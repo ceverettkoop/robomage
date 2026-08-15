@@ -78,7 +78,8 @@ import decode
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import (ANALYSIS_TOOL, append_spec_knob, apply_to_parser,
-                      DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH)
+                      DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
+                      DEFAULT_SB_ROLLOUT_TURNS)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
@@ -597,6 +598,8 @@ def _load_model_and_env(args):
     except ImportError:
         from stable_baselines3 import PPO as MaskablePPO
 
+    from opponents import is_scripted_spec
+
     _apply_search_budget_flags(args)
     binary = getattr(args, "binary", BINARY)
 
@@ -606,6 +609,7 @@ def _load_model_and_env(args):
     # so the trace loop can build the matching SearchController.
     insp_model_spec = _inspection_spec(args.model)
     insp_opp_spec = _inspection_spec(args.opponent)
+    opp_scripted = is_scripted_spec(insp_opp_spec)
     model_path = _resolve_any_path(insp_model_spec)
 
     # Deck resolution. A checkpoint no longer encodes a deck — there is one
@@ -620,7 +624,7 @@ def _load_model_and_env(args):
               file=sys.stderr)
         sys.exit(1)
     if not deck_b:
-        if args.opponent == "scripted":
+        if opp_scripted:
             deck_b = deck_a  # no opponent deck given; mirror by default
             print(f"No --deck-b given for scripted opponent; defaulting to a mirror "
                   f"match (opponent plays {deck_b}). Pass --deck-b for a different matchup.")
@@ -642,8 +646,11 @@ def _load_model_and_env(args):
     # object here is always the inspection net (SHAP/value/probs); a search spec
     # additionally spins up a SearchController that plays via make_controller.
     model._play_spec = args.model
+    # A scripted opponent never loads a checkpoint; remember its tier spec
+    # (e.g. "scripted:easy") so _controllers_for builds the matching agent.
+    model._scripted_opp_spec = args.opponent if opp_scripted else None
     opp_model = None
-    if args.opponent != "scripted":
+    if not opp_scripted:
         if _is_az_model_spec(insp_opp_spec):
             opp_model, _ = _load_az_analysis_model(insp_opp_spec)
         else:
@@ -744,9 +751,10 @@ def _controllers_for(model, opp_model, model_is_a, env=None):
     The model seat (and the opponent seat when ``opp_model`` is given) plays via
     :func:`_playing_controller` — a raw-policy ``ModelController`` normally, or a
     real MCTS ``SearchController`` when the original spec was ``az:``/``mcts:``.
-    A scripted opponent is the HARD agent. ``env`` (the search-capable env when
-    search play is active) is handed to any controller that advertises
-    ``bind_env``.
+    A scripted opponent plays the tier the spec named (``_scripted_opp_spec``
+    stashed by ``_load_model_and_env``; the bare "scripted" default is the HARD
+    agent). ``env`` (the search-capable env when search play is active) is
+    handed to any controller that advertises ``bind_env``.
     """
     from opponents import ScriptedController
     from scripted_agent import make_agent
@@ -755,7 +763,8 @@ def _controllers_for(model, opp_model, model_is_a, env=None):
     if opp_model is not None:
         ctrl_opp = _playing_controller(opp_model, "Opp", env)
     else:
-        ctrl_opp = ScriptedController(make_agent("scripted"), label="Scripted")
+        spec = getattr(model, "_scripted_opp_spec", None) or "scripted"
+        ctrl_opp = ScriptedController(make_agent(spec), label="Scripted")
     ctrl_a, ctrl_b = ((ctrl_model, ctrl_opp) if model_is_a
                       else (ctrl_opp, ctrl_model))
     return ctrl_a, ctrl_b, ctrl_model
@@ -772,7 +781,13 @@ def _ctrl_clock_stats(ctrl):
     return stats.get("clock_bank"), stats.get("clock_remaining")
 
 
-def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
+class CollectAbort(Exception):
+    """Raised out of the on_query hook to stop a trace collection between
+    decisions (see _collect_game_traces' should_stop)."""
+
+
+def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
+                         progress=None, should_stop=None):
     """Play n_games and collect per-step (obs, value, action) traces.
 
     Returns a list of game dicts:
@@ -801,16 +816,39 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
 
     The game loop itself is runner.drive_game (the shared loop); the trace
     recording rides its on_query/on_action hooks.
+
+    `progress(event_dict)`, when given, streams the collection live (called on
+    this thread): {"kind": "game_start", "model_is_a", "engine_seed"} after each
+    reset; {"kind": "step", "step": {...}} the moment a MODEL decision's action
+    is known (the step dict carries that decision's full record — obs copy,
+    value, interp, num_choices, probs, clock, prefix_len, action);
+    {"kind": "opp_action", "opp": {...}} per opponent decision;
+    {"kind": "game_end", "game": <finished dict>} with the authoritative record;
+    {"kind": "game_abort"} when should_stop lands mid-game; {"kind": "note",
+    "text"} for the search-play announce/stats lines (which print to stdout
+    only when progress is None). `should_stop()` is checked between games and
+    between decisions (via CollectAbort raised from on_query); a stop during a
+    single controller.choose takes effect when that decision returns. Both
+    default to None — existing callers are unchanged.
     """
     import torch
     import runner
 
-    _announce_search_play(model, opp_model)
+    if progress is None:
+        _announce_search_play(model, opp_model)
+    else:
+        for line in _search_play_notes(model, opp_model):
+            progress({"kind": "note", "text": line})
 
     games = []
     for g in range(n_games):
+        if should_stop is not None and should_stop():
+            break
         model_is_a = bool(np.random.random() < 0.5)
         obs, engine_seed = _reset_for_game(env, model_is_a)
+        if progress is not None:
+            progress({"kind": "game_start", "model_is_a": model_is_a,
+                      "engine_seed": engine_seed})
         ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model,
                                                       model_is_a, env)
         ctrl_opp = ctrl_b if ctrl_model is ctrl_a else ctrl_a
@@ -826,6 +864,8 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         prefix_len = []
 
         def on_query(d):
+            if should_stop is not None and should_stop():
+                raise CollectAbort
             # Record observation, value and policy probs for MODEL decisions
             # (before the controller acts; the obs is unchanged by choosing).
             if d.controller is not ctrl_model:
@@ -846,6 +886,16 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         def on_action(d, action):
             if d.controller is ctrl_model:
                 trace_actions.append(int(action))
+                if progress is not None:
+                    # The step's complete record, now that the choice is known.
+                    # Ships the same obs copy made in on_query — the consumer
+                    # owns it (finished dicts are treated as immutable).
+                    progress({"kind": "step", "step": {
+                        "obs": trace_obs[-1], "value": trace_vals[-1],
+                        "interp": trace_interp[-1],
+                        "num_choices": trace_num_choices[-1],
+                        "probs": trace_probs[-1], "clock": trace_clock[-1],
+                        "prefix_len": prefix_len[-1], "action": int(action)}})
             else:
                 # Decode now (obs is from the opponent's perspective and is not
                 # kept) so the replay can interleave opponent actions later.
@@ -856,9 +906,17 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                     "before_model_step": len(trace_obs),
                     "clock": _ctrl_clock_stats(d.controller)[1],
                 })
+                if progress is not None:
+                    progress({"kind": "opp_action",
+                              "opp": trace_opp_actions[-1]})
 
-        rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
-                                on_query=on_query, on_action=on_action)
+        try:
+            rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
+                                    on_query=on_query, on_action=on_action)
+        except CollectAbort:
+            if progress is not None:
+                progress({"kind": "game_abort"})
+            break
         full_actions = rec.actions
         model_reward = rec.reward if model_is_a else -rec.reward
         games.append({
@@ -881,6 +939,8 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             "clock_bank": _ctrl_clock_stats(ctrl_model)[0],
             "opp_clock_bank": _ctrl_clock_stats(ctrl_opp)[0],
         })
+        if progress is not None:
+            progress({"kind": "game_end", "game": games[-1]})
         if verbose:
             result_str = "W" if model_reward > 0 else ("L" if model_reward < 0 else "D")
             score = _match_score(games[-1])
@@ -888,22 +948,35 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                 result_str += f" {score[0]}-{score[1]}"
             print(f"  game {g}/{n_games - 1}: {len(trace_obs)} decisions, {result_str}",
                   flush=True)
-    _report_search_stats(model, opp_model)
+    if progress is None:
+        _report_search_stats(model, opp_model)
+    else:
+        for line in _search_stats_notes(model, opp_model):
+            progress({"kind": "note", "text": line})
     return games
+
+
+def _search_play_notes(model, opp_model):
+    """One-line notice per seat whose trace games are MCTS-played."""
+    lines = []
+    for who, m in (("model", model), ("opponent", opp_model)):
+        spec = getattr(m, "_play_spec", None) if m is not None else None
+        if _is_search_spec(spec):
+            lines.append(f"  {who} trace games played by MCTS ({spec}) — slow "
+                         f"(~sims/decision); use azraw:/bare spec for "
+                         f"raw-policy traces")
+    return lines
 
 
 def _announce_search_play(model, opp_model):
     """Print a one-line notice for each seat whose trace games are MCTS-played."""
-    for who, m in (("model", model), ("opponent", opp_model)):
-        spec = getattr(m, "_play_spec", None) if m is not None else None
-        if _is_search_spec(spec):
-            print(f"  {who} trace games played by MCTS ({spec}) — slow "
-                  f"(~sims/decision); use azraw:/bare spec for raw-policy traces",
-                  flush=True)
+    for line in _search_play_notes(model, opp_model):
+        print(line, flush=True)
 
 
-def _report_search_stats(model, opp_model):
-    """Print each search seat's accumulated searched/fallback/sims tally."""
+def _search_stats_notes(model, opp_model):
+    """Each search seat's accumulated searched/fallback/sims tally, as lines."""
+    lines = []
     for who, m in (("model", model), ("opponent", opp_model)):
         ctrl = getattr(m, "_search_ctrl", None) if m is not None else None
         stats = getattr(ctrl, "stats", None) if ctrl is not None else None
@@ -912,11 +985,18 @@ def _report_search_stats(model, opp_model):
             bank, remaining = _ctrl_clock_stats(ctrl)
             if bank is not None:
                 clock = f" clock={remaining:.1f}/{bank:g}s"
-            print(f"  {who} MCTS [{getattr(ctrl, 'label', 'mcts')}]: "
-                  f"searched={stats.get('searched', 0)} "
-                  f"sb_searched={stats.get('sb_searched', 0)} "
-                  f"fallback={stats.get('fallback', 0)} "
-                  f"sims={stats.get('sims', 0)}{clock}", flush=True)
+            lines.append(f"  {who} MCTS [{getattr(ctrl, 'label', 'mcts')}]: "
+                         f"searched={stats.get('searched', 0)} "
+                         f"sb_searched={stats.get('sb_searched', 0)} "
+                         f"fallback={stats.get('fallback', 0)} "
+                         f"sims={stats.get('sims', 0)}{clock}")
+    return lines
+
+
+def _report_search_stats(model, opp_model):
+    """Print each search seat's accumulated searched/fallback/sims tally."""
+    for line in _search_stats_notes(model, opp_model):
+        print(line, flush=True)
 
 
 def _game_is_replayable(game):
@@ -935,7 +1015,7 @@ def _replay_to_step(env, game, step):
     printed warning) if replay diverged from the stored observation, so callers
     never present a counterfactual built on a desynced state. `prefix_reward` is
     the cumulative Player-A reward accrued during the prefix — nonzero when the
-    branch point is in game 2+ of a bo3 match (the ±0.3 intermediates from
+    branch point is in game 2+ of a bo3 match (the ±1.0 per-game results from
     earlier games land here, not after the branch).
     """
     engine_seed = game["engine_seed"]
@@ -1511,8 +1591,8 @@ def _print_boundaries(rows):
 def _print_match_calibration(games):
     """Per (match, game) score-conditioned value calibration: V(s) at each
     game's first decision vs the empirical mean REMAINING match return for
-    that score across the sample (remaining = final result minus the ±0.3
-    intermediates already accrued at that score)."""
+    that score across the sample (remaining = final result minus the
+    ±BO3_GAME_WIN_REWARD per-game results already accrued at that score)."""
     # Collect one row per (match, game-within-match).
     rows = []
     for g_idx, game in enumerate(games):
@@ -4201,7 +4281,8 @@ def _build_search_evaluator(spec):
 
 def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed,
                                     sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
-                                    sb_max_depth=DEFAULT_SB_MAX_DEPTH):
+                                    sb_max_depth=DEFAULT_SB_MAX_DEPTH,
+                                    sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS):
     """A SearchController that also RECORDS (priors, visit_dist, net_value,
     root_value, obs) for every searched root, for the search-vs-raw report."""
     from opponents import SearchController
@@ -4211,7 +4292,8 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             super().__init__(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                              temperature=0.0, label="search-compare", rng_seed=rng_seed,
                              sb_sims=sb_sims, sb_worlds=sb_worlds,
-                             sb_max_depth=sb_max_depth)
+                             sb_max_depth=sb_max_depth,
+                             sb_rollout_turns=sb_rollout_turns)
             self.records = []
 
         def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
@@ -4229,7 +4311,9 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 result = run_search(env, self._evaluator, sims=self._sb_sims,
                                     worlds=self._sb_worlds, c_puct=self._c_puct,
-                                    max_depth=self._sb_max_depth, rng=self._rng)
+                                    max_depth=self._sb_max_depth,
+                                    rollout_turns=self._sb_rollout_turns,
+                                    rng=self._rng)
                 self.stats["sb_searched"] += 1
             else:
                 result = run_search(env, self._evaluator, sims=self._sims,
@@ -4282,9 +4366,25 @@ def _report_search_compare(ctrl, args):
               "policy — try a deck/opponent with more loop-safe priority windows).")
         return
 
-    kls = np.array([_kl(r["priors"], r["visit_dist"]) for r in recs])
-    agree = np.array([int(np.argmax(r["priors"]) == np.argmax(r["visit_dist"]))
-                      for r in recs])
+    # The search merges duplicate edges (visit mass sits on each group's
+    # representative), so fold the raw priors the same way before comparing —
+    # otherwise duplicate-heavy roots would report inflated KL and spurious
+    # argmax disagreement (net's max prior on a copy search never visits).
+    def _folded_priors(r):
+        from decode import menu_merge_reps
+        p = r["priors"].copy()
+        rep = menu_merge_reps(r["obs"], r["num_choices"])
+        for i in range(1, r["num_choices"]):
+            j = int(rep[i])
+            if j != i:
+                p[j] += p[i]
+                p[i] = 0.0
+        return p
+
+    folded = [_folded_priors(r) for r in recs]
+    kls = np.array([_kl(p, r["visit_dist"]) for p, r in zip(folded, recs)])
+    agree = np.array([int(np.argmax(p) == np.argmax(r["visit_dist"]))
+                      for p, r in zip(folded, recs)])
     net_v = np.array([r["net_value"] for r in recs])
     root_v = np.array([r["root_value"] for r in recs])
     vmae = float(np.mean(np.abs(net_v - root_v)))
@@ -4349,7 +4449,7 @@ def _run_search_compare_batch(payload):
     ``(batch_id, n_games, records, stats, elapsed)``."""
     (batch_id, model_spec, opponent_spec, deck_a, deck_b, n_games, seed,
      sims, worlds, c_puct, binary_path, bo3,
-     sb_sims, sb_worlds, sb_max_depth) = payload
+     sb_sims, sb_worlds, sb_max_depth, sb_rollout_turns) = payload
     t0 = time.time()
     try:
         import torch
@@ -4362,7 +4462,8 @@ def _run_search_compare_batch(payload):
     evaluator, _ = _build_search_evaluator(model_spec)
     ctrl_model = _make_search_compare_controller(
         evaluator, sims=sims, worlds=worlds, c_puct=c_puct, rng_seed=seed,
-        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth)
+        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+        sb_rollout_turns=sb_rollout_turns)
     ctrl_opp = make_controller(opponent_spec)
     runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
                      binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
@@ -4411,7 +4512,8 @@ def cmd_search_compare(args):
         ctrl_model = _make_search_compare_controller(
             evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
             rng_seed=args.seed, sb_sims=args.sb_sims, sb_worlds=args.sb_worlds,
-            sb_max_depth=args.sb_max_depth)
+            sb_max_depth=args.sb_max_depth,
+            sb_rollout_turns=args.sb_rollout_turns)
         ctrl_opp = make_controller(args.opponent)
 
         print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
@@ -4445,7 +4547,7 @@ def cmd_search_compare(args):
     payloads = [
         (i, args.model, args.opponent, deck_a, deck_b, count, args.seed + start,
          args.sims, args.worlds, args.c, args.binary, bo3,
-         args.sb_sims, args.sb_worlds, args.sb_max_depth)
+         args.sb_sims, args.sb_worlds, args.sb_max_depth, args.sb_rollout_turns)
         for i, (start, count) in enumerate(batches)
     ]
     print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "

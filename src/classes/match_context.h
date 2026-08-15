@@ -36,8 +36,10 @@ struct SideboardPhaseState {
     // can never be submitted off-size.
     int delta = 0;
     // The card whose unpaired move produced a nonzero delta ("" when balanced).
-    // It is exempt from its own direction lock, which is what lets an exploratory
-    // move be taken back in one ply instead of forcing a matching move.
+    // Its takeback is offered ONLY when the balancing direction has no genuine
+    // completion (the stranded case): between the two halves of a swap no new
+    // information arrives, so an avoidable takeback is a pure two-decision no-op
+    // that outcome-driven training could never learn to skip.
     std::string unpaired_name;
 };
 

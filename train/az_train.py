@@ -36,7 +36,21 @@ from progress_io import write_progress_state, read_progress_state
 # literals here, which silently pinned this module to the old values whenever the
 # arg was absent — import them so a change to the default actually reaches the
 # az / az-league paths.
-from cli_spec import DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH
+from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
+                      DEFAULT_SB_ROLLOUT_TURNS, DEFAULT_SB_PERSIST,
+                      DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
+                      DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_LR,
+                      DEFAULT_AZ_WEIGHT_DECAY, DEFAULT_AZ_BATCH_SIZE,
+                      DEFAULT_AZ_TRAIN_BATCHES, DEFAULT_AZ_CYCLE_BATCHES,
+                      DEFAULT_AZ_WINDOW, DEFAULT_AZ_CV,
+                      DEFAULT_AZ_TD_N, DEFAULT_AZ_Q_MIX,
+                      DEFAULT_AZ_EVAL_GAMES, DEFAULT_AZ_EVAL_SIMS,
+                      DEFAULT_AZ_EVAL_WORLDS, DEFAULT_AZ_PROMOTE_THRESHOLD,
+                      DEFAULT_AZ_GATE_FLOOR, DEFAULT_AZ_GATE_FLOOR_MIN,
+                      DEFAULT_AZ_GATE_CROSS_PAIRS, DEFAULT_AZ_GATE_EVERY,
+                      DEFAULT_AZ_EXPERT_GAMES, DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                      DEFAULT_AZ_SCRIPTED_CELLS,
+                      EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
 
 import numpy as np
 
@@ -55,7 +69,9 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 # P(opponent deck == focus deck) per self-play game (mirror vs cross-deck roster).
-DEFAULT_MIRROR_FRAC = 0.25
+# Value lives in cli_spec's AZ-defaults block (one home); local alias kept for
+# the existing internal references.
+DEFAULT_MIRROR_FRAC = DEFAULT_AZ_MIRROR_FRAC
 
 # Promotion-gate defaults. The gate panel is ROSTER-WIDE: a candidate-vs-incumbent
 # mirror for every roster deck (so a piloting regression on ANY deck shows up in
@@ -70,9 +86,11 @@ DEFAULT_MIRROR_FRAC = 0.25
 # trigger stays a 0-for-4 wipeout; a lopsided cross matchup the incumbent also
 # loses no longer counts against the deck. Deliberate: per-deck samples are
 # tiny, so the floor is a catastrophic-collapse tripwire, not a fine measure.
-DEFAULT_GATE_FLOOR = 0.2
-DEFAULT_GATE_FLOOR_MIN = 4
-DEFAULT_GATE_CROSS_PAIRS = 2
+# Values live in cli_spec's AZ-defaults block (one home); local aliases kept
+# for the existing internal references.
+DEFAULT_GATE_FLOOR = DEFAULT_AZ_GATE_FLOOR
+DEFAULT_GATE_FLOOR_MIN = DEFAULT_AZ_GATE_FLOOR_MIN
+DEFAULT_GATE_CROSS_PAIRS = DEFAULT_AZ_GATE_CROSS_PAIRS
 
 # az-league gates (az_eval + promotion) run every DEFAULT_GATE_EVERY slots. One
 # slot of training between gates is a small weight delta against a >=55%
@@ -81,20 +99,26 @@ DEFAULT_GATE_CROSS_PAIRS = 2
 # and K slots of CANDIDATE-generated self-play (resolve_source prefers the
 # snapshot line) — before paying for an eval. Promotion cadence, not training,
 # is all that changes: candidate snapshots still save every slot.
-DEFAULT_GATE_EVERY = 1
+DEFAULT_GATE_EVERY = DEFAULT_AZ_GATE_EVERY
 
 
 # ----------------------------------------------------------------------
 # Shard loading
 # ----------------------------------------------------------------------
 
-def load_window(deck: str, window: int, data_dir: Optional[str] = None):
+def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
     """Load the last ``window`` shards (by mtime) into flat arrays.
 
     Shards pool into ``az_data/gen/`` — self-play across every focus deck feeds
     the ONE generalist net — so ``deck`` is used only for the error message; the
     default ``data_dir`` is the shared gen pool. Pass ``data_dir`` to override
-    (tests point it at a temp dir)."""
+    (tests point it at a temp dir).
+
+    Returns a dict of the :data:`az_selfplay.SHARD_KEYS` arrays plus
+    ``n_shards``. Every key is REQUIRED: a shard predating the n-step TD schema
+    (no ``td_q`` column) is a hard error, because silently training such a shard
+    would mix two different value targets in one window."""
+    from az_selfplay import SHARD_KEYS
     data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
                     key=os.path.getmtime)
@@ -102,24 +126,31 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None):
         raise FileNotFoundError(
             f"no self-play shards in {data_dir} — run az-selfplay first")
     shards = shards[-window:]
-    obs, pi, z, mask = [], [], [], []
+    parts = {k: [] for k in SHARD_KEYS}
     for s in shards:
         d = np.load(s)
-        obs.append(d["obs"]); pi.append(d["pi"]); z.append(d["z"]); mask.append(d["mask"])
-    obs = np.concatenate(obs, axis=0)
-    pi = np.concatenate(pi, axis=0)
-    z = np.concatenate(z, axis=0)
-    mask = np.concatenate(mask, axis=0)
+        missing = [k for k in SHARD_KEYS if k not in d.files]
+        if missing:
+            raise RuntimeError(
+                f"self-play shard {s} is missing the column(s) "
+                f"{', '.join(missing)} — regenerate self-play shards (schema "
+                f"changed: n-step TD targets). Delete {data_dir}/shard_*.npz and "
+                f"re-run az-selfplay / the az cycle.")
+        for k in SHARD_KEYS:
+            parts[k].append(d[k])
+    out = {k: np.concatenate(v, axis=0) for k, v in parts.items()}
     # Shards are raw observation rows, so an obs-layout change (e.g. a new tail
     # block) makes older shards unusable. Say so instead of letting the net's
     # first slice fail with a bare shape error deep in the forward pass.
-    if obs.shape[1] != OBS_SIZE or mask.shape[1] != MAX_ACTIONS:
+    if out["obs"].shape[1] != OBS_SIZE or out["mask"].shape[1] != MAX_ACTIONS:
         raise RuntimeError(
             f"self-play shards in {data_dir} were recorded against a different "
-            f"observation layout (obs width {obs.shape[1]}, mask {mask.shape[1]}) "
-            f"but this build has OBS_SIZE={OBS_SIZE}, MAX_ACTIONS={MAX_ACTIONS} — "
+            f"observation layout (obs width {out['obs'].shape[1]}, mask "
+            f"{out['mask'].shape[1]}) but this build has OBS_SIZE={OBS_SIZE}, "
+            f"MAX_ACTIONS={MAX_ACTIONS} — "
             "delete/regenerate the shards (re-run az-selfplay) before training")
-    return obs, pi, z, mask, len(shards)
+    out["n_shards"] = len(shards)
+    return out
 
 
 def prune_shards(window: int, data_dir: Optional[str] = None) -> int:
@@ -192,12 +223,30 @@ def _read_steps(az_path: str) -> int:
 # Training
 # ----------------------------------------------------------------------
 
-def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
-             lr: float = 1e-3, c_v: float = 1.0, window: int = 50,
-             weight_decay: float = 1e-4, from_ppo: Optional[str] = None,
+def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
+             batch_size: int = DEFAULT_AZ_BATCH_SIZE,
+             lr: float = DEFAULT_AZ_LR, c_v: float = DEFAULT_AZ_CV,
+             q_mix: float = DEFAULT_AZ_Q_MIX,
+             window: int = DEFAULT_AZ_WINDOW,
+             weight_decay: float = DEFAULT_AZ_WEIGHT_DECAY,
+             from_ppo: Optional[str] = None,
              fresh: bool = False, log_every: int = 50,
              snapshot_every: int = 0, data_dir: Optional[str] = None,
              ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 0) -> dict:
+    """Optimize the gen AZNet on the newest ``window`` shards.
+
+    ``batches <= 0`` resolves to AUTO — ``max(1, n_samples // batch_size)``
+    optimizer updates, i.e. exactly one epoch over the loaded window — and the
+    resolution is printed (``batches=auto(one-epoch)->534``). That is the az /
+    az-league cycle default (``DEFAULT_AZ_CYCLE_BATCHES``); the standalone
+    az-train default stays a fixed batch count.
+
+    The value target is the MIX ``(1 - q_mix) * z + q_mix * td_q``: the shard's
+    per-game outcome blended with its recorded n-step TD bootstrap (see
+    :func:`az_selfplay.compute_td_targets`). ``q_mix=0`` restores the classic
+    pure-outcome AlphaZero target. The periodic log line reports the value loss
+    against BOTH the mixed target and the plain outcome, so a drift between them
+    is visible while training."""
     import torch
     import torch.nn.functional as F
     from az_net import az_checkpoint_path, decay_exempt_param_groups
@@ -205,10 +254,36 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
 
-    obs, pi, z, mask, n_shards = load_window(deck, window, data_dir)
+    w = load_window(deck, window, data_dir)
+    obs, pi, z, mask = w["obs"], w["pi"], w["z"], w["mask"]
+    td_q, n_shards = w["td_q"], w["n_shards"]
     n = obs.shape[0]
+    # Both backends already resolve every unbootstrappable row to z, so a NaN
+    # here means a shard was written by something that does not honour the
+    # schema — refuse it rather than propagate NaN through the value head.
+    if not np.all(np.isfinite(td_q)):
+        raise RuntimeError(
+            f"{int((~np.isfinite(td_q)).sum())} of {n} shard rows have a "
+            f"non-finite td_q — every writer must resolve an unbootstrappable "
+            f"sample to its outcome z (regenerate the shards)")
+    q_mix = float(q_mix)
+    v_target = ((1.0 - q_mix) * z + q_mix * td_q).astype(np.float32)
+    # batches <= 0 = AUTO: exactly ONE epoch over the loaded window. A fixed
+    # batch count silently drifts in epochs as the window's data volume changes
+    # (1000 x 256 over a ~137k-sample window was ~1.9 epochs of re-fitting one
+    # small, correlated window); one pass is the same amount of fitting whatever
+    # the volume.
+    bs = min(batch_size, n)
+    batches_txt = str(batches)
+    if batches <= 0:
+        batches = max(1, n // bs)
+        batches_txt = f"auto(one-epoch)->{batches}"
     print(f"[az-train] gen (focus={deck}): {n} samples from {n_shards} shards; "
-          f"batches={batches} batch_size={batch_size} lr={lr} c_v={c_v}")
+          f"batches={batches_txt} batch_size={batch_size} lr={lr} c_v={c_v} "
+          f"q_mix={q_mix}")
+    print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_q; "
+          f"td_q != z on {int((td_q != z).sum())}/{n} rows "
+          f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f})")
 
     net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
@@ -224,13 +299,13 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
     obs_t = torch.as_tensor(obs)
     pi_t = torch.as_tensor(pi)
     z_t = torch.as_tensor(z)
+    vt_t = torch.as_tensor(v_target)
     mask_t = torch.as_tensor(mask)
 
     log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
     os.makedirs(ckpt_dir, exist_ok=True)
     first_loss = None
     last_loss = None
-    bs = min(batch_size, n)
 
     with open(log_path, "a") as logf:
         logf.write(f"# az-train {time.strftime('%Y-%m-%d %H:%M:%S')} deck={deck} "
@@ -239,12 +314,17 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
             idx = rng.integers(0, n, size=bs)
             bi = torch.as_tensor(idx)
             ob = obs_t[bi]; tp = pi_t[bi]; tz = z_t[bi]; mk = mask_t[bi]
+            tv = vt_t[bi]
 
             logits, value = net(ob, mk)
             logp = F.log_softmax(logits, dim=-1)
             logp = torch.where(mk, logp, torch.zeros_like(logp))   # kill -inf*0 nan
             loss_pi = -(tp * logp).sum(dim=1).mean()
-            loss_v = F.mse_loss(value, tz)
+            # Optimized against the MIXED target; the pure-outcome MSE is
+            # computed alongside (no grad) purely as a comparable diagnostic.
+            loss_v = F.mse_loss(value, tv)
+            with torch.no_grad():
+                loss_vz = F.mse_loss(value, tz)
             loss = loss_pi + c_v * loss_v
 
             opt.zero_grad()
@@ -257,7 +337,8 @@ def train_az(deck: str, *, batches: int = 1000, batch_size: int = 256,
             last_loss = fl
             if b == 0 or (b + 1) % log_every == 0 or b == batches - 1:
                 line = (f"[az-train] batch {b+1}/{batches} loss={fl:.4f} "
-                        f"(pi={loss_pi.item():.4f} v={loss_v.item():.4f})")
+                        f"(pi={loss_pi.item():.4f} v_mix={loss_v.item():.4f} "
+                        f"v_z={loss_vz.item():.4f})")
                 print(line)
                 logf.write(line + "\n"); logf.flush()
             if snapshot_every and (b + 1) % snapshot_every == 0:
@@ -369,16 +450,62 @@ def _like_pairing_floor(per_matchup: dict, gate_floor: float,
     return vetoes, deck_floor
 
 
+def _gate_worker_init():
+    """Gate-pool worker initializer: pin the batch-1 CPU net eval to one math
+    thread. Gate parallelism comes from the process fan-out (each worker already
+    alternates with its own engine subprocess); letting torch fan tiny matmuls
+    across cores would just oversubscribe the pool."""
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    try:
+        import torch
+        torch.set_num_threads(1)
+    except ImportError:
+        pass
+
+
+def _gate_matchup_worker(mi: int, dx: str, dy: str, per: int, cand_spec: str,
+                         opp_spec: str, bo3: bool, seed: int) -> tuple:
+    """One gate matchup — ``per`` matches of candidate-piloting-``dx`` vs
+    opponent-piloting-``dy``, seats split half/half — returning
+    ``(mi, mw, ml, md)`` from the candidate's view.
+
+    Controllers are built FRESH from the specs by each ``run_match`` call
+    (never cached across matchups): a controller's internal rng advances as it
+    searches, so reuse would make a matchup's result depend on which matchups
+    ran before it on the same worker. Fresh construction plus seeds derived
+    only from ``mi`` make every matchup's result identical to the serial
+    loop's, regardless of worker count or scheduling."""
+    from runner import run_match
+    half = per // 2
+    mw = ml = md = 0
+    mseed = seed + mi * 100003
+    if per - half:  # candidate (piloting dx) in seat A
+        r = run_match(cand_spec, opp_spec, deck_a=dx, deck_b=dy,
+                      games=per - half, bo3=bo3, seed=mseed, transcript="quiet")
+        mw += r.wins; ml += r.losses; md += r.draws
+    if half:        # candidate (piloting dx) in seat B — flip tally to cand view
+        r = run_match(opp_spec, cand_spec, deck_a=dy, deck_b=dx,
+                      games=half, bo3=bo3, seed=mseed + per, transcript="quiet")
+        mw += r.losses; ml += r.wins; md += r.draws
+    return mi, mw, ml, md
+
+
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
-            games: int = 56, sims: int = 32, worlds: int = 2, c_puct: float = 1.5,
+            games: int = DEFAULT_AZ_EVAL_GAMES, sims: int = DEFAULT_AZ_EVAL_SIMS,
+            worlds: int = DEFAULT_AZ_EVAL_WORLDS, c_puct: float = 1.5,
             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
-            promote_threshold: float = 0.55, promote: bool = False,
+            sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+            sb_persist: int = DEFAULT_SB_PERSIST,
+            promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD,
+            promote: bool = False,
             roster: Optional[list] = None,
             cross_pairs: int = DEFAULT_GATE_CROSS_PAIRS,
             gate_floor: float = DEFAULT_GATE_FLOOR,
             floor_min_matches: int = DEFAULT_GATE_FLOOR_MIN,
-            ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True) -> dict:
+            ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True,
+            workers: Optional[int] = None) -> dict:
     """ROSTER-WIDE gate: play ``candidate`` vs ``incumbent`` over a panel of
     matchups covering EVERY deck in ``roster`` (default: the whole decks/league/
     roster) as pilot — a mirror per deck plus direction-balanced cross pairings
@@ -405,8 +532,16 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     veto is much cheaper than promoting a net that forgot how to pilot a deck.
     Prints per-matchup and per-piloted-deck breakdowns. The no-incumbent-yet
     fallback (vs scripted) is preserved (the like-pairing baseline is then the
-    scripted opponent piloting the same deck)."""
-    from runner import run_match
+    scripted opponent piloting the same deck).
+
+    ``workers`` fans the matchup panel out over a process pool (default
+    ``max(1, cpu-1)``, capped at the panel size; 1 = the old serial loop). A
+    gate match is one driver process ping-ponging with one engine subprocess —
+    ~one busy core — so the serial panel left the machine idle. Matchups are
+    independent and every matchup's seeds derive only from its panel index
+    (and its controllers are built fresh per matchup — see
+    :func:`_gate_matchup_worker`), so the aggregate/breakdown/veto results are
+    identical for ANY worker count; only per-matchup print order varies."""
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
     cand_path = resolve_az_checkpoint(candidate, prefer="snapshot") or candidate
@@ -417,7 +552,8 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 
     # bo3 gate: sideboard roots get their own (deeper) budget, mirroring self-play.
     knobs = (f"?sims={sims}&worlds={worlds}&c={c_puct}"
-             f"&sb_sims={sb_sims}&sb_worlds={sb_worlds}&sb_max_depth={sb_max_depth}")
+             f"&sb_sims={sb_sims}&sb_worlds={sb_worlds}&sb_max_depth={sb_max_depth}"
+             f"&sb_rollout_turns={sb_rollout_turns}&sb_persist={int(sb_persist)}")
     cand_spec = f"az:{cand_path}{knobs}"
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
@@ -426,35 +562,56 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     focus_decks = _normalize_focus(deck, roster)
     matchups = _gate_matchups(focus_decks, roster, cross_pairs, seed)
     per = max(2, games // len(matchups))   # matches per matchup (>=2 so seats alternate)
+    if workers is None:
+        workers = max(1, (os.cpu_count() or 2) - 1)
+    workers = max(1, min(int(workers), len(matchups)))
     unit = "matches" if bo3 else "games"
     print(f"[az-eval] {len(matchups)} matchup(s) x {per} {unit} "
-          f"({'bo3' if bo3 else 'bo1'}, seats alternating): candidate={cand_path} vs "
+          f"({'bo3' if bo3 else 'bo1'}, seats alternating, {workers} worker(s)): "
+          f"candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
+
+    def _tag(dx: str, dy: str) -> str:
+        return f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
+
+    # Run the panel: each matchup's result depends only on its index mi (seeds)
+    # and the specs (fresh controllers per matchup), so the parallel fan-out is
+    # result-identical to the serial loop for any worker count.
+    tallies: dict = {}       # mi -> (mw, ml, md), candidate's view
+    if workers > 1:
+        import multiprocessing as mp
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        ctx = mp.get_context("spawn")
+        with ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
+                                 initializer=_gate_worker_init) as ex:
+            futs = [ex.submit(_gate_matchup_worker, mi, dx, dy, per, cand_spec,
+                              opp_spec, bo3, seed)
+                    for mi, (dx, dy) in enumerate(matchups)]
+            for fut in as_completed(futs):
+                mi, mw, ml, md = fut.result()
+                tallies[mi] = (mw, ml, md)
+                dx, dy = matchups[mi]
+                print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D "
+                      f"({len(tallies)}/{len(matchups)})", flush=True)
+    else:
+        for mi, (dx, dy) in enumerate(matchups):
+            _, mw, ml, md = _gate_matchup_worker(mi, dx, dy, per, cand_spec,
+                                                 opp_spec, bo3, seed)
+            tallies[mi] = (mw, ml, md)
+            print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D")
 
     w = l = d = 0
     breakdown = []
     per_deck: dict = {}      # piloted deck -> [w, l, d] from the candidate's view
     per_matchup: dict = {}   # (dx, dy) -> [w, l, d], candidate piloting dx
     for mi, (dx, dy) in enumerate(matchups):
-        half = per // 2
-        mw = ml = md = 0
-        mseed = seed + mi * 100003
-        if per - half:  # candidate (piloting dx) in seat A
-            r = run_match(cand_spec, opp_spec, deck_a=dx, deck_b=dy,
-                          games=per - half, bo3=bo3, seed=mseed, transcript="quiet")
-            mw += r.wins; ml += r.losses; md += r.draws
-        if half:        # candidate (piloting dx) in seat B — flip tally to cand view
-            r = run_match(opp_spec, cand_spec, deck_a=dy, deck_b=dx,
-                          games=half, bo3=bo3, seed=mseed + per, transcript="quiet")
-            mw += r.losses; ml += r.wins; md += r.draws
+        mw, ml, md = tallies[mi]
         w += mw; l += ml; d += md
         t = per_deck.setdefault(dx, [0, 0, 0])
         t[0] += mw; t[1] += ml; t[2] += md
         per_matchup[(dx, dy)] = [mw, ml, md]
-        tag = f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
-        breakdown.append((tag, mw, ml, md))
-        print(f"[az-eval]   {tag}: {mw}W-{ml}L-{md}D")
+        breakdown.append((_tag(dx, dy), mw, ml, md))
 
     wr = w / max(1, w + l + d)
     print(f"[az-eval] AGGREGATE candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
@@ -472,12 +629,7 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 
     promoted = False
     if promote and wr >= promote_threshold and not vetoes:
-        final = az_checkpoint_path(None, ckpt_dir)
-        for src, dst in ((cand_path, final),
-                         (_meta_of(cand_path), _meta_of(final))):
-            if os.path.exists(src):
-                os.makedirs(os.path.dirname(dst), exist_ok=True)
-                shutil.copyfile(src, dst)
+        final = _promote_to_final(cand_path, ckpt_dir)
         promoted = True
         print(f"[az-eval] PROMOTED candidate -> {final} (>= {promote_threshold:.2f})")
     elif promote and vetoes:
@@ -496,26 +648,107 @@ def _meta_of(path: str) -> str:
     return base + ".meta.json"
 
 
+def _promote_to_final(cand_path: str, ckpt_dir: str = _AZ_CKPT_DIR) -> str:
+    """Copy a candidate snapshot (and its meta sidecar) over ``gen__azfinal.pt``
+    — the checkpoint the ``az:gen`` serving/eval specs resolve to. Used by the
+    gate on promotion and by an ungated (``gate_every=0``) az-league run at
+    completion. Returns the final path."""
+    from az_net import az_checkpoint_path
+    final = az_checkpoint_path(None, ckpt_dir)
+    for src, dst in ((cand_path, final),
+                     (_meta_of(cand_path), _meta_of(final))):
+        if os.path.exists(src):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(src, dst)
+    return final
+
+
 # ----------------------------------------------------------------------
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
 
-def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
+def _resolve_expert_decks(expert_decks) -> Optional[list]:
+    """Resolve an ``--expert-decks`` value to a deck list (or None = no experts).
+
+    The ONE place the ``roster`` / ``none`` sentinels are interpreted, so every
+    caller (az cycle, az-league, the resume sidecar) can carry the RAW user value
+    around and resolve it at the moment it is consumed:
+
+    * ``roster`` (the default) -> every deck in ``decks/league/``, re-read now, so
+      a resumed run picks up the roster of the day;
+    * ``none`` / empty / None -> None (write no expert shards);
+    * anything else -> the explicit deck list (a comma-joined string is split).
+    """
+    if expert_decks is None:
+        return None
+    if isinstance(expert_decks, str):
+        expert_decks = [d.strip() for d in expert_decks.split(",") if d.strip()]
+    decks = [str(d).strip() for d in expert_decks if str(d).strip()]
+    if not decks:
+        return None
+    lowered = [d.lower() for d in decks]
+    if lowered == [EXPERT_DECKS_NONE]:
+        return None
+    if lowered == [EXPERT_DECKS_ROSTER]:
+        return _default_az_league_roster() or None
+    return decks
+
+
+def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
+             sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
              sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
-             workers: Optional[int] = None, batches: int = 500,
-             batch_size: int = 256, lr: float = 1e-3, window: int = 50,
-             eval_games: int = 56, eval_sims: int = 32, eval_worlds: int = 2,
-             promote_threshold: float = 0.55, seed: int = 1,
+             sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+             sb_persist: int = DEFAULT_SB_PERSIST,
+             workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
+             batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
+             td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
+             window: int = DEFAULT_AZ_WINDOW,
+             eval_games: int = DEFAULT_AZ_EVAL_GAMES,
+             eval_sims: int = DEFAULT_AZ_EVAL_SIMS,
+             eval_worlds: int = DEFAULT_AZ_EVAL_WORLDS,
+             promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD, seed: int = 1,
              use_actor: Optional[bool] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
+             scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
-             expert_decks: Optional[list] = None, expert_games: int = 16,
+             expert_decks=EXPERT_DECKS_ROSTER,
+             expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
              roster: Optional[list] = None, bo3: bool = True,
-             gate: bool = True) -> dict:
+             gate: bool = True, exhaustive: bool = False,
+             exhaustive_selfplay: bool = False,
+             exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+             scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
+             slot: int = 0) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
+
+    ``exhaustive`` swaps the random self-play schedule for the exact matchup
+    matrix (see :func:`az_selfplay.build_exhaustive_schedule_ex`): one bo3 match
+    vs scripted:hard per ORDERED focus x opponent pair plus one pure self-play
+    match per UNORDERED pair — 155 matches on the 10-deck roster. ``games``,
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and the backend
+    goes HYBRID: the C++ actor (when built) plays the pure self-play cells, the
+    Python backend the vs-scripted cells (the actor has no scripted seat).
+
+    ``exhaustive_selfplay`` (implies ``exhaustive``) drops the vs-scripted family:
+    the cycle plays ONLY the pure self-play cells, one bo3 match per unordered
+    deck pair (55 on the 10-deck roster), entirely on the C++ actor backend.
+    ``exhaustive_repeats=n`` plays every cell of that matrix n times per cycle.
+
+    ``scripted_cells=k`` (self-play matrix only) adds back k vs-scripted matches
+    per cycle, rotating through the ordered (focus, opponent) pair list by
+    ``slot`` — az-league passes its slot index, a standalone cycle is slot 0 —
+    so coverage of every ordered pair accumulates across a run. The cells are
+    marked like the full matrix's, so the hybrid backend routes them to Python
+    while the actor plays the self-play cells.
+
+    ``window=0`` sizes the training window automatically: 2x the shards THIS
+    cycle's generation just wrote (self-play + expert), so each training pass
+    always covers exactly this generation pass plus the previous one — older
+    shards age out and anything newer (e.g. expert shards written just before
+    the run) still lands inside the window.
 
     ``gate=False`` skips the eval/gate stage entirely (the returned ``eval`` is
     None) — az-league uses it to gate every K slots (``--gate-every``) instead
@@ -534,6 +767,13 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
     game one focus deck is drawn and plays a mirror (P=``mirror_frac``) or a draw
     from ``roster`` (the opponent pool, default: the whole league roster).
 
+    ``scripted_opponent_frac`` (0..1, default 0) hands that fraction of the
+    self-play games' OPPONENT seat to the rule-based scripted:hard agent, with the
+    net+MCTS on the focus seat and only the net seat's decisions sampled; 1.0
+    trains the cycle entirely against the scripted agent. It forces the Python
+    self-play backend (the C++ actor is pure self-play) and does NOT change the
+    gate, which stays candidate-vs-incumbent.
+
     ``use_actor`` chooses the self-play backend (None=AUTO: the C++ actor iff
     built, else Python; see :func:`az_selfplay.generate`)."""
     import az_selfplay
@@ -543,33 +783,61 @@ def az_cycle(deck=None, *, games: int = 50, sims: int = 256, worlds: int = 4,
     focus = _normalize_focus(deck, _default_az_league_roster())
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
 
+    exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
+    matrix_txt = ("" if not exhaustive else
+                  ", exhaustive matrix"
+                  + (" (self-play only)" if exhaustive_selfplay else "")
+                  + (f" x{exhaustive_repeats}" if exhaustive_repeats > 1 else ""))
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
-          f"{'bo3' if bo3 else 'bo1'}) ===")
+          f"{'bo3' if bo3 else 'bo1'}{matrix_txt}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
                                sb_sims=sb_sims, sb_worlds=sb_worlds,
                                sb_max_depth=sb_max_depth,
+                               sb_rollout_turns=sb_rollout_turns,
+                               sb_persist=bool(sb_persist),
                                workers=workers, seed=seed, use_actor=use_actor,
                                roster=roster, focus_decks=focus,
-                               mirror_frac=mirror_frac, bo3=bo3)
-    if expert_decks:
+                               mirror_frac=mirror_frac,
+                               scripted_opponent_frac=scripted_opponent_frac,
+                               bo3=bo3, exhaustive=exhaustive,
+                               exhaustive_selfplay=exhaustive_selfplay,
+                               exhaustive_repeats=exhaustive_repeats,
+                               scripted_cells=scripted_cells, slot=slot,
+                               td_n=td_n)
+    experts = _resolve_expert_decks(expert_decks)
+    if experts:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
         print("=== az cycle: expert demonstrations (scripted:hard) ===")
+        print(f"[az cycle] expert decks: {expert_decks} -> {len(experts)} deck(s) "
+              f"[{', '.join(experts)}] x {expert_games} matches each")
         gen["expert"] = az_selfplay.generate_expert(
-            list(expert_decks), games=expert_games * len(expert_decks),
+            experts, games=expert_games * len(experts),
             roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed)
+    else:
+        print(f"[az cycle] expert decks: {expert_decks!r} -> none "
+              f"(no expert shards this cycle)")
+    if window == 0:
+        # Auto window: 2x the shards this cycle just wrote, so training always
+        # reads exactly this generation pass plus the previous one.
+        n_new = len(gen["shards"]) + len((gen.get("expert") or {}).get("shards", []))
+        window = max(1, 2 * n_new)
+        print(f"[az cycle] auto window: {n_new} new shard(s) this cycle -> "
+              f"window={window} (2x, covers this pass + the previous one)")
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
-                  window=window, seed=seed)
+                  q_mix=q_mix, window=window, seed=seed)
     if not gate:
         print("=== az cycle: eval/gate skipped (gated every K slots) ===")
         return {"generate": gen, "train": tr, "eval": None}
     print("=== az cycle: eval/gate (aggregate) ===")
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
                  worlds=eval_worlds, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                 sb_max_depth=sb_max_depth, promote_threshold=promote_threshold,
+                 sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
+                 sb_persist=sb_persist,
+                 promote_threshold=promote_threshold,
                  promote=True, seed=seed, roster=roster, gate_floor=gate_floor,
-                 bo3=bo3)
+                 bo3=bo3, workers=workers)
     return {"generate": gen, "train": tr, "eval": ev}
 
 
@@ -614,17 +882,30 @@ def _default_az_league_roster() -> list:
 
 
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
-              games: int = 50, sims: int = 256, worlds: int = 4,
+              games: int = DEFAULT_AZ_GAMES, sims: int = DEFAULT_AZ_SIMS,
+              worlds: int = DEFAULT_AZ_WORLDS,
               sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
               sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
-              workers: Optional[int] = None, batches: int = 500,
-              batch_size: int = 256, lr: float = 1e-3, window: int = 50,
-              eval_games: int = 56, eval_sims: int = 32, eval_worlds: int = 2,
-              promote_threshold: float = 0.55, seed: int = 1,
+              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+              sb_persist: int = DEFAULT_SB_PERSIST,
+              workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
+              batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
+              td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
+              window: int = DEFAULT_AZ_WINDOW,
+              eval_games: int = DEFAULT_AZ_EVAL_GAMES,
+              eval_sims: int = DEFAULT_AZ_EVAL_SIMS,
+              eval_worlds: int = DEFAULT_AZ_EVAL_WORLDS,
+              promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD, seed: int = 1,
               mirror_frac: float = DEFAULT_MIRROR_FRAC,
-              matrix: bool = False, gate_floor: float = DEFAULT_GATE_FLOOR,
+              scripted_opponent_frac: float = 0.0,
+              matrix: bool = False, exhaustive: bool = False,
+              exhaustive_selfplay: bool = False,
+              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
+              gate_floor: float = DEFAULT_GATE_FLOOR,
               gate_every: int = DEFAULT_GATE_EVERY,
-              expert_decks: Optional[list] = None, expert_games: int = 16,
+              expert_decks=EXPERT_DECKS_ROSTER,
+              expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
               use_actor: Optional[bool] = None, resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
@@ -642,6 +923,39 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     deck's distribution at a time — the per-deck rotation is where the
     catastrophic-forgetting pressure came from. A "rotation" then counts
     ``cycles_per_deck`` matrix cycles instead of a roster pass.
+
+    ``exhaustive=True`` goes one step further than ``matrix``: every slot's
+    self-play is the EXACT matchup matrix (one vs-scripted match per ordered
+    pair + one pure self-play match per unordered pair — 155 bo3 matches on a
+    10-deck roster; see :func:`az_selfplay.build_exhaustive_schedule_ex`)
+    instead of a random draw. Slot accounting follows the matrix rule (a
+    rotation = ``cycles_per_deck`` whole-roster cycles); ``games``,
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and self-play
+    runs on the HYBRID backend — the C++ actor (when built) plays the pure
+    self-play cells, the Python backend the vs-scripted cells.
+
+    ``exhaustive_selfplay=True`` (implies ``exhaustive``) keeps only the pure
+    SELF-PLAY family of that matrix: every slot plays one bo3 match per
+    UNORDERED deck pair, mirrors included (55 on the 10-deck roster) and no
+    vs-scripted cells, so the whole slot runs on the C++ actor backend.
+    ``exhaustive_repeats=n`` plays each cell n times per slot — e.g.
+    ``exhaustive_selfplay=True, exhaustive_repeats=2`` is "every self-play
+    matchup twice, every slot".
+
+    ``scripted_cells=k`` (with ``exhaustive_selfplay``) additionally plays k
+    vs-scripted:hard matches per slot, ROTATING through the full ordered (focus,
+    opponent) pair list: slot ``s`` takes the k consecutive pairs starting at
+    ``(s * k) % n_ordered``, wrapping — so ceil(n_ordered / k) slots cover every
+    ordered pair, and the scripted cells never repeat the same corner of the
+    matrix while the rest of the slot stays on the C++ actor.
+
+    ``gate_every=0`` disables the eval/gate entirely: no slot is gated, and at
+    run COMPLETION the newest candidate snapshot is promoted to
+    ``gen__azfinal.pt`` unconditionally — otherwise ``az:gen`` serving/eval
+    specs would keep resolving a stale (or missing) incumbent forever. An
+    indefinite run (``rotations=0``) with ``gate_every=0`` never reaches
+    completion, so it never promotes until interrupted+finished — prefer a
+    finite ``rotations`` with ``gate_every=0``.
 
     ``rotations=0`` runs INDEFINITELY: slots keep generating until the process
     is interrupted. The sidecar still advances after every completed slot, so an
@@ -669,10 +983,17 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         sb_sims = int(p.get("sb_sims", sb_sims))
         sb_worlds = int(p.get("sb_worlds", sb_worlds))
         sb_max_depth = int(p.get("sb_max_depth", sb_max_depth))
+        # p.get default keeps pre-rollout sidecars resumable (they carry no
+        # sb_rollout_turns key).
+        sb_rollout_turns = int(p.get("sb_rollout_turns", sb_rollout_turns))
+        sb_persist = int(p.get("sb_persist", sb_persist))
         workers = p.get("workers", workers)
         batches = int(p.get("batches", batches))
         batch_size = int(p.get("batch_size", batch_size))
         lr = float(p.get("lr", lr))
+        # .get defaults keep sidecars written before the n-step TD knobs resumable.
+        td_n = int(p.get("td_n", td_n))
+        q_mix = float(p.get("q_mix", q_mix))
         window = int(p.get("window", window))
         eval_games = int(p.get("eval_games", eval_games))
         eval_sims = int(p.get("eval_sims", eval_sims))
@@ -681,9 +1002,20 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         seed = int(p.get("seed", seed))
         mirror_frac = float(p.get("mirror_frac", mirror_frac))
         # Older sidecars predate these knobs; .get keeps them resumable.
+        scripted_opponent_frac = float(
+            p.get("scripted_opponent_frac", scripted_opponent_frac))
         matrix = bool(p.get("matrix", False))
+        exhaustive = bool(p.get("exhaustive", False))
+        exhaustive_selfplay = bool(p.get("exhaustive_selfplay", False))
+        exhaustive_repeats = int(p.get("exhaustive_repeats", 1))
+        scripted_cells = int(p.get("scripted_cells", 0))
         gate_floor = float(p.get("gate_floor", gate_floor))
         gate_every = int(p.get("gate_every", gate_every))
+        # The RAW user value (sentinel included) is what the sidecar carries;
+        # _resolve_expert_decks interprets it at use, so a resumed run re-reads
+        # decks/league/ instead of freezing yesterday's roster. Sidecars written
+        # before the sentinel existed carry an explicit list or None and resolve
+        # to themselves.
         expert_decks = p.get("expert_decks", None)
         expert_games = int(p.get("expert_games", expert_games))
         use_actor = p.get("use_actor", use_actor)
@@ -704,15 +1036,33 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     # 'gen' is the reserved generalist stem — a roster deck may not collide with it.
     for _d in roster:
         assert_not_reserved_deck(_d)
+    # Normalize to a list (or None) but do NOT resolve the roster/none sentinel
+    # here: az_cycle resolves it at the moment the shards are generated, and the
+    # sidecar below persists this raw value.
     if expert_decks and isinstance(expert_decks, str):
         expert_decks = [d.strip() for d in expert_decks.split(",") if d.strip()]
     expert_decks = list(expert_decks) if expert_decks else None
 
     # rotations == 0 -> indefinite: no materialized slot list; slot i maps to
     # (rotation, deck, cycle) by index arithmetic and total stays None. In
-    # matrix mode every slot is a whole-roster cycle, so a rotation is just
-    # cycles_per_deck slots.
-    per_rotation = cycles_per_deck if matrix else len(roster) * cycles_per_deck
+    # matrix (and exhaustive) mode every slot is a whole-roster cycle, so a
+    # rotation is just cycles_per_deck slots.
+    # --exhaustive-selfplay is a NARROWING of the exhaustive matrix, so it
+    # implies it; normalize before the slot accounting and the sidecar so both
+    # (and a later --resume) see the effective mode.
+    exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
+    exhaustive_repeats = max(1, int(exhaustive_repeats))
+    # The rotating vs-scripted slice only applies to the self-play-only matrix
+    # (full --exhaustive already plays every ordered pair).
+    if scripted_cells and not exhaustive_selfplay:
+        print(f"[az-league] ignoring --scripted-cells {scripted_cells}: it "
+              f"applies to --exhaustive-selfplay slots only"
+              + (" (full --exhaustive already plays every ordered vs-scripted "
+                 "cell)" if exhaustive else ""))
+    scripted_cells = max(0, int(scripted_cells)) if exhaustive_selfplay else 0
+    whole_roster_slots = matrix or exhaustive
+    per_rotation = (cycles_per_deck if whole_roster_slots
+                    else len(roster) * cycles_per_deck)
     total = None if rotations == 0 else rotations * per_rotation
 
     base_state = {
@@ -723,11 +1073,18 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         "params": {
             "games": games, "sims": sims, "worlds": worlds,
             "sb_sims": sb_sims, "sb_worlds": sb_worlds, "sb_max_depth": sb_max_depth,
+            "sb_rollout_turns": sb_rollout_turns, "sb_persist": sb_persist,
             "workers": workers,
             "batches": batches, "batch_size": batch_size, "lr": lr,
+            "td_n": td_n, "q_mix": q_mix,
             "window": window, "eval_games": eval_games, "eval_sims": eval_sims,
             "eval_worlds": eval_worlds, "promote_threshold": promote_threshold,
-            "seed": seed, "mirror_frac": mirror_frac, "matrix": matrix,
+            "seed": seed, "mirror_frac": mirror_frac,
+            "scripted_opponent_frac": scripted_opponent_frac, "matrix": matrix,
+            "exhaustive": exhaustive,
+            "exhaustive_selfplay": exhaustive_selfplay,
+            "exhaustive_repeats": exhaustive_repeats,
+            "scripted_cells": scripted_cells,
             "gate_floor": gate_floor, "gate_every": gate_every,
             "expert_decks": expert_decks,
             "expert_games": expert_games, "use_actor": use_actor,
@@ -738,19 +1095,47 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     print(f"AZ league roster: {', '.join(roster)}")
     rotations_txt = "indefinite" if total is None else str(rotations)
     total_txt = "unbounded" if total is None else str(total)
-    focus_txt = ("matrix (whole-roster focus every slot)" if matrix
+    times_txt = ("once" if exhaustive_repeats == 1
+                 else f"{exhaustive_repeats}x")
+    scr_cells_txt = (f"; +{scripted_cells} rotating vs-scripted cell(s) per slot"
+                     if scripted_cells else "; no vs-scripted cells")
+    focus_txt = (f"exhaustive SELF-PLAY matrix (every unordered pair {times_txt}, "
+                 f"every slot{scr_cells_txt})" if exhaustive_selfplay
+                 else f"exhaustive matrix (every matchup cell {times_txt}, every slot)"
+                 if exhaustive
+                 else "matrix (whole-roster focus every slot)" if matrix
                  else "per-deck rotation")
     print(f"  rotations={rotations_txt}  cycles_per_deck={cycles_per_deck}  "
           f"slots={total_txt}  focus={focus_txt}  (starting at slot {slot_index})")
-    gate_every = max(1, int(gate_every))
+    gate_every = max(0, int(gate_every))
+    gate_txt = ("OFF (ungated promotion at run completion)" if gate_every == 0
+                else str(gate_every))
+    window_txt = "auto(2x new shards)" if window == 0 else str(window)
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
-          f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth}  "
-          f"batches={batches} window={window}  "
+          f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth} "
+          f"sb_rollout_turns={sb_rollout_turns} sb_persist={sb_persist}  "
+          f"batches={batches} window={window_txt} td_n={td_n} q_mix={q_mix}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
-          f"gate_floor={gate_floor} gate_every={gate_every}")
+          f"gate_floor={gate_floor} gate_every={gate_txt}")
+    if gate_every == 0 and total is None:
+        print("  WARNING: gate_every=0 with rotations=0 (indefinite) never "
+              "reaches completion, so gen__azfinal is never refreshed — prefer "
+              "a finite --rotations with --gate-every 0.")
+    if scripted_opponent_frac:
+        print(f"  scripted_opponent_frac={scripted_opponent_frac} "
+              f"(scripted:hard on the opponent seat that share of self-play "
+              f"games; Python backend)")
     if expert_decks:
+        # Raw value (the 'roster' sentinel included) — az_cycle prints what it
+        # resolves to each slot.
         print(f"  expert demonstrations: {', '.join(expert_decks)} "
               f"({expert_games} scripted:hard matches per deck per slot)")
+    if scripted_cells:
+        n_ordered = len(roster) * len(roster)
+        print(f"  rotating vs-scripted cells: {scripted_cells} per slot, offset "
+              f"(slot * {scripted_cells}) % {n_ordered} over the ordered "
+              f"(focus, opponent) pair list "
+              f"({-(-n_ordered // scripted_cells)} slots cover every pair)")
 
     def save_progress(next_slot: int):
         _write_az_league_state(ckpt_dir, {
@@ -765,40 +1150,56 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         return {"roster": roster, "slots": total, "results": results}
 
     si = slot_index
+    last_snapshot = None
     while total is None or si < total:
         r, rem = divmod(si, per_rotation)
-        if matrix:
+        if whole_roster_slots:
             c = rem
             focus = list(roster)
-            deck_label = f"matrix[{len(roster)} decks]"
+            mode_lbl = ("exhaustive-selfplay" if exhaustive_selfplay
+                        else "exhaustive" if exhaustive else "matrix")
+            deck_label = f"{mode_lbl}[{len(roster)} decks]"
         else:
             di, c = divmod(rem, cycles_per_deck)
             focus = roster[di]
             deck_label = focus
         slot_seed = seed + si
         # Gate on the LAST slot of each gate_every group (slot-index arithmetic,
-        # so an interrupted run resumes onto the same cadence).
-        do_gate = ((si + 1) % gate_every == 0)
+        # so an interrupted run resumes onto the same cadence). gate_every == 0
+        # disables gating entirely (ungated promotion at run completion instead).
+        do_gate = gate_every > 0 and ((si + 1) % gate_every == 0)
         slot_txt = f"{si + 1}" if total is None else f"{si + 1}/{total}"
         rot_txt = f"{r + 1}" if total is None else f"{r + 1}/{rotations}"
+        gate_note = ("" if do_gate
+                     else "  [gating off]" if gate_every == 0
+                     else f"  [gate deferred: every {gate_every} slots]")
         print(f"\n{'='*60}")
         print(f"[az-league slot {slot_txt}] rotation {rot_txt}  "
-              f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  (seed={slot_seed})"
-              f"{'' if do_gate else f'  [gate deferred: every {gate_every} slots]'}")
+              f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  "
+              f"(seed={slot_seed}){gate_note}")
         print(f"{'='*60}")
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
                        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                       sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
                        workers=workers,
-                       batches=batches, batch_size=batch_size, lr=lr, window=window,
+                       batches=batches, batch_size=batch_size, lr=lr,
+                       td_n=td_n, q_mix=q_mix, window=window,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
-                       mirror_frac=mirror_frac, gate_floor=gate_floor,
+                       mirror_frac=mirror_frac,
+                       scripted_opponent_frac=scripted_opponent_frac,
+                       gate_floor=gate_floor,
                        expert_decks=expert_decks, expert_games=expert_games,
-                       roster=roster, bo3=bo3, gate=do_gate)
+                       roster=roster, bo3=bo3, gate=do_gate,
+                       exhaustive=exhaustive,
+                       exhaustive_selfplay=exhaustive_selfplay,
+                       exhaustive_repeats=exhaustive_repeats,
+                       scripted_cells=scripted_cells, slot=si)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
+        last_snapshot = tr.get("snapshot")
         if ev is None:
-            gate_txt = "gate deferred"
+            gate_txt = "gating off" if gate_every == 0 else "gate deferred"
         else:
             veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
                         if ev.get("vetoes") else "")
@@ -819,6 +1220,21 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         save_progress(si + 1)
         si += 1
 
+    if gate_every == 0:
+        # Ungated run: nothing ever refreshed gen__azfinal, so az:gen specs
+        # (serving, baseline, the next run's gate opponent) would resolve a
+        # stale or missing incumbent. Promote the last trained candidate
+        # unconditionally at completion.
+        from az_net import resolve_az_checkpoint
+        cand = last_snapshot or resolve_az_checkpoint("gen", prefer="snapshot")
+        if cand and os.path.exists(cand):
+            final = _promote_to_final(cand, ckpt_dir)
+            print(f"[az-league] gating off: promoted final candidate {cand} -> "
+                  f"{final} (unconditional, run complete)")
+        else:
+            print("[az-league] gating off: no candidate snapshot found to "
+                  "promote — gen__azfinal left untouched")
+
     print(f"\n[az-league] complete: {total} slots over {rotations} rotations.")
     return {"roster": roster, "slots": total, "results": results}
 
@@ -837,7 +1253,8 @@ def _resolve_use_actor(args) -> Optional[bool]:
 
 def run_train(args) -> None:
     train_az(args.deck, batches=args.batches, batch_size=args.batch_size,
-             lr=args.lr, c_v=args.c_v, window=args.window,
+             lr=args.lr, c_v=args.c_v,
+             q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX), window=args.window,
              from_ppo=args.from_ppo, fresh=args.fresh,
              snapshot_every=args.snapshot_every,
              seed=args.seed if args.seed is not None else 0)
@@ -850,10 +1267,14 @@ def run_eval(args) -> None:
             sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
             sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
             sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
+            sb_rollout_turns=getattr(args, "sb_rollout_turns",
+                                     DEFAULT_SB_ROLLOUT_TURNS),
+            sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
             promote_threshold=args.promote_threshold, promote=args.promote,
             gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
             seed=args.seed if args.seed is not None else 1,
-            bo3=not getattr(args, "bo1", False))
+            bo3=not getattr(args, "bo1", False),
+            workers=getattr(args, "workers", None))
 
 
 def _split_decks(val) -> Optional[list]:
@@ -876,17 +1297,31 @@ def run_cycle(args) -> None:
              sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
              sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
+             sb_rollout_turns=getattr(args, "sb_rollout_turns",
+                                      DEFAULT_SB_ROLLOUT_TURNS),
+             sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
-             lr=args.lr, window=args.window, eval_games=args.eval_games,
+             lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
+             q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
+             window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
              promote_threshold=args.promote_threshold,
              seed=args.seed if args.seed is not None else 1,
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+             scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
-             expert_decks=_split_decks(getattr(args, "expert_decks", None)),
-             expert_games=getattr(args, "expert_games", 16),
+             # Raw value: az_cycle resolves the roster/none sentinel.
+             expert_decks=_split_decks(getattr(args, "expert_decks",
+                                               EXPERT_DECKS_ROSTER)),
+             expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
              roster=roster, bo3=not getattr(args, "bo1", False),
-             use_actor=_resolve_use_actor(args))
+             use_actor=_resolve_use_actor(args),
+             exhaustive=getattr(args, "exhaustive", False),
+             exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
+             exhaustive_repeats=getattr(args, "exhaustive_repeats",
+                                        DEFAULT_AZ_EXHAUSTIVE_REPEATS),
+             scripted_cells=getattr(args, "scripted_cells",
+                                    DEFAULT_AZ_SCRIPTED_CELLS))
 
 
 def run_league(args) -> None:
@@ -896,17 +1331,31 @@ def run_league(args) -> None:
               sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
               sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
               sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
+              sb_rollout_turns=getattr(args, "sb_rollout_turns",
+                                       DEFAULT_SB_ROLLOUT_TURNS),
+              sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
               workers=args.workers, batches=args.batches, batch_size=args.batch_size,
-              lr=args.lr, window=args.window, eval_games=args.eval_games,
+              lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
+              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
+              window=args.window, eval_games=args.eval_games,
               eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
               promote_threshold=args.promote_threshold,
               seed=args.seed if args.seed is not None else 1,
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
+              scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
               matrix=getattr(args, "matrix", False),
+              exhaustive=getattr(args, "exhaustive", False),
+              exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
+              exhaustive_repeats=getattr(args, "exhaustive_repeats",
+                                         DEFAULT_AZ_EXHAUSTIVE_REPEATS),
+              scripted_cells=getattr(args, "scripted_cells",
+                                     DEFAULT_AZ_SCRIPTED_CELLS),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
               gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
-              expert_decks=_split_decks(getattr(args, "expert_decks", None)),
-              expert_games=getattr(args, "expert_games", 16),
+              # Raw value: az_cycle resolves the roster/none sentinel per slot.
+              expert_decks=_split_decks(getattr(args, "expert_decks",
+                                                EXPERT_DECKS_ROSTER)),
+              expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
               use_actor=_resolve_use_actor(args), resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
@@ -917,11 +1366,15 @@ if __name__ == "__main__":
 
     t = sub.add_parser("train", help="Train AZNet on self-play shards")
     t.add_argument("--deck", default="delver")
-    t.add_argument("--batches", type=int, default=1000)
-    t.add_argument("--batch-size", type=int, default=256)
-    t.add_argument("--lr", type=float, default=1e-3)
-    t.add_argument("--c-v", type=float, default=1.0)
-    t.add_argument("--window", type=int, default=50)
+    t.add_argument("--batches", type=int, default=DEFAULT_AZ_TRAIN_BATCHES)
+    t.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
+    t.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    t.add_argument("--c-v", type=float, default=DEFAULT_AZ_CV)
+    t.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
+                   help="Weight of the shard's n-step TD target in the value "
+                        "loss: (1-q_mix)*z + q_mix*td_q (default %s)"
+                        % DEFAULT_AZ_Q_MIX)
+    t.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
     t.add_argument("--from-ppo", default=None, help="Warm-start from a PPO ckpt")
     t.add_argument("--fresh", action="store_true", help="Start from random init")
     t.add_argument("--snapshot-every", type=int, default=0)
@@ -932,16 +1385,21 @@ if __name__ == "__main__":
     e.add_argument("--deck", default="delver")
     e.add_argument("--candidate", required=True)
     e.add_argument("--incumbent", default=None)
-    e.add_argument("--games", type=int, default=56)
-    e.add_argument("--sims", type=int, default=32)
-    e.add_argument("--worlds", type=int, default=2)
+    e.add_argument("--games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
+    e.add_argument("--sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
+    e.add_argument("--worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
     e.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
-    e.add_argument("--sb-worlds", type=int, default=4,
+    e.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
                    help="Determinized worlds at a bo3 sideboard root (bo3 only)")
-    e.add_argument("--sb-max-depth", type=int, default=200,
-                   help="Rollout depth at a bo3 sideboard root (bo3 only)")
-    e.add_argument("--promote-threshold", type=float, default=0.55)
+    e.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
+                   help="Descent depth cap at a bo3 sideboard root (bo3 only)")
+    e.add_argument("--sb-rollout-turns", type=int,
+                   default=DEFAULT_SB_ROLLOUT_TURNS,
+                   help="Leaf-rollout horizon at a bo3 sideboard root, in "
+                        "player turns (0 = off)")
+    e.add_argument("--promote-threshold", type=float,
+                   default=DEFAULT_AZ_PROMOTE_THRESHOLD)
     e.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                    help="Per-piloted-deck win-rate floor; a deck below it "
                         "vetoes promotion (0 disables)")
@@ -953,37 +1411,68 @@ if __name__ == "__main__":
 
     c = sub.add_parser("cycle", help="One generate->train->eval cycle")
     c.add_argument("--deck", default="delver")
-    c.add_argument("--games", type=int, default=50)
-    c.add_argument("--sims", type=int, default=256,
+    c.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
+    c.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                    help="Self-play PUCT sims, TOTAL across --worlds")
-    c.add_argument("--worlds", type=int, default=4)
+    c.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
     c.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
-    c.add_argument("--sb-worlds", type=int, default=4,
+    c.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
                    help="Determinized worlds at a bo3 sideboard root")
-    c.add_argument("--sb-max-depth", type=int, default=200,
-                   help="Rollout depth cap at a bo3 sideboard root")
+    c.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
+                   help="Descent depth cap at a bo3 sideboard root")
+    c.add_argument("--sb-rollout-turns", type=int,
+                   default=DEFAULT_SB_ROLLOUT_TURNS,
+                   help="Leaf-rollout horizon at a bo3 sideboard root, in "
+                        "player turns (0 = off)")
     c.add_argument("--workers", type=int, default=None)
-    c.add_argument("--batches", type=int, default=500)
-    c.add_argument("--batch-size", type=int, default=256)
-    c.add_argument("--lr", type=float, default=1e-3)
-    c.add_argument("--window", type=int, default=50)
-    c.add_argument("--eval-games", type=int, default=56)
-    c.add_argument("--eval-sims", type=int, default=32)
-    c.add_argument("--eval-worlds", type=int, default=2)
-    c.add_argument("--promote-threshold", type=float, default=0.55)
+    c.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
+    c.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
+    c.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    c.add_argument("--td-n", type=int, default=DEFAULT_AZ_TD_N,
+                   help="n-step TD horizon recorded in this cycle's shards "
+                        "(default %d)" % DEFAULT_AZ_TD_N)
+    c.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
+                   help="Weight of td_q in the value target (default %s)"
+                        % DEFAULT_AZ_Q_MIX)
+    c.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
+    c.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
+    c.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
+    c.add_argument("--eval-worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
+    c.add_argument("--promote-threshold", type=float,
+                   default=DEFAULT_AZ_PROMOTE_THRESHOLD)
     c.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                    help="Per-piloted-deck gate floor (0 disables the veto)")
-    c.add_argument("--expert-decks", default=None,
+    c.add_argument("--exhaustive", action="store_true",
+                   help="Exact matchup matrix instead of the random draw")
+    c.add_argument("--exhaustive-selfplay", action="store_true",
+                   help="Exhaustive matrix, pure SELF-PLAY cells only "
+                        "(implies --exhaustive)")
+    c.add_argument("--exhaustive-repeats", type=int,
+                   default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                   help="Play every cell of the matrix N times (default %d)"
+                        % DEFAULT_AZ_EXHAUSTIVE_REPEATS)
+    c.add_argument("--scripted-cells", type=int,
+                   default=DEFAULT_AZ_SCRIPTED_CELLS,
+                   help="With --exhaustive-selfplay: also play K vs-scripted "
+                        "matches from the rotating ordered-pair slice "
+                        "(default %d; 0 disables)" % DEFAULT_AZ_SCRIPTED_CELLS)
+    c.add_argument("--expert-decks", default=EXPERT_DECKS_ROSTER,
                    help="Comma-separated decks to also write scripted:hard "
                         "EXPERT demonstration shards for each cycle (BC "
-                        "targets for combo lines search can't discover)")
-    c.add_argument("--expert-games", type=int, default=16,
+                        "targets for combo lines search can't discover); "
+                        "default '%s' = every decks/league/ deck, 'none' to "
+                        "disable" % EXPERT_DECKS_ROSTER)
+    c.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
                    help="Expert matches per expert deck per cycle")
     c.add_argument("--seed", type=int, default=1)
     c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                    help="P(opponent deck == focus deck) per self-play game "
                         "(else uniform league-roster draw)")
+    c.add_argument("--scripted-opponent-frac", type=float, default=0.0,
+                   help="Fraction of self-play games (0..1) whose opponent seat "
+                        "is piloted by scripted:hard (net+MCTS on the focus "
+                        "seat, net samples only). Forces the Python backend")
     c.add_argument("--bo1", action="store_true",
                    help="Run bo1 self-play + gate (default: bo3 with per-game value)")
     cg = c.add_mutually_exclusive_group()
@@ -1004,40 +1493,72 @@ if __name__ == "__main__":
                     help="Full passes over the roster (0 = run indefinitely "
                          "until interrupted)")
     lg.add_argument("--cycles-per-deck", type=int, default=1)
-    lg.add_argument("--games", type=int, default=50)
-    lg.add_argument("--sims", type=int, default=256,
+    lg.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
+    lg.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="Self-play PUCT sims, TOTAL across --worlds")
-    lg.add_argument("--worlds", type=int, default=4)
+    lg.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
     lg.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
                     help="PUCT sims at a bo3 sideboard root (bo3 only)")
-    lg.add_argument("--sb-worlds", type=int, default=4,
+    lg.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
                     help="Determinized worlds at a bo3 sideboard root")
-    lg.add_argument("--sb-max-depth", type=int, default=200,
-                    help="Rollout depth cap at a bo3 sideboard root")
+    lg.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
+                    help="Descent depth cap at a bo3 sideboard root")
+    lg.add_argument("--sb-rollout-turns", type=int,
+                    default=DEFAULT_SB_ROLLOUT_TURNS,
+                    help="Leaf-rollout horizon at a bo3 sideboard root, in "
+                         "player turns (0 = off)")
     lg.add_argument("--workers", type=int, default=None)
-    lg.add_argument("--batches", type=int, default=500)
-    lg.add_argument("--batch-size", type=int, default=256)
-    lg.add_argument("--lr", type=float, default=1e-3)
-    lg.add_argument("--window", type=int, default=50)
-    lg.add_argument("--eval-games", type=int, default=56)
-    lg.add_argument("--eval-sims", type=int, default=32)
-    lg.add_argument("--eval-worlds", type=int, default=2)
-    lg.add_argument("--promote-threshold", type=float, default=0.55)
+    lg.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
+    lg.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
+    lg.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
+    lg.add_argument("--td-n", type=int, default=DEFAULT_AZ_TD_N,
+                    help="n-step TD horizon recorded in each slot's shards "
+                         "(default %d)" % DEFAULT_AZ_TD_N)
+    lg.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
+                    help="Weight of td_q in the value target (default %s)"
+                         % DEFAULT_AZ_Q_MIX)
+    lg.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
+    lg.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
+    lg.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
+    lg.add_argument("--eval-worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
+    lg.add_argument("--promote-threshold", type=float,
+                    default=DEFAULT_AZ_PROMOTE_THRESHOLD)
     lg.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
                     help="Per-piloted-deck gate floor (0 disables the veto)")
     lg.add_argument("--matrix", action="store_true",
                     help="Whole-roster focus MATRIX every slot instead of the "
                          "per-deck focus rotation")
-    lg.add_argument("--expert-decks", default=None,
+    lg.add_argument("--exhaustive", action="store_true",
+                    help="Exact matchup matrix every slot")
+    lg.add_argument("--exhaustive-selfplay", action="store_true",
+                    help="Exhaustive matrix, pure SELF-PLAY cells only "
+                         "(implies --exhaustive)")
+    lg.add_argument("--exhaustive-repeats", type=int,
+                    default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+                    help="Play every cell of the matrix N times per slot "
+                         "(default %d)" % DEFAULT_AZ_EXHAUSTIVE_REPEATS)
+    lg.add_argument("--scripted-cells", type=int,
+                    default=DEFAULT_AZ_SCRIPTED_CELLS,
+                    help="With --exhaustive-selfplay: also play K vs-scripted "
+                         "matches per slot from the rotating ordered-pair "
+                         "slice (default %d; 0 disables)"
+                         % DEFAULT_AZ_SCRIPTED_CELLS)
+    lg.add_argument("--expert-decks", default=EXPERT_DECKS_ROSTER,
                     help="Comma-separated decks to also write scripted:hard "
                          "EXPERT demonstration shards for each slot (BC "
-                         "targets for combo lines search can't discover)")
-    lg.add_argument("--expert-games", type=int, default=16,
+                         "targets for combo lines search can't discover); "
+                         "default '%s' = every decks/league/ deck, 'none' to "
+                         "disable" % EXPERT_DECKS_ROSTER)
+    lg.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
                     help="Expert matches per expert deck per slot")
     lg.add_argument("--seed", type=int, default=1)
     lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per self-play game "
                          "(else uniform league-roster draw)")
+    lg.add_argument("--scripted-opponent-frac", type=float, default=0.0,
+                    help="Fraction of self-play games (0..1) whose opponent seat "
+                         "is piloted by scripted:hard (net+MCTS on the focus "
+                         "seat, net samples only). Forces the Python backend")
     lg.add_argument("--bo1", action="store_true",
                     help="Run bo1 self-play + gate (default: bo3 with per-game value)")
     lgg = lg.add_mutually_exclusive_group()

@@ -33,11 +33,16 @@ analysis.py — this front end covers the text/interactive tools.
 Run from the repo root (same simulation args as `analysis.py interactive`):
     train/.venv/bin/python train/tui_analysis.py <model.zip|deck> \
         --opponent scripted [--deck-b mav] [--n-games 20] [--bo3]
+
+Shard replay — browse recorded AZ self-play instead of simulating (see
+shard_replay.py; the model spec becomes the V(s) net, --no-net keeps the
+recorded outcome z, and whatif/run stay disabled without a live env):
+    train/.venv/bin/python train/tui_analysis.py gen \
+        --shards train/az_data/gen [--seat A|B] [--no-net] [--n-games 20]
 """
 
 import argparse
 import io
-import threading
 import traceback
 from contextlib import redirect_stdout
 
@@ -77,103 +82,15 @@ _AXIS_STYLE = "dim"
 # (from the bottom). Downward bars reuse them via reverse-video (see _cell).
 _BLOCKS = " ▁▂▃▄▅▆▇█"
 
-# One lock around every stdout capture: the analysis/engine workers run in
-# separate threads and redirect_stdout swaps the process-global sys.stdout, so
-# concurrent captures would interleave each other's prints.
-_CAPTURE_LOCK = threading.Lock()
-
-
-def _capture(fn, *a, **k):
-    """Run a printing analysis function, returning its stdout as a string."""
-    buf = io.StringIO()
-    with _CAPTURE_LOCK, redirect_stdout(buf):
-        fn(*a, **k)
-    return buf.getvalue()
-
-
-def _result_str(game):
-    return "WIN" if game["result"] > 0 else ("LOSS" if game["result"] < 0 else "DRAW")
-
-
-def _run_shap(games, n_background=50, n_samples=200):
-    """Fit the V(s) surrogate and print SHAP feature importances (the REPL's
-    'shap' command, minus the chart)."""
-    import numpy as np
-    try:
-        import shap
-        from sklearn.ensemble import GradientBoostingRegressor
-    except ImportError as e:
-        print(f"  Missing dependency: {e}")
-        return
-    all_interp = np.array([f for g in games for f in g["interp_features"]])
-    all_vals = np.array([v for g in games for v in g["values"]])
-    print(f"Fitting surrogate on {len(all_interp)} points...")
-    surrogate = GradientBoostingRegressor(
-        n_estimators=200, max_depth=5, learning_rate=0.1, subsample=0.8)
-    surrogate.fit(all_interp, all_vals)
-    print(f"Surrogate R^2: {surrogate.score(all_interp, all_vals):.4f}")
-    bg_idx = np.random.choice(len(all_interp),
-                              size=min(n_background, len(all_interp)), replace=False)
-    smp_idx = np.random.choice(len(all_interp),
-                               size=min(n_samples, len(all_interp)), replace=False)
-    print(f"Running SHAP ({len(bg_idx)} background, {len(smp_idx)} samples)...")
-    explainer = shap.KernelExplainer(surrogate.predict, all_interp[bg_idx])
-    shap_vals = explainer.shap_values(all_interp[smp_idx])
-    mean_abs = abs(shap_vals).mean(axis=0)
-    print(f"\n{'Feature':<25} {'Mean |SHAP|':>12}")
-    print("-" * 40)
-    for idx in mean_abs.argsort()[::-1]:
-        print(f"  {an._INTERP_FEATURE_NAMES[idx]:<23} {mean_abs[idx]:12.4f}")
-
-
-def _has_probs(games):
-    return any(g.get("action_probs") for g in games)
-
-
-def _probs_guard(fn):
-    """Wrap a probs-dependent analyzer with the REPL's no-data message."""
-    def run(games):
-        if not _has_probs(games):
-            print("  No action probability data in these traces.")
-        else:
-            fn(games)
-    return run
-
-
-# Sidebar analysis menu: (key, label, fn(games)). Mirrors the REPL commands
-# (each just prints; the app captures the text into the output tab).
-_ANALYSES = [
-    ("summary", "summary — W/L/D stats", an._sim_summary),
-    ("cardvalue", "cardvalue — card importance",
-     lambda g: an._analyze_cardvalue(g, top_n=30)),
-    ("targeting", "targeting — self/opp targets, hold vs cast", an._sim_targeting),
-    ("swings", "swings — top in-game V(s) swings",
-     lambda g: an._print_swing_table(an._compute_swings(g)[:15])),
-    ("boundaries", "boundaries — V(s) across bo3 games",
-     lambda g: an._print_boundaries(an._compute_boundaries(g))),
-    ("matchcal", "matchcal — V at game start by match score",
-     an._print_match_calibration),
-    ("regret", "regret — high-regret decisions",
-     _probs_guard(lambda g: an._analyze_regret(g, top_n=20))),
-    ("entropy", "entropy — policy entropy by phase/board",
-     _probs_guard(an._analyze_entropy)),
-    ("consistency", "consistency — similar states, different actions",
-     lambda g: an._analyze_consistency(g, top_n=10)),
-    ("calibration", "calibration — start V(s) vs win rate", an._analyze_calibration),
-    ("turning", "turning — point of no return", an._analyze_turning_points),
-    ("clusters", "clusters — V(s) curve archetypes", an._analyze_clusters),
-    ("sideboard", "sideboard — sideboard decisions (bo3)", an._sim_sideboard_report),
-    ("sbvalue", "sbvalue — sideboard preference & impact (bo3)", an._analyze_sbvalue),
-    ("shap", "shap — feature importance (slow)", _run_shap),
-]
-
-# Live-env entries appended after the analyses (they need the engine worker).
-_ENGINE_MENU = [
-    ("whatif", "whatif — branch alternatives at current step (w); "
-               "adds each branch as a steppable ↳trace"),
-    ("run5", "run +5 — simulate 5 more games"),
-    ("run20", "run +20 — simulate 20 more games"),
-]
+# The front-end-independent pieces live in browse_session (shared with the Qt
+# browser, gui_browser.py): the ONE process-global capture lock, the analyses
+# registry, and the label/summary helpers. Aliased to the old private names so
+# the rest of this file is unchanged.
+from browse_session import (CAPTURE_LOCK as _CAPTURE_LOCK, capture as _capture,
+                            result_str as _result_str,
+                            has_probs as _has_probs, probs_guard as _probs_guard,
+                            run_shap as _run_shap, ANALYSES as _ANALYSES,
+                            ENGINE_MENU as _ENGINE_MENU)
 
 
 # ── Clickable V(s) histogram ──────────────────────────────────────────────────
@@ -644,6 +561,9 @@ class AnalysisApp(App):
 
     @work(thread=True, group="engine")
     def _load_and_collect(self, n_games: int) -> None:
+        if getattr(self._args, "shards", None):
+            self._load_shards(n_games)
+            return
         try:
             buf = io.StringIO()
             with _CAPTURE_LOCK, redirect_stdout(buf):
@@ -654,6 +574,38 @@ class AnalysisApp(App):
                 f"model/env load failed: {exc!r}\n{traceback.format_exc()}"))
             return
         self._collect_games(n_games)
+
+    def _load_shards(self, n_games: int) -> None:
+        """Shard-replay startup: reconstruct match records from recorded AZ
+        self-play instead of simulating. No env is created (self._env stays
+        None, so the whatif/run entries stay gated); the model spec is loaded
+        only as the V(s) net, unless --no-net keeps values at the recorded z.
+        Runs inside the engine worker thread."""
+        import shard_replay
+        try:
+            buf = io.StringIO()
+            with _CAPTURE_LOCK, redirect_stdout(buf):
+                model = None
+                if not getattr(self._args, "no_net", False):
+                    model = shard_replay.load_value_model(self._args.model)
+                records = shard_replay.load_records(
+                    self._args.shards,
+                    viewpoint_is_a=getattr(self._args, "seat", "A") != "B",
+                    limit=n_games or None,
+                    interp_fn=an._extract_interpretable)
+                if model is not None:
+                    shard_replay.apply_net_values(model, records)
+                print(f"{len(records)} match record(s) from {self._args.shards} "
+                      f"(seat {getattr(self._args, 'seat', 'A')}, "
+                      + ("net V(s))" if model is not None else "z values)"))
+            self.post_message(EnvReady(buf.getvalue()))
+            for g in records:
+                self.post_message(GameAdded(g))
+        except BaseException as exc:
+            self.post_message(LoadFailed(
+                f"shard load failed: {exc!r}\n{traceback.format_exc()}"))
+        finally:
+            self.post_message(EngineIdle())
 
     def _collect_games(self, n: int) -> None:
         """Simulate n games one at a time (posting each so the UI fills live).
@@ -718,10 +670,16 @@ class AnalysisApp(App):
     # ----- message handlers -----
 
     def on_env_ready(self, message: EnvReady) -> None:
-        deck_a = getattr(self._args, "deck_a", None) or "?"
-        deck_b = getattr(self._args, "deck_b", None) or "?"
-        self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.opponent})"
-                          + ("  · bo3" if getattr(self._args, "bo3", False) else ""))
+        if getattr(self._args, "shards", None):
+            net = ("z values" if getattr(self._args, "no_net", False)
+                   else f"V(s): {self._args.model}")
+            self.sub_title = (f"shard replay: {self._args.shards} · "
+                              f"seat {getattr(self._args, 'seat', 'A')} · {net}")
+        else:
+            deck_a = getattr(self._args, "deck_a", None) or "?"
+            deck_b = getattr(self._args, "deck_b", None) or "?"
+            self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.opponent})"
+                              + ("  · bo3" if getattr(self._args, "bo3", False) else ""))
         if message.startup_text.strip():
             self._log_output("startup", message.startup_text)
         self._refresh_summary(loading=True)
@@ -746,6 +704,8 @@ class AnalysisApp(App):
             side = "A" if g["model_is_a"] else "B"
             label = (f"{i:>3}  {_result_str(g):<4} {sc_str:<4} "
                      f"{len(g['values']):>4}d  {side}")
+            if g.get("shard"):
+                label += "  ⛁"
         self.query_one("#games", OptionList).add_option(Option(label, id=str(i)))
         self._refresh_summary(loading=self._engine_busy)
         if self._cur_game is None:
@@ -975,6 +935,11 @@ class AnalysisApp(App):
             out.append(f"\nOpponent since decision {step - 1}:\n", style="italic")
             for ln in opp_lines:
                 out.append(f"  opp → {ln}\n", style="dim")
+        if g.get("shard"):
+            out.append("\n⛁ shard replay: chosen = argmax(visits) — sampled, "
+                       "not exact, inside each game's temperature window; "
+                       "unsearched (fallback) decisions are not recorded\n",
+                       style="dim italic")
         return out
 
     @staticmethod
@@ -1041,7 +1006,11 @@ class AnalysisApp(App):
     def _run_menu_entry(self, key: str) -> None:
         if key in ("whatif", "run5", "run20"):
             if self._env is None or self._model is None:
-                self.notify("Live env not ready.", severity="warning")
+                msg = ("Not available in shard replay — branching/simulating "
+                       "needs a live env."
+                       if getattr(self._args, "shards", None)
+                       else "Live env not ready.")
+                self.notify(msg, severity="warning")
                 return
             if self._engine_busy:
                 self.notify("Engine is busy (simulating or branching) — try again "

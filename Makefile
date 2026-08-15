@@ -28,10 +28,11 @@ BINNAME=robomage
 # Python used to regenerate the train/ codegen files. Prefer the project venv;
 # fall back to python3 (both generators use only the stdlib).
 PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
-# Auto-generated files kept in sync with the C++ sources at build time
-# (train/ codegen plus the C++ mirror header src/gen/card_costs_gen.h).
-PYGEN := train/_enums.py train/card_costs.py src/gen/card_costs_gen.h \
-	src/gen/archetypes_gen.h
+# Auto-generated codegen, regenerated on every build by the `pygen` target below.
+# Tracked (derive only from tracked C++/JSON sources): train/_enums.py,
+# src/gen/archetypes_gen.h. Untracked (derive from gitignored/fetched card-script
+# content, so regenerated locally): train/card_costs.py, train/card_props.py,
+# src/gen/card_costs_gen.h.
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -90,25 +91,27 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 
 all: pygen program
 
-# Regenerate the train/ codegen files from the C++ sources. Each is a real file
-# target with its inputs as prerequisites, so codegen only runs when those
-# sources actually change (not on every build).
-pygen: $(PYGEN)
+# Regenerate ALL codegen on EVERY build. card_costs.py / card_props.py and the C++
+# mirror header src/gen/card_costs_gen.h derive from card-script CONTENT (ManaCost,
+# keywords, types), and card scripts are gitignored/fetched — so their content is NOT
+# expressible as a Make prerequisite. The old mtime-based file targets went stale
+# whenever a script changed without a header/vocab change (e.g. a FORGE_PIN bump adding
+# a keyword), which is exactly how a stale card_props.py got committed. Running the
+# generators unconditionally here closes that hole; they write-if-changed
+# (train/gen_util.py), so an unchanged output keeps its mtime and forces no recompile.
+# stdout is muted (real failures raise and exit nonzero); errors still surface on stderr.
+pygen:
+	@$(PYTHON) train/gen_enums.py >/dev/null
+	@$(PYTHON) train/gen_card_costs.py >/dev/null
+	@$(PYTHON) train/gen_card_props.py >/dev/null
+	@$(PYTHON) train/gen_archetypes.py >/dev/null
 
-train/_enums.py: src/classes/action.h src/classes/game.h src/classes/gamestate.h src/machine_io.h train/gen_enums.py
-	$(PYTHON) train/gen_enums.py
-
-# One generator run emits BOTH the Python matrices and the C++ mirror header, so
-# they are grouped targets (`&:`, GNU Make 4.3+): the recipe runs once and is
-# guaranteed to have produced every listed target — parallel-safe, and never
-# invoked twice under `make -j`.
-train/card_costs.py src/gen/card_costs_gen.h &: src/card_vocab.h src/machine_io.h train/gen_card_costs.py
-	$(PYTHON) train/gen_card_costs.py
-
-# C++ mirror of the deck -> archetype -> value-bucket metadata, so the in-process
-# AZ actor rebuilds the same observation matchup tail train/env.py appends.
-src/gen/archetypes_gen.h: train/archetypes.py bin/resources/decks/archetypes.json train/gen_archetypes.py
-	$(PYTHON) train/gen_archetypes.py
+# The generated C++ mirror headers (src/gen/*.h) are #included by the engine, and
+# src/gen/card_costs_gen.h is UNTRACKED — so guarantee pygen has produced them before any
+# TU compiles (a fresh clone has no header and no dep files yet). Order-only (|): a mere
+# regeneration never forces a rebuild; a real header content change still rebuilds its
+# dependent objects through the -MMD/-include dep files.
+$(C_OBJ) $(CXX_OBJ): | pygen
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
@@ -123,18 +126,14 @@ check: all
 	$(PYTHON) train/ci_check.py
 
 # Regenerate every derived artifact after an intentional C++ change: provision
-# the card set (codegen reads card scripts), force-rerun every generator, and
-# re-record the replay corpus with the fresh binary. Run this when `make check`
-# reports stale codegen or corpus drift, then commit the results. The generators
-# run unconditionally here (not via the incremental pygen file targets) because
-# ci_check's pygen tier restores the committed copies with `git checkout`, which
-# bumps their mtimes past the C++ headers and turns the mtime-based `pygen`
-# target into a silent no-op on stale content.
-regen: all
+# the card set (codegen reads card scripts), then re-record the replay corpus with
+# the fresh binary. Run this when `make check` reports corpus drift, then commit the
+# results. `all` already regenerates all codegen unconditionally (the `pygen` target),
+# so provisioning first — which may fetch changed scripts — guarantees the codegen it
+# produces reflects the current card set before the corpus is recorded against it.
+regen:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
-	$(PYTHON) train/gen_enums.py
-	$(PYTHON) train/gen_card_costs.py
-	$(PYTHON) train/gen_archetypes.py
+	$(MAKE) all
 	$(PYTHON) train/regression/replay_diff.py record
 
 # ── bin/az_actor — in-process AlphaZero actor (Phase D), NOT in the default build ──
@@ -154,6 +153,10 @@ endif
 ACTOR_SRCS := $(wildcard $(SRCDIR)/actor/*.cpp)
 ACTOR_OBJ := $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(ACTOR_SRCS))
 ENGINE_OBJ_NO_MAIN := $(filter-out $(ODIR)/main.o,$(C_OBJ) $(CXX_OBJ))
+
+# Same order-only pygen guard as the engine objects: the actor TUs include the
+# untracked generated headers too, so pygen must produce them before they compile.
+$(ACTOR_OBJ): | pygen
 
 # torch headers are noisy under -Wconversion etc.; -isystem silences them. ABI is
 # 1 in this venv (matches the engine's default), so no -D_GLIBCXX_USE_CXX11_ABI.
@@ -175,10 +178,13 @@ actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 # only thing that catches the C++ actor drifting from src/machine_io.h — but they
 # only fire under `make actor`, which needs libtorch and is not in the default
 # build, so a layout change can (and did) land with the actor left uncompilable.
-# These two TUs are the actor's only torch-free ones, so -fsyntax-only fires every
+# These TUs are the actor's only torch-free ones, so -fsyntax-only fires every
 # layout assert with nothing but a compiler. Wired into ci_check.py's `actorobs`
-# tier, which IS part of `make check`.
-ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp
+# tier, which IS part of `make check`. td_targets.cpp joins them for the same
+# reason: it is the C++ twin of az_selfplay.py's n-step TD rule and must stay
+# compilable wherever libtorch is not installed.
+ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp \
+                     $(SRCDIR)/actor/td_targets.cpp
 
 actor-syntax: pygen
 	@for f in $(ACTOR_SYNTAX_SRCS); do \

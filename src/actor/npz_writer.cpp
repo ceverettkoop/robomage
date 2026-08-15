@@ -139,6 +139,11 @@ void NpzWriter::add_bool(const std::string& name, const uint8_t* data,
     add_member(name, "|b1", sizeof(uint8_t), data, shape);
 }
 
+void NpzWriter::add_uint8(const std::string& name, const uint8_t* data,
+                          const std::vector<size_t>& shape) {
+    add_member(name, "|u1", sizeof(uint8_t), data, shape);
+}
+
 void NpzWriter::add_member(const std::string& name, const char* descr,
                            size_t elem_size, const void* data,
                            const std::vector<size_t>& shape) {
@@ -251,11 +256,15 @@ ShardAccumulator::ShardAccumulator(std::string out_dir, size_t flush_samples,
 }
 
 void ShardAccumulator::add_sample(const float* obs, const float* pi, float z,
-                                  const uint8_t* mask) {
+                                  const uint8_t* mask, float q, uint8_t explored,
+                                  float td_q) {
     obs_.insert(obs_.end(), obs, obs + obs_w_);
     pi_.insert(pi_.end(), pi, pi + act_w_);
     z_.push_back(z);
     mask_.insert(mask_.end(), mask, mask + act_w_);
+    q_.push_back(q);
+    explored_.push_back(explored);
+    td_q_.push_back(td_q);
     buffered_++;
 }
 
@@ -282,6 +291,9 @@ void ShardAccumulator::flush() {
         w.add_float("pi", pi_.data(), {buffered_, act_w_});
         w.add_float("z", z_.data(), {buffered_});
         w.add_bool("mask", mask_.data(), {buffered_, act_w_});
+        w.add_float("q", q_.data(), {buffered_});
+        w.add_uint8("explored", explored_.data(), {buffered_});
+        w.add_float("td_q", td_q_.data(), {buffered_});
         w.finish();
     }
 
@@ -292,5 +304,8 @@ void ShardAccumulator::flush() {
     pi_.clear();
     z_.clear();
     mask_.clear();
+    q_.clear();
+    explored_.clear();
+    td_q_.clear();
     buffered_ = 0;
 }

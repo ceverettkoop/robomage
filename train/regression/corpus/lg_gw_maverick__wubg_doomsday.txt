@@ -1,0 +1,3260 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Forest
+  Player A draws Wasteland
+  Player A draws Wasteland
+  Player A draws Once Upon a Time
+  Player A draws Thalia, Guardian of Thraben
+  Player A draws Once Upon a Time
+  Player A draws Savannah
+  Player B draws Lotus Petal
+  Player B draws Quantum Riddler
+  Player B draws Tropical Island
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Doomsday
+  Player B draws Dark Ritual
+  Player B draws Force of Will
+  Player A hand:
+  Forest
+  Once Upon a Time
+  Once Upon a Time
+  Savannah
+  Thalia, Guardian of Thraben
+  Wasteland
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Dark Ritual
+  Doomsday
+  Force of Will
+  Lotus Petal
+  Quantum Riddler
+  Tamiyo, Inquisitive Student
+  Tropical Island
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Pass priority
+   1: Cast Once Upon a Time (alternate cost)  [#1]
+   2: Cast Once Upon a Time (alternate cost)  [#1]
+  >> A/A: 1 (Cast Once Upon a Time (alternate cost))
+--- Narrative ---
+  Player A casts for free (alternate cost)
+  Player A casts Once Upon a Time
+
+--- Decision 4 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Stack: Once Upon a Time (spell, opponent)
+  Opp revealed: Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Dig)
+  Player A looks at the top 5 card(s) of their library.
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 1)
+  Self:  20 life | mana: empty | hand(6): Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Stack: Once Upon a Time (spell, self)
+  Pending: Once Upon a Time (self)
+  Actions:
+   0: Take nothing
+   1: Badgermole Cub
+   2: Endurance
+   3: Collector Ouphe
+   4: Badgermole Cub
+  >> A/A: 1 (Badgermole Cub)
+--- Narrative ---
+  Player A puts Badgermole Cub into hand.
+  Player A puts 4 card(s) on the bottom of their library.
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self GY: Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Play Forest
+   2: Play Savannah
+   3: Play Wasteland
+   4: Play Wasteland
+  >> A/A: 1 (Play Forest)
+--- Narrative ---
+  Player A played Forest
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Teferi, Time Raveler
+--- Turn 2 (Player B) ---
+  PA: Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island
+
+--- Decision 7 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp BF:   Forest
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+   2: Cast Lotus Petal  [#0]
+  >> B/B: 2 (Cast Lotus Petal)
+--- Narrative ---
+  Player B casts Lotus Petal
+
+--- Decision 8 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp BF:   Forest
+  Stack: Lotus Petal (spell, self)
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Lotus Petal enters the battlefield
+
+--- Decision 9 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Lotus Petal
+  Opp BF:   Forest
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+   2: Cast Dark Ritual  [#0]
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 3 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp BF:   Forest
+  Stack: Tamiyo, Inquisitive Student (spell, self)
+  Self GY: Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Tamiyo, Inquisitive Student enters the battlefield
+
+--- Decision 11 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Opp BF:   Forest
+  Self GY: Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+  >> B/B: 1 (Play Tropical Island)
+--- Narrative ---
+  Player B played Tropical Island
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Swords to Plowshares
+--- Turn 3 (Player A) ---
+  PA: Badgermole Cub, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler, Tropical Island
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Forest
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
+  Self GY: Once Upon a Time
+  Opp GY:  Lotus Petal
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Savannah
+   2: Play Wasteland
+   3: Play Wasteland
+  >> A/A: 1 (Play Savannah)
+--- Narrative ---
+  Player A played Savannah
+
+--- Decision 13 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Forest | Savannah
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
+  Self GY: Once Upon a Time
+  Opp GY:  Lotus Petal
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Badgermole Cub  [#0]
+   2: Cast Once Upon a Time  [#0]
+   3: Cast Swords to Plowshares  [#0]
+   4: Cast Thalia, Guardian of Thraben  [#0]
+  >> A/A: 1 (Cast Badgermole Cub)
+--- Narrative ---
+  Player A activated Forest for 1(G)
+  Player A activated Savannah for 1(G)
+  Player A casts Badgermole Cub
+
+--- Decision 14 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
+  Opp BF:   Forest (T) | Savannah (T)
+  Stack: Badgermole Cub (spell, opponent)
+  Self GY: Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: opp_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Badgermole Cub enters the battlefield
+  Choose target for Badgermole Cub:
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Badgermole Cub [2/2] (SICK) | Forest (T) | Savannah (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island
+  Pending: Badgermole Cub (self)
+  Self GY: Once Upon a Time
+  Opp GY:  Lotus Petal
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Forest
+   1: Savannah
+  >> A/A: 0 (Forest)
+--- Narrative ---
+  Targeting choice 0
+  Badgermole Cub triggered
+  Resolving ability (category: Earthbend)
+  Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Flooded Strand
+--- Turn 4 (Player B) ---
+  PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+  >> B/B: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player B played Flooded Strand
+
+--- Decision 17 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Flooded Strand | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Flooded Strand (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 18 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Flooded Strand (ability, self)
+  Pending: Flooded Strand (self)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Scrubland
+   3: Tropical Island
+   4: Tundra
+   5: Undercity Sewers
+   6: Underground Sea
+   7: Underground Sea
+  >> B/B: 1 (Island)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Island to the battlefield
+
+--- Decision 19 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Quantum Riddler (warp)  [#1]
+  >> B/B: 1 (Cast Quantum Riddler (warp))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Tropical Island for 1(G)
+  Player B casts Quantum Riddler
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(4): Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 50
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Quantum Riddler (spell, self)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Quantum Riddler enters the battlefield
+  Quantum Riddler was cast with warp (exiled at the next end step; castable from exile later).
+  Quantum Riddler triggered
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Tundra
+  --- Declare Attackers (Player B) ---
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Quantum Riddler [4/6] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Island (T) | Quantum Riddler [4/6] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Once Upon a Time
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  Delayed trigger fires.
+  Resolving ability (category: WarpExile)
+  Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
+  PB: Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra
+
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Once Upon a Time  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Once Upon a Time)
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Forest for 1(G)
+  Player A casts Once Upon a Time
+
+--- Decision 24 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Once Upon a Time (spell, self)
+  Self GY: Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 25 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Opp BF:   Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Stack: Once Upon a Time (spell, opponent)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Dig)
+  Player A looks at the top 5 card(s) of their library.
+
+--- Decision 26 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Once Upon a Time (spell, self)
+  Pending: Once Upon a Time (self)
+  Self GY: Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Take nothing
+   1: Thalia, Guardian of Thraben
+   2: Verdant Catacombs
+   3: Talon Gates of Madara
+   4: Thalia, Guardian of Thraben
+   5: Noble Hierarch
+  >> A/A: 1 (Thalia, Guardian of Thraben)
+--- Narrative ---
+  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A puts 4 card(s) on the bottom of their library.
+
+--- Decision 27 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(5): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 50
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Green Sun's Zenith
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: Draw (turn 5)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Cast Green Sun's Zenith  [#0]
+   4: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 30 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah | Wasteland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Green Sun's Zenith  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Thalia, Guardian of Thraben  [#0]
+   4: Cast Thalia, Guardian of Thraben  [#0]
+   5: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Cast Green Sun's Zenith)
+--- Narrative ---
+  Choose X value (0-1):
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah | Wasteland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: X = 0  [#0]
+   1: X = 1  [#1]
+  >> A/A: 0 (X = 0)
+--- Narrative ---
+  Player A chooses X = 0
+  Player A activated Savannah for 1(G)
+  Player A casts Green Sun's Zenith
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Wasteland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Wasteland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Green Sun's Zenith (spell, self)
+  Pending: Wasteland (self)
+  Self GY: Once Upon a Time, Once Upon a Time
+  Opp GY:  Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Tropical Island
+   1: Savannah
+   2: Wasteland
+  >> A/A: 0 (Tropical Island)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Tropical Island is on the stack
+
+--- Decision 34 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Opp BF:   Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Wasteland (ability, opponent) -> Tropical Island (self, slot 2) -> Green Sun's Zenith (spell, opponent)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Destroy)
+  Tropical Island is destroyed
+
+--- Decision 35 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Opp BF:   Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Stack: Green Sun's Zenith (spell, opponent)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 36 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Stack: Green Sun's Zenith (spell, self)
+  Pending: Green Sun's Zenith (self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Fail to find
+   1: Dryad Arbor
+  >> A/A: 1 (Dryad Arbor)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Dryad Arbor to the battlefield
+  Green Sun's Zenith is shuffled into its owner's library
+  --- Declare Attackers (Player A) ---
+
+--- Decision 37 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [2/2])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+
+--- Decision 38 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   19 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Badgermole Cub deals 2 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Brainstorm
+--- Turn 6 (Player B) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
+  PB: Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra
+
+--- Decision 39 ---
+  Priority: Player B (active)
+  Step: Draw (turn 6)
+  Self:  17 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tundra | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Cast Brainstorm  [#0]
+  >> B/B: 1 (Play Tundra)
+--- Narrative ---
+  Player B played Tundra
+
+--- Decision 41 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(5): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 2 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Undercity Sewers
+  --- Declare Attackers (Player B) ---
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 6)
+  Self:  17 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 43 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 6)
+  Self:  17 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
+  PB: Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Noble Hierarch
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  20 life | mana: empty | hand(5): Noble Hierarch, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(5): Noble Hierarch, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Noble Hierarch  [#0]
+   3: Cast Swords to Plowshares  [#0]
+   4: Cast Thalia, Guardian of Thraben  [#0]
+   5: Cast Thalia, Guardian of Thraben  [#0]
+  >> A/A: 2 (Cast Noble Hierarch)
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Dryad Arbor for 1(G)
+  Player A casts Noble Hierarch
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Stack: Noble Hierarch (spell, self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 48 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 47
+  Opp:   20 life | mana: 1G | hand count: 4 | lib 48
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Opp BF:   Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Stack: Noble Hierarch (spell, opponent)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Noble Hierarch enters the battlefield
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (SICK) | Savannah
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Thalia, Guardian of Thraben  [#0]
+   4: Cast Thalia, Guardian of Thraben  [#0]
+  >> A/A: 3 (Cast Thalia, Guardian of Thraben)
+--- Narrative ---
+  Player A activated Savannah for 1(W)
+  Player A casts Thalia, Guardian of Thraben
+
+--- Decision 50 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 47
+  Opp:   20 life | mana: empty | hand count: 3 | lib 48
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Opp BF:   Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (SICK) | Savannah (T)
+  Stack: Thalia, Guardian of Thraben (spell, opponent)
+  Self GY: Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Thalia, Guardian of Thraben enters the battlefield
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 53 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
+  Pending: Wasteland (self)
+  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Tundra
+   1: Dryad Arbor
+   2: Savannah
+   3: Wasteland
+  >> A/A: 0 (Tundra)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Tundra is on the stack
+  Resolving ability (category: Destroy)
+  Tundra is destroyed
+  --- Declare Attackers (Player A) ---
+
+--- Decision 54 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [2/2]
+   1: Forest [1/1]
+   2: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [2/2])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+
+--- Decision 55 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Forest [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Forest [1/1])
+--- Narrative ---
+  Forest attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Forest [1/1] -> Player B
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
+  Opp:   17 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+    Forest -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Badgermole Cub deals 2 damage to Player B
+    Forest deals 1 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Tropical Island
+--- Turn 8 (Player B) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben
+  PB: Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tropical Island, Undercity Sewers
+
+--- Decision 57 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(7): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Tropical Island, Undercity Sewers | lib 46
+  Opp:   20 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+   2: Play Undercity Sewers
+  >> B/B: 1 (Play Tropical Island)
+--- Narrative ---
+  Player B played Tropical Island
+
+--- Decision 58 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  14 life | mana: empty | hand(6): Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 46
+  Opp:   20 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 2 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Tropical Island for 1(G)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Brainstorm
+  --- Declare Attackers (Player B) ---
+
+--- Decision 59 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  14 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 60 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  14 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self GY: Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Swords to Plowshares, Thalia, Guardian of Thraben
+  PB: Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers
+
+--- Decision 61 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 9)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Talon Gates of Madara
+
+--- Decision 62 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Talon Gates of Madara from hand (ChangeZone)  [#2]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 63 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Talon Gates of Madara
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Thalia, Guardian of Thraben  [#0]
+   4: Activate Talon Gates of Madara from hand (ChangeZone)  [#2]
+  >> A/A: 3 (Cast Thalia, Guardian of Thraben)
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Noble Hierarch for 1(W)
+  Player A casts Thalia, Guardian of Thraben
+
+--- Decision 64 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Talon Gates of Madara | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Thalia, Guardian of Thraben (spell, self)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Talon Gates of Madara from hand (ChangeZone)  [#2]
+  >> A/A: 2 (Activate Talon Gates of Madara from hand (ChangeZone))
+--- Narrative ---
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Dryad Arbor for 1(G)
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Forest for 1(G)
+  Player A activates Talon Gates of Madara from hand
+  Resolving ability (category: ChangeZone)
+  Talon Gates of Madara is moved to the battlefield
+  Choose target for Talon Gates of Madara:
+
+--- Decision 65 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Thalia, Guardian of Thraben (spell, self)
+  Pending: Talon Gates of Madara (self)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: No target
+   1: Tamiyo, Inquisitive Student
+   2: Badgermole Cub
+   3: Dryad Arbor
+   4: Forest
+   5: Noble Hierarch
+   6: Thalia, Guardian of Thraben
+  >> A/A: 0 (No target)
+--- Narrative ---
+  Targeting choice 0
+  Talon Gates of Madara triggered
+
+--- Decision 66 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Talon Gates of Madara (ability, self) -> Thalia, Guardian of Thraben (spell, self)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Phases)
+
+--- Decision 67 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Stack: Thalia, Guardian of Thraben (spell, self)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Thalia, Guardian of Thraben enters the battlefield
+  Legend rule: Player A controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
+
+--- Decision 68 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Keep Thalia, Guardian of Thraben
+   1: Keep Thalia, Guardian of Thraben
+  >> A/A: 0 (Keep Thalia, Guardian of Thraben)
+--- Narrative ---
+  Thalia, Guardian of Thraben is put into the graveyard (legend rule)
+
+--- Decision 69 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 70 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 71 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [2/2]
+   1: Thalia, Guardian of Thraben [2/1]
+   2: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [2/2])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+
+--- Decision 72 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Thalia, Guardian of Thraben [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
+--- Narrative ---
+  Thalia, Guardian of Thraben attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+
+--- Decision 73 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+    Thalia, Guardian of Thraben -> Player B
+
+--- Decision 74 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 75 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   14 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Thalia, Guardian of Thraben deals 2 damage to Player B
+  --- End First Strike Combat Damage ---
+
+--- Decision 76 ---
+  Priority: Player A (active)
+  Step: First Strike Dmg (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   12 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Badgermole Cub deals 2 damage to Player B
+  --- End Combat Damage ---
+
+--- Decision 77 ---
+  Priority: Player A (active)
+  Step: Combat Dmg (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 78 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 79 ---
+  Priority: Player A (active)
+  Step: Second Main (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 80 ---
+  Priority: Player A (active)
+  Step: End Step (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 10 (Player B) --------
+--- Turn 10 (Player B) ---
+  PA: Swords to Plowshares
+  PB: Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers
+
+--- Decision 81 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  10 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 45
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Brainstorm  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 82 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Edge of Autumn
+
+--- Decision 83 ---
+  Priority: Player B (active)
+  Step: Draw (turn 10)
+  Self:  10 life | mana: empty | hand(8): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Edge of Autumn, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 44
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Brainstorm  [#0]
+   3: Activate Clue token (Draw)  [#0]
+   4: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 4 (Activate Edge of Autumn from hand (Draw))
+
+--- Decision 84 ---
+  Priority: Player B (active)
+  Step: Draw (turn 10)
+  Self:  10 life | mana: empty | hand(8): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Edge of Autumn, Force of Will, Teferi, Time Raveler, Undercity Sewers | lib 44
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Actions:
+   0: Sacrifice Island
+   1: Sacrifice Tropical Island
+  >> B/B: 0 (Sacrifice Island)
+--- Narrative ---
+  Player B sacrifices Island
+  Player B activates Edge of Autumn from hand
+
+--- Decision 85 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 44
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Stack: Edge of Autumn (ability, opponent) [amt=1]
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Thassa's Oracle
+
+--- Decision 86 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 8 | lib 43
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 87 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  10 life | mana: empty | hand(8): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers | lib 43
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Undercity Sewers
+  >> B/B: 1 (Play Undercity Sewers)
+--- Narrative ---
+  Player B played Undercity Sewers
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+
+--- Decision 88 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 43
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Undercity Sewers (T) | Clue
+  Stack: Undercity Sewers (ability, opponent) [amt=1]
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Tamiyo, Inquisitive Student
+
+--- Decision 89 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  10 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 43
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Undercity Sewers (T) | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
+  Self GY: Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Put Tamiyo, Inquisitive Student on top of library  [#0]
+   1: Put Tamiyo, Inquisitive Student into graveyard
+  >> B/B: 1 (Put Tamiyo, Inquisitive Student into graveyard)
+--- Narrative ---
+  Player B puts Tamiyo, Inquisitive Student into their graveyard.
+
+--- Decision 90 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Undercity Sewers (T) | Clue
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 91 ---
+  Priority: Player A (non-active)
+  Step: Begin Combat (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Undercity Sewers (T) | Clue
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 92 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  10 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 42
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Undercity Sewers (T) | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 93 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  10 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 42
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island | Undercity Sewers (T) | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+
+--- Decision 94 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Undercity Sewers (T) | Clue
+  Stack: Tamiyo, Inquisitive Student (ability, opponent)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+
+--- Decision 95 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 96 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 97 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 98 ---
+  Priority: Player A (non-active)
+  Step: End Combat (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 99 ---
+  Priority: Player A (non-active)
+  Step: Second Main (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 100 ---
+  Priority: Player A (non-active)
+  Step: End Step (turn 10)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 11 (Player A) --------
+--- Turn 11 (Player A) ---
+  PA: Swords to Plowshares
+  PB: Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle
+
+--- Decision 101 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Wasteland
+
+--- Decision 102 ---
+  Priority: Player A (active)
+  Step: Draw (turn 11)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Wasteland | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 103 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Wasteland | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 104 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 2 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 105 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Pending: Wasteland (self)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Tropical Island
+   1: Undercity Sewers
+   2: Dryad Arbor
+   3: Savannah
+   4: Talon Gates of Madara
+   5: Wasteland
+  >> A/A: 0 (Tropical Island)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Tropical Island is on the stack
+
+--- Decision 106 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Stack: Wasteland (ability, self) -> Tropical Island (opponent, slot 49)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 107 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 11)
+  Self:  10 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 42
+  Opp:   20 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Undercity Sewers (T) | Clue | Clue (SICK)
+  Opp BF:   Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Stack: Wasteland (ability, opponent) -> Tropical Island (self, slot 1)
+  Self GY: Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Tap Tropical Island for (G)
+   2: Tap Tropical Island for (U)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Destroy)
+  Tropical Island is destroyed
+
+--- Decision 108 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 109 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 110 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [2/2]
+   1: Dryad Arbor [1/1]
+   2: Forest [1/1]
+   3: Noble Hierarch [0/1]
+   4: Thalia, Guardian of Thraben [2/1]
+   5: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [2/2])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+
+--- Decision 111 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Dryad Arbor [1/1]
+   1: Forest [1/1]
+   2: Noble Hierarch [0/1]
+   3: Thalia, Guardian of Thraben [2/1]
+   4: Confirm attackers
+  >> A/A: 0 (Dryad Arbor [1/1])
+--- Narrative ---
+  Dryad Arbor attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Dryad Arbor [1/1] -> Player B
+
+--- Decision 112 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (ATK) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Forest [1/1]
+   1: Noble Hierarch [0/1]
+   2: Thalia, Guardian of Thraben [2/1]
+   3: Confirm attackers
+  >> A/A: 0 (Forest [1/1])
+--- Narrative ---
+  Forest attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Dryad Arbor [1/1] -> Player B
+    [attacking] Forest [1/1] -> Player B
+
+--- Decision 113 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (ATK) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Noble Hierarch [0/1]
+   1: Thalia, Guardian of Thraben [2/1]
+   2: Confirm attackers
+  >> A/A: 0 (Noble Hierarch [0/1])
+--- Narrative ---
+  Noble Hierarch attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Dryad Arbor [1/1] -> Player B
+    [attacking] Forest [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+
+--- Decision 114 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (ATK) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Noble Hierarch [0/1] (ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Thalia, Guardian of Thraben [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
+--- Narrative ---
+  Thalia, Guardian of Thraben attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Dryad Arbor [1/1] -> Player B
+    [attacking] Forest [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+
+--- Decision 115 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (ATK) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Noble Hierarch [0/1] (ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+    Dryad Arbor -> Player B
+    Forest -> Player B
+    Noble Hierarch -> Player B
+    Thalia, Guardian of Thraben -> Player B
+
+--- Decision 116 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T,ATK) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 117 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   10 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T,ATK) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Thalia, Guardian of Thraben deals 2 damage to Player B
+  --- End First Strike Combat Damage ---
+
+--- Decision 118 ---
+  Priority: Player A (active)
+  Step: First Strike Dmg (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   8 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T,ATK) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Badgermole Cub deals 2 damage to Player B
+    Dryad Arbor deals 1 damage to Player B
+    Forest deals 1 damage to Player B
+  --- End Combat Damage ---
+
+--- Decision 119 ---
+  Priority: Player A (active)
+  Step: Combat Dmg (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T,ATK) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 120 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T,ATK) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 121 ---
+  Priority: Player A (active)
+  Step: Second Main (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 122 ---
+  Priority: Player A (active)
+  Step: End Step (turn 11)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 12 (Player B) --------
+--- Turn 12 (Player B) ---
+  PA: Swords to Plowshares
+  PB: Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle
+
+--- Decision 123 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 42
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Cavern of Souls
+
+--- Decision 124 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 8 | lib 41
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Lotus Petal, Edge of Autumn, Undercity Sewers, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 125 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  4 life | mana: empty | hand(8): Brainstorm, Brainstorm, Cavern of Souls, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 41
+  Opp:   20 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Actions:
+   0: Pass priority
+   1: Play Cavern of Souls
+  >> B/B: 1 (Play Cavern of Souls)
+--- Narrative ---
+  Player B played Cavern of Souls
+  Choose a creature type for Cavern of Souls:
+
+--- Decision 126 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  4 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 41
+  Opp:   20 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Cavern of Souls | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Choose creature type: Wizard  [#0]
+   1: Choose creature type: Moonfolk  [#1]
+   2: Choose creature type: Merfolk  [#2]
+   3: Choose creature type: Sphinx  [#3]
+   4: Choose creature type: Wraith  [#4]
+  >> B/B: 0 (Choose creature type: Wizard)
+--- Narrative ---
+  Player B chose creature type: Wizard
+
+--- Decision 127 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  4 life | mana: empty | hand(7): Brainstorm, Brainstorm, Dark Ritual, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 41
+  Opp:   20 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Cavern of Souls | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Brainstorm  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Thassa's Oracle  [#0]
+   5: Activate Clue token (Draw)  [#0]
+   6: Activate Clue token (Draw)  [#0]
+  >> B/B: 3 (Cast Dark Ritual)
+--- Narrative ---
+  Player B activated Undercity Sewers for 1(B)
+  Player B activated Cavern of Souls for 1(C)
+  Player B casts Dark Ritual
+
+--- Decision 128 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 6 | lib 41
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers (T) | Clue | Clue
+  Stack: Dark Ritual (spell, opponent)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: AddMana)
+  Player B adds 3{B}
+
+--- Decision 129 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  4 life | mana: 3B | hand(6): Brainstorm, Brainstorm, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 41
+  Opp:   20 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers (T) | Clue | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+
+--- Decision 130 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: 1B | hand count: 6 | lib 41
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers (T) | Clue
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Doomsday
+
+--- Decision 131 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: 1B | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers (T) | Clue
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 132 ---
+  Priority: Player A (non-active)
+  Step: Begin Combat (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers (T) | Clue
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 133 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  4 life | mana: empty | hand(7): Brainstorm, Brainstorm, Doomsday, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 40
+  Opp:   20 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers (T) | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 134 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  4 life | mana: empty | hand(7): Brainstorm, Brainstorm, Doomsday, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 40
+  Opp:   20 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Undercity Sewers (T) | Clue
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Self GY: Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp GY:  Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Self exile: Quantum Riddler
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+
+--- Decision 135 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Undercity Sewers (T) | Clue
+  Stack: Tamiyo, Inquisitive Student (ability, opponent)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+
+--- Decision 136 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 137 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 138 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 139 ---
+  Priority: Player A (non-active)
+  Step: End Combat (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 140 ---
+  Priority: Player A (non-active)
+  Step: Second Main (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 141 ---
+  Priority: Player A (non-active)
+  Step: End Step (turn 12)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 13 (Player A) --------
+--- Turn 13 (Player A) ---
+  PA: Swords to Plowshares
+  PB: Brainstorm, Brainstorm, Doomsday, Doomsday, Force of Will, Teferi, Time Raveler, Thassa's Oracle
+
+--- Decision 142 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Green Sun's Zenith
+
+--- Decision 143 ---
+  Priority: Player A (active)
+  Step: Draw (turn 13)
+  Self:  20 life | mana: empty | hand(2): Green Sun's Zenith, Swords to Plowshares | lib 45
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 144 ---
+  Priority: Player A (active)
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(2): Green Sun's Zenith, Swords to Plowshares | lib 45
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Green Sun's Zenith  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Green Sun's Zenith)
+--- Narrative ---
+  Choose X value (0-3):
+
+--- Decision 145 ---
+  Priority: Player A (active)
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(2): Green Sun's Zenith, Swords to Plowshares | lib 45
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: X = 0  [#0]
+   1: X = 1  [#1]
+   2: X = 2  [#2]
+   3: X = 3  [#3]
+  >> A/A: 0 (X = 0)
+--- Narrative ---
+  Player A chooses X = 0
+  Badgermole Cub adds an additional 1(G).
+  Player A activated Dryad Arbor for 1(G)
+  Player A casts Green Sun's Zenith
+
+--- Decision 146 ---
+  Priority: Player A (active)
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 147 ---
+  Priority: Player A (active)
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 45
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Stack: Green Sun's Zenith (spell, self)
+  Pending: Green Sun's Zenith (self)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Fail to find
+  >> A/A: 0 (Fail to find)
+--- Narrative ---
+  Player A shuffles their library
+  Player A fails to find
+  Green Sun's Zenith is shuffled into its owner's library
+
+--- Decision 148 ---
+  Priority: Player A (active)
+  Step: First Main (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 149 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player A) ---
+
+--- Decision 150 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Badgermole Cub [2/2]
+   1: Forest [1/1]
+   2: Noble Hierarch [0/1]
+   3: Thalia, Guardian of Thraben [2/1]
+   4: Confirm attackers
+  >> A/A: 0 (Badgermole Cub [2/2])
+--- Narrative ---
+  Badgermole Cub attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+
+--- Decision 151 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Forest [1/1]
+   1: Noble Hierarch [0/1]
+   2: Thalia, Guardian of Thraben [2/1]
+   3: Confirm attackers
+  >> A/A: 0 (Forest [1/1])
+--- Narrative ---
+  Forest attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Forest [1/1] -> Player B
+
+--- Decision 152 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Noble Hierarch [0/1]
+   1: Thalia, Guardian of Thraben [2/1]
+   2: Confirm attackers
+  >> A/A: 0 (Noble Hierarch [0/1])
+--- Narrative ---
+  Noble Hierarch attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Forest [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+
+--- Decision 153 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Noble Hierarch [0/1] (ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Thalia, Guardian of Thraben [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
+--- Narrative ---
+  Thalia, Guardian of Thraben attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Badgermole Cub [2/2] -> Player B
+    [attacking] Forest [1/1] -> Player B
+    [attacking] Noble Hierarch [0/1] -> Player B
+    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
+
+--- Decision 154 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Noble Hierarch [0/1] (ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Badgermole Cub -> Player B
+    Forest -> Player B
+    Noble Hierarch -> Player B
+    Thalia, Guardian of Thraben -> Player B
+
+--- Decision 155 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 156 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   4 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Thalia, Guardian of Thraben deals 2 damage to Player B
+  --- End First Strike Combat Damage ---
+
+--- Decision 157 ---
+  Priority: Player A (active)
+  Step: First Strike Dmg (turn 13)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 46
+  Opp:   2 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK) | Noble Hierarch [0/1] (T,ATK) | Savannah | Talon Gates of Madara | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Clue | Clue (SICK)
+  Self GY: Wasteland, Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Dark Ritual, Tropical Island, Tamiyo, Inquisitive Student, Edge of Autumn, Island, Tundra, Tropical Island, Flooded Strand, Lotus Petal
+  Opp exile:  Quantum Riddler
+  Opp revealed: Flooded Strand, Tundra, Island, Dark Ritual, Lotus Petal, Edge of Autumn, Undercity Sewers, Cavern of Souls, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Badgermole Cub deals 2 damage to Player B
+    Forest deals 1 damage to Player B
+  --- End Combat Damage ---
+  Player B has -1 life - Player A wins!
+
+=== A/A wins ===

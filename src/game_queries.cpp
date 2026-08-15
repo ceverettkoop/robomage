@@ -5,7 +5,9 @@
 #include <cstdio>
 
 #include "classes/game.h"
+#include "cli_output.h"
 #include "components/ability.h"
+#include "components/player.h"
 #include "svar_eval.h"
 
 extern Coordinator global_coordinator;
@@ -46,10 +48,13 @@ std::set<Colors> effective_colors(Entity e) {
     std::set<Colors> override_colors;
     if (setcolor_override_for(e, override_colors)) return override_colors;
     // On the battlefield, effective color is the layer-5 (613.1e) result. With no active color-
-    // changing static this reads the printed colors; the override above is the single seam such a
-    // static plugs into without touching any consumer.
+    // changing static this reads the printed colors of the ACTIVE face — a transformed permanent
+    // has its back face's colors (CR 712.8e: Ajani, Nacatl Avenger is red-white via its color
+    // indicator, not its mono-white front; a face-up MDFC land back is colorless, not the front
+    // spell's color). The override above is the single seam a color-changing static plugs into
+    // without touching any consumer.
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<CardData>(e))
-        return card_colors(global_coordinator.GetComponent<CardData>(e));
+        return card_colors(active_face(e, global_coordinator.GetComponent<CardData>(e)));
     if (const LastKnownInfo *lki = lki_for(e)) return lki->colors;
     if (global_coordinator.entity_has_component<CardData>(e))
         return card_colors(global_coordinator.GetComponent<CardData>(e));
@@ -265,6 +270,9 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "nonBasic")     return v.types && !has_basic_supertype(*v.types);
     if (q == "Colorless")    return !view_has_any_color(v);  // CR 105.2c
     if (q == "hasXCost")     return v.has_x_cost;       // {X} in the printed mana cost (Gaddock Teeg)
+    // hasABasicLandType — the object's subtypes include one of the five basic land types
+    // (CR 305.6; Boseiju, Who Endures' compensation search "a land card with a basic land type").
+    if (q == "hasABasicLandType") return v.types && has_a_basic_land_type(*v.types);
     // mana-value family (dynamic bound applied once by the caller) --------------
     if (q.rfind("cmc", 0) == 0) {
         if (q == "cmcLEX") return v.cmc <= static_cast<int>(cur_game.x_paid);
@@ -449,8 +457,13 @@ CharView permanent_view(Entity e, const Permanent &perm) {
     }
     if (global_coordinator.entity_has_component<CardData>(e)) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
-        v.cmc = card_mana_value(cd);  // CR 112.7
-        v.has_x_cost = cd.has_x_cost;
+        // Mana value: a transformed NONMODAL permanent keeps the front face's (CR 712.8e —
+        // Insectile Aberration is MV 1 from Delver's cost), so the front CardData is the right
+        // read; but a face-up MODAL back has entirely its own characteristics (CR 712.8d), so
+        // Witch-Blessed Meadow in play is MV 0, not the front spell's 4.
+        const CardData &mv_face = cd.is_modal_dfc ? active_face(e, cd) : cd;
+        v.cmc = card_mana_value(mv_face);  // CR 112.7
+        v.has_x_cost = mv_face.has_x_cost;
     }
     return v;
 }
@@ -580,6 +593,41 @@ Zone::Ownership resolve_defined_player(const Ability &ab) {
     // check_triggered_abilities' delayed-trigger leave-battlefield path).
     if (ab.defined_triggered_card_controller) return ab.triggered_player;
     return Zone::UNKNOWN;
+}
+
+// CR 702.131b: Ascend on a permanent — any time its controller controls ten or more
+// permanents and doesn't yet have the city's blessing, they get the city's blessing
+// for the rest of the game (a one-way latch; never lost once gained, 702.131c). The
+// keyword lives on the source CardData, so this also covers non-creature permanents
+// that have Ascend. Shared by the SBA preamble (every pass) and by mid-resolution
+// readers of the flag (the Condition$ Blessing gate), since "any time" means the
+// grant may not lag to the next state-based pass — see the header comment.
+void refresh_city_blessing(const std::set<Entity> &entities) {
+    bool ascend_a = false, ascend_b = false;
+    int perms_a = 0, perms_b = 0;
+    for (auto entity : entities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(entity).controller;
+        if (ctrl == Zone::PLAYER_A) ++perms_a;
+        else if (ctrl == Zone::PLAYER_B) ++perms_b;
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            for (const auto &kw : cd.keywords)
+                if (kw == "Ascend") {
+                    if (ctrl == Zone::PLAYER_A) ascend_a = true;
+                    else if (ctrl == Zone::PLAYER_B) ascend_b = true;
+                }
+        }
+    }
+    auto grant = [](Entity pe, int perms, const char *who) {
+        auto &pl = global_coordinator.GetComponent<Player>(pe);
+        if (!pl.has_city_blessing && perms >= 10) {
+            pl.has_city_blessing = true;
+            game_log("%s gets the city's blessing.\n", who);
+        }
+    };
+    if (ascend_a) grant(cur_game.player_a_entity, perms_a, "Player A");
+    if (ascend_b) grant(cur_game.player_b_entity, perms_b, "Player B");
 }
 
 bool player_cant_gain_life(Entity player_entity) {

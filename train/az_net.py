@@ -63,12 +63,14 @@ from extractor import CardGameExtractor, _ActionScorer
 try:
     from env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from card_costs import N_CARD_TYPES
+    from card_props import N_CARD_PROPS
     from cli_spec import EMBED_DIM, NET_ARCH
     from _enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
     from archetypes import N_VALUE_BUCKETS, bucket_name
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from train.card_costs import N_CARD_TYPES
+    from train.card_props import N_CARD_PROPS
     from train.cli_spec import EMBED_DIM, NET_ARCH
     from train._enums import REF_ZONE_MAX, N_REF_ZONES, ACTION_CATEGORY_MAX
     from train.archetypes import N_VALUE_BUCKETS, bucket_name
@@ -130,7 +132,9 @@ class ScriptTrunk(nn.Module):
         "HIST_ENTRY_SIZE", "HIST_RECENT_K", "KNOWN_TOP_LIB_START",
         "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "REVEALED_START",
         "REVEALED_END", "PENDING_START", "PENDING_END", "EXTRAS_START",
-        "EXTRAS_END", "STATE_END", "PERM_START", "PERM_END", "PERM_SLOTS",
+        "EXTRAS_END", "MANA_DEV_START", "MANA_DEV_END",
+        "LOG_VITALS_START", "LOG_VITALS_END",
+        "STATE_END", "PERM_START", "PERM_END", "PERM_SLOTS",
         "PERM_SLOT_SIZE", "PERM_STATUS_FLOATS", "PERM_CHOSEN_NAME_OFF",
         "PERM_RETURNABLE_OFF", "PERM_CARD_OFF", "STACK_START", "STACK_END",
         "STACK_SLOTS", "STACK_SLOT_SIZE", "STACK_XAMT_OFF", "STACK_MODE_OFF",
@@ -155,6 +159,11 @@ class ScriptTrunk(nn.Module):
             "ScriptTrunk requires a per_action_head=True CardGameExtractor"
         # Adopt the extractor's encoder submodules (same names -> state_dict 1:1).
         self.card_emb = fe.card_emb
+        # The frozen printed-property block must be register_buffer'd (a bare
+        # tensor attribute is neither in the state_dict nor TorchScript-visible);
+        # the registered name trunk.card_props then aligns 1:1 with the policy's
+        # features_extractor.card_props under from_ppo's prefix map.
+        self.register_buffer("card_props", fe.card_props)
         self.perm_encoder = fe.perm_encoder
         self.stack_encoder = fe.stack_encoder
         self.entity_encoder = fe.entity_encoder
@@ -184,6 +193,10 @@ class ScriptTrunk(nn.Module):
         self.PENDING_END = int(_ex._PENDING_END)
         self.EXTRAS_START = int(_ex._EXTRAS_START)
         self.EXTRAS_END = int(_ex._EXTRAS_END)
+        self.MANA_DEV_START = int(_ex._MANA_DEV_START)
+        self.MANA_DEV_END = int(_ex._MANA_DEV_END)
+        self.LOG_VITALS_START = int(_ex._LOG_VITALS_START)
+        self.LOG_VITALS_END = int(_ex._LOG_VITALS_END)
         self.STATE_END = int(_ex._STATE_END)
         self.PERM_START = int(_ex._PERM_START)
         self.PERM_END = int(_ex._PERM_END)
@@ -246,7 +259,8 @@ class ScriptTrunk(nn.Module):
     def _embed_ids(self, id_floats: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         idx = torch.round(id_floats * self.N_CARD_TYPES).long()
         present = idx >= 0
-        emb = self.card_emb((idx + 1).clamp(0, self.N_CARD_TYPES))
+        safe = (idx + 1).clamp(0, self.N_CARD_TYPES)
+        emb = torch.cat([self.card_emb(safe), self.card_props[safe]], dim=-1)
         return emb, present
 
     def _mean_max(self, emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -268,6 +282,8 @@ class ScriptTrunk(nn.Module):
         revealed = obs[:, self.REVEALED_START:self.REVEALED_END]
         pending = obs[:, self.PENDING_START:self.PENDING_END]
         extras = obs[:, self.EXTRAS_START:self.EXTRAS_END]
+        mana_dev = obs[:, self.MANA_DEV_START:self.MANA_DEV_END]
+        log_vitals = obs[:, self.LOG_VITALS_START:self.LOG_VITALS_END]
         # Mirror the extractor: the action/cost block stops BEFORE the matchup
         # tail's raw bucket float (stripped from the trunk input), and the two
         # archetype one-hots enter the base cat right after it.
@@ -377,7 +393,8 @@ class ScriptTrunk(nn.Module):
         opp_side_agg = self._mean_max(opp_side_enc, opp_side_present)
 
         base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
-                          revealed_agg, pending_feat, extras, action_extras,
+                          revealed_agg, pending_feat, extras, mana_dev, log_vitals,
+                          action_extras,
                           arch_onehot,
                           perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
                           self_lib_agg, self_main_agg, self_side_agg,
@@ -508,6 +525,7 @@ class AZNet(nn.Module):
             "OBS_SIZE": OBS_SIZE,
             "MAX_ACTIONS": MAX_ACTIONS,
             "N_CARD_TYPES": N_CARD_TYPES,
+            "N_CARD_PROPS": int(self.trunk.card_props.shape[1]),
             "N_VALUE_BUCKETS": N_VALUE_BUCKETS,
             "steps": int(steps),
         }
@@ -619,6 +637,7 @@ def load_az(path: str, map_location="cpu") -> "AZNet":
             meta = json.load(f)
         for key, cur in (("OBS_SIZE", OBS_SIZE), ("MAX_ACTIONS", MAX_ACTIONS),
                          ("N_CARD_TYPES", N_CARD_TYPES),
+                         ("N_CARD_PROPS", N_CARD_PROPS),
                          ("N_VALUE_BUCKETS", N_VALUE_BUCKETS)):
             if key in meta and int(meta[key]) != int(cur):
                 raise RuntimeError(
@@ -669,6 +688,7 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
     net_sd = net.state_dict()
 
     transferred: list = []
+    trunk_skipped: list = []
     # 1) Trunk (features_extractor.* -> trunk.*). Shared by both flavors.
     for k, v in sd.items():
         if not k.startswith("features_extractor."):
@@ -677,6 +697,8 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
         if tk in net_sd and net_sd[tk].shape == v.shape:
             net_sd[tk] = v.clone()
             transferred.append(tk)
+        else:
+            trunk_skipped.append(tk)
 
     notes: list = []
     if flavor == "per_action":
@@ -700,18 +722,32 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
                     transferred.append(tk)
         notes.append("multi-head value head copied 1:1 from PPO value_net "
                      f"({N_VALUE_BUCKETS} archetype-bucket columns, now behind tanh)")
-        # A PopArt-trained PPO head predicts NORMALIZED values (its per-bucket
-        # (mu, sigma) live in policy buffers AZNet has no counterpart for), so its
-        # copied columns are on a different scale than AZ's tanh targets. Harmless
-        # (AZ re-fits the head from ±1 targets) but say so rather than hide it.
+        # A PopArt-trained PPO head predicts NORMALIZED values: the real value is
+        # v_norm * sigma[bucket] + mu[bucket] (the policy's popart buffers, see
+        # extractor's _bucket_values). AZNet has no such buffers, so FOLD the
+        # de-normalization into the copied linear layer — w' = sigma*w,
+        # b' = sigma*b + mu per bucket column — so the warm-started head outputs
+        # values on the PPO return scale (per-game ±1.0, matching AZ's own z) from step 0
+        # instead of a per-bucket-miscalibrated normalized value (measured: sign
+        # accuracy vs game outcome at or below coin-flip without the fold). The
+        # tanh AZNet applies on top is monotone, so ordering is preserved and the
+        # output lands in AZ's [-1,1] target space, if compressed.
         sigma = sd.get("popart_sigma")
         mu = sd.get("popart_mu")
         if sigma is not None and mu is not None and (
                 bool((sigma != 1.0).any()) or bool((mu != 0.0).any())):
-            notes.append("source checkpoint was trained with PopArt: the copied "
-                         "value head is in NORMALIZED value space (its per-bucket "
-                         "mu/sigma are not transferred) — AZ retrains it against "
-                         "its own [-1,1] targets")
+            wk, bk = "value_head.weight", "value_head.bias"
+            if wk in transferred and bk in transferred:
+                s = torch.where(sigma > 0, sigma, torch.ones_like(sigma))
+                net_sd[wk] = net_sd[wk] * s.unsqueeze(1)
+                net_sd[bk] = net_sd[bk] * s + mu
+                notes.append("source checkpoint was trained with PopArt: folded "
+                             "per-bucket (mu, sigma) into the copied value head "
+                             "(w'=sigma*w, b'=sigma*b+mu) so it starts on the "
+                             "real return scale")
+            else:
+                notes.append("source checkpoint was trained with PopArt but the "
+                             "value head did not transfer — nothing to fold")
     else:
         notes.append("stock MlpPolicy: policy/value heads start fresh "
                      "(shape-incompatible with the per-action AZ head)")
@@ -727,6 +763,15 @@ def from_ppo(ckpt_path: str, map_location="cpu") -> "AZNet":
     fresh_top = sorted({k.split(".")[0] for k in fresh})
     if fresh:
         print(f"[from_ppo]   fresh modules: {', '.join(fresh_top)}")
+    if trunk_skipped:
+        # Shape-gated transfer is silent per-tensor; a checkpoint from before a
+        # card-representation change (e.g. the frozen card_props split) would
+        # otherwise warm-start almost nothing with only a count as evidence.
+        skipped_top = sorted({k.split(".")[1] for k in trunk_skipped})
+        print(f"[from_ppo] WARNING: {len(trunk_skipped)} trunk tensors did NOT "
+              f"transfer (shape mismatch or absent in this build — the source "
+              f"checkpoint likely predates a card-representation change); "
+              f"starting fresh: {', '.join(skipped_top)}")
     net.eval()
     return net
 

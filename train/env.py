@@ -102,6 +102,9 @@ try:
         STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
+        MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
+        LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -110,7 +113,8 @@ try:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE, CAT_KEEP_HAND)
+        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT,
+        CAT_SACRIFICE_PERMANENT)
 except ImportError:
     from train._enums import (
         ACTION_CATEGORY_MAX, REF_ZONE_MAX, OPTION_ORDINAL_MAX, N_OBS_KEYWORDS,
@@ -125,6 +129,9 @@ except ImportError:
         STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
+        MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
+        LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -133,7 +140,8 @@ except ImportError:
         CAT_OTHER_CHOICE, CAT_DISCARD, CAT_PAYING_COSTS, CAT_CHOOSE_X,
         CAT_CHOOSE_CARD, CAT_DIG_CHOICE, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT,
         CAT_SIDEBOARD_DONE, CAT_COMPANION, CAT_OPTIONAL_YESNO, CAT_TOP_LIBRARY,
-        CAT_SHUFFLE, CAT_KEEP_HAND)
+        CAT_SHUFFLE, CAT_KEEP_HAND, CAT_KEEP_LEGEND, CAT_CHOOSE_REPLACEMENT,
+        CAT_SACRIFICE_PERMANENT)
 
 # STATE_SIZE / MAX_ACTIONS are imported from _enums (src/machine_io.h,
 # src/classes/gamestate.h). Card identity is 1 id float/slot, not a one-hot.
@@ -188,8 +196,30 @@ SHAPING_MULLIGAN_PENALTY =  0.00  # per mulligan taken beyond the 2nd (C++: >= 3
 SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drops < 10
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
-SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per episode
+SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per GAME
 SHAPING_EPISODE_CAP_DOOMSDAY = 0.6  # higher cap for doomsday deck
+# Shaping magnitude vs the outcome signal. The caps above are sized against the
+# PER-GAME outcome reward (±1.0 — see the per-game reward block below), which is
+# the unit the value function is now asked to predict. One game's accumulated
+# shaping must never outweigh that game's own result, so every cap stays
+# strictly under 1.0 (asserted below), and the budget is reset at each bo3 game
+# boundary (see step()).
+# History / why the magnitudes did NOT change with the per-game rework: when a
+# bo3 game was worth only ±0.3 and the MATCH ±1.0, bo3 shaping was divided by 3
+# (both the per-step magnitude and the budget) so a whole match's shaping stayed
+# under the smallest decisive match return. Now that each game carries a full
+# ±1.0 the per-game budget is the natural unit and that /3 is gone: a bo3 game is
+# shaped exactly like a bo1 game. This does not increase shaping's relative
+# influence — measured per game it falls slightly, from (0.3/3)/0.3 = 0.33 of the
+# outcome magnitude to 0.3/1.0 = 0.30 (doomsday: 0.67 -> 0.60) — while leaving
+# the doomsday combo curriculum at the absolute strength it was tuned at.
+# The one property that weakens is the whole-EPISODE bound: three per-game
+# budgets (0.9, or 1.8 on doomsday) can exceed the +1.0 return of a 2-1 match, so
+# a bo3 episode's shaped TOTAL can read the wrong sign. That is deliberate and
+# contained: win-rate consumers classify from info["outcome"], computed from the
+# pre-shaping reward, and each individual game — the credit-assignment unit that
+# now matters — still keeps its sign. Shaping also anneals to 0 over
+# SHAPING_DECAY_STEPS (cli_spec.py), so the asymptotic objective is pure win/loss.
 
 # ── Doomsday deck shaping ────────────────────────────────────────────────────
 SHAPING_DD_CAST_DOOMSDAY    = 0.2  # reward for casting Doomsday
@@ -202,17 +232,38 @@ SHAPING_DD_KEEP_DOOMSDAY    = 0.00  # reward for not shuffling after placed Doom
 SHAPING_DD_LED_WITH_DRAW    = 0.03 # reward for cracking LED with a cycling/draw ability on the stack
 SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on the stack
 
-# ── Bo3 match rewards ────────────────────────────────────────────────────────
-BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
-BO3_GAME_LOSS_REWARD  = -0.3   # intermediate penalty for losing a game in bo3
-BO3_MATCH_WIN_REWARD  =  1.0   # terminal reward for winning the match
-BO3_MATCH_LOSS_REWARD = -1.0   # terminal penalty for losing the match
+# ── Game / match rewards (the ONE home; edit here, nowhere else) ─────────────
+# PER-GAME reward structure: the win/loss of EACH GAME is the primary signal at
+# ±1.0. In bo1 that is the single terminal reward; in bo3 it lands at every
+# GAME_RESULT boundary, so an episode's return is the (discounted) sum of the
+# match's game results.
+# Why per-game: it matches the AlphaZero value target exactly, which is the
+# per-game z = ±1 (az_selfplay prices every sample by the winner of the GAME it
+# was played in). A PPO checkpoint then hands the AZ warm start
+# (az_net.from_ppo, which folds the PopArt de-normalization into the copied
+# value head) a critic that already speaks AZ's units instead of one calibrated
+# to a 0.3-game/1.0-match blend.
+# The separate MATCH-terminal reward is RETIRED (0.0) rather than deleted: the
+# constants and the MATCH_RESULT plumbing stay so a match bonus can be dialed
+# back in by editing these two lines alone. Leave them at 0.0 unless you
+# deliberately want the critic to also track match equity — any nonzero value
+# reintroduces the scale mismatch with AZ's per-game target.
+GAME_WIN_REWARD   =  1.0   # reward for winning a game (bo1 terminal, bo3 per game)
+GAME_LOSS_REWARD  = -1.0   # penalty for losing a game
+MATCH_WIN_REWARD  =  0.0   # extra terminal reward for winning a bo3 match
+MATCH_LOSS_REWARD =  0.0   # extra terminal penalty for losing a bo3 match
+# Back-compat aliases (these bo3-prefixed names predate the per-game rework and
+# are imported elsewhere, e.g. analysis.py's match calibration).
+BO3_GAME_WIN_REWARD   = GAME_WIN_REWARD
+BO3_GAME_LOSS_REWARD  = GAME_LOSS_REWARD
+BO3_MATCH_WIN_REWARD  = MATCH_WIN_REWARD
+BO3_MATCH_LOSS_REWARD = MATCH_LOSS_REWARD
 
-# The total shaping an episode can accumulate must stay strictly below the
-# smallest decisive terminal reward magnitude, or shaping could flip the SIGN of
-# a finished episode's return — a lost game netting positive reward. The bo1
-# terminal is ±1.0; in bo3 the per-game budget is ep_cap/3 (see step()), so a
-# full match is also bounded by the cap. Keep the caps under 1.0.
+# The shaping a single GAME can accumulate must stay strictly below the decisive
+# per-game reward magnitude, or shaping could flip the SIGN of a finished game's
+# contribution — a lost game netting positive reward. Every game (bo1 terminal or
+# bo3 intermediate) is worth ±1.0 and the budget resets per game (see step()), so
+# keep the caps under 1.0.
 assert SHAPING_EPISODE_CAP < 1.0, SHAPING_EPISODE_CAP
 assert SHAPING_EPISODE_CAP_DOOMSDAY < 1.0, SHAPING_EPISODE_CAP_DOOMSDAY
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
@@ -479,7 +530,45 @@ _OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST
 _OPP_DECK_SIDE_START    = _OPP_DECK_MAIN_END
 _OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
 
-assert _OPP_DECK_SIDE_END == STATE_SIZE, (_OPP_DECK_SIDE_END, STATE_SIZE)
+# ── Mana development (mirrors machine_io.h's MANA DEVELOPMENT block) ─────────
+# The one summary of each player's mana BASE: per-color untapped-source potential
+# (W,U,B,R,G,C), the total source count + floating pool, lands in play, lands in
+# hand (self only — hidden for the opponent), land drops still available this turn
+# (the same expression the PLAY_LAND legal-action gate uses), and the reserved
+# max-affordable-CMC proxy (currently == potential_total; see machine_io.h).
+# Sub-offsets within one half; the opponent half omits lands_in_hand, so its later
+# fields sit one earlier — never index the opp block with the self offsets.
+_MD_POTENTIAL_START = 0                     # 6 floats: W, U, B, R, G, C
+_MD_POTENTIAL_TOTAL = MANA_DEV_COLORS       # 6
+_MD_LANDS_IN_PLAY   = _MD_POTENTIAL_TOTAL + 1
+_MD_SELF_LANDS_IN_HAND = _MD_LANDS_IN_PLAY + 1        # SELF half only
+_MD_SELF_LAND_DROPS    = _MD_SELF_LANDS_IN_HAND + 1
+_MD_SELF_MAX_CMC       = _MD_SELF_LAND_DROPS + 1
+_MD_OPP_LAND_DROPS     = _MD_LANDS_IN_PLAY + 1        # opp half: no lands_in_hand
+_MD_OPP_MAX_CMC        = _MD_OPP_LAND_DROPS + 1
+_MANA_DEV_START      = _OPP_DECK_SIDE_END
+_MANA_DEV_OPP_START  = _MANA_DEV_START + MANA_DEV_SELF_SIZE
+_MANA_DEV_END        = _MANA_DEV_OPP_START + MANA_DEV_OPP_SIZE
+assert _MD_SELF_MAX_CMC + 1 == MANA_DEV_SELF_SIZE, MANA_DEV_SELF_SIZE
+assert _MD_OPP_MAX_CMC + 1 == MANA_DEV_OPP_SIZE, MANA_DEV_OPP_SIZE
+
+# ── Log-scaled vitals (mirrors machine_io.h's LOG VITALS block) ──────────────
+# log1p re-warpings of the SAME life/library counts the player blocks and the
+# library-context block already carry linearly: log1p(max(life,0))/log1p(20) and
+# log1p(library)/log1p(60). The linear floats have their least resolution exactly
+# at the near-zero cliff where the game is decided (2 vs 5 life, 1 vs 3 cards);
+# the log copy gives that region proportional resolution while compressing the
+# high end. Both are kept — linear for life-payment arithmetic, log for the
+# endgame gradient. Values exceed 1.0 above the starting value, like the linear
+# floats. Self half then opponent half, same two fields (both public).
+_LV_LOG_LIFE    = 0
+_LV_LOG_LIBRARY = 1
+_LOG_VITALS_START     = _MANA_DEV_END
+_LOG_VITALS_OPP_START = _LOG_VITALS_START + LOG_VITALS_PLAYER_SIZE
+_LOG_VITALS_END       = _LOG_VITALS_OPP_START + LOG_VITALS_PLAYER_SIZE
+assert _LV_LOG_LIBRARY + 1 == LOG_VITALS_PLAYER_SIZE, LOG_VITALS_PLAYER_SIZE
+
+assert _LOG_VITALS_END == STATE_SIZE, (_LOG_VITALS_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
@@ -507,7 +596,16 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # opponent revealed-cards multi-hot (the primary signal), and the pending-decision
 # context (which IN card the OUT query is cutting for). The global-extras block
 # (lands played, monarch, day/night, MandatoryChoice one-hot, ...) describes the
-# stale ended game, so it stays masked; it holds no card-id slots. Card-id slots
+# stale ended game, so it stays masked; it holds no card-id slots. The MANA
+# DEVELOPMENT block is masked for the same reason — untapped sources, lands in play
+# and land drops left all describe the ended game's final turn — and likewise holds
+# no card-id slot, so the 0.0 fill is the right one. The LOG VITALS block is masked
+# too: it re-states the PLAYER blocks' life (masked) and the library counts, so
+# keeping it would leak the ended game's life totals past the player-block mask.
+# (The LINEAR library counts live inside the kept match/library-context range and DO
+# survive; the log copy does not, so during the sideboard phase the two encodings are
+# deliberately not redundant — test_obs_invariants asserts the zeroed block there
+# rather than the log identity.) Card-id slots
 # must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
 # to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():
@@ -900,25 +998,27 @@ class RoboMageEnv(gym.Env):
 
             # Detect win/loss
             if self._bo3:
-                # In bo3 mode, individual game results are intermediate rewards
+                # In bo3 mode every GAME is worth the full ±GAME_WIN_REWARD; the
+                # match line only ENDS the episode (MATCH_*_REWARD is 0.0 by
+                # default — see the reward block above).
                 if line.startswith(b"GAME_RESULT:"):
                     game_result = True
                     if b"Player A wins" in line:
-                        reward += BO3_GAME_WIN_REWARD
+                        reward += GAME_WIN_REWARD
                     elif b"Player B wins" in line:
-                        reward += BO3_GAME_LOSS_REWARD
+                        reward += GAME_LOSS_REWARD
                 elif line.startswith(b"MATCH_RESULT:"):
                     if b"Player A wins" in line:
-                        reward += BO3_MATCH_WIN_REWARD
+                        reward += MATCH_WIN_REWARD
                     elif b"Player B wins" in line:
-                        reward += BO3_MATCH_LOSS_REWARD
+                        reward += MATCH_LOSS_REWARD
                     done = True
             else:
                 if b"Player A wins" in line:
-                    reward = 1.0
+                    reward = GAME_WIN_REWARD
                     done = True
                 elif b"Player B wins" in line:
-                    reward = -1.0
+                    reward = GAME_LOSS_REWARD
                     done = True
 
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
@@ -1260,9 +1360,53 @@ _BF_COST_START    = ACT_BLOCKS_END + _HAND_COST_FEATS
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
 _AETHER_VIAL_VOCAB_IDX   = 121
-_BASIC_LAND_IDS          = frozenset({0, 19})  # Mountain(0), Island(19)
-_COUNTER_SPELL_VOCAB_IDS = frozenset({12, 13, 22})  # Force of Will(12), Daze(13), Counterspell(22)
+# All basic lands in the vocab. Used by the Wasteland gate ("does the opponent
+# have a nonbasic land worth destroying"): a missing entry makes an opposing
+# basic look nonbasic, so Wasteland fires with only its controller's own
+# nonbasics as legal targets and destroys one of them.
+_BASIC_LAND_IDS          = frozenset({0,    # Mountain
+                                      1,    # Forest
+                                      19,   # Island
+                                      44,   # Plains
+                                      62,   # Swamp
+                                      235,  # Snow-Covered Island
+                                      240}) # Wastes
+# Every counterspell in the vocab: these are only cast with an opponent spell
+# on the stack (a missing entry let the agent counter its OWN spell, the only
+# legal target when nothing else is stacked).
+_COUNTER_SPELL_VOCAB_IDS = frozenset({12,    # Force of Will
+                                      13,    # Daze
+                                      22,    # Counterspell
+                                      72,    # Force of Negation
+                                      206,   # Consign to Memory
+                                      291,   # Flusterstorm
+                                      307,   # Spell Pierce
+                                      321})  # Spell Snare
 _COUNTERSPELL_VOCAB_IDX  = 22
+# Pure cantrips the hard tier lets resolve rather than countering (threat-type
+# triage: a counter spent on the opponent's Ponder is a counter unavailable for
+# their threat; everything NOT in this set — any creature/planeswalker/
+# enchantment at any MV, and any other MV>=2 spell — stays counterable).
+_COUNTER_EXEMPT_CANTRIP_IDS = frozenset({11,    # Ponder
+                                         24,    # Brainstorm
+                                         27,    # Mishra's Bauble
+                                         43,    # Once Upon a Time
+                                         68,    # Consider
+                                         152,   # Preordain
+                                         303,   # Careful Study
+                                         305})  # Otherworldly Gaze
+# Targeted removal the hard tier holds until a real threat exists — power >= 2,
+# or any NONTOKEN 1-power creature (an unflipped Delver / Dragon's Rage
+# Channeler is a real threat; a 1/1 token is not).
+_TARGETED_REMOVAL_IDS    = frozenset({48,    # Swords to Plowshares
+                                      84,    # Fatal Push
+                                      338})  # Prismatic Ending
+# First index of the token band in the card vocab (mirror src/card_vocab.h
+# TOKEN_VOCAB_BASE): perm-slot card ids >= this are token permanents.
+_TOKEN_VOCAB_BASE        = 900
+# Wrath of the Skies: symmetric X sweeper (destroys artifacts/creatures/
+# enchantments with MV <= energy paid) — gated on the board actually favoring it.
+_WRATH_OF_SKIES_VOCAB_IDX = 186
 # Death and Taxes: Solitude's ETB exiles a creature, so hard-cast it only with an
 # opponent creature to hit. The One Ring's {T} draws a card per burden counter.
 _SOLITUDE_VOCAB_IDX      = 141
@@ -1346,8 +1490,46 @@ _MULTI_MANA_LAND_IDS     = frozenset({123, 261,  # Ancient Tomb, Urza's Workshop
                                       _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 
+# Reanimator deck card vocab indices (mirror src/card_vocab.h). Reanimate and
+# Animate Dead are the "put a creature card from a graveyard onto the
+# battlefield" spells; the fatties are the creatures those spells exist to
+# cheat out (the deck's discard outlets put them in the graveyard first).
+_REANIMATE_VOCAB_IDX     = 302
+_ANIMATE_DEAD_VOCAB_IDX  = 348
+_CAREFUL_STUDY_VOCAB_IDX = 303
+_REANIMATION_SPELL_IDS   = frozenset({_REANIMATE_VOCAB_IDX, _ANIMATE_DEAD_VOCAB_IDX})
+_REANIMATION_FATTY_IDS   = frozenset({304,   # Griselbrand
+                                      323,   # Archon of Cruelty
+                                      347})  # Atraxa, Grand Unifier
+
+# Lands deck card vocab indices (mirror src/card_vocab.h). Thespian's Stage
+# copying Dark Depths yields a zero-ice-counter Depths (copy effects don't copy
+# counters, CR 706.2) whose "no ice counters" trigger makes Marit Lage — the
+# deck's win condition. Urza's Saga's chapter-II ability builds Construct
+# tokens, and Life from the Loam's dredge recurs Saga/Wasteland from the
+# graveyard every turn.
+_LIFE_FROM_LOAM_VOCAB_IDX   = 90
+_EXPLORATION_VOCAB_IDX      = 311
+_CROP_ROTATION_VOCAB_IDX    = 312
+_URZAS_SAGA_VOCAB_IDX       = 296
+_DARK_DEPTHS_VOCAB_IDX      = 334
+_THESPIANS_STAGE_VOCAB_IDX  = 335
+_TABERNACLE_VOCAB_IDX       = 337  # The Tabernacle at Pendrell Vale
+# Lands a sacrifice cost should never eat while another option exists — the
+# combo pieces and the irreplaceable utility lands (a Crop Rotation that sacs
+# Dark Depths to fetch Thespian's Stage has defeated itself).
+_SAC_LAST_LAND_IDS = frozenset({_DARK_DEPTHS_VOCAB_IDX, _THESPIANS_STAGE_VOCAB_IDX,
+                                _URZAS_SAGA_VOCAB_IDX, _TABERNACLE_VOCAB_IDX,
+                                39,    # Karakas
+                                316,   # Boseiju, Who Endures
+                                324,   # Blast Zone
+                                343})  # Maze of Ith
+
 _CAT_TOP_LIBRARY = CAT_TOP_LIBRARY  # choose card to put on top of library (Doomsday pile ordering)
 _CAT_SHUFFLE     = CAT_SHUFFLE  # shuffle choice (0 = don't shuffle, 1 = shuffle)
+_CAT_KEEP_LEGEND = CAT_KEEP_LEGEND  # legend rule (704.5j): choose which duplicate to keep
+_CAT_CHOOSE_REPLACEMENT = CAT_CHOOSE_REPLACEMENT  # draw replacement menu (0 = draw, 1+ = dredge)
+_CAT_SACRIFICE   = CAT_SACRIFICE_PERMANENT  # choose a permanent to sacrifice (cost or effect)
 
 
 def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:
@@ -1602,16 +1784,13 @@ class ModelVsScriptedEnv(gym.Env):
             shaping += phi_curr - _shaping_potential(self._last_obs)
 
         shaping *= self.shaping_scale
-        # In bo3, scale per-game shaping to 1/3 so total across 3 games
-        # stays proportional to the match reward (1.0)
+        # The budget is PER GAME (reset at each bo3 game boundary below), sized
+        # against the ±1.0 a game is worth. bo1 and bo3 games are shaped
+        # identically — no bo3 /3 division any more, since a bo3 game is no
+        # longer a fractional slice of the outcome signal (see the shaping
+        # magnitude rationale next to SHAPING_EPISODE_CAP).
         ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
-        if self._bo3:
-            shaping /= 3.0
-            # Scale the per-game budget too, so the whole-match shaping total is
-            # bounded by ep_cap (< the 1.3 minimum decisive match |reward|) —
-            # otherwise 3 full per-game budgets could outweigh a match loss.
-            ep_cap /= 3.0
-        # Clamp to remaining episode budget
+        # Clamp to remaining per-game budget
         remaining = ep_cap - self._episode_shaping
         floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
@@ -1670,7 +1849,7 @@ class ModelVsScriptedEnv(gym.Env):
         the shaping reward accumulated across all opponent steps. Two values are
         ACCUMULATED across the loop rather than taken from the last step, because
         a bo3 game boundary may fall on any step in it:
-          * ``reward`` — game results (±0.3) earned on the incoming step or on an
+          * ``reward`` — game results (±1.0) earned on the incoming step or on an
             intermediate opponent step would otherwise be silently overwritten by
             the last step's (usually zero) reward and never reach the learner.
             All engine rewards are Player-A-perspective, so plain summation is
@@ -1854,7 +2033,7 @@ class SelfPlayEnv(gym.Env):
         """Step with the frozen opponent until it is the training model's turn.
 
         ``reward`` is accumulated and ``game_result`` OR-ed across the loop (not
-        taken from the last step): in bo3 a game result (±0.3) may arrive on the
+        taken from the last step): in bo3 a game result (±1.0) may arrive on the
         incoming step or on an intermediate opponent step, and would otherwise be
         silently dropped. Rewards are Player-A-perspective, so summation is
         correct; the caller negates the total for seat B.

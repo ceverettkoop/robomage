@@ -6,6 +6,13 @@ obj/*.o
 obj/*/*.o
 bin/resources/cardsfolder/*/*.txt
 bin/resources/cardsfolder/.DS_Store
+# Codegen derived from gitignored/fetched card-script content — regenerated on every
+# `make` (unconditional pygen target), so it is untracked to keep a machine's stale
+# local scripts from committing stale matrices. The script-independent codegen
+# (train/_enums.py, src/gen/archetypes_gen.h) stays tracked.
+train/card_costs.py
+train/card_props.py
+src/gen/card_costs_gen.h
 bin/resources/logs/**
 src/classes/game.cpp
 logs/**
@@ -29,6 +36,11 @@ obj/*/*.d
 obj/*.d
 train/replays/*
 corpus/
+# ...but the replay-regression corpus IS tracked (the CI replay tier diffs
+# against it); without this exception new scenario files stay silently
+# unstaged after a re-record.
+!train/regression/corpus/
+!train/regression/corpus/**
 
 # ci_check.py transcript/draw-log output directory, and stray draw logs runner.py
 # writes to cwd on a stall (ci_check relocates them into --out-dir).

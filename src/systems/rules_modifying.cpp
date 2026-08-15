@@ -181,6 +181,19 @@ int land_play_bonus(Zone::Ownership player) {
     return bonus;
 }
 
+int land_play_limit(Zone::Ownership player) {
+    return 1 + land_play_bonus(player);
+}
+
+int land_drops_remaining(Zone::Ownership player) {
+    Entity player_entity = get_player_entity(player);
+    if (!global_coordinator.entity_has_component<Player>(player_entity)) return 0;
+    int played = static_cast<int>(
+        global_coordinator.GetComponent<Player>(player_entity).lands_played_this_turn);
+    int remaining = land_play_limit(player) - played;
+    return remaining > 0 ? remaining : 0;
+}
+
 bool may_play_lands_from_graveyard(Zone::Ownership player) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)

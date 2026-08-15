@@ -32,7 +32,7 @@ from typing import Callable, Optional
 
 import numpy as np
 
-from cli_spec import DEFAULT_SB_MAX_DEPTH
+from cli_spec import DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS
 from env import _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX
 from mcts import IncrementalSearch, LiveStats, UniformEvaluator
 
@@ -77,9 +77,11 @@ class AnalysisConfig:
     max_sims: int = 800      # total per run; 0 = run until stopped
     c_puct: float = 2.5
     max_depth: int = 60
-    sb_max_depth: int = DEFAULT_SB_MAX_DEPTH  # sideboard roots: game-long horizon
+    sb_max_depth: int = DEFAULT_SB_MAX_DEPTH  # sideboard roots: descent depth cap
+    sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS  # sideboard roots: leaf-rollout horizon (player turns; 0 = off)
     seed: int = 0            # search rng seed; 0 = fresh entropy per run
     auto_analyze: bool = True  # UI: start a run at every new analyzable decision
+    merge_dupes: bool = True   # merge interchangeable duplicate menu actions
 
 
 @dataclass
@@ -251,7 +253,8 @@ class AnalysisSession:
                 self._env, evaluator,
                 worlds=cfg.worlds, c_puct=cfg.c_puct,
                 max_depth=cfg.sb_max_depth if req.is_sideboard else cfg.max_depth,
-                rng=rng)
+                rollout_turns=(cfg.sb_rollout_turns if req.is_sideboard else 0),
+                rng=rng, merge_dupes=cfg.merge_dupes)
             stats = self._search.stats()
             if on_update is not None:
                 on_update(stats)

@@ -128,7 +128,9 @@ games (explicit open question). Robomage's current scheme — ±1 terminal,
 hand/board-advantage shaping capped per episode and **annealed by `(1-win_rate)`**
 (train.py:277), bo3 ±0.3/game + ±1.0/match — follows the sensible general
 principle of decaying shaping as competence rises, and per-game intermediate
-rewards in bo3 match the dense-reward intuition. Nothing in the literature
+rewards in bo3 match the dense-reward intuition. (Superseded: the scheme is now
+PER-GAME ±1.0 with no separate match reward, and shaping anneals on cumulative
+timesteps rather than win-rate — see CLAUDE.md's bo3 reward bullet.) Nothing in the literature
 contradicts it; nothing validates the specific magnitudes either. Treat the caps
 as empirical knobs.
 

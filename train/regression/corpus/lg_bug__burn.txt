@@ -1,0 +1,1204 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Flow State
+  Player A draws Wasteland
+  Player A draws Verdant Catacombs
+  Player A draws Polluted Delta
+  Player A draws Underground Sea
+  Player A draws Polluted Delta
+  Player A draws Sheoldred's Edict
+  Player B draws Mountain
+  Player B draws Mountain
+  Player B draws Price of Progress
+  Player B draws Mountain
+  Player B draws Goblin Guide
+  Player B draws Eidolon of the Great Revel
+  Player B draws Lightning Bolt
+  Player A hand:
+  Flow State
+  Polluted Delta
+  Polluted Delta
+  Sheoldred's Edict
+  Underground Sea
+  Verdant Catacombs
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 1 (Mulligan)
+--- Narrative ---
+  Player A mulligans.
+  Player A draws Thoughtseize
+  Player A draws Fatal Push
+  Player A draws Brainstorm
+  Player A draws Fatal Push
+  Player A draws Tropical Island
+  Player A draws Sheoldred's Edict
+  Player A draws Force of Will
+  Player B hand:
+  Eidolon of the Great Revel
+  Goblin Guide
+  Lightning Bolt
+  Mountain
+  Mountain
+  Mountain
+  Price of Progress
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  Player A hand:
+  Brainstorm
+  Fatal Push
+  Fatal Push
+  Force of Will
+  Sheoldred's Edict
+  Thoughtseize
+  Tropical Island
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 1 (Mulligan)
+--- Narrative ---
+  Player A mulligans.
+  Player A draws Fatal Push
+  Player A draws Tropical Island
+  Player A draws Kaito, Bane of Nightmares
+  Player A draws Force of Will
+  Player A draws Ponder
+  Player A draws Verdant Catacombs
+  Player A draws Ponder
+  Player A hand:
+  Fatal Push
+  Force of Will
+  Kaito, Bane of Nightmares
+  Ponder
+  Ponder
+  Tropical Island
+  Verdant Catacombs
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fatal Push, Force of Will, Kaito, Bane of Nightmares, Ponder, Ponder, Tropical Island, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 5-card hand.
+  Player A: Choose card to put on library bottom (2 remaining):
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fatal Push, Force of Will, Kaito, Bane of Nightmares, Ponder, Ponder, Tropical Island, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Fatal Push
+   1: Force of Will
+   2: Kaito, Bane of Nightmares
+   3: Ponder
+   4: Ponder
+   5: Tropical Island
+   6: Verdant Catacombs
+  >> A/A: 0 (Fatal Push)
+--- Narrative ---
+  Player A: Choose card to put on library bottom (1 remaining):
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(6): Force of Will, Kaito, Bane of Nightmares, Ponder, Ponder, Tropical Island, Verdant Catacombs | lib 54
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Force of Will
+   1: Kaito, Bane of Nightmares
+   2: Ponder
+   3: Ponder
+   4: Tropical Island
+   5: Verdant Catacombs
+  >> A/A: 0 (Force of Will)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Kaito, Bane of Nightmares, Ponder, Ponder, Tropical Island, Verdant Catacombs
+  PB: Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Kaito, Bane of Nightmares, Ponder, Ponder, Tropical Island, Verdant Catacombs | lib 55
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+   2: Play Verdant Catacombs
+  >> A/A: 1 (Play Tropical Island)
+--- Narrative ---
+  Player A played Tropical Island
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Kaito, Bane of Nightmares, Ponder, Ponder, Verdant Catacombs | lib 55
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+   2: Cast Ponder  [#0]
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Tropical Island for 1(U)
+  Player A casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(3): Kaito, Bane of Nightmares, Ponder, Verdant Catacombs | lib 55
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Tropical Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Extras: self_lands_played=1
+  Actions:
+   0: Force of Will  [#2]
+   1: Baleful Strix  [#2]
+   2: Polluted Delta  [#2]
+  >> A/A: 0 (Force of Will)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(3): Kaito, Bane of Nightmares, Ponder, Verdant Catacombs | lib 55
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Tropical Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Extras: self_lands_played=1
+  Actions:
+   0: Baleful Strix  [#1]
+   1: Polluted Delta  [#1]
+  >> A/A: 0 (Baleful Strix)
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(3): Kaito, Bane of Nightmares, Ponder, Verdant Catacombs | lib 55
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Tropical Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Known top: Polluted Delta, Baleful Strix, Force of Will, ?, ?
+  Extras: self_lands_played=1
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Polluted Delta
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Mountain
+--- Turn 2 (Player B) ---
+  PA: Kaito, Bane of Nightmares, Ponder, Verdant Catacombs
+  PB: Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   20 life | mana: empty | hand count: 4 | lib 54
+  Opp BF:   Tropical Island (T)
+  Opp GY:  Ponder
+  Opp revealed: Ponder, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+   4: Play Mountain
+  >> B/B: 1 (Play Mountain)
+--- Narrative ---
+  Player B played Mountain
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   20 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Mountain
+  Opp BF:   Tropical Island (T)
+  Opp GY:  Ponder
+  Opp revealed: Ponder, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Goblin Guide  [#0]
+   2: Cast Lightning Bolt  [#0]
+  >> B/B: 1 (Cast Goblin Guide)
+--- Narrative ---
+  Player B activated Mountain for 1(R)
+  Player B casts Goblin Guide
+  Goblin Guide enters the battlefield
+  --- Declare Attackers (Player B) ---
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 2)
+  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   20 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Goblin Guide [2/2] [Haste] (SICK) | Mountain (T)
+  Opp BF:   Tropical Island (T)
+  Opp GY:  Ponder
+  Opp revealed: Ponder, Tropical Island
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Goblin Guide [2/2]
+   1: Confirm attackers
+  >> B/B: 0 (Goblin Guide [2/2])
+--- Narrative ---
+  Goblin Guide attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Goblin Guide [2/2] -> Player A
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 2)
+  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   20 life | mana: empty | hand count: 4 | lib 54
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK,SICK) | Mountain (T)
+  Opp BF:   Tropical Island (T)
+  Opp GY:  Ponder
+  Opp revealed: Ponder, Tropical Island
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Goblin Guide -> Player A
+  Goblin Guide triggered
+  Resolving ability (category: Dig)
+  Player A looks at the top 1 card(s) of their library.
+  Player A reveals Baleful Strix from the top of their library.
+  Player A puts 1 card(s) on the top of their library.
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Goblin Guide deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Baleful Strix
+--- Turn 3 (Player A) ---
+  PA: Baleful Strix, Kaito, Bane of Nightmares, Polluted Delta, Ponder, Verdant Catacombs
+  PB: Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Baleful Strix, Kaito, Bane of Nightmares, Polluted Delta, Ponder, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Tropical Island
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Self GY: Ponder
+  Known top: Force of Will, ?, ?, ?, ?
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Verdant Catacombs
+   3: Cast Ponder  [#0]
+  >> A/A: 3 (Cast Ponder)
+--- Narrative ---
+  Player A activated Tropical Island for 1(U)
+  Player A casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Baleful Strix, Kaito, Bane of Nightmares, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Ponder
+  Known top: Force of Will, ?, ?, ?, ?
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Force of Will  [#2]
+   1: Thoughtseize  [#2]
+   2: Force of Will  [#2]
+  >> A/A: 0 (Force of Will)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Baleful Strix, Kaito, Bane of Nightmares, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Ponder
+  Known top: Force of Will, ?, ?, ?, ?
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Thoughtseize  [#1]
+   1: Force of Will  [#1]
+  >> A/A: 0 (Thoughtseize)
+
+--- Decision 19 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Baleful Strix, Kaito, Bane of Nightmares, Polluted Delta, Verdant Catacombs | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Ponder
+  Known top: Force of Will, Thoughtseize, Force of Will, ?, ?
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Force of Will
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Baleful Strix, Force of Will, Kaito, Bane of Nightmares, Polluted Delta, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Self GY: Ponder, Ponder
+  Known top: Thoughtseize, Force of Will, ?, ?, ?
+  Opp revealed: Mountain, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Verdant Catacombs
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 21 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Baleful Strix, Force of Will, Kaito, Bane of Nightmares, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Polluted Delta | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Self GY: Ponder, Ponder
+  Known top: Thoughtseize, Force of Will, ?, ?, ?
+  Opp revealed: Mountain, Goblin Guide
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  17 life | mana: empty | hand(4): Baleful Strix, Force of Will, Kaito, Bane of Nightmares, Verdant Catacombs | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Ponder, Ponder
+  Known top: Thoughtseize, Force of Will, ?, ?, ?
+  Opp revealed: Mountain, Goblin Guide
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Bayou
+   2: Island
+   3: Swamp
+   4: Tropical Island
+   5: Tropical Island
+   6: Undercity Sewers
+   7: Underground Sea
+   8: Underground Sea
+  >> A/A: 1 (Bayou)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Bayou to the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Baleful Strix, Force of Will, Kaito, Bane of Nightmares, Verdant Catacombs
+  PB: Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   17 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain
+  Opp BF:   Bayou | Tropical Island (T)
+  Opp GY:  Polluted Delta, Ponder, Ponder
+  Opp revealed: Polluted Delta, Ponder, Bayou, Baleful Strix, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Lightning Bolt  [#0]
+  >> B/B: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target for Lightning Bolt:
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Opp:   17 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain
+  Opp BF:   Bayou | Tropical Island (T)
+  Pending: Lightning Bolt (self)
+  Opp GY:  Polluted Delta, Ponder, Ponder
+  Opp revealed: Polluted Delta, Ponder, Bayou, Baleful Strix, Tropical Island
+  Actions:
+   0: Player A (17 life)
+   1: Player B (20 life)
+   2: Goblin Guide
+  >> B/B: 0 (Player A (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Lightning Bolt targeting Player A
+
+--- Decision 25 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 4)
+  Self:  17 life | mana: empty | hand(4): Baleful Strix, Force of Will, Kaito, Bane of Nightmares, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T)
+  Stack: Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Polluted Delta, Ponder, Ponder
+  Opp revealed: Mountain, Lightning Bolt, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 26 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 4)
+  Self:  17 life | mana: empty | hand(4): Baleful Strix, Force of Will, Kaito, Bane of Nightmares, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T)
+  Stack: Lightning Bolt (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
+  Self GY: Polluted Delta, Ponder, Ponder
+  Opp revealed: Mountain, Lightning Bolt, Goblin Guide
+  Actions:
+   0: Lightning Bolt
+  >> A/A: 0 (Lightning Bolt)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 27 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 4)
+  Self:  17 life | mana: empty | hand(4): Baleful Strix, Force of Will, Kaito, Bane of Nightmares, Verdant Catacombs | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T)
+  Stack: Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Polluted Delta, Ponder, Ponder
+  Opp revealed: Mountain, Lightning Bolt, Goblin Guide
+  Actions:
+   0: Exile Baleful Strix
+   1: Exile Kaito, Bane of Nightmares
+  >> A/A: 0 (Exile Baleful Strix)
+--- Narrative ---
+  Player A pays 1 life
+  Player A exiles Baleful Strix
+  Player A casts Force of Will targeting Lightning Bolt
+  Resolving ability (category: Counter)
+  Lightning Bolt is countered
+  Player B draws Lava Spike
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   16 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T)
+  Opp BF:   Bayou | Tropical Island (T)
+  Self GY: Lightning Bolt
+  Opp GY:  Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Bayou, Baleful Strix, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+  >> B/B: 1 (Play Mountain)
+--- Narrative ---
+  Player B played Mountain
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   16 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Opp BF:   Bayou | Tropical Island (T)
+  Self GY: Lightning Bolt
+  Opp GY:  Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Bayou, Baleful Strix, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Lava Spike  [#0]
+  >> B/B: 1 (Cast Lava Spike)
+--- Narrative ---
+  Choose target for Lava Spike:
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   16 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Opp BF:   Bayou | Tropical Island (T)
+  Pending: Lava Spike (self)
+  Self GY: Lightning Bolt
+  Opp GY:  Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Bayou, Baleful Strix, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (16 life)
+   1: Player B (20 life)
+  >> B/B: 0 (Player A (16 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Lava Spike targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 13 life)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  20 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   13 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T)
+  Opp BF:   Bayou | Tropical Island (T)
+  Self GY: Lava Spike, Lightning Bolt
+  Opp GY:  Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Bayou, Baleful Strix, Tropical Island
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Goblin Guide [2/2]
+   1: Confirm attackers
+  >> B/B: 0 (Goblin Guide [2/2])
+--- Narrative ---
+  Goblin Guide attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Goblin Guide [2/2] -> Player A
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  20 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   13 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T)
+  Opp BF:   Bayou | Tropical Island (T)
+  Self GY: Lava Spike, Lightning Bolt
+  Opp GY:  Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Bayou, Baleful Strix, Tropical Island
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Goblin Guide -> Player A
+  Goblin Guide triggered
+  Resolving ability (category: Dig)
+  Player A looks at the top 1 card(s) of their library.
+  Player A reveals Island from the top of their library.
+  Player A puts Island into hand.
+  Player A puts 0 card(s) on the top of their library.
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Goblin Guide deals 2 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Player A draws Ponder
+--- Turn 5 (Player A) ---
+  PA: Island, Kaito, Bane of Nightmares, Ponder, Verdant Catacombs
+  PB: Eidolon of the Great Revel, Mountain, Mountain, Price of Progress
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(4): Island, Kaito, Bane of Nightmares, Ponder, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Bayou | Tropical Island
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Self GY: Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Verdant Catacombs
+   3: Cast Ponder  [#0]
+  >> A/A: 3 (Cast Ponder)
+--- Narrative ---
+  Player A activated Tropical Island for 1(U)
+  Player A casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(3): Island, Kaito, Bane of Nightmares, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Tamiyo, Inquisitive Student  [#2]
+   1: Wasteland  [#2]
+   2: Fatal Push  [#2]
+  >> A/A: 0 (Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 35 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(3): Island, Kaito, Bane of Nightmares, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Wasteland  [#1]
+   1: Fatal Push  [#1]
+  >> A/A: 0 (Wasteland)
+
+--- Decision 36 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(3): Island, Kaito, Bane of Nightmares, Verdant Catacombs | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Fatal Push, Wasteland, Tamiyo, Inquisitive Student, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Fatal Push
+
+--- Decision 37 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(4): Fatal Push, Island, Kaito, Bane of Nightmares, Verdant Catacombs | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Self GY: Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Wasteland, Tamiyo, Inquisitive Student, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Verdant Catacombs
+   3: Cast Fatal Push  [#0]
+  >> A/A: 3 (Cast Fatal Push)
+--- Narrative ---
+  Choose target for Fatal Push:
+
+--- Decision 38 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(4): Fatal Push, Island, Kaito, Bane of Nightmares, Verdant Catacombs | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Bayou | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Pending: Fatal Push (self)
+  Self GY: Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Wasteland, Tamiyo, Inquisitive Student, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Actions:
+   0: Goblin Guide
+  >> A/A: 0 (Goblin Guide)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Bayou for 1(B)
+  Player A casts Fatal Push targeting Goblin Guide
+  Resolving ability (category: Destroy)
+  Goblin Guide is destroyed
+
+--- Decision 39 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(3): Island, Kaito, Bane of Nightmares, Verdant Catacombs | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 51
+  Self BF:  Bayou (T) | Tropical Island (T)
+  Opp BF:   Mountain (T) | Mountain (T)
+  Self GY: Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Wasteland, Tamiyo, Inquisitive Student, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Verdant Catacombs
+  >> A/A: 1 (Play Island)
+--- Narrative ---
+  Player A played Island
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Island, Kaito, Bane of Nightmares, Verdant Catacombs
+  PB: Eidolon of the Great Revel, Mountain, Mountain, Price of Progress
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
+  Opp:   11 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Mountain | Mountain
+  Opp BF:   Bayou (T) | Island | Tropical Island (T)
+  Self GY: Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Fatal Push, Bayou, Baleful Strix, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Price of Progress  [#0]
+  >> B/B: 1 (Cast Price of Progress)
+--- Narrative ---
+  Player B activated Mountain for 1(R)
+  Player B activated Mountain for 1(R)
+  Player B casts Price of Progress
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: DealDamage, amount: 4)
+  Dealt 4 damage to player (now at 7 life)
+  Resolving ability (category: DealDamage, amount: 0)
+  Dealt 0 damage to player (now at 20 life)
+  Player B draws Chain Lightning
+
+--- Decision 41 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(4): Chain Lightning, Eidolon of the Great Revel, Mountain, Mountain | lib 50
+  Opp:   7 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Mountain (T) | Mountain (T)
+  Opp BF:   Bayou (T) | Island | Tropical Island (T)
+  Self GY: Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Fatal Push, Bayou, Baleful Strix, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+  >> B/B: 1 (Play Mountain)
+--- Narrative ---
+  Player B played Mountain
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
+  Opp:   7 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Bayou (T) | Island | Tropical Island (T)
+  Self GY: Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Fatal Push, Bayou, Baleful Strix, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Chain Lightning  [#0]
+  >> B/B: 1 (Cast Chain Lightning)
+--- Narrative ---
+  Choose target for Chain Lightning:
+
+--- Decision 43 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
+  Opp:   7 life | mana: empty | hand count: 2 | lib 48
+  Self BF:  Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Bayou (T) | Island | Tropical Island (T)
+  Pending: Chain Lightning (self)
+  Self GY: Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Fatal Push, Bayou, Baleful Strix, Tropical Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (7 life)
+   1: Player B (20 life)
+  >> B/B: 0 (Player A (7 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Chain Lightning targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 4 life)
+  Resolving ability (category: CopySpellAbility)
+  Player A may pay to copy Chain Lightning:
+
+--- Decision 44 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  4 life | mana: empty | hand(2): Kaito, Bane of Nightmares, Verdant Catacombs | lib 48
+  Opp:   20 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou (T) | Island | Tropical Island (T)
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Wasteland, Tamiyo, Inquisitive Student, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: opp_lands_played=1
+  Actions:
+   0: Tap Island for (U)
+   1: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Tap Island for (U))
+--- Narrative ---
+  Player A tapped Island for {U}
+
+--- Decision 45 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  4 life | mana: 1U | hand(2): Kaito, Bane of Nightmares, Verdant Catacombs | lib 48
+  Opp:   20 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou (T) | Island (T) | Tropical Island (T)
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Wasteland, Tamiyo, Inquisitive Student, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: opp_lands_played=1
+  Actions:
+   0: Don't pay (spell is countered)  [#0]
+  >> A/A: 0 (Don't pay (spell is countered))
+--- Narrative ---
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+  Player A draws Wasteland
+--- Turn 7 (Player A) ---
+  PA: Kaito, Bane of Nightmares, Verdant Catacombs, Wasteland
+  PB: Chain Lightning, Eidolon of the Great Revel, Mountain
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  4 life | mana: empty | hand(3): Kaito, Bane of Nightmares, Verdant Catacombs, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Island | Tropical Island
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Self GY: Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Tamiyo, Inquisitive Student, ?, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Actions:
+   0: Pass priority
+   1: Play Verdant Catacombs
+   2: Play Wasteland
+  >> A/A: 1 (Play Verdant Catacombs)
+--- Narrative ---
+  Player A played Verdant Catacombs
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  4 life | mana: empty | hand(2): Kaito, Bane of Nightmares, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Island | Tropical Island | Verdant Catacombs
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Self GY: Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Tamiyo, Inquisitive Student, ?, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Verdant Catacombs (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Verdant Catacombs (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Verdant Catacombs
+  Player A's Verdant Catacombs ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 48 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  3 life | mana: empty | hand(2): Kaito, Bane of Nightmares, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Island | Tropical Island
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Verdant Catacombs (ability, self)
+  Pending: Verdant Catacombs (self)
+  Self GY: Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Known top: Tamiyo, Inquisitive Student, ?, ?, ?, ?
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Forest
+   2: Swamp
+   3: Tropical Island
+   4: Tropical Island
+   5: Undercity Sewers
+   6: Underground Sea
+   7: Underground Sea
+  >> A/A: 1 (Forest)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Forest to the battlefield
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  3 life | mana: empty | hand(2): Kaito, Bane of Nightmares, Wasteland | lib 46
+  Opp:   20 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou | Forest | Island | Tropical Island
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Self GY: Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Kaito, Bane of Nightmares  [#0]
+  >> A/A: 1 (Cast Kaito, Bane of Nightmares)
+--- Narrative ---
+  Player A activated Bayou for 1(B)
+  Player A activated Island for 1(U)
+  Player A activated Forest for 1(G)
+  Player A activated Tropical Island for 1(G)
+  Player A casts Kaito, Bane of Nightmares
+  Kaito, Bane of Nightmares enters the battlefield
+  Kaito, Bane of Nightmares gains Hexproof (PlayerTurn)
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  3 life | mana: empty | hand(1): Wasteland | lib 46
+  Opp:   20 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [3/4] [loy 4] [Hexproof] (SICK) | Tropical Island (T)
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Self GY: Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp GY:  Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Self exile: Baleful Strix
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Kaito, Bane of Nightmares [+1] (Effect)  [#0]
+   2: Activate Kaito, Bane of Nightmares [0] (Surveil)  [#1]
+   3: Activate Kaito, Bane of Nightmares [-2] (Tap)  [#2]
+  >> A/A: 1 (Activate Kaito, Bane of Nightmares [+1] (Effect))
+--- Narrative ---
+  Kaito, Bane of Nightmares activates a loyalty ability (+1, loyalty now 5)
+  Player A's Kaito, Bane of Nightmares ability is on the stack
+  Resolving ability (category: Effect)
+  Player A gets an emblem.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Fireblast
+--- Turn 8 (Player B) ---
+  PA: Wasteland
+  PB: Eidolon of the Great Revel, Fireblast, Mountain
+
+--- Decision 51 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  20 life | mana: empty | hand(3): Eidolon of the Great Revel, Fireblast, Mountain | lib 49
+  Opp:   3 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Mountain | Mountain | Mountain
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Tropical Island (T)
+  Self GY: Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Ponder, Force of Will, Island, Verdant Catacombs, Fatal Push, Bayou, Baleful Strix, Kaito, Bane of Nightmares, Tropical Island
+  Actions:
+   0: Pass priority
+   1: Cast Fireblast (alternate cost)  [#1]
+  >> B/B: 1 (Cast Fireblast (alternate cost))
+--- Narrative ---
+  Choose target for Fireblast:
+
+--- Decision 52 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  20 life | mana: empty | hand(3): Eidolon of the Great Revel, Fireblast, Mountain | lib 49
+  Opp:   3 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Mountain | Mountain | Mountain
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Tropical Island (T)
+  Pending: Fireblast (self)
+  Self GY: Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Ponder, Force of Will, Island, Verdant Catacombs, Fatal Push, Bayou, Baleful Strix, Kaito, Bane of Nightmares, Tropical Island
+  Actions:
+   0: Player A (3 life)
+   1: Player B (20 life)
+   2: Kaito, Bane of Nightmares
+  >> B/B: 0 (Player A (3 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 53 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  20 life | mana: empty | hand(3): Eidolon of the Great Revel, Fireblast, Mountain | lib 49
+  Opp:   3 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Mountain | Mountain | Mountain
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Tropical Island (T)
+  Self GY: Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Ponder, Force of Will, Island, Verdant Catacombs, Fatal Push, Bayou, Baleful Strix, Kaito, Bane of Nightmares, Tropical Island
+  Actions:
+   0: Sacrifice Mountain
+   1: Sacrifice Mountain
+   2: Sacrifice Mountain
+  >> B/B: 0 (Sacrifice Mountain)
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  20 life | mana: empty | hand(3): Eidolon of the Great Revel, Fireblast, Mountain | lib 49
+  Opp:   3 life | mana: empty | hand count: 1 | lib 46
+  Self BF:  Mountain | Mountain | Mountain
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Tropical Island (T)
+  Self GY: Chain Lightning, Price of Progress, Goblin Guide, Lava Spike, Lightning Bolt
+  Opp GY:  Verdant Catacombs, Fatal Push, Ponder, Force of Will, Polluted Delta, Ponder, Ponder
+  Opp exile:  Baleful Strix
+  Opp revealed: Forest, Polluted Delta, Ponder, Force of Will, Island, Verdant Catacombs, Fatal Push, Bayou, Baleful Strix, Kaito, Bane of Nightmares, Tropical Island
+  Actions:
+   0: Sacrifice Mountain
+   1: Sacrifice Mountain
+  >> B/B: 0 (Sacrifice Mountain)
+--- Narrative ---
+  Player B sacrifices Mountain
+  Player B sacrifices Mountain
+  Player B casts Fireblast targeting Player A
+  Resolving ability (category: DealDamage, amount: 4)
+  Dealt 4 damage to player (now at -1 life)
+  Player A has -1 life - Player B wins!
+
+=== B/B wins ===

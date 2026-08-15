@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "name": "default",
+  "description": "The standard end-to-end run: PPO league -> AZ self-play matrix -> baseline report. Phase 1 trains the ONE generalist (gen__final.zip) over the whole decks/league/ roster for 18M steps with the scripted anchor raised to 0.2, so the PPO warm-start the AZ net needs is broad rather than snapshot-inbred. Phase 2 rotates two ungated-cadence az-league passes whose self-play is the EXACT unordered deck-pair matrix played twice (exhaustive_selfplay + exhaustive_repeats 2 = 55 x 2 = 110 bo3 matches per slot on the 10-deck roster, mirrors included, entirely on the C++ actor -- build it with `make actor`) plus a rotating 20-cell slice of the ordered vs-scripted:hard pair list per slot (5 slots cover all 100 ordered pairs), expert demonstration shards for every roster deck, one-epoch training over the auto window, and a gate every 2 slots at serving strength. Phase 3 round-robins the finished generalist over every roster deck vs scripted:hard, 100 games per matchup, appended to baseline_report.log. Run the FIRST phase-1 pass with an explicit --fresh on the league command if you really mean to start the generalist over -- it is deliberately NOT baked into the plan, so a rerun/resume never wipes the generalist.",
+  "phases": [
+    {
+      "kind": "league",
+      "steps": 18000000,
+      "overrides": {
+        "scripted_anchor_frac": 0.2,
+        "exploiter_floor": 0.0,
+        "promote_margin": 0.0,
+        "fresh": true,
+        "n_envs": 24,
+        "popart": true,
+        "bo3": true
+      }
+    },
+    {
+      "kind": "az-league",
+      "rotations": 2,
+      "games": 50,
+      "overrides": {
+        "workers": 28,
+        "exhaustive_selfplay": true,
+        "actor": true
+      }
+    },
+    {
+      "kind": "baseline",
+      "games": 100,
+      "overrides": {
+        "all": true,
+        "workers": 28
+      }
+    }
+  ]
+}

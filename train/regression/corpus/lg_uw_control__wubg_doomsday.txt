@@ -1,0 +1,2803 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Flow State
+  Player A draws Wasteland
+  Player A draws Tune the Narrative
+  Player A draws Polluted Delta
+  Player A draws Tundra
+  Player A draws Ponder
+  Player A draws Swords to Plowshares
+  Player B draws Lotus Petal
+  Player B draws Quantum Riddler
+  Player B draws Tropical Island
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Doomsday
+  Player B draws Dark Ritual
+  Player B draws Force of Will
+  Player A hand:
+  Flow State
+  Polluted Delta
+  Ponder
+  Swords to Plowshares
+  Tundra
+  Tune the Narrative
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Dark Ritual
+  Doomsday
+  Force of Will
+  Lotus Petal
+  Quantum Riddler
+  Tamiyo, Inquisitive Student
+  Tropical Island
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 1 (Mulligan)
+--- Narrative ---
+  Player B mulligans.
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Dark Ritual
+  Player B draws Cavern of Souls
+  Player B draws Dark Ritual
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Ponder
+  Player B draws Doomsday
+  Player B hand:
+  Cavern of Souls
+  Dark Ritual
+  Dark Ritual
+  Doomsday
+  Ponder
+  Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student
+
+--- Decision 3 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 6-card hand.
+  Player B: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Cavern of Souls
+   1: Dark Ritual
+   2: Dark Ritual
+   3: Doomsday
+   4: Ponder
+   5: Tamiyo, Inquisitive Student
+   6: Tamiyo, Inquisitive Student
+  >> B/B: 4 (Ponder)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Flow State, Polluted Delta, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland
+  PB: Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Tundra
+   3: Play Wasteland
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Polluted Delta
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Island
+   3: Meticulous Archive
+   4: Mystic Sanctuary
+   5: Tundra
+   6: Tundra
+  >> A/A: 1 (Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Island to the battlefield
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(6): Flow State, Ponder, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+   2: Cast Tune the Narrative  [#0]
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Flow State, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Mystic Sanctuary  [#2]
+   1: Brainstorm  [#2]
+   2: Lórien Revealed  [#2]
+  >> A/A: 0 (Mystic Sanctuary)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Flow State, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Polluted Delta
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Brainstorm  [#1]
+   1: Lórien Revealed  [#1]
+  >> A/A: 0 (Brainstorm)
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Flow State, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 52
+  Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Self BF:  Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Polluted Delta
+  Known top: Lorien Revealed, Brainstorm, Mystic Sanctuary, ?, ?
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Lórien Revealed
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Island
+--- Turn 2 (Player B) ---
+  PA: Flow State, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland
+  PB: Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Opp BF:   Island (T)
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Actions:
+   0: Pass priority
+   1: Play Cavern of Souls
+   2: Play Island
+  >> B/B: 1 (Play Cavern of Souls)
+--- Narrative ---
+  Player B played Cavern of Souls
+  Choose a creature type for Cavern of Souls:
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Cavern of Souls
+  Opp BF:   Island (T)
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Choose creature type: Wizard  [#0]
+   1: Choose creature type: Moonfolk  [#1]
+   2: Choose creature type: Merfolk  [#2]
+   3: Choose creature type: Sphinx  [#3]
+   4: Choose creature type: Wraith  [#4]
+  >> B/B: 0 (Choose creature type: Wizard)
+--- Narrative ---
+  Player B chose creature type: Wizard
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Cavern of Souls
+  Opp BF:   Island (T)
+  Opp GY:  Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Tamiyo, Inquisitive Student  [#0]
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 1 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Cavern of Souls for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+--- Turn 3 (Player A) ---
+  PA: Flow State, Lorien Revealed, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(6): Flow State, Lorien Revealed, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland | lib 51
+  Opp:   20 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Island
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Ponder, Polluted Delta
+  Known top: Brainstorm, Mystic Sanctuary, ?, ?, ?
+  Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Cast Tune the Narrative  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 1 (Cast Tune the Narrative)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Tune the Narrative
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Brainstorm
+  Resolving ability (category: PutCounter, amount: 2)
+  Player A gets 2 ENERGY counter(s) (now 2).
+  Player A draws Mystic Sanctuary
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | energy 2 | hand(7): Brainstorm, Flow State, Lorien Revealed, Mystic Sanctuary, Swords to Plowshares, Tundra, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Island (T)
+  Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self GY: Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Play Mystic Sanctuary
+   2: Play Tundra
+   3: Play Wasteland
+  >> A/A: 1 (Play Mystic Sanctuary)
+--- Narrative ---
+  Player A played Mystic Sanctuary
+  Mystic Sanctuary enters tapped.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Scrubland
+--- Turn 4 (Player B) ---
+  PA: Brainstorm, Flow State, Lorien Revealed, Mystic Sanctuary, Swords to Plowshares, Tundra, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Island, Scrubland, Tamiyo, Inquisitive Student
+
+--- Decision 17 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Scrubland, Tamiyo, Inquisitive Student | lib 52
+  Opp:   19 life | mana: empty | energy 2 | hand count: 6 | lib 49
+  Self BF:  Cavern of Souls | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Opp GY:  Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island, Mystic Sanctuary, Tune the Narrative
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Scrubland
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+  >> B/B: 3 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Cavern of Souls for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student enters the battlefield
+  Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+
+--- Decision 18 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Island, Scrubland | lib 52
+  Opp:   19 life | mana: empty | energy 2 | hand count: 6 | lib 49
+  Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Opp GY:  Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island, Mystic Sanctuary, Tune the Narrative
+  Actions:
+   0: Keep Tamiyo, Inquisitive Student
+   1: Keep Tamiyo, Inquisitive Student
+  >> B/B: 0 (Keep Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+
+--- Decision 19 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Island, Scrubland | lib 52
+  Opp:   19 life | mana: empty | energy 2 | hand count: 6 | lib 49
+  Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island, Mystic Sanctuary, Tune the Narrative
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Scrubland
+  >> B/B: 1 (Play Island)
+--- Narrative ---
+  Player B played Island
+  --- Declare Attackers (Player B) ---
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 52
+  Opp:   19 life | mana: empty | energy 2 | hand count: 6 | lib 49
+  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island, Mystic Sanctuary, Tune the Narrative
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 52
+  Opp:   19 life | mana: empty | energy 2 | hand count: 6 | lib 49
+  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Island, Mystic Sanctuary, Tune the Narrative
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Brainstorm, Flow State, Lorien Revealed, Swords to Plowshares, Tundra, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Scrubland
+
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(6): Brainstorm, Flow State, Lorien Revealed, Swords to Plowshares, Tundra, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island | Mystic Sanctuary
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Brainstorm
+
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(5): Flow State, Lorien Revealed, Swords to Plowshares, Tundra, Wasteland | lib 49
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Stack: Brainstorm (spell, self)
+  Self GY: Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player A draws Geist of Saint Traft
+  Player A draws Tundra
+  Player A draws Lórien Revealed
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 24 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(8): Flow State, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tundra, Tundra, Wasteland | lib 46
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Flow State
+   1: Geist of Saint Traft
+   2: Lórien Revealed
+   3: Lórien Revealed
+   4: Swords to Plowshares
+   5: Tundra
+   6: Tundra
+   7: Wasteland
+  >> A/A: 5 (Tundra)
+--- Narrative ---
+  Player A puts Tundra to top of library
+  Player A chooses a card from Player A hand:
+
+--- Decision 25 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(7): Flow State, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tundra, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Known top: Tundra, ?, ?, ?, ?
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Flow State
+   1: Geist of Saint Traft
+   2: Lórien Revealed
+   3: Lórien Revealed
+   4: Swords to Plowshares
+   5: Tundra
+   6: Wasteland
+  >> A/A: 0 (Flow State)
+--- Narrative ---
+  Player A puts Flow State to top of library
+
+--- Decision 26 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(6): Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tundra, Wasteland | lib 48
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Known top: Flow State, Tundra, ?, ?, ?
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Flow State
+
+--- Decision 27 ---
+  Priority: Player A (active)
+  Step: Draw (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(7): Flow State, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tundra, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Known top: Tundra, ?, ?, ?, ?
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(7): Flow State, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tundra, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Known top: Tundra, ?, ?, ?, ?
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Play Wasteland
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   4: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 1 (Play Tundra)
+--- Narrative ---
+  Player A played Tundra
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(6): Flow State, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary | Tundra
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self GY: Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Known top: Tundra, ?, ?, ?, ?
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Flow State  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   4: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 1 (Cast Flow State)
+--- Narrative ---
+  Player A activated Mystic Sanctuary for 1(U)
+  Player A activated Tundra for 1(U)
+  Player A casts Flow State
+  Resolving ability (category: Dig)
+  Player A looks at the top 3 card(s) of their library.
+
+--- Decision 30 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(5): Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Known top: Tundra, ?, ?, ?, ?
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Extras: self_lands_played=1
+  Actions:
+   0: Tundra
+   1: Force of Negation
+   2: Tune the Narrative
+  >> A/A: 1 (Force of Negation)
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  19 life | mana: empty | energy 2 | hand(5): Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Wasteland | lib 47
+  Opp:   20 life | mana: empty | hand count: 4 | lib 52
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student
+  Known top: Tundra, ?, ?, ?, ?
+  Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Extras: self_lands_played=1
+  Actions:
+   0: Tundra
+   1: Tune the Narrative
+  >> A/A: 1 (Tune the Narrative)
+--- Narrative ---
+  Player A puts Force of Negation into hand.
+  Player A puts Tune the Narrative into hand.
+  Player A puts 1 card(s) on the bottom of their library.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Wasteland
+  PB: Dark Ritual, Dark Ritual, Doomsday, Scrubland
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 52
+  Opp:   19 life | mana: empty | energy 2 | hand count: 7 | lib 45
+  Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Flow State, Mystic Sanctuary, Tune the Narrative
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Tamiyo, Inquisitive Student
+
+--- Decision 33 ---
+  Priority: Player B (active)
+  Step: Draw (turn 6)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Scrubland, Tamiyo, Inquisitive Student | lib 51
+  Opp:   19 life | mana: empty | energy 2 | hand count: 7 | lib 45
+  Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Flow State, Mystic Sanctuary, Tune the Narrative
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 34 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Scrubland, Tamiyo, Inquisitive Student | lib 51
+  Opp:   19 life | mana: empty | energy 2 | hand count: 7 | lib 45
+  Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Flow State, Mystic Sanctuary, Tune the Narrative
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> B/B: 2 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Cavern of Souls for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student enters the battlefield
+  Legend rule: Player B controls 2 copies of Tamiyo, Inquisitive Student; choose one to keep.
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 51
+  Opp:   19 life | mana: empty | energy 2 | hand count: 7 | lib 45
+  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Flow State, Mystic Sanctuary, Tune the Narrative
+  Actions:
+   0: Keep Tamiyo, Inquisitive Student
+   1: Keep Tamiyo, Inquisitive Student
+  >> B/B: 0 (Keep Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Tamiyo, Inquisitive Student is put into the graveyard (legend rule)
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 51
+  Opp:   19 life | mana: empty | energy 2 | hand count: 7 | lib 45
+  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Flow State, Mystic Sanctuary, Tune the Narrative
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 37 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Doomsday | lib 51
+  Opp:   19 life | mana: empty | energy 2 | hand count: 7 | lib 45
+  Self BF:  Cavern of Souls (T) | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Flow State, Mystic Sanctuary, Tune the Narrative
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Cast Dark Ritual)
+--- Narrative ---
+  Player B activated Scrubland for 1(B)
+  Player B casts Dark Ritual
+
+--- Decision 38 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | energy 2 | hand(7): Force of Negation, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Stack: Dark Ritual (spell, opponent)
+  Self GY: Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Negation (alternate cost)  [#1]
+  >> A/A: 1 (Cast Force of Negation (alternate cost))
+--- Narrative ---
+  Choose target for Force of Negation:
+
+--- Decision 39 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | energy 2 | hand(7): Force of Negation, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Stack: Dark Ritual (spell, opponent)
+  Pending: Force of Negation (self)
+  Self GY: Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Dark Ritual
+  >> A/A: 0 (Dark Ritual)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 40 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | energy 2 | hand(7): Force of Negation, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Stack: Dark Ritual (spell, opponent)
+  Self GY: Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Exile Geist of Saint Traft
+   1: Exile Lórien Revealed
+   2: Exile Lórien Revealed
+   3: Exile Tune the Narrative
+  >> A/A: 0 (Exile Geist of Saint Traft)
+--- Narrative ---
+  Player A exiles Geist of Saint Traft
+  Player A casts Force of Negation targeting Dark Ritual
+  Resolving ability (category: Counter)
+  Dark Ritual is countered
+  --- Declare Attackers (Player B) ---
+
+--- Decision 41 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 6)
+  Self:  20 life | mana: empty | hand(2): Dark Ritual, Doomsday | lib 51
+  Opp:   19 life | mana: empty | energy 2 | hand count: 5 | lib 45
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Tune the Narrative, Geist of Saint Traft
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 6)
+  Self:  20 life | mana: empty | hand(2): Dark Ritual, Doomsday | lib 51
+  Opp:   19 life | mana: empty | energy 2 | hand count: 5 | lib 45
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Tune the Narrative, Geist of Saint Traft
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland
+  PB: Dark Ritual, Doomsday
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  19 life | mana: empty | energy 2 | hand(5): Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island | Mystic Sanctuary | Tundra
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Tune the Narrative  [#0]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   4: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 2 (Cast Tune the Narrative)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Tune the Narrative
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  19 life | mana: empty | energy 2 | hand(4): Lorien Revealed, Lorien Revealed, Swords to Plowshares, Wasteland | lib 45
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary | Tundra
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Stack: Tune the Narrative (spell, self)
+  Self GY: Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws The One Ring
+  Resolving ability (category: PutCounter, amount: 2)
+  Player A gets 2 ENERGY counter(s) (now 4).
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(5): Lorien Revealed, Lorien Revealed, Swords to Plowshares, The One Ring, Wasteland | lib 44
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary | Tundra
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Tamiyo, Inquisitive Student
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(6): Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wasteland | lib 43
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary | Tundra
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(6): Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wasteland | lib 43
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary | Tundra
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+   4: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   5: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 3 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player A activated Mystic Sanctuary for 1(U)
+  Player A casts Tamiyo, Inquisitive Student
+
+--- Decision 48 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(5): Lorien Revealed, Lorien Revealed, Swords to Plowshares, The One Ring, Wasteland | lib 43
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Stack: Tamiyo, Inquisitive Student (spell, self)
+  Self GY: Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 2 (Activate Lórien Revealed from hand (ChangeZone))
+--- Narrative ---
+  Player A activated Tundra for 1(U)
+  Player A activates Lórien Revealed from hand
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Lorien Revealed, Swords to Plowshares, The One Ring, Wasteland | lib 43
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Stack: Lorien Revealed (ability, self) -> Tamiyo, Inquisitive Student (spell, self)
+  Pending: Lorien Revealed (self)
+  Self GY: Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Meticulous Archive
+   3: Tundra
+   4: Tundra
+  >> A/A: 1 (Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A reveals Island and puts it to hand
+  Tamiyo, Inquisitive Student enters the battlefield
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(5): Island, Lorien Revealed, Swords to Plowshares, The One Ring, Wasteland | lib 42
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Wasteland
+  >> A/A: 1 (Play Island)
+--- Narrative ---
+  Player A played Island
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Lorien Revealed, Swords to Plowshares, The One Ring, Wasteland | lib 42
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> A/A: 1 (Activate Lórien Revealed from hand (ChangeZone))
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A activates Lórien Revealed from hand
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  19 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wasteland | lib 42
+  Opp:   20 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Stack: Lorien Revealed (ability, self)
+  Pending: Lorien Revealed (self)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Self exile: Geist of Saint Traft
+  Opp exile:  Dark Ritual
+  Opp revealed: Island, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  Extras: self_lands_played=1
+  Actions:
+   0: Fail to find
+   1: Meticulous Archive
+   2: Tundra
+   3: Tundra
+  >> A/A: 1 (Meticulous Archive)
+--- Narrative ---
+  Player A shuffles their library
+  Player A reveals Meticulous Archive and puts it to hand
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Swords to Plowshares, The One Ring, Wasteland
+  PB: Dark Ritual, Doomsday
+
+--- Decision 53 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 8)
+  Self:  20 life | mana: empty | hand(2): Dark Ritual, Doomsday | lib 51
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Brainstorm
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  20 life | mana: empty | hand(3): Brainstorm, Dark Ritual, Doomsday | lib 50
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Activate Clue token (Draw)  [#0]
+   4: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 55 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(3): Brainstorm, Dark Ritual, Doomsday | lib 50
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Activate Clue token (Draw)  [#0]
+   4: Activate Clue token (Draw)  [#0]
+  >> B/B: 2 (Cast Dark Ritual)
+--- Narrative ---
+  Player B activated Scrubland for 1(B)
+  Player B casts Dark Ritual
+
+--- Decision 56 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Doomsday | lib 50
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Dark Ritual (spell, self)
+  Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> B/B: 2 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Cavern of Souls for 1(C)
+  Player B activated Island for 1(U)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Ponder
+  Resolving ability (category: AddMana)
+  Player B adds 3{B}
+
+--- Decision 57 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: 3B | hand(3): Brainstorm, Doomsday, Ponder | lib 49
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Doomsday  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Cast Doomsday)
+--- Narrative ---
+  Player B casts Doomsday
+  Resolving ability (category: ChangeZone)
+  Searching Player B's graveyard and library:
+
+--- Decision 58 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 49
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Dark Ritual (graveyard)
+   1: Tamiyo, Inquisitive Student (graveyard)
+   2: Tamiyo, Inquisitive Student (graveyard)
+   3: Brainstorm (library)
+   4: Brainstorm (library)
+   5: Brainstorm (library)
+   6: Consider (library)
+   7: Dark Ritual (library)
+   8: Dark Ritual (library)
+   9: Daze (library)
+  10: Daze (library)
+  11: Daze (library)
+  12: Daze (library)
+  13: Doomsday (library)
+  14: Doomsday (library)
+  15: Doomsday (library)
+  16: Edge of Autumn (library)
+  17: Flooded Strand (library)
+  18: Flooded Strand (library)
+  19: Flooded Strand (library)
+  20: Flooded Strand (library)
+  21: Force of Will (library)
+  22: Force of Will (library)
+  23: Force of Will (library)
+  24: Force of Will (library)
+  25: Lion's Eye Diamond (library)
+  26: Lotus Petal (library)
+  27: Lotus Petal (library)
+  28: Lotus Petal (library)
+  29: Lotus Petal (library)
+  30: Polluted Delta (library)
+  31: Polluted Delta (library)
+  32: Polluted Delta (library)
+  33: Ponder (library)
+  34: Ponder (library)
+  35: Ponder (library)
+  36: Quantum Riddler (library)
+  37: Street Wraith (library)
+  38: Tamiyo, Inquisitive Student (library)
+  39: Teferi, Time Raveler (library)
+  40: Teferi, Time Raveler (library)
+  41: Teferi, Time Raveler (library)
+  42: Thassa's Oracle (library)
+  43: Tropical Island (library)
+  44: Tropical Island (library)
+  45: Tundra (library)
+  46: Undercity Sewers (library)
+  47: Underground Sea (library)
+  48: Underground Sea (library)
+  49: Veil of Summer (library)
+  50: Veil of Summer (library)
+  51: Veil of Summer (library)
+  >> B/B: 42 (Thassa's Oracle (library))
+--- Narrative ---
+  Player B puts Thassa's Oracle to top of library
+  Searching Player B's graveyard and library:
+
+--- Decision 59 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 49
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Thassa's Oracle, ?, ?, ?, ?
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Dark Ritual (graveyard)
+   1: Tamiyo, Inquisitive Student (graveyard)
+   2: Tamiyo, Inquisitive Student (graveyard)
+   3: Brainstorm (library)
+   4: Brainstorm (library)
+   5: Brainstorm (library)
+   6: Consider (library)
+   7: Dark Ritual (library)
+   8: Dark Ritual (library)
+   9: Daze (library)
+  10: Daze (library)
+  11: Daze (library)
+  12: Daze (library)
+  13: Doomsday (library)
+  14: Doomsday (library)
+  15: Doomsday (library)
+  16: Edge of Autumn (library)
+  17: Flooded Strand (library)
+  18: Flooded Strand (library)
+  19: Flooded Strand (library)
+  20: Flooded Strand (library)
+  21: Force of Will (library)
+  22: Force of Will (library)
+  23: Force of Will (library)
+  24: Force of Will (library)
+  25: Lion's Eye Diamond (library)
+  26: Lotus Petal (library)
+  27: Lotus Petal (library)
+  28: Lotus Petal (library)
+  29: Lotus Petal (library)
+  30: Polluted Delta (library)
+  31: Polluted Delta (library)
+  32: Polluted Delta (library)
+  33: Ponder (library)
+  34: Ponder (library)
+  35: Ponder (library)
+  36: Quantum Riddler (library)
+  37: Street Wraith (library)
+  38: Tamiyo, Inquisitive Student (library)
+  39: Teferi, Time Raveler (library)
+  40: Teferi, Time Raveler (library)
+  41: Teferi, Time Raveler (library)
+  42: Tropical Island (library)
+  43: Tropical Island (library)
+  44: Tundra (library)
+  45: Undercity Sewers (library)
+  46: Underground Sea (library)
+  47: Underground Sea (library)
+  48: Veil of Summer (library)
+  49: Veil of Summer (library)
+  50: Veil of Summer (library)
+  >> B/B: 16 (Edge of Autumn (library))
+--- Narrative ---
+  Player B puts Edge of Autumn to top of library
+  Searching Player B's graveyard and library:
+
+--- Decision 60 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 49
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Thassa's Oracle, ?, ?, ?
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Dark Ritual (graveyard)
+   1: Tamiyo, Inquisitive Student (graveyard)
+   2: Tamiyo, Inquisitive Student (graveyard)
+   3: Brainstorm (library)
+   4: Brainstorm (library)
+   5: Brainstorm (library)
+   6: Consider (library)
+   7: Dark Ritual (library)
+   8: Dark Ritual (library)
+   9: Daze (library)
+  10: Daze (library)
+  11: Daze (library)
+  12: Daze (library)
+  13: Doomsday (library)
+  14: Doomsday (library)
+  15: Doomsday (library)
+  16: Flooded Strand (library)
+  17: Flooded Strand (library)
+  18: Flooded Strand (library)
+  19: Flooded Strand (library)
+  20: Force of Will (library)
+  21: Force of Will (library)
+  22: Force of Will (library)
+  23: Force of Will (library)
+  24: Lion's Eye Diamond (library)
+  25: Lotus Petal (library)
+  26: Lotus Petal (library)
+  27: Lotus Petal (library)
+  28: Lotus Petal (library)
+  29: Polluted Delta (library)
+  30: Polluted Delta (library)
+  31: Polluted Delta (library)
+  32: Ponder (library)
+  33: Ponder (library)
+  34: Ponder (library)
+  35: Quantum Riddler (library)
+  36: Street Wraith (library)
+  37: Tamiyo, Inquisitive Student (library)
+  38: Teferi, Time Raveler (library)
+  39: Teferi, Time Raveler (library)
+  40: Teferi, Time Raveler (library)
+  41: Tropical Island (library)
+  42: Tropical Island (library)
+  43: Tundra (library)
+  44: Undercity Sewers (library)
+  45: Underground Sea (library)
+  46: Underground Sea (library)
+  47: Veil of Summer (library)
+  48: Veil of Summer (library)
+  49: Veil of Summer (library)
+  >> B/B: 36 (Street Wraith (library))
+--- Narrative ---
+  Player B puts Street Wraith to top of library
+  Searching Player B's graveyard and library:
+
+--- Decision 61 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 49
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Street Wraith, Edge of Autumn, Thassa's Oracle, ?, ?
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Dark Ritual (graveyard)
+   1: Tamiyo, Inquisitive Student (graveyard)
+   2: Tamiyo, Inquisitive Student (graveyard)
+   3: Brainstorm (library)
+   4: Brainstorm (library)
+   5: Brainstorm (library)
+   6: Consider (library)
+   7: Dark Ritual (library)
+   8: Dark Ritual (library)
+   9: Daze (library)
+  10: Daze (library)
+  11: Daze (library)
+  12: Daze (library)
+  13: Doomsday (library)
+  14: Doomsday (library)
+  15: Doomsday (library)
+  16: Flooded Strand (library)
+  17: Flooded Strand (library)
+  18: Flooded Strand (library)
+  19: Flooded Strand (library)
+  20: Force of Will (library)
+  21: Force of Will (library)
+  22: Force of Will (library)
+  23: Force of Will (library)
+  24: Lion's Eye Diamond (library)
+  25: Lotus Petal (library)
+  26: Lotus Petal (library)
+  27: Lotus Petal (library)
+  28: Lotus Petal (library)
+  29: Polluted Delta (library)
+  30: Polluted Delta (library)
+  31: Polluted Delta (library)
+  32: Ponder (library)
+  33: Ponder (library)
+  34: Ponder (library)
+  35: Quantum Riddler (library)
+  36: Tamiyo, Inquisitive Student (library)
+  37: Teferi, Time Raveler (library)
+  38: Teferi, Time Raveler (library)
+  39: Teferi, Time Raveler (library)
+  40: Tropical Island (library)
+  41: Tropical Island (library)
+  42: Tundra (library)
+  43: Undercity Sewers (library)
+  44: Underground Sea (library)
+  45: Underground Sea (library)
+  46: Veil of Summer (library)
+  47: Veil of Summer (library)
+  48: Veil of Summer (library)
+  >> B/B: 3 (Brainstorm (library))
+--- Narrative ---
+  Player B puts Brainstorm to top of library
+  Searching Player B's graveyard and library:
+
+--- Decision 62 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 49
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle, ?
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Dark Ritual (graveyard)
+   1: Tamiyo, Inquisitive Student (graveyard)
+   2: Tamiyo, Inquisitive Student (graveyard)
+   3: Brainstorm (library)
+   4: Brainstorm (library)
+   5: Consider (library)
+   6: Dark Ritual (library)
+   7: Dark Ritual (library)
+   8: Daze (library)
+   9: Daze (library)
+  10: Daze (library)
+  11: Daze (library)
+  12: Doomsday (library)
+  13: Doomsday (library)
+  14: Doomsday (library)
+  15: Flooded Strand (library)
+  16: Flooded Strand (library)
+  17: Flooded Strand (library)
+  18: Flooded Strand (library)
+  19: Force of Will (library)
+  20: Force of Will (library)
+  21: Force of Will (library)
+  22: Force of Will (library)
+  23: Lion's Eye Diamond (library)
+  24: Lotus Petal (library)
+  25: Lotus Petal (library)
+  26: Lotus Petal (library)
+  27: Lotus Petal (library)
+  28: Polluted Delta (library)
+  29: Polluted Delta (library)
+  30: Polluted Delta (library)
+  31: Ponder (library)
+  32: Ponder (library)
+  33: Ponder (library)
+  34: Quantum Riddler (library)
+  35: Tamiyo, Inquisitive Student (library)
+  36: Teferi, Time Raveler (library)
+  37: Teferi, Time Raveler (library)
+  38: Teferi, Time Raveler (library)
+  39: Tropical Island (library)
+  40: Tropical Island (library)
+  41: Tundra (library)
+  42: Undercity Sewers (library)
+  43: Underground Sea (library)
+  44: Underground Sea (library)
+  45: Veil of Summer (library)
+  46: Veil of Summer (library)
+  47: Veil of Summer (library)
+  >> B/B: 3 (Brainstorm (library))
+--- Narrative ---
+  Player B puts Brainstorm to top of library
+  Resolving ability (category: ChangeZoneAll)
+  Player B moves Dark Ritual to exile
+  Player B moves Tamiyo, Inquisitive Student to exile
+  Player B moves Tamiyo, Inquisitive Student to exile
+  Player B moves Brainstorm to exile
+  Player B moves Consider to exile
+  Player B moves Dark Ritual to exile
+  Player B moves Dark Ritual to exile
+  Player B moves Daze to exile
+  Player B moves Daze to exile
+  Player B moves Daze to exile
+  Player B moves Daze to exile
+  Player B moves Doomsday to exile
+  Player B moves Doomsday to exile
+  Player B moves Doomsday to exile
+  Player B moves Flooded Strand to exile
+  Player B moves Flooded Strand to exile
+  Player B moves Flooded Strand to exile
+  Player B moves Flooded Strand to exile
+  Player B moves Force of Will to exile
+  Player B moves Force of Will to exile
+  Player B moves Force of Will to exile
+  Player B moves Force of Will to exile
+  Player B moves Lion's Eye Diamond to exile
+  Player B moves Lotus Petal to exile
+  Player B moves Lotus Petal to exile
+  Player B moves Lotus Petal to exile
+  Player B moves Lotus Petal to exile
+  Player B moves Polluted Delta to exile
+  Player B moves Polluted Delta to exile
+  Player B moves Polluted Delta to exile
+  Player B moves Ponder to exile
+  Player B moves Ponder to exile
+  Player B moves Ponder to exile
+  Player B moves Quantum Riddler to exile
+  Player B moves Tamiyo, Inquisitive Student to exile
+  Player B moves Teferi, Time Raveler to exile
+  Player B moves Teferi, Time Raveler to exile
+  Player B moves Teferi, Time Raveler to exile
+  Player B moves Tropical Island to exile
+  Player B moves Tropical Island to exile
+  Player B moves Tundra to exile
+  Player B moves Undercity Sewers to exile
+  Player B moves Underground Sea to exile
+  Player B moves Underground Sea to exile
+  Player B moves Veil of Summer to exile
+  Player B moves Veil of Summer to exile
+  Player B moves Veil of Summer to exile
+  Player B moves 47 card(s) to exile
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 5 card(s) of their library.
+  Choose which card goes 5 from top:
+
+--- Decision 63 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Brainstorm  [#4]
+   1: Brainstorm  [#4]
+   2: Street Wraith  [#4]
+   3: Edge of Autumn  [#4]
+   4: Thassa's Oracle  [#4]
+  >> B/B: 0 (Brainstorm)
+--- Narrative ---
+  Choose which card goes 4 from top:
+
+--- Decision 64 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Brainstorm  [#3]
+   1: Street Wraith  [#3]
+   2: Edge of Autumn  [#3]
+   3: Thassa's Oracle  [#3]
+  >> B/B: 0 (Brainstorm)
+--- Narrative ---
+  Choose which card goes 3 from top:
+
+--- Decision 65 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Street Wraith  [#2]
+   1: Edge of Autumn  [#2]
+   2: Thassa's Oracle  [#2]
+  >> B/B: 2 (Thassa's Oracle)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 66 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Brainstorm, Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Stack: Doomsday (spell, self)
+  Pending: Doomsday (self)
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Street Wraith  [#1]
+   1: Edge of Autumn  [#1]
+  >> B/B: 0 (Street Wraith)
+--- Narrative ---
+  Resolving ability (category: LoseLife, amount: 10)
+  Player B loses 10 life (now at 10)
+  Resolving ability (category: Cleanup)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 67 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  10 life | mana: empty | hand(2): Brainstorm, Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Self GY: Doomsday
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 68 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  10 life | mana: empty | hand(2): Brainstorm, Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Clue
+  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Self GY: Doomsday
+  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
+  Known opp hand: Meticulous Archive
+  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  --- Declare Blockers (Player A) ---
+  Attackers:
+    0: Tamiyo, Inquisitive Student [0/3]
+  Your creatures:
+
+--- Decision 69 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 8)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland | lib 41
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue | Clue (SICK)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: opp_revolt, mandatory_choice=Declare Blk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm blockers
+  >> A/A: 1 (Confirm blockers)
+--- Narrative ---
+  Blockers declared:
+    (none)
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland
+  PB: Brainstorm, Ponder
+
+--- Decision 70 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland | lib 41
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island | Island | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Force of Will
+
+--- Decision 71 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(5): Force of Will, Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland | lib 40
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island | Island | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 72 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(5): Force of Will, Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland | lib 40
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island | Island | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Meticulous Archive
+   2: Play Wasteland
+   3: Cast Swords to Plowshares  [#0]
+   4: Cast The One Ring  [#0]
+  >> A/A: 4 (Cast The One Ring)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A activated Island for 1(U)
+  Player A activated Mystic Sanctuary for 1(U)
+  Player A activated Tundra for 1(U)
+  Player A casts The One Ring
+  The One Ring enters the battlefield
+  The One Ring triggered
+
+--- Decision 73 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Meticulous Archive, Swords to Plowshares, Wasteland | lib 40
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [Indestructible] | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Stack: The One Ring (ability, self)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Activate The One Ring (PutCounter)  [#0]
+  >> A/A: 1 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player A's The One Ring ability is on the stack
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 1).
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Force of Will
+  Resolving ability (category: Pump)
+  Player A gains protection from everything until their next turn.
+
+--- Decision 74 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(5): Force of Will, Force of Will, Meticulous Archive, Swords to Plowshares, Wasteland | lib 39
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Play Meticulous Archive
+   2: Play Wasteland
+  >> A/A: 1 (Play Meticulous Archive)
+--- Narrative ---
+  Player A played Meticulous Archive
+  Meticulous Archive enters tapped.
+  Meticulous Archive triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player A surveils 1.
+  Surveil: looking at Force of Will
+
+--- Decision 75 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 39
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Stack: Meticulous Archive (ability, self) [amt=1]
+  Pending: Meticulous Archive (self)
+  Self GY: Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1
+  Actions:
+   0: Put Force of Will on top of library  [#0]
+   1: Put Force of Will into graveyard
+  >> A/A: 1 (Put Force of Will into graveyard)
+--- Narrative ---
+  Player A puts Force of Will into their graveyard.
+  --- Declare Attackers (Player A) ---
+
+--- Decision 76 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> A/A: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
+
+--- Decision 77 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 9)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
+  Opp:   10 life | mana: empty | hand count: 2 | lib 5
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player B
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 10 (Player B) --------
+--- Turn 10 (Player B) ---
+  PA: Force of Will, Force of Will, Swords to Plowshares, Wasteland
+  PB: Brainstorm, Ponder
+
+--- Decision 78 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  10 life | mana: empty | hand(2): Brainstorm, Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Brainstorm
+
+--- Decision 79 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  10 life | mana: empty | hand(1): Ponder | lib 5
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Stack: Brainstorm (spell, self)
+  Self GY: Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 80 ---
+  Priority: Player A (non-active)
+  Step: Upkeep (turn 10)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
+  Opp:   10 life | mana: empty | hand count: 1 | lib 5
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Opp BF:   Cavern of Souls | Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Stack: Brainstorm (spell, opponent)
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Edge of Autumn
+  Player B draws Street Wraith
+  Player B draws Thassa's Oracle
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 81 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  10 life | mana: empty | hand(4): Edge of Autumn, Ponder, Street Wraith, Thassa's Oracle | lib 2
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, Brainstorm, ?, ?, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Edge of Autumn
+   1: Ponder
+   2: Street Wraith
+   3: Thassa's Oracle
+  >> B/B: 1 (Ponder)
+--- Narrative ---
+  Player B puts Ponder to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 82 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  10 life | mana: empty | hand(3): Edge of Autumn, Street Wraith, Thassa's Oracle | lib 3
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Ponder, Brainstorm, Brainstorm, ?, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Edge of Autumn
+   1: Street Wraith
+   2: Thassa's Oracle
+  >> B/B: 0 (Edge of Autumn)
+--- Narrative ---
+  Player B puts Edge of Autumn to top of library
+  Tamiyo, Inquisitive Student triggered
+
+--- Decision 83 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  10 life | mana: empty | hand(2): Street Wraith, Thassa's Oracle | lib 4
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Stack: Tamiyo, Inquisitive Student (ability, self)
+  Self GY: Brainstorm, Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Ponder, Brainstorm, Brainstorm, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to exile
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+
+--- Decision 84 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  10 life | mana: empty | hand(2): Street Wraith, Thassa's Oracle | lib 4
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Brainstorm, Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Ponder, Brainstorm, Brainstorm, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Street Wraith from hand (Draw)  [#0]
+  >> B/B: 3 (Activate Street Wraith from hand (Draw))
+--- Narrative ---
+  Player B pays 2 life
+  Player B activates Street Wraith from hand
+
+--- Decision 85 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  8 life | mana: empty | hand(1): Thassa's Oracle | lib 4
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Stack: Street Wraith (ability, self) [amt=1]
+  Self GY: Street Wraith, Brainstorm, Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Edge of Autumn, Ponder, Brainstorm, Brainstorm, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Edge of Autumn
+
+--- Decision 86 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  8 life | mana: empty | hand(2): Edge of Autumn, Thassa's Oracle | lib 3
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Street Wraith, Brainstorm, Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Ponder, Brainstorm, Brainstorm, ?, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 3 (Activate Edge of Autumn from hand (Draw))
+
+--- Decision 87 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 10)
+  Self:  8 life | mana: empty | hand(2): Edge of Autumn, Thassa's Oracle | lib 3
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Street Wraith, Brainstorm, Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Ponder, Brainstorm, Brainstorm, ?, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Sacrifice Cavern of Souls
+   1: Sacrifice Island
+   2: Sacrifice Scrubland
+  >> B/B: 0 (Sacrifice Cavern of Souls)
+--- Narrative ---
+  Player B sacrifices Cavern of Souls
+  Player B activates Edge of Autumn from hand
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Ponder
+  Player B draws Brainstorm
+
+--- Decision 88 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  8 life | mana: empty | hand(3): Brainstorm, Ponder, Thassa's Oracle | lib 1
+  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
+  Self BF:  Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Self GY: Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, ?, ?, ?, ?
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  The One Ring triggered
+--- Turn 11 (Player A) ---
+  PA: Force of Will, Force of Will, Swords to Plowshares, Wasteland
+  PB: Brainstorm, Ponder, Thassa's Oracle
+
+--- Decision 89 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 11)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: The One Ring (ability, self)
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate The One Ring (PutCounter)  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> A/A: 2 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player A's The One Ring ability is on the stack
+
+--- Decision 90 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 11)
+  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: The One Ring (ability, self) -> The One Ring (ability, self)
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 2).
+  Resolving ability (category: Draw, amount: 2)
+  Player A draws Swords to Plowshares
+  Player A draws Flooded Strand
+
+--- Decision 91 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 11)
+  Self:  19 life | mana: empty | energy 4 | hand(6): Flooded Strand, Force of Will, Force of Will, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 36
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: The One Ring (ability, self)
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 17)
+
+--- Decision 92 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 11)
+  Self:  17 life | mana: empty | energy 4 | hand(6): Flooded Strand, Force of Will, Force of Will, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 36
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Misty Rainforest
+  Tamiyo, Inquisitive Student triggered
+
+--- Decision 93 ---
+  Priority: Player A (active)
+  Step: Draw (turn 11)
+  Self:  17 life | mana: empty | energy 4 | hand(7): Flooded Strand, Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 35
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: Tamiyo, Inquisitive Student (ability, self)
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to exile
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+
+--- Decision 94 ---
+  Priority: Player A (active)
+  Step: Draw (turn 11)
+  Self:  17 life | mana: empty | energy 4 | hand(7): Flooded Strand, Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 35
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 95 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  17 life | mana: empty | energy 4 | hand(7): Flooded Strand, Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 35
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Misty Rainforest
+   3: Play Wasteland
+   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   5: Activate Clue token (Draw)  [#0]
+  >> A/A: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player A played Flooded Strand
+
+--- Decision 96 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  17 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 35
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Flooded Strand | Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Flooded Strand (ChangeZone)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> A/A: 1 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Flooded Strand
+  Player A's Flooded Strand ability is on the stack
+
+--- Decision 97 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  16 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 35
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Clue
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: Flooded Strand (ability, self)
+  Self GY: Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> A/A: 1 (Activate Clue token (Draw))
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A activated Island for 1(U)
+  Player A sacrifices Clue token
+  Player A's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws The One Ring
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 98 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  16 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: Flooded Strand (ability, self)
+  Pending: Flooded Strand (self)
+  Self GY: Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Plains
+   2: Tundra
+   3: Tundra
+  >> A/A: 1 (Plains)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Plains to the battlefield
+
+--- Decision 99 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  16 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 33
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self GY: Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast The One Ring  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  >> A/A: 1 (Cast The One Ring)
+--- Narrative ---
+  Player A activated Plains for 1(W)
+  Player A activated Meticulous Archive for 1(U)
+  Player A activated Mystic Sanctuary for 1(U)
+  Player A activated Tundra for 1(U)
+  Player A casts The One Ring
+
+--- Decision 100 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  16 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 33
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T)
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: The One Ring (spell, self)
+  Self GY: Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  The One Ring enters the battlefield
+  Legend rule: Player A controls 2 copies of The One Ring; choose one to keep.
+
+--- Decision 101 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  16 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 33
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [Indestructible] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T)
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self GY: Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Keep The One Ring
+   1: Keep The One Ring
+  >> A/A: 0 (Keep The One Ring)
+--- Narrative ---
+  The One Ring is put into the graveyard (legend rule)
+  The One Ring triggered
+
+--- Decision 102 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  16 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 33
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [Indestructible] | Tundra (T)
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Stack: The One Ring (ability, self)
+  Self GY: The One Ring, Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate The One Ring (PutCounter)  [#0]
+  >> A/A: 1 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player A's The One Ring ability is on the stack
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 1).
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Wasteland
+  Resolving ability (category: Pump)
+  Player A gains protection from everything until their next turn.
+
+--- Decision 103 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  16 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 32
+  Opp:   8 life | mana: empty | hand count: 3 | lib 1
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Opp BF:   Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self GY: The One Ring, Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Opp GY:  Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Self exile: Geist of Saint Traft
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  >> A/A: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
+  Player A's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 12 (Player B) --------
+--- Turn 12 (Player B) ---
+  PA: Force of Will, Force of Will, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland
+  PB: Brainstorm, Ponder, Thassa's Oracle
+
+--- Decision 104 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 12)
+  Self:  8 life | mana: empty | hand(3): Brainstorm, Ponder, Thassa's Oracle | lib 1
+  Opp:   16 life | mana: empty | energy 4 | hand count: 7 | lib 32
+  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Self GY: Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Opp GY:  The One Ring, Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Known top: Brainstorm, ?, ?, ?, ?
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Brainstorm
+
+--- Decision 105 ---
+  Priority: Player B (active)
+  Step: Draw (turn 12)
+  Self:  8 life | mana: empty | hand(4): Brainstorm, Brainstorm, Ponder, Thassa's Oracle | lib 0
+  Opp:   16 life | mana: empty | energy 4 | hand count: 7 | lib 32
+  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Self GY: Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Opp GY:  The One Ring, Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Brainstorm  [#0]
+   3: Activate Clue token (Draw)  [#0]
+   4: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 106 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  8 life | mana: empty | hand(4): Brainstorm, Brainstorm, Ponder, Thassa's Oracle | lib 0
+  Opp:   16 life | mana: empty | energy 4 | hand count: 7 | lib 32
+  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Self GY: Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Opp GY:  The One Ring, Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Brainstorm  [#0]
+   3: Cast Ponder  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   5: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   6: Activate Clue token (Draw)  [#0]
+   7: Activate Clue token (Draw)  [#0]
+  >> B/B: 4 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+
+--- Decision 107 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  8 life | mana: empty | hand(4): Brainstorm, Brainstorm, Ponder, Thassa's Oracle | lib 0
+  Opp:   16 life | mana: empty | energy 4 | hand count: 7 | lib 32
+  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T)
+  Stack: Tamiyo, Seasoned Scholar (ability, self)
+  Self GY: Edge of Autumn, Cavern of Souls, Street Wraith, Brainstorm, Doomsday
+  Opp GY:  The One Ring, Flooded Strand, Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
+  Opp exile:  Geist of Saint Traft
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Brainstorm  [#0]
+   3: Activate Clue token (Draw)  [#0]
+   4: Activate Clue token (Draw)  [#0]
+  >> B/B: 3 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B activated Island for 1(U)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player B attempts to draw from an empty library.
+  Player B decked - Player A wins!
+
+=== A/A wins ===

@@ -131,7 +131,6 @@ public:
 
 private:
     void apply_permanent_components(Game& game, std::shared_ptr<Orderer> orderer);
-    void update_city_blessing(Game& game);  // 702.131: grant ascend's city's blessing at 10+ permanents
     void apply_land_abilities(Entity entity);
     void apply_keyword_abilities(Entity entity);
     void deal_combat_damage(Game& game, bool first_strike_only);
@@ -144,6 +143,7 @@ private:
     void gather_active_statics(Game& game);       // preamble: reset bonuses (incl. keyword rebuild-from-base), build g_active_statics, eval conditions
     void suppress_removed_statics(Game& game);    // layer 6 (613.1f): mark statics on objects that lose all abilities (Humility) as suppressed
     void apply_type_changing_effects();           // layer 4 (613.1d)
+    void sync_subtype_mana_abilities();           // layer 4 epilogue: derived mana abilities track current basic land subtypes within the SAME pass
     void apply_layer6_ability_effects();          // layer 6 (613.1f): keyword grant/removal
     void apply_layer6_ability_grants();           // layer 6 (613.1f): AddAbility$ activated-ability grants (Petrified Hamlet)
     void recompute_abilities(Game& game);         // layer 6 (613.1f): erase activated/keyword abilities removed by an ability-removal effect

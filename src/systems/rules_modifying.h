@@ -63,6 +63,16 @@ bool attack_prohibited(Entity creature);
 int  land_play_bonus(Zone::Ownership player);
 bool may_play_lands_from_graveyard(Zone::Ownership player);
 
+// How many lands `player` may still play this turn (CR 305.2 plus AdjustLandPlays
+// statics), clamped at 0 — `land_play_limit` is the per-turn allowance (1 + bonus),
+// `land_drops_remaining` that allowance minus Player::lands_played_this_turn. THE
+// shared expression behind every "may I play a land?" gate: the PLAY_LAND legal-action
+// enumeration (hand and impulse-exile), and the ML observation's mana-development
+// block, which must report exactly what the menu will offer. Returns 0 for a player
+// whose Player component is missing.
+int  land_play_limit(Zone::Ownership player);
+int  land_drops_remaining(Zone::Ownership player);
+
 // DisableTriggers (Doorkeeper Thrull): are an entering permanent's ETB triggers suppressed
 // because its card type matches an active DisableTriggers cause? The caller guards that the
 // event is a card changing zone onto the battlefield.

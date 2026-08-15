@@ -120,7 +120,9 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
 
     // Count$ValidExile ... CardTypes — distinct card types among the cards exiled
     // with `source` (e.g. Keen-Eyed Curator's exiled-with pile). Scoped to the
-    // source permanent, hence the `source` parameter.
+    // source permanent, hence the `source` parameter. Only kind == TYPE entries
+    // count (CR 205.2a card types) — subtypes/supertypes on the type line (Plains,
+    // Legendary, ...) are excluded by the kind filter.
     if (expr.find("Count$ValidExile") != std::string::npos &&
         expr.find("CardTypes") != std::string::npos) {
         if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source))
@@ -128,6 +130,13 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
         auto &eperm = global_coordinator.GetComponent<Permanent>(source);
         std::set<std::string> type_names;
         for (auto ex_e : eperm.exiled_with) {
+            // exiled_with is append-only, so require the entry to still be a card sitting in
+            // the exile zone. A card that has since left exile is a new object and no longer
+            // "exiled with" the source, and a ceased token's recycled entity id may point at
+            // an unrelated object (same guard as returnable_exiled_card in game_queries.cpp)
+            // — counting either would overstate the type count.
+            if (!global_coordinator.entity_has_component<Zone>(ex_e)) continue;
+            if (global_coordinator.GetComponent<Zone>(ex_e).location != Zone::EXILE) continue;
             if (!global_coordinator.entity_has_component<CardData>(ex_e)) continue;
             for (auto &t : global_coordinator.GetComponent<CardData>(ex_e).types)
                 if (t.kind == TYPE) type_names.insert(t.name);

@@ -991,32 +991,52 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         if (st.delta <= 0) {  // room to bring a card in
             for (size_t i = 0; i < deck.sideboard.size(); i++) {
                 const std::string &name = deck.sideboard[i].second;
-                // A name locked out of the maindeck stays out — unless it is the
-                // outstanding move itself, which is the takeback.
-                if (sided_out_names.count(name) && name != st.unpaired_name) continue;
+                if (sided_out_names.count(name)) continue;
                 add_choice("Sideboard in: ", i, deck.sideboard[i].first, name, true);
             }
         }
         if (st.delta >= 0) {  // room to cut a card
             for (size_t i = 0; i < deck.main_deck.size(); i++) {
                 const std::string &name = deck.main_deck[i].second;
-                if (sided_in_names.count(name) && name != st.unpaired_name) continue;
+                if (sided_in_names.count(name)) continue;
                 add_choice("Sideboard out: ", i, deck.main_deck[i].first, name, false);
+            }
+        }
+        // The TAKEBACK (reversing the outstanding half-move) is offered ONLY when
+        // the balancing direction has no genuine completion — the STRANDED case
+        // (pool empty, or every name direction-locked). No information arrives
+        // between the two halves of a swap, so a takeback where an alternative
+        // completion exists adds no expressiveness ("don't swap" was expressible
+        // as Done on the balanced menu one decision earlier) — it only lets an
+        // agent burn two decisions on a net no-op, which outcome-driven training
+        // can never learn to avoid (the deck ends bit-identical, so the outcome
+        // gradient against it is exactly zero). With a move outstanding no Done
+        // is present, so `actions` is empty here iff no completion exists.
+        if (st.delta != 0 && actions.empty()) {
+            const bool tb_in = (st.delta < 0);  // a cut is outstanding -> bring it back in
+            const auto &pool = tb_in ? deck.sideboard : deck.main_deck;
+            for (size_t i = 0; i < pool.size(); i++) {
+                if (pool[i].second == st.unpaired_name) {
+                    add_choice(tb_in ? "Sideboard in: " : "Sideboard out: ",
+                               i, pool[i].first, st.unpaired_name, tb_in);
+                    break;
+                }
             }
         }
 
         // The one-shot locks bound the menu to (distinct maindeck) + (distinct
-        // sideboard) + Done + the takeback, comfortably inside MAX_ACTIONS for any
-        // real deck. Fail loudly rather than relying on populate_query's silent
-        // truncation, which would make legal choices unreachable to the model.
+        // sideboard) + Done — or the lone takeback in the stranded case —
+        // comfortably inside MAX_ACTIONS for any real deck. Fail loudly rather
+        // than relying on populate_query's silent truncation, which would make
+        // legal choices unreachable to the model.
         if (actions.size() > MAX_ACTIONS)
             fatal_error("sideboard menu has " + std::to_string(actions.size()) +
                         " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
                         " — choices beyond that would be unreachable");
 
         // Nothing legal at all (empty sideboard AND nothing cuttable): end the
-        // phase. Only reachable while balanced — an outstanding move always leaves
-        // its own takeback legal, so the deck can never be stranded off-size.
+        // phase. Only reachable while balanced — a stranded outstanding move gets
+        // its takeback appended above, so the deck can never be stuck off-size.
         if (actions.empty()) {
             game_log("No sideboard moves available — ending sideboard phase.\n");
             break;

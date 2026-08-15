@@ -63,7 +63,10 @@ def main() -> int:
     ap.add_argument("--sb-worlds", type=int, default=None,
                     help="bo3 sideboard-root determinized worlds (default budget)")
     ap.add_argument("--sb-max-depth", type=int, default=None,
-                    help="bo3 sideboard-root rollout depth (default budget)")
+                    help="bo3 sideboard-root descent depth cap (default budget)")
+    ap.add_argument("--sb-rollout-turns", type=int, default=None,
+                    help="bo3 sideboard-root leaf-rollout horizon in player "
+                         "turns, 0 = off (default budget)")
     ap.add_argument("--c", type=float, default=1.5, dest="c_puct")
     ap.add_argument("--vscale", type=float, default=1.0,
                     help="Value squash scale for the PPO value head")
@@ -79,7 +82,8 @@ def main() -> int:
     spec = (f"mcts:{args.checkpoint}?sims={args.sims}&worlds={args.worlds}"
             f"&c={args.c_puct}&vscale={args.vscale}")
     for knob, val in (("sb_sims", args.sb_sims), ("sb_worlds", args.sb_worlds),
-                      ("sb_max_depth", args.sb_max_depth)):
+                      ("sb_max_depth", args.sb_max_depth),
+                      ("sb_rollout_turns", args.sb_rollout_turns)):
         if val is not None:
             spec += f"&{knob}={val}"
     raw = args.checkpoint

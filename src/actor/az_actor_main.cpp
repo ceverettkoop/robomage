@@ -23,6 +23,7 @@
 #include "az_evaluator.h"
 #include "az_mcts.h"
 #include "npz_writer.h"
+#include "td_targets.h"
 #include "classes/deck.h"
 #include "classes/match_state.h"
 #include "components/zone.h"
@@ -57,11 +58,24 @@ struct ActorConfig {
     int sb_sims = -1;
     int sb_worlds = -1;
     int sb_max_depth = -1;
+    // Leaf-rollout horizon in player turns (see az_mcts.h). 0 = off;
+    // sb value -1 = inherit --rollout-turns.
+    int rollout_turns = 0;
+    int sb_rollout_turns = -1;
+    // Sideboard-boundary tree persistence + rollout memo (see az_mcts.h).
+    // Default mirrors cli_spec.DEFAULT_SB_PERSIST.
+    int sb_persist = 1;
+    // Duplicate-edge merging (see az_mcts.h / menu_merge.h; must match the
+    // Python side's merge_dupes or visit parity breaks).
+    int merge_dupes = 1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
     double noise_eps = 0.25;
     double noise_alpha = 1.0;
     int temp_moves = 20;
+    // n-step TD horizon for the recorded value target (mirrors
+    // cli_spec.DEFAULT_AZ_TD_N; az_selfplay always passes --td-n explicitly).
+    int td_n = 10;
     std::string out_dir;               // empty -> ../train/az_data/<deck>
     bool rng_seed_set = false;
     uint32_t rng_seed = 0;             // default derived from --seed
@@ -78,8 +92,14 @@ void print_usage(const char* prog) {
                  "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
                  "       [--sb-sims N] [--sb-worlds N] [--sb-max-depth N] "
                  "(bo3 sideboard-root budget; -1=inherit)\n"
+                 "       [--rollout-turns N] [--sb-rollout-turns N] "
+                 "(leaf-rollout horizon in player turns; 0=off, sb -1=inherit)\n"
+                 "       [--sb-persist 0|1] (persist trees + rollout memo across a "
+                 "bo3 sideboard boundary)\n"
+                 "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
+                 "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
-                 "[--temp-moves N] [--out-dir <dir>] [--rng-seed N]]\n",
+                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n",
                  prog);
 }
 
@@ -144,6 +164,14 @@ int main(int argc, char const* argv[]) {
             cfg.sb_worlds = std::stoi(need_arg(argc, argv, i, "--sb-worlds"));
         } else if (a == "--sb-max-depth") {
             cfg.sb_max_depth = std::stoi(need_arg(argc, argv, i, "--sb-max-depth"));
+        } else if (a == "--rollout-turns") {
+            cfg.rollout_turns = std::stoi(need_arg(argc, argv, i, "--rollout-turns"));
+        } else if (a == "--sb-rollout-turns") {
+            cfg.sb_rollout_turns = std::stoi(need_arg(argc, argv, i, "--sb-rollout-turns"));
+        } else if (a == "--sb-persist") {
+            cfg.sb_persist = std::stoi(need_arg(argc, argv, i, "--sb-persist"));
+        } else if (a == "--merge-dupes") {
+            cfg.merge_dupes = std::stoi(need_arg(argc, argv, i, "--merge-dupes"));
         } else if (a == "--selfplay") {
             cfg.selfplay = true;
             cfg.search = true;  // self-play implies MCTS search
@@ -153,6 +181,8 @@ int main(int argc, char const* argv[]) {
             cfg.noise_alpha = std::stod(need_arg(argc, argv, i, "--noise-alpha"));
         } else if (a == "--temp-moves") {
             cfg.temp_moves = std::stoi(need_arg(argc, argv, i, "--temp-moves"));
+        } else if (a == "--td-n") {
+            cfg.td_n = std::stoi(need_arg(argc, argv, i, "--td-n"));
         } else if (a == "--out-dir") {
             cfg.out_dir = need_arg(argc, argv, i, "--out-dir");
         } else if (a == "--rng-seed") {
@@ -234,6 +264,10 @@ int main(int argc, char const* argv[]) {
         mc.sb_sims = cfg.sb_sims;              // -1 = inherit in-game sims
         mc.sb_worlds = cfg.sb_worlds;          // -1 = inherit in-game worlds
         mc.sb_max_depth = cfg.sb_max_depth;    // -1 = inherit in-game max_depth
+        mc.rollout_turns = cfg.rollout_turns;
+        mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = inherit rollout_turns
+        mc.sb_tree_persist = cfg.sb_persist != 0;
+        mc.merge_dupes = cfg.merge_dupes != 0;
         mc.selfplay = cfg.selfplay;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
         mc.noise_alpha = cfg.noise_alpha;
@@ -256,9 +290,9 @@ int main(int argc, char const* argv[]) {
             static_cast<size_t>(MAX_ACTIONS));
         std::fprintf(stderr,
                      "az_actor: self-play out_dir=%s sims=%d worlds=%d "
-                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d\n",
+                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d td_n=%d\n",
                      dir.c_str(), cfg.sims, cfg.worlds, cfg.noise_eps,
-                     cfg.noise_alpha, cfg.temp_moves);
+                     cfg.noise_alpha, cfg.temp_moves, cfg.td_n);
     }
 
     InputLogger::instance().set_input_provider(
@@ -293,9 +327,26 @@ int main(int argc, char const* argv[]) {
                     winner != static_cast<int>(Zone::PLAYER_B);
         bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
         const std::vector<SelfPlaySample>& gs = mcts->game_samples();
-        for (const SelfPlaySample& s : gs) {
-            float z = draw ? 0.0f : (s.mover_is_a == winner_is_a ? 1.0f : -1.0f);
-            shards->add_sample(s.obs.data(), s.pi.data(), z, s.mask.data());
+        // Price each sample, then derive the n-step TD targets over the WHOLE
+        // game's sample stream at once (the chain never leaves this buffer:
+        // it holds exactly one game plus any sideboard roots that gated it,
+        // mirroring az_selfplay.py's per-(game, sideboard) chains).
+        std::vector<TdSample> td_in(gs.size());
+        for (size_t i = 0; i < gs.size(); i++) {
+            const SelfPlaySample& s = gs[i];
+            td_in[i].z = draw ? 0.0f : (s.mover_is_a == winner_is_a ? 1.0f : -1.0f);
+            td_in[i].q = s.q;
+            td_in[i].explored = s.explored;
+            td_in[i].is_sideboard = s.is_sideboard;
+            td_in[i].mover_is_a = s.mover_is_a;
+        }
+        std::vector<float> td_q;
+        compute_td_targets(td_in, cfg.td_n, td_q);
+        for (size_t i = 0; i < gs.size(); i++) {
+            const SelfPlaySample& s = gs[i];
+            shards->add_sample(s.obs.data(), s.pi.data(), td_in[i].z,
+                               s.mask.data(), s.q,
+                               static_cast<uint8_t>(s.explored ? 1 : 0), td_q[i]);
         }
         shards->maybe_flush();
         const char* wstr = draw ? "DRAW" : (winner_is_a ? "A" : "B");

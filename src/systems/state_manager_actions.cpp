@@ -384,6 +384,17 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         return is_battlefield_permanent(ab.source);
     }
 
+    // IsPresent$ Card.StrictlySelf (Animate Dead's ETB: "When CARDNAME enters, if it's on the
+    // battlefield, ..."): strictly this object itself must be on the battlefield when the
+    // trigger would go on the stack AND when it resolves (CR 603.4 — either check failing means
+    // the trigger does nothing). Unlike Card.Self this is NOT Forge's "another permanent
+    // enters" idiom, so the source's own entry satisfies it (no trigger_self_excluded in
+    // parse.cpp). Must not fall through to the generic presence scan below, which would read
+    // the type token "Card" as any-permanent and pass vacuously whenever anything is in play.
+    if (ab.condition_present == "Card.StrictlySelf") {
+        return is_battlefield_permanent(ab.source);
+    }
+
     // Card.Self+escaped: the source permanent entered because its spell was cast from the
     // graveyard for its Escape cost (CR 702.139). Read the persisted flag off its Permanent.
     // Uro's TrigSac uses ConditionNotPresent$ Card.Self+escaped ("sacrifice it unless it
@@ -553,35 +564,29 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
         game.player_a_turn == game.player_a_has_priority && stack_manager->is_empty() &&
         global_coordinator.entity_has_component<Player>(priority_player_entity)) {
-        auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
-
-        // Compute effective land play limit (base 1 + AdjustLandPlays statics)
-        int land_play_limit = 1 + rules_mod::land_play_bonus(priority_player);
+        // Effective land play allowance (base 1 + AdjustLandPlays statics) minus the
+        // lands already played, through the shared rules_mod expression the ML
+        // observation's mana-development block reports.
         bool may_play_from_graveyard = rules_mod::may_play_lands_from_graveyard(priority_player);
 
-        if (player.lands_played_this_turn < land_play_limit) {
+        if (rules_mod::land_drops_remaining(priority_player) > 0) {
             // Check hand for lands
             auto hand = orderer->get_hand(priority_player);
             for (auto card_entity : hand) {
                 auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-                if (is_land_card(card_data)) {
-                    std::string desc = "Play " + card_data.name;
-                    LegalAction la(SPECIAL_ACTION, card_entity, desc);
-                    la.category = ActionCategory::PLAY_LAND;
-                    actions.push_back(la);
-                } else if (card_data.is_modal_dfc && card_data.backside &&
-                           is_land_card(*card_data.backside)) {
-                    // Modal DFC whose BACK face is a land (Witch Enchanter // Witch-Blessed
-                    // Meadow): playing the back face is a land play, subject to the same one-
-                    // land-per-turn drop (CR 712.x / 305.2). The front face is still offered as a
-                    // cast in the spell loop below. (A modal DFC whose back is a nonland spell
-                    // would instead be a cast — keyed on the back face's card type.)
-                    std::string desc = "Play " + card_data.backside->name;
-                    LegalAction la(SPECIAL_ACTION, card_entity, desc);
-                    la.category = ActionCategory::PLAY_LAND;
-                    la.play_back_face = true;
-                    actions.push_back(la);
-                }
+                // A modal DFC whose BACK face is a land (Witch Enchanter // Witch-Blessed
+                // Meadow): playing the back face is a land play, subject to the same one-
+                // land-per-turn drop (CR 712.x / 305.2). The front face is still offered as a
+                // cast in the spell loop below. (A modal DFC whose back is a nonland spell
+                // would instead be a cast — keyed on the back face's card type.)
+                if (!card_playable_as_land(card_data)) continue;
+                bool back_face = !is_land_card(card_data);
+                std::string desc =
+                    "Play " + (back_face ? card_data.backside->name : card_data.name);
+                LegalAction la(SPECIAL_ACTION, card_entity, desc);
+                la.category = ActionCategory::PLAY_LAND;
+                la.play_back_face = back_face;
+                actions.push_back(la);
             }
             // Check graveyard for lands if MayPlay from graveyard is active
             if (may_play_from_graveyard) {
@@ -1012,11 +1017,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (perm_grant.resource != Game::ImpulseCastPermission::NORMAL || !perm_grant.allow_land)
                 continue;
             if (!main_phase_window) continue;
-            Entity ple = get_player_entity(priority_player);
-            if (!global_coordinator.entity_has_component<Player>(ple)) continue;
-            int land_play_limit = 1 + rules_mod::land_play_bonus(priority_player);
-            if (global_coordinator.GetComponent<Player>(ple).lands_played_this_turn >= land_play_limit)
-                continue;
+            // Same shared land-drop expression the hand loop above uses.
+            if (rules_mod::land_drops_remaining(priority_player) <= 0) continue;
             LegalAction land_la(SPECIAL_ACTION, ex_entity, "Play " + ecd.name + " (from exile)");
             land_la.category = ActionCategory::PLAY_LAND;
             actions.push_back(land_la);

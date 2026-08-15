@@ -35,6 +35,20 @@ static_assert(ACTOR_SELF_IS_A_IDX == 34, "self_is_a documented at float 34 (mach
 static_assert(ACTOR_IS_ACTIVE_IDX + HEADER_FLAGS == STATE_HEADER_SIZE,
               "is_active/self_is_a/stack_size are the HEADER_FLAGS trailing scalars");
 
+// Per-action metadata block start offsets in the obs (must mirror env.py's
+// ACT_*_START writes into self._obs). Shared here so obs_builder.cpp (writer)
+// and menu_merge.h (reader) index the same blocks from one definition.
+constexpr int ACT_CATS_START = STATE_SIZE;
+constexpr int ACT_IDS_START = ACT_CATS_START + MAX_ACTIONS;
+constexpr int ACT_CTRL_START = ACT_IDS_START + MAX_ACTIONS;
+constexpr int ACT_ZONE_START = ACT_CTRL_START + MAX_ACTIONS;
+constexpr int ACT_REFS_START = ACT_ZONE_START + MAX_ACTIONS;
+constexpr int ACT_ORDS_START = ACT_REFS_START + MAX_ACTIONS;
+
+// REF_ZONE_MAX (env.py / _enums.py) = highest ActionRefZone value = REF_PLAYER_OPP.
+constexpr int ACTOR_REF_ZONE_MAX = static_cast<int>(REF_PLAYER_OPP);
+static_assert(ACTOR_REF_ZONE_MAX == 11, "REF_ZONE_MAX documented as 11");
+
 // Matchup tail (train/env.py's _MATCHUP_TAIL_FEATS): the raw value-bucket index
 // (self_arch * ARCH_N + opp_arch) followed by one-hot(self arch) + one-hot(opp
 // arch). ARCH_N comes from the generated archetype mirror, so the width tracks
@@ -43,7 +57,7 @@ constexpr int ACTOR_MATCHUP_TAIL_FEATS = 1 + 2 * ARCH_N;
 
 // obs = state | cats | ids | ctrl | zone | refs | ords | hand_costs |
 //       bf_ability_costs | matchup_tail.
-// Must equal train/env.py::OBS_SIZE (7136). Derived from the engine layout
+// Must equal train/env.py::OBS_SIZE (7161). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.
 // The per-action metadata blocks (N_ACTION_OBS_BLOCKS: cats | ids | ctrl | zone_ref
 // | slot_ref | option_ordinal; pub stays a side-channel, not in the obs) are counted
@@ -54,7 +68,7 @@ constexpr int ACTOR_OBS_SIZE =
     MAX_HAND_SLOTS * ACTOR_N_COST_FEATS +
     MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS +
     ACTOR_MATCHUP_TAIL_FEATS;
-static_assert(ACTOR_OBS_SIZE == 7136, "actor obs size must match env.py OBS_SIZE");
+static_assert(ACTOR_OBS_SIZE == 7161, "actor obs size must match env.py OBS_SIZE");
 
 struct ActorObs {
     std::vector<float> obs;  // ACTOR_OBS_SIZE floats

@@ -10,6 +10,10 @@
 #include "classes/game.h"  // MandatoryChoice enum (mandatory-choice one-hot width)
 #include "components/zone.h"
 #include "error.h"
+// Not consumed here — included so the torch-free `make actor-syntax` tier
+// compiles the duplicate-edge merge predicate (its layout reads must track
+// this file's block constants).
+#include "menu_merge.h"
 #include "game_driver.h"  // sideboard_phase / sideboard_phase_player + deck names
 #include "gen/archetypes_gen.h"  // ARCH_DECK_TAGS, ARCH_UNKNOWN, ARCH_N
 #include "gen/card_costs_gen.h"  // CARD_COST_MATRIX, CARD_ABILITY_COST_MATRIX, N_COST_FEATS
@@ -51,17 +55,8 @@ static constexpr int SELF_DECK_MAIN_END = SELF_DECK_SIDE_START;
 static constexpr int SELF_DECK_SIDE_END = OPP_DECK_MAIN_START;
 static constexpr int OPP_DECK_MAIN_END = OPP_DECK_SIDE_START;
 
-// REF_ZONE_MAX (env.py / _enums.py) = highest ActionRefZone value = REF_PLAYER_OPP.
-static constexpr int ACTOR_REF_ZONE_MAX = static_cast<int>(REF_PLAYER_OPP);
-static_assert(ACTOR_REF_ZONE_MAX == 11, "REF_ZONE_MAX documented as 11");
-
-// obs sub-block start offsets (must mirror env.py's writes into self._obs).
-static constexpr int ACT_CATS_START = STATE_SIZE;
-static constexpr int ACT_IDS_START = ACT_CATS_START + MAX_ACTIONS;
-static constexpr int ACT_CTRL_START = ACT_IDS_START + MAX_ACTIONS;
-static constexpr int ACT_ZONE_START = ACT_CTRL_START + MAX_ACTIONS;
-static constexpr int ACT_REFS_START = ACT_ZONE_START + MAX_ACTIONS;
-static constexpr int ACT_ORDS_START = ACT_REFS_START + MAX_ACTIONS;
+// Per-action block starts + ACTOR_REF_ZONE_MAX now live in obs_builder.h
+// (shared with menu_merge.h).
 static constexpr int HAND_COST_START = ACT_ORDS_START + MAX_ACTIONS;
 static constexpr int BF_COST_START = HAND_COST_START + MAX_HAND_SLOTS * ACTOR_N_COST_FEATS;
 // Matchup tail: raw bucket float, then one-hot(self arch), then one-hot(opp arch).
@@ -137,6 +132,16 @@ static void write_matchup_tail(float* o, bool self_is_a) {
 // static-decklist blocks), plus the self-is-A seat flag; card-id positions inside
 // masked blocks are filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 (0.0
 // decodes to real vocab index 0). We build the identical keep/fill pair once.
+// The MANA DEVELOPMENT block is board state of the ENDED game (untapped sources, lands
+// in play, land drops left in a turn that is over), so — like the player blocks and the
+// global extras — it is masked: it is simply not kept below, and holds no card-id slot,
+// so the default 0.0 fill is correct. env.py's mask does the same by omission.
+// The LOG VITALS block is masked the same way and for the same reason: it re-states the
+// player blocks' life and the library-context counts, and the PLAYER blocks are masked
+// here, so keeping the log copy would leak the ended game's life totals back in. (The
+// LINEAR library counts inside the kept match/library-context range do survive the mask;
+// the log copy does not, so during the sideboard phase the two encodings are deliberately
+// NOT redundant — obsinv asserts the zeroed block there instead of the log identity.)
 struct SideboardMask {
     std::array<bool, STATE_SIZE> keep{};   // value-initialized: all false
     std::array<float, STATE_SIZE> fill{};  // value-initialized: all 0.0f

@@ -24,6 +24,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import archetypes  # noqa: E402
+from gen_util import write_if_changed  # noqa: E402
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_HEADER = os.path.join(REPO_ROOT, "src/gen/archetypes_gen.h")
@@ -73,9 +74,7 @@ def main():
         hdr.append(f'    {{"{stem}", {arch}}},  // {mapping[stem]}')
     hdr += ["};", ""]
 
-    os.makedirs(os.path.dirname(OUT_HEADER), exist_ok=True)
-    with open(OUT_HEADER, "w") as f:
-        f.write("\n".join(hdr) + "\n")
+    write_if_changed(OUT_HEADER, "\n".join(hdr) + "\n")
     print(f"Wrote {OUT_HEADER}")
 
 

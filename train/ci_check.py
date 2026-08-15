@@ -13,15 +13,27 @@ non-fatal errors / anomalies in the transcripts.
 Tiers (run cheap-to-expensive; all requested tiers run even if an earlier one
 fails, so one invocation reports every finding):
 
-  pygen   Regenerate train/_enums.py + train/card_costs.py and fail if the
-          committed copies are stale (someone changed a C++ input without
-          committing the regenerated Python).
+  pygen   Regenerate the codegen and fail if the TRACKED copies (train/_enums.py,
+          src/gen/archetypes_gen.h — the ones derived only from tracked sources)
+          are stale (someone changed a C++/JSON input without committing the
+          regenerated output). The script-derived codegen (card_costs.py,
+          card_props.py, card_costs_gen.h) is untracked and regenerated every
+          `make`, so it has no committed copy to go stale; its generators are
+          still run here as a crash smoke.
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
   curriculum The curriculum plan schema and the argv each phase kind composes
           for its train.py subcommand, the resume argv forms, and the plan-hash
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
+  shardrec The play-session shard recorder (train/shard_record.py behind the
+          GUI's "Record shards" / play.py --record-shards): a synthetic bo3
+          match's searched + one-hot rows write trainer-schema shards, a
+          MID-GAME flush is already a valid shard whose unfinished-game rows
+          price z=0, game-boundary rewrites never duplicate, z backfill is
+          per-game per-mover, and both readers (shard_replay records,
+          az_inspect samples) round-trip it (train/test_shard_record.py).
+          Torch-free, engine-free, instant.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -74,8 +86,19 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           AnalysisSession's detached mirror stays in lockstep across a bo3
           sideboard boundary by delta replay, rewinds to an already-played
           decision by respawn, and a cross-thread stop event cancels within one
-          chunk (train/test_analysis_session.py).
+          chunk (train/test_analysis_session.py). Also the shard-replay
+          reconstruction behind tui_analysis --shards: recorded scripted
+          matches round-trip through synthetic shard_*.npz files into
+          browsable match records (train/test_shard_replay.py).
           Torch-free; needs bin/robomage.
+  azinspect The AZ checkpoint inspector (az_inspect.py / tui_az_inspect.py):
+          every view computed against a FRESH AZNet and synthetic shards, so it
+          needs neither a trained checkpoint nor recorded self-play. Pins the
+          views to the real observation layout — the block partition covers
+          [0, OBS_SIZE), the card embedding's padding offset, the swap probe's
+          swap-for-itself-is-zero invariant, the sweep normalizers — plus the
+          ./tui.sh spec wiring (train/test_az_inspect.py). Needs torch (self-
+          skips without it); no engine binary.
 
 Draw classification (per repo policy — draws are not acceptable, but the two
 causes differ in severity):
@@ -120,13 +143,14 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "obsinv", "actorobs", "pergame",
-             "snapshot", "sbselfplay", "mirror", "replay", "smoke", "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "obsinv", "actorobs",
+             "pergame", "snapshot", "sbselfplay", "mirror", "replay", "smoke",
+             "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
 # self-skips cleanly when either is absent (so it never breaks a stock build).
-OPT_IN_TIERS = ["actor", "analysis"]
+OPT_IN_TIERS = ["actor", "analysis", "azinspect", "gui"]
 KNOWN_TIERS = ALL_TIERS + OPT_IN_TIERS
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
@@ -213,36 +237,38 @@ class Report:
 # ── Tiers ───────────────────────────────────────────────────────────────────
 
 def tier_pygen(rep):
-    """Regenerate the codegen outputs and fail if the committed copies are stale.
+    """Regenerate the codegen and fail if the TRACKED committed copies are stale.
 
-    All are deterministic given the committed inputs AND a fully provisioned
-    card set: _enums.py derives from action.h/game.h; archetypes_gen.h from
-    archetypes.py + decks/archetypes.json; card_costs.py additionally
-    reads each vocab card's ManaCost from its script — and provision_decks.py
-    fetches the whole vocab, so every cost is reproducible here and in CI. The
-    working tree is restored afterward so a stale result is reported, not left
+    Only train/_enums.py (from action.h/game.h/machine_io.h) and
+    src/gen/archetypes_gen.h (from archetypes.py + decks/archetypes.json) are
+    tracked: they derive purely from tracked sources, so a committed copy CAN go
+    stale when a developer edits a C++/JSON input without regenerating. The
+    script-derived codegen (train/card_costs.py, train/card_props.py,
+    src/gen/card_costs_gen.h) reads gitignored/fetched card-script content and is
+    regenerated on every `make`, so it is untracked — there is no committed copy to
+    diff, and stale local scripts can never commit stale matrices. Every generator
+    is still RUN below (a crash is a real failure), but only the tracked outputs are
+    diffed; they are restored afterward so a stale result is reported, not left
     half-regenerated (the developer runs `make pygen` to actually update them)."""
-    gen_files = ["train/_enums.py", "train/card_costs.py",
-                 "src/gen/card_costs_gen.h", "src/gen/archetypes_gen.h"]
+    tracked = ["train/_enums.py", "src/gen/archetypes_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
-                "train/gen_archetypes.py"):
+                "train/gen_card_props.py", "train/gen_archetypes.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
         if r.returncode != 0:
             rep.error("pygen", f"{gen} failed: {r.stderr.strip()}")
-            subprocess.run(["git", "checkout", "--", *gen_files], cwd=_REPO_ROOT,
+            subprocess.run(["git", "checkout", "--", *tracked], cwd=_REPO_ROOT,
                            capture_output=True)
             return
-    diff = subprocess.run(["git", "diff", "--", *gen_files], cwd=_REPO_ROOT,
+    diff = subprocess.run(["git", "diff", "--", *tracked], cwd=_REPO_ROOT,
                           capture_output=True, text=True)
     # Restore the committed copies regardless — the tier only reports staleness.
-    subprocess.run(["git", "checkout", "--", *gen_files], cwd=_REPO_ROOT,
+    subprocess.run(["git", "checkout", "--", *tracked], cwd=_REPO_ROOT,
                    capture_output=True)
     if diff.stdout.strip():
         rep.error("pygen",
                   "generated files are stale — run `make pygen` and commit "
-                  f"{', '.join(gen_files)} (ensure the full card set is provisioned "
-                  f"first: tools/forge_fetch/provision_decks.py):\n{diff.stdout}")
+                  f"{', '.join(tracked)}:\n{diff.stdout}")
 
 
 def tier_vocab(rep):
@@ -288,6 +314,24 @@ def tier_curriculum(rep):
         rep.error("curriculum", "curriculum plan/argv violation "
                                 f"(test_curriculum.py exit {r.returncode}):\n"
                                 f"{r.stdout}{r.stderr}")
+
+
+def tier_shardrec(rep):
+    """Play-session shard-recorder regression (train/shard_record.py).
+
+    Drives a ShardRecorder through a synthetic bo3 match (searched rows via
+    the on_result signature, one-hot rows via the driver step observer,
+    sideboard rows priced on the upcoming game) and asserts the trainer-schema
+    checklist, the mid-game-flush validity (unfinished game rows z=0, atomic
+    rewrite never duplicates), per-mover z backfill, and both readers'
+    round-trip (see train/test_shard_record.py). Torch-free, engine-free."""
+    r = subprocess.run([sys.executable, "train/test_shard_record.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("shardrec", "shard-recorder violation "
+                              f"(test_shard_record.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
 
 
 def tier_snapshot(rep):
@@ -367,6 +411,117 @@ def tier_analysis(rep):
         rep.error("analysis", "analysis-session violation "
                               f"(test_analysis_session.py exit {r.returncode}):\n"
                               f"{r.stdout}{r.stderr}")
+    # Shard-replay reconstruction (tui_analysis --shards): recorded scripted
+    # matches round-trip through synthetic shards into browsable match records.
+    # Torch-free; needs bin/robomage.
+    r = subprocess.run([sys.executable, "train/test_shard_replay.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("analysis", "shard-replay violation "
+                              f"(test_shard_replay.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+    # Qt-free analysis-browser core (browse_session): histogram geometry parity,
+    # BrowseStore event application, presentation helpers, and live streaming
+    # through the real collector's progress/should_stop hooks. Needs
+    # bin/robomage; the live-stream leg self-skips without torch.
+    r = subprocess.run([sys.executable, "train/test_browse_session.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("analysis", "browse-session violation "
+                              f"(test_browse_session.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+    # GUI session save/load (gui_session_io): .rmplay byte-identical replay
+    # round-trip, .rmtrace round-trip incl. shard/whatif records, validation
+    # gates, kind sniffing, trace_from_replay. Torch-free; needs bin/robomage.
+    r = subprocess.run([sys.executable, "train/test_gui_session_io.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("analysis", "gui-session-io violation "
+                              f"(test_gui_session_io.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
+
+
+def tier_gui(rep):
+    """Headless PySide6 shell smokes (opt-in; needs the optional PySide6
+    extra). Runs offscreen: the play-board auto-drive, the shard-recording
+    play session (--record-shards writes ≥1 valid shard into a scratch dir),
+    the live-analysis window, the play-session save→reopen replay round-trip,
+    the synthetic .rmtrace open into the analysis browser, and the shard-mode
+    browser (self-skips without recorded shards). Self-skips without
+    PySide6."""
+    try:
+        import PySide6  # noqa: F401
+    except Exception as e:
+        print(f"  [skip] gui: PySide6 not importable ({e})", flush=True)
+        return
+    env = dict(os.environ, QT_QPA_PLATFORM="offscreen")
+    rec_dir = tempfile.mkdtemp(prefix="ci_record_smoke_")
+    legs = [
+        ("play smoke",
+         dict(env, ROBOMAGE_GUI_SMOKE="8"),
+         [sys.executable, "train/play.py", "--gui",
+          "--human-deck", "league/ur_delver",
+          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+        # Recording leg: the driver step-observer records every >1-choice
+        # decision as a one-hot shard row (a scripted opponent never searches,
+        # so this exercises the recorder without torch); gui_main.run's
+        # RECORD SMOKE check fails the leg when no shard was written.
+        ("record-shards smoke",
+         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=rec_dir),
+         [sys.executable, "train/play.py", "--gui",
+          "--human-deck", "league/ur_delver",
+          "--model-deck", "league/gw_maverick", "--scripted", "--bo1",
+          "--record-shards"]),
+        ("analysis-window smoke",
+         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_ANALYSIS_SMOKE="1"),
+         [sys.executable, "train/play.py", "--gui", "--analysis",
+          "--human-deck", "league/ur_delver",
+          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+        ("session save/reopen smoke",
+         dict(env, ROBOMAGE_GUI_SESSION_SMOKE="1"),
+         [sys.executable, "train/gui_main.py"]),
+        ("trace open smoke",
+         dict(env, ROBOMAGE_GUI_TRACE_SMOKE="1"),
+         [sys.executable, "train/gui_main.py"]),
+        ("browser shard smoke",
+         dict(env, ROBOMAGE_BROWSER_SMOKE="1"),
+         [sys.executable, "train/gui_main.py"]),
+    ]
+    try:
+        for name, leg_env, cmd in legs:
+            r = subprocess.run(cmd, cwd=_REPO_ROOT, capture_output=True,
+                               text=True, env=leg_env)
+            print(r.stdout, end="", flush=True)
+            if r.returncode != 0:
+                rep.error("gui", f"{name} failed (exit {r.returncode}):\n"
+                                 f"{r.stdout}{r.stderr}")
+    finally:
+        shutil.rmtree(rec_dir, ignore_errors=True)
+
+
+def tier_azinspect(rep):
+    """AZ checkpoint-inspector regression (opt-in). Self-skips without torch.
+
+    Runs train/test_az_inspect.py: every az_inspect view against a fresh AZNet
+    and synthetic shards — obs-block partition, card-embedding padding offset,
+    shard-layout rejection, critic/bucket agreement, the probe invariants
+    (swap-for-itself == 0, sweep normalizers) and the ./tui.sh spec wiring.
+    No engine binary and no trained checkpoint needed."""
+    try:
+        import torch  # noqa: F401
+    except Exception as e:
+        print(f"  [skip] azinspect: torch not importable ({e})", flush=True)
+        return
+    r = subprocess.run([sys.executable, "train/test_az_inspect.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("azinspect", "az-inspect violation "
+                               f"(test_az_inspect.py exit {r.returncode}):\n"
+                               f"{r.stdout}{r.stderr}")
 
 
 def tier_replay(rep):
@@ -532,6 +687,12 @@ _CHAIN_PAIRS = [
     ("_OPP_DECK_MAIN_START",    "OPP_DECK_MAIN_START"),
     ("_OPP_DECK_SIDE_START",    "OPP_DECK_SIDE_START"),
     ("_OPP_DECK_SIDE_END",      "OPP_DECK_SIDE_END"),
+    ("_MANA_DEV_START",         "MANA_DEV_START"),
+    ("_MANA_DEV_OPP_START",     "MANA_DEV_OPP_START"),
+    ("_MANA_DEV_END",           "MANA_DEV_END"),
+    ("_LOG_VITALS_START",       "LOG_VITALS_START"),
+    ("_LOG_VITALS_OPP_START",   "LOG_VITALS_OPP_START"),
+    ("_LOG_VITALS_END",         "LOG_VITALS_END"),
 ]
 
 
@@ -687,6 +848,8 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "curriculum":
             tier_curriculum(rep)
+        elif t == "shardrec":
+            tier_shardrec(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
         elif t == "actorobs":
@@ -709,6 +872,10 @@ def main(argv=None):
             tier_actor(rep)
         elif t == "analysis":
             tier_analysis(rep)
+        elif t == "azinspect":
+            tier_azinspect(rep)
+        elif t == "gui":
+            tier_gui(rep)
 
     print("\n" + "=" * 60, flush=True)
     print(f"ci_check: {len(rep.errors)} error(s), {len(rep.warnings)} warning(s)",

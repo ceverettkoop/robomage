@@ -172,9 +172,9 @@ def _expand_checkpoint(val):
 
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
 # 'checkpoint' stays PPO-zips-only (fields that MaskablePPO.load directly:
-# --load resume, --from-ppo, baseline); 'agent' adds the az:/azraw:/mcts: gen
-# entries for fields that go through make_controller; 'az_checkpoint' is bare AZ
-# .pt paths.
+# --load resume, --from-ppo); 'agent' adds the az:/azraw:/mcts: gen entries for
+# fields that go through make_controller (observe's players, baseline's model);
+# 'az_checkpoint' is bare AZ .pt paths.
 _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
              "checkpoint": _scan_checkpoints, "agent": _scan_agents,
              "az_checkpoint": _scan_az_checkpoints,
@@ -256,6 +256,11 @@ class ArgFormMixin:
         if a.suggest in ("checkpoint", "agent") and (
                 a.default == "scripted" or a.name == "--opponent"):
             opts = ["scripted"] + opts
+        # AZ fields defaulting to the generalist stem offer 'gen' itself, so the
+        # default is selectable (and preselected) rather than only the explicit
+        # snapshot paths the scanner finds.
+        if a.suggest == "az_checkpoint" and a.default == "gen":
+            opts = ["gen"] + opts
         return opts
 
     def _arg_for_widget(self, widget):
@@ -599,7 +604,8 @@ class LauncherApp(ArgFormMixin, App):
     # play.py launches the game board (tui_game.py) and tui_analysis.py is the
     # analysis browser. Teeing either through `script` would fill the log with
     # terminal escape sequences, so they run without logging.
-    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py"})
+    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py",
+                                     "tui_az_inspect.py"})
 
     def _is_play_mode(self):
         """True when the selected command is itself a full-screen Textual app

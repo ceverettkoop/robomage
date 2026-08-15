@@ -1,0 +1,1384 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Dark Depths
+  Player A draws Wasteland
+  Player A draws Urza's Saga
+  Player A draws Mox Diamond
+  Player A draws Urza's Saga
+  Player A draws Mox Diamond
+  Player A draws Skateboard
+  Player B draws Mishra's Bauble
+  Player B draws Polluted Delta
+  Player B draws Volcanic Island
+  Player B draws Ponder
+  Player B draws Dragon's Rage Channeler
+  Player B draws Cori-Steel Cutter
+  Player B draws Into the Flood Maw
+  Player A hand:
+  Dark Depths
+  Mox Diamond
+  Mox Diamond
+  Skateboard
+  Urza's Saga
+  Urza's Saga
+  Wasteland
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Cori-Steel Cutter
+  Dragon's Rage Channeler
+  Into the Flood Maw
+  Mishra's Bauble
+  Polluted Delta
+  Ponder
+  Volcanic Island
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Pass priority
+   1: Play Dark Depths
+   2: Play Urza's Saga
+   3: Play Urza's Saga
+   4: Play Wasteland
+   5: Cast Mox Diamond  [#0]
+   6: Cast Mox Diamond  [#0]
+  >> A/A: 2 (Play Urza's Saga)
+--- Narrative ---
+  Player A played Urza's Saga
+  Urza's Saga gets 1 lore counter (now 1).
+  Urza's Saga chapter 1 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Urza's Saga [lore:1]
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Mox Diamond  [#0]
+   2: Cast Mox Diamond  [#0]
+   3: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Mox Diamond)
+--- Narrative ---
+  Player A casts Mox Diamond
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Dark Depths, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Urza's Saga [lore:1]
+  Stack: Mox Diamond (ability, self)
+  Extras: self_lands_played=1
+  Actions:
+   0: Discard Dark Depths (put Mox Diamond onto the battlefield)
+   1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+   2: Discard Wasteland (put Mox Diamond onto the battlefield)
+   3: Don't discard (put Mox Diamond into graveyard)
+  >> A/A: 0 (Discard Dark Depths (put Mox Diamond onto the battlefield))
+--- Narrative ---
+  Player A discards Dark Depths.
+  Mox Diamond enters the battlefield
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(4): Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond | Urza's Saga [lore:1]
+  Self GY: Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Mox Diamond  [#0]
+   2: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Mox Diamond)
+--- Narrative ---
+  Player A casts Mox Diamond
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(3): Skateboard, Urza's Saga, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond | Urza's Saga [lore:1]
+  Stack: Mox Diamond (ability, self)
+  Self GY: Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
+   1: Discard Wasteland (put Mox Diamond onto the battlefield)
+   2: Don't discard (put Mox Diamond into graveyard)
+  >> A/A: 0 (Discard Urza's Saga (put Mox Diamond onto the battlefield))
+--- Narrative ---
+  Player A discards Urza's Saga.
+  Mox Diamond enters the battlefield
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(2): Skateboard, Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond | Mox Diamond | Urza's Saga [lore:1]
+  Self GY: Urza's Saga, Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Skateboard  [#0]
+  >> A/A: 1 (Cast Skateboard)
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A casts Skateboard
+  Skateboard enters the battlefield
+  Choose target for Skateboard:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(1): Wasteland | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Pending: Skateboard (self)
+  Self GY: Urza's Saga, Dark Depths
+  Extras: self_lands_played=1
+  Actions:
+   0: Mox Diamond
+   1: Mox Diamond
+   2: Skateboard
+   3: Urza's Saga
+  >> A/A: 0 (Mox Diamond)
+--- Narrative ---
+  Targeting choice 0
+  Skateboard triggered
+  Resolving ability (category: Tap)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Scalding Tarn
+--- Turn 2 (Player B) ---
+  PA: Wasteland
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Scalding Tarn
+   3: Play Volcanic Island
+   4: Cast Mishra's Bauble  [#0]
+  >> B/B: 4 (Cast Mishra's Bauble)
+--- Narrative ---
+  Player B casts Mishra's Bauble
+  Mishra's Bauble enters the battlefield
+
+--- Decision 11 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Mishra's Bauble
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Scalding Tarn
+   3: Play Volcanic Island
+   4: Activate Mishra's Bauble (PeekAndReveal)  [#0]
+  >> B/B: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player B played Polluted Delta
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Mishra's Bauble | Polluted Delta
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
+   2: Activate Polluted Delta (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+--- Narrative ---
+  Choose target for Mishra's Bauble:
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Mishra's Bauble | Polluted Delta
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Pending: Mishra's Bauble (self)
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (20 life)
+   1: Player B (20 life)
+  >> B/B: 0 (Player A (20 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Mishra's Bauble
+  Player B's Mishra's Bauble ability targeting Player A is on the stack
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Polluted Delta
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Stack: Mishra's Bauble (ability, self) -> opponent (player)
+  Self GY: Mishra's Bauble
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Polluted Delta
+  Player B's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Mystic Sanctuary
+   3: Thundering Falls
+   4: Volcanic Island
+   5: Volcanic Island
+   6: Volcanic Island
+  >> B/B: 1 (Island)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Island to the battlefield
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Island
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Stack: Mishra's Bauble (ability, self) -> opponent (player)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Into the Flood Maw  [#0]
+  >> B/B: 1 (Cast Into the Flood Maw)
+--- Narrative ---
+  Player B promises the gift to Player A
+  Choose target for Into the Flood Maw:
+
+--- Decision 17 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
+  Opp:   20 life | mana: empty | hand count: 1 | lib 53
+  Self BF:  Island
+  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Stack: Mishra's Bauble (ability, self) -> opponent (player)
+  Pending: Into the Flood Maw (self)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Dark Depths
+  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Mox Diamond
+   1: Mox Diamond
+   2: Skateboard
+  >> B/B: 0 (Mox Diamond)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Island for 1(U)
+  Player B casts Into the Flood Maw
+  Resolving ability (category: ChangeZone)
+  Resolving ability (category: Token)
+  Token created: 1/1 Fish
+  Resolving ability (category: ChangeZone)
+  Mox Diamond is moved to hand
+  Resolving ability (category: PeekAndReveal)
+  Player B looks at top of Player A's library: Boseiju, Who Endures
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: Draw at next Upkeep.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Delayed trigger fires.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Unholy Heat
+  Player A draws Boseiju, Who Endures
+  Urza's Saga gets 1 lore counter (now 2).
+  Urza's Saga chapter 2 triggers.
+  Resolving ability (category: Animate)
+  Urza's Saga gains an activated ability.
+--- Turn 3 (Player A) ---
+  PA: Boseiju, Who Endures, Mox Diamond, Wasteland
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Mox Diamond, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2] | Fish [1/1]
+  Opp BF:   Island (T)
+  Self GY: Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Play Boseiju, Who Endures
+   2: Play Wasteland
+   3: Cast Mox Diamond  [#0]
+   4: Equip Skateboard  [#32]
+  >> A/A: 3 (Cast Mox Diamond)
+--- Narrative ---
+  Player A casts Mox Diamond
+
+--- Decision 19 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2] | Fish [1/1]
+  Opp BF:   Island (T)
+  Stack: Mox Diamond (ability, self)
+  Self GY: Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Actions:
+   0: Discard Boseiju, Who Endures (put Mox Diamond onto the battlefield)
+   1: Discard Wasteland (put Mox Diamond onto the battlefield)
+   2: Don't discard (put Mox Diamond into graveyard)
+  >> A/A: 0 (Discard Boseiju, Who Endures (put Mox Diamond onto the battlefield))
+--- Narrative ---
+  Player A discards Boseiju, Who Endures.
+  Mox Diamond enters the battlefield
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(1): Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2] | Fish [1/1]
+  Opp BF:   Island (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Equip Skateboard  [#32]
+   3: Activate Urza's Saga (Token)  [#1]
+  >> A/A: 3 (Activate Urza's Saga (Token))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Mox Diamond for 1(W)
+  Player A's Urza's Saga ability is on the stack
+  Resolving ability (category: Token)
+  Token created: 0/0 Construct
+  Construct token gains (always)
+
+--- Decision 21 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(1): Wasteland | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Fish [1/1] | Construct [4/4] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Wasteland | Fish [1/1] | Construct [4/4] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Equip Skateboard  [#32]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Equip Skateboard)
+--- Narrative ---
+  Player A activated Wasteland for 1(C)
+  Choose creature to equip:
+
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [1/1] | Construct [4/4] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Extras: self_lands_played=1
+  Actions:
+   0: Fish [1/1]
+   1: Construct [4/4]
+  >> A/A: 0 (Fish [1/1])
+--- Narrative ---
+  Skateboard equipped to Fish.
+  Fish token gains 1/0 Haste (always)
+  --- Declare Attackers (Player A) ---
+
+--- Decision 24 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 3)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [4/4] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Fish token [2/1]
+   1: Confirm attackers
+  >> A/A: 0 (Fish token [2/1])
+--- Narrative ---
+  Fish token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Fish token [2/1] -> Player B
+
+--- Decision 25 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 3)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (ATK) | Construct [4/4] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Island, Mishra's Bauble, Into the Flood Maw
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Fish token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Fish token deals 2 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Lightning Bolt
+--- Turn 4 (Player B) ---
+  PA: (empty)
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island | lib 49
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Island
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
+  Self GY: Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+   2: Play Volcanic Island
+   3: Cast Ponder  [#0]
+  >> B/B: 3 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 49
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Daze  [#2]
+   1: Scalding Tarn  [#2]
+   2: Murktide Regent  [#2]
+  >> B/B: 0 (Daze)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 49
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Scalding Tarn  [#1]
+   1: Murktide Regent  [#1]
+  >> B/B: 0 (Scalding Tarn)
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 49
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Murktide Regent, Scalding Tarn, Daze, ?, ?
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Murktide Regent
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Scalding Tarn, Unholy Heat, Volcanic Island | lib 48
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
+  Self GY: Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Scalding Tarn, Daze, ?, ?, ?
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+   2: Play Volcanic Island
+  >> B/B: 1 (Play Scalding Tarn)
+--- Narrative ---
+  Player B played Scalding Tarn
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Unholy Heat, Volcanic Island | lib 48
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Island (T) | Scalding Tarn
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
+  Self GY: Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Scalding Tarn, Daze, ?, ?, ?
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Scalding Tarn (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Scalding Tarn
+  Player B's Scalding Tarn ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  16 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Unholy Heat, Volcanic Island | lib 48
+  Opp:   20 life | mana: empty | hand count: 0 | lib 52
+  Self BF:  Island (T)
+  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland (T) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [4/4] (SICK)
+  Stack: Scalding Tarn (ability, self)
+  Pending: Scalding Tarn (self)
+  Self GY: Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Scalding Tarn, Daze, ?, ?, ?
+  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Mystic Sanctuary
+   2: Thundering Falls
+   3: Volcanic Island
+   4: Volcanic Island
+   5: Volcanic Island
+  >> B/B: 1 (Mystic Sanctuary)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Mystic Sanctuary to the battlefield
+  Mystic Sanctuary enters tapped.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: (empty)
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Unholy Heat, Volcanic Island
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Mox Diamond | Mox Diamond | Skateboard (->Fish) | Urza's Saga [lore:2] | Wasteland | Fish [2/1] [Haste] (eq:Skateboard) | Construct [4/4]
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Activate Urza's Saga (Token)  [#1]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Urza's Saga (Token))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Mox Diamond for 1(W)
+  Player A's Urza's Saga ability is on the stack
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland | Fish [2/1] [Haste] (eq:Skateboard) | Construct [4/4]
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Stack: Urza's Saga (ability, self)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Token)
+  Token created: 0/0 Construct
+  Construct token gains (always)
+
+--- Decision 35 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland | Fish [2/1] [Haste] (eq:Skateboard) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Dark Depths
+
+--- Decision 36 ---
+  Priority: Player A (active)
+  Step: Draw (turn 5)
+  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:2] (T) | Wasteland | Fish [2/1] [Haste] (eq:Skateboard) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Urza's Saga gets 1 lore counter (now 3).
+  Urza's Saga chapter 3 triggers.
+
+--- Decision 37 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:3] (T) | Wasteland | Fish [2/1] [Haste] (eq:Skateboard) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Stack: Urza's Saga (ability, self) [amt=1]
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 38 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:3] (T) | Wasteland | Fish [2/1] [Haste] (eq:Skateboard) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Stack: Urza's Saga (ability, self) [amt=1]
+  Pending: Wasteland (self)
+  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Mystic Sanctuary
+   1: Urza's Saga
+   2: Wasteland
+  >> A/A: 0 (Mystic Sanctuary)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Mystic Sanctuary is on the stack
+  Resolving ability (category: Destroy)
+  Mystic Sanctuary is destroyed
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 39 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:3] (T) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [5/5] | Construct [5/5] (SICK)
+  Opp BF:   Island (T)
+  Stack: Urza's Saga (ability, self) [amt=1]
+  Pending: Urza's Saga (self)
+  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_revolt, opp_revolt
+  Actions:
+   0: Fail to find
+   1: Expedition Map
+   2: Grafdigger's Cage
+   3: Mox Diamond
+   4: Mox Diamond
+   5: Pithing Needle
+  >> A/A: 1 (Expedition Map)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Expedition Map to the battlefield
+  Urza's Saga is sacrificed (final chapter completed).
+
+--- Decision 40 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 50
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_revolt, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Play Dark Depths
+  >> A/A: 1 (Play Dark Depths)
+--- Narrative ---
+  Player A played Dark Depths
+  Dark Depths enters with 10 ICE counter(s).
+  --- Declare Attackers (Player A) ---
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 50
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Fish token [2/1]
+   1: Construct token [6/6]
+   2: Confirm attackers
+  >> A/A: 0 (Fish token [2/1])
+--- Narrative ---
+  Fish token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Fish token [2/1] -> Player B
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 50
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (ATK) | Construct [6/6] | Construct [6/6] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [6/6]
+   1: Confirm attackers
+  >> A/A: 0 (Construct token [6/6])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Fish token [2/1] -> Player B
+    [attacking] Construct token [6/6] -> Player B
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 50
+  Opp:   16 life | mana: empty | hand count: 6 | lib 47
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (ATK) | Construct [6/6] (ATK) | Construct [6/6] (SICK)
+  Opp BF:   Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Fish token -> Player B
+    Construct token -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Fish token deals 2 damage to Player B
+    Construct token deals 6 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Ponder
+--- Turn 6 (Player B) ---
+  PA: (empty)
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Ponder, Unholy Heat, Volcanic Island
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  8 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Ponder, Unholy Heat, Volcanic Island | lib 46
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Self GY: Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+   2: Cast Ponder  [#0]
+  >> B/B: 2 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  8 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Unholy Heat, Volcanic Island | lib 46
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T)
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Force of Will  [#2]
+   1: Mishra's Bauble  [#2]
+   2: Force of Will  [#2]
+  >> B/B: 0 (Force of Will)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  8 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Unholy Heat, Volcanic Island | lib 46
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T)
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Mishra's Bauble  [#1]
+   1: Force of Will  [#1]
+  >> B/B: 0 (Mishra's Bauble)
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  8 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Unholy Heat, Volcanic Island | lib 46
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T)
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Force of Will, Mishra's Bauble, Force of Will, ?, ?
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Force of Will
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  8 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Force of Will, Lightning Bolt, Murktide Regent, Unholy Heat, Volcanic Island | lib 45
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T)
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Mishra's Bauble, Force of Will, ?, ?, ?
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+  >> B/B: 1 (Play Volcanic Island)
+--- Narrative ---
+  Player B played Volcanic Island
+
+--- Decision 49 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  8 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Force of Will, Lightning Bolt, Murktide Regent, Unholy Heat | lib 45
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T) | Volcanic Island
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Mishra's Bauble, Force of Will, ?, ?, ?
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dragon's Rage Channeler  [#0]
+   2: Cast Lightning Bolt  [#0]
+   3: Cast Unholy Heat  [#0]
+  >> B/B: 1 (Cast Dragon's Rage Channeler)
+--- Narrative ---
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Dragon's Rage Channeler
+
+--- Decision 50 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  8 life | mana: empty | hand(5): Cori-Steel Cutter, Force of Will, Lightning Bolt, Murktide Regent, Unholy Heat | lib 45
+  Opp:   20 life | mana: empty | hand count: 0 | lib 50
+  Self BF:  Island (T) | Volcanic Island (T)
+  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T) | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Stack: Dragon's Rage Channeler (spell, self)
+  Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Mishra's Bauble, Force of Will, ?, ?, ?
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Dragon's Rage Channeler enters the battlefield
+  Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: (empty)
+  PB: Cori-Steel Cutter, Force of Will, Lightning Bolt, Murktide Regent, Unholy Heat
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 50
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Ancient Tomb
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  20 life | mana: empty | hand(1): Ancient Tomb | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Activate Expedition Map (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 53 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(1): Ancient Tomb | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Actions:
+   0: Pass priority
+   1: Play Ancient Tomb
+   2: Activate Expedition Map (ChangeZone)  [#0]
+   3: Equip Skateboard  [#32]
+  >> A/A: 1 (Play Ancient Tomb)
+--- Narrative ---
+  Player A played Ancient Tomb
+
+--- Decision 54 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Ancient Tomb | Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Dark Depths (RemoveCounter)  [#0]
+   2: Activate Expedition Map (ChangeZone)  [#0]
+   3: Equip Skateboard  [#32]
+  >> A/A: 1 (Activate Dark Depths (RemoveCounter))
+--- Narrative ---
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Mox Diamond for 1(W)
+  Player A activated Ancient Tomb for 2(C)
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 18 life)
+  Player A's Dark Depths ability is on the stack
+  Resolving ability (category: RemoveCounter, amount: 1)
+  Removed 1 ICE counter(s) from Dark Depths.
+
+--- Decision 55 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  18 life | mana: 1C | hand(0): (empty) | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Equip Skateboard  [#32]
+  >> A/A: 1 (Equip Skateboard)
+--- Narrative ---
+  Choose creature to equip:
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1
+  Actions:
+   0: Fish [2/1]
+   1: Construct [6/6]
+   2: Construct [6/6]
+  >> A/A: 0 (Fish [2/1])
+--- Narrative ---
+  Skateboard equipped to Fish.
+  --- Declare Attackers (Player A) ---
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Fish token [2/1]
+   1: Construct token [6/6]
+   2: Construct token [6/6]
+   3: Confirm attackers
+  >> A/A: 0 (Fish token [2/1])
+--- Narrative ---
+  Fish token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Fish token [2/1] -> Player B
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (ATK) | Construct [6/6] | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [6/6]
+   1: Construct token [6/6]
+   2: Confirm attackers
+  >> A/A: 0 (Construct token [6/6])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Fish token [2/1] -> Player B
+    [attacking] Construct token [6/6] -> Player B
+
+--- Decision 59 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (ATK) | Construct [6/6] (ATK) | Construct [6/6]
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Construct token [6/6]
+   1: Confirm attackers
+  >> A/A: 0 (Construct token [6/6])
+--- Narrative ---
+  Construct token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Fish token [2/1] -> Player B
+    [attacking] Construct token [6/6] -> Player B
+    [attacking] Construct token [6/6] -> Player B
+
+--- Decision 60 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 7)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   8 life | mana: empty | hand count: 5 | lib 45
+  Self BF:  Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (ATK) | Construct [6/6] (ATK) | Construct [6/6] (ATK)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Mishra's Bauble, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Fish token -> Player B
+    Construct token -> Player B
+    Construct token -> Player B
+  --- Declare Blockers (Player B) ---
+  Attackers:
+    0: Fish token [2/1]
+    1: Construct token [6/6]
+    2: Construct token [6/6]
+  Your creatures:
+
+--- Decision 61 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 7)
+  Self:  8 life | mana: empty | hand(5): Cori-Steel Cutter, Force of Will, Lightning Bolt, Murktide Regent, Unholy Heat | lib 45
+  Opp:   18 life | mana: empty | hand count: 0 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T,ATK) | Construct [6/6] (T,ATK) | Construct [6/6] (T,ATK)
+  Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Mishra's Bauble, Force of Will, ?, ?, ?
+  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
+  Actions:
+   0: Dragon's Rage Channeler [3/3]
+   1: Confirm blockers
+  >> B/B: 0 (Dragon's Rage Channeler [3/3])
+--- Narrative ---
+  Select attacker for Dragon's Rage Channeler to block:
+
+--- Decision 62 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 7)
+  Self:  8 life | mana: empty | hand(5): Cori-Steel Cutter, Force of Will, Lightning Bolt, Murktide Regent, Unholy Heat | lib 45
+  Opp:   18 life | mana: empty | hand count: 0 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T,ATK) | Construct [6/6] (T,ATK) | Construct [6/6] (T,ATK)
+  Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Mishra's Bauble, Force of Will, ?, ?, ?
+  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
+  Actions:
+   0: Fish token [2/1]
+   1: Construct token [6/6]
+   2: Construct token [6/6]
+  >> B/B: 0 (Fish token [2/1])
+--- Narrative ---
+  Dragon's Rage Channeler blocking Fish token.
+  --- Declare Blockers (Player B) ---
+  Attackers:
+    0: Fish token [2/1]
+    1: Construct token [6/6]
+    2: Construct token [6/6]
+  Your creatures:
+    (assigned) Dragon's Rage Channeler [3/3] blocking Fish token
+
+--- Decision 63 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 7)
+  Self:  8 life | mana: empty | hand(5): Cori-Steel Cutter, Force of Will, Lightning Bolt, Murktide Regent, Unholy Heat | lib 45
+  Opp:   18 life | mana: empty | hand count: 0 | lib 49
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (BLK->Fish,SICK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Ancient Tomb (T) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) (T,ATK,BLOCKED) | Construct [6/6] (T,ATK) | Construct [6/6] (T,ATK)
+  Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
+  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Known top: Mishra's Bauble, Force of Will, ?, ?, ?
+  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
+  Actions:
+   0: Confirm blockers
+  >> B/B: 0 (Confirm blockers)
+--- Narrative ---
+  Blockers declared:
+    Dragon's Rage Channeler blocking Fish token
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 3 damage to Fish token
+    Fish token deals 2 damage to Dragon's Rage Channeler
+    Construct token deals 6 damage to Player B
+    Construct token deals 6 damage to Player B
+  --- End Combat Damage ---
+  Player B has -4 life - Player A wins!
+
+=== A/A wins ===

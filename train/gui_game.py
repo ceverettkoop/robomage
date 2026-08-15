@@ -45,7 +45,7 @@ import numpy as np
 from PySide6.QtCore import Qt, QObject, Signal, QTimer, QRectF, QSize
 from PySide6.QtGui import (QColor, QFont, QPainter, QPen, QBrush, QPixmap,
                            QPainterPath, QKeySequence, QShortcut)
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
+from PySide6.QtWidgets import (QApplication, QWidget, QLabel,
                                QVBoxLayout, QHBoxLayout, QScrollArea, QSplitter,
                                QListWidget, QListWidgetItem, QPlainTextEdit,
                                QToolButton, QSizePolicy, QDialog, QComboBox,
@@ -174,6 +174,38 @@ QPushButton {
 }
 QPushButton:hover { background: #2f2f3a; }
 QPushButton:default { border: 1px solid #d8a12a; }
+/* App shell (gui_main): menu bar, menus, and the welcome pane. */
+QMenuBar { background: #16161c; color: #d8d8d8; border-bottom: 1px solid #2a2a33; }
+QMenuBar::item { background: transparent; padding: 4px 10px; }
+QMenuBar::item:selected { background: #24242e; color: #f0f0f4; }
+QMenu { background: #16161c; color: #d8d8d8; border: 1px solid #2a2a33; }
+QMenu::item { padding: 4px 24px 4px 12px; }
+QMenu::item:selected { background: #d8a12a; color: #101014; }
+QMenu::item:disabled { color: #6a6a72; }
+QMenu::separator { height: 1px; background: #2a2a33; margin: 4px 8px; }
+QLabel#welcomeTitle { font-size: 28px; font-weight: bold; color: #f0f0f4; }
+QLabel#welcomeHint { color: #9a9aa2; }
+/* Tables/tabs (analysis window + browser pane). */
+QTableWidget, QTableView {
+    border: 1px solid #2a2a33; background: #0c0c10; color: #d8d8d8;
+    gridline-color: #2a2a33;
+    selection-background-color: #d8a12a; selection-color: #101014;
+}
+QHeaderView::section {
+    background: #16161c; color: #b8b8c0; border: 1px solid #2a2a33;
+    padding: 3px 6px;
+}
+QTableCornerButton::section { background: #16161c; border: 1px solid #2a2a33; }
+QTabWidget::pane { border: 1px solid #2a2a33; }
+QTabBar::tab {
+    background: #16161c; color: #b8b8c0; border: 1px solid #2a2a33;
+    padding: 4px 12px;
+}
+QTabBar::tab:selected { background: #24242e; color: #f0f0f4; }
+QLineEdit {
+    border: 1px solid #2a2a33; background: #0c0c10; color: #d8d8d8;
+    padding: 3px 6px;
+}
 """
 
 
@@ -942,12 +974,22 @@ class KnownHandPanel(_CollapsiblePanel):
         self._text.setText(", ".join(names) if names else "—")
 
 
-class GameWindow(QMainWindow):
-    """The Qt game board. Owns the widget tree, the DriverBridge, and the
-    GameDriver; renders each StateUpdate and delivers the human's picks back."""
+class PlayPane(QWidget):
+    """The Qt game board for ONE play session. Owns the widget tree, the
+    DriverBridge, and the GameDriver; renders each StateUpdate and delivers
+    the human's picks back.
 
-    def __init__(self, session):
+    A per-session widget, not a window: the host (gui_main.MainWindow, or
+    this module's standalone harness) embeds it, calls start() after showing
+    it, and calls shutdown() before closing the env. `session_finished` fires
+    when the pane wants the session ended (smoke auto-drive reaching its
+    quota, or game over under smoke) — the host decides what that means."""
+
+    session_finished = Signal()
+
+    def __init__(self, session, replay_actions=None):
         super().__init__()
+        self.session = session
         self._opp_is_a = session.opp_is_a
         self._human_deck = session.human_deck
         self._opp_deck = session.opp_deck
@@ -967,6 +1009,9 @@ class GameWindow(QMainWindow):
         self._actions = []
         self._awaiting = False
         self._thread = None
+        # Set once the driver reports game/match over — the host's save path
+        # reads it (a finished session saves with in_progress=False).
+        self.game_over = False
 
         # Cross-highlighting / oracle state (Phase D). _hovered_card is the
         # CardWidget the mouse is currently over (the Q-hold oracle anchor and the
@@ -990,7 +1035,7 @@ class GameWindow(QMainWindow):
         seat = "B" if self._opp_is_a else "A"
         opp_seat = "A" if self._opp_is_a else "B"
         fmt = "Best of 3" if self._bo3 else "Single game"
-        self.setWindowTitle(
+        self._title = (
             f"RoboMage · {fmt}  —  You (Player {seat}, {self._human_deck}) "
             f"vs {self._opp_label} (Player {opp_seat}, {self._opp_deck})")
 
@@ -1005,11 +1050,15 @@ class GameWindow(QMainWindow):
         # Frameless oracle-text popup, parented to the window so it centers on it
         # and stays above it (see OraclePopup); shown on Q-hold / right-click-hold.
         self._oracle = OraclePopup(self._provider, self)
+        reset_options = ({"engine_seed": session.engine_seed}
+                         if getattr(session, "engine_seed", None) is not None
+                         else None)
         self._driver = GameDriver(
             env=session.env, opp_act=session.opp_act, opp_is_a=session.opp_is_a,
             is_model=session.is_model, opp_label=session.opp_label,
             bo3=session.bo3, sink=self._bridge,
-            clock_fn=session.clock_fn, pace_idle=session.pace_idle)
+            clock_fn=session.clock_fn, pace_idle=session.pace_idle,
+            reset_options=reset_options, replay_actions=replay_actions)
 
         # Analysis window (separate top-level window; F9 toggles). Built only
         # when the session was assembled with an AnalysisConfig — its worker
@@ -1019,7 +1068,6 @@ class GameWindow(QMainWindow):
             from gui_analysis import AnalysisWindow
             self._analysis = AnalysisWindow(session.env, session.analysis_cfg,
                                             self._opp_is_a)
-            QShortcut(QKeySequence("F9"), self, activated=self._toggle_analysis)
             # A search opponent's own per-decision SearchResult is free —
             # surface it in the analysis window (shown only when its reveal
             # toggle is on).
@@ -1027,16 +1075,43 @@ class GameWindow(QMainWindow):
             if ctrl is not None and hasattr(ctrl, "on_result"):
                 ctrl.on_result = self._analysis.opp_search_sink()
 
-        # App-wide filter so the arrow-keys→action-pane hop works from any
-        # focused widget (log, scroll rows, ...), not just the window itself.
-        QApplication.instance().installEventFilter(self)
+        # Shard recorder (Session ▸ Analyze Recording… browses the output).
+        # Built AFTER the analysis window so its on_result tap CHAINS in front
+        # of the analysis sink instead of replacing it. The driver's step
+        # observer commits every decision (searched or not); on_search_result
+        # enriches the opponent's searched ones with the visit posterior.
+        self.recorder = None
+        if getattr(session, "record_dir", None):
+            from shard_record import ShardRecorder
+            self.recorder = ShardRecorder(session.record_dir)
+            self._driver.step_observer = self.recorder.observe_step
+            ctrl = getattr(session, "controller", None)
+            if ctrl is not None and hasattr(ctrl, "on_result"):
+                prev_sink = ctrl.on_result
+                rec_tap = self.recorder.on_search_result
+                if prev_sink is None:
+                    ctrl.on_result = rec_tap
+                else:
+                    def _fanout(obs, num, result, chosen,
+                                _rec=rec_tap, _prev=prev_sink):
+                        _rec(obs, num, result, chosen)
+                        _prev(obs, num, result, chosen)
+                    ctrl.on_result = _fanout
+            self._append_log(f"Recording shards to {session.record_dir}")
 
-        QShortcut(QKeySequence("Ctrl+Q"), self, activated=self.close)
+        # Whether this pane is the window's active mode. Gates the app-wide
+        # arrow-key filter (installed in start(), removed in shutdown()) so a
+        # hidden play pane, or an open dialog, never steals keys. The host
+        # flips it via set_active on mode switches.
+        self._active = True
+
         # >/< nudge the board/log division (parity with the TUI's resize_log).
-        QShortcut(QKeySequence(Qt.Key_Greater), self,
-                  activated=lambda: self._nudge_splitter(1))
-        QShortcut(QKeySequence(Qt.Key_Less), self,
-                  activated=lambda: self._nudge_splitter(-1))
+        # Widget-scoped so they are dead while another mode has the window.
+        # Quit and the analysis-window toggle belong to the host (menu/harness).
+        for keyseq, delta in ((Qt.Key_Greater, 1), (Qt.Key_Less, -1)):
+            sc = QShortcut(QKeySequence(keyseq), self)
+            sc.setContext(Qt.WidgetWithChildrenShortcut)
+            sc.activated.connect(lambda d=delta: self._nudge_splitter(d))
 
         keys = ("Game starting...  Click a card or pick a numbered action. "
                 "Keys: digits = pick, enter = confirm highlighted, space = pass, "
@@ -1155,13 +1230,26 @@ class GameWindow(QMainWindow):
         self._hsplit.setStretchFactor(0, 3)
         self._hsplit.setStretchFactor(1, 1)
         self._hsplit.setSizes([860, 380])
-        self.setCentralWidget(self._hsplit)
-        self.resize(1280, 940)
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.addWidget(self._hsplit)
 
     # ----- driver lifecycle -----
 
+    def title(self):
+        """Window-title fragment for the host."""
+        return self._title
+
+    def set_active(self, active):
+        """Host hook: whether this pane is the window's current mode (gates
+        the app-wide arrow-key filter)."""
+        self._active = bool(active)
+
     def start(self):
         """Start the engine loop on a worker thread (called after show)."""
+        # App-wide filter so the arrow-keys→action-pane hop works from any
+        # focused widget (log, scroll rows, ...), not just this pane.
+        QApplication.instance().installEventFilter(self)
         if self._analysis is not None:
             self._analysis.show()
         self._thread = threading.Thread(target=self._driver.run,
@@ -1176,19 +1264,28 @@ class GameWindow(QMainWindow):
         else:
             self._analysis.show()
 
-    def closeEvent(self, event):
-        # Signal shutdown and join the worker before the caller closes the env.
-        # request_quit sets _quitting so a loop blocked in a long opponent search
-        # returns silently once the env (and engine pipe) tear down. The analysis
-        # worker (and its detached engine) shuts down first — it must never see
-        # the primary env's teardown as a divergence.
+    @property
+    def driver(self):
+        """The GameDriver (the host's save path reads its action_log)."""
+        return self._driver
+
+    def shutdown(self):
+        """Tear the session's workers down, in the load-bearing order. The
+        host closes the env AFTER this returns (the driver leaves it open).
+
+        request_quit sets _quitting so a loop blocked in a long opponent search
+        returns silently once the env (and engine pipe) tear down. The analysis
+        worker (and its detached engine) shuts down first — it must never see
+        the primary env's teardown as a divergence."""
+        QApplication.instance().removeEventFilter(self)
         if self._analysis is not None:
             self._analysis.shutdown()
             self._analysis.close()
         self._driver.request_quit()
         if self._thread is not None:
             self._thread.join(timeout=2.0)
-        super().closeEvent(event)
+        if self.recorder is not None:
+            self.recorder.close()      # driver stopped: flush the final rows
 
     # ----- render (UI thread) -----
 
@@ -1300,6 +1397,7 @@ class GameWindow(QMainWindow):
             f"⏳ {self._opp_label} is thinking…  ({elapsed}s){bank}")
 
     def on_game_over(self, text):
+        self.game_over = True
         self._awaiting = False
         self._menu.clear()
         self._menu.setEnabled(False)
@@ -1308,7 +1406,7 @@ class GameWindow(QMainWindow):
         if self._analysis is not None:
             self._analysis.on_game_over()
         if self._smoke_n is not None:
-            QTimer.singleShot(80, self.close)
+            QTimer.singleShot(80, self.session_finished.emit)
 
     # ----- input -----
 
@@ -1347,10 +1445,13 @@ class GameWindow(QMainWindow):
         et = event.type()
         # Any arrow key, wherever focus is, jumps keyboard focus to the action
         # pane (installed app-wide); once the pane has focus the list handles
-        # arrows natively for row navigation.
+        # arrows natively for row navigation. Gated so a hidden play pane
+        # (another mode active) or an open modal dialog keeps its own arrows.
         if (et == event.Type.KeyPress
                 and event.key() in (Qt.Key_Up, Qt.Key_Down,
                                     Qt.Key_Left, Qt.Key_Right)
+                and self._active and self.isVisible()
+                and QApplication.activeModalWidget() is None
                 and not self._menu.hasFocus()):
             self._menu.setFocus(Qt.ShortcutFocusReason)
             return True
@@ -1752,12 +1853,12 @@ class GameWindow(QMainWindow):
         if self._smoke_n is None:
             return
         if self._smoke_n <= 1:
-            QTimer.singleShot(150, self.close)
+            QTimer.singleShot(150, self.session_finished.emit)
             return
         if not human_turn:
             return
         if self._smoke_played >= self._smoke_n:
-            QTimer.singleShot(60, self.close)
+            QTimer.singleShot(60, self.session_finished.emit)
             return
         self._smoke_played += 1
         QTimer.singleShot(15, self._smoke_submit)
@@ -1839,6 +1940,7 @@ _LAUNCHER_DEFAULTS = {
     "search_procs": None,
     "match_clock": 1500.0,                   # 25 min of thinking for the whole bo3
     "paced": True,
+    "record_shards": False,
     "analysis_enabled": True,
     "analysis_evaluator": "az:gen",
     "analysis_worlds": 4,
@@ -1871,36 +1973,37 @@ def _scan_decks():
     return sorted(out, key=lambda rel: (rel.count("/"), rel))
 
 
-def _load_launcher_config():
+def _load_launcher_config(path=_LAUNCHER_CONFIG):
     try:
-        with open(_LAUNCHER_CONFIG, encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
         return data if isinstance(data, dict) else {}
     except (OSError, ValueError):
         return {}
 
 
-def _save_launcher_config(cfg):
+def _save_launcher_config(cfg, path=_LAUNCHER_CONFIG):
     try:
-        os.makedirs(os.path.dirname(_LAUNCHER_CONFIG), exist_ok=True)
-        with open(_LAUNCHER_CONFIG, "w", encoding="utf-8") as f:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(cfg, f, indent=2)
     except OSError:
         pass                                 # persistence is best-effort
 
 
-class LauncherDialog(QDialog):
-    """Intro screen shown when the GUI is launched with no game arguments.
+class NewPlaySessionDialog(QDialog):
+    """The File ▸ New Session ▸ Play… dialog (also the no-arguments intro).
 
     Exposes the same game-running knobs as the TUI play form — the human's deck,
     the opponent's deck, the opponent controller, which seat the human takes, and
     the match format — and seeds every field from the last session's choices
     (persisted to ~/.robomage/gui_launcher.json). On Start it hands a plain options
-    dict back to run_launcher, which assembles the session and shows the board."""
+    dict back to the host (gui_main.SessionManager), which assembles the session
+    and shows the board."""
 
     def __init__(self, binary_path, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("RoboMage — New Game")
+        self.setWindowTitle("RoboMage — New Play Session")
         self.setModal(True)
         self._binary = binary_path
         cfg = _load_launcher_config()
@@ -1995,12 +2098,22 @@ class LauncherDialog(QDialog):
         self._paced.addItem("Off — instant obvious decisions", False)
         self._paced.setCurrentIndex(
             {None: 0, True: 1, False: 2}.get(_cfg_get(cfg, "paced"), 0))
+        self._record = QCheckBox("Record shards for analysis")
+        self._record.setChecked(bool(_cfg_get(cfg, "record_shards")))
+        self._record.setToolTip(
+            "Record every decision of the match into trainer-schema shard "
+            "files (train/az_data/recorded/rec_*): the opponent's searched "
+            "decisions with their full visit posterior and root value, every "
+            "other decision (yours included) as a one-hot row. Analyze them "
+            "live from View ▸ Analyze Recording… (F10), or later with the "
+            "analysis browser / az-inspect pointed at the directory.")
         form.addRow("Simulations", self._sims)
         form.addRow("Worlds", self._worlds)
         form.addRow("Think time (s)", self._think_time)
         form.addRow("Search procs", self._search_procs)
         form.addRow("Match clock (s)", self._match_clock)
         form.addRow("Paced responses", self._paced)
+        form.addRow(self._record)
         box = QGroupBox("Search opponent settings")
         box.setLayout(form)
         return box
@@ -2186,9 +2299,11 @@ class LauncherDialog(QDialog):
 
         player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
         bo3 = bool(self._format.currentData())
+        record = self._record.isChecked() and self._is_search_spec(opponent)
         self._options = dict(binary=self._binary, model_path=model_path,
                              human_player=player, human_deck=human_deck,
-                             model_deck=model_deck, bo3=bo3, analysis=analysis)
+                             model_deck=model_deck, bo3=bo3, analysis=analysis,
+                             record_shards=record)
         # Persist the BASE opponent + individual knobs (not the composed spec) so
         # the fields autofill cleanly next session without double-appending.
         _save_launcher_config(dict(
@@ -2199,6 +2314,7 @@ class LauncherDialog(QDialog):
             search_procs=self._spin_value(self._search_procs),
             match_clock=self._spin_value(self._match_clock),
             paced=self._paced.currentData(),
+            record_shards=self._record.isChecked(),
             analysis_enabled=self._analysis_enable.isChecked(),
             analysis_evaluator=self._combo_spec(self._analysis_eval),
             analysis_worlds=self._spin_value(self._analysis_worlds),
@@ -2209,6 +2325,11 @@ class LauncherDialog(QDialog):
 
     def options(self):
         return self._options
+
+
+# Back-compat alias (the dialog was the GUI's whole intro screen before the
+# gui_main.MainWindow app shell existed).
+LauncherDialog = NewPlaySessionDialog
 
 
 def _resolve_opponent_spec(spec):
@@ -2271,65 +2392,24 @@ def _analysis_cfg_from(opts):
     return cfg
 
 
-def _run_session(session):
-    """Show the board for an assembled session and run the Qt loop to completion."""
-    window = GameWindow(session)
-    try:
-        window.show()
-        window.start()
-        _ensure_app().exec()
-        if (os.environ.get("ROBOMAGE_ANALYSIS_SMOKE")
-                and not (window._analysis is not None
-                         and window._analysis.smoke_ok)):
-            print("ANALYSIS SMOKE FAILED: no analysis stats arrived",
-                  file=sys.stderr)
-            return 1
-    finally:
-        # The front end owns closing the env (the driver leaves it open).
-        session.env.close()
-    return 0
-
-
 def run(binary_path, model_path, human_player=None,
         human_deck="delver", model_deck="delver", bo3=True, analysis=False):
-    """Launch the Qt game board. Same signature/semantics as tui_game.run:
-    `model_path` of None/"scripted" ⇒ rule-based opponent; any
-    opponents.make_controller spec works; `bo3` (default True) plays a
-    best-of-three match with sideboarding in one engine process. `analysis`
-    opens the analysis window (default config)."""
-    _ensure_app()
-    analysis_cfg = _analysis_cfg_from({} if analysis else None)
-    session = build_session(binary_path, model_path, human_player=human_player,
-                            human_deck=human_deck, model_deck=model_deck, bo3=bo3,
-                            analysis=analysis_cfg is not None, step_pacing=True)
-    session.analysis_cfg = analysis_cfg
-    return _run_session(session)
+    """Back-compat delegate: the app shell (MainWindow + menus + sessions)
+    lives in gui_main now. Same signature/semantics as tui_game.run."""
+    import gui_main
+    return gui_main.run(binary_path, model_path, human_player=human_player,
+                        human_deck=human_deck, model_deck=model_deck,
+                        bo3=bo3, analysis=analysis)
 
 
 def run_launcher(binary_path=None):
-    """Show the intro screen, then launch the game the human configured. Returns 0
-    on a clean exit (including Cancel). This is the no-arguments entry point."""
-    from cli_spec import BINARY
-    binary_path = binary_path or BINARY
-    _ensure_app()
-    dialog = LauncherDialog(binary_path)
-    if dialog.exec() != QDialog.DialogCode.Accepted:
-        return 0
-    opts = dialog.options()
-    analysis_cfg = _analysis_cfg_from(opts.get("analysis"))
-    try:
-        session = build_session(
-            opts["binary"], opts["model_path"], human_player=opts["human_player"],
-            human_deck=opts["human_deck"], model_deck=opts["model_deck"],
-            bo3=opts["bo3"], analysis=analysis_cfg is not None, step_pacing=True)
-        session.analysis_cfg = analysis_cfg
-    except Exception as exc:                              # noqa: BLE001
-        QMessageBox.critical(None, "Could not start game", str(exc))
-        return 1
-    return _run_session(session)
+    """Back-compat delegate to gui_main.run_launcher (the no-arguments entry
+    point: MainWindow on the welcome pane + the New Play Session dialog)."""
+    import gui_main
+    return gui_main.run_launcher(binary_path)
 
 
 if __name__ == "__main__":
-    # Run with no game arguments -> the intro/launcher screen. (play.py --gui is
-    # the flagged entry point that skips the launcher and starts a game directly.)
+    # Run with no game arguments -> the app shell's launcher flow. (play.py
+    # --gui is the flagged entry point that starts a game directly.)
     sys.exit(run_launcher())

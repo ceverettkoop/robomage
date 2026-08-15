@@ -31,6 +31,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from az_net import AZNet, obs_space_from_const, save_torchscript, torchscript_export_path
 from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _MATCH_CTX_START
 from cli_spec import BIN_DIR
+# Write-order shard sort lives in shard_replay (shared with the browse path).
+from shard_replay import shard_sort_key as _shard_sort_key
+from az_selfplay import SHARD_KEYS
 import az_train
 
 DECK = "league/ur_delver"
@@ -45,6 +48,7 @@ BO3_WORLDS = 2
 BO3_SB_SIMS = 8
 BO3_SB_WORLDS = 2
 BO3_SB_MAX_DEPTH = 200
+BO3_SB_ROLLOUT_TURNS = 2  # small pin: exercises the actor's leaf-rollout path cheaply
 # is_sideboard_phase flag in the obs (env's _MATCH_CTX layout: game_number,
 # self_wins, opp_wins, sideboard_phase).
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
@@ -72,6 +76,7 @@ def _run_selfplay_bo3(ts_path, out_dir):
            "--games", str(GAMES), "--sims", str(BO3_SIMS), "--worlds",
            str(BO3_WORLDS), "--sb-sims", str(BO3_SB_SIMS), "--sb-worlds",
            str(BO3_SB_WORLDS), "--sb-max-depth", str(BO3_SB_MAX_DEPTH),
+           "--sb-rollout-turns", str(BO3_SB_ROLLOUT_TURNS),
            "--model", ts_path, "--out-dir", out_dir]
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
@@ -80,17 +85,6 @@ def _run_selfplay_bo3(ts_path, out_dir):
               + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
         return None
     return proc.stdout.decode("utf-8", "replace")
-
-
-def _shard_sort_key(path):
-    """Order pooled shards by write order: (mtime, numeric suffix n) from the
-    shard_{ts}_{pid}_{n}.npz name (a lexicographic sort misorders n>=10)."""
-    base = os.path.basename(path)
-    try:
-        n = int(base.rsplit("_", 1)[1].split(".")[0])
-    except (IndexError, ValueError):
-        n = 0
-    return (os.path.getmtime(path), n)
 
 
 def _load_pooled(out_dir):
@@ -227,14 +221,17 @@ def main():
             return 1
 
         n_total = 0
+        n_boot = 0        # rows whose n-step TD target left the plain outcome
+        n_explored = 0
         for sp in shard_paths:
             d = np.load(sp)
             keys = set(d.files)
-            if keys != {"obs", "pi", "z", "mask"}:
-                print(f"FAIL: shard {sp} keys {keys} != obs/pi/z/mask",
-                      file=sys.stderr)
+            if keys != set(SHARD_KEYS):
+                print(f"FAIL: shard {sp} keys {sorted(keys)} != "
+                      f"{sorted(SHARD_KEYS)}", file=sys.stderr)
                 return 1
             obs, pi, z, mask = d["obs"], d["pi"], d["z"], d["mask"]
+            q, explored, td_q = d["q"], d["explored"], d["td_q"]
             n = obs.shape[0]
             n_total += n
             checks = [
@@ -246,6 +243,18 @@ def main():
                 (pi.shape == (n, MAX_ACTIONS), f"pi shape {pi.shape}"),
                 (z.shape == (n,), f"z shape {z.shape}"),
                 (mask.shape == (n, MAX_ACTIONS), f"mask shape {mask.shape}"),
+                (q.dtype == np.float32, f"q dtype {q.dtype} != float32"),
+                (explored.dtype == np.uint8,
+                 f"explored dtype {explored.dtype} != uint8"),
+                (td_q.dtype == np.float32, f"td_q dtype {td_q.dtype} != float32"),
+                (q.shape == (n,), f"q shape {q.shape}"),
+                (explored.shape == (n,), f"explored shape {explored.shape}"),
+                (td_q.shape == (n,), f"td_q shape {td_q.shape}"),
+                (bool(np.all(np.isfinite(td_q))), "td_q has non-finite values"),
+                (bool(np.all(np.abs(td_q) <= 1.0 + 1e-6)),
+                 f"td_q outside [-1,1] (min={td_q.min()} max={td_q.max()})"),
+                (bool(np.all(np.isin(explored, (0, 1)))),
+                 "explored outside {0,1}"),
             ]
             for ok, msg in checks:
                 if not ok:
@@ -279,6 +288,19 @@ def main():
                 print(f"FAIL: shard {sp}: pi nonzero beyond the mask",
                       file=sys.stderr)
                 return 1
+            n_boot += int((td_q != z).sum())
+            n_explored += int(explored.sum())
+
+        # The C++ n-step TD rule must actually fire: with the actor's default
+        # horizon these games are far longer than td_n, so a shard where td_q is
+        # everywhere equal to z means the column is inert (a wiring bug), not a
+        # short game.
+        if n_boot == 0:
+            print(f"FAIL: no row bootstrapped (td_q == z on all {n_total} rows) "
+                  f"— the actor's n-step TD column is inert", file=sys.stderr)
+            return 1
+        print(f"[shards] n-step TD: {n_boot}/{n_total} rows bootstrapped, "
+              f"{n_explored} exploratory move(s)")
 
         if n_total != tally_total:
             print(f"FAIL: shard rows {n_total} != summed tallies {tally_total}",
@@ -286,17 +308,16 @@ def main():
             return 1
 
         # 4) The trainer's loader ingests the temp dir.
-        lobs, lpi, lz, lmask, n_shards = az_train.load_window(
-            DECK, window=1000, data_dir=out_dir)
-        if lobs.shape[0] != n_total or lpi.shape[0] != n_total or \
-                lz.shape[0] != n_total or lmask.shape[0] != n_total:
-            print(f"FAIL: load_window row count mismatch: obs={lobs.shape[0]} "
-                  f"pi={lpi.shape[0]} z={lz.shape[0]} mask={lmask.shape[0]} "
+        w = az_train.load_window(DECK, window=1000, data_dir=out_dir)
+        n_shards = w["n_shards"]
+        bad = {k: w[k].shape[0] for k in SHARD_KEYS if w[k].shape[0] != n_total}
+        if bad:
+            print(f"FAIL: load_window row count mismatch {bad} "
                   f"expected {n_total}", file=sys.stderr)
             return 1
-        if lobs.shape[1] != OBS_SIZE or lpi.shape[1] != MAX_ACTIONS:
-            print(f"FAIL: load_window widths obs={lobs.shape[1]} pi={lpi.shape[1]}",
-                  file=sys.stderr)
+        if w["obs"].shape[1] != OBS_SIZE or w["pi"].shape[1] != MAX_ACTIONS:
+            print(f"FAIL: load_window widths obs={w['obs'].shape[1]} "
+                  f"pi={w['pi'].shape[1]}", file=sys.stderr)
             return 1
 
         print(f"PASS: {len(shard_paths)} shard(s), {n_total} samples "

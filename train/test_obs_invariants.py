@@ -20,6 +20,7 @@ it); also runnable standalone::
 
     train/.venv/bin/python train/test_obs_invariants.py
 """
+import math
 import os
 import random
 import re
@@ -47,15 +48,23 @@ from env import (
     _PENDING_DECISION_START, _HIST_START, _ACTION_HISTORY_SIZE,
     _ACTION_HISTORY_ENTRY, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
-    _SELF_BLOCK_START, _OPP_BLOCK_START,
-    _PB_LIFE, _PB_HAND_CT, _LIBRARY_CTX_START, _REVEALED_START,
+    _SELF_BLOCK_START, _OPP_BLOCK_START, _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
+    _MANA_DEV_START, _MANA_DEV_OPP_START,
+    _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
+    _MD_SELF_LAND_DROPS, _MD_OPP_LAND_DROPS,
+    _LOG_VITALS_START, _LOG_VITALS_OPP_START, _LV_LOG_LIFE, _LV_LOG_LIBRARY,
+    _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START, _REVEALED_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
     _DECKLIST_SLOT_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
-                    SIDEBOARD_SWAP_CAP)
+                    SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
+                    MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
+                    LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
+                    LIFE_NORMALIZER, LIBRARY_NORMALIZER,
+                    LOG_LIFE_DENOM, LOG_LIBRARY_DENOM)
 from opponents import make_controller
 from scripted_agent import scripted_action
 
@@ -177,6 +186,129 @@ def _zone_block_offsets(start):
 
 # ── The invariant checks (all read `state` = obs[:STATE_SIZE]) ─────────────────
 
+def _count_slot_lands(state, start):
+    """Lands among one side's serialized permanent slots, phased-out excluded.
+
+    The observation deliberately keeps phased-out permanents visible (with the
+    is_phased_out flag set), while the engine's mana-development counts use the
+    live-permanent guard — so this mirrors that guard rather than counting every
+    is_land slot."""
+    n = 0
+    for s in range(_PERM_SLOTS):
+        base = start + s * _PERM_SLOT_SIZE
+        if state[base + _OFF_IS_LAND] > 0.5 and state[base + _OFF_IS_PHASED_OUT] < 0.5:
+            n += 1
+    return n
+
+
+def _check_mana_dev(decision_idx, seat, state):
+    """Invariant (12): the MANA DEVELOPMENT block (see machine_io.h)."""
+    halves = (
+        ("self_mana_dev", _MANA_DEV_START, MANA_DEV_SELF_SIZE,
+         _MD_SELF_LAND_DROPS, _SELF_BLOCK_START, _SELF_PERM_START,
+         _MD_SELF_LANDS_IN_HAND),
+        ("opp_mana_dev", _MANA_DEV_OPP_START, MANA_DEV_OPP_SIZE,
+         _MD_OPP_LAND_DROPS, _OPP_BLOCK_START, _OPP_PERM_START, None),
+    )
+    for name, start, width, drops_off, pb_start, perm_start, hand_off in halves:
+        block = state[start:start + width]
+        # Finite and non-negative (every field is a count; -0.5 tolerates float noise).
+        for i, v in enumerate(block):
+            if not np.isfinite(v) or v < -0.5 / MANA_COUNT_NORMALIZER:
+                _fail(decision_idx, seat, name, i, v,
+                      "mana-development float must be finite and non-negative")
+        total = float(block[_MD_POTENTIAL_TOTAL]) * MANA_COUNT_NORMALIZER
+        # Per-color potential <= the source total (a source counts once per color
+        # it can make, and once toward the total).
+        for c in range(MANA_DEV_COLORS):
+            pot = float(block[c]) * MANA_COUNT_NORMALIZER
+            if pot > total + 0.5:
+                _fail(decision_idx, seat, f"{name}.potential", c, pot,
+                      f"per-color potential {pot} exceeds potential_total {total}")
+        # potential_total includes the floating pool, so it can never be smaller.
+        pool = float(np.sum(state[pb_start + _PB_MANA:pb_start + _PB_MANA
+                                  + MANA_DEV_COLORS])) * MANA_COUNT_NORMALIZER
+        if total + 0.5 < pool:
+            _fail(decision_idx, seat, f"{name}.potential_total", "-", total,
+                  f"potential_total {total} < floating pool {pool} (it must include it)")
+        # Land drops fit the normalizer's range: 0 .. LAND_DROPS_NORMALIZER. (If a
+        # future card can grant more, the NORMALIZER is what must grow — this bound
+        # follows it rather than restating a literal.)
+        drops = float(block[drops_off]) * LAND_DROPS_NORMALIZER
+        if not (-0.5 <= drops <= LAND_DROPS_NORMALIZER + 0.5):
+            _fail(decision_idx, seat, f"{name}.land_drops_remaining", "-", drops,
+                  f"land drops {drops} outside [0,{LAND_DROPS_NORMALIZER}]")
+        # lands_in_play == the lands visible in this side's permanent slots.
+        lands = int(round(float(block[_MD_LANDS_IN_PLAY]) * MANA_COUNT_NORMALIZER))
+        slot_lands = _count_slot_lands(state, perm_start)
+        if lands != slot_lands:
+            _fail(decision_idx, seat, f"{name}.lands_in_play", "-", lands,
+                  f"lands_in_play {lands} != {slot_lands} lands counted over this "
+                  "side's permanent slots (is_land & !is_phased_out)")
+        # lands_in_hand (self only) can never exceed the hand size.
+        if hand_off is not None:
+            in_hand = float(block[hand_off]) * MANA_COUNT_NORMALIZER
+            hand_ct = float(state[pb_start + _PB_HAND_CT]) * 10.0
+            if in_hand > hand_ct + 0.5:
+                _fail(decision_idx, seat, f"{name}.lands_in_hand", "-", in_hand,
+                      f"lands_in_hand {in_hand} exceeds hand count {hand_ct}")
+
+
+# Tolerance for the log-vitals identity. The engine narrows a double log1p ratio to
+# float32 (~1e-7 relative) and the count is recovered exactly from the linear float,
+# so anything beyond this is a real disagreement, not arithmetic noise.
+_LOG_VITALS_TOL = 1e-5
+
+
+def _check_log_vitals(decision_idx, seat, state):
+    """Invariant (13): the LOG VITALS block is exactly the log1p re-warping of the
+    SAME observation's LINEAR life and library floats.
+
+    The strong form of the check: the integer life total and library size are
+    recovered from the linear encodings that already exist in this obs (life =
+    round(f * LIFE_NORMALIZER), library = round(f * LIBRARY_NORMALIZER)), and the
+    log floats must equal log1p(max(v, 0)) / the mirrored denominator. So the two
+    encodings can never describe different numbers — a serializer that read the
+    wrong player's life, ordered the halves backwards, or forgot to clamp a negative
+    life into log1p's domain fails here rather than silently training on it.
+
+    During the bo3 sideboard phase the block is MASKED (env._build_sideboard_mask /
+    obs_builder.cpp's twin) because the player blocks it mirrors are masked, so the
+    identity deliberately does not hold there; the masked all-zeros form is asserted
+    instead — which is itself the check that the mask covers the new block."""
+    in_sideboard = float(state[_IS_SIDEBOARD_IDX]) > 0.5
+    halves = (
+        ("self_log_vitals", _LOG_VITALS_START, _SELF_BLOCK_START, _LIBRARY_CTX_START),
+        ("opp_log_vitals", _LOG_VITALS_OPP_START, _OPP_BLOCK_START, _LIBRARY_CTX_START + 1),
+    )
+    for name, start, pb_start, lib_off in halves:
+        block = state[start:start + LOG_VITALS_PLAYER_SIZE]
+        # Finite and non-negative: log1p over a clamped count can never be either.
+        for i, v in enumerate(block):
+            if not np.isfinite(v) or v < -_LOG_VITALS_TOL:
+                _fail(decision_idx, seat, name, i, v,
+                      "log-scaled vital must be finite and non-negative")
+        if in_sideboard:
+            for i, v in enumerate(block):
+                if float(v) != 0.0:
+                    _fail(decision_idx, seat, name, i, v,
+                          "log-scaled vital must be masked to 0.0 during the "
+                          "sideboard phase (it mirrors the masked player blocks)")
+            continue
+        # Recover the counts from THIS obs's linear floats, then re-derive the logs.
+        life = int(round(float(state[pb_start + _PB_LIFE]) * LIFE_NORMALIZER))
+        library = int(round(float(state[lib_off]) * LIBRARY_NORMALIZER))
+        for off, field, count, denom in (
+                (_LV_LOG_LIFE, "log_life", life, LOG_LIFE_DENOM),
+                (_LV_LOG_LIBRARY, "log_library", library, LOG_LIBRARY_DENOM)):
+            expected = math.log1p(max(count, 0)) / denom
+            got = float(block[off])
+            if abs(got - expected) > _LOG_VITALS_TOL:
+                _fail(decision_idx, seat, f"{name}.{field}", off, got,
+                      f"log float {got} != log1p(max({count},0))/{denom} = {expected} "
+                      f"(count recovered from this obs's linear float)")
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -260,14 +392,14 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
 
     # (7) Player-block sanity: life / hand / library counts finite & non-negative.
     for label, base in (("self", _SELF_BLOCK_START), ("opp", _OPP_BLOCK_START)):
-        life = float(state[base + _PB_LIFE]) * 20.0
+        life = float(state[base + _PB_LIFE]) * LIFE_NORMALIZER
         hand = float(state[base + _PB_HAND_CT]) * 10.0
         for field, val in (("life", life), ("hand_count", hand)):
             if not np.isfinite(val) or val < -0.5:  # -0.5: tolerate float rounding at 0
                 _fail(decision_idx, seat, f"{label}_player.{field}", "-", val,
                       f"{field} de-normalizes to {val} (expected finite & >= 0)")
     for label, off in (("self", _LIBRARY_CTX_START), ("opp", _LIBRARY_CTX_START + 1)):
-        lib = float(state[off]) * 60.0
+        lib = float(state[off]) * LIBRARY_NORMALIZER
         if not np.isfinite(lib) or lib < -0.5:
             _fail(decision_idx, seat, f"{label}_player.library", "-", lib,
                   f"library count de-normalizes to {lib} (expected finite & >= 0)")
@@ -326,7 +458,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
                 self_lib_sum += cnt
 
     # (9c) self-live-library counts sum to the viewer's library card count.
-    lib_ct = int(round(float(state[_LIBRARY_CTX_START]) * 60.0))
+    lib_ct = int(round(float(state[_LIBRARY_CTX_START]) * LIBRARY_NORMALIZER))
     if self_lib_sum != lib_ct:
         _fail(decision_idx, seat, "self_live_lib.sum", "-", self_lib_sum,
               f"library counts sum to {self_lib_sum} but self_library_ct is {lib_ct}")
@@ -343,6 +475,22 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
               "opponent static decklist block changed across decisions of the same seat")
     deck_block_by_seat[seat] = opp_block
+
+    # (12) Mana-development block: every float is a finite non-negative count, the
+    # per-color potentials are bounded by the source total, the total covers the
+    # floating pool it includes, land drops stay inside the normalizer's range, and
+    # lands_in_play agrees with the SAME observation's permanent slots (the strong
+    # cross-check: two independent derivations of "how many lands does this player
+    # have" — the engine's live-permanent scan vs. the serialized per-slot is_land
+    # flags — must match, with phased-out permanents excluded from BOTH per CR
+    # 702.26e). lands_in_hand is self-only and bounded by the hand count.
+    _check_mana_dev(decision_idx, seat, state)
+
+    # (13) Log-scaled vitals: each log float is exactly log1p(max(count,0)) over the
+    # mirrored denominator, where the count is recovered from the SAME obs's LINEAR
+    # life/library float — the two encodings of one number, pinned to each other.
+    # (Masked to zeros during the sideboard phase, which is asserted instead there.)
+    _check_log_vitals(decision_idx, seat, state)
 
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
@@ -507,6 +655,10 @@ _SB_MAX_DECISIONS = 4000
 # The bo3 matchup the sideboard checks drive: both decks carry a real sideboard,
 # and the seed reaches a second game quickly.
 _SB_DECK_A, _SB_DECK_B, _SB_SEED = "league/ur_delver", "league/gw_maverick", 3
+# Seed for the sideboard-less matchup the takeback check drives (see
+# _write_sideboardless_decks): a beatdown deck vs a lands-only one, so game 1
+# ends quickly and the sideboard phase is reached.
+_SB_NOSB_SEED = 7
 
 
 def _decklist_diff(before, after):
@@ -531,9 +683,11 @@ def _sideboard_action(obs, cats, swaps_left):
 
     A Done action means the deck is balanced: open a swap with a "+1" while budget
     remains, else finish. With a move outstanding, Done is absent and only the
-    balancing direction is offered — complete the pair, avoiding the takeback (the
-    entry for the outstanding card itself, identified via the pending-decision
-    context) so a swap actually lands.
+    balancing direction is offered — complete the pair with any card other than the
+    outstanding one (identified via the pending-decision context) so a swap actually
+    lands. That card is normally absent anyway: the engine offers its takeback only
+    when stranded (check_sideboard_takeback), which is the one case the fallback
+    below covers, and it deliberately does not count as a swap.
     """
     done_idx = next((i for i, c in enumerate(cats) if c == CAT_SIDEBOARD_DONE), None)
     moves = [i for i, c in enumerate(cats)
@@ -609,8 +763,18 @@ def check_opponent_decklist_frozen():
     swaps = 0
     saw_sideboard = False
     post_board = 0
+    # Log-vitals coverage over this bo3: the main invariant loop is bo1 only, so
+    # this is where the block's SIDEBOARD-phase form (masked to zeros) is exercised
+    # alongside its normal form (the log identity). Counted so neither branch can
+    # pass vacuously.
+    lv_live, lv_masked = 0, 0
     try:
-        for obs, _num, cats, seat in _drive_bo3_sideboarding(env):
+        for idx, (obs, _num, cats, seat) in enumerate(_drive_bo3_sideboarding(env)):
+            _check_log_vitals(idx, seat, obs[:STATE_SIZE])
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                lv_masked += 1
+            else:
+                lv_live += 1
             blocks = (
                 tuple(_decode_decklist_block(obs, _OPP_DECK_MAIN_START,
                                              DECKLIST_MAIN_SLOTS)),
@@ -650,7 +814,11 @@ def check_opponent_decklist_frozen():
     if post_board == 0:
         raise InvariantError("the match never reached a post-board game — the "
                              "frozen-block assertion would pass vacuously")
-    return swaps, post_board
+    if lv_live == 0 or lv_masked == 0:
+        raise InvariantError(
+            f"log-vitals coverage was vacuous: {lv_live} live decisions, "
+            f"{lv_masked} sideboard-masked ones (both branches must be seen)")
+    return swaps, post_board, lv_live, lv_masked
 
 
 # "Sideboard in: 4x Lightning Bolt" / "Sideboard out: 1x Island" — the count is the
@@ -715,6 +883,11 @@ def check_sideboard_copy_ordinals():
 def _decode_sb_delta(obs):
     """Maindeck drift from its phase-start size, from the serialized (d + 1) / 2."""
     return int(round(float(obs[_EXTRAS_SB_DELTA]) * 2)) - 1
+
+
+def _decode_sb_swaps(obs):
+    """Swaps completed so far this phase, from the serialized count / cap."""
+    return int(round(float(obs[_EXTRAS_SB_SWAPS]) * SIDEBOARD_SWAP_CAP))
 
 
 def check_sideboard_delta_menu():
@@ -785,9 +958,7 @@ def check_sideboard_delta_menu():
                 openings.add("add-first" if drift > 0 else "cut-first")
 
             # (iv) swaps completed so far, from the serialized counter.
-            max_swaps_seen = max(
-                max_swaps_seen,
-                int(round(float(obs[_EXTRAS_SB_SWAPS]) * SIDEBOARD_SWAP_CAP)))
+            max_swaps_seen = max(max_swaps_seen, _decode_sb_swaps(obs))
     finally:
         env.close()
 
@@ -810,86 +981,152 @@ def check_sideboard_delta_menu():
     return checked, unbalanced
 
 
+def _drive_to_sideboard(env, seed, max_decisions=_SB_MAX_DECISIONS):
+    """Play the match scripted from a fresh reset until the first sideboard
+    prompt, and return that decision's observation."""
+    obs, _ = env.reset(seed=seed)
+    for _ in range(max_decisions):
+        if obs[_IS_SIDEBOARD_IDX] > 0.5:
+            return obs
+        obs, _r, term, trunc, _i = env.step(scripted_action(obs, env._num_choices))
+        if term or trunc:
+            break
+    raise InvariantError("the match ended before any sideboard prompt — the "
+                         "sideboard assertions would pass vacuously")
+
+
+def _write_sideboardless_decks():
+    """Write two temp decks with NO sideboard, so a cut STRANDS the maindeck: no
+    addition exists to balance it, which is the only case in which the engine
+    offers the takeback (see run_sideboard_phase in src/game_driver.cpp). Basics
+    and bears keep both decks in-vocab and game 1 short. Returns the two deck
+    specs (relative to decks/)."""
+    specs = []
+    for stem, lines in (("obsinv_nosb_a", ["36 Grizzly Bears", "24 Forest"]),
+                        ("obsinv_nosb_b", ["60 Swamp"])):
+        path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write("\n".join(lines) + "\n")
+        specs.append("temp/" + stem)
+    return specs
+
+
 def check_sideboard_takeback():
-    """An outstanding move must be reversible in one ply, and the reversal must not
-    count as a swap or let the deck oscillate forever.
+    """An outstanding half-move must never leave the deck stuck off-size, yet the
+    reversal that guarantees that must not be an always-available no-op.
 
-    Under the old paired menu, choosing a card to bring in committed you to cutting
-    something — there was no cancel, so an exploratory pick was expensive. The delta
-    menu exempts the outstanding card from its own direction lock, making the move
-    undoable. This drives that path explicitly (the other checks deliberately avoid
-    it) and asserts:
+    The delta menu offers the reverse of the outstanding move (the TAKEBACK) ONLY
+    when the balancing direction is empty — the stranded case. Where a genuine
+    completion exists the takeback is withheld, because no information arrives
+    between the two halves of a swap: "don't swap" was expressible as Done one
+    decision earlier, so cut-X-then-put-X-back is an outcome-invariant no-op that
+    outcome-driven training could never learn to avoid. This drives both sides of
+    that rule and asserts:
 
-      (i)   at drift +1 the outstanding card IS offered as a cut (the takeback);
-      (ii)  taking it back restores drift 0 WITHOUT crediting a swap;
-      (iii) the taken-back card is then locked out of being added again, which is
-            what bounds the phase — otherwise add/undo could repeat forever.
+      (i)   with a real sideboard, a cut's follow-up menu offers genuine
+            completions and does NOT offer the cut card back, while the
+            pending-decision source still names it;
+      (ii)  with no sideboard at all the cut strands the deck, and the menu is
+            then exactly the lone takeback of that card (so the deck can never be
+            stuck off-size);
+      (iii) taking it back restores drift 0 WITHOUT crediting a swap;
+      (iv)  the taken-back card is then locked out of being cut again, which is
+            what bounds the phase — otherwise cut/undo could repeat forever.
 
     Returns the vocab id of the card that was taken back."""
+    # ── (i) genuine completions exist => no takeback ──────────────────────────
     env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
                       auto_sideboard=False)
-    obs, _ = env.reset(seed=_SB_SEED)
-    added_id = None
-    swaps_before = None
     try:
-        for _ in range(_SB_MAX_DECISIONS):
-            num = env._num_choices
-            cats = decode.action_categories(obs, num)
-            ids = decode.action_card_ids(obs)
-            drift = _decode_sb_delta(obs)
-            swaps = int(round(float(obs[_EXTRAS_SB_SWAPS]) * SIDEBOARD_SWAP_CAP))
-            in_sb = obs[_IS_SIDEBOARD_IDX] > 0.5
-
-            if not in_sb:
-                obs, _r, term, trunc, _i = env.step(scripted_action(obs, num))
-                if term or trunc:
-                    break
-                continue
-
-            if added_id is None:
-                # Open a swap with the first available addition.
-                adds = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
-                if not adds:
-                    raise InvariantError("balanced sideboard menu offered no "
-                                         "addition to open a swap with")
-                added_id = _decode_card_id(ids[adds[0]])
-                swaps_before = swaps
-                action = adds[0]
-            elif drift > 0:
-                # (i) the outstanding card must be offered back as a cut.
-                back = [i for i in range(num)
-                        if cats[i] == CAT_SIDEBOARD_OUT
-                        and _decode_card_id(ids[i]) == added_id]
-                if not back:
-                    raise InvariantError(
-                        f"card {added_id} was added (drift +1) but is not offered "
-                        "as a cut — the takeback is unavailable and the model is "
-                        "forced to cut something else")
-                action = back[0]
-            else:
-                # (ii) drift is back to 0 and no swap was credited.
-                if swaps != swaps_before:
-                    raise InvariantError(
-                        f"takeback credited a swap ({swaps_before} -> {swaps}); "
-                        "reversing a move must not consume the swap budget")
-                # (iii) the card must now be locked out of being added again.
-                still_addable = [i for i in range(num)
-                                 if cats[i] == CAT_SIDEBOARD_IN
-                                 and _decode_card_id(ids[i]) == added_id]
-                if still_addable:
-                    raise InvariantError(
-                        f"card {added_id} is addable again after being taken back — "
-                        "add/undo could then repeat forever and the phase would not "
-                        "be guaranteed to terminate")
-                return added_id
-
-            obs, _r, term, trunc, _i = env.step(action)
-            if term or trunc:
-                break
+        obs = _drive_to_sideboard(env, _SB_SEED)
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        ids = decode.action_card_ids(obs)
+        cuts = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
+        if not cuts:
+            raise InvariantError("balanced sideboard menu offered no cut to open "
+                                 "a swap with")
+        cut_id = _decode_card_id(ids[cuts[0]])
+        obs, _r, _term, _trunc, _i = env.step(cuts[0])
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        ids = decode.action_card_ids(obs)
+        if _decode_sb_delta(obs) != -1:
+            raise InvariantError(
+                f"cutting a card left drift {_decode_sb_delta(obs):+d}, not -1")
+        pending = _decode_card_id(obs[_PENDING_DECISION_START])
+        if pending != cut_id:
+            raise InvariantError(
+                f"pending-decision source is card {pending}, not the outstanding "
+                f"card {cut_id} — the observation does not say what to balance")
+        moves = [i for i in range(num)
+                 if cats[i] in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT)]
+        if not moves:
+            raise InvariantError(
+                f"card {cut_id} was cut but nothing is offered to balance it, "
+                "even though the deck carries a full sideboard")
+        offered_back = [i for i in moves if _decode_card_id(ids[i]) == cut_id]
+        if offered_back:
+            raise InvariantError(
+                f"card {cut_id} was cut and is offered straight back alongside "
+                f"{len(moves) - len(offered_back)} genuine completion(s) — an "
+                "outcome-invariant no-op the model can never learn to avoid")
     finally:
         env.close()
-    raise InvariantError("never reached a sideboard takeback — the assertions "
-                         "would pass vacuously")
+
+    # ── (ii)-(iv) stranded => the lone takeback, free and self-limiting ───────
+    deck_a, deck_b = _write_sideboardless_decks()
+    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                      auto_sideboard=False)
+    try:
+        obs = _drive_to_sideboard(env, _SB_NOSB_SEED)
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        ids = decode.action_card_ids(obs)
+        swaps_before = _decode_sb_swaps(obs)
+        cuts = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
+        if not cuts:
+            raise InvariantError("sideboard-less balanced menu offered no cut")
+        cut_id = _decode_card_id(ids[cuts[0]])
+        obs, _r, _term, _trunc, _i = env.step(cuts[0])
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        ids = decode.action_card_ids(obs)
+        # (ii)
+        if num != 1 or cats[0] != CAT_SIDEBOARD_IN or \
+                _decode_card_id(ids[0]) != cut_id:
+            raise InvariantError(
+                f"a stranded cut of card {cut_id} must offer exactly its takeback; "
+                f"got {num} choice(s) cats={cats.tolist()} "
+                f"ids={[_decode_card_id(ids[i]) for i in range(num)]}")
+        obs, _r, _term, _trunc, _i = env.step(0)
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        ids = decode.action_card_ids(obs)
+        # (iii)
+        drift = _decode_sb_delta(obs)
+        if drift != 0:
+            raise InvariantError(
+                f"drift is {drift:+d} after the takeback; reversing the "
+                "outstanding move must restore balance")
+        swaps = _decode_sb_swaps(obs)
+        if swaps != swaps_before:
+            raise InvariantError(
+                f"takeback credited a swap ({swaps_before} -> {swaps}); "
+                "reversing a move must not consume the swap budget")
+        # (iv)
+        still_cuttable = [i for i in range(num)
+                          if cats[i] == CAT_SIDEBOARD_OUT
+                          and _decode_card_id(ids[i]) == cut_id]
+        if still_cuttable:
+            raise InvariantError(
+                f"card {cut_id} is cuttable again after being taken back — "
+                "cut/undo could then repeat forever and the phase would not be "
+                "guaranteed to terminate")
+        return cut_id
+    finally:
+        env.close()
 
 
 def _block_total(obs, start, n_slots):
@@ -1024,12 +1261,14 @@ def main():
           "activations on one Jace", flush=True)
 
     try:
-        n_swaps, n_post = check_opponent_decklist_frozen()
+        n_swaps, n_post, lv_live, lv_masked = check_opponent_decklist_frozen()
     except InvariantError as e:
         print(f"FAIL  opponent decklist frozen across bo3\n  {e}", flush=True)
         return 1
     print(f"ok    opponent decklist frozen across bo3: {n_swaps} swaps made, "
           f"{n_post} post-board decisions checked", flush=True)
+    print(f"ok    log vitals across bo3: {lv_live} live decisions match the log "
+          f"identity, {lv_masked} sideboard decisions masked to zeros", flush=True)
 
     try:
         n_acts, n_ords = check_sideboard_copy_ordinals()
@@ -1060,8 +1299,8 @@ def main():
     except InvariantError as e:
         print(f"FAIL  sideboard takeback\n  {e}", flush=True)
         return 1
-    print(f"ok    sideboard takeback: card {tb_id} added, reversed, and locked out",
-          flush=True)
+    print(f"ok    sideboard takeback: withheld where a completion existed; card "
+          f"{tb_id} stranded, reversed free, and locked out", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

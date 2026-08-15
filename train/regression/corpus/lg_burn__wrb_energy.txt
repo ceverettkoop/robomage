@@ -1,0 +1,1388 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Fiery Islet
+  Player A draws Rift Bolt
+  Player A draws Rift Bolt
+  Player A draws Mountain
+  Player A draws Price of Progress
+  Player A draws Mountain
+  Player A draws Mountain
+  Player B draws Ocelot Pride
+  Player B draws Scrubland
+  Player B draws Voice of Victory
+  Player B draws Swords to Plowshares
+  Player B draws Cabal Therapy
+  Player B draws Amped Raptor
+  Player B draws Marsh Flats
+  Player A hand:
+  Fiery Islet
+  Mountain
+  Mountain
+  Mountain
+  Price of Progress
+  Rift Bolt
+  Rift Bolt
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Amped Raptor
+  Cabal Therapy
+  Marsh Flats
+  Ocelot Pride
+  Scrubland
+  Swords to Plowshares
+  Voice of Victory
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap (turn 1)
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
+  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Pass priority
+   1: Play Fiery Islet
+   2: Play Mountain
+   3: Play Mountain
+   4: Play Mountain
+  >> A/A: 1 (Play Fiery Islet)
+--- Narrative ---
+  Player A played Fiery Islet
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Fiery Islet
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Suspend Rift Bolt
+   2: Suspend Rift Bolt
+  >> A/A: 1 (Suspend Rift Bolt)
+--- Narrative ---
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(R)
+  Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Thoughtseize
+--- Turn 2 (Player B) ---
+  PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
+  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 5 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Scrubland
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 6 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Marsh Flats
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 7 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Fiery Islet (T)
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Badlands
+   2: Elegant Parlor
+   3: Plains
+   4: Plateau
+   5: Plateau
+   6: Scrubland
+   7: Shadowy Backstreet
+  >> B/B: 1 (Badlands)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Badlands to the battlefield
+
+--- Decision 8 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Badlands
+  Opp BF:   Fiery Islet (T)
+  Self GY: Marsh Flats
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Cabal Therapy)
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 9 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Badlands
+  Opp BF:   Fiery Islet (T)
+  Pending: Cabal Therapy (self)
+  Self GY: Marsh Flats
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Player A (19 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Badlands (T)
+  Opp BF:   Fiery Islet (T)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Marsh Flats
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Mountain
+    Mountain
+    Mountain
+    Price of Progress
+    Rift Bolt
+  No matching cards to discard.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+  Resolving ability (category: SuspendTick)
+  Removed a time counter from Rift Bolt (0 remaining).
+  Player A may cast Rift Bolt without paying its mana cost (suspend).
+--- Turn 3 (Player A) ---
+  PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Fiery Islet
+  Opp BF:   Badlands (T)
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Self exile: Rift Bolt
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Cast Rift Bolt (from exile, no cost)  [#7]
+  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+--- Narrative ---
+  Player A casts Rift Bolt without paying its mana cost
+  Choose target for Rift Bolt:
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 3)
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Fiery Islet
+  Opp BF:   Badlands (T)
+  Pending: Rift Bolt (self)
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Self exile: Rift Bolt
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Player B (19 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Rift Bolt targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 16 life)
+  Player A draws Chain Lightning
+
+--- Decision 13 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   16 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Fiery Islet
+  Opp BF:   Badlands (T)
+  Self GY: Rift Bolt
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+   4: Cast Chain Lightning  [#0]
+   5: Suspend Rift Bolt
+  >> A/A: 4 (Cast Chain Lightning)
+--- Narrative ---
+  Choose target for Chain Lightning:
+
+--- Decision 14 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   16 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Fiery Islet
+  Opp BF:   Badlands (T)
+  Pending: Chain Lightning (self)
+  Self GY: Rift Bolt
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Player B (16 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (16 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(R)
+  Player A casts Chain Lightning targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 13 life)
+  Resolving ability (category: CopySpellAbility)
+  Player B may pay to copy Chain Lightning:
+
+--- Decision 15 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  13 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Badlands (T)
+  Opp BF:   Fiery Islet (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Rift Bolt
+  Known opp hand: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Don't pay (spell is countered)  [#0]
+  >> B/B: 0 (Don't pay (spell is countered))
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   13 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Fiery Islet (T)
+  Opp BF:   Badlands (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   13 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Fiery Islet (T) | Mountain
+  Opp BF:   Badlands (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Suspend Rift Bolt
+  >> A/A: 1 (Suspend Rift Bolt)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A suspends Rift Bolt (exiled with 1 time counter(s)).
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Thoughtseize
+--- Turn 4 (Player B) ---
+  PA: Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory
+
+--- Decision 18 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  13 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Badlands
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain, Price of Progress
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+   2: Cast Thoughtseize  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 19 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  13 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Badlands
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Pending: Thoughtseize (self)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain, Price of Progress
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Player A (18 life)
+   1: Player B (13 life)
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Mountain
+    Mountain
+    Price of Progress
+  Player B chooses a card to discard:
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  13 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Badlands (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain, Price of Progress
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Price of Progress
+  >> B/B: 0 (Price of Progress)
+--- Narrative ---
+  Player A discards Price of Progress
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 11)
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  11 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Badlands (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  11 life | mana: empty | hand(5): Amped Raptor, Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Badlands (T) | Scrubland
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  11 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  11 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Pending: Cabal Therapy (self)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (18 life)
+   1: Player B (11 life)
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  11 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Sacrifice Ocelot Pride
+  >> B/B: 0 (Sacrifice Ocelot Pride)
+--- Narrative ---
+  Player B sacrifices Ocelot Pride
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  11 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 2 | lib 52
+  Self BF:  Badlands (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt
+  Known opp hand: Mountain, Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Mountain
+    Mountain
+  No matching cards to discard.
+  Cabal Therapy is exiled (flashback)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+--- Turn 5 (Player A) ---
+  PA: Mountain, Mountain
+  PB: Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 27 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   11 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Rift Bolt (ability, self)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Rift Bolt
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: SuspendTick)
+  Removed a time counter from Rift Bolt (0 remaining).
+  Player A may cast Rift Bolt without paying its mana cost (suspend).
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   11 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Rift Bolt
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Cast Rift Bolt (from exile, no cost)  [#7]
+   2: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+--- Narrative ---
+  Player A casts Rift Bolt without paying its mana cost
+  Choose target for Rift Bolt:
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   11 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Pending: Rift Bolt (self)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Rift Bolt
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Player B (11 life)
+   1: Player A (18 life)
+  >> A/A: 0 (Player B (11 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Rift Bolt targeting Player B
+
+--- Decision 30 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   11 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Rift Bolt (spell, self) -> opponent (player)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 8 life)
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   8 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Exquisite Firecraft
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: Draw (turn 5)
+  Self:  18 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
+  Opp:   8 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
+  Opp:   8 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   8 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Exquisite Firecraft  [#0]
+   2: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Cast Exquisite Firecraft)
+--- Narrative ---
+  Choose target for Exquisite Firecraft:
+
+--- Decision 35 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   8 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Pending: Exquisite Firecraft (self)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1
+  Actions:
+   0: Player B (8 life)
+   1: Player A (18 life)
+  >> A/A: 0 (Player B (8 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Mountain for 1(R)
+  Player A activated Mountain for 1(R)
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(U)
+  Player A casts Exquisite Firecraft targeting Player B
+  Resolving ability (category: DealDamage, amount: 4)
+  Dealt 4 damage to player (now at 4 life)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Marsh Flats
+--- Turn 6 (Player B) ---
+  PA: Exquisite Firecraft, Mountain
+  PB: Amped Raptor, Marsh Flats, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  4 life | mana: empty | hand(5): Amped Raptor, Marsh Flats, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Badlands | Scrubland
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Cast Amped Raptor  [#0]
+   3: Cast Thoughtseize  [#0]
+   4: Cast Voice of Victory  [#0]
+  >> B/B: 2 (Cast Amped Raptor)
+--- Narrative ---
+  Player B activated Badlands for 1(R)
+  Player B activated Scrubland for 1(W)
+  Player B casts Amped Raptor
+  Amped Raptor enters the battlefield
+  Amped Raptor triggered
+  Resolving ability (category: PutCounter, amount: 2)
+  Player B gets 2 ENERGY counter(s) (now 2).
+  Resolving ability (category: DigUntil)
+  Player B reveals Arid Mesa.
+  Player B reveals Swords to Plowshares.
+  Player B exiles Swords to Plowshares.
+  Resolving ability (category: Play)
+  Player B may cast Swords to Plowshares this turn by paying 1 energy rather than its mana cost.
+  Resolving ability (category: Cleanup)
+
+--- Decision 37 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  4 life | mana: empty | energy 2 | hand(4): Marsh Flats, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 38 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  4 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Marsh Flats | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+   2: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 2 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+
+--- Decision 39 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Stack: Marsh Flats (ability, self)
+  Self GY: Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Elegant Parlor
+   2: Plains
+   3: Plateau
+   4: Plateau
+   5: Scrubland
+   6: Shadowy Backstreet
+  >> B/B: 1 (Elegant Parlor)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Elegant Parlor to the battlefield
+  Elegant Parlor enters tapped.
+  Elegant Parlor triggered
+
+--- Decision 41 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 46
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Stack: Elegant Parlor (ability, self) [amt=1]
+  Self GY: Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Thoughtseize
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 46
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Stack: Elegant Parlor (ability, self) [amt=1]
+  Pending: Elegant Parlor (self)
+  Self GY: Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Put Thoughtseize on top of library  [#0]
+   1: Put Thoughtseize into graveyard
+  >> B/B: 1 (Put Thoughtseize into graveyard)
+--- Narrative ---
+  Player B puts Thoughtseize into their graveyard.
+
+--- Decision 43 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: Begin Combat (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: Declare Blk (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: Combat Dmg (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: End Combat (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 49 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 50 ---
+  Priority: Player B (active)
+  Step: End Step (turn 6)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares (impulse, alt cost)  [#7]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Mountain
+  PB: Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  17 life | mana: empty | hand(1): Mountain | lib 51
+  Opp:   3 life | mana: empty | energy 2 | hand count: 3 | lib 45
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Opp revealed: Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Mountain
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: Draw (turn 7)
+  Self:  17 life | mana: empty | hand(2): Mountain, Mountain | lib 50
+  Opp:   3 life | mana: empty | energy 2 | hand count: 3 | lib 45
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Opp revealed: Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 53 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Mountain, Mountain | lib 50
+  Opp:   3 life | mana: empty | energy 2 | hand count: 3 | lib 45
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Opp revealed: Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+
+--- Decision 54 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(1): Mountain | lib 50
+  Opp:   3 life | mana: empty | energy 2 | hand count: 3 | lib 45
+  Self BF:  Fiery Islet | Mountain | Mountain | Mountain
+  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Opp revealed: Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Activate Fiery Islet (Draw))
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A sacrifices Fiery Islet
+  Player A's Fiery Islet ability is on the stack
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Eidolon of the Great Revel
+
+--- Decision 55 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
+  Opp:   3 life | mana: empty | energy 2 | hand count: 3 | lib 45
+  Self BF:  Mountain (T) | Mountain | Mountain
+  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland (T)
+  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Opp revealed: Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Eidolon of the Great Revel  [#0]
+  >> A/A: 1 (Cast Eidolon of the Great Revel)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A activated Mountain for 1(R)
+  Player A casts Eidolon of the Great Revel
+  Eidolon of the Great Revel enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Eidolon of the Great Revel, Mountain
+  PB: Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 56 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 8)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands | Elegant Parlor | Scrubland
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 57 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 8)
+  Self:  3 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands | Elegant Parlor | Scrubland
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Swords to Plowshares (self)
+  Self GY: Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Actions:
+   0: Eidolon of the Great Revel
+   1: Amped Raptor
+  >> B/B: 0 (Eidolon of the Great Revel)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Elegant Parlor for 1(W)
+  Player B casts Swords to Plowshares targeting Eidolon of the Great Revel
+  Eidolon of the Great Revel triggered
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 1 life)
+  Resolving ability (category: ChangeZone)
+  Eidolon of the Great Revel is moved to exile
+  Resolving ability (category: GainLife, amount: 2)
+  Player A gains 2 life (now at 19)
+  Player B draws Arid Mesa
+
+--- Decision 58 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  1 life | mana: empty | energy 2 | hand(3): Arid Mesa, Thoughtseize, Voice of Victory | lib 44
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands | Elegant Parlor (T) | Scrubland
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Self GY: Swords to Plowshares, Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Opp exile:  Eidolon of the Great Revel
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: opp_revolt
+  Actions:
+   0: Pass priority
+   1: Play Arid Mesa
+   2: Cast Thoughtseize  [#0]
+   3: Cast Voice of Victory  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 59 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  1 life | mana: empty | energy 2 | hand(3): Arid Mesa, Thoughtseize, Voice of Victory | lib 44
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands | Elegant Parlor (T) | Scrubland
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Thoughtseize (self)
+  Self GY: Swords to Plowshares, Thoughtseize, Marsh Flats, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Swords to Plowshares, Arid Mesa, Cabal Therapy
+  Opp exile:  Eidolon of the Great Revel
+  Known opp hand: Mountain
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: opp_revolt
+  Actions:
+   0: Player A (19 life)
+   1: Player B (1 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Mountain
+  No valid cards to discard.
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at -1)
+  Player B has -1 life - Player A wins!
+
+=== A/A wins ===

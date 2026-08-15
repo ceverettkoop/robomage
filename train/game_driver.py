@@ -367,7 +367,8 @@ class GameDriver:
     (the front end still owns closing the env)."""
 
     def __init__(self, env, opp_act, opp_is_a, is_model, opp_label, bo3, sink,
-                 clock_fn=None, pace_idle=None):
+                 clock_fn=None, pace_idle=None, reset_options=None,
+                 replay_actions=None):
         self._env = env
         self._opp_act = opp_act              # callable(obs, num_choices) -> int
         self._opp_is_a = opp_is_a
@@ -406,16 +407,38 @@ class GameDriver:
         # Step one-hot index of the last frame posted to the sink (real or
         # passive) — the passive-frame pacer dwells only when it advances.
         self._last_step_idx = None
+        # Options dict for the env reset (e.g. {"engine_seed": N} to restore a
+        # saved session's seed); None = the env picks its own seed.
+        self._reset_options = reset_options
+        # Saved-session action prefix to fast-forward through before handing
+        # control to the interactive loop (see _replay_prefix).
+        self._replay_actions = list(replay_actions) if replay_actions else None
+        # Every action index fed to env.step this session, replayed prefix
+        # included, appended just before the step call. Append-only, so a
+        # UI-thread list() snapshot is always a consistent replayable prefix
+        # regardless of env class (plain TuiEnv has no _action_history).
+        self.action_log = []
+        # Optional per-decision observer (e.g. shard_record.ShardRecorder
+        # .observe_step), called on the worker thread after each MAIN-LOOP
+        # env.step with (pre_step_obs, num_choices, action, reward, info,
+        # done). Not called during a saved-session replay prefix (those
+        # decisions belong to the session that recorded them). Exceptions are
+        # swallowed — an observer must never break play.
+        self.step_observer = None
 
     # ----- the loop (worker thread) -----
 
     def run(self) -> None:
         env = self._env
         try:
-            obs, _ = env.reset()
+            obs, _ = env.reset(options=self._reset_options)
             self._sink.on_log(env.flush_lines())
             self._emit_passive_frames()
             done = False
+            if self._replay_actions:
+                obs, done = self._replay_prefix(obs)
+                if obs is None:            # replay diverged; already reported
+                    return
             opp_queried = True   # nothing to mask before the first decision
             while not done:
                 num = env._num_choices
@@ -495,10 +518,22 @@ class GameDriver:
                     if action is None:                 # quit signalled
                         return
 
+                self.action_log.append(int(action))
+                # Copy the pre-step obs before stepping — the env may reuse
+                # its obs buffer, so the reference alone could alias the
+                # post-step state by the time the observer runs.
+                pre_obs = (obs.copy() if self.step_observer is not None
+                           else None)
                 obs, reward, terminated, truncated, info = env.step(action)
                 if reward:
                     self._reward = reward
                 done = terminated or truncated
+                if self.step_observer is not None:
+                    try:
+                        self.step_observer(pre_obs, num, int(action), reward,
+                                           info, done)
+                    except Exception:  # noqa: BLE001 — observer must not break play
+                        pass
                 # A finished game disengages autopass: the human drives the
                 # between-games sideboard and the next game's mulligan
                 # themselves instead of autopass blowing through them (its
@@ -558,6 +593,48 @@ class GameDriver:
             if step_idx != self._last_step_idx:
                 self._last_step_idx = step_idx
                 time.sleep(STEP_OBSERVE_DELAY)
+
+    def _replay_prefix(self, obs):
+        """Fast-forward through a saved session's action prefix: step each
+        recorded action with no observe delays and no per-step state frames,
+        batching the narrative into one on_log. Returns (obs, done); on a
+        divergence (an action index outside the live menu, or the game ending
+        before the prefix is exhausted) reports the failure and returns
+        (None, True) so run() exits without entering the interactive loop."""
+        env = self._env
+        lines = []
+        drain = getattr(env, "drain_passive_frames", None)
+        done = False
+        for i, action in enumerate(self._replay_actions):
+            if self._quitting:
+                return None, True
+            if done or not (0 <= int(action) < env._num_choices):
+                self._sink.on_log(lines + [
+                    f"replay diverged at action {i}/{len(self._replay_actions)}"
+                    " — was this session saved with a different engine build?"])
+                self._sink.on_game_over("Replay failed — session not restored.")
+                return None, True
+            self.action_log.append(int(action))
+            obs, reward, terminated, truncated, _info = env.step(int(action))
+            if reward:
+                self._reward = reward
+            done = terminated or truncated
+            lines.extend(env.flush_lines())
+            if drain is not None:
+                for _ in drain():          # discard queued frames; no dwell
+                    pass
+        lines.append(f"=== Replayed {len(self._replay_actions)} saved actions ===")
+        self._sink.on_log(lines)
+        self._match = self._human_match_context(obs)
+        if done:
+            # A completed saved game: render its final board once so the
+            # winner banner (posted by run()) lands on a visible position.
+            self._sink.on_state(StateUpdate(
+                obs.copy(), env._num_choices, [], human_turn=False,
+                opp_perspective=(obs[_SELF_IS_A_IDX] > 0.5) == self._opp_is_a,
+                perm_counters=getattr(env, "_perm_counters", None),
+                perm_token_names=getattr(env, "_perm_token_names", None)))
+        return obs, done
 
     # ----- input / control (called from the front end's UI thread) -----
 
@@ -640,7 +717,8 @@ class GameDriver:
         human_wins = (self._reward > 0 and human_is_a) or (self._reward < 0 and not human_is_a)
         if self._reward == 0:
             return "Game over — no winner detected (draw?)."
-        # In bo3 the terminal reward is the MATCH result; report it with the
+        # In bo3 the terminal reward is the DECIDING GAME's result (±1.0), whose
+        # sign is also the match winner's; report it with the
         # final game score. The match ends the instant the deciding game does, so
         # no fresh obs follows: the stored match context reflects the score
         # *entering* that last game — the winner takes it, so add 1 to their tally.
@@ -674,11 +752,14 @@ class Session:
     pace_idle: object = None
     controller: object = None    # the opponent Controller (analysis hooks)
     analysis_cfg: object = None  # AnalysisConfig when the front end enables it
+    engine_seed: object = None   # force the engine --seed (saved-session restore)
+    record_dir: object = None    # shard-recording directory (front end sets it;
+    #                              the pane builds a shard_record.ShardRecorder)
 
 
 def build_session(binary_path, model_path, human_player=None,
                   human_deck="delver", model_deck="delver", bo3=True,
-                  analysis=False, step_pacing=False):
+                  analysis=False, step_pacing=False, engine_seed=None):
     """Assemble the engine env, opponent controller, and seat/clock/pace plumbing
     for one session (front-end-agnostic). Returns a Session.
 
@@ -692,7 +773,9 @@ def build_session(binary_path, model_path, human_player=None,
     can snapshot/replay the session (harmless when unused). `step_pacing=True`
     runs the engine with --broadcast-steps so the driver renders every game
     step (passive BSTATE frames, ~0.2s dwell per step) instead of
-    fast-forwarding between decisions — the GUI turns this on.
+    fast-forwarding between decisions — the GUI turns this on. `engine_seed`
+    forces the engine --seed on reset (saved-session restore); None lets the
+    env pick its own.
     """
     from opponents import make_controller, is_scripted_spec
 
@@ -744,4 +827,4 @@ def build_session(binary_path, model_path, human_player=None,
                    opp_label=opp_label, human_deck=human_deck, opp_deck=model_deck,
                    bo3=bo3, clock_fn=clock_fn,
                    pace_idle=getattr(ctrl, "pace_idle", None),
-                   controller=ctrl)
+                   controller=ctrl, engine_seed=engine_seed)

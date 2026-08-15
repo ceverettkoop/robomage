@@ -27,7 +27,20 @@ phases, decisions, risks) is summarized at the bottom.
 > trainer behavior-clones hand-coded combo lines (the doomsday fix: the
 > warm-started value net scores mid-combo states as lost, so search prunes the
 > line before sampling it; demonstrations put prior mass on the line and price
-> those states by games the combo wins). Controller specs are `az:gen` /
+> those states by games the combo wins). `--scripted-opponent-frac <f>` (az /
+> az-league, default 0 = pure self-play) hands that fraction of the self-play
+> games' **opponent seat** to the rule-based **scripted:hard** agent while the
+> net+MCTS pilots the focus seat; only the net seat's decisions are searched and
+> stored as samples (the scripted seat is environment, not a policy to imitate,
+> and `z` is already priced per-mover so a one-seat sample stream needs no
+> special handling). `1.0` trains entirely against the scripted agent — useful
+> when self-play has collapsed into a narrow equilibrium and you want the net
+> re-anchored against the hand-coded baseline. It forces the **Python** self-play
+> backend (`bin/az_actor` is pure self-play; combining it with an explicit
+> `--actor` is a loud error), is drawn per match from a dedicated seeded RNG
+> stream (reproducible, worker-count-independent) and is persisted in the
+> az-league resume sidecar. The **promotion gate is unchanged** (candidate vs
+> incumbent over the roster-wide panel). Controller specs are `az:gen` /
 > `azraw:gen` / `mcts:gen` (a bare deck shorthand is rejected; the deck travels as a
 > separate explicit parameter). The per-deck `{deck}__az*` naming, mirror-only
 > self-play, and `az_data/{deck}/` sharding described below are historical; commit
@@ -150,14 +163,17 @@ All Phase C deliverables are on the branch (landed across the WIP commits
 - **`train/az_selfplay.py`** — multiprocess self-play, mirrors + cross-deck (a
   focus deck vs a mirror with `--mirror-frac`, else a uniform roster opponent):
   per searched (loop-safe, >1 choice) decision stores `(obs copy, visit-count pi,
-  legal mask, mover seat)`; root Dirichlet (eps .25 / alpha 1.0), tau=1 for the
+  legal mask, mover seat, search root value `q`, exploratory-move flag)`; root
+  Dirichlet (eps .25 / alpha 1.0), tau=1 for the
   first 20 moves then argmax; z backfilled ±1 per-mover (0 on draws); unsafe
   roots fall back to the net's argmax and are NOT stored (post snapshot_safe
   effectively never — every decision kind is a safe root). Shards pool into
-  `train/az_data/gen/shard_*.npz` (obs/pi/z/mask) — the exact format the
+  `train/az_data/gen/shard_*.npz` (obs/pi/z/mask/q/explored/td_q — see
+  "n-step TD value targets" below) — the exact format the
   Phase D C++ writer reproduces.
 - **`train/az_train.py`** — Adam (wd 1e-4) on
-  `CE(pi, masked_log_softmax) + c_v*MSE(v,z)` over a last-M-shards window from the
+  `CE(pi, masked_log_softmax) + c_v*MSE(v, v_target)` with
+  `v_target = (1 - q_mix)*z + q_mix*td_q`, over a last-M-shards window from the
   pooled `az_data/gen/` dir; saves CANDIDATE snapshots only. **`gen__azfinal`
   advances exclusively through the `az-eval` promotion gate** (candidate vs
   incumbent over a ROSTER-WIDE panel — a mirror per roster deck plus
@@ -437,12 +453,16 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
   by the *next* game's seed, so the K sampled worlds vary correctly game-to-game
   (covered by the snapshot-tier world-variation test).
 - **Sideboard-root search budget** — the sideboard root gets its own heavier, deeper
-  budget: `sb_sims=32` / `sb_worlds=4` / `sb_max_depth=200` (the rollout horizon is
-  game-long, so it is deeper than an in-game decision). These are inert for bo1.
+  budget: `sb_sims=128` / `sb_worlds=4` / `sb_max_depth=128` / `sb_rollout_turns=6`
+  / `sb_persist=1` (the `DEFAULT_SB_*` constants in `cli_spec.py`; the horizon is
+  game-long, so it is deeper than an in-game decision, leaf rollouts — see the
+  2026-07-31 update below — carry each sim to turn 6 of the sampled next game, and
+  boundary persistence shares one set of trees + a rollout memo across a boundary's
+  picks). Inert for bo1.
 - **Actor parity + next-game flush** — the C++ actor mirrors the Python match loop
   exactly: `--bo3` treats each `--games` unit as a match (match seeds spaced by 3),
   it searches the sideboard root with the same `--sb-sims`/`--sb-worlds`/
-  `--sb-max-depth` budget, and it **flushes** each game's samples priced by that
+  `--sb-max-depth`/`--sb-rollout-turns` budget, and it **flushes** each game's samples priced by that
   game's winner while sideboard samples recorded between a game's backfill and the
   next game's start stay buffered and are priced by the NEXT game (matching Python's
   `game_idx == k+1` sideboard samples). All obs + MCTS visits stay bit-exact with the
@@ -452,10 +472,81 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
 `az-eval`, all bo3 by default with `--bo1` to opt out):
 
 ```
---sb-sims N        PUCT sims at a bo3 sideboard root (default 128, was 32)
---sb-worlds N      determinized worlds at a bo3 sideboard root (default 4)
---sb-max-depth N   rollout depth cap at a bo3 sideboard root (default 200)
+--sb-sims N          PUCT sims at a bo3 sideboard root (default 256; was 32, then 128)
+--sb-worlds N        determinized worlds at a bo3 sideboard root (default 4)
+--sb-max-depth N     descent depth cap at a bo3 sideboard root (default 200)
+--sb-rollout-turns N leaf-rollout horizon in player turns of the next game
+                     (default 12; 0 = off — see the 2026-07-31 update below)
+--sb-persist 0|1     persist trees + rollout memo across a sideboard boundary
+                     (default 1 — see the boundary-persistence update below)
 ```
+
+> **Update (2026-07-31, later): sideboard-boundary persistence + rollout
+> memo.** A boundary is one seat's contiguous run of ~10-20 pick decisions,
+> and leaf rollouts multiplied their cost — each pick was a fresh full-budget
+> search re-simulating futures the previous pick already explored. With
+> `--sb-persist 1` (default) the per-world trees now SURVIVE across a
+> boundary's picks: world seeds are pinned to the boundary's first searched
+> root (mandatory — at a sb root the seed IS the sampled next-game deal), each
+> next pick re-roots every world at the actually-played action's child
+> (walking searched picks, the finalize-chosen action, and nc==1 forced
+> actions alike; a failed walk re-roots that world fresh, never killing the
+> boundary), the re-rooted node's P is overwritten with the fresh clean/noised
+> root priors, and the search only tops up to `sb_sims` CUMULATIVE root visits
+> (`sims_run` counts new sims; the training pi target keeps the inherited
+> mass — deliberately, it is real signal). A per-boundary **rollout memo**
+> additionally keys finished rollouts by (pinned world seed, leaf seat, sorted
+> multiset of (cat, card id, seat) picks since the boundary root), so permuted
+> pick orders reaching the same net configuration reuse one playout. The memo
+> is a deliberate approximation: engine deck-vector order is mutation-history
+> dependent, so a hit substitutes the first-seen ordering's value (a
+> different-but-equally-random deal / completion of the same cards); paths
+> containing a takeback are never memoized (direction locks genuinely
+> diverge). Boundary identity = `mcts.sb_root_key` (seat + upcoming game
+> number); all shared rules live in `train/mcts.py` (`world_seeds_for`,
+> `sb_root_key`, `sb_pick_descriptor`, `walk_reuse_root`, `rollout_memo_*`)
+> and are mirrored bit-exactly in `az_mcts.cpp`. `test_mcts_parity.py` runs
+> the sb gate both ways (`bo3-sb-persist` + the persist-off baseline), all
+> bit-exact. Out of scope (fresh searches): the analysis window /
+> `IncrementalSearch`, `procs>1` mirror-pool search, `run_search_parallel`.
+>
+> Measured on one full boundary (ur_delver vs gw_maverick, 256/4/200/12,
+> PPO-warm-start evaluator, Python path): fresh per-pick searches 19 picks at
+> **79.3 s/pick** (4864 sims, 563k engine steps); persistence **44.0 s/pick**
+> (1.8x, 46% fewer new sims, 1728 inherited visits; the memo added 25 hits
+> and left the pick sequence identical). The C++ actor (production self-play)
+> is far faster per step; the ratios carry over.
+
+> **Update (2026-07-31): leaf rollouts at sideboard roots.** Depth benchmarking
+> showed the PUCT tree alone never reaches the next game: at `sb_sims=256` the
+> most-visited line is ~3 decisions deep (max 8 — still inside the swap picks),
+> and even 4096 sims (~40 s/root) reach only ~turn 1, because the ~33-child swap
+> menu with diffuse priors spreads visits sideways (~+3 PV depth per sims
+> doubling). So a freshly expanded leaf now **plays the determinized world
+> forward** with the argmax-greedy raw policy (both seats, no rng) to the end of
+> player-turn `--sb-rollout-turns` of the sampled next game — through the
+> remaining sideboard picks and mulligans — and backs up THAT state's net value
+> (or the true terminal ±1). Pure rollout-end value, no leaf mixing; rolled-out
+> states are never added to the tree; a hard cap of `40 * turns` rollout steps
+> (`mcts.ROLLOUT_STEPS_PER_TURN`, mirrored in `az_mcts.cpp`) bounds pathological
+> lines. Measured at a real sideboard root (ur_delver vs gw_maverick, 256 sims,
+> PPO-warm-start evaluator): steps/sim 2.0 → 100.0 — every sim now sees ~12
+> player turns of the sampled game — at ~75 s/root in Python (the C++ actor is
+> substantially faster). The mechanism is a general `run_search(...,
+> rollout_turns=)` option (in-game roots keep 0 by default, anchor = the root's
+> own turn), mirrored bit-exactly in the C++ actor as a new ROLLOUT phase
+> (`--rollout-turns`/`--sb-rollout-turns`, -1 = inherit; rollouts force the
+> immediate leaf-eval path even under `--batch K>1`). `test_mcts_parity.py`
+> gained a rolled bo3-sb gate at `sb_rollout_turns=3`; the bo1 and
+> inherited-budget bo3 gates stay rollout-free as the unrolled baseline.
+
+> **Update (2026-08-09): sideboard budget retuned to 128 / 6 / 128.** The
+> 256-sims / 12-turn / depth-200 budget above measurably ~**tripled** az-league
+> match wall-clock (a bo3 pays it at every pick of both boundaries), so
+> `DEFAULT_SB_SIMS` 256 → **128**, `DEFAULT_SB_ROLLOUT_TURNS` 12 → **6**, and
+> `DEFAULT_SB_MAX_DEPTH` 200 → **128** — the values the last league run pinned
+> deliberately (the `az_matrix` curriculum already overrode to them). The
+> measurements above were taken at the old budget and are kept as history.
 
 > **Update (2026-07-26).** `--sb-sims` default raised 32 → **128**. The 32 was
 > chosen when a sideboard decision was the old paired IN→OUT menu; the balanced
@@ -502,25 +593,27 @@ root** correctly:
 
 - **`SearchController` selects the sideboard budget at sideboard roots.** When the
   current decision is a bo3 sideboard prompt (`obs[_IS_SIDEBOARD_IDX] > 0.5`) the
-  controller searches it with `sb_sims` / `sb_worlds` / `sb_max_depth` (defaults
-  `32` / `4` / `200`) instead of the in-game budget. This mirrors `az_selfplay`:
+  controller searches it with `sb_sims` / `sb_worlds` / `sb_max_depth` /
+  `sb_rollout_turns` (the `DEFAULT_SB_*` constants, currently `256`/`4`/`200`/`12`)
+  instead of the in-game budget. This mirrors `az_selfplay`:
   in-game roots keep `run_search`'s default `max_depth=60`, which at a sideboard
   root would be swallowed by the remaining sideboard/mulligan prompts and land the
   leaf value on a masked between-game observation (weak signal). The sideboard vs
   in-game searched split is tallied separately in `stats["sb_searched"]`.
-- **Shared constants, no duplication.** `DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH` live in
-  `cli_spec.py` (the single home, imported by `az_selfplay`, `SearchController`,
-  and the CLI flag defaults); the sideboard-flag index `_IS_SIDEBOARD_IDX` is a
-  named constant in `env.py`.
+- **Shared constants, no duplication.** `DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH/
+  ROLLOUT_TURNS` live in `cli_spec.py` (the single home, imported by
+  `az_selfplay`, `SearchController`, and the CLI flag defaults); the
+  sideboard-flag index `_IS_SIDEBOARD_IDX` is a named constant in `env.py`.
 - **Spec query knobs.** `az:`/`azraw:`/`mcts:` specs accept
-  `?sb_sims=&sb_worlds=&sb_max_depth=` (alongside `sims=`/`worlds=`), so any tool
-  taking a controller spec (observe `--player-a`, play `--model`) can tune the
-  sideboard budget inline.
-- **`analysis.py search`** gained `--sb-sims`/`--sb-worlds`/`--sb-max-depth` and
-  reports how many searched roots were sideboard roots (`N searched (K at bo3
-  sideboard roots)`); its recording sub-controller applies the same budget split.
-- **`az_eval` / `eval_search_gate.py`** thread `--sb-sims`/`--sb-worlds`/
-  `--sb-max-depth` into the `az:`/`mcts:` spec they build, so the gate prices
+  `?sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=` (alongside
+  `sims=`/`worlds=`), so any tool taking a controller spec (observe
+  `--player-a`, play `--model`) can tune the sideboard budget inline.
+- **`analysis.py search`** gained `--sb-sims`/`--sb-worlds`/`--sb-max-depth`/
+  `--sb-rollout-turns` and reports how many searched roots were sideboard roots
+  (`N searched (K at bo3 sideboard roots)`); its recording sub-controller
+  applies the same budget split.
+- **`az_eval` / `eval_search_gate.py`** thread the same four `--sb-*` flags
+  into the `az:`/`mcts:` spec they build, so the gate prices
   sideboard roots explicitly rather than inheriting them silently.
 
 Verified end-to-end (`league/ur_delver` vs `league/gw_maverick`, `az:gen`): observe
@@ -543,7 +636,9 @@ deadline (so a timed cutoff never biases visits toward the first world), with a
 floor of one sim per world; `sims`/`sb_sims` become an optional hard cap. When
 `time=` is absent the original per-world sequential loop is **byte-for-byte
 unchanged** (actor visit-parity holds). The one budget applies to both in-game and
-sideboard roots (the `sb_max_depth` split still applies). `runner.run_games` now
+sideboard roots (the `sb_max_depth`/`sb_rollout_turns` split still applies; the
+deadline is checked between sims, so a rolled sideboard sim can overshoot it by
+up to one rollout). `runner.run_games` now
 prints a per-side search-effort line (roots searched, sideboard split, total and
 mean sims/decision) so the effort spent is visible. Measured with `az:gen` on
 `league/ur_delver` vs `league/gw_maverick`: `time=2&worlds=4` ≈ 190 mean
@@ -596,6 +691,165 @@ live search during a replay); the whatif counterfactual `_rollout_from` re-drive
 the branch live, which now legitimately searches on a search spec (works with the
 search env; snapshots released between decisions as usual).
 
+## n-step TD value targets (exploration-aware horizons)
+
+**What it is.** The value target is no longer only the game's final result. Every
+recorded sample now also carries an **n-step TD target `td_q`**, which bootstraps
+off the SEARCH ROOT VALUE of a decision `n` samples later in the same game rather
+than waiting for the outcome. The trainer optimizes a mix of the two, so the
+critic gets a lower-variance, faster-settling signal while the outcome keeps it
+anchored to ground truth.
+
+Rationale: `z` is one bit of information smeared across every decision of a game —
+a brilliant turn-3 line and the punt that lost the game on turn 12 receive the
+same label. The search root value at a later decision is a much sharper estimate
+of "how is this going", and it is already computed for free by the search that
+produced the sample.
+
+**Shard schema (clean break — old shards are rejected, not migrated).** Alongside
+`obs / pi / z / mask`, every shard now carries three parallel per-sample columns:
+
+| column | dtype | meaning |
+|---|---|---|
+| `q` | float32 | that decision's search ROOT VALUE (ΣW/ΣN across worlds), in the **mover's** perspective. `NaN` for expert (behavior-cloning) rows, which run no search. |
+| `explored` | uint8 | 1 iff the action actually played differs from the search's visit-count argmax — i.e. the temperature branch took a non-argmax action. |
+| `td_q` | float32 | the n-step target below. Always finite and in `[-1, 1]`. |
+
+`az_train.load_window` **hard-fails** on a shard missing any of them ("regenerate
+self-play shards (schema changed: n-step TD targets)") rather than silently
+mixing two different value targets in one training window.
+
+**The rule** (`az_selfplay.compute_td_targets`, mirrored bit-exactly by
+`src/actor/td_targets.cpp`). Samples are the searched decisions of a match, in
+play order, both seats interleaved. They are partitioned into **chains** keyed on
+`(game_idx, is_sideboard)`: a bootstrap window never crosses a game boundary, and
+never crosses the bo3 sideboard boundary. For sample `t` in a chain whose last
+sample is `L`, with `E` the first sample after `t` in that chain with
+`explored = 1` (infinity when there is none) and `j_max = min(E - 1, L)`:
+
+* `t + n <= j_max` → **bootstrap**: `td_q[t] = s * q[t + n]`
+* `j_max == L` → the window runs clean to the end of the game, so the true
+  outcome is in reach: `td_q[t] = z[t]`
+* otherwise → **shortened horizon** at the exploratory move:
+  `td_q[t] = s * q[j_max]`, or `z[t]` when the block is immediate (`j_max == t`)
+
+`s` is the **perspective flip** and is mandatory: `q` and `z` are each stored from
+their own sample's mover's point of view and the seat alternates freely between
+samples, so `s = +1` when the bootstrap sample's mover is the same seat as `t`'s
+and `-1` otherwise. Getting this sign wrong silently poisons every target.
+
+*Why shorten at an exploratory move.* Bootstrapping assumes the states between
+`t` and `t + n` were reached by the policy the search endorses. A temperature
+sample that plays a non-argmax action breaks that assumption: everything after it
+is off-policy noise, so the window stops just before it and bootstraps from the
+last on-policy decision instead (or falls back to `z` when that is `t` itself).
+
+*Sideboard rows.* A sideboard-root sample's value is about the game it is
+choosing, and a boundary's picks are one seat's bookkeeping rather than a line of
+play, so sideboard samples form their own chain: they always keep `td_q = z` and
+never appear inside an in-game sample's window. (They sit as a contiguous run in
+front of the in-game samples of the game they gate, so the chain key alone
+separates them.) *Expert rows* (`generate_expert`) record `q = NaN`,
+`explored = 0` and therefore `td_q = z` — BC data is priced purely by its own
+demonstration's outcome.
+
+**Knobs** (one home: the `DEFAULT_AZ_*` block in `train/cli_spec.py`):
+
+```
+--td-n N       GENERATION side (az-selfplay, az, az-league; default 10)
+               the n-step horizon, baked into each shard's td_q column. The
+               C++ actor takes the same flag and computes the identical rule.
+--q-mix F      TRAINING side (az-train, az, az-league; default 0.5)
+               v_target = (1 - q_mix) * z + q_mix * td_q.
+               0 = the classic pure-outcome AlphaZero target; 1 = pure bootstrap.
+               Re-weights already-recorded shards, so it can be changed without
+               regenerating self-play.
+```
+
+Both are persisted in the az-league resume sidecar alongside the other knobs.
+`az-train`'s periodic log line reports the value loss against BOTH targets —
+`v_mix=` (what is optimized) and `v_z=` (plain `MSE(v, z)`, no grad) — so a drift
+between the bootstrap and the outcome is visible while training.
+
+**Regression coverage.** The `pergame` ci tier (`train/test_per_game_split.py`)
+runs a synthetic match with hand-picked `q` values that pins every branch of the
+rule to exact expected `td_q` values, including the seat-flip sign, the shortened
+horizon, the immediate block, terminal-in-window, sideboard rows and expert rows.
+The `sbselfplay` tier additionally asserts on a REAL bo3 match that sideboard
+samples never bootstrap and that `td_q` is finite in `[-1, 1]`; the opt-in `actor`
+tier's `test_actor_shards.py` pins the C++ writer's schema (keys, dtypes, ranges).
+
+## Static checkpoint inspection (az_inspect)
+
+Every tool above studies the net by *watching it play*. `train/az_inspect.py`
+(CLI) and `train/tui_az_inspect.py` (Textual, `./tui.sh` → `az-inspect`) are the
+other half: views computed from the checkpoint's **weights** and the **recorded
+self-play shards** (`az_data/gen/shard_*.npz` — obs/pi/z/mask), with no engine
+subprocess and no game played.
+
+- **Embedding space.** `trunk.card_emb` is an `nn.Embedding(N_CARD_TYPES + 1,
+  card_embed_dim, padding_idx=0)` whose row `i + 1` is vocab card `i`, so its rows
+  line up with `src/card_vocab.h`: cosine neighbours, kNN **label purity vs
+  chance** (color / primary type / mana value / land — the quantitative "did it
+  recover real card structure"), k-means, a PCA scatter, and the
+  action-category embedding's neighbours.
+- **The card representation is split** (2026-08-01): the network consumes
+  `[card_emb | trunk.card_props]` per card id — a 32-dim **trainable identity**
+  table plus a 96-dim **frozen printed-property buffer** (`train/card_props.py`
+  codegen: pips/CMC/X, colors, types, land subtypes, P/T, printed keywords,
+  ability-category heads, tribal subtypes). Properties are constant per card, so
+  the identity rows carry only the behavioral residual — measured purity on the
+  identity table is *expected* to sit at chance on printed labels after the
+  split (the props block encodes those at ~0.98 land / ~0.79 type purity by
+  construction); that is the division of labor working, not a regression. The
+  embedding views take `--space identity|props|full` (default `identity`).
+  This was a breaking network-shape change: pre-split PPO zips fail SB3's strict
+  policy load and pre-split AZ `.pt` fail `load_az`'s `N_CARD_PROPS` handshake —
+  both intended; retrain via `league --fresh`, then warm-start AZ as usual.
+- **Training exposure** (`exposure`, weights only) is the honesty check for every
+  embedding view: a card the training window never contained still carries its
+  warm-start row, so its "neighbours" are noise. Diffing a checkpoint against its
+  previous snapshot (or the PPO net it warm-started from) says *exactly* which
+  rows and which critic columns received gradient — an untouched row is
+  bit-identical, because `az_train`'s `decay_exempt_param_groups` keeps weight
+  decay off these tables precisely so an ungradiented row cannot drift.
+  `--min-seen 1` filters the untrained rows out of every embedding view.
+- **Occurrence counts** (`occur`, needs shards) decode a sample of recorded
+  states and count where each card appears. Reported in two columns: states that
+  EMBED the card (both boards, hand, graveyards/exiles, known zones, and the five
+  decklist blocks) and states where it appears only in the dense
+  opponent-revealed multi-hot — which never touches `card_emb` and is sticky for
+  a whole match, so summing the two would both overstate and misattribute
+  exposure. This measures visibility in the sample; `exposure` answers the
+  underlying question exactly.
+- **Critic.** The value head's per-matchup columns as an `N_ARCH × N_ARCH` map
+  (norm / constant / `dead_value_buckets`), which buckets the sampled self-play
+  actually covers, and **per-bucket calibration** of predicted V against the
+  shards' realized `z` — matchup-level "is this critic honest", without playing.
+- **Policy.** `KL(search posterior ‖ raw-net priors)` grouped by the action
+  category the search preferred: where the net cannot reproduce search without
+  searching.
+- **Probes** on one recorded decision: **permutation importance** over the named
+  observation blocks (a block is replaced with another *real* state's values,
+  not zeroed — a 0 life total is not "no information"), a **card-identity swap**
+  ranking every vocab card by ΔV in one slot, and **scalar sweeps** (own/opp
+  life, hand, turn) with a monotonicity verdict.
+- **`diff`** between two checkpoints: per-tensor, per-card and per-bucket
+  movement — what a league/az rotation actually changed.
+
+**The TUI opens weights-only.** Only the checkpoint (and its baseline, for
+exposure) is read by default: it starts in about a second, needs no shard pool on
+disk, and the sidebar lists only the views this session can actually compute —
+the Probes pane, every view of which needs a recorded decision, is not built at
+all. `--with-shards` (implied by naming `--shards <dir>`) loads recorded
+self-play and restores the rest.
+
+`obs_blocks()` derives its partition from `env.py`'s offset chain and asserts it
+contiguous over `[0, OBS_SIZE)`, so a layout change fails loudly instead of
+mislabelling attributions. Regression: `train/test_az_inspect.py` (opt-in ci tier
+`azinspect`) runs every view against a *fresh* net and synthetic shards, so it
+needs neither a trained checkpoint nor recorded self-play.
+
 ## Analysis-tool integration (M10)
 
 The model-analysis tools (`train/analysis.py` + its shared CLI in
@@ -647,7 +901,7 @@ conventions). Example:
 train/.venv/bin/python train/analysis.py search az:league/ur_delver \
     --deck-a league/ur_delver --deck-b league/ur_delver \
     --n-games 4 --sims 64 --worlds 4 --top 8 \
-    --bo3 --sb-sims 32 --sb-worlds 4 --sb-max-depth 200   # sb-* apply at bo3 sideboard roots
+    --bo3 --sb-sims 32 --sb-worlds 4 --sb-rollout-turns 4   # sb-* apply at bo3 sideboard roots
 ```
 
 Both are surfaced in the TUI for free: the `search` subcommand is declared in
@@ -688,6 +942,63 @@ as the design intent it was built against:
   --export-check`); (b) actor-generated shards train identically to
   Python-generated shards; (c) throughput benchmark vs the Phase C Python
   generator.
+
+## Duplicate-edge merging (2026-08-14)
+
+Both search backends merge **interchangeable duplicate menu actions** into one
+edge (three copies of Tropical Island in hand = one "play Tropical Island"
+edge), so a fixed sim budget stops splitting itself across identical subtrees
+and searches strictly more unique futures, and the collective line carries its
+full prior mass (no vote-splitting against distinct alternatives).
+
+- **Predicate (the shared Python↔C++ contract):** `decode.menu_merge_reps` /
+  `MENU_MERGE_WHITELIST` (train/decode.py) and its bit-exact twin
+  `src/actor/menu_merge.h`. `rep[i]` = lowest menu index with an equal
+  whitelisted key `(category, card id, ctrl, zone_ref, ordinal)` — a pure
+  integer decode of the six per-action obs blocks (whitelisted zones always
+  carry `slot_ref == -1`, so no state reads). Whitelist: all same-owner HAND
+  picks (cast / play-land / discard / bottom-deck / cost-pitch), library
+  search picks (SEARCH_LIBRARY / TOP_LIBRARY), graveyard picks (targets /
+  choose-card / escape-cost exiles / flashback-variant casts), and exile
+  CHOOSE_CARD picks. Deliberately excluded: **cast-from-exile / play-free**
+  (two same-name exile cards can carry different hidden
+  `ImpulseCastPermission`s — free vs pay-life vs energy, suspend timing),
+  `OTHER_CHOICE`, null card ids, and anything with a real `slot_ref`
+  (battlefield/stack state can differ per entity).
+- **Tree mechanics:** each node stores the partition (`_Node.rep` /
+  `Node::rep`) captured from its creation obs (the `pick_meta` pattern);
+  raw priors are **folded** onto representatives (ascending member index,
+  float64) and `select()` masks non-representatives, so N/W/children only
+  ever live at rep indices and the engine is only ever sent rep indices.
+  Invariant: *fold exactly once, immediately after every P assignment*
+  (creation, boundary-root adoption, batched flush) — adoption overwrites P
+  with fresh raw priors first, so double-folding is impossible. Root
+  Dirichlet noise keeps its **raw-dimension** draws (rng streams unchanged);
+  the fold happens after mixing, so a duplicate group gets the sum of its
+  members' noise.
+- **Naturally-canonical fallbacks:** duplicate actions have bit-identical
+  per-action features, so the net's logits for them are identical and every
+  first-max argmax fallback already picks the group's lowest index (= the
+  rep). If the net ever gains positional per-action features this stops
+  holding and the fallback paths must canonicalize explicitly on BOTH sides.
+- **Training targets unchanged in shape:** `pi` stays a raw-menu-width visit
+  distribution with all of a group's mass on its representative; no mask
+  change, no shard-schema change (identical logits make the CE loss
+  indifferent to within-group placement). Real played duplicate indices are
+  canonicalized through each node's `rep` at the walk/follow sites
+  (`walk_reuse_root`, `_try_follow_tree`, C++ `walk_node`).
+- **Accepted approximation:** graveyard/hand recency — removing the older vs
+  newer copy permutes the remaining obs id sequences; the states are
+  semantically equivalent, the obs bytes differ.
+- **Kill-switch:** `merge_dupes=True` kwarg (`run_search` /
+  `IncrementalSearch` / `SearchController` / `AnalysisConfig`),
+  `az_selfplay --merge-dupes 0|1`, actor `--merge-dupes 0|1`
+  (`MCTSConfig::merge_dupes`). Config-constant per process — never flip it
+  across a persisted sideboard boundary.
+- **Tests:** `train/test_menu_merge.py` (predicate + fold/select/walk
+  semantics, standalone); `train/test_mcts_parity.py` now also asserts ≥1
+  duplicate-bearing searched root (non-vacuous), zero visit mass on
+  merged-away duplicates, and a `--merge-dupes 0` kill-switch parity case.
 
 ## Notes, quirks, known limitations
 

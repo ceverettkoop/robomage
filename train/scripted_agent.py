@@ -25,6 +25,7 @@ by env's reward shaping and observation mirroring) and imported here.
 import random
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 
 import numpy as np
 
@@ -40,19 +41,27 @@ from env import (
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY,
     _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE,
     _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD, _CAT_YESNO,
-    # battlefield / stack layout
+    _CAT_DISCARD, _CAT_KEEP_LEGEND, _CAT_CHOOSE_REPLACEMENT, _CAT_SACRIFICE,
+    # battlefield / stack / graveyard layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
     _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE, _CUR_TURN_IDX,
+    _GY_START, _GY_SLOT_SIZE, MAX_GY_SLOTS,
     _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE,
-    _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
+    _OFF_IS_LAND, _OFF_IS_PHASED_OUT, _OFF_OTHER_COUNTERS,
+    # per-action entity-reference slots (KEEP_LEGEND duplicate disambiguation)
+    ACT_REFS_START, N_ENTITY_REF_SLOTS,
     # per-slot card-id decoder
     _slot_card_idx,
     # vocab / targeting constants
     _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL, _BLUE_POOL_IDX, _WASTELAND_VOCAB_IDX,
     _AETHER_VIAL_VOCAB_IDX,
     _BASIC_LAND_IDS, _COUNTER_SPELL_VOCAB_IDS, _COUNTERSPELL_VOCAB_IDX,
+    _COUNTER_EXEMPT_CANTRIP_IDS, _TARGETED_REMOVAL_IDS, _WRATH_OF_SKIES_VOCAB_IDX,
+    _TOKEN_VOCAB_BASE,
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
+    _LOTUS_PETAL_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
+    _PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX, _CONSIDER_VOCAB_IDX,
     _KEEP_ONE_LANDER_IDS,
     _GREEN_SUNS_ZENITH_VOCAB_IDX, _KEEN_EYED_CURATOR_VOCAB_IDX, _MANA_DORK_IDS,
     _UNRELIABLE_LAND_IDS,
@@ -62,16 +71,24 @@ from env import (
     _MYCOSYNTH_LATTICE_VOCAB_IDX,
     _CANDELABRA_VOCAB_IDX, _MULTI_MANA_LAND_IDS,
     _SOLITUDE_VOCAB_IDX, _THE_ONE_RING_VOCAB_IDX,
+    # reanimation spells + the fatties they cheat out
+    _REANIMATION_SPELL_IDS, _REANIMATION_FATTY_IDS,
+    # lands-deck combo/engine pieces
+    _LIFE_FROM_LOAM_VOCAB_IDX, _URZAS_SAGA_VOCAB_IDX,
+    _DARK_DEPTHS_VOCAB_IDX, _THESPIANS_STAGE_VOCAB_IDX,
+    _EXPLORATION_VOCAB_IDX, _TABERNACLE_VOCAB_IDX, _SAC_LAST_LAND_IDS,
     # Lion's Eye Diamond crack: blue-mana category + LED vocab id + draw-on-stack test
     _CAT_MANA_U, _LED_VOCAB_IDX, _self_has_draw_on_stack,
     # pending-decision source index (obs[_PENDING_DECISION_START] == source card id)
     _PENDING_DECISION_START,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
+    # action-history ring start (newest entry first: cat, card id, is_self, turn)
+    _HIST_START,
     # known top-of-library slot 0 (obs[_KNOWN_TOP_LIB_START] == top card id, sentinel=unknown)
     _KNOWN_TOP_LIB_START,
     # header flag / step one-hot indices + self player-block offsets
-    _SELF_IS_A_IDX, _STEP_FIRST_MAIN_IDX, _STEP_SECOND_MAIN_IDX,
+    _SELF_IS_A_IDX, _STEP_FIRST_MAIN_IDX, _STEP_SECOND_MAIN_IDX, _IS_ACTIVE_IDX,
     _SELF_BLOCK_START, _PB_LIFE,
     # shared helpers (also used by env's reward shaping, so they stay in env.py)
     _hand_has_card, _stack_is_empty,
@@ -80,6 +97,7 @@ from env import (
 )
 from decode import decode_game_state
 from card_costs import _LAND_VOCAB_IDS, _CARD_COST_MATRIX
+from _enums import CAT_BOTTOM_DECK_CARD as _CAT_BOTTOM_CARD
 
 
 class Skill(Enum):
@@ -332,6 +350,36 @@ def _opponent_has_creature(obs: np.ndarray) -> bool:
     return False
 
 
+def _controls_card(obs: np.ndarray, cid: int) -> bool:
+    """True if self controls an unphased permanent with this vocab id (slots 0-47)."""
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base):
+            continue
+        if _slot_card_idx(obs, base + _BF_CARD_OFF) == cid:
+            return True
+    return False
+
+
+def _gy_has_any(obs: np.ndarray, ids: frozenset) -> bool:
+    """True if EITHER graveyard holds a card whose vocab id is in ``ids``.
+
+    The self and opponent graveyard blocks are contiguous card-id slots
+    (self first), so one scan over 2*MAX_GY_SLOTS covers both. Both sides
+    matter to the caller (Reanimate can take a creature from any graveyard).
+    """
+    for slot in range(2 * MAX_GY_SLOTS):
+        if _slot_card_idx(obs, _GY_START + slot * _GY_SLOT_SIZE) in ids:
+            return True
+    return False
+
+
+def _action_slot_ref(obs: np.ndarray, i: int) -> int:
+    """Decode action i's entity-reference slot (-1 = none; 0-47 self perms,
+    48-95 opp perms, 96-107 stack — the unified reference space)."""
+    return int(round(float(obs[ACT_REFS_START + i]) * N_ENTITY_REF_SLOTS)) - 1
+
+
 def _tapped_multi_mana_lands(obs: np.ndarray) -> int:
     """Count self-controlled TAPPED lands that make more than one mana (self slots 0-47).
 
@@ -393,6 +441,49 @@ def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
     return False
 
 
+def _self_stack_has_card(obs: np.ndarray, cid: int) -> bool:
+    """Return True if self controls a stack object with the given card id."""
+    for i in range(12):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        if obs[base] > 0.5 and _slot_card_idx(obs, base + 1) == cid:
+            return True
+    return False
+
+
+def _opponent_threat_on_stack(obs: np.ndarray) -> bool:
+    """Threat-type counter triage: True if a non-self stack object is worth a
+    counterspell — anything that is NOT a known pure cantrip
+    (_COUNTER_EXEMPT_CANTRIP_IDS). Creatures/planeswalkers/enchantments at any
+    MV and every other MV>=2 spell fall through the exemption and count."""
+    for i in range(12):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        if obs[base] >= 0.5:
+            continue  # self-controlled
+        cid = _slot_card_idx(obs, base + 1)
+        if cid >= 0 and cid not in _COUNTER_EXEMPT_CANTRIP_IDS:
+            return True
+    return False
+
+
+def _hand_land_count(obs: np.ndarray) -> int:
+    """Lands in the priority player's hand."""
+    count = 0
+    for slot in range(MAX_HAND_SLOTS):
+        if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) in _LAND_VOCAB_IDS:
+            count += 1
+    return count
+
+
+def _self_land_count(obs: np.ndarray) -> int:
+    """Lands self controls (unphased, self battlefield slots 0-47)."""
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_LAND] > 0.5 and not _phased(obs, base):
+            count += 1
+    return count
+
+
 # ── Doomsday combo constants/helpers ────────────────────────────────────────
 # Doomsday keeps exactly 5 cards on top of the library (doomsday.txt ChangeNum$ 5).
 # Thassa's Oracle wins the game when devotion-to-blue (>= 2 from its own UU) is
@@ -423,7 +514,99 @@ _BLUE_SOURCE_IDS = frozenset({
     64,   # Underground Sea (U/B)
     67,   # Cavern of Souls (any colour for creature spells, e.g. Oracle)
     56,   # Lotus Petal (sacrifice: one mana of any colour)
+    300,  # Tropical Island (U/G) — wubg_doomsday runs 2; omitting it
+          # undercounted blue sources and held Doomsday longer than needed
 })
+
+# ── Doomsday all-in mulligan (vs decks with no Force of Will) ───────────────
+# Hand-based mana classification for the fast-kill keep test. A fetch counts
+# for every colour the deck's duals let it find (Flooded Strand and Polluted
+# Delta fetch Underground Sea, Verdant Catacombs fetches Sea or Tropical);
+# Lotus Petal counts for both sides.
+_DD_HAND_B_SOURCE_IDS = frozenset({
+    62,   # Swamp
+    63,   # Undercity Sewers (U/B)
+    64,   # Underground Sea (U/B)
+    153,  # Scrubland (W/B)
+    65,   # Bloodstained Mire (fetches a Swamp-typed dual)
+    66,   # Verdant Catacombs (fetches Underground Sea)
+    6,    # Flooded Strand (fetches Underground Sea / Scrubland)
+    7,    # Polluted Delta (fetches Sea / Sewers)
+    56,   # Lotus Petal
+})
+_DD_HAND_U_SOURCE_IDS = frozenset({
+    19,   # Island
+    15,   # Tundra (W/U)
+    4,    # Volcanic Island (U/R)
+    63,   # Undercity Sewers (U/B)
+    64,   # Underground Sea (U/B)
+    67,   # Cavern of Souls (creature spells — pays for Oracle)
+    300,  # Tropical Island (U/G)
+    5,    # Scalding Tarn (fetches an Island-typed dual)
+    9,    # Misty Rainforest (fetches an Island-typed dual)
+    6,    # Flooded Strand
+    7,    # Polluted Delta
+    66,   # Verdant Catacombs (fetches Tropical Island)
+    56,   # Lotus Petal
+})
+
+# Instant-speed removal that can kill Thassa's Oracle mid-combo (in response
+# to the cast or the win trigger) — what a Doomsday deck's Thoughtseize-style
+# discard strips right after countermagic. The instant subset of
+# _TARGETED_REMOVAL_IDS: Prismatic Ending is sorcery-speed, so it can't
+# disrupt the kill and stays on the highest-MV fallback.
+_DD_DISRUPTOR_REMOVAL_IDS = frozenset({
+    48,   # Swords to Plowshares
+    84,   # Fatal Push
+})
+
+_DECKS_DIR = Path(__file__).resolve().parent.parent / "bin" / "resources" / "decks"
+_deck_fow_cache: dict = {}
+
+
+def _deck_runs_force_of_will(deck_name: str):
+    """Whether the named deck's .dk file (main or sideboard) contains Force of
+    Will. Returns True/False, or None when the list can't be read (unknown
+    deck name, sculpted temp deck already cleaned up, ...) — callers treat
+    None as "assume it does" and stay conservative."""
+    if deck_name in _deck_fow_cache:
+        return _deck_fow_cache[deck_name]
+    try:
+        text = (_DECKS_DIR / f"{deck_name}.dk").read_text()
+    except OSError:
+        result = None
+    else:
+        result = "force of will" in text.lower()
+    _deck_fow_cache[deck_name] = result
+    return result
+
+
+def _dd_fast_hand(obs: np.ndarray, hand_ids) -> bool:
+    """Can this opening hand cast Doomsday by turn 1-3 and convert right
+    after? Requirements: Doomsday itself; BBB reachable on at most three land
+    drops plus Petals plus a Dark Ritual's net +2; a black-capable source to
+    kick things off; and two blue-capable sources for Thassa's Oracle's UU —
+    or Lion's Eye Diamond, which pays for Oracle by itself in the crack
+    window. Sources are counted per-card across turns (the ritual land untaps
+    before the Oracle turn), so one dual serving both colours is fine.
+    Battlefield sources count too — normally none exist at the mulligan, but
+    sculpted harness scenarios preset them."""
+    if _DOOMSDAY_VOCAB_IDX not in hand_ids:
+        return False
+    rituals = sum(1 for c in hand_ids if c == _DARK_RITUAL_VOCAB_IDX)
+    petals = sum(1 for c in hand_ids if c == _LOTUS_PETAL_VOCAB_IDX)
+    b_lands = sum(1 for c in hand_ids
+                  if c in _DD_HAND_B_SOURCE_IDS and c != _LOTUS_PETAL_VOCAB_IDX)
+    bf_b = _count_untapped_sources(obs, _DD_HAND_B_SOURCE_IDS)
+    if min(b_lands, 3) + bf_b + petals == 0:
+        return False
+    if min(b_lands, 3) + bf_b + petals + 2 * min(rituals, 1) < 3:
+        return False
+    blue = (sum(1 for c in hand_ids if c in _DD_HAND_U_SOURCE_IDS)
+            + _count_untapped_sources(obs, _DD_HAND_U_SOURCE_IDS))
+    if _LED_VOCAB_IDX in hand_ids:
+        blue += 2
+    return blue >= 2
 
 
 def _led_crack_choice(obs: np.ndarray, cats, card_ids) -> int | None:
@@ -462,12 +645,30 @@ def _self_life(obs: np.ndarray) -> int:
     return int(round(float(obs[_SELF_LIFE_IDX]) * 20))
 
 
-def _count_blue_sources(obs: np.ndarray) -> int:
-    """Untapped blue-mana sources self controls (self battlefield slots 0..47)."""
+def _count_untapped_sources(obs: np.ndarray, id_set) -> int:
+    """Untapped permanents self controls whose card id is in ``id_set``
+    (self battlefield slots 0..47)."""
     count = 0
     for slot in range(_PERM_A_SLOTS):
         base = _BF_START + slot * _BF_SLOT_SIZE
         if obs[base + _OFF_IS_TAPPED] > 0.5 or _phased(obs, base):
+            continue
+        idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
+        if idx >= 0 and idx in id_set:
+            count += 1
+    return count
+
+
+def _count_blue_sources(obs: np.ndarray) -> int:
+    """Blue-mana sources self controls, tapped or not. The Doomsday gate asks
+    whether Oracle's UU will exist by KILL time (next untap, or the LED crack
+    window), so a source tapped mid-combo-turn — e.g. the Underground Sea
+    that just paid for Dark Ritual — still counts. Counting only untapped
+    sources made the ritual itself flip the Doomsday gate false."""
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base):
             continue
         idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
         if idx >= 0 and idx in _BLUE_SOURCE_IDS:
@@ -500,9 +701,43 @@ def _count_untapped_mana_sources(obs: np.ndarray) -> int:
     return count
 
 
+# Free-draw enablers for the Doomsday pile: cycling that costs no mana (Street
+# Wraith pays life, Edge of Autumn sacs a land), so a drawn one is immediately
+# re-cycled to keep drawing down the pile the same turn.
+_DD_FREE_DRAW_IDS = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX})
+# Cheap cantrips: preferred pile filler (a drawn one is castable for more digging)
+# but NOT counted toward Oracle's position — they cost mana, so the pile plan
+# only relies on the free draws plus natural draw steps.
+_DD_CANTRIP_IDS = frozenset({_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
+                             _CONSIDER_VOCAB_IDX})
+
+
+def _hand_free_draw_count(obs: np.ndarray) -> int:
+    """Free-draw cyclers (Street Wraith / Edge of Autumn) in the priority
+    player's hand. The Brainstorm same-turn pile plan needs at least one:
+    Brainstorm's two put-backs cost two draws, so the pile's own cyclers
+    always come up exactly one draw short without a cycler already in hand."""
+    count = 0
+    for slot in range(MAX_HAND_SLOTS):
+        if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) in _DD_FREE_DRAW_IDS:
+            count += 1
+    return count
+
+
+def _led_covers_oracle(obs: np.ndarray) -> bool:
+    """Lion's Eye Diamond pays Thassa's Oracle's UU on its own: cracked in the
+    kill window (_led_crack_choice) it floats three blue that outlive the final
+    cycle draw. So an LED in hand (castable for 0) or already on the
+    battlefield satisfies the blue coverage the Doomsday gate demands even
+    when fewer than two untapped blue sources are up."""
+    return (_hand_has_card(obs, _LED_VOCAB_IDX)
+            or _controls_card(obs, _LED_VOCAB_IDX))
+
+
 def _classify_top_library(cats, card_ids):
-    """Bucket the offered TOP_LIBRARY choices into (oracle_idx, wraith_idxs, filler_idxs)."""
-    oracle_i, wraith_is, filler_is = None, [], []
+    """Bucket the offered TOP_LIBRARY choices into
+    (oracle_idx, led_idx, free_draw_idxs, cantrip_idxs, filler_idxs)."""
+    oracle_i, led_i, draw_is, cantrip_is, filler_is = None, None, [], [], []
     for i, c in enumerate(cats):
         if c != _CAT_TOP_LIBRARY:
             continue
@@ -510,64 +745,208 @@ def _classify_top_library(cats, card_ids):
         if cid == _THASSAS_ORACLE_VOCAB_IDX:
             if oracle_i is None:
                 oracle_i = i
-        elif cid == _STREET_WRAITH_VOCAB_IDX:
-            wraith_is.append(i)
+        elif cid == _LED_VOCAB_IDX:
+            if led_i is None:
+                led_i = i
+        elif cid in _DD_FREE_DRAW_IDS:
+            draw_is.append(i)
+        elif cid in _DD_CANTRIP_IDS:
+            cantrip_is.append(i)
         else:
             filler_is.append(i)
-    return oracle_i, wraith_is, filler_is
+    return oracle_i, led_i, draw_is, cantrip_is, filler_is
 
 
-def _doomsday_pile_pick(cats, card_ids) -> int:
+def _dd_return_pick(obs: np.ndarray, cats, card_ids, cat) -> int:
+    """Pick a card to give back from hand (Brainstorm's put-back to the top,
+    or London-mulligan bottoming — ``cat`` selects which menu), protecting
+    the Doomsday combo pieces and threats. Return, in preference order: an
+    excess land (while the hand still holds >= 3, the same threshold as the
+    discard rule), then a cheap cantrip, then any other non-combo card, then
+    free-draw cyclers (the cycle chain re-draws whatever sits on top, so they
+    are the least-bad combo piece for the put-back case), then Lion's Eye
+    Diamond and Doomsday, with Thassa's Oracle only as the forced last
+    resort."""
+    land_heavy = _hand_land_count(obs) >= 3
+    tiers: list[list[int]] = [[], [], [], [], [], []]
+    for i, c in enumerate(cats):
+        if c != cat:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if cid == _THASSAS_ORACLE_VOCAB_IDX:
+            tiers[5].append(i)
+        elif cid in (_LED_VOCAB_IDX, _DOOMSDAY_VOCAB_IDX):
+            tiers[4].append(i)
+        elif cid in _DD_FREE_DRAW_IDS:
+            tiers[3].append(i)
+        elif cid in _DD_CANTRIP_IDS:
+            tiers[1].append(i)
+        elif cid in _LAND_VOCAB_IDS:
+            tiers[0 if land_heavy else 2].append(i)
+        else:
+            tiers[2].append(i)
+    for tier in tiers:
+        if tier:
+            return tier[0]
+    return 0
+
+
+def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
     """Choose a card during Doomsday pile building (TOP_LIBRARY queries).
+
+    A TOP_LIBRARY menu whose pending source is Brainstorm is its put-back
+    (cards from HAND going on top), not pile building — that goes to
+    _brainstorm_putback_pick so combo pieces are kept over junk.
 
     Doomsday resolves in two TOP_LIBRARY phases:
 
       (a) SELECTION — choose WHICH 5 cards to keep, from the whole library and
           graveyard (many options). Composition only; the order is fixed by the
-          rearrange that follows, so just keep Thassa's Oracle and the Street
-          Wraiths and let anything fill the rest.
+          rearrange that follows: keep Thassa's Oracle, then every free-draw
+          enabler (Street Wraith / Edge of Autumn), then cheap cantrips, then
+          whatever fills the rest.
 
       (b) REARRANGE — order the (<= 5) kept cards. The engine fills the pile
           bottom-first (effect_rearrange_top_of_library.cpp), so the
           position-from-top being placed equals the number of remaining choices.
 
-    Target pile, top -> bottom: [Wraith, Wraith, Thassa's Oracle, filler, filler].
-    The kill is then: cycle a Street Wraith to draw Wraith(pos1), cycle to draw
-    Wraith(pos2), cycle to draw Oracle(pos3) -> library is now 2 -> cast Oracle
-    and win. Oracle sits 3rd from the top (== 3rd from the bottom of the pile).
+    Two pile plans:
+
+    STANDARD, top -> bottom: [free draws..., Thassa's Oracle, rest...] with
+    Oracle's position ADAPTIVE — directly under however many free-draw enablers
+    the pile actually has (the old plan hardcoded Oracle 3rd behind two Street
+    Wraiths, which stalls a list running only one Wraith, e.g. wubg_doomsday).
+    The kill: each drawn enabler is immediately cycled (the post-Doomsday
+    cycling rules), chaining down to Oracle; natural draw steps and any cantrip
+    filler drain the remainder until the library hits the Oracle-win size.
+
+    BRAINSTORM SAME-TURN (bs_line: Brainstorm in hand, LED offered, and a
+    free-draw cycler already in hand), top -> bottom:
+    [free draws..., Lion's Eye Diamond, Thassa's Oracle, rest...].
+    Brainstorm lifts the top three pile cards (cyclers + LED), puts back two
+    junk cards, LED is cast for 0, and the in-hand cycler chain eats the
+    put-backs down to Oracle: the final cycle's draw trigger is the LED crack
+    window (_led_crack_choice) — sac LED for UUU with Oracle still in the
+    library, draw Oracle, cast it off the floating mana the same turn. The
+    extra cycler in HAND is load-bearing: Brainstorm's two put-backs cost two
+    draws, so a pile-only chain always comes up exactly one draw short.
     """
-    oracle_i, wraith_is, filler_is = _classify_top_library(cats, card_ids)
+    if _slot_card_idx(obs, _PENDING_DECISION_START) == _BRAINSTORM_VOCAB_IDX:
+        return _dd_return_pick(obs, cats, card_ids, _CAT_TOP_LIBRARY)
+
+    oracle_i, led_i, draw_is, cantrip_is, filler_is = \
+        _classify_top_library(cats, card_ids)
+    bs_line = (led_i is not None
+               and _hand_has_card(obs, _BRAINSTORM_VOCAB_IDX)
+               and _hand_free_draw_count(obs) >= 1)
+    if not bs_line and led_i is not None:
+        # Without the Brainstorm line LED is ordinary filler, as before.
+        filler_is = sorted(filler_is + [led_i])
+        led_i = None
     n_choices = sum(1 for c in cats if c == _CAT_TOP_LIBRARY)
 
-    # (a) SELECTION: keep Oracle, then the Street Wraiths, then any filler.
+    # (a) SELECTION: Oracle, LED (bs_line only), free draws, cantrips, filler.
     if n_choices > _DD_PILE_SIZE:
         if oracle_i is not None:
             return oracle_i
-        if wraith_is:
-            return wraith_is[0]
+        if led_i is not None:
+            return led_i
+        if draw_is:
+            return draw_is[0]
+        if cantrip_is:
+            return cantrip_is[0]
         return 0
 
     # Small rearrange with no combo pieces (Ponder / Brainstorm): legacy behaviour.
-    if oracle_i is None and not wraith_is:
+    if oracle_i is None and not draw_is and led_i is None:
         return 0
 
-    # (b) REARRANGE: position-from-top being placed == remaining choice count.
+    # (b) REARRANGE, bottom-first: position-from-top == remaining choice count.
+    # Oracle goes right under the (remaining) free-draw enablers — with LED
+    # slotted between them on the bs_line — positions above get the enablers,
+    # positions below get filler-then-cantrips (cantrips shallower than dead
+    # filler, since a drawn one digs further).
     pos = n_choices
-    if pos == 3 and oracle_i is not None:
-        return oracle_i                      # Thassa's Oracle 3rd from top
-    if pos <= 2:                             # top slots: free-draw enablers first
-        if wraith_is:
-            return wraith_is[0]
-        if oracle_i is not None:
-            return oracle_i
-    # Bottom slots (pos 4, 5): bury filler, keeping Oracle/Wraiths shallower.
-    if filler_is:
-        return filler_is[0]
-    if wraith_is:
-        return wraith_is[0]
+    led_pos = (len(draw_is) + 1) if led_i is not None else 0
+    oracle_slot = len(draw_is) + (2 if led_i is not None else 1)
+    oracle_pos = oracle_slot if oracle_i is not None else 0
+    # Deepest combo-piece position: below it the pile is bury-order. With
+    # neither Oracle nor LED among the remaining picks it is 0, i.e. every
+    # position buries (the legacy oracle-absent behaviour).
+    if oracle_i is not None:
+        combo_floor = oracle_slot
+    elif led_i is not None:
+        combo_floor = led_pos
+    else:
+        combo_floor = 0
+    if pos == led_pos and led_i is not None:
+        return led_i
+    if pos == oracle_pos and oracle_i is not None:
+        return oracle_i
+    if pos > combo_floor:                    # below Oracle: bury the worst first
+        if filler_is:
+            return filler_is[0]
+        if cantrip_is:
+            return cantrip_is[0]
+        if draw_is:
+            return draw_is[0]
+        return oracle_i if oracle_i is not None else 0
+    # Above Oracle/LED: the free-draw chain.
+    if draw_is:
+        return draw_is[0]
+    if cantrip_is:
+        return cantrip_is[0]
     if oracle_i is not None:
         return oracle_i
     return 0
+
+
+# ── Reanimation / lands-combo helpers (card-id gated, deck-agnostic) ────────
+# Don't dredge (skip the draw, mill 3) once the library is this small — the
+# lands deck grinds long games and a draw/deck-out loss is never acceptable.
+_LOAM_DREDGE_MIN_LIBRARY = 10
+
+
+def _reanimation_target_choice(cats, card_ids, ctrl_arr, num_choices: int) -> int | None:
+    """Target pick for Reanimate / Animate Dead: the highest-mana-value creature
+    card offered, tie-broken toward self-owned (our own fatty beats stealing an
+    equal one). Fixes the generic target rule's prefer-opponent polarity, which
+    is meant for removal and is exactly backwards for reanimation. Returns None
+    when no TARGET action is offered."""
+    best_i, best_key = None, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_TARGET:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if cid < 0:
+            continue  # "no target" slot — never preferred
+        key = (_card_mana_value(cid), 1 if ctrl_arr[i] > 0.5 else 0)
+        if best_key is None or key > best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+def _keep_legend_choice(obs: np.ndarray, cats, card_ids, num_choices: int) -> int | None:
+    """Legend-rule keep pick (704.5j) for duplicate Dark Depths: keep the copy
+    with the FEWEST 'other' counters — the freshly-cloned Thespian's Stage at
+    zero ice counters — so its "no ice counters" trigger fires and makes Marit
+    Lage. Keeping the 10-counter original fizzles the combo. The duplicates
+    share one card id, so they are told apart through the action's slot_ref
+    into the battlefield slots' counter float. Other legend conflicts return
+    None (generic behaviour)."""
+    best_i, best_ct = None, None
+    for i in range(num_choices):
+        if (cats[i] != _CAT_KEEP_LEGEND
+                or _action_card_id(card_ids, i) != _DARK_DEPTHS_VOCAB_IDX):
+            continue
+        ref = _action_slot_ref(obs, i)
+        if 0 <= ref < 2 * _PERM_A_SLOTS:
+            ct = float(obs[_BF_START + ref * _BF_SLOT_SIZE + _OFF_OTHER_COUNTERS])
+        else:
+            ct = float("inf")  # unresolvable ref — never preferred
+        if best_ct is None or ct < best_ct:
+            best_i, best_ct = i, ct
+    return best_i
 
 
 # ── GREEDY/HEURISTIC fruitless-activation stall guard ───────────────────────
@@ -593,7 +972,9 @@ _FRUITLESS_ACTIVATION_LIMIT = 3
 
 
 def _greedy_action(obs: np.ndarray, num_choices: int,
-                   fruitless: set[int] | None = None) -> int:
+                   fruitless: set[int] | None = None,
+                   hold_casts: frozenset | set | None = None,
+                   hold_activations: frozenset | set | None = None) -> int:
     """
     Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
     Works correctly for either Player A or Player B because the observation
@@ -730,8 +1111,10 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     #    on the stack; skip them when the stack holds only own spells or is empty.
     opponent_spell_on_stack = _opponent_has_spell_on_stack(obs)
 
-    # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first.
-    if opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2:
+    # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first
+    # (unless the caller's triage put it on hold — a cantrip not worth countering).
+    if (opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2
+            and not (hold_casts and _COUNTERSPELL_VOCAB_IDX in hold_casts)):
         for i, c in enumerate(cats):
             if c == _CAT_CAST and _action_card_id(card_ids, i) == _COUNTERSPELL_VOCAB_IDX:
                 return i
@@ -756,9 +1139,11 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                 return i
 
     # Cast Doomsday once we control enough blue sources to follow it up with
-    # Thassa's Oracle (UU). Firing it earlier just empties our library into a
-    # deck-out, so we hold it until the mana to win is on the board.
-    has_blue_for_oracle = _count_blue_sources(obs) >= _BLUE_SOURCES_NEEDED
+    # Thassa's Oracle (UU) — or an LED covers Oracle's mana by itself.
+    # Firing it earlier just empties our library into a deck-out, so we hold
+    # it until the mana to win is on the board.
+    has_blue_for_oracle = (_count_blue_sources(obs) >= _BLUE_SOURCES_NEEDED
+                           or _led_covers_oracle(obs))
     for i, c in enumerate(cats):
         if c == _CAT_CAST and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
             if has_blue_for_oracle:
@@ -766,16 +1151,23 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
             # else hold Doomsday until the blue mana to cast Oracle is in play
 
     # Only cast Dark Ritual if Doomsday is also in hand and we're ready to combo
-    # (don't waste ritual mana without the payoff online).
+    # (don't waste ritual mana without the payoff online). Main phase of our
+    # own turn only: the mana pool empties at step boundaries, so a ritual cast
+    # at upkeep (its first legal window — it's an instant) strands the BBB
+    # before the sorcery-speed Doomsday can ever be cast with it.
+    own_main = in_main_phase and obs[_IS_ACTIVE_IDX] > 0.5
     for i, c in enumerate(cats):
         if c == _CAT_CAST and _action_card_id(card_ids, i) == _DARK_RITUAL_VOCAB_IDX:
-            if has_doomsday_in_hand and has_blue_for_oracle:
+            if has_doomsday_in_hand and has_blue_for_oracle and own_main:
                 return i
             # else skip it
 
     for i, c in enumerate(cats):
         if c == _CAT_CAST:
             cid = _action_card_id(card_ids, i)
+            if hold_casts and cid in hold_casts:
+                continue  # caller-computed hold (e.g. Reanimate with no fatty
+                          # in a graveyard yet — see _heuristic_action)
             if cid in _COUNTER_SPELL_VOCAB_IDS and not opponent_spell_on_stack:
                 continue
             if cid == _DARK_RITUAL_VOCAB_IDX:
@@ -784,6 +1176,22 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                 continue  # handled above (held until blue mana for Oracle is online)
             if cid == _THASSAS_ORACLE_VOCAB_IDX:
                 continue  # only cast Oracle as the wincon (handled above)
+            if cid == _BRAINSTORM_VOCAB_IDX and (
+                    has_doomsday_in_hand
+                    or _self_stack_has_card(obs, _DOOMSDAY_VOCAB_IDX)):
+                continue  # hold Brainstorm: post-Doomsday it lifts the top of
+                          # the pile (the same-turn kill's draw engine). The
+                          # stack check matters — casting it in response to our
+                          # own Doomsday resolves it FIRST, drawing from the
+                          # un-piled library.
+            if cid in _DD_CANTRIP_IDS and (
+                    _self_library_count(obs) < 3
+                    or _controls_card(obs, _THASSAS_ORACLE_VOCAB_IDX)):
+                continue  # never deck ourselves with a cantrip: drawing from
+                          # an empty library is a loss, and with Oracle already
+                          # on our battlefield its win trigger is pending — a
+                          # greedy Brainstorm here resolves FIRST and kills us
+                          # in response to our own winning trigger
             if (cid == _GREEN_SUNS_ZENITH_VOCAB_IDX
                     and _count_untapped_mana_sources(obs) < _GSZ_MIN_MANA_SOURCES):
                 continue  # hold GSZ until it can pay X>=1 (avoids the X=0 Dryad Arbor cast)
@@ -807,16 +1215,25 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     # Oracle. Cycling earlier would dump the Wraiths we need for the free-draw
     # chain and pull Oracle out of the pile, breaking the combo. Never pay the
     # 2 life below 3 life, so the dig can't kill us before Oracle resolves.
-    if (_self_library_count(obs) <= _DD_PILE_SIZE
-            and _self_life(obs) >= _STREET_WRAITH_MIN_LIFE):
+    # Only cycle on an empty stack: stacked cycles resolve LIFO, scrambling the
+    # pile's draw order, and an unresolved LED spell must hit the battlefield
+    # before the final cycle's draw opens its crack window.
+    if (1 <= _self_library_count(obs) <= _DD_PILE_SIZE
+            and _self_life(obs) >= _STREET_WRAITH_MIN_LIFE
+            and _stack_is_empty(obs)):
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _STREET_WRAITH_VOCAB_IDX:
                 return i
 
-    # Always cycle Edge of Autumn (sac a land, draw a card) — only offered when legal
-    for i, c in enumerate(cats):
-        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _EDGE_OF_AUTUMN_VOCAB_IDX:
-            return i
+    # Always cycle Edge of Autumn (sac a land, draw a card) — only offered when
+    # legal, and like Street Wraith only on an empty stack (its draw is the
+    # LED crack window on the same-turn line, so LED must have resolved) and
+    # never off an empty library (that draw would be the game loss).
+    if _self_library_count(obs) >= 1:
+        for i, c in enumerate(cats):
+            if (c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _EDGE_OF_AUTUMN_VOCAB_IDX
+                    and _stack_is_empty(obs)):
+                return i
 
     # Always activate The One Ring's {T} draw ability whenever able — each use draws
     # a card per burden counter (pure card advantage), and it only taps once per turn.
@@ -833,11 +1250,17 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                     continue  # no opponent nonbasic land to target — skip
                 if cid == _STREET_WRAITH_VOCAB_IDX:
                     continue  # only ever cycled via the gated combo rule above
+                if cid == _EDGE_OF_AUTUMN_VOCAB_IDX:
+                    continue  # likewise: only via its stack-empty rule above,
+                              # so its draw can serve as the LED crack window
                 if cid == _KEEN_EYED_CURATOR_VOCAB_IDX and not _stack_is_empty(obs):
                     continue  # don't pile copies onto the stack (each extra one
                               # fizzles when its graveyard target is already exiled)
                 if cid == _CANDELABRA_VOCAB_IDX and _tapped_multi_mana_lands(obs) == 0:
                     continue  # nothing worth untapping — don't tap Candelabra for X=0
+                if hold_activations and cid in hold_activations:
+                    continue  # caller-computed hold (e.g. Thespian's Stage with
+                              # no Dark Depths to copy — see _heuristic_action)
                 if fruitless and cid in fruitless:
                     continue  # stall guard: this card's search found NOTHING
                               # earlier this game (see _SEARCH_MENU_CATS) —
@@ -848,11 +1271,11 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     #     mana is tapped automatically during cost payment via PAYING_COSTS.)
 
     # 10. Doomsday pile building (TOP_LIBRARY): select the 5 pile cards, then
-    #     order them so Thassa's Oracle sits 3rd from the top (== 3rd from the
-    #     bottom of the five-card pile) behind two Street Wraiths, ready for the
-    #     cycle-chain kill. See _doomsday_pile_pick for the full line.
+    #     order them [free draws..., (LED,) Thassa's Oracle, rest...] for the
+    #     cycle-chain kill; a Brainstorm put-back menu instead protects combo
+    #     pieces. See _doomsday_pile_pick for both pile plans.
     if any(c == _CAT_TOP_LIBRARY for c in cats):
-        return _doomsday_pile_pick(cats, card_ids)
+        return _doomsday_pile_pick(obs, cats, card_ids)
 
     # 10b. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
     if any(c == _CAT_DIG for c in cats):
@@ -984,6 +1407,43 @@ def _best_opp_creature_target(g: dict, cats, card_ids, ctrl_arr, num_choices: in
     return best_i
 
 
+def _wrath_energy_plan(g: dict) -> tuple[int, int, int]:
+    """Best energy amount Y for Wrath of the Skies, with its board impact.
+
+    Wrath destroys EACH artifact, creature, and enchantment with MV <= Y on
+    BOTH sides (lands and planeswalkers are immune). Evaluate every candidate
+    Y — the distinct MVs of the opponent's destroyable permanents, plus 0 —
+    and pick the one maximizing (opponent permanents destroyed - own
+    permanents destroyed), tie-broken by destroyed-power differential and
+    then by the SMALLEST Y (cheaper X, and no collateral own losses beyond
+    what the score already accepted). Token card ids cost-decode to MV 0,
+    matching their real mana value.
+
+    Returns (best_y, count_net, power_net) so the caster can also gate on
+    whether the sweep is worth it at all.
+    """
+    def destroyables(perms):
+        out = []
+        for p in perms:
+            if p.get("is_land") or p.get("loyalty", 0) > 0:
+                continue
+            out.append((int(_card_mana_value(p.get("card_idx", -1))),
+                        p.get("power", 0)))
+        return out
+    opp = destroyables(g["opp_battlefield"])
+    own = destroyables(g["self_battlefield"])
+    best_key, best = None, (0, 0, 0)
+    for y in sorted({mv for mv, _ in opp} | {0}):
+        count_net = (sum(1 for mv, _ in opp if mv <= y)
+                     - sum(1 for mv, _ in own if mv <= y))
+        power_net = (sum(pw for mv, pw in opp if mv <= y)
+                     - sum(pw for mv, pw in own if mv <= y))
+        key = (count_net, power_net, -y)
+        if best_key is None or key > best_key:
+            best_key, best = key, (y, count_net, power_net)
+    return best
+
+
 def _desired_block_count(g: dict, attackers: list) -> int:
     """How many blockers to commit this combat (survival need vs. free-kill value)."""
     powers = sorted((a["power"] for a in attackers), reverse=True)
@@ -1033,6 +1493,11 @@ class ScriptedAgent:
         # Card ids already cast/activated this game: only touched by the EXPLORE
         # tier (novelty bias). Reset per game via new_game().
         self._explore_seen: set[int] = set()
+        # Per-seat count of mulligans taken this game (London: the redrawn
+        # hand is always 7 at the keep/mull decision, so the Doomsday all-in
+        # mulligan's "never below 6" floor must count mulligans, not cards).
+        # Zeroed on every keep, so a bo3's later games start fresh.
+        self._mull_counts: dict[bool, int] = {True: 0, False: 0}
         # Stall guard (GREEDY/HEURISTIC only): per-seat map of card id ->
         # [failed_search_count, turn_of_last_fail] for activated abilities whose
         # search found NOTHING. Keyed by seat (obs[_SELF_IS_A_IDX] > 0.5) so one shared
@@ -1054,6 +1519,7 @@ class ScriptedAgent:
         """
         self._explore_seen.clear()
         self._fruitless_activations.clear()
+        self._mull_counts = {True: 0, False: 0}
 
     def set_deck_names(self, deck_a: str | None, deck_b: str | None) -> None:
         """Tell the agent which deck each seat pilots.
@@ -1070,6 +1536,10 @@ class ScriptedAgent:
     def _seat_deck(self, obs: np.ndarray) -> str | None:
         """Deck name piloted by the seat this obs belongs to (None if unknown)."""
         return self._deck_names[bool(obs[_SELF_IS_A_IDX] > 0.5)]
+
+    def _opp_deck(self, obs: np.ndarray) -> str | None:
+        """Deck name piloted by this obs's OPPONENT (None if unknown)."""
+        return self._deck_names[not bool(obs[_SELF_IS_A_IDX] > 0.5)]
 
     def _deck_is_doomsday(self, obs: np.ndarray) -> bool:
         """Unified doomsday identification: deck name first, hand contents fallback."""
@@ -1180,7 +1650,7 @@ class ScriptedAgent:
 
         # Smart mulligan
         if cfg.use_smart_mulligan and any(c == _CAT_MULLIGAN for c in cats):
-            return self._mulligan_choice(g(), cats)
+            return self._mulligan_choice(obs, g(), cats)
 
         if cfg.use_combat_sim:
             # Declare blockers (SEL_BLK + CONF_BLK offered together)
@@ -1192,6 +1662,269 @@ class ScriptedAgent:
             # Declare attackers
             if any(c == _CAT_SEL_ATK for c in cats):
                 return self._attack_choice(g(), cats, card_ids)
+
+        # ── Reanimation / lands-combo interceptions ─────────────────────────
+        # All card-id / pending-source gated (no deck-name gate needed): each
+        # rule can only fire on a menu that names its specific card, so no
+        # other deck's decisions change. Kept out of GREEDY so the easy tier
+        # stays byte-identical.
+
+        # Legend rule: duplicate Dark Depths → keep the 0-counter clone so
+        # Marit Lage happens (see _keep_legend_choice).
+        if any(c == _CAT_KEEP_LEGEND for c in cats):
+            pick = _keep_legend_choice(obs, cats, card_ids, num_choices)
+            if pick is not None:
+                return pick
+
+        # Life from the Loam: take the dredge draw-replacement whenever the
+        # library can afford the mill — Loam back to hand every turn is the
+        # lands deck's engine (recast it to return Wasteland / Urza's Saga).
+        if (any(c == _CAT_CHOOSE_REPLACEMENT for c in cats)
+                and _self_library_count(obs) > _LOAM_DREDGE_MIN_LIBRARY):
+            for i, c in enumerate(cats):
+                if (c == _CAT_CHOOSE_REPLACEMENT
+                        and _action_card_id(card_ids, i) == _LIFE_FROM_LOAM_VOCAB_IDX):
+                    return i
+
+        # Beneficial-target polarity: the generic target rule prefers
+        # opponent-controlled targets (right for removal, backwards for
+        # effects that help their target). Keyed on the pending-decision
+        # source so only the named cards change behaviour.
+        if any(c == _CAT_TARGET for c in cats):
+            pending = _slot_card_idx(obs, _PENDING_DECISION_START)
+            # Reanimate / Animate Dead: the biggest creature card offered,
+            # preferring our own graveyard.
+            if pending in _REANIMATION_SPELL_IDS:
+                pick = _reanimation_target_choice(cats, card_ids, ctrl_arr, num_choices)
+                if pick is not None:
+                    return pick
+            # Thespian's Stage: copy our own Dark Depths (the Marit Lage line).
+            if pending == _THESPIANS_STAGE_VOCAB_IDX:
+                for i, c in enumerate(cats):
+                    if (c == _CAT_TARGET and ctrl_arr[i] > 0.5
+                            and _action_card_id(card_ids, i) == _DARK_DEPTHS_VOCAB_IDX):
+                        return i
+            # Life from the Loam: return the engine lands first (Urza's Saga
+            # to redeploy, then Wasteland to keep stripping their mana).
+            if pending == _LIFE_FROM_LOAM_VOCAB_IDX:
+                for want in (_URZAS_SAGA_VOCAB_IDX, _WASTELAND_VOCAB_IDX):
+                    for i, c in enumerate(cats):
+                        if c == _CAT_TARGET and _action_card_id(card_ids, i) == want:
+                            return i
+
+        # London-mulligan bottoming: the Doomsday all-in mulligan keeps hands
+        # for their specific combo pieces, so don't bottom blind (slot 0 could
+        # be Doomsday itself) — give back junk by the same tiers as the
+        # Brainstorm put-back. Other decks keep the legacy first-slot pick.
+        if any(c == _CAT_BOTTOM_CARD for c in cats) and self._deck_is_doomsday(obs):
+            return _dd_return_pick(obs, cats, card_ids, _CAT_BOTTOM_CARD)
+
+        # Discard choice (lands-first conservative; replaces "first listed
+        # card"). Own-hand discards, in priority order:
+        #   1. a reanimation fatty — its home is the graveyard (the scripted
+        #      agent never sideboards, so no post-board Show and Tell plan to
+        #      protect);
+        #   2. an excess land, while the hand still holds >= 3;
+        #   3. the highest-MV card not castable any time soon
+        #      (MV > lands in play + 1);
+        #   4. the highest-MV card (lands are MV 0, so a spell goes first).
+        # A menu of OPPONENT-owned cards (our Thoughtseize-style pick) takes
+        # their highest-MV card instead — strip the biggest threat. A
+        # Doomsday deck instead strips whatever can disrupt the combo:
+        # countermagic first, then instant-speed removal (Thassa's Oracle
+        # dies to it mid-kill), then the highest-MV fallback.
+        if any(c == _CAT_DISCARD for c in cats):
+            own_dc, opp_dc = [], []
+            for i, c in enumerate(cats):
+                if c != _CAT_DISCARD:
+                    continue
+                cid = _action_card_id(card_ids, i)
+                (own_dc if ctrl_arr[i] > 0.5 else opp_dc).append((i, cid))
+            for i, cid in own_dc:
+                if cid in _REANIMATION_FATTY_IDS:
+                    return i
+            if own_dc:
+                if _hand_land_count(obs) >= 3:
+                    for i, cid in own_dc:
+                        if cid in _LAND_VOCAB_IDS:
+                            return i
+                castable_mv = _self_land_count(obs) + 1
+                uncastable = [(_card_mana_value(cid), i) for i, cid in own_dc
+                              if _card_mana_value(cid) > castable_mv]
+                if uncastable:
+                    return max(uncastable)[1]
+                return max((_card_mana_value(cid), i) for i, cid in own_dc)[1]
+            if opp_dc:
+                if self._deck_is_doomsday(obs):
+                    for i, cid in opp_dc:
+                        if cid in _COUNTER_SPELL_VOCAB_IDS:
+                            return i
+                    for i, cid in opp_dc:
+                        if cid in _DD_DISRUPTOR_REMOVAL_IDS:
+                            return i
+                return max((_card_mana_value(cid), i) for i, cid in opp_dc)[1]
+
+        # Urza's Saga chapter-II ability: always make the Construct when
+        # offered. The Saga's mana ability is auto-pay (never offered at
+        # priority), so the only Saga ACTIVATE here is the {2},{T} token
+        # ability — and the Saga sacrifices itself after chapter III, so the
+        # window is short. Ungated by phase, like The One Ring.
+        for i, c in enumerate(cats):
+            if (c == _CAT_ACTIVATE
+                    and _action_card_id(card_ids, i) == _URZAS_SAGA_VOCAB_IDX):
+                return i
+
+        # Thespian's Stage: with our own Dark Depths in play, take the Clone
+        # activation immediately (copy Depths → legend rule keeps the
+        # 0-counter copy → Marit Lage). Without Depths, hold it — copying a
+        # random land wastes the {2} and the tap.
+        hold_activations = None
+        if any(c == _CAT_ACTIVATE
+               and _action_card_id(card_ids, i) == _THESPIANS_STAGE_VOCAB_IDX
+               for i, c in enumerate(cats)):
+            if _controls_card(obs, _DARK_DEPTHS_VOCAB_IDX):
+                for i, c in enumerate(cats):
+                    if (c == _CAT_ACTIVATE
+                            and _action_card_id(card_ids, i) == _THESPIANS_STAGE_VOCAB_IDX):
+                        return i
+            else:
+                hold_activations = {_THESPIANS_STAGE_VOCAB_IDX}
+
+        # Sacrifice-cost pick: never eat a combo piece or irreplaceable
+        # utility land while any other option exists (Crop Rotation sacking
+        # the Dark Depths it plays around defeats itself). A Doomsday deck
+        # additionally keeps its black-capable lands (Edge of Autumn's cycle
+        # sacking the Underground Sea that pays for Dark Ritual defeats the
+        # combo). First non-protected option, else the generic first pick.
+        if any(c == _CAT_SACRIFICE for c in cats):
+            if self._deck_is_doomsday(obs):
+                for i, c in enumerate(cats):
+                    cid = _action_card_id(card_ids, i)
+                    if (c == _CAT_SACRIFICE
+                            and cid not in _SAC_LAST_LAND_IDS
+                            and cid not in _DD_HAND_B_SOURCE_IDS):
+                        return i
+            for i, c in enumerate(cats):
+                if (c == _CAT_SACRIFICE
+                        and _action_card_id(card_ids, i) not in _SAC_LAST_LAND_IDS):
+                    return i
+
+        # Land-search preference (Crop Rotation, Expedition Map, any land
+        # tutor — self-gating, the options only exist when the search can
+        # fetch them): complete the missing Depths/Stage half, else grab
+        # Tabernacle against a wide opposing board our own board shrugs at,
+        # else Urza's Saga. Tron decks run none of these cards, so their own
+        # search priorities (the tron blocks below) are unaffected.
+        if any(c == _CAT_SEARCH for c in cats):
+            search_prefs = []
+            has_depths = _controls_card(obs, _DARK_DEPTHS_VOCAB_IDX)
+            has_stage = _controls_card(obs, _THESPIANS_STAGE_VOCAB_IDX)
+            if has_depths and not has_stage:
+                search_prefs.append(_THESPIANS_STAGE_VOCAB_IDX)
+            if has_stage and not has_depths:
+                search_prefs.append(_DARK_DEPTHS_VOCAB_IDX)
+            gs_creatures = None
+            if any(_action_card_id(card_ids, i) == _TABERNACLE_VOCAB_IDX
+                   for i, c in enumerate(cats) if c == _CAT_SEARCH):
+                gs_creatures = (len(_creatures(g()["opp_battlefield"])),
+                                len(_creatures(g()["self_battlefield"])))
+                if gs_creatures[0] >= 3 and gs_creatures[1] <= 1:
+                    search_prefs.append(_TABERNACLE_VOCAB_IDX)
+            search_prefs.append(_URZAS_SAGA_VOCAB_IDX)
+            for want in search_prefs:
+                for i, c in enumerate(cats):
+                    if c == _CAT_SEARCH and _action_card_id(card_ids, i) == want:
+                        return i
+
+        # Exploration first among casts: the extra land drop compounds every
+        # later turn, so it beats any other one-shot play this turn.
+        for i, c in enumerate(cats):
+            if (c == _CAT_CAST
+                    and _action_card_id(card_ids, i) == _EXPLORATION_VOCAB_IDX):
+                return i
+
+        # Land drop: complete the Depths/Stage pair when half is already down,
+        # else lead with Urza's Saga (its chapters start ticking — mana, then
+        # Constructs, then the tutor). Card-id gated: decks without these
+        # lands in hand fall through unchanged.
+        if any(c == _CAT_LAND for c in cats):
+            land_prefs = []
+            if _controls_card(obs, _DARK_DEPTHS_VOCAB_IDX):
+                land_prefs.append(_THESPIANS_STAGE_VOCAB_IDX)
+            if _controls_card(obs, _THESPIANS_STAGE_VOCAB_IDX):
+                land_prefs.append(_DARK_DEPTHS_VOCAB_IDX)
+            land_prefs.append(_URZAS_SAGA_VOCAB_IDX)
+            for want in land_prefs:
+                for i, c in enumerate(cats):
+                    if c == _CAT_LAND and _action_card_id(card_ids, i) == want:
+                        return i
+
+        # Cast holds, accumulated for the greedy fallback's cast scan. Each is
+        # card-id gated: it only fires when that cast is actually on the menu.
+        hold_casts: set[int] = set()
+        cast_ids = {_action_card_id(card_ids, i)
+                    for i, c in enumerate(cats) if c == _CAT_CAST}
+        # Reanimate/Animate Dead stay in hand until a creature worth cheating
+        # out is in a graveyard (either side's — the engine only offers the
+        # cast when SOME creature card is there, but a random 2-drop isn't
+        # worth the card).
+        if (cast_ids & _REANIMATION_SPELL_IDS
+                and not _gy_has_any(obs, _REANIMATION_FATTY_IDS)):
+            hold_casts |= _REANIMATION_SPELL_IDS
+        # Counter triage. A Doomsday deck's counters are combo PROTECTION:
+        # hold them until our own Thassa's Oracle — the spell or its win
+        # trigger (both stack slots carry Oracle's card id) — is on the
+        # stack, then counter ANY opponent spell that goes on top of it,
+        # cantrip or not (a "cantrip" there is a response to the kill).
+        # Other decks: an opponent spell is on the stack but nothing
+        # threat-shaped (only exempt cantrips) — let it resolve and keep the
+        # counter for their threat.
+        if cast_ids & _COUNTER_SPELL_VOCAB_IDS:
+            if self._deck_is_doomsday(obs):
+                if not (_self_stack_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX)
+                        and _opponent_has_spell_on_stack(obs)):
+                    hold_casts |= _COUNTER_SPELL_VOCAB_IDS
+            elif not _opponent_threat_on_stack(obs):
+                hold_casts |= _COUNTER_SPELL_VOCAB_IDS
+        # Targeted removal (Swords/Push/Prismatic) waits for a real threat:
+        # power >= 2, or a NONTOKEN 1-power creature (an unflipped Delver /
+        # Dragon's Rage Channeler is worth killing; a 1/1 token is not).
+        if cast_ids & _TARGETED_REMOVAL_IDS:
+            threat = any(p["power"] >= 2
+                         or (p["power"] >= 1
+                             and p.get("card_idx", _TOKEN_VOCAB_BASE) < _TOKEN_VOCAB_BASE)
+                         for p in _creatures(g()["opp_battlefield"]))
+            if not threat:
+                hold_casts |= _TARGETED_REMOVAL_IDS
+        # Wrath of the Skies (symmetric X sweeper) only into a board where the
+        # best energy amount nets a real sweep: 2+ more of their permanents
+        # destroyed than ours, or a 4+ destroyed-power differential.
+        if _WRATH_OF_SKIES_VOCAB_IDX in cast_ids:
+            _, count_net, power_net = _wrath_energy_plan(g())
+            if not (count_net >= 2 or power_net >= 4):
+                hold_casts.add(_WRATH_OF_SKIES_VOCAB_IDX)
+        hold_casts = hold_casts or None
+
+        # Wrath of the Skies X / energy-pay amounts: both arrive as bare
+        # number ladders (index == amount), and both should be the planned
+        # energy Y — X buys exactly the energy the sweep needs, and the pay
+        # step spends exactly that much (the generic pickers defaulted these
+        # to 0, sweeping nothing). The resolution-time pay menu names Wrath
+        # as the pending source; the cast-time X ladder fires BEFORE the
+        # spell is pending (601.2b announcement), so that one is identified
+        # from the newest action-history entry — our own just-recorded CAST
+        # of Wrath (a plain null-id ladder, so no delve-menu overlap).
+        wrath_x_menu = (
+            _slot_card_idx(obs, _PENDING_DECISION_START) == _WRATH_OF_SKIES_VOCAB_IDX
+            or (all(c == _CAT_CHOOSE_X for c in cats)
+                and card_ids[0] <= _ACTION_CARD_ID_NULL + 0.01
+                and int(round(float(obs[_HIST_START]) * ACTION_CATEGORY_MAX)) == _CAT_CAST
+                and obs[_HIST_START + 2] > 0.5
+                and _slot_card_idx(obs, _HIST_START + 1) == _WRATH_OF_SKIES_VOCAB_IDX))
+        if (num_choices >= 2 and wrath_x_menu
+                and all(c in (_CAT_CHOOSE_X, _CAT_OTHER) for c in cats)):
+            y, _, _ = _wrath_energy_plan(g())
+            return min(y, num_choices - 1)
 
         # Tron synergy: Candelabra of Tawnos untaps X target lands. It's only a mana
         # engine when it untaps lands that make MORE THAN ONE mana (Ancient Tomb, a
@@ -1281,8 +2014,11 @@ class ScriptedAgent:
             if pick is not None:
                 return pick
 
-        # Anything not explicitly improved: proven GREEDY behaviour.
-        return _greedy_action(obs, num_choices, fruitless)
+        # Anything not explicitly improved: proven GREEDY behaviour (with the
+        # reanimation/Stage holds computed above threaded through its scans).
+        return _greedy_action(obs, num_choices, fruitless,
+                              hold_casts=hold_casts,
+                              hold_activations=hold_activations)
 
     @staticmethod
     def _confirm(cats, confirm_cat: int) -> int:
@@ -1291,13 +2027,35 @@ class ScriptedAgent:
                 return i
         return 0
 
-    def _mulligan_choice(self, g: dict, cats) -> int:
+    def _mulligan_choice(self, obs: np.ndarray, g: dict, cats) -> int:
         """Keep a hand with a sane land count; otherwise mulligan.
 
         A one-land hand is keepable if it contains a cheap card-selection spell
         (Brainstorm, Ponder, Once Upon a Time) that can dig toward more lands.
         Hands with 5 or more lands are too land-heavy to keep.
+
+        Doomsday all-in: piloting a Doomsday deck against an opponent whose
+        decklist runs no Force of Will (nothing can stop the resolved combo),
+        mulligan aggressively for a turn-1-3 kill hand (_dd_fast_hand),
+        keeping ANY hand rather than go below 6 cards. London mulligan means
+        the hand at this decision is ALWAYS 7 fresh cards — the "never below
+        6" floor counts mulligans already taken (1 mulligan -> keeping now
+        bottoms to 6), via the per-seat _mull_counts. An unknown opponent
+        list counts as running Force of Will (stay on the standard rule).
         """
+        hand_ids = [c["card_idx"] for c in g["self_hand"]]
+        if self._deck_is_doomsday(obs):
+            opp_deck = self._opp_deck(obs)
+            has_fow = _deck_runs_force_of_will(opp_deck) if opp_deck else None
+            if has_fow is False:
+                seat = bool(obs[_SELF_IS_A_IDX] > 0.5)
+                mulls = self._mull_counts.get(seat, 0)
+                keep = mulls >= 1 or _dd_fast_hand(obs, hand_ids)
+                self._mull_counts[seat] = 0 if keep else mulls + 1
+                for i, c in enumerate(cats):
+                    if (c != _CAT_MULLIGAN) == keep:
+                        return i
+                return 0
         lands = sum(1 for c in g["self_hand"] if c["card_idx"] in _LAND_VOCAB_IDS)
         has_dig = any(c["card_idx"] in _KEEP_ONE_LANDER_IDS for c in g["self_hand"])
         keepable = 2 <= lands <= 4 or (lands == 1 and has_dig)

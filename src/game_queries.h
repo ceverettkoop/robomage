@@ -47,6 +47,30 @@ inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Cre
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
 
+// True if this card in HAND consumes a land drop when played (CR 305.2): a land card, or
+// a modal DFC whose BACK face is a land (Witch Enchanter // Witch-Blessed Meadow — playing
+// that face is a land play, not a cast). Single source shared by the PLAY_LAND legal-action
+// enumeration and the ML observation's lands-in-hand count, so the two can't disagree about
+// which hand cards are land drops.
+inline bool card_playable_as_land(const CardData &cd) {
+    return is_land_card(cd) ||
+           (cd.is_modal_dfc && cd.backside && is_land_card(*cd.backside));
+}
+
+// The CardData face a permanent entity is currently showing: the back face while the
+// permanent is transformed (CR 712.8e — a face-up back face has its own characteristics),
+// else the front. Falls back to the front face for single-faced cards and non-permanents.
+// Use this instead of reading GetComponent<CardData>(e) directly wherever a transformed
+// permanent's PRINTED characteristics (colors, types, P/T) matter; note that MANA VALUE is
+// the one characteristic that does NOT follow the active face for a nonmodal DFC (712.8e
+// computes it from the front face's cost; only a MODAL back face carries its own, 712.8d).
+inline const CardData &active_face(Entity e, const CardData &cd) {
+    if (cd.backside && global_coordinator.entity_has_component<Permanent>(e) &&
+        global_coordinator.GetComponent<Permanent>(e).transformed)
+        return *cd.backside;
+    return cd;
+}
+
 // Printed colors of a card: an explicit Colors$ override if present (e.g. Devoid's COLORLESS),
 // otherwise the colors of its mana cost (CR 105.2 / 202.2). Single source for the color of a
 // card object, shared by the targeting color checks and the last-known-info snapshot.
@@ -482,6 +506,19 @@ inline std::vector<Entity> battlefield_permanents(
     return out;
 }
 
+// CR 702.131b: Ascend on a permanent is a static ability — "ANY TIME you control ten or
+// more permanents and you don't have the city's blessing, you get the city's blessing for
+// the rest of the game" (a one-way latch, never lost once gained, 702.131c). Because it
+// applies "any time", the grant must be visible IMMEDIATELY when the tenth permanent
+// arrives — in particular mid-resolution, between a Token sub-ability creating the 10th
+// permanent and a later Condition$ Blessing gate reading the flag (Ocelot Pride's copy
+// clause) — not only at the next state-based pass. Re-evaluates and latches the blessing
+// for both players. The SBA preamble runs it every pass; any code that READS the blessing
+// flag after possibly changing the permanent count should call it first. Pass the
+// iterating system's mEntities (or orderer->mEntities). Defined in game_queries.cpp
+// (needs cur_game's player entities and game_log).
+void refresh_city_blessing(const std::set<Entity> &entities);
+
 // The most recently exiled card linked to `host` (Permanent::exiled_with) that STILL has a live
 // "return it from exile" path scheduled in cur_game.delayed_triggers, or 0 if none. This
 // distinguishes an exile-with-return host (a Static Prison holding a real Murktide) from a
@@ -678,6 +715,20 @@ inline bool has_basic_supertype(const std::set<Type> &types) {
 inline bool is_basic_land_subtype(const std::string &name) {
     return name == "Mountain" || name == "Forest" || name == "Plains" ||
            name == "Island" || name == "Swamp" || name == "Wastes";
+}
+
+// True when the type list carries at least one of the FIVE basic land types —
+// Plains/Island/Swamp/Mountain/Forest (CR 205.3i / 305.6). Wastes is deliberately
+// excluded here: it is a basic land with NO basic land type, even though
+// is_basic_land_subtype() lists it for the innate-mana-ability rule. A basic
+// Mountain qualifies (subtype Mountain), a dual like Scrubland qualifies
+// (Plains Swamp), a subtype-less utility land (Wasteland) does not. Drives the
+// `hasABasicLandType` filter qualifier (Boseiju, Who Endures' compensation search).
+inline bool has_a_basic_land_type(const std::set<Type> &types) {
+    for (const auto &t : types)
+        if (t.kind == SUBTYPE && t.name != "Wastes" && is_basic_land_subtype(t.name))
+            return true;
+    return false;
 }
 
 // Battlefield permanents controlled by `player` matching the ';'-delimited `spec` used by

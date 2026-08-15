@@ -86,8 +86,11 @@ checkpoint's `policy.state_dict()`. Caveats to build in:
 - **Per-action head required** for a full round-trip; a stock-MlpPolicy target
   can only take the trunk back.
 - **Value-head semantics differ**: AZ's value is a tanh-squashed game outcome
-  in [−1, 1]; PPO's critic predicts discounted *shaped* returns (bo3 game/match
-  rewards, shaping terms). On resume the critic is mis-scaled, so either reset
+  in [−1, 1]; PPO's critic predicts discounted *shaped* returns. Since the
+  per-game reward rework the two agree on the OUTCOME scale (each game is worth
+  ±1.0 on both sides, and the bo3 match terminal adds nothing), so what remains
+  is discounting, the residual shaping terms, and — in bo3 — the sum over the
+  match's games. On resume the critic is still mis-scaled, so either reset
   the final value Linear or run a short low-LR / high-vf-coef warmup while it
   recalibrates — expect briefly noisy advantages either way.
 - Fresh optimizer state on resume (SB3 will not have Adam moments for the
