@@ -136,6 +136,23 @@ regen:
 	$(MAKE) all
 	$(PYTHON) train/regression/replay_diff.py record
 
+# Force a clean re-fetch of every Forge card/token script, then VALIDATE the fresh
+# scripts against the COMMITTED replay corpus. Deletes the gitignored local scripts
+# (bin/resources/cardsfolder + tokenscripts) so provision_decks.py re-fetches them
+# all at the pinned Forge commit (tools/forge_fetch/FORGE_PIN) instead of skipping
+# already-present files, then runs the standard `make check` gate — which
+# regenerates all codegen (card_costs.py / card_props.py / src/gen/card_costs_gen.h)
+# from the fresh scripts, builds, and diffs the result against the committed corpus.
+# Unlike `regen`, it deliberately does NOT re-record the corpus: the point is to
+# DETECT whether the refetched scripts drift from the committed baseline. A corpus
+# (or codegen-sync) failure here means an upstream script change moved engine
+# behavior — investigate it; if the change is intentional, run `make regen` to
+# re-record and commit the new corpus.
+refetch:
+	rm -f $(BINDIR)/resources/cardsfolder/*/*.txt $(BINDIR)/resources/tokenscripts/*.txt
+	$(PYTHON) tools/forge_fetch/provision_decks.py
+	$(MAKE) check
+
 # ── bin/az_actor — in-process AlphaZero actor (Phase D), NOT in the default build ──
 # Links all engine objects EXCEPT obj/main.o (the actor provides its own main),
 # plus the src/actor/* TUs (compiled with exceptions ON) and libtorch. Auto-detect
@@ -193,7 +210,7 @@ actor-syntax: pygen
 			$(filter-out -fno-exceptions,$(CXXFLAGS)) $(PLATFLAGS) || exit 1; \
 	done
 
-.PHONY: all pygen check regen clean actor actor-syntax
+.PHONY: all pygen check regen refetch clean actor actor-syntax
 
 # Remove everything under the object tree (the compile rules mkdir -p subdirs
 # back on demand), not per-level globs that silently miss deeper nesting, plus
