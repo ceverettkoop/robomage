@@ -1520,6 +1520,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     merge_dupes=True,
                     td_n=DEFAULT_TD_N) -> dict:
     import glob
+    import shlex
     import shutil
     import subprocess
     import threading
@@ -1594,7 +1595,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         ]
         for t in threads:
             t.start()
-        return {"gi": gi, "da": da, "db": db, "n": n, "p": p,
+        return {"gi": gi, "da": da, "db": db, "n": n, "p": p, "cmd": cmd,
                 "threads": threads, "out": out_lines, "err": err_lines}
 
     failed = []
@@ -1605,7 +1606,8 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         for t in rec["threads"]:
             t.join()
         if rec["p"].returncode != 0:
-            failed.append((rec["gi"], rec["p"].returncode, "".join(rec["err"])))
+            failed.append((rec["gi"], rec["p"].returncode, rec["da"], rec["db"],
+                           rec["cmd"], "".join(rec["err"])))
             return
         s, wa, wb, dr = _parse_actor_output("".join(rec["out"]), bo3=bo3)
         total_samples += s
@@ -1637,12 +1639,23 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                 _reap(rec)
                 active.remove(rec)
         if failed:
-            for gi, rc, err in failed:
-                tail = "\n".join(err.strip().splitlines()[-10:])
-                print(f"[az-selfplay] matchup group {gi} FAILED (exit {rc}):\n{tail}")
+            for gi, rc, da, db, cmd, err in failed:
+                # Surface enough to REPRODUCE the failing group in isolation: the
+                # matchup, the exit code, the exact actor argv (copy-pasteable —
+                # run it from BIN_DIR), and a generous stderr tail so a rich actor
+                # diagnostic (e.g. az_mcts's DIVERGENCE dump, which spans several
+                # lines) is not truncated away above the fatal line.
+                tail = "\n".join(err.strip().splitlines()[-40:])
+                repro = " ".join(shlex.quote(str(c)) for c in cmd)
+                print(f"[az-selfplay] matchup group {gi} ({da} vs {db}) FAILED "
+                      f"(exit {rc})\n  reproduce (run from {BIN_DIR}):\n    {repro}\n"
+                      f"  stderr tail:\n{tail}")
             raise RuntimeError(
                 f"az_actor self-play: {len(failed)} of {total_groups} matchup "
-                f"group(s) failed")
+                f"group(s) failed (first: group {failed[0][0]}, "
+                f"{failed[0][2]} vs {failed[0][3]}, exit {failed[0][1]}); "
+                f"see the per-group FAILED block(s) above for the repro command "
+                f"and stderr tail")
     finally:
         # Abnormal exit (a failed group raising above, KeyboardInterrupt):
         # don't leave live actor processes running detached.
