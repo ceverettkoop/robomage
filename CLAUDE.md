@@ -69,14 +69,19 @@ PySide6 is an optional Python extra: `pip install -r train/requirements-gui.txt`
 The compiled binary is output to `bin/robomage`.
 
 **Codegen is part of the build.** The default `make` target runs `pygen` before compiling,
-which regenerates the auto-generated Python files (`train/_enums.py`, `train/card_costs.py`)
-whenever their declared C++ inputs change. `train/card_costs.py` is rebuilt from
-`gen_card_costs.py` keyed on `src/card_vocab.h` and `src/machine_io.h`, so **adding/removing a
-vocab entry and running `make` keeps the cast-cost matrix in sync automatically** — the manual
-`gen_card_costs.py` invocation in "Adding a New Card" is only needed to regenerate without a
-full build. (The generator reads each vocab card's `ManaCost` from its script; a card in the
-vocab is assumed to have its script present, so the scripts themselves are not Make
-prerequisites.)
+which regenerates ALL auto-generated files **unconditionally on every build** (they
+write-if-changed — see `train/gen_util.py` — so an unchanged output keeps its mtime and forces
+no recompile). Two of them derive purely from tracked sources and are **committed**:
+`train/_enums.py` (from the C++ headers) and `src/gen/archetypes_gen.h` (from
+`decks/archetypes.json`). The other three derive from **card-script CONTENT**
+(`ManaCost`/keywords/types) — and card scripts are gitignored and fetched from Forge, so their
+content is not expressible as a Make prerequisite. To keep a machine's stale local scripts from
+committing stale matrices, those three are **UNTRACKED** and regenerated locally every build:
+`train/card_costs.py`, `train/card_props.py`, and the C++ mirror header
+`src/gen/card_costs_gen.h`. So **adding/removing a vocab entry and running `make` keeps the
+cast-cost/property matrices in sync automatically**; there is nothing to commit for them. The
+`pygen` CI tier only guards the two tracked outputs (the untracked three cannot go stale — they
+are rebuilt from the pinned, provisioned scripts on every build and in CI).
 
 **Run build/test commands plainly so they don't trigger a permission prompt.** A single
 command, or a single pipeline whose programs are all allowlisted (`make`, the `train/...`
@@ -484,15 +489,18 @@ When implementing a new card, **both** of the following steps are required:
 2. Regenerate `train/card_costs.py` AND `train/card_props.py` — the cast-cost feature matrix
    used by the RL environment/extractor, and the frozen printed-property block of the
    network's card representation. A normal `make` does both for you (the `pygen` step
-   regenerates them because `src/card_vocab.h` changed); run them by hand only to regenerate
-   without a full build:
+   regenerates ALL codegen on every build); run them by hand only to regenerate without a
+   full build:
    ```
    train/.venv/bin/python train/gen_card_costs.py
    train/.venv/bin/python train/gen_card_props.py
    ```
-   Either way, commit both regenerated files alongside the vocab change. (A new card only
-   ADDS a property row — the column layout is a fixed constant in `gen_card_props.py`, so
-   vocab growth never changes the network shape or invalidates checkpoints.)
+   Both files (and the C++ mirror header `src/gen/card_costs_gen.h`) are **untracked** —
+   generated from the fetched card scripts on every build — so there is **nothing to commit**
+   for them; just make sure the card's script is provisioned so the regeneration is correct.
+   (A new card only ADDS a property row — the column layout is a fixed constant in
+   `gen_card_props.py`, so vocab growth never changes the network shape or invalidates
+   checkpoints.)
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags

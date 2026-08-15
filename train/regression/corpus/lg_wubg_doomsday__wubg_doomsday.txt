@@ -434,8 +434,6 @@
   Spells Player A controls can't be countered this turn.
   Resolving ability (category: Pump)
   Player A and the permanents they control gain hexproof from the chosen color(s) until end of turn.
-  Resolving ability (category: PumpAll)
-  PumpAll: no matching creatures.
 
 --- Decision 22 ---
   Priority: Player A (active)

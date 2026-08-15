@@ -28,6 +28,7 @@ from gen_card_costs import (REPO_ROOT, VOCAB_H, CARDS_DIR, N_TYPES, TOKENS_DIR,
                             parse_vocab_with_stems, find_back_face_file,
                             split_faces, face_lines_for)
 from _enums import _OBS_KEYWORDS
+from gen_util import write_if_changed
 
 OUT_FILE = os.path.join(REPO_ROOT, "train/card_props.py")
 
@@ -236,8 +237,7 @@ def main():
         vals = ", ".join(f"{v:.1f}" for v in row)
         lines.append(f"    [{vals}],  # {idx}: {vocab_by_idx.get(idx, '')}")
     lines += ["], dtype=np.float32)", ""]
-    with open(OUT_FILE, "w") as f:
-        f.write("\n".join(lines) + "\n")
+    write_if_changed(OUT_FILE, "\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}")
 
 

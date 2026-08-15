@@ -13,9 +13,13 @@ non-fatal errors / anomalies in the transcripts.
 Tiers (run cheap-to-expensive; all requested tiers run even if an earlier one
 fails, so one invocation reports every finding):
 
-  pygen   Regenerate train/_enums.py + train/card_costs.py + train/card_props.py
-          and fail if the committed copies are stale (someone changed a C++
-          input without committing the regenerated Python).
+  pygen   Regenerate the codegen and fail if the TRACKED copies (train/_enums.py,
+          src/gen/archetypes_gen.h — the ones derived only from tracked sources)
+          are stale (someone changed a C++/JSON input without committing the
+          regenerated output). The script-derived codegen (card_costs.py,
+          card_props.py, card_costs_gen.h) is untracked and regenerated every
+          `make`, so it has no committed copy to go stale; its generators are
+          still run here as a crash smoke.
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
@@ -233,36 +237,38 @@ class Report:
 # ── Tiers ───────────────────────────────────────────────────────────────────
 
 def tier_pygen(rep):
-    """Regenerate the codegen outputs and fail if the committed copies are stale.
+    """Regenerate the codegen and fail if the TRACKED committed copies are stale.
 
-    All are deterministic given the committed inputs AND a fully provisioned
-    card set: _enums.py derives from action.h/game.h; archetypes_gen.h from
-    archetypes.py + decks/archetypes.json; card_costs.py additionally
-    reads each vocab card's ManaCost from its script — and provision_decks.py
-    fetches the whole vocab, so every cost is reproducible here and in CI. The
-    working tree is restored afterward so a stale result is reported, not left
+    Only train/_enums.py (from action.h/game.h/machine_io.h) and
+    src/gen/archetypes_gen.h (from archetypes.py + decks/archetypes.json) are
+    tracked: they derive purely from tracked sources, so a committed copy CAN go
+    stale when a developer edits a C++/JSON input without regenerating. The
+    script-derived codegen (train/card_costs.py, train/card_props.py,
+    src/gen/card_costs_gen.h) reads gitignored/fetched card-script content and is
+    regenerated on every `make`, so it is untracked — there is no committed copy to
+    diff, and stale local scripts can never commit stale matrices. Every generator
+    is still RUN below (a crash is a real failure), but only the tracked outputs are
+    diffed; they are restored afterward so a stale result is reported, not left
     half-regenerated (the developer runs `make pygen` to actually update them)."""
-    gen_files = ["train/_enums.py", "train/card_costs.py", "train/card_props.py",
-                 "src/gen/card_costs_gen.h", "src/gen/archetypes_gen.h"]
+    tracked = ["train/_enums.py", "src/gen/archetypes_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
                 "train/gen_card_props.py", "train/gen_archetypes.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
         if r.returncode != 0:
             rep.error("pygen", f"{gen} failed: {r.stderr.strip()}")
-            subprocess.run(["git", "checkout", "--", *gen_files], cwd=_REPO_ROOT,
+            subprocess.run(["git", "checkout", "--", *tracked], cwd=_REPO_ROOT,
                            capture_output=True)
             return
-    diff = subprocess.run(["git", "diff", "--", *gen_files], cwd=_REPO_ROOT,
+    diff = subprocess.run(["git", "diff", "--", *tracked], cwd=_REPO_ROOT,
                           capture_output=True, text=True)
     # Restore the committed copies regardless — the tier only reports staleness.
-    subprocess.run(["git", "checkout", "--", *gen_files], cwd=_REPO_ROOT,
+    subprocess.run(["git", "checkout", "--", *tracked], cwd=_REPO_ROOT,
                    capture_output=True)
     if diff.stdout.strip():
         rep.error("pygen",
                   "generated files are stale — run `make pygen` and commit "
-                  f"{', '.join(gen_files)} (ensure the full card set is provisioned "
-                  f"first: tools/forge_fetch/provision_decks.py):\n{diff.stdout}")
+                  f"{', '.join(tracked)}:\n{diff.stdout}")
 
 
 def tier_vocab(rep):

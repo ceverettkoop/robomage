@@ -23,6 +23,8 @@ string, or a stale display entry), so the one place to update on an enum change
 is this file.
 """
 import re, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gen_util import write_if_changed  # noqa: E402
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__)) + "/.."
 ACTION_H  = os.path.join(REPO_ROOT, "src/classes/action.h")
@@ -421,8 +423,7 @@ def main():
         lines.append(f'    {val}: "{_REF_DISPLAY[name]}",  # {name}')
     lines += ["}", ""]
 
-    with open(OUT_FILE, "w") as f:
-        f.write("\n".join(lines) + "\n")
+    write_if_changed(OUT_FILE, "\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}: {len(cats)} categories, {len(steps)} steps, "
           f"{len(refs)} ref zones, {len(mcs)} mandatory choices, "
           f"{len(keywords)} obs keywords, {len(layout)} layout constants")

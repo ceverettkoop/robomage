@@ -43,7 +43,9 @@ Accepted ambiguities (documented, not bugs):
     Return<...>, AddCounter/SubCounter<N/LOYALTY>, ...) are dropped entirely —
     this block is about mana only.
 """
-import re, os, unicodedata
+import re, os, sys, unicodedata
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gen_util import write_if_changed  # noqa: E402
 
 REPO_ROOT   = os.path.dirname(os.path.abspath(__file__)) + "/.."
 VOCAB_H     = os.path.join(REPO_ROOT, "src/card_vocab.h")
@@ -441,8 +443,7 @@ def main():
         "# Vocab indices that are Land cards (Types line includes 'Land').",
         f"_LAND_VOCAB_IDS = frozenset({{{', '.join(str(i) for i in land_ids)}}})",
     ]
-    with open(OUT_FILE, "w") as f:
-        f.write("\n".join(lines) + "\n")
+    write_if_changed(OUT_FILE, "\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}")
 
     # Emit src/gen/card_costs_gen.h — the C++ mirror of the two cost matrices, so
@@ -487,9 +488,7 @@ def emit_cpp_header(cast_matrix, ability_matrix, vocab_by_idx):
         hdr.append(f"    {row_literal(row)},  // {idx}: {name}")
     hdr += ["};", ""]
 
-    os.makedirs(os.path.dirname(OUT_HEADER), exist_ok=True)
-    with open(OUT_HEADER, "w") as f:
-        f.write("\n".join(hdr) + "\n")
+    write_if_changed(OUT_HEADER, "\n".join(hdr) + "\n")
     print(f"Wrote {OUT_HEADER}")
 
 if __name__ == "__main__":

@@ -32,6 +32,14 @@ runs:
     # Restore-then-save (not the monolithic cache action) so the FIRST run still
     # populates the cache even if a later build/test step fails the job. The fetch
     # tool is add-only, so a stale restore only re-fetches the delta.
+    #
+    # The cache key and its restore-keys fallback are BOTH scoped by the FORGE_PIN
+    # hash. Scripts are pinned to that commit, so within a pin they are immutable and
+    # add-only provisioning is correct. When FORGE_PIN is bumped (changed scripts),
+    # the pin-scoped restore-keys prefix no longer matches any prior cache, so the
+    # restore is empty and provisioning re-fetches the whole set at the NEW pin —
+    # otherwise the broad fallback would restore old-pin scripts that add-only never
+    # overwrites, silently shipping stale card content into codegen and the engine.
     - name: Restore card scripts cache
       id: cards-cache
       uses: actions/cache/restore@v4
@@ -39,8 +47,8 @@ runs:
         path: |
           bin/resources/cardsfolder
           bin/resources/tokenscripts
-        key: cards-v1-${{ hashFiles('bin/resources/decks/**/*.dk', 'src/card_vocab.h', 'tools/forge_fetch/*.py') }}
-        restore-keys: cards-v1-
+        key: cards-v2-${{ hashFiles('tools/forge_fetch/FORGE_PIN') }}-${{ hashFiles('bin/resources/decks/**/*.dk', 'src/card_vocab.h', 'tools/forge_fetch/*.py') }}
+        restore-keys: cards-v2-${{ hashFiles('tools/forge_fetch/FORGE_PIN') }}-
 
     - name: Provision card + token scripts
       shell: bash
@@ -59,7 +67,7 @@ runs:
         path: |
           bin/resources/cardsfolder
           bin/resources/tokenscripts
-        key: cards-v1-${{ hashFiles('bin/resources/decks/**/*.dk', 'src/card_vocab.h', 'tools/forge_fetch/*.py') }}
+        key: cards-v2-${{ hashFiles('tools/forge_fetch/FORGE_PIN') }}-${{ hashFiles('bin/resources/decks/**/*.dk', 'src/card_vocab.h', 'tools/forge_fetch/*.py') }}
 
     - name: Cache ccache
       uses: actions/cache@v4

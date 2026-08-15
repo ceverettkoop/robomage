@@ -6,6 +6,13 @@ obj/*.o
 obj/*/*.o
 bin/resources/cardsfolder/*/*.txt
 bin/resources/cardsfolder/.DS_Store
+# Codegen derived from gitignored/fetched card-script content — regenerated on every
+# `make` (unconditional pygen target), so it is untracked to keep a machine's stale
+# local scripts from committing stale matrices. The script-independent codegen
+# (train/_enums.py, src/gen/archetypes_gen.h) stays tracked.
+train/card_costs.py
+train/card_props.py
+src/gen/card_costs_gen.h
 bin/resources/logs/**
 src/classes/game.cpp
 logs/**
