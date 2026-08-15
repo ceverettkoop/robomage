@@ -42,6 +42,11 @@ _SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard",
 # be named 'gen' (see ``assert_not_reserved_deck``).
 GEN_STEM = "gen"
 
+# Determinized worlds per search when a spec names no worlds= knob (the mcts:/az:
+# grammar default). Also the cap an interactive front end's auto procs count is
+# clamped to — see default_search_procs.
+DEFAULT_SEARCH_WORLDS = 4
+
 # Checkpoint stem prefix of an ARCHETYPE EXPLOITER: a dedicated run whose learner
 # pilots one archetype's decks against the frozen generalist, saved under its own
 # stem ('exp_burn__v{steps}.zip' / 'exp_burn__final.zip') so it never touches the
@@ -539,8 +544,12 @@ class SearchController:
         # determinize seeds (latched from the boundary's first search); roots =
         # the previous search's SearchResult.roots (walked down the history
         # delta at the next pick); picks = descriptors of the real picks since
-        # the boundary root (the memo key base). Single-env path only —
-        # procs>1 sb searches stay fresh.
+        # the boundary root (the memo key base). Works at any procs: the
+        # parallel search forwards the same seeds/roots/memo per world (world
+        # order == env order), and the latched per-world state is
+        # engine-agnostic — so if the mirror pool dies mid-boundary (fail-open)
+        # the next pick simply re-partitions the same seeds/roots across the
+        # remaining env count, or runs serially, with nothing lost.
         self._sbp_key = None
         self._sbp_seeds = None
         self._sbp_roots = None
@@ -782,7 +791,9 @@ class SearchController:
         # Mirror pool: with procs>1 the worlds fan out across procs-1 extra engine
         # processes (interactive only; duck-typed so a plain env is tolerated).
         # envs is None => procs==1 (or no mirror support) => the original
-        # single-env run_search call, byte-identical.
+        # single-env run_search call, byte-identical. Either way the same kw dict
+        # (sideboard-boundary seeds/roots/memo included) is forwarded unchanged,
+        # so boundary persistence behaves identically on both paths.
         envs = None
         if self._procs > 1:
             ensure = getattr(env, "ensure_mirrors", None)
@@ -827,7 +838,7 @@ class SearchController:
                 rng=self._rng, time_budget_s=tb,
                 time_budget_min_s=tmin_s,
                 merge_dupes=self._merge_dupes)
-            persist_here = sbp_key is not None and envs is None
+            persist_here = sbp_key is not None
             if persist_here:
                 # Boundary continue: same identity AND every action since the
                 # previous search is our own (the engine runs one seat's picks
@@ -857,8 +868,6 @@ class SearchController:
                     self._drop_boundary()
                 kw.update(rollout_memo=self._sbp_memo,
                           memo_picks=tuple(self._sbp_picks))
-            elif sbp_key is not None:
-                self._drop_boundary()  # procs>1: no persistence, stay fresh
             result = _search(**kw)
             self.stats["sb_searched"] += 1
             if persist_here:
@@ -1218,6 +1227,28 @@ def _spec_knob(params: dict, key: str, default, conv, spec: str):
             f"{conv.__name__} value, got {raw!r}") from None
 
 
+def default_search_procs(worlds: int = DEFAULT_SEARCH_WORLDS) -> int:
+    """The engine-process count an INTERACTIVE front end should fan a search's
+    worlds across when the user did not ask for one.
+
+    Half the visible cores (at least 1), capped at ``worlds`` — a world is the
+    unit of parallelism, so more processes than worlds would idle, and leaving
+    half the machine free keeps the UI (and the human's own machine) responsive
+    while a search runs. NOT the spec-grammar default: a bare ``mcts:``/``az:``
+    spec still builds procs=1 so gates, eval and parity runs stay reproducible;
+    only play.py / the GUI launcher opt in to this.
+    """
+    return min(int(worlds), max(1, (os.cpu_count() or 2) // 2))
+
+
+def default_search_procs_for_spec(spec: str) -> int:
+    """:func:`default_search_procs` for a controller spec, reading the spec's own
+    ``worlds=`` knob (default :data:`DEFAULT_SEARCH_WORLDS`) as the cap."""
+    _base, params = _parse_spec_query(spec or "")
+    return default_search_procs(
+        _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec))
+
+
 def _boolean(raw: str) -> bool:
     """Bool converter for _spec_knob (its error message uses conv.__name__)."""
     v = raw.strip().lower()
@@ -1300,7 +1331,7 @@ def _make_search_controller(spec: str, *,
 
     base, params = _parse_spec_query(spec)
     sims = _spec_knob(params, "sims", 128, int, spec)
-    worlds = _spec_knob(params, "worlds", 4, int, spec)
+    worlds = _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec)
     c_puct = _spec_knob(params, "c", 1.5, float, spec)
     temperature = _spec_knob(params, "temp", 0.0, float, spec)
     v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
@@ -1392,7 +1423,7 @@ def _make_az_controller(spec: str, *, search: bool):
     if not search:
         return AZRawController(evaluator, label=f"azraw:{base}")
     sims = _spec_knob(params, "sims", 128, int, spec)
-    worlds = _spec_knob(params, "worlds", 4, int, spec)
+    worlds = _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec)
     c_puct = _spec_knob(params, "c", 1.5, float, spec)
     temperature = _spec_knob(params, "temp", 0.0, float, spec)
     rng_seed = _spec_knob(params, "seed", 0, int, spec)

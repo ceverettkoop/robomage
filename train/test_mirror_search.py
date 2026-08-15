@@ -3,7 +3,7 @@
 
 The MCTS worlds of a determinized search are independent, so they can be split
 across N engine processes kept in lockstep with the primary game. This test
-proves the three guarantees the interactive mirror pool relies on:
+proves the four guarantees the interactive mirror pool relies on:
 
   1. bit-exact merge — a plain ``run_search`` over W worlds and a
      ``run_search_parallel`` over (primary + mirror) with the SAME rng seed
@@ -18,6 +18,14 @@ proves the three guarantees the interactive mirror pool relies on:
      real step; the pool disables (one stderr warning), the primary plays on, and
      a subsequent ``run_search_parallel`` over the now single-env list delegates
      to a plain ``run_search`` (identical result).
+  4. bo3 sideboard-boundary PERSISTENCE under the pool — a boundary's
+     consecutive picks (pinned world seeds, re-rooted trees, shared rollout
+     memo) driven through ``run_search_parallel`` over primary+mirror produce
+     bit-identical per-pick visits, per-WORLD root visits, seeds, reused visits
+     and memo hits to the same boundary driven serially through ``run_search``.
+     Independent worlds + pinned seeds + a deterministic evaluator make exact
+     equality the correct expectation, and the per-world comparison is what pins
+     the roots/seeds alignment the persistence latch relies on.
 
 Also checks the ``procs=`` spec knob parses on the torch-free ``mcts:uniform``
 grammar.
@@ -38,7 +46,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from env import _IS_SIDEBOARD_IDX  # noqa: E402
+from env import _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX  # noqa: E402
 from cli_spec import BINARY, BIN_DIR  # noqa: E402
 from search_env import SearchRoboMageEnv  # noqa: E402
 from mcts import UniformEvaluator, run_search, run_search_parallel  # noqa: E402
@@ -47,6 +55,20 @@ from scripted_agent import make_agent  # noqa: E402
 SEED = 7          # engine seed (deterministic game)
 SEARCH_SEED = 1234  # search rng seed (world-seed derivation)
 BO3_STEP_CAP = 3000
+
+# Sideboard-boundary persistence budget (small: this test runs the boundary
+# twice, serially and in parallel). The world seeds are PINNED — a boundary's
+# searches must all determinize the same sampled next-game deals for the reused
+# trees to stay valid, so the caller latches them once (SearchController latches
+# SearchResult.seeds); here they are literals so both runs are comparable.
+SB_SIMS = 48               # 12 sims/world: deep enough that the re-rooted
+                           # subtree carries real visit mass into the next pick
+                           # AND the shared rollout memo actually records hits
+SB_WORLDS = 4              # split 2+2 across primary+mirror
+SB_MAX_DEPTH = 200
+SB_ROLLOUT_TURNS = 2       # >0 so the rollout memo is actually exercised
+SB_SEEDS = [111, 222, 333, 444]
+SB_PICKS = 3               # consecutive searched picks of the one boundary
 
 
 class MirrorError(AssertionError):
@@ -218,6 +240,136 @@ def test_fallback_on_drift():
         _rm(paths)
 
 
+def _drive_to_sideboard(env, agent, cap=BO3_STEP_CAP):
+    """Play the bo3 with the scripted agent until it parks on a searchable
+    sideboard decision (loop-safe, >1 choice). Deterministic for a given engine
+    seed, so two envs driven this way reach the same boundary."""
+    for _ in range(cap):
+        obs = env._obs
+        if (obs[_IS_SIDEBOARD_IDX] > 0.5 and env.last_search_safe
+                and env._num_choices > 1):
+            return
+        _, _, term, trunc, _ = env.step(agent.act(obs, env._num_choices))
+        if term or trunc:
+            raise MirrorError("bo3 ended before a searchable sideboard decision")
+    raise MirrorError(f"no searchable sideboard decision within {cap} decisions")
+
+
+def _run_boundary(procs):
+    """Drive ONE sideboard boundary's consecutive picks with persistence on,
+    serially (procs=1) or across primary+mirror (procs=2), and return a
+    per-pick record of everything the persistence latch depends on.
+
+    Mirrors the controller's boundary machinery (SearchController._choose_impl):
+    pinned seeds, previous roots walked down the actions played since the last
+    search, one rollout memo + accumulated pick descriptors shared across the
+    boundary."""
+    from mcts import walk_reuse_root, sb_pick_descriptor
+
+    deck_a, deck_b, paths = _write_decks()
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                                auto_sideboard=False)
+        ev = UniformEvaluator()
+        try:
+            env.reset(options={"engine_seed": SEED})
+            agent = make_agent("scripted")
+            agent.new_game()
+            _drive_to_sideboard(env, agent)
+            envs = None
+            if procs > 1:
+                env.ensure_mirrors(procs - 1)
+                envs = env.search_envs()
+                if len(envs) != procs:
+                    raise MirrorError(f"expected {procs} envs, got {len(envs)}")
+
+            records = []
+            memo: dict = {}
+            roots = None      # previous search's per-world trees
+            played: list = []  # real actions since that search
+            picks: list = []   # pick descriptors since the boundary root
+            for _ in range(SB_PICKS):
+                obs = env._obs
+                nc = env._num_choices
+                if not (obs[_IS_SIDEBOARD_IDX] > 0.5 and env.last_search_safe
+                        and nc > 1):
+                    break
+                seat = bool(obs[_SELF_IS_A_IDX] > 0.5)
+                kw = dict(sims=SB_SIMS, worlds=SB_WORLDS, max_depth=SB_MAX_DEPTH,
+                          rollout_turns=SB_ROLLOUT_TURNS, world_seeds=SB_SEEDS,
+                          rollout_memo=memo, memo_picks=tuple(picks))
+                if roots is not None:
+                    kw["reuse_roots"] = [walk_reuse_root(r, played, nc, seat)
+                                         for r in roots]
+                if envs is None:
+                    result = run_search(env, ev, **kw)
+                else:
+                    result = run_search_parallel(envs, ev, **kw)
+                records.append({
+                    "num_choices": int(nc),
+                    "visits": result.visits.astype(np.int64).tolist(),
+                    # Per-WORLD root visits, in world order — the roots/seeds
+                    # alignment guarantee (roots[w] was built under seeds[w]).
+                    "world_visits": [r.N.astype(np.int64).tolist()
+                                     for r in result.roots],
+                    "seeds": [int(s) for s in result.seeds],
+                    "sims_run": int(result.sims_run),
+                    "reused_visits": int(result.reused_visits),
+                    "memo_hits": int(result.memo_hits),
+                })
+                roots = result.roots
+                played = []
+                # Keep the BOUNDARY alive: play the visit-argmax among real PICK
+                # actions. sb_pick_descriptor is None for "Done sideboarding",
+                # which ends this seat's contiguous pick run (and with it the
+                # boundary), so a plain best_action() would often stop after one
+                # search and never exercise the top-up path. The rule is
+                # deterministic, so both runs walk the identical line.
+                pick_actions = [a for a in range(nc)
+                                if sb_pick_descriptor(obs, a) is not None]
+                chosen = (max(pick_actions, key=lambda a: result.visits[a])
+                          if pick_actions else result.best_action())
+                d = sb_pick_descriptor(obs, chosen)
+                if d is not None:
+                    picks.append(d)
+                env.step(chosen)
+                played.append(int(chosen))
+            return records
+        finally:
+            env.close()
+    finally:
+        _rm(paths)
+
+
+def test_parallel_sb_persistence():
+    """A sideboard boundary persisted across primary+mirror is bit-identical to
+    the same boundary persisted serially (pinned seeds, deterministic evaluator,
+    independent worlds => exact equality is the correct expectation)."""
+    serial = _run_boundary(1)
+    parallel = _run_boundary(2)
+    if len(serial) < 2:
+        raise MirrorError(f"boundary produced only {len(serial)} searched pick(s) "
+                          "— the top-up (reuse) path was never exercised")
+    if len(serial) != len(parallel):
+        raise MirrorError(f"pick count differs: serial {len(serial)} vs "
+                          f"parallel {len(parallel)}")
+    for i, (s, p) in enumerate(zip(serial, parallel)):
+        for key in ("num_choices", "seeds", "visits", "world_visits",
+                    "sims_run", "reused_visits", "memo_hits"):
+            if s[key] != p[key]:
+                raise MirrorError(f"pick {i}: {key} diverged — serial {s[key]} "
+                                  f"vs parallel {p[key]}")
+    if serial[-1]["reused_visits"] <= 0:
+        raise MirrorError("no tree mass was ever reused across the boundary — "
+                          "persistence did not engage")
+    if sum(r["memo_hits"] for r in serial) <= 0:
+        raise MirrorError("the rollout memo never hit — the shared-memo path "
+                          "(one dict across the worker threads) was not exercised")
+    return (f"{len(serial)} persisted picks identical (visits, per-world roots, "
+            f"seeds, reuse={serial[-1]['reused_visits']}, "
+            f"memo_hits={sum(r['memo_hits'] for r in serial)})")
+
+
 def test_procs_spec_parsing():
     """The ``procs=`` knob parses on the torch-free mcts:uniform grammar; default
     is 1; a bad value is rejected loudly."""
@@ -244,6 +396,7 @@ TESTS = [
     ("bitexact_merge", test_bitexact_merge),
     ("lockstep_bo3", test_lockstep_bo3),
     ("fallback_on_drift", test_fallback_on_drift),
+    ("parallel_sb_persistence", test_parallel_sb_persistence),
 ]
 
 

@@ -74,9 +74,12 @@ harness, the TUI, and `play.py` — accepts:
   the boundary's first searched root, each next pick re-rooted at the played
   action's child and topped up to `sb_sims` cumulative visits — plus a
   rollout-value memo over the boundary's pick multisets; `sb_persist=0`
-  restores per-pick fresh searches. (Persistence applies on the single-engine
-  path only: `procs>1` sideboard searches, the analysis window, and
-  `run_search_parallel` stay fresh.) e.g.
+  restores per-pick fresh searches. (Persistence applies at any `procs`:
+  `run_search_parallel` forwards the pinned seeds, the per-world reuse roots
+  sliced by the same contiguous world split, and the shared rollout memo, so a
+  boundary played under the mirror pool is bit-identical to the serial one — see
+  `test_mirror_search.py`'s `parallel_sb_persistence`. The analysis window's
+  one-off searches still stay fresh.) e.g.
   `az:gen?sims=64&worlds=4&sb_sims=128&sb_rollout_turns=8`.
   - `time=<seconds>` sets a **wall-clock per-decision budget** instead of a fixed
     sim count: the search interleaves its `worlds` round-robin and runs as many
@@ -98,6 +101,12 @@ harness, the TUI, and `play.py` — accepts:
     is `sims` or `time=`). `procs=1` is byte-identical to the plain single-engine
     search — self-play and the parity corpus never use the pool. `play.py
     --search-procs <n>` is the CLI front door. e.g. `az:gen?time=2&procs=4`.
+    The **spec-grammar default stays 1** (gates / eval / parity reproducibility),
+    but the INTERACTIVE front doors default it to AUTO when neither the spec nor
+    the flag names one: `play.py` (hence `./tui.sh`'s play entry) and the GUI
+    play launcher append `procs=min(worlds, max(1, cpu_count//2))`
+    (`opponents.default_search_procs`); an explicit `procs=` / `--search-procs`
+    / a set launcher field always wins.
 - a prebuilt `Controller` instance (passed through)
 
 The human-in-a-Textual-TUI seat is the exception: the TUI (`tui_game.py`,

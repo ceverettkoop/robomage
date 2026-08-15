@@ -1352,7 +1352,8 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="Search opponent only (az:/mcts: --model): number of engine "
                  "processes to fan the determinized worlds across for a faster "
                  "search (world-parallel; more procs = more sims/decision in the "
-                 "same wall-clock). Default 1 (TUI only)"),
+                 "same wall-clock). Default for interactive play is AUTO — half "
+                 "the visible cores, capped at the world count (TUI only)"),
         Arg("--match-clock", "float", default=None,
             help="Search opponent only: total wall-clock thinking bank in "
                  "seconds for the WHOLE match (chess clock; 1500 = 25 min for "

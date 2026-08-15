@@ -143,6 +143,14 @@ if __name__ == "__main__":
         # World-parallel search across N engine processes. Appended last so it
         # wins over any procs= already present in the spec.
         model_path = append_spec_knob(model_path, "procs", args.search_procs)
+    elif is_search_spec and "procs=" not in model_path:
+        # Interactive play defaults to a PARALLEL search (the spec grammar's own
+        # default stays procs=1 for reproducible gates/eval): fan the worlds
+        # across half the cores so a human's think time buys more sims. An
+        # explicit procs= in the spec (or --search-procs above) always wins.
+        from opponents import default_search_procs_for_spec
+        model_path = append_spec_knob(
+            model_path, "procs", default_search_procs_for_spec(model_path))
     if args.match_clock is not None:
         if not is_search_spec:
             parser.error("--match-clock only applies to a search opponent "

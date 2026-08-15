@@ -665,10 +665,28 @@ env the parallel path is **bit-identical** to plain `run_search` and with N it j
 fans the same worlds out — visit counts sum across envs. Any mirror drift/spawn
 failure disables the pool with one stderr warning and the primary plays on alone
 (interactive robustness over strictness). `run_search` itself is untouched and
-`procs` defaults to 1, so **self-play and the parity corpus never touch this path**.
+`procs` defaults to 1 in the spec grammar, so **self-play and the parity corpus
+never touch this path**; the interactive front doors (`play.py`, the GUI play
+launcher) default it instead to AUTO — `min(worlds, max(1, cpu_count//2))` via
+`opponents.default_search_procs` — when neither the spec nor the flag/field names
+one.
+
+Bo3 **sideboard-boundary persistence works under the pool too**:
+`run_search_parallel` takes the same `world_seeds` / `reuse_roots` /
+`rollout_memo` / `memo_picks` handles and forwards them per env — pinned seeds
+replace the pre-draw (consuming no rng), the reuse roots are sliced by the same
+contiguous world split, and the memo dict is shared unlocked across the worker
+threads (its keys embed the world seed and the workers own disjoint seeds, so
+writes never collide and CPython dict ops are GIL-atomic). The merged
+`SearchResult` reports `seeds` (world order, aligned index-for-index with the
+concatenated `roots`), summed `reused_visits` and `memo_hits`, which is exactly
+what `SearchController` latches — so it no longer drops the boundary when the
+pool is active, and a pool that fails mid-boundary simply re-partitions the same
+latched per-world state across the remaining engines.
 Regression: `train/test_mirror_search.py`, wired into `ci_check.py` as the default
 `mirror` tier (torch-free: bit-exact merge, bo3 lockstep across the sideboard
-boundary, and drift-fallback).
+boundary, drift-fallback, and serial-vs-parallel bit-identity of a persisted
+sideboard boundary).
 
 ### Analysis trace games honor search specs (Stage 11)
 

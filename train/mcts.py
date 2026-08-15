@@ -296,11 +296,15 @@ def run_search(
     walking the previous ``SearchResult.roots`` down the actually-played
     actions (:func:`walk_reuse_root`) and MUST pass the same pinned
     ``world_seeds`` the trees were built under (at a sideboard root the seed IS
-    the sampled next-game deal). A reused world only runs
-    ``max(0, sims_per_world - existing_visits)`` new sims (top-up) and the
-    reported ``visits`` are CUMULATIVE (``sims_run`` counts new sims only;
-    ``reused_visits`` reports the inherited mass). ``None`` (the default)
-    keeps every path byte-identical to the pre-reuse search.
+    the sampled next-game deal). On the FIXED-budget path (``time_budget_s is
+    None``) a reused world only runs ``max(0, sims_per_world -
+    existing_visits)`` new sims (top-up); the TIMED path ignores those per-world
+    budgets by design — a wall-clock budget keeps growing every world's tree,
+    reused or fresh, until the deadline (or the ``sims`` cap / stability stop)
+    ends it. Either way the reported ``visits`` are CUMULATIVE (``sims_run``
+    counts new sims only; ``reused_visits`` reports the inherited mass).
+    ``None`` (the default) keeps every path byte-identical to the pre-reuse
+    search.
 
     ``rollout_memo`` (optional, sideboard boundaries only): the boundary's
     rollout-value memo dict, shared across the boundary's searches;
@@ -525,6 +529,10 @@ def run_search_parallel(
     root_noise_eps: float = 0.0,
     root_noise_alpha: float = 1.0,
     rng: Optional[np.random.Generator] = None,
+    world_seeds: Optional[Sequence[int]] = None,
+    reuse_roots: Optional[Sequence] = None,
+    rollout_memo: Optional[dict] = None,
+    memo_picks: tuple = (),
     time_budget_s: Optional[float] = None,
     time_budget_min_s: Optional[float] = None,
     merge_dupes: bool = True,
@@ -549,6 +557,15 @@ def run_search_parallel(
     up front with the exact derivation ``run_search`` uses, so a 1-env call
     consumes ``rng`` identically to a plain ``run_search``.
 
+    ``world_seeds`` / ``reuse_roots`` / ``rollout_memo`` / ``memo_picks`` are the
+    bo3 sideboard-boundary persistence handles (contracts in :func:`run_search`),
+    forwarded per env: pinned ``world_seeds`` replace the pre-draw entirely (no
+    rng is consumed for seeds then) and ``reuse_roots`` is sliced by the same
+    contiguous world split, so each worker tops up exactly the trees belonging to
+    its own worlds. Persistence therefore works identically at any ``procs`` —
+    the per-world state is engine-agnostic, so a boundary latched under N envs
+    may be continued under a different env count (or serially) without loss.
+
     ``time_budget_min_s`` is forwarded per env, so each worker's stability
     early-stop (see :func:`run_search`) sees only its OWN world slice — a
     noisier per-slice approximation of the global signal (the slices are i.i.d.
@@ -564,7 +581,10 @@ def run_search_parallel(
             envs[0], evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
             max_depth=max_depth, rollout_turns=rollout_turns,
             root_noise_eps=root_noise_eps,
-            root_noise_alpha=root_noise_alpha, rng=rng, time_budget_s=time_budget_s,
+            root_noise_alpha=root_noise_alpha, rng=rng,
+            world_seeds=world_seeds, reuse_roots=reuse_roots,
+            rollout_memo=rollout_memo, memo_picks=memo_picks,
+            time_budget_s=time_budget_s,
             time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes)
 
     assert root_noise_eps == 0.0, (
@@ -572,9 +592,20 @@ def run_search_parallel(
         "the rng per world in a thread-order-dependent way")
 
     rng = rng if rng is not None else np.random.default_rng()
-    # Pre-draw every world seed with the SAME derivation run_search uses, so a
-    # 1-env call would consume the rng identically to plain run_search.
-    world_seeds = [int(rng.integers(1, 2**31 - 1)) for _ in range(worlds)]
+    if world_seeds is None:
+        # Pre-draw every world seed with the SAME derivation run_search uses, so a
+        # 1-env call would consume the rng identically to plain run_search.
+        world_seeds = [int(rng.integers(1, 2**31 - 1)) for _ in range(worlds)]
+    else:
+        # Pinned seeds (boundary persistence): consume no rng at all, exactly like
+        # run_search's world_seeds path.
+        if len(world_seeds) < worlds:
+            raise ValueError(
+                f"world_seeds needs >= {worlds} entries, got {len(world_seeds)}")
+        world_seeds = [int(s) for s in world_seeds[:worlds]]
+    if reuse_roots is not None and len(reuse_roots) < worlds:
+        raise ValueError(
+            f"reuse_roots needs >= {worlds} entries, got {len(reuse_roots)}")
 
     n_envs = min(len(envs), worlds)
     usable = envs[:n_envs]
@@ -606,11 +637,20 @@ def run_search_parallel(
             sims_i = max(cap * k_i // worlds, k_i)
         else:
             sims_i = 0  # clock alone terminates
+        # The rollout memo dict is deliberately SHARED (unlocked) across the
+        # worker threads: every key embeds the world seed (rollout_memo_key) and
+        # the workers own disjoint seed slices, so two workers can never write
+        # the same key, and CPython dict get/setitem are GIL-atomic — no lock is
+        # needed (one would only serialize the boundary's hot path).
         return run_search(
             usable[i], locked, sims=sims_i, worlds=k_i, c_puct=c_puct,
             max_depth=max_depth, rollout_turns=rollout_turns,
             root_noise_eps=0.0, rng=None,
-            world_seeds=seeds_i, time_budget_s=time_budget_s,
+            world_seeds=seeds_i,
+            reuse_roots=(list(reuse_roots[lo:hi])
+                         if reuse_roots is not None else None),
+            rollout_memo=rollout_memo, memo_picks=memo_picks,
+            time_budget_s=time_budget_s,
             time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes)
 
     results: list[Optional[SearchResult]] = [None] * n_envs
@@ -649,6 +689,12 @@ def run_search_parallel(
         sims_run += r.sims_run
         sim_steps += r.sim_steps
     root_value = weighted_value / total_vis if total_vis > 0 else 0.0
+    # Roots/seeds alignment (boundary persistence depends on it): the roots are
+    # concatenated in env order and each env owns the CONTIGUOUS world slice
+    # world_seeds[lo:hi], so env order == world order and roots[w] is the tree
+    # built under seeds[w] — index-for-index, exactly as run_search returns them.
+    # (_Node carries no seed of its own, so this cannot be asserted cheaply; the
+    # parallel-persistence parity test in train/test_mirror_search.py guards it.)
     return SearchResult(
         visits=visits,
         priors=results[0].priors,
@@ -661,6 +707,9 @@ def run_search_parallel(
         w_sum=w_sum,
         world_values=np.concatenate([r.world_values for r in results]),
         roots=[root for r in results for root in (r.roots or [])],
+        seeds=list(world_seeds),
+        reused_visits=sum(r.reused_visits for r in results),
+        memo_hits=sum(r.memo_hits for r in results),
     )
 
 
@@ -965,6 +1014,7 @@ class LiveStats:
     visits: np.ndarray          # (n,) summed root visit counts across worlds
     priors: np.ndarray          # (n,) root priors (no noise)
     q: np.ndarray               # (n,) per-action Q = ΣW/ΣN (0 where unvisited)
+    w_sum: np.ndarray           # (n,) summed root W (value mass) across worlds
     root_value: float           # visit-weighted root Q
     net_value: float            # evaluator's raw value at the root ("depth 0")
     world_values: np.ndarray    # (worlds,) per-world root value
@@ -1000,6 +1050,14 @@ class IncrementalSearch:
     yields bit-identical trees to run_search's sequential per-world loop once
     each world has received the same sim count (pin ``world_seeds`` and give
     both the same totals to compare). No root dirichlet noise (inference only).
+
+    ``world_seeds`` mirrors :func:`run_search`'s contract exactly: when given
+    (at least ``worlds`` entries) the per-world determinize seeds are consumed
+    from it in order and NO rng draw happens; when absent they are drawn as
+    ``rng.integers(1, 2**31 - 1)`` per world, w=0..worlds-1 — the derivation
+    the chunked-parity claim above depends on. Pinned seeds are what lets one
+    search's worlds be split across several engines (the analysis window's
+    world-parallel mode) and still merge to the single-engine result.
 
     Unlike run_search, the root SNAPSHOT is held OPEN across chunks so the
     search can resume, and :meth:`pv`/:meth:`walk` can browse the tree and
@@ -1090,6 +1148,7 @@ class IncrementalSearch:
             visits=visits,
             priors=np.array(self.priors, dtype=np.float64, copy=True),
             q=np.where(visits > 0, w_sum / np.maximum(visits, 1), 0.0),
+            w_sum=w_sum,
             root_value=float(w_sum.sum()) / total if total > 0 else 0.0,
             net_value=self.net_value,
             world_values=world_values,
@@ -1097,13 +1156,17 @@ class IncrementalSearch:
         )
 
     def result(self) -> SearchResult:
-        """The current stats as a plain SearchResult (run_search-compatible)."""
+        """The current stats as a plain SearchResult (run_search-compatible).
+
+        ``w_sum`` is the stats' EXACT per-root W sum (not the lossy ``q *
+        visits`` reconstruction), so a merged/derived Q recomputed from it is
+        bit-identical to this search's own ``q``."""
         s = self.stats()
         return SearchResult(
             visits=s.visits, priors=s.priors, root_value=s.root_value,
             num_choices=s.num_choices, sims_run=s.sims_run,
             sim_steps=s.sim_steps, q=s.q,
-            w_sum=np.where(s.visits > 0, s.q * s.visits, 0.0),
+            w_sum=s.w_sum,
             world_values=s.world_values)
 
     def pv(self, action: int, world: int, max_len: int = 24) -> list:

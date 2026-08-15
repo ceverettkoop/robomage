@@ -1937,13 +1937,14 @@ _LAUNCHER_DEFAULTS = {
     "sims": None,                            # no sims cap — the match clock paces it
     "worlds": 8,
     "think_time": None,
-    "search_procs": None,
+    "search_procs": None,                    # auto: half the cores, capped at worlds
     "match_clock": 1500.0,                   # 25 min of thinking for the whole bo3
     "paced": True,
     "record_shards": False,
     "analysis_enabled": True,
     "analysis_evaluator": "az:gen",
     "analysis_worlds": 4,
+    "analysis_procs": None,                  # auto: half the cores, capped at worlds
     "analysis_cap": 2000,
     "analysis_auto": True,
 }
@@ -2075,7 +2076,9 @@ class NewPlaySessionDialog(QDialog):
         """The az:/mcts:-only search-tuning group (hidden for other opponents).
         Each field's '(default)' sentinel (a spinbox at its minimum) means 'omit
         the knob'; set values are appended to the spec query the same way
-        play.py's --sims/--worlds/--think-time/--search-procs/--match-clock do."""
+        play.py's --sims/--worlds/--think-time/--search-procs/--match-clock do.
+        Search procs is the one exception: unset means AUTO (half the cores,
+        capped at the world count), matching play.py's interactive default."""
         form = QFormLayout()
         form.setSpacing(8)
         self._sims = self._int_field(
@@ -2088,7 +2091,8 @@ class NewPlaySessionDialog(QDialog):
             "sims as fit in this budget (overrides the sims terminator).")
         self._search_procs = self._int_field(
             _cfg_get(cfg, "search_procs"), "Engine processes to fan the worlds across "
-            "(world-parallel search; default 1).")
+            "(world-parallel search). '(default)' means AUTO: half the visible "
+            "cores, capped at the world count. Set a value to override.")
         self._match_clock = self._float_field(
             _cfg_get(cfg, "match_clock"), "Whole-match thinking bank in seconds (chess "
             "clock; 1500 = 25 min for a bo3). Each decision draws a variable budget.")
@@ -2139,6 +2143,11 @@ class NewPlaySessionDialog(QDialog):
         self._analysis_worlds = self._int_field(
             _cfg_get(cfg, "analysis_worlds"),
             "Determinized worlds per analysis run (hidden-zone samples).")
+        self._analysis_procs = self._int_field(
+            _cfg_get(cfg, "analysis_procs"),
+            "Detached analysis engines to fan the worlds across "
+            "((default) = half the cores, capped at the world count). "
+            "The merged result is the same either way — just faster.")
         self._analysis_cap = QSpinBox()
         self._analysis_cap.setRange(-1, 1_000_000)
         self._analysis_cap.setSpecialValueText("(default)")
@@ -2152,6 +2161,7 @@ class NewPlaySessionDialog(QDialog):
         form.addRow(self._analysis_enable)
         form.addRow("Evaluator", self._analysis_eval)
         form.addRow("Worlds", self._analysis_worlds)
+        form.addRow("Search procs", self._analysis_procs)
         form.addRow("Sims cap", self._analysis_cap)
         form.addRow(self._analysis_auto)
         box = QGroupBox("Analysis window (MCTS evaluation of your decisions)")
@@ -2240,6 +2250,13 @@ class NewPlaySessionDialog(QDialog):
         worlds = self._spin_value(self._worlds)
         time_val = self._spin_value(self._think_time)
         procs = self._spin_value(self._search_procs)
+        if procs is None:
+            # Unset means AUTO for interactive play (not the spec grammar's
+            # procs=1): fan the worlds across half the cores, capped at the
+            # world count in effect. Mirrors play.py's --search-procs default.
+            from opponents import default_search_procs, DEFAULT_SEARCH_WORLDS
+            procs = default_search_procs(
+                worlds if worlds is not None else DEFAULT_SEARCH_WORLDS)
         clock = self._spin_value(self._match_clock)
         pairs = [("sims", sims), ("worlds", worlds), ("time", time_val),
                  ("procs", procs), ("clock", clock)]
@@ -2294,6 +2311,7 @@ class NewPlaySessionDialog(QDialog):
             cap = self._analysis_cap.value()
             analysis = dict(evaluator=evaluator,
                             worlds=self._spin_value(self._analysis_worlds),
+                            procs=self._spin_value(self._analysis_procs),
                             max_sims=None if cap < 0 else cap,
                             auto=self._analysis_auto.isChecked())
 
@@ -2318,6 +2336,7 @@ class NewPlaySessionDialog(QDialog):
             analysis_enabled=self._analysis_enable.isChecked(),
             analysis_evaluator=self._combo_spec(self._analysis_eval),
             analysis_worlds=self._spin_value(self._analysis_worlds),
+            analysis_procs=self._spin_value(self._analysis_procs),
             analysis_cap=None if self._analysis_cap.value() < 0
             else self._analysis_cap.value(),
             analysis_auto=self._analysis_auto.isChecked()))
@@ -2378,7 +2397,8 @@ def _analysis_cfg_from(opts):
 
     if os.environ.get("ROBOMAGE_ANALYSIS_SMOKE"):
         return AnalysisConfig(evaluator_spec="uniform", worlds=2,
-                              chunk_sims=8, max_sims=32, auto_analyze=True)
+                              chunk_sims=8, max_sims=32, auto_analyze=True,
+                              procs=1)   # one engine: keep the smoke cheap
     if opts is None:
         return None
     cfg = AnalysisConfig()
@@ -2386,6 +2406,9 @@ def _analysis_cfg_from(opts):
         cfg.evaluator_spec = opts["evaluator"]
     if opts.get("worlds"):
         cfg.worlds = int(opts["worlds"])
+    if opts.get("procs") is not None:
+        # 0/unset stays AnalysisConfig's auto sentinel (default_search_procs).
+        cfg.procs = int(opts["procs"])
     if opts.get("max_sims") is not None:
         cfg.max_sims = int(opts["max_sims"])
     cfg.auto_analyze = bool(opts.get("auto", True))
