@@ -454,13 +454,12 @@ class GameDriver:
         # soft — it just thinks faster). Off by default, so a driver built the
         # old way behaves identically.
         self._hard_timeout = bool(hard_timeout)
-        # Set when a hard timeout fired: ("you"|"opponent", display reason).
-        # Read by _winner_text so the banner says WHY the match ended.
-        self.timeout_loss = None
         # Set when the driver injected a MATCH concession (the human asked, or a
-        # hard clock ran out): (loser_seat, reason). It decides the final banner
-        # on its own — a match conceded between games carries no game result, so
-        # the running reward cannot be trusted there.
+        # hard clock ran out): (loser_seat, reason). The single source of truth
+        # for a driver-forced match end — it decides the final banner in
+        # _winner_text (a match conceded between games carries no game result, so
+        # the running reward cannot be trusted there) AND gates _hard_timeout_seat
+        # so a fired timeout never re-fires.
         self._forfeit = None
         # Optional per-decision observer (e.g. shard_record.ShardRecorder
         # .observe_step), called on the worker thread after each MAIN-LOOP
@@ -784,7 +783,7 @@ class GameDriver:
         """"you" / "opponent" when THAT seat is on the clock right now with an
         exhausted bank, else None. Only the seat about to act can flag: a clock
         runs out ON your own decision, and an autopass window costs no time."""
-        if not self._hard_timeout or self.timeout_loss is not None:
+        if not self._hard_timeout or self._forfeit is not None:
             return None
         remaining = (self._opp_clock_remaining() if opp_turn
                      else (self._human_remaining if human_must_act else None))
@@ -797,7 +796,6 @@ class GameDriver:
         CONCEDE_MATCH for `seat`)."""
         who = "You" if seat == "you" else self._opp_label
         reason = f"{who} lost on time."
-        self.timeout_loss = (seat, reason)
         self._forfeit = (seat, "lost on time")
         self._sink.on_log([f"=== {reason} ==="])
         on_timeout = getattr(self._sink, "on_timeout", None)
