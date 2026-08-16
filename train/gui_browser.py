@@ -129,7 +129,8 @@ class EngineWorker(threading.Thread):
     """The one thread that touches EngineCore (model/env/opp_model).
 
     Commands (via the queue): ("load", n, stop) / ("collect", n, stop) /
-    ("whatif", gn, step, k, game) / ("shutdown",). Stop events are created at
+    ("whatif", gn, step, k, game) / ("search", gn, step, game) /
+    ("shutdown",). Stop events are created at
     submit time, one per collect run (the AnalysisWorker discipline), so a
     stop that lands before the worker even dequeues the run still sticks. The
     UI rejects submissions while the store is engine_busy, keeping the queue
@@ -156,6 +157,8 @@ class EngineWorker(threading.Thread):
                     self._core.collect(cmd[1], cmd[2])
                 elif kind == "whatif":
                     self._core.whatif(cmd[1], cmd[2], cmd[3], cmd[4])
+                elif kind == "search":
+                    self._core.search_step(cmd[1], cmd[2], cmd[3])
             except Exception:   # noqa: BLE001 — the worker loop must survive
                 # EngineCore jobs guard themselves; this is the last-resort
                 # net so a bug can't kill the queue loop silently.
@@ -616,10 +619,12 @@ class BrowserPane(QWidget):
         self._bridge = BrowserBridge()
         self._bridge.engine_event.connect(self._on_engine_event)
         self._bridge.analysis_done.connect(self._on_analysis_done)
-        self._worker = None
-        if self._has_engine:
-            core = bs.EngineCore(self._args, self._bridge.engine_event.emit)
-            self._worker = EngineWorker(core)
+        # The worker exists in EVERY mode: traces-only sessions never get a
+        # load job (start() gates on _has_engine), but the replay-to-step
+        # search job works off a game's recorded seed/action log alone, so it
+        # must be submittable even without a live env/model.
+        core = bs.EngineCore(self._args, self._bridge.engine_event.emit)
+        self._worker = EngineWorker(core)
         self._collect_stop = None      # stop event of the running collect job
         self._busy_kind = None         # None | "sim" | "whatif"
         self._analysis_thread = None
@@ -698,6 +703,14 @@ class BrowserPane(QWidget):
                 item.setToolTip(_MSG_SHARD if self._shards
                                 else "No live env — browse-only session.")
             self._menu_list.addItem(item)
+        # Replay-to-step search: needs only a game's recorded seed/action log
+        # (a recording's .rmplay sidecars, a replay-enabled trace), so it
+        # stays enabled in every mode — an unreplayable game gets a printed
+        # refusal in the output tab.
+        for key, label in bs.REPLAY_MENU:
+            item = QListWidgetItem(label)
+            item.setData(Qt.UserRole, key)
+            self._menu_list.addItem(item)
         # Net probes (az_inspect over the browsed records): per-decision
         # block-importance / card-swap / sweeps / recorded-π-vs-net, plus the
         # pooled KL and calibration views. Work in every session mode; the
@@ -772,7 +785,8 @@ class BrowserPane(QWidget):
                  ("Shift+Right", lambda: self._step_by(10)),
                  ("Home", lambda: self._set_step(0)),
                  ("End", self._step_end),
-                 ("W", lambda: self._run_menu_entry("whatif"))]
+                 ("W", lambda: self._run_menu_entry("whatif")),
+                 ("F6", lambda: self._run_menu_entry("search"))]
         for seq, fn in binds:
             sc = QShortcut(QKeySequence(seq), self)
             sc.setContext(Qt.WidgetWithChildrenShortcut)
@@ -781,13 +795,15 @@ class BrowserPane(QWidget):
     # ----- SessionManager contract -----
 
     def start(self):
-        """Submit the initial load+collect job (no-op in traces-only mode).
-        Construction is cheap by design — nothing loads until here."""
-        if self._started or self._worker is None:
+        """Start the worker and, outside traces-only mode, submit the initial
+        load+collect job. Construction is cheap by design — nothing loads
+        until here."""
+        if self._started:
             return
         self._started = True
         self._worker.start()
-        self._submit_collect("load", getattr(self._args, "n_games", 20))
+        if self._has_engine:
+            self._submit_collect("load", getattr(self._args, "n_games", 20))
 
     def shutdown(self):
         """Bounded-blocking teardown: stop the running collect, queue the
@@ -1010,6 +1026,8 @@ class BrowserPane(QWidget):
             loading=(self._store.engine_busy and self._busy_kind == "sim"))
         if self._store.engine_busy and self._busy_kind == "whatif":
             text += "  (branching…)"
+        elif self._store.engine_busy and self._busy_kind == "search":
+            text += "  (searching…)"
         self._summary.setText(text)
 
     def _refresh_selected(self):
@@ -1094,6 +1112,9 @@ class BrowserPane(QWidget):
         if key in ("whatif", "run5", "run20"):
             self._run_engine_entry(key)
             return
+        if key == "search":
+            self._run_search_entry()
+            return
         if key in shard_probes.PROBE_KEYS:
             self._run_probe_entry(key)
             return
@@ -1163,6 +1184,29 @@ class BrowserPane(QWidget):
         self._analysis_thread = threading.Thread(
             target=runner, name="gui-browser-probe", daemon=True)
         self._analysis_thread.start()
+
+    def _run_search_entry(self):
+        """Replay-to-step MCTS analysis at the current game/step. Unlike the
+        ENGINE_MENU jobs it needs no live env — the job builds a throwaway
+        search env from the game's recorded seed/action log — so it runs in
+        shard-browse and traces-only modes too. An unreplayable game gets the
+        job's printed refusal in the output tab."""
+        if self._store.cur_game is None:
+            self._say(_MSG_NO_SEL)
+            return
+        if self._store.engine_busy:
+            self._say(_MSG_BUSY)
+            return
+        game = self._store.games[self._store.cur_game]
+        if game.get("live"):
+            self._say("The live game has no finished record yet.")
+            return
+        gn, step = self._store.cur_game, self._store.cur_step
+        self._store.engine_busy = True
+        self._busy_kind = "search"
+        self._mark(summary=True)
+        self._say(f"Replaying game {gn} to step {step} and searching…")
+        self._worker.submit(("search", gn, step, game))
 
     def _run_engine_entry(self, key):
         """Gate chain (verbatim parity with the TUI): live env → not busy →

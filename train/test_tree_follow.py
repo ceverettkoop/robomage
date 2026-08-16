@@ -1,7 +1,7 @@
 """Standalone checks for search-tree reuse: the revealed-hidden-info
 fingerprint (decode.hidden_info_fingerprint) and the SearchController
 _try_follow_tree gates (opponent-action categories, reveal ratchet, visit
-threshold, menu/seat match).
+threshold, winning-action share threshold, menu/seat match).
 
 Pure Python on synthetic observation vectors and hand-built _Node trees — no
 engine binary, no torch. Run standalone (not wired into a ci_check tier,
@@ -143,7 +143,7 @@ def arm(ctrl, env, tree_roots, obs):
     ctrl._followed_fp = hidden_info_fingerprint(obs[:STATE_SIZE])
 
 
-def make_chain(*, leaf_visits=(20, 5)):
+def make_chain(*, leaf_visits=(30, 10)):
     """root --a=1--> mid --a=0--> leaf (2 choices, our seat)."""
     root = _Node(3, np.full(3, 1.0 / 3.0), True)
     mid = _Node(2, np.full(2, 0.5), False)
@@ -212,6 +212,27 @@ def test_follow_gates() -> None:
     env5._action_meta += [(True, CAT_CAST_SPELL), (False, CAT_PASS_PRIORITY)]
     check(ctrl5._try_follow_tree(base, 2) is None,
           "a thin-visit node must not be followed")
+
+    # A contested node — enough total visits but the winning action below the
+    # _FOLLOW_MIN_SHARE cut — also falls through to a search.
+    ctrl5b = SearchController(StubEvaluator(), rng_seed=1)
+    env5b = FakeEnv()
+    arm(ctrl5b, env5b, [make_chain(leaf_visits=(18, 14))], base)
+    env5b._action_history += [1, 0]
+    env5b._action_meta += [(True, CAT_CAST_SPELL), (False, CAT_PASS_PRIORITY)]
+    check(ctrl5b._try_follow_tree(base, 2) is None,
+          "a contested node (winner below the share cut) must not be followed")
+    check(ctrl5b._followed_trees is None,
+          "a contested node should drop the trees")
+
+    # A share exactly at the cut is trusted (the gate is strictly-below).
+    ctrl5c = SearchController(StubEvaluator(), rng_seed=1)
+    env5c = FakeEnv()
+    arm(ctrl5c, env5c, [make_chain(leaf_visits=(33, 17))], base)
+    env5c._action_history += [1, 0]
+    env5c._action_meta += [(True, CAT_CAST_SPELL), (False, CAT_PASS_PRIORITY)]
+    check(ctrl5c._try_follow_tree(base, 2) == 0,
+          "a winner holding exactly the share cut should be followed")
 
     # Menu-size mismatch at the reached node is a divergence.
     ctrl6 = SearchController(StubEvaluator(), rng_seed=1)

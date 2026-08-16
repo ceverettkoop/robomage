@@ -201,8 +201,52 @@ def main():
         d = _check_schema(files[1])
         assert d["obs"].shape[0] == 1 and d["z"][0] == -1.0
 
+        # ── Replay sidecar: replay_meta + seed_fn make each match's shard
+        # exactly replayable (engine seed + action log + row_decision_idx),
+        # and shard_replay attaches them to the browsable records. ──────────
+        tmp2 = tempfile.mkdtemp(prefix="shard_record_test_sidecar_")
+        try:
+            import json
+            rec2 = ShardRecorder(
+                tmp2, td_n=3,
+                replay_meta={"deck_a": "league/ur_delver",
+                             "deck_b": "league/uw_control",
+                             "human_deck": "league/uw_control",
+                             "opp_deck": "league/ur_delver",
+                             "human_is_a": False, "bo3": False,
+                             "opponent_spec": "az:gen", "binary": None},
+                seed_fn=lambda: 12345)
+            _searched(rec2, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=0)
+            _onehot(rec2, _obs(False, 0, 1), 4, action=2)
+            _onehot(rec2, _obs(False, 0, 2), 1, action=0)   # 1-choice: no row,
+            #                                                 but IS an action
+            _searched(rec2, _obs(True, 0, 2), 2, [5, 3], -0.10, chosen=1,
+                      reward=1.0, done=True)
+            rec2.close()
+            sides = sorted(glob.glob(os.path.join(tmp2, "shard_*.rmplay")))
+            assert len(sides) == 1, sides
+            with open(sides[0]) as f:
+                doc = json.load(f)
+            assert doc["engine_seed"] == 12345
+            assert doc["actions"] == [0, 2, 0, 1]        # 1-choice step included
+            assert doc["row_decision_idx"] == [0, 1, 3]  # rows skip it
+            assert doc["in_progress"] is False
+            recs = shard_replay.load_records(tmp2, viewpoint_is_a=True)
+            assert len(recs) == 1
+            r = recs[0]
+            assert r["engine_seed"] == 12345
+            assert r["full_actions"] == [0, 2, 0, 1]
+            assert r["prefix_len"] == [0, 3]             # A's two rows
+            assert r["replay_decks"] == {"deck_a": "league/ur_delver",
+                                         "deck_b": "league/uw_control",
+                                         "bo3": False}
+            recs_b = shard_replay.load_records(tmp2, viewpoint_is_a=False)
+            assert recs_b[0]["prefix_len"] == [1]        # B's one recorded row
+        finally:
+            shutil.rmtree(tmp2, ignore_errors=True)
+
         print("shard_record OK: schema, mid-game flush, z backfill, "
-              "segmentation, both readers, per-match files")
+              "segmentation, both readers, per-match files, replay sidecar")
         return 0
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

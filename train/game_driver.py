@@ -958,6 +958,8 @@ class Session:
     engine_seed: object = None   # force the engine --seed (saved-session restore)
     record_dir: object = None    # shard-recording directory (front end sets it;
     #                              the pane builds a shard_record.ShardRecorder)
+    opponent_spec: object = None  # the agent spec string the opponent was built
+    #                               from (recorder sidecar / value-net derivation)
     # Hard-clock settings for the GameDriver this session builds (see its
     # docstring). Defaults leave the session untimed and soft, as before.
     human_clock_s: object = None
@@ -1038,4 +1040,5 @@ def build_session(binary_path, model_path, human_player=None,
                    bo3=bo3, clock_fn=clock_fn,
                    pace_idle=getattr(ctrl, "pace_idle", None),
                    controller=ctrl, engine_seed=engine_seed,
+                   opponent_spec=(spec if isinstance(spec, str) else None),
                    human_clock_s=human_clock_s, hard_timeout=hard_timeout)
