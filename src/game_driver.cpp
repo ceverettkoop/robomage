@@ -41,6 +41,9 @@
 // to sample a distinct next-game deal per searched world. One engine-side
 // definition so the C++ actor and the Python stdio driver stay in parity.
 static unsigned int match_game_seed(const MatchContext &ctx);
+// MATCH_RESULT line for a conceded match (CR 104.3a): the conceder's opponent
+// wins, reported with the games actually played so the score still reads true.
+static void print_match_concede_result(const MatchContext &ctx);
 static int sideboard_copy_ordinal(size_t copies);
 static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from,
                                std::vector<std::pair<size_t, std::string>> &to,
@@ -129,6 +132,73 @@ MatchContext g_match_ctx;
 // tell a card_db.clear()+reload happened across the rollback (see game_driver.h).
 uint64_t g_card_db_generation = 0;
 
+// ── Concession (CR 104.3a) — see game_driver.h for the contract ─────────────
+// Armed by concede_current_game(); consumed by InputLogger::get_input, which
+// hands back choice 0 at every decision below the concede until the main loop
+// exits on the already-decided game.
+static bool g_concede_unwinding = false;
+static int g_concede_unwind_count = 0;
+// A runaway unwind (a menu family that never terminates under repeated
+// first-choice selection) would silently auto-play forever; cap it loudly, the
+// same way the search-server unwind does.
+static const int CONCEDE_UNWIND_CAP = 10000;
+// Latched by CONCEDE_MATCH until the match ends (reset per match).
+static bool g_match_conceded = false;
+static Zone::Ownership g_match_conceder = Zone::UNKNOWN;
+
+bool concede_unwind_pending() { return g_concede_unwinding; }
+
+int concede_unwind_choice() {
+    if (++g_concede_unwind_count > CONCEDE_UNWIND_CAP) {
+        fatal_error("concede: cooperative unwind exceeded " +
+                    std::to_string(CONCEDE_UNWIND_CAP) +
+                    " decisions without reaching the main loop");
+    }
+    return 0;
+}
+
+void concede_reset_unwind() {
+    g_concede_unwinding = false;
+    g_concede_unwind_count = 0;
+}
+
+bool match_conceded() { return g_match_conceded; }
+Zone::Ownership match_conceder() { return g_match_conceder; }
+
+void concede_current_game(Zone::Ownership conceder, bool whole_match) {
+    if (conceder != Zone::PLAYER_A && conceder != Zone::PLAYER_B) {
+        // Guard rail: no seat owns this decision (should be unreachable — every
+        // decision is read with priority, or the sideboard player, seated).
+        non_fatal_error("concede: no player owns the pending decision — ignored");
+        return;
+    }
+    Zone::Ownership opponent = (conceder == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    if (whole_match) {
+        // Latched even with no live game (a concede during the between-games
+        // sideboard phase still ends the match).
+        g_match_conceded = true;
+        g_match_conceder = conceder;
+        game_log("%s concedes the match.\n", player_name(conceder).c_str());
+    } else {
+        game_log("%s concedes.\n", player_name(conceder).c_str());
+    }
+    // Guard rail: nothing to concede when no game is live — the game is already
+    // decided (a parked prompt draining under an ended game) or we are between
+    // games. The match latch above still stands; the caller treats the sentinel
+    // as choice 0 for the decision at hand.
+    if (cur_game.ended) {
+        game_log("(no live game to concede)\n");
+        return;
+    }
+    // The same result line every other game-ending path prints, so a machine
+    // driver reading stdout sees the winner exactly as for a life/deck-out loss.
+    printf("\n%s concedes - %s wins!\n", player_name(conceder).c_str(),
+           player_name(opponent).c_str());
+    cur_game.player_loses(conceder);
+    g_concede_unwinding = true;
+    g_concede_unwind_count = 0;
+}
+
 // True while play_single_game's decision loop is running. Blocking fallbacks
 // gate on it: a prompt fired OUTSIDE the loop has no loop top to suspend to,
 // so it must block inline. Since the pregame gate (Batch 13) the whole pregame
@@ -186,6 +256,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // and dropping its snapshot here would strand the rollback. The guard keeps
     // the original invariant for ordinary game starts (no match snapshot live).
     if (!snapshot_any_match_scope_live()) snapshot_release_all();
+    // A concession belongs to the game it was made in: never carry its unwind
+    // latch into this game (the previous game of a bo3 may have ended on one).
+    concede_reset_unwind();
     // Decklist stores for the state serializer (see deck_state.h for why there
     // are two). The REGISTERED list is what the opponent sees, so it is captured
     // ONCE per match, from the pre-board Deck structs: match_game_number is -1
@@ -251,6 +324,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // before reading it.
         if (search_match_restore_pending()) {
             g_in_main_loop = false;
+            concede_reset_unwind();
             return cur_game.winner;
         }
         // Set by the RESOLUTION dispatch below when a resumed resolution ran to
@@ -561,6 +635,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         fatal_error("game ended with a suspended resolution/pending query still parked:" + which);
     }
     g_in_main_loop = false;
+    // Leave auto-choice mode behind with the game: the between-games sideboard
+    // phase and the next game must emit their own queries again.
+    concede_reset_unwind();
     return cur_game.winner;
 }
 
@@ -1165,6 +1242,8 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
 
     match_wins_a = 0;
     match_wins_b = 0;
+    g_match_conceded = false;  // concessions never carry across matches
+    g_match_conceder = Zone::UNKNOWN;
     match_reset_revealed();  // clear revealed-cards accumulator for the whole match
     // Drop the previous match's decklists so neither store can bleed across
     // matches; game 1's play_single_game repopulates both.
@@ -1178,6 +1257,15 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
         // and the match globals — back to the sideboard root before the switch
         // re-enters the restored stage.
         if (search_match_restore_pending()) search_apply_pending_match_restore();
+
+        // CR 104.3a: a conceded MATCH ends here whatever the game score is (the
+        // sentinel may have arrived between games, during a sideboard phase).
+        // The in-game case is caught right after that game's GAME_RESULT below.
+        if (g_match_conceded) {
+            print_match_concede_result(ctx);
+            match_done = true;
+            break;
+        }
 
         switch (ctx.stage) {
         case MatchContext::PLAY_GAME: {
@@ -1219,6 +1307,14 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
             std::fflush(stdout);
 
             if (after_game) after_game(ctx.game_num, winner);
+
+            // A CONCEDE_MATCH sentinel taken during this game: the game result
+            // above stands (it is an ordinary loss), and the match ends now.
+            if (g_match_conceded) {
+                print_match_concede_result(ctx);
+                match_done = true;
+                break;
+            }
 
             if (ctx.wins_a == 2) {
                 std::printf("MATCH_RESULT: Player A wins %d-%d\n", ctx.wins_a, ctx.wins_b);
@@ -1266,8 +1362,19 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
 
     match_game_number = -1;
     ctx.active = false;
+    // A conceded match is won by the conceder's opponent regardless of the game
+    // tally (which can be level, or even in the conceder's favour).
+    if (g_match_conceded) {
+        return (g_match_conceder == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    }
     int result = ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
     return result;
+}
+
+static void print_match_concede_result(const MatchContext &ctx) {
+    const char *winner = (g_match_conceder == Zone::PLAYER_A) ? "B" : "A";
+    std::printf("MATCH_RESULT: Player %s wins %d-%d\n", winner, ctx.wins_a, ctx.wins_b);
+    std::fflush(stdout);
 }
 
 static unsigned int match_game_seed(const MatchContext &ctx) {

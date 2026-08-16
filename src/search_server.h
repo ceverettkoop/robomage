@@ -13,8 +13,12 @@
 //   RESTORE <slot>       roll the game back to a saved slot
 //   DETERMINIZE <seed>   reshuffle the hidden zones (unknown library cards and
 //                        the opponent's unknown hand cards) from the priority
-//                        player's perspective, using a world-local RNG
-//                        (legal only at a loop-safe decision)
+//                        player's perspective, using a world-local RNG, and
+//                        salt cur_game.gen per world so in-sim shuffles
+//                        (mulligan redraws, fetch/tutor searches) neither
+//                        replay the live game's RNG stream nor collapse the
+//                        worlds onto one deal (legal only at a loop-safe
+//                        decision)
 //   RELEASE              drop all snapshots (also leaves the terminal intercept)
 //
 // A decision is "loop-safe" when the whole game state lives in cur_game + the
@@ -103,8 +107,11 @@ bool search_handle_command(const char *line);
 bool search_intercept_game_end();
 
 // Reshuffle the hidden information from the current priority player's
-// perspective using a world-local RNG (never cur_game.gen, so the real game's
-// RNG stream is untouched). Exported for the future in-process search actor.
+// perspective using a world-local RNG, and reseed cur_game.gen from a per-world
+// salt (a mix of the snapshotted stream and world_seed) so a simulated line's
+// own shuffles are world-distinct and can't oracle the live stream. The real
+// game's RNG is unaffected: gen is part of the Game snapshot, so the final
+// RESTORE puts the live stream back. Exported for the in-process search actor.
 void determinize_hidden_state(unsigned int world_seed);
 
 #endif /* SEARCH_SERVER_H */

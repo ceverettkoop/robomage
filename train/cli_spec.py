@@ -1360,6 +1360,19 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "a bo3). Each decision draws a variable budget from the bank "
                  "— harder decisions earn more time, obvious ones stop early. "
                  "Appends clock= to the spec (TUI only)"),
+        Arg("--human-clock", "float", default=None,
+            help="Arm YOUR OWN chess clock: total wall-clock thinking bank in "
+                 "seconds for the whole match, debited by the time you spend "
+                 "on each of your decisions (the opponent's bank is the "
+                 "separate --match-clock). Unset = untimed. On its own the "
+                 "bank is only a readout; add --hard-timeout to make it "
+                 "decisive (TUI/GUI only)"),
+        Arg("--hard-timeout", "flag",
+            help="Losing on time is real: a seat that reaches its own decision "
+                 "with an empty bank concedes the match (CR 104.3a). Applies to "
+                 "both your --human-clock and a search opponent's --match-clock, "
+                 "whose bank is otherwise SOFT (it just thinks faster). "
+                 "TUI/GUI only"),
         Arg("--paced", "flag",
             help="Mask opponent response-timing tells: a small jittered "
                  "(~0.02-0.05s) floor on every decision, plus occasional "

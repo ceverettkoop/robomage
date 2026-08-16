@@ -59,6 +59,11 @@ void Game::set_monarch(Entity player_entity) {
              player_name(player_entity == player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B).c_str());
 }
 
+void Game::player_loses(Zone::Ownership loser) {
+    ended = true;
+    winner = (loser == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+}
+
 void Game::record_action(int category, int card_vocab_idx, bool player_a) {
     action_history[action_history_write] = {category, card_vocab_idx, player_a, static_cast<int>(turn)};
     action_history_write = (action_history_write + 1) % ACTION_HISTORY_SIZE;

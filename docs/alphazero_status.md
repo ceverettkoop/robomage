@@ -451,7 +451,16 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
   top rather than double-counting the game).
 - **Seed-salt determinization** — a sideboard root's determinized worlds are salted
   by the *next* game's seed, so the K sampled worlds vary correctly game-to-game
-  (covered by the snapshot-tier world-variation test).
+  (covered by the snapshot-tier world-variation test). In-game roots get the
+  analogous treatment: `DETERMINIZE` reseeds `cur_game.gen` from a mix of the
+  snapshotted stream and the world seed, so a simulated line's own shuffles
+  (mulligan redraws, fetch/tutor searches) are distinct per world and never
+  replay the live game's actual future stream — without the salt the first
+  in-sim shuffle collapsed every world onto the same deal (`shuffle_library`
+  collects the library in canonical entity order, so the determinizer's zone
+  permutation doesn't survive a reshuffle) and made the search an oracle of
+  e.g. the exact hand a real mulligan would draw. The real line is unaffected:
+  `gen` is part of the Game snapshot, restored on every RESTORE.
 - **Sideboard-root search budget** — the sideboard root gets its own heavier, deeper
   budget: `sb_sims=128` / `sb_worlds=4` / `sb_max_depth=128` / `sb_rollout_turns=6`
   / `sb_persist=1` (the `DEFAULT_SB_*` constants in `cli_spec.py`; the horizon is

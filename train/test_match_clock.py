@@ -458,12 +458,18 @@ def test_pace_idle() -> None:
 
 
 def main() -> int:
+    # --math-only: just the deterministic pure-arithmetic legs (what the
+    # ci_check `matchclock` tier gates on). The two timing legs below assert
+    # real wall-clock sleeps and a sampled probability, which is why the full
+    # run stays out of default CI (see the module docstring's flakiness note).
+    math_only = "--math-only" in sys.argv[1:]
     test_allocation_math()
     test_pacing_curve()
     test_closeout()
     test_legacy_regression_grid()
-    test_paced_floor()
-    test_pace_idle()
+    if not math_only:
+        test_paced_floor()
+        test_pace_idle()
     if FAILURES:
         print(f"{len(FAILURES)} failure(s)", file=sys.stderr)
         return 1

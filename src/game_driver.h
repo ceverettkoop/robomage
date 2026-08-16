@@ -89,6 +89,40 @@ extern uint64_t g_card_db_generation;
 // fallbacks are defensive only.
 bool in_main_loop();
 
+// ── Concession (CR 104.3a) ──────────────────────────────────────────────────
+// A player may concede at any time; they lose the game immediately. The engine
+// reads a concession as an out-of-band decision INPUT: the sentinels
+// CONCEDE_GAME (-2) and CONCEDE_MATCH (-3) (see input_logger.h) are accepted
+// wherever an action index is read, and are attributed to the seat the pending
+// decision belongs to.
+//
+// concede_current_game() ends the live game through the ordinary player-loss
+// path (Game::player_loses — the same one the life/deck-out state-based actions
+// use), so everything downstream (GAME_RESULT, loser-on-the-play, sideboarding,
+// the RL reward) behaves exactly as for any other loss. It then arms a
+// COOPERATIVE UNWIND modelled on the search-server RESTORE unwind: the engine
+// cannot unwind the C++ stack (-fno-exceptions), so every get_input below the
+// concede hands back choice 0 — emitting no query, consuming no stdin,
+// committing nothing — until control returns to the main loop, whose
+// already-decided-game check exits it. Those auto-choices run under an ended
+// game (state-based effects early-return, so nothing can change the winner).
+//
+// `whole_match` (the -3 sentinel) additionally latches match_conceded(): the
+// bo3 dispatcher stops after the current game and reports the conceder's
+// opponent as the match winner whatever the game score is. Outside a live game
+// (between games, during sideboarding) there is nothing to concede: -2 is
+// ignored with a log line, -3 still latches the match concession.
+void concede_current_game(Zone::Ownership conceder, bool whole_match);
+bool concede_unwind_pending();
+int concede_unwind_choice();
+// Drop the unwind latch. Called at both ends of a game's decision loop so the
+// auto-choice mode can never leak into the between-games sideboard phase or the
+// next game (each of which must emit its own queries again).
+void concede_reset_unwind();
+// Latched by a CONCEDE_MATCH sentinel; cleared at the start of every match.
+bool match_conceded();
+Zone::Ownership match_conceder();
+
 struct EcsSystems {
     std::shared_ptr<Orderer> orderer;
     std::shared_ptr<StateManager> state_manager;

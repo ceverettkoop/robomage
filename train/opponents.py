@@ -882,14 +882,18 @@ class SearchController:
             # Difficulty signal: one extra deterministic root eval (run_search
             # re-evaluates internally). Cheap next to a multi-second search,
             # draws no rng, and keeps the parity-sensitive search code untouched.
-            priors, _ = self._evaluator.evaluate(obs, num_choices)
+            priors, v = self._evaluator.evaluate(obs, num_choices)
             turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
             g = int(round(float(obs[_MATCH_CTX_START]) * 3))
             ws = int(round(float(obs[_MATCH_CTX_START + 1]) * 2))
             wo = int(round(float(obs[_MATCH_CTX_START + 2]) * 2))
+            # The same root eval's value head feeds the match-point closeout
+            # (mover perspective already == "self", so no negation; see
+            # MatchClock's closeout docs — inert except at 1 win + v >= 0.8).
             tmin_s, alloc = self._clock.allocate(
                 turn=turn, game_number=g, self_wins=ws, opp_wins=wo,
-                is_sideboard=is_sb, priors=priors, num_choices=num_choices)
+                is_sideboard=is_sb, priors=priors, num_choices=num_choices,
+                value=v)
             # An explicit time= budget acts as a per-decision ceiling.
             tb = alloc if tb is None else min(alloc, tb)
             tmin_s = min(tmin_s, tb)

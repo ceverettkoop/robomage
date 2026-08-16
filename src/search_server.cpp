@@ -250,6 +250,23 @@ void determinize_hidden_state(unsigned int world_seed) {
         return;
     }
     std::mt19937 world_gen(world_seed);
+
+    // Salt the game's own RNG per world. Every shuffle a simulated line performs
+    // (a mulligan redraw, a fetch/tutor search) draws from cur_game.gen — the
+    // snapshotted LIVE stream, identical in every world and identical to what
+    // the real game will actually roll. Left unsalted, the first in-sim shuffle
+    // collapses all worlds onto one deal AND makes the search an oracle of the
+    // true future (shuffle_library's input is canonical mEntities order, so the
+    // per-world zone permutation below doesn't survive a reshuffle). Reseed from
+    // a mix of the snapshotted stream (one draw) and the world seed: each world's
+    // future randomness is distinct, decoupled from the live stream, and
+    // deterministic per (snapshot, world_seed) — every DETERMINIZE runs with gen
+    // freshly restored to the snapshot state (the Python client RESTOREs first;
+    // the C++ actor's first sim runs on the untouched just-snapshotted state),
+    // and the final RESTORE puts the real line's gen back untouched.
+    unsigned int gen_base = static_cast<unsigned int>(cur_game.gen());
+    cur_game.gen.seed(gen_base ^ (0x9e3779b9u * world_seed));
+
     Zone::Ownership p = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     Zone::Ownership opp = (p == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
     const int *known_a = cur_game.known_top_library_a;

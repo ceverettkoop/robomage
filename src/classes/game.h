@@ -783,6 +783,15 @@ struct Game {
         // triggers (end-step draw, steal-on-combat-damage) are fired by check_triggered_abilities.
         void set_monarch(Entity player_entity);
 
+        // The one place a player LOSING decides the game: marks the game over and credits the
+        // win to their opponent (a two-player game, so the last player standing wins — CR
+        // 104.2a). Shared by the state-based-action losses (0 or less life 704.5a, drawing from
+        // an empty library 704.5c) and by conceding (CR 104.3a, see concede_current_game in
+        // game_driver.h). Unconditional by design: callers that must not overwrite an
+        // already-decided game check `ended` first, exactly as they did when they assigned
+        // `ended`/`winner` inline.
+        void player_loses(Zone::Ownership loser);
+
         void record_action(int category, int card_vocab_idx, bool player_a);
         void clear_known_top_library(bool player_a_owner);
         void known_top_library_push(bool player_a_owner, int card_vocab_idx);

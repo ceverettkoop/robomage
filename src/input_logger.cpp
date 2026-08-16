@@ -13,6 +13,7 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "game_driver.h"
 #include "machine_io.h"
 #include "search_server.h"
 
@@ -21,6 +22,8 @@ extern Coordinator global_coordinator;
 extern Game cur_game;
 
 static int get_int_input();
+static Zone::Ownership deciding_player();
+static int apply_concede_input(int choice);
 static void record_chosen_action(const std::vector<LegalAction> &actions, int choice);
 static void check_machine_choice(const std::vector<LegalAction> &actions, int choice);
 static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
@@ -47,6 +50,27 @@ static int get_int_input() {
     }
     while ((c = getchar()) != '\n' && c != EOF);
     return choice;
+}
+
+// The seat a decision belongs to — i.e. who a concession read at it is
+// attributed to. Normally the priority holder (every mid-resolution prompt
+// seats priority at its chooser, e.g. request_optional_yesno below); between
+// games the priority flags are stale, so the sideboarding player owns it.
+static Zone::Ownership deciding_player() {
+    extern bool sideboard_phase;
+    extern Zone::Ownership sideboard_phase_player;
+    if (sideboard_phase && sideboard_phase_player != Zone::UNKNOWN) return sideboard_phase_player;
+    return cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+}
+
+// Apply a CONCEDE_GAME / CONCEDE_MATCH sentinel read at the current decision
+// (CR 104.3a) and return the index the caller should act on. That is choice 0,
+// the cooperative unwind's first-choice hand-back: the game is already decided,
+// so the auto-choices below simply carry control back to the main loop, which
+// exits on the ended game (see game_driver.h).
+static int apply_concede_input(int choice) {
+    concede_current_game(deciding_player(), choice == CONCEDE_MATCH);
+    return concede_unwind_choice();
 }
 
 void DecisionLogHeader::add_flag(const std::string &token) {
@@ -291,12 +315,27 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
     extern bool human_player_is_a;
     bool human_has_priority = has_human_player && (human_player_is_a == cur_game.player_a_has_priority);
 
+    // Cooperative unwind after a concession (CR 104.3a): the game is already
+    // decided, so hand back the first choice at every remaining decision --
+    // emitting no query, consuming no stdin, committing nothing -- until control
+    // returns to the main loop, which exits on the ended game. Nothing these
+    // auto-choices touch can change the outcome (state-based effects early-return
+    // once the game has ended). Checked before every input path so a replay
+    // consumes exactly the decisions the recorded run committed.
+    if (concede_unwind_pending()) return concede_unwind_choice();
+
     if (replay_mode) {
         int choice;
         if (!(replay_file >> choice)) {
             fatal_error("Replay file ended unexpectedly");
         }
         replay_decision_no++;
+        // A logged concession replays as a concession, from the same seat.
+        if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
+            game_log("(REPLAY) [T%zu | %s] Input: %d (concede)\n", cur_game.turn,
+                     step_to_string(cur_game.cur_step), choice);
+            return apply_concede_input(choice);
+        }
         // Remap -1 (old confirm sentinel) to last slot for old replay file compatibility
         if (choice == -1 && !actions.empty()) {
             choice = static_cast<int>(actions.size()) - 1;
@@ -334,6 +373,11 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         // search_loop_safe() for restore-safety without any extra plumbing.
         if (input_provider) {
             int choice = input_provider(actions);
+            // Same concession sentinels the stdio path accepts.
+            if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
+                commit_choice(actions, choice);
+                return apply_concede_input(choice);
+            }
             // Same -1 (confirm sentinel) → last-slot remap the stdio path applies.
             if (choice == -1 && !actions.empty()) {
                 choice = static_cast<int>(actions.size()) - 1;
@@ -401,6 +445,13 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             break;  // unparseable input: legacy confirm fallback (choice stays -1)
         }
 
+        // Concession sentinels (CR 104.3a): logged verbatim so --replay
+        // reproduces the concession, then applied instead of being indexed into
+        // the menu. Handled before the -1 confirm remap and the range check.
+        if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
+            commit_choice(actions, choice);
+            return apply_concede_input(choice);
+        }
         // Remap -1 (confirm sentinel from Python env) to last slot
         if (choice == -1 && !actions.empty()) {
             choice = static_cast<int>(actions.size()) - 1;
@@ -458,6 +509,12 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             case FLAG_QUIT:
                 exit(0);
                 break;
+            case CONCEDE_GAME:
+            case CONCEDE_MATCH:
+                // Typed at the prompt: same concession the machine protocol
+                // takes, logged the same way so the game replays.
+                commit_choice(actions, choice);
+                return apply_concede_input(choice);
             default:
                 break;
         }

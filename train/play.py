@@ -3,8 +3,9 @@ Play interactively against a trained RoboMage model.
 
 The model is randomly assigned to Player A or B each game (pin with --player).
 Text mode runs on the shared runner loop with a HumanController seat — enter
-an action number or a semantic spec ('cast:bolt', 'pass'); --seed reproduces a
-game. The --tui path delegates to tui_game.py.
+an action number or a semantic spec ('cast:bolt', 'pass', or 'concede' /
+'concede:match' to resign); --seed reproduces a game. The --tui path delegates
+to tui_game.py.
 
 Usage:
     train/.venv/bin/python train/play.py --human-deck delver --model-deck burn
@@ -58,8 +59,11 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver",
     The human seat is an :class:`opponents.HumanController` — it renders the
     board and legal menu each decision and accepts an action number, a
     semantic spec (``cast:bolt``, ``target:bears@opp``, ``pass`` — the same
-    grammar as the harness ``--play``), or 'quit'. The model's choices are
-    announced as they happen; game narrative comes from the engine.
+    grammar as the harness ``--play``), or 'quit'. ``concede`` /
+    ``concede:match`` resign (CR 104.3a): the resolver hands back the negative
+    sentinel and the runner steps it straight into the engine, so no clock or
+    board plumbing is involved. The model's choices are announced as they
+    happen; game narrative comes from the engine.
     """
     import runner
     from opponents import HumanController, ModelController
@@ -78,8 +82,8 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver",
 
     print(f"=== Model (Player {model_role}, {model_deck}) vs "
           f"You (Player {human_role}, {human_deck}) ===", flush=True)
-    print("(enter an action number or a spec like 'cast:bolt'; 'quit' to exit)\n",
-          flush=True)
+    print("(enter an action number or a spec like 'cast:bolt'; 'concede' or "
+          "'concede:match' to resign; 'quit' to exit)\n", flush=True)
 
     def announce(d, action):
         if d.controller is bot:
@@ -110,6 +114,10 @@ if __name__ == "__main__":
 
     if args.scripted and not (args.tui or args.gui):
         parser.error("--scripted is only supported with the TUI or GUI board")
+    # The clocks live on the GameDriver, which only the board front ends run —
+    # text mode drives the game through runner.run_games instead.
+    if (args.human_clock is not None or args.hard_timeout) and not (args.tui or args.gui):
+        parser.error("--human-clock/--hard-timeout need the TUI or GUI board")
 
     model_path = args.model
     is_ctrl_spec = bool(model_path) and model_path.lower().startswith(
@@ -205,7 +213,8 @@ if __name__ == "__main__":
                 import tui_game
                 tui_game.run(args.binary, model_path, human_player=args.player,
                              human_deck=args.human_deck, model_deck=args.model_deck,
-                             bo3=not args.bo1)
+                             bo3=not args.bo1, human_clock_s=args.human_clock,
+                             hard_timeout=args.hard_timeout)
             else:
                 parser.error("PySide6 not installed — pip install -r "
                              "train/requirements-gui.txt, or use --tui")
@@ -215,12 +224,15 @@ if __name__ == "__main__":
                 args.binary, model_path, human_player=args.player,
                 human_deck=args.human_deck, model_deck=args.model_deck,
                 bo3=not args.bo1, analysis=args.analysis,
-                record_shards=args.record_shards))
+                record_shards=args.record_shards,
+                human_clock_s=args.human_clock,
+                hard_timeout=args.hard_timeout))
     elif args.tui:
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,
                      human_deck=args.human_deck, model_deck=args.model_deck,
-                     bo3=not args.bo1)
+                     bo3=not args.bo1, human_clock_s=args.human_clock,
+                     hard_timeout=args.hard_timeout)
     else:
         play(args.binary, model_path, human_deck=args.human_deck, model_deck=args.model_deck,
              human_player=args.player, seed=args.seed)

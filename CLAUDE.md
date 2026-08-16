@@ -793,6 +793,19 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 
+**Concession sentinels (CR 104.3a):** besides an action index, the engine accepts
+`-2` (`CONCEDE_GAME`) and `-3` (`CONCEDE_MATCH`) wherever it reads a decision — machine
+mode, `--replay`, the in-process actor provider, and the CLI prompt. The seat the pending
+decision belongs to loses the game (`-3` also ends the MATCH immediately, with
+`MATCH_RESULT` naming the opponent whatever the score). The loss runs through the ordinary
+`Game::player_loses` path, so `GAME_RESULT`, loser-on-the-play, sideboarding and the RL
+reward are unchanged; the sentinel is written to the RMLOG decision log, so a concession
+replays. Between games (the sideboard phase) there is no live game: `-2` is ignored safely,
+`-3` still ends the match. Python constants live in `train/env.py` (`CONCEDE_GAME` /
+`CONCEDE_MATCH`, stepped through `RoboMageEnv.step` without the confirm-slot remap);
+`GameDriver.concede(match=…)` injects one for the human seat. Regression:
+`train/test_concede.py` (`make check` tier `concede`).
+
 **Two perspective flags** worth knowing without opening the source: in the state vector, one flag marks whether the priority player is the active player (perspective-relative) and another marks whether "self" is Player A (absolute); AND-ing their agreement recovers `active_is_a`. See `src/machine_io.h` for their exact indices.
 
 ### Interactive front ends: TUI, GUI, and the analysis window

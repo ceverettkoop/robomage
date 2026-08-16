@@ -151,14 +151,12 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         auto &player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
         if (player_a.life_total <= 0) {
             printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
-            game.ended = true;
-            game.winner = Zone::PLAYER_B;
+            game.player_loses(Zone::PLAYER_A);
             return;
         }
         if (player_b.life_total <= 0) {
             printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
-            game.ended = true;
-            game.winner = Zone::PLAYER_A;
+            game.player_loses(Zone::PLAYER_B);
             return;
         }
 
@@ -169,14 +167,12 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // this check ever runs.
         if (player_a.attempted_draw_from_empty) {
             printf("\nPlayer A decked - Player B wins!\n");
-            game.ended = true;
-            game.winner = Zone::PLAYER_B;
+            game.player_loses(Zone::PLAYER_A);
             return;
         }
         if (player_b.attempted_draw_from_empty) {
             printf("\nPlayer B decked - Player A wins!\n");
-            game.ended = true;
-            game.winner = Zone::PLAYER_A;
+            game.player_loses(Zone::PLAYER_B);
             return;
         }
 

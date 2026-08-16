@@ -5,7 +5,10 @@ machine mode with four text commands alongside the usual integer action index:
 
     SNAPSHOT <slot>      deep-copy the game state into a slot   -> SNAPSHOT_OK
     RESTORE <slot>       roll back to a slot                    -> (restored query)
-    DETERMINIZE <seed>   reshuffle hidden zones, world-local RNG -> DETERMINIZE_OK
+    DETERMINIZE <seed>   reshuffle hidden zones (world-local RNG) and salt the
+                         game RNG per world, so in-sim shuffles (mulligan
+                         redraws, fetches) are world-distinct and never replay
+                         the live stream                        -> DETERMINIZE_OK
     RELEASE              drop all snapshots                     -> RELEASE_OK
 
 Every engine query is preceded by a ``SEARCHINFO safe=<0|1>`` line; SNAPSHOT
