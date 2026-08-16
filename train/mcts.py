@@ -163,6 +163,23 @@ class SearchResult:
         return v / v.sum()
 
 
+def sample_visits(visits: np.ndarray, temperature: float,
+                  rng: np.random.Generator) -> int:
+    """Pick a root action from a visit vector under ``temperature``.
+
+    ``temperature <= 1e-6`` is the greedy branch (argmax, consumes NO rng);
+    otherwise the visits are raised to ``1/temperature``, normalized, and
+    sampled with EXACTLY ONE ``rng.choice`` draw. The arithmetic is the same
+    power law :meth:`SearchResult.policy_target` builds — callers that need the
+    distribution itself keep using that; callers that only need the action use
+    this so the rng is consumed identically everywhere."""
+    v = np.asarray(visits, dtype=np.float64)
+    if temperature <= 1e-6:
+        return int(np.argmax(v))
+    pi = v ** (1.0 / temperature)
+    return int(rng.choice(len(pi), p=pi / pi.sum()))
+
+
 class _Node:
     __slots__ = ("num_choices", "P", "N", "W", "children", "self_is_a",
                  "pick_meta", "rep", "sel_mask")
@@ -351,9 +368,7 @@ def run_search(
     ``stopped_early``. ``None`` (the default) keeps the timed loop's existing
     semantics; the fixed-budget path ignores it entirely."""
     rng = rng if rng is not None else np.random.default_rng()
-    if world_seeds is not None and len(world_seeds) < worlds:
-        raise ValueError(
-            f"world_seeds needs >= {worlds} entries, got {len(world_seeds)}")
+    _check_world_seeds(world_seeds, worlds)
 
     root_obs = env._obs.copy()
     root_n = env._num_choices
@@ -599,9 +614,7 @@ def run_search_parallel(
     else:
         # Pinned seeds (boundary persistence): consume no rng at all, exactly like
         # run_search's world_seeds path.
-        if len(world_seeds) < worlds:
-            raise ValueError(
-                f"world_seeds needs >= {worlds} entries, got {len(world_seeds)}")
+        _check_world_seeds(world_seeds, worlds)
         world_seeds = [int(s) for s in world_seeds[:worlds]]
     if reuse_roots is not None and len(reuse_roots) < worlds:
         raise ValueError(
@@ -847,6 +860,29 @@ def walk_reuse_root(root: "_Node", actions, num_choices: int,
     return node
 
 
+def _check_world_seeds(world_seeds: Optional[Sequence[int]],
+                       worlds: int) -> None:
+    """Validate a caller-pinned per-world seed list (no-op when ``None``).
+
+    Shared by :func:`run_search`, :func:`run_search_parallel` and
+    :class:`IncrementalSearch` so all three reject a short list with the same
+    message, before any snapshot/evaluate work happens."""
+    if world_seeds is not None and len(world_seeds) < worlds:
+        raise ValueError(
+            f"world_seeds needs >= {worlds} entries, got {len(world_seeds)}")
+
+
+def _terminal_value(tag: str, root_is_a: bool) -> float:
+    """Root-relative value of a terminal game tag ("A" / "B" / "DRAW").
+
+    A draw is worth exactly 0.0 to both seats; any other tag is ±1.0 by whether
+    the winning seat is the root mover. These draw semantics are mirrored in
+    the C++ actor (``src/actor/az_mcts.cpp``) — do not drift."""
+    if tag == "DRAW":
+        return 0.0
+    return 1.0 if (tag == "A") == root_is_a else -1.0
+
+
 def _rollout(
     env: SearchRoboMageEnv,
     evaluator: Evaluator,
@@ -879,10 +915,8 @@ def _rollout(
         query = env.sim_step(int(np.argmax(priors)))
         steps += 1
         if query.terminal is not None:
-            if query.terminal == "DRAW":
-                return 0.0, root_is_a, steps, query.terminal
-            won = (query.terminal == "A") == root_is_a
-            return (1.0 if won else -1.0), root_is_a, steps, query.terminal
+            return (_terminal_value(query.terminal, root_is_a), root_is_a,
+                    steps, query.terminal)
         seat_is_a = bool(query.obs[_SELF_IS_A_IDX] > 0.5)
         priors, value = evaluator.evaluate(query.obs, query.num_choices)
 
@@ -933,12 +967,8 @@ def _simulate(
         path.append((node, action))
 
         if query.terminal is not None:
-            if query.terminal == "DRAW":
-                leaf_value, leaf_seat_is_a = 0.0, root.self_is_a
-            else:
-                leaf_seat_is_a = root.self_is_a
-                won = (query.terminal == "A") == root.self_is_a
-                leaf_value = 1.0 if won else -1.0
+            leaf_seat_is_a = root.self_is_a
+            leaf_value = _terminal_value(query.terminal, root.self_is_a)
             break
 
         child = node.children.get(action)
@@ -962,11 +992,7 @@ def _simulate(
                         memo_ctx["hits"] += 1
                         if hit[0] == "t":
                             leaf_seat_is_a = root.self_is_a
-                            if hit[1] == "DRAW":
-                                leaf_value = 0.0
-                            else:
-                                won = (hit[1] == "A") == root.self_is_a
-                                leaf_value = 1.0 if won else -1.0
+                            leaf_value = _terminal_value(hit[1], root.self_is_a)
                         else:
                             leaf_value, leaf_seat_is_a = hit[1], hit[2]
                         break
@@ -1073,9 +1099,7 @@ class IncrementalSearch:
                  snapshot_slot: int = 0,
                  world_seeds: Optional[Sequence[int]] = None,
                  merge_dupes: bool = True):
-        if world_seeds is not None and len(world_seeds) < worlds:
-            raise ValueError(
-                f"world_seeds needs >= {worlds} entries, got {len(world_seeds)}")
+        _check_world_seeds(world_seeds, worlds)
         rng = rng if rng is not None else np.random.default_rng()
         self._env = env
         self._evaluator = evaluator

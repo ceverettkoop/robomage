@@ -802,14 +802,12 @@ class SearchController:
         self._followed_trees = nodes
         self._followed_hist_len = len(hist)
         self._followed_fp = cur  # ratchet: a card that hides re-triggers on re-reveal
-        if self._temperature <= 1e-6:
-            return int(np.argmax(visits))
-        pi = visits ** (1.0 / self._temperature)
-        return int(self._rng.choice(num_choices, p=pi / pi.sum()))
+        from mcts import sample_visits
+        return sample_visits(visits, self._temperature, self._rng)
 
     def _choose_impl(self, obs, num_choices, action_masks=None,
                      decoded_actions=None) -> int:
-        from mcts import run_search, run_search_parallel
+        from mcts import run_search, run_search_parallel, sample_visits
         from decode import menu_is_interchangeable
 
         # Sideboard-boundary identity of this decision (None off the sideboard
@@ -972,11 +970,7 @@ class SearchController:
             self._drop_trees()
         if result.stopped_early:
             self.stats["early_stops"] += 1
-        if self._temperature <= 1e-6:
-            chosen = result.best_action()
-        else:
-            pi = result.policy_target(self._temperature)
-            chosen = int(self._rng.choice(len(pi), p=pi))
+        chosen = sample_visits(result.visits, self._temperature, self._rng)
         self._sbp_latch(obs, chosen)
         if self.on_result is not None:
             try:
