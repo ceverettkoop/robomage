@@ -572,6 +572,10 @@ class GameDriver:
                     self._debit_human(time.monotonic() - think_t0)
                     if action is None:                 # quit signalled
                         return
+                    if action == CONCEDE_MATCH:
+                        # Record the human's match concession now that the loop
+                        # has the sentinel in hand to step — see concede().
+                        self._forfeit = ("you", "conceded the match")
 
                 self.action_log.append(int(action))
                 # Copy the pre-step obs before stepping — the env may reuse
@@ -744,9 +748,13 @@ class GameDriver:
         exactly as after any other game loss (the loser is on the play next
         game, both players sideboard). `match=True` concedes the MATCH: the
         current game is lost and the match ends immediately with the opponent
-        as the winner, whatever the score was."""
-        if match:
-            self._forfeit = ("you", "conceded the match")
+        as the winner, whatever the score was.
+
+        A match concession records the forfeit (self._forfeit) only when the loop
+        actually consumes the sentinel — see run() — NOT here at request time: a
+        match that ended by other means (e.g. the opponent's in-flight move ending
+        the game in the human's favour) before the queued sentinel was read must
+        not be misreported as a concession the human never got to make."""
         self.submit(CONCEDE_MATCH if match else CONCEDE_GAME)
 
     # ----- clocks (hard timeout) -----

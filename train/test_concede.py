@@ -322,8 +322,8 @@ def test_driver_concede_and_timeout():
     check(d._forfeit is None, "a GAME concede leaves the match banner to the reward")
     d.concede(match=True)
     check(d._human_q.get() == CONCEDE_MATCH, "concede(match=True) queues CONCEDE_MATCH")
-    check(d._forfeit == ("you", "conceded the match"),
-          "a MATCH concede records the human as the forfeiting seat")
+    check(d._forfeit is None,
+          "concede(match=True) records no forfeit until the loop consumes the sentinel")
 
     # Hard timeout on the human seat: the bank is debited per decision and an
     # empty bank at the human's own decision flags a loss on time.
