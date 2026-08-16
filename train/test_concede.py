@@ -375,7 +375,7 @@ def test_driver_drain_pending_input():
     # (its game ended by other means first) must not survive into the next game,
     # where it would be read at the first decision and auto-concede a game the
     # human never chose to.
-    d = _driver(sink, bo3=True)
+    d = _driver(sink)
     d.concede()                          # queues CONCEDE_GAME out of turn
     check(not d._human_q.empty(), "the concession is queued")
     d._drain_pending_input()
@@ -383,7 +383,7 @@ def test_driver_drain_pending_input():
           "the stale concession is drained at the game boundary")
 
     # A pending quit (None) survives the drain so shutdown still fires.
-    d = _driver(sink, bo3=True)
+    d = _driver(sink)
     d.request_quit()                     # queues None (quit)
     d._drain_pending_input()
     check(d._human_q.get_nowait() is None, "a pending quit survives the drain")
