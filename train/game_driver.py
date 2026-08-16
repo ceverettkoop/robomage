@@ -596,6 +596,14 @@ class GameDriver:
                 # UPKEEP stop mark never fires during those decisions).
                 if self._autopass and info.get("game_result"):
                     self._autopass = False
+                # A finished game (bo3 continuing) clears any input the human
+                # queued during it but that the loop never consumed — e.g. a
+                # concession clicked while the opponent held priority, whose game
+                # then ended by other means before the sentinel was read. Left in
+                # place it would be picked up at the NEXT game's first human
+                # decision, auto-conceding a game the human never chose to.
+                if info.get("game_result") and not done:
+                    self._drain_pending_input()
                 flushed = env.flush_lines()
                 self._sink.on_log(flushed)
 
@@ -703,6 +711,25 @@ class GameDriver:
             self._human_q.put_nowait(idx)
         except Exception:
             self._human_q.put(idx)
+
+    def _drain_pending_input(self) -> None:
+        """Discard any input queued but not yet consumed by the loop.
+
+        Called at a bo3 game boundary: a concession (or other action) the human
+        submitted out of turn during the finished game must not leak into the
+        next game's first decision. A pending quit (None) is preserved and
+        re-queued so shutdown still fires."""
+        import queue
+        quit_pending = False
+        while True:
+            try:
+                item = self._human_q.get_nowait()
+            except queue.Empty:
+                break
+            if item is None:               # a quit must survive the drain
+                quit_pending = True
+        if quit_pending:
+            self.submit(None)
 
     def concede(self, match: bool = False) -> None:
         """Concede on the HUMAN's behalf (CR 104.3a) at their next decision.
