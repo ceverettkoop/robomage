@@ -1101,7 +1101,28 @@ class PlayPane(QWidget):
         self.recorder = None
         if getattr(session, "record_dir", None):
             from shard_record import ShardRecorder
-            self.recorder = ShardRecorder(session.record_dir)
+            # Replay sidecar wiring: absolute-seat decks + the env's actual
+            # seed (read lazily at flush — reset happens on the worker thread
+            # after this constructor) make each match's shard exactly
+            # replayable in the browser (replay-to-step MCTS analysis).
+            human_is_a = not self._opp_is_a
+            env = session.env
+            self.recorder = ShardRecorder(
+                session.record_dir,
+                replay_meta={
+                    "deck_a": (self._human_deck if human_is_a
+                               else self._opp_deck),
+                    "deck_b": (self._opp_deck if human_is_a
+                               else self._human_deck),
+                    "human_deck": self._human_deck,
+                    "opp_deck": self._opp_deck,
+                    "human_is_a": human_is_a,
+                    "bo3": self._bo3,
+                    "opponent_spec": getattr(session, "opponent_spec", None),
+                    "binary": getattr(env, "binary_path", None),
+                },
+                seed_fn=lambda: getattr(env, "last_engine_seed", None),
+                replay_prefix=replay_actions)
             self._driver.step_observer = self.recorder.observe_step
             ctrl = getattr(session, "controller", None)
             if ctrl is not None and hasattr(ctrl, "on_result"):

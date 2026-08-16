@@ -879,7 +879,17 @@ searched decisions land with their full visit posterior / root value / explored 
 browsable. One shard file per match, atomically rewritten at each game boundary and on demand,
 so the dir is always valid for every existing shard consumer (`az_train.load_window`,
 `az_inspect --shards`, `tui_az_inspect --shards`, `tui_analysis --shards`, the GUI browser's
-shard mode) — rows of the game still in progress carry `z=0` until it finishes. **View ▸
+shard mode) — rows of the game still in progress carry `z=0` until it finishes. Each shard
+also gets a same-stem **`.rmplay` replay sidecar** (engine seed + the match's full action
+log + per-row replay positions, `gui_session_io.save_replay` format), which
+`shard_replay.load_replay_sidecars` attaches to the browsable records — so a recording is
+**exactly replayable**: both analysis browsers gained a `search` menu entry (**F6**,
+`browse_session.run_replay_search` / `EngineCore.search_step`) that replays the recording to
+the selected decision on a throwaway `SearchRoboMageEnv` (recorded seed + action prefix,
+obs verified against the recorded state) and runs a determinized MCTS there from the mover's
+perspective — the live analysis window's F6 review, offline. Works without a live env/model
+(shard-browse and traces-only modes included); training-pool shards and pre-sidecar
+recordings self-report as non-replayable. **View ▸
 Analyze Recording… (F10)** flushes mid-game and opens the recording in a shard-mode
 `BrowserPane` in a SECOND window (the live game keeps running); viewpoint seat defaults to the
 opponent so you page the model's decisions, and the analysis dialog's seat toggle shows your

@@ -683,7 +683,8 @@ class SearchController:
         return float(self._rng.uniform(self._PACE_IDLE_MIN_S,
                                        self._PACE_IDLE_MAX_S))
 
-    _FOLLOW_MIN_VISITS = 16  # combined visits a followed node needs to be trusted
+    _FOLLOW_MIN_VISITS = 32   # combined visits a followed node needs to be trusted
+    _FOLLOW_MIN_SHARE = 0.66  # and the share of them the winning action must hold
 
     # Opponent action categories whose menus are built from PUBLIC state only
     # (priority pass, combat declarations and confirms) — the one case where a
@@ -740,7 +741,9 @@ class SearchController:
         Worlds that never simulated the real line drop out; the survivors'
         visit counts at the reached node are the answer. Divergence — a gate
         firing, an unexplored real action, a menu-size or seat mismatch at the
-        reached node, or fewer than ``_FOLLOW_MIN_VISITS`` combined visits —
+        reached node, fewer than ``_FOLLOW_MIN_VISITS`` combined visits, or a
+        most-visited action holding less than ``_FOLLOW_MIN_SHARE`` of them (a
+        contested node's plurality is exploration noise, not a conclusion) —
         drops the trees and returns None so a fresh search runs. On success
         the reached nodes become the new follow roots and the fingerprint
         ratchets to the current one, so a whole expected sequence can be
@@ -796,7 +799,9 @@ class SearchController:
         visits = np.zeros(num_choices, dtype=np.float64)
         for n in nodes:
             visits += n.N
-        if visits.sum() < self._FOLLOW_MIN_VISITS:
+        total = visits.sum()
+        if (total < self._FOLLOW_MIN_VISITS
+                or visits.max() < self._FOLLOW_MIN_SHARE * total):
             self._drop_trees()
             return None
         self._followed_trees = nodes

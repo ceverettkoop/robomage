@@ -15,8 +15,12 @@ The record unit is a full bo3 MATCH trace (matching the analysis collector,
 whose env episode spans the match): steps are the VIEWPOINT seat's rows, the
 other seat's rows become ``opp_actions`` one-liners, ``result`` is the match
 outcome, and ``pi`` (the search's visit posterior) stands in for the policy
-distribution. ``engine_seed``/``full_actions``/``prefix_len`` stay None, so
-the browser's whatif/replay paths self-disable gracefully.
+distribution. ``engine_seed``/``full_actions``/``prefix_len`` stay None for
+training-pool shards, so the browser's whatif/replay paths self-disable
+gracefully — but a GUI-play recording whose ``.rmplay`` sidecars are present
+(see :func:`load_replay_sidecars`) gets them filled with the REAL seed and
+action log, making those records exactly replayable (browser replay-to-step
+MCTS analysis included).
 
 Deliberately torch-free at import: numpy + the env layout constants + decode.
 Net-based V(s) (``load_value_model``/``eval_values``) imports analysis/torch
@@ -27,8 +31,10 @@ Known reconstruction limits (inherent to the shard format, surfaced in the UI):
     ``best_action()``, but each game's first ``temp_moves`` (default 20)
     searched decisions were SAMPLED from ``pi``, so there argmax is only the
     most probable reconstruction.
-  * Fallback (unsearched) decisions produced no rows — step sequences have
-    gaps at the residual unsafe roots.
+  * TRAINING-POOL shards record only searched decisions, so step sequences
+    have gaps at the residual unsafe roots. (GUI-play recordings do NOT have
+    this gap: shard_record writes every >1-choice decision, the unsearched
+    ones as one-hot behavior rows with ``q = NaN``.)
   * Action labels are rebuilt from the obs metadata blocks (the engine's
     narrative description side-channel is not stored).
 """
@@ -160,7 +166,7 @@ def _match_result(games, obs, z, viewpoint_is_a):
 
 
 def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
-                        interp_fn=None):
+                        interp_fn=None, replay_docs=None):
     """Pack match segments into analysis-schema trace dicts.
 
     Steps are the viewpoint seat's rows; the other seat's rows are summarized
@@ -170,13 +176,22 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
     fills ``interp_features``; None leaves them empty (the turning/clusters/
     shap views then have no data, everything else is unaffected).
 
+    ``replay_docs`` (parallel to ``matches``, from :func:`load_replay_sidecars`)
+    supplies each match's recorder sidecar: when present, the record gains the
+    real ``engine_seed``/``full_actions``/``prefix_len`` (plus the absolute
+    ``deck_a``/``deck_b``/``bo3_match`` under ``replay_decks``), so the
+    browser's replay-to-step paths (whatif, MCTS analysis) work on the
+    recording; without one they stay None and self-disable as before.
+
     Matches where the viewpoint seat never held a searched root are skipped
     (nothing to page through).
     """
     records = []
-    for games in matches:
+    for mi, games in enumerate(matches):
+        doc = replay_docs[mi] if replay_docs else None
         steps, vals, zs, interp, actions, num_choices, probs, opp = \
             [], [], [], [], [], [], [], []
+        g_prefix = []
         for rows in games:
             for i in rows:
                 n = int(mask[i].sum())
@@ -189,6 +204,8 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
                     actions.append(best)
                     num_choices.append(n)
                     probs.append(pi[i, :n].astype(np.float64))
+                    if doc is not None:
+                        g_prefix.append(doc["row_prefix"].get(i))
                     if interp_fn is not None:
                         interp.append(interp_fn(obs[i]))
                 else:
@@ -198,6 +215,8 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
                                 "clock": None})
         if not steps:
             continue
+        replayable = (doc is not None and g_prefix
+                      and all(p is not None for p in g_prefix))
         records.append({
             "observations": steps,
             "values": vals,
@@ -208,9 +227,12 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
             "num_choices": num_choices,
             "action_probs": probs,
             "opp_actions": opp,
-            "engine_seed": None,
-            "full_actions": None,
-            "prefix_len": None,
+            "engine_seed": doc["engine_seed"] if replayable else None,
+            "full_actions": list(doc["actions"]) if replayable else None,
+            "prefix_len": g_prefix if replayable else None,
+            "replay_decks": ({"deck_a": doc["deck_a"],
+                              "deck_b": doc["deck_b"],
+                              "bo3": doc["bo3"]} if replayable else None),
             "result": _match_result(games, obs, z, viewpoint_is_a),
             "model_is_a": viewpoint_is_a,
             "clock_remaining": None,
@@ -221,13 +243,66 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
     return records
 
 
+def load_replay_sidecars(spans, matches):
+    """Match each segmented match to its recorder ``.rmplay`` sidecar.
+
+    A GUI-play recording (``shard_record.ShardRecorder`` with replay wiring)
+    writes one same-stem ``.rmplay`` per shard file: engine seed, the match's
+    full action list, and ``row_decision_idx`` mapping each shard row to its
+    replay position. Returns a list parallel to ``matches``: None (no/invalid
+    sidecar, or the file segmented into more than one match — then its rows
+    cannot be attributed) or a dict with ``engine_seed``/``actions``/
+    ``deck_a``/``deck_b``/``bo3`` and ``row_prefix`` rebased to GLOBAL row
+    indices. Training-pool shards have no sidecars and load as all-None."""
+    import gui_session_io
+
+    per_span = {}
+    for path, start, end in spans:
+        side = os.path.splitext(path)[0] + gui_session_io.PLAY_EXT
+        if not os.path.exists(side):
+            continue
+        try:
+            doc = gui_session_io.load_replay(side)
+        except (OSError, ValueError):
+            continue
+        idx = doc.get("row_decision_idx")
+        if not isinstance(idx, list) or len(idx) != end - start:
+            continue    # mid-update skew or foreign file: not trustworthy
+        per_span[(start, end)] = doc
+
+    # A span (file) maps cleanly only when it holds exactly one match.
+    span_matches = {}
+    for mi, games in enumerate(matches):
+        first = games[0][0]
+        for (start, end) in per_span:
+            if start <= first < end:
+                span_matches.setdefault((start, end), []).append(mi)
+
+    docs = [None] * len(matches)
+    for (start, end), mis in span_matches.items():
+        if len(mis) != 1:
+            continue
+        doc = per_span[(start, end)]
+        idx = doc["row_decision_idx"]
+        docs[mis[0]] = {
+            "engine_seed": doc["engine_seed"],
+            "actions": doc["actions"],
+            "deck_a": doc.get("deck_a"), "deck_b": doc.get("deck_b"),
+            "bo3": bool(doc.get("bo3", True)),
+            "row_prefix": {start + k: int(p) for k, p in enumerate(idx)},
+        }
+    return docs
+
+
 def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
     """The one-call front door: shards on disk -> browsable match records."""
     obs, pi, z, mask, spans = load_shard_rows(data_dir)
     matches = segment_matches(obs, spans)
     records = build_match_records(obs, pi, z, mask, matches,
                                   viewpoint_is_a=viewpoint_is_a,
-                                  interp_fn=interp_fn)
+                                  interp_fn=interp_fn,
+                                  replay_docs=load_replay_sidecars(spans,
+                                                                   matches))
     if limit is not None:
         records = records[:limit]
     return records
