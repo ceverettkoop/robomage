@@ -472,6 +472,7 @@ class GameDriver:
     # ----- the loop (worker thread) -----
 
     def run(self) -> None:
+        import queue
         env = self._env
         try:
             obs, _ = env.reset(options=self._reset_options)
@@ -567,12 +568,32 @@ class GameDriver:
                 else:
                     # Debit the human's bank with the time they spend on this
                     # decision (a chess clock: only their own thinking counts).
+                    # Under a hard clock, block only as long as the bank holds:
+                    # if it runs out while they deliberate they lose on time HERE,
+                    # not merely at their NEXT decision — otherwise a human could
+                    # think indefinitely on their own turn and never time out,
+                    # making the hard clock unenforceable against an opponent-side
+                    # one. The bank is > 0 here (an already-empty bank fires the
+                    # top-of-decision check above), so the wait is always positive.
                     think_t0 = time.monotonic()
-                    action = self._human_q.get()       # blocks until UI delivers
+                    block_s = (self._human_remaining
+                               if (self._hard_timeout
+                                   and self._human_remaining is not None)
+                               else None)
+                    try:
+                        action = (self._human_q.get(timeout=block_s)
+                                  if block_s is not None
+                                  else self._human_q.get())
+                        expired = False
+                    except queue.Empty:
+                        expired = True
                     self._debit_human(time.monotonic() - think_t0)
-                    if action is None:                 # quit signalled
+                    if expired:                        # bank ran out mid-decision
+                        action = CONCEDE_MATCH
+                        self._report_timeout("you")
+                    elif action is None:               # quit signalled
                         return
-                    if action == CONCEDE_MATCH:
+                    elif action == CONCEDE_MATCH:
                         # Record the human's match concession now that the loop
                         # has the sentinel in hand to step — see concede().
                         self._forfeit = ("you", "conceded the match")
