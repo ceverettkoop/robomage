@@ -765,6 +765,14 @@ class AnalysisWindow(QMainWindow):
     def request_analyze(self) -> None:
         if self._update is None:
             return
+        # Rebuild the row labels from the decision we are about to analyze:
+        # an opponent search result (_on_opp_result) may have overwritten
+        # self._labels with the opponent's menu since this decision was armed,
+        # and this method is reachable via the F5 shortcut even after the
+        # button was disabled. Without this the table would label the human
+        # decision's rows with the opponent's action text.
+        self._labels = {a["index"]: menu_label(a, self._opp_is_a)
+                        for a in self._update.actions}
         self._tag += 1
         self._running = True
         self._run_is_opp = False
