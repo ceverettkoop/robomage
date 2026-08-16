@@ -60,25 +60,30 @@ def load_analysis_evaluator(spec: str):
     (evaluator, label).
 
       - "uniform"          -> UniformEvaluator (torch-free; tests/fallback)
-      - "az:<base>" / bare -> AZ net via opponents._load_az_evaluator: the AZ
-                              checkpoint when one exists, else an AZNet
-                              warm-started from the PPO checkpoint. Default
-                              base is "gen" (the one generalist).
+      - "az:<base>" / bare -> AZ net via opponents.load_az_evaluator (THE shared
+                              evaluator ladder): the AZ checkpoint when one
+                              exists, else an AZNet warm-started from the PPO
+                              checkpoint. Default base is "gen" (the one
+                              generalist).
       - "mcts:<base>"      -> PPOEvaluator over the MaskablePPO checkpoint.
     """
     spec = (spec or "az:gen").strip()
     if spec.lower() == "uniform":
         return UniformEvaluator(), "uniform"
+    # Deliberate divergence from the other spec grammars: the "mcts:"/"az:"
+    # prefixes are matched CASE-SENSITIVELY here (only "uniform" is folded), so
+    # e.g. "MCTS:gen" falls through to the AZ rung. Kept as-is — these specs
+    # come from the analysis window's own config, not from user-typed CLI text.
     if spec.startswith("mcts:"):
         from mcts import PPOEvaluator
         from opponents import _load_model, resolve_checkpoint
 
         base = spec.split(":", 1)[1] or "gen"
         return PPOEvaluator(_load_model(resolve_checkpoint(base))), f"mcts:{base}"
-    from opponents import _load_az_evaluator
+    from opponents import load_az_evaluator
 
     base = spec.split(":", 1)[1] if spec.startswith("az:") else spec
-    evaluator, resolved = _load_az_evaluator(base or "gen")
+    evaluator, resolved = load_az_evaluator(base or "gen")
     return evaluator, f"az:{resolved}"
 
 

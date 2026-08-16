@@ -294,7 +294,14 @@ def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
     schedule, not the checkpoint name.
 
     Returns a spec dict {mode: 'az'|'ppo'|'random', path: str|None} — picklable so
-    each worker reconstructs its own net (torch objects don't cross processes)."""
+    each worker reconstructs its own net (torch objects don't cross processes).
+
+    Deliberately NOT the shared ladder ``opponents.load_az_evaluator``: that one
+    serves the SERVING contract (``prefer="final"`` — the gate-promoted
+    incumbent — and returns a live AZEvaluator). Self-play needs the CANDIDATE
+    line (``prefer="snapshot"``), a random-init fallback the serving ladder has
+    no rung for, and a picklable dict rather than a torch object. Keep the two in
+    sync in SPIRIT (AZ path -> PPO warm-start -> …), not in code."""
     from az_net import resolve_az_checkpoint
     from opponents import resolve_checkpoint
 
@@ -313,6 +320,9 @@ def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
 
 
 def _build_net(source: dict):
+    # The worker-side half of resolve_source's dict; see that docstring for why
+    # this stays separate from opponents.load_az_evaluator (candidate line,
+    # random-init rung, picklable spec, bare net rather than an AZEvaluator).
     from az_net import AZNet, load_az, from_ppo
     if source["mode"] == "az":
         return load_az(source["path"])

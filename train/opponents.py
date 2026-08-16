@@ -1251,9 +1251,11 @@ def make_controller(spec, *,
         return _make_search_controller(s[len("mcts:"):],
                                        checkpoint_resolver=checkpoint_resolver)
     if low.startswith("az:"):
-        return _make_az_controller(s[len("az:"):], search=True)
+        return _make_az_controller(s[len("az:"):], search=True,
+                                   checkpoint_resolver=checkpoint_resolver)
     if low.startswith("azraw:"):
-        return _make_az_controller(s[len("azraw:"):], search=False)
+        return _make_az_controller(s[len("azraw:"):], search=False,
+                                   checkpoint_resolver=checkpoint_resolver)
     resolver = checkpoint_resolver or resolve_checkpoint
     path = resolver(s)
     return ModelController(_load_model(path), label=s, deterministic=deterministic)
@@ -1444,15 +1446,32 @@ class AZRawController:
         return int(np.argmax(priors))
 
 
-def _load_az_evaluator(base: str):
-    """Load an AZNet -> AZEvaluator for the generalist contract. Accepts:
+def load_az_evaluator(base: str, *, ppo_resolver=None, on_warm_start=None):
+    """THE evaluator ladder: load an AZNet -> AZEvaluator for the generalist
+    contract. Returns ``(AZEvaluator, resolved)``. Accepts:
       - ``'gen'`` → the generalist AZ checkpoint (``gen__azfinal.pt`` / newest
         ``gen__azv*.pt``), else a warm-start from the ``gen`` PPO checkpoint;
       - an explicit ``.pt`` AZ path (loaded directly), or an explicit ``.zip``
         PPO path (warm-started).
     A bare per-deck shorthand (``az:delver``) is rejected with a clear error via
-    ``resolve_checkpoint`` — the model is the ONE generalist and the deck it
-    pilots travels as a separate parameter.
+    the PPO resolver — the model is the ONE generalist and the deck it pilots
+    travels as a separate parameter.
+
+    ``ppo_resolver`` maps a PPO spec to a checkpoint path for the warm-start
+    rung; it defaults to :func:`resolve_checkpoint` (strict — raises on a bare
+    deck shorthand). analysis.py injects its own LENIENT ``_resolve_model_path``
+    instead, which is why this is a parameter rather than a hardcoded call.
+    ``on_warm_start(base, ppo_path)`` is a notification hook fired just before
+    the warm-start (the sites that want a "no AZ checkpoint; warm-starting…"
+    line pass a printer); this function itself never prints.
+
+    Shared by opponents' ``az:``/``azraw:`` factories, analysis.py
+    (``_load_az_analysis_model`` / ``_build_search_evaluator``),
+    ``analysis_session.load_analysis_evaluator`` and
+    ``shard_probes.load_probe_net``. NOT used by the trainer-side net
+    resolvers (``az_selfplay.resolve_source``/``_build_net``,
+    ``az_train._init_net``) — see the cross-reference comments there.
+
     Lazy import so opponents.py stays torch-free until a model seat is built."""
     from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
     az = resolve_az_checkpoint(base)
@@ -1461,11 +1480,18 @@ def _load_az_evaluator(base: str):
     if base.endswith(".pt"):
         return AZEvaluator(load_az(base)), base   # explicit AZ path; load_az raises if missing
     # Otherwise a PPO spec to warm-start from: 'gen' or an explicit .zip.
-    # resolve_checkpoint raises a clear error on a bare (non-'gen') deck shorthand.
-    return AZEvaluator(from_ppo(resolve_checkpoint(base))), base
+    # The default resolver raises a clear error on a bare (non-'gen') deck shorthand.
+    ppo_path = (ppo_resolver or resolve_checkpoint)(base)
+    if on_warm_start is not None:
+        on_warm_start(base, ppo_path)
+    return AZEvaluator(from_ppo(ppo_path)), base
 
 
-def _make_az_controller(spec: str, *, search: bool):
+# Back-compat alias for the pre-promotion private name.
+_load_az_evaluator = load_az_evaluator
+
+
+def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
     Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=&sb_persist=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
@@ -1482,7 +1508,11 @@ def _make_az_controller(spec: str, *, search: bool):
     tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` masks response-timing
     tells for human play (small jittered floor + occasional fake-think beats)."""
     base, params = _parse_spec_query(spec)
-    evaluator, resolved = _load_az_evaluator(base)
+    # The PPO warm-start rung honours the caller's checkpoint resolver, same as
+    # the plain-model and mcts: branches of make_controller (this used to be
+    # silently dropped for az:/azraw: specs).
+    evaluator, resolved = load_az_evaluator(
+        base, ppo_resolver=checkpoint_resolver or resolve_checkpoint)
     if not search:
         return AZRawController(evaluator, label=f"azraw:{base}")
     sims = _spec_knob(params, "sims", 128, int, spec)

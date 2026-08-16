@@ -551,15 +551,24 @@ def _load_az_analysis_model(spec):
     Resolves an AZ checkpoint (az:/azraw: prefix, ``.pt`` path, or deck shorthand)
     via resolve_az_checkpoint; when only a PPO checkpoint exists it warm-starts an
     AZNet from it (``from_ppo``) so an ``az:`` spec still yields an AZNet-shaped
-    model."""
-    from az_net import load_az, from_ppo, resolve_az_checkpoint
+    model.
+
+    Delegates to the shared ladder ``opponents.load_az_evaluator``, injecting
+    analysis's own LENIENT ``_resolve_model_path`` (Decision 5: analysis does not
+    adopt the strict ``resolve_checkpoint``) and a printer for the warm-start
+    notice. The warm-start rung reports the PPO path, so the callback captures
+    it."""
+    from opponents import load_az_evaluator
     base = _az_spec_base(spec)
-    az = resolve_az_checkpoint(base)
-    if az is not None:
-        return _AZModelAdapter(load_az(az)), az
-    ppo_path = _resolve_model_path(base)
-    print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo_path}")
-    return _AZModelAdapter(from_ppo(ppo_path)), ppo_path
+    warm: list = []
+
+    def _note(b, ppo_path):
+        warm.append(ppo_path)
+        print(f"No AZ checkpoint for {b!r}; warm-starting an AZNet from PPO {ppo_path}")
+
+    evaluator, resolved = load_az_evaluator(
+        base, ppo_resolver=_resolve_model_path, on_warm_start=_note)
+    return _AZModelAdapter(evaluator._net), (warm[0] if warm else resolved)
 
 
 def _apply_search_budget_flags(args):
@@ -4267,13 +4276,16 @@ def _build_search_evaluator(spec):
     if base.lower() in ("uniform", "mcts:uniform"):
         return UniformEvaluator(), None
     if _is_az_model_spec(spec):
-        from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
-        az = resolve_az_checkpoint(base)
-        if az is not None:
-            return AZEvaluator(load_az(az)), None
-        ppo = _resolve_model_path(base)
-        print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo}")
-        return AZEvaluator(from_ppo(ppo)), None
+        # Only the AZ rung is shared (opponents.load_az_evaluator); the uniform
+        # and PPOEvaluator rungs above/below are this tool's own.
+        from opponents import load_az_evaluator
+
+        def _note(b, ppo):
+            print(f"No AZ checkpoint for {b!r}; warm-starting an AZNet from PPO {ppo}")
+
+        evaluator, _ = load_az_evaluator(
+            base, ppo_resolver=_resolve_model_path, on_warm_start=_note)
+        return evaluator, None
     from opponents import _load_model
     path = _resolve_model_path(base)
     return PPOEvaluator(_load_model(path)), None

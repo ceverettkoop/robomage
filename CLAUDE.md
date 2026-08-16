@@ -852,7 +852,7 @@ win%), a branch value chart (bold mean per top branch + thin per-world lines for
 determinization spread, always in the human's perspective), and a PV scrubber that walks a
 branch's principal variation on the analysis engine and renders each hypothetical future board
 (`MiniBoard`, reusing `CardWidget`). Evaluator is selectable (default `az:gen` — AZ checkpoint
-else PPO warm-start via `opponents._load_az_evaluator`; also `mcts:gen`, `uniform`).
+else PPO warm-start via `opponents.load_az_evaluator`; also `mcts:gen`, `uniform`).
 Constraints: since the snapshot-safe conversion (branch `snapshot_safe`) every decision kind is
 loop-safe and a legal search root — the greyed-out state remains only for the documented
 residual `safe=0` prompts (see docs/alphazero_status.md's safe-window section); opponent-decision analysis

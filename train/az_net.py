@@ -601,7 +601,7 @@ def resolve_az_checkpoint(spec: str,
     Returns ``None`` for anything else — a nonexistent path, or a bare (non-``gen``)
     deck shorthand — so boolean probes stay well-behaved and callers can fall back
     to a PPO warm-start. The user-facing "deck shorthands are gone" error is raised
-    at the controller layer (see opponents._load_az_evaluator), which pairs the
+    at the controller layer (see opponents.load_az_evaluator), which pairs the
     generalist net with an explicit deck.
 
     ``prefer="snapshot"`` flips the final/snapshot order — the trainer uses it to
