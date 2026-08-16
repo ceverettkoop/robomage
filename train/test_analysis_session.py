@@ -9,7 +9,9 @@ Proves the guarantees the analysis window relies on:
      trees, so interleaving across worlds cannot change them). Also checks the
      new ``SearchResult.q/w_sum/world_values`` fields are populated and
      self-consistent, in both ``run_search`` and a mirrored
-     ``run_search_parallel`` merge.
+     ``run_search_parallel`` merge. A companion drawn-seed check pins the seed
+     DERIVATION itself (no pinned world seeds: the same rng state must yield the
+     same per-world seeds in ``IncrementalSearch`` and ``run_search``).
   2. pv/walk driver discipline — a principal variation reads out with
      non-increasing visits; walking it replays decodable states; the snapshot
      survives an idle pause (parked search) and further chunks; after close()
@@ -160,6 +162,49 @@ def test_chunked_parity():
                 s.close()
             return (f"64 sims in chunks 5+16+43 bit-equal to run_search "
                     f"(visits {r.visits.astype(int).tolist()})")
+        finally:
+            env.close()
+    finally:
+        _rm(paths)
+
+
+def test_drawn_seed_parity():
+    """DRAWN (not pinned) world seeds: IncrementalSearch derives the same
+    per-world determinize seeds as run_search from the same rng state.
+
+    test_chunked_parity pins WORLD_SEEDS on both sides, so it cannot see a
+    divergence in the seed DERIVATION itself (one rng.integers(1, 2**31-1) draw
+    per world, w = 0..worlds-1, and no other draw). This closes that gap: same
+    default_rng(SEARCH_SEED), no world_seeds, seeds must be equal — and with
+    equal per-world sim totals the visit vectors must then be array_equal."""
+    deck_a, deck_b, paths = _write_decks()
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        ev = UniformEvaluator()
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+
+            r = run_search(env, ev, worlds=4, sims=64,
+                           rng=np.random.default_rng(SEARCH_SEED))
+            s = IncrementalSearch(env, ev, worlds=4,
+                                  rng=np.random.default_rng(SEARCH_SEED))
+            try:
+                if list(s.seeds) != list(r.seeds):
+                    raise AnalysisTestError(
+                        f"drawn seeds {list(s.seeds)} != run_search "
+                        f"{list(r.seeds)}")
+                stats = s.run_chunk(64)     # 64 = 4 worlds * 16 sims each
+                if stats.sims_run != r.sims_run:
+                    raise AnalysisTestError(
+                        f"sims_run {stats.sims_run} != {r.sims_run}")
+                if not np.array_equal(stats.visits, r.visits):
+                    raise AnalysisTestError(
+                        f"drawn-seed visits {stats.visits} != {r.visits}")
+            finally:
+                s.close()
+            return (f"drawn world seeds {list(r.seeds)} identical; 64 sims "
+                    f"visit-equal (visits {r.visits.astype(int).tolist()})")
         finally:
             env.close()
     finally:
@@ -742,6 +787,7 @@ def test_opp_result_hook():
 
 TESTS = [
     ("chunked_parity", test_chunked_parity),
+    ("drawn_seed_parity", test_drawn_seed_parity),
     ("parallel_merge_fields", test_parallel_merge_fields),
     ("pv_walk_discipline", test_pv_walk_discipline),
     ("session_lockstep_bo3", test_session_lockstep_bo3),

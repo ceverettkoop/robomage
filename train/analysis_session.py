@@ -47,7 +47,8 @@ import numpy as np
 
 from cli_spec import DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS
 from env import _IS_SIDEBOARD_IDX
-from mcts import IncrementalSearch, LiveStats, UniformEvaluator, _LockedEvaluator
+from mcts import (IncrementalSearch, LiveStats, UniformEvaluator,
+                  _LockedEvaluator, _merge_root_stats)
 
 
 class AnalysisError(RuntimeError):
@@ -468,15 +469,7 @@ class AnalysisSession:
         if len(parts) == 1:
             return parts[0]
         n = parts[0].num_choices
-        visits = np.zeros(n, dtype=np.float64)
-        w_sum = np.zeros(n, dtype=np.float64)
-        sims_run = 0
-        sim_steps = 0
-        for p in parts:
-            visits += p.visits
-            w_sum += p.w_sum
-            sims_run += p.sims_run
-            sim_steps += p.sim_steps
+        visits, w_sum, sims_run, sim_steps, q = _merge_root_stats(parts)
         total = visits.sum()
         return LiveStats(
             num_choices=n,
@@ -484,8 +477,11 @@ class AnalysisSession:
             sim_steps=sim_steps,
             visits=visits,
             priors=parts[0].priors,
-            q=np.where(visits > 0, w_sum / np.maximum(visits, 1), 0.0),
+            q=q,
             w_sum=w_sum,
+            # VERBATIM formula, kept at the site: pinned against
+            # IncrementalSearch.stats() by an exact `!=` comparison
+            # (test_analysis_session.test_parallel_analysis_parity).
             root_value=float(w_sum.sum()) / total if total > 0 else 0.0,
             net_value=parts[0].net_value,
             world_values=np.concatenate([p.world_values for p in parts]),

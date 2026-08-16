@@ -281,6 +281,135 @@ def _stability_stop(roots: "list[_Node]", prev_top: int) -> tuple[bool, int]:
     return top == prev_top, top
 
 
+def _init_worlds(worlds: int, world_seeds: Optional[Sequence[int]],
+                 rng: np.random.Generator, root_n: int,
+                 root_priors: np.ndarray, root_is_a: bool, *,
+                 root_noise_eps: float = 0.0, root_noise_alpha: float = 1.0,
+                 reuse_roots: Optional[Sequence] = None,
+                 root_rep: Optional[np.ndarray] = None,
+                 root_pm: Optional[tuple] = None,
+                 sims_per_world: int = 0):
+    """Derive the per-world determinize seeds and root nodes up front.
+
+    BIT CONTRACT — this is the historical inline loop of :func:`run_search`,
+    moved verbatim; every caller's rng consumption sequence must stay exactly
+    what it was. Per world w = 0..worlds-1, in this order: exactly ONE
+    ``rng.integers(1, 2**31 - 1)`` draw unless ``world_seeds`` is given (then
+    NO draw at all), followed by exactly ONE ``rng.dirichlet`` draw iff
+    ``root_noise_eps > 0.0``. Do not reorder, hoist, or vectorize these draws —
+    the fixed-budget search path is pinned bit-for-bit against the C++ actor
+    (train/test_mcts_parity.py) and against IncrementalSearch (the chunked and
+    drawn-seed parity tests in train/test_analysis_session.py).
+
+    A reused root (boundary persistence) is adopted in place of a fresh _Node:
+    its P is overwritten with the fresh CLEAN root priors (copied — the
+    fresh-root path shares one priors array across worlds) and noise is
+    re-mixed in the same per-world rng position a fresh root would use; its
+    N/W/children are kept, and its budget is topped up to ``sims_per_world``
+    total visits.
+
+    Returns ``(seeds, roots, budgets, reused_visits)``.
+    """
+    seeds: list[int] = []
+    roots: list[_Node] = []
+    budgets: list[int] = []
+    reused_visits = 0
+    for w in range(worlds):
+        world_seed = (int(world_seeds[w]) if world_seeds is not None
+                      else int(rng.integers(1, 2**31 - 1)))
+        priors = root_priors
+        if root_noise_eps > 0.0:
+            noise = rng.dirichlet([root_noise_alpha] * root_n)
+            priors = (1.0 - root_noise_eps) * root_priors + root_noise_eps * noise
+        seeds.append(world_seed)
+        reused = reuse_roots[w] if reuse_roots is not None else None
+        if reused is not None:
+            reused.P = np.array(priors, copy=True)
+            # Adoption overwrites P with fresh raw priors, so the merge fold
+            # must be re-applied (exactly once) — and the partition is refilled
+            # from THIS search's root obs (same menu by world consistency).
+            if root_rep is not None:
+                reused.set_rep(root_rep)
+            else:
+                reused.rep = None
+                reused.sel_mask = None
+            if root_pm is not None and reused.pick_meta is None:
+                reused.pick_meta = root_pm
+            n_have = int(reused.N.sum())
+            reused_visits += n_have
+            roots.append(reused)
+            budgets.append(max(0, sims_per_world - n_have))
+        else:
+            roots.append(_Node(root_n, priors, root_is_a, pick_meta=root_pm,
+                               rep=root_rep))
+            budgets.append(sims_per_world)
+    return seeds, roots, budgets, reused_visits
+
+
+def _aggregate_roots(roots: "list[_Node]", root_n: int, *,
+                     want_world_visits: bool = False):
+    """Sum the per-world root trees into the global root statistics.
+
+    BIT CONTRACT — ``value_acc`` accumulates ``float(root.W.sum())`` ONE WORLD
+    AT A TIME, in world order; that summation order deliberately mirrors the
+    C++ actor (src/actor/az_mcts.cpp ~482 / ~953). NEVER replace it with
+    ``w_totals.sum()``: the two differ in the last float ulp and
+    train/test_mcts_parity.py pins the Python result against the actor's.
+    Callers keep their OWN root_value formula (:func:`run_search` uses
+    ``value_acc / total``; :meth:`IncrementalSearch.stats` uses
+    ``w_sum.sum() / total``) — this helper shares the LOOP only, never the
+    formula. See also :func:`_stability_stop`, which keeps its own int64
+    mid-search fast path rather than calling this.
+
+    Returns ``(visits, w_totals, world_values, value_acc)``, plus a
+    ``(worlds, root_n)`` int64 ``world_visits`` matrix when requested.
+    """
+    visits = np.zeros(root_n, dtype=np.float64)
+    w_totals = np.zeros(root_n, dtype=np.float64)
+    world_values = np.zeros(len(roots), dtype=np.float64)
+    world_visits = (np.zeros((len(roots), root_n), dtype=np.int64)
+                    if want_world_visits else None)
+    value_acc = 0.0
+    for w, root in enumerate(roots):
+        visits += root.N
+        w_totals += root.W
+        value_acc += float(root.W.sum())
+        if world_visits is not None:
+            world_visits[w] = root.N
+        n_w = int(root.N.sum())
+        world_values[w] = float(root.W.sum()) / n_w if n_w > 0 else 0.0
+    if want_world_visits:
+        return visits, w_totals, world_values, value_acc, world_visits
+    return visits, w_totals, world_values, value_acc
+
+
+def _merge_root_stats(parts: Sequence):
+    """Merge several already-aggregated root views (``SearchResult``s from
+    :func:`run_search_parallel`'s workers, or ``LiveStats`` from the analysis
+    session's engine fleet) into one.
+
+    Duck-typed on ``visits``/``w_sum``/``sims_run``/``sim_steps``; the parts are
+    summed in the caller's order (env/engine order == world order at both
+    sites), which is what makes the merged floats bit-identical to the
+    single-engine run. Returns ``(visits, w_sum, sims_run, sim_steps, q)`` with
+    the character-identical q expression both sites used. root_value is
+    deliberately NOT computed here — the two sites use different (both pinned)
+    formulas and must keep them at the site.
+    """
+    root_n = parts[0].num_choices
+    visits = np.zeros(root_n, dtype=np.float64)
+    w_sum = np.zeros(root_n, dtype=np.float64)
+    sims_run = 0
+    sim_steps = 0
+    for p in parts:
+        visits += p.visits
+        w_sum += p.w_sum
+        sims_run += p.sims_run
+        sim_steps += p.sim_steps
+    q = np.where(visits > 0, w_sum / np.maximum(visits, 1), 0.0)
+    return visits, w_sum, sims_run, sim_steps, q
+
+
 def run_search(
     env: SearchRoboMageEnv,
     evaluator: Evaluator,
@@ -379,21 +508,15 @@ def run_search(
 
     env.snapshot(snapshot_slot)
 
-    visit_totals = np.zeros(root_n, dtype=np.float64)
-    value_acc = 0.0
     sims_run = 0
     sim_steps = 0
     sims_per_world = max(1, sims // max(1, worlds))
 
     # Derive per-world seeds and root nodes up front. The derivation order
     # (world_seed then optional dirichlet noise, for w=0..worlds-1) is identical
-    # to the historical inline loop, so the ``rng`` consumption sequence is
-    # unchanged — the fixed-budget path below stays bit-exact. A reused root
-    # (boundary persistence) is adopted in place of a fresh _Node: its P is
-    # overwritten with the fresh CLEAN root priors (copied — the fresh-root
-    # path shares one priors array across worlds) and noise is re-mixed in the
-    # same per-world rng position a fresh root would use; its N/W/children are
-    # kept, and its budget is topped up to sims_per_world total visits.
+    # to the historical inline loop — see _init_worlds' BIT CONTRACT — so the
+    # ``rng`` consumption sequence is unchanged and the fixed-budget path below
+    # stays bit-exact.
     memo_ctx = None
     root_pm = None
     if rollout_memo is not None:
@@ -401,39 +524,11 @@ def run_search(
         memo_ctx = {"table": rollout_memo, "base_picks": tuple(memo_picks),
                     "world_seed": 0, "hits": 0}
 
-    seeds: list[int] = []
-    roots: list[_Node] = []
-    budgets: list[int] = []
-    reused_visits = 0
-    for w in range(worlds):
-        world_seed = (int(world_seeds[w]) if world_seeds is not None
-                      else int(rng.integers(1, 2**31 - 1)))
-        priors = root_priors
-        if root_noise_eps > 0.0:
-            noise = rng.dirichlet([root_noise_alpha] * root_n)
-            priors = (1.0 - root_noise_eps) * root_priors + root_noise_eps * noise
-        seeds.append(world_seed)
-        reused = reuse_roots[w] if reuse_roots is not None else None
-        if reused is not None:
-            reused.P = np.array(priors, copy=True)
-            # Adoption overwrites P with fresh raw priors, so the merge fold
-            # must be re-applied (exactly once) — and the partition is refilled
-            # from THIS search's root obs (same menu by world consistency).
-            if root_rep is not None:
-                reused.set_rep(root_rep)
-            else:
-                reused.rep = None
-                reused.sel_mask = None
-            if root_pm is not None and reused.pick_meta is None:
-                reused.pick_meta = root_pm
-            n_have = int(reused.N.sum())
-            reused_visits += n_have
-            roots.append(reused)
-            budgets.append(max(0, sims_per_world - n_have))
-        else:
-            roots.append(_Node(root_n, priors, root_is_a, pick_meta=root_pm,
-                               rep=root_rep))
-            budgets.append(sims_per_world)
+    seeds, roots, budgets, reused_visits = _init_worlds(
+        worlds, world_seeds, rng, root_n, root_priors, root_is_a,
+        root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
+        reuse_roots=reuse_roots, root_rep=root_rep, root_pm=root_pm,
+        sims_per_world=sims_per_world)
 
     def _one_sim(w: int) -> None:
         nonlocal sims_run, sim_steps
@@ -482,14 +577,8 @@ def run_search(
             i += 1
             since_check += 1
 
-    w_totals = np.zeros(root_n, dtype=np.float64)
-    world_values = np.zeros(len(roots), dtype=np.float64)
-    for w, root in enumerate(roots):
-        visit_totals += root.N
-        w_totals += root.W
-        value_acc += float(root.W.sum())
-        n_w = int(root.N.sum())
-        world_values[w] = float(root.W.sum()) / n_w if n_w > 0 else 0.0
+    visit_totals, w_totals, world_values, value_acc = _aggregate_roots(
+        roots, root_n)
 
     # Back to the true root state; drop snapshots BEFORE the caller's real
     # step — a real game-end with a live snapshot parks the engine in the
@@ -687,20 +776,16 @@ def run_search_parallel(
     # Env order == world order (each env owns the contiguous world_seeds[lo:hi]
     # slice), so concatenating world_values in env order preserves world index.
     root_n = results[0].num_choices
-    visits = np.zeros(root_n, dtype=np.float64)
-    w_sum = np.zeros(root_n, dtype=np.float64)
+    visits, w_sum, sims_run, sim_steps, q = _merge_root_stats(results)
+    # root_value stays VERBATIM at this site (visit-weighted average of the
+    # workers' own root_values) — deliberately NOT unified with the other
+    # merge site's w_sum.sum()/total; see _merge_root_stats.
     weighted_value = 0.0
     total_vis = 0.0
-    sims_run = 0
-    sim_steps = 0
     for r in results:
-        visits += r.visits
-        w_sum += r.w_sum
         vs = float(r.visits.sum())
         weighted_value += r.root_value * vs
         total_vis += vs
-        sims_run += r.sims_run
-        sim_steps += r.sim_steps
     root_value = weighted_value / total_vis if total_vis > 0 else 0.0
     # Roots/seeds alignment (boundary persistence depends on it): the roots are
     # concatenated in env order and each env owns the CONTIGUOUS world slice
@@ -716,7 +801,7 @@ def run_search_parallel(
         sims_run=sims_run,
         sim_steps=sim_steps,
         stopped_early=any(r.stopped_early for r in results),
-        q=np.where(visits > 0, w_sum / np.maximum(visits, 1), 0.0),
+        q=q,
         w_sum=w_sum,
         world_values=np.concatenate([r.world_values for r in results]),
         roots=[root for r in results for root in (r.roots or [])],
@@ -1119,14 +1204,12 @@ class IncrementalSearch:
         root_rep = (menu_merge_reps(self.root_obs, self.num_choices)
                     if merge_dupes else None)
         env.snapshot(snapshot_slot)
-        self.seeds: list[int] = []
-        self.roots: list[_Node] = []
-        for w in range(worlds):
-            seed = (int(world_seeds[w]) if world_seeds is not None
-                    else int(rng.integers(1, 2**31 - 1)))
-            self.seeds.append(seed)
-            self.roots.append(_Node(self.num_choices, priors, self.root_is_a,
-                                    rep=root_rep))
+        # Same derivation as run_search (no noise, no reuse), so with the same
+        # rng state and no pinned world_seeds this draws the IDENTICAL seeds —
+        # pinned by test_analysis_session.test_drawn_seed_parity.
+        self.seeds, self.roots, _, _ = _init_worlds(
+            worlds, world_seeds, rng, self.num_choices, priors, self.root_is_a,
+            root_rep=root_rep)
         self._next_world = 0
         self.sims_run = 0
         self.sim_steps = 0
@@ -1154,16 +1237,8 @@ class IncrementalSearch:
 
     def stats(self) -> LiveStats:
         n = self.num_choices
-        visits = np.zeros(n, dtype=np.float64)
-        w_sum = np.zeros(n, dtype=np.float64)
-        world_values = np.zeros(self._worlds, dtype=np.float64)
-        world_visits = np.zeros((self._worlds, n), dtype=np.int64)
-        for w, root in enumerate(self.roots):
-            visits += root.N
-            w_sum += root.W
-            world_visits[w] = root.N
-            n_w = int(root.N.sum())
-            world_values[w] = float(root.W.sum()) / n_w if n_w > 0 else 0.0
+        visits, w_sum, world_values, _, world_visits = _aggregate_roots(
+            self.roots, n, want_world_visits=True)
         total = visits.sum()
         return LiveStats(
             num_choices=n,
@@ -1173,6 +1248,9 @@ class IncrementalSearch:
             priors=np.array(self.priors, dtype=np.float64, copy=True),
             q=np.where(visits > 0, w_sum / np.maximum(visits, 1), 0.0),
             w_sum=w_sum,
+            # VERBATIM formula, deliberately NOT _aggregate_roots' value_acc:
+            # pinned against analysis_session._merged_stats by an exact `!=`
+            # comparison (test_analysis_session.test_parallel_analysis_parity).
             root_value=float(w_sum.sum()) / total if total > 0 else 0.0,
             net_value=self.net_value,
             world_values=world_values,
@@ -1185,6 +1263,9 @@ class IncrementalSearch:
         ``w_sum`` is the stats' EXACT per-root W sum (not the lossy ``q *
         visits`` reconstruction), so a merged/derived Q recomputed from it is
         bit-identical to this search's own ``q``."""
+        # roots/seeds/reused_visits/memo_hits/stopped_early are deliberately
+        # left at their SearchResult defaults: this view is for consumers of the
+        # aggregate stats, not for boundary persistence or parity replay.
         s = self.stats()
         return SearchResult(
             visits=s.visits, priors=s.priors, root_value=s.root_value,
