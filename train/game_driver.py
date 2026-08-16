@@ -917,8 +917,17 @@ class GameDriver:
         if self._bo3:
             score = ""
             if self._match:
-                you = self._match["self_wins"] + (1 if human_wins else 0)
-                opp = self._match["opp_wins"] + (0 if human_wins else 1)
+                if self._forfeit is not None and self._match.get("is_sideboard"):
+                    # A match conceded (or a clock that ran out) BETWEEN games
+                    # played no extra game: report the actual game tally, matching
+                    # the engine's MATCH_RESULT, rather than crediting a phantom
+                    # deciding game that was never played (a 0–0 concession would
+                    # otherwise render 0–1).
+                    you = self._match["self_wins"]
+                    opp = self._match["opp_wins"]
+                else:
+                    you = self._match["self_wins"] + (1 if human_wins else 0)
+                    opp = self._match["opp_wins"] + (0 if human_wins else 1)
                 score = f" ({you}–{opp})"
             return (f"=== You win the match!{score}{note} ===" if human_wins
                     else f"=== {self._opp_label} wins the match{score}{note}. ===")
