@@ -367,13 +367,36 @@ def test_driver_concede_and_timeout():
           "an exhausted bank never concedes while hard_timeout is off")
 
 
+def test_driver_drain_pending_input():
+    print("[6] GameDriver: a stale queued concession is dropped at a game boundary")
+    sink = _StubSink()
+
+    # A concession queued while the human is off the clock but never consumed
+    # (its game ended by other means first) must not survive into the next game,
+    # where it would be read at the first decision and auto-concede a game the
+    # human never chose to.
+    d = _driver(sink, bo3=True)
+    d.concede()                          # queues CONCEDE_GAME out of turn
+    check(not d._human_q.empty(), "the concession is queued")
+    d._drain_pending_input()
+    check(d._human_q.empty(),
+          "the stale concession is drained at the game boundary")
+
+    # A pending quit (None) survives the drain so shutdown still fires.
+    d = _driver(sink, bo3=True)
+    d.request_quit()                     # queues None (quit)
+    d._drain_pending_input()
+    check(d._human_q.get_nowait() is None, "a pending quit survives the drain")
+
+
 def main():
     for t in (test_bo1_concede_game,
               test_bo3_concede_game_continues_match,
               test_bo3_concede_match,
               test_bo3_concede_between_games,
               test_determinism_and_replay,
-              test_driver_concede_and_timeout):
+              test_driver_concede_and_timeout,
+              test_driver_drain_pending_input):
         t()
     print()
     if _failures:
