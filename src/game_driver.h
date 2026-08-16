@@ -119,6 +119,12 @@ int concede_unwind_choice();
 // auto-choice mode can never leak into the between-games sideboard phase or the
 // next game (each of which must emit its own queries again).
 void concede_reset_unwind();
+// True iff a concession sentinel was read at the most recent decision (set in
+// concede_current_game). Query-and-clear. run_sideboard_phase uses it to treat
+// the handed-back choice 0 as a safe no-op rather than an arbitrary swap;
+// concede_clear_read_flag() drops it without reading (phase entry).
+bool concede_read_this_decision();
+void concede_clear_read_flag();
 // Latched by a CONCEDE_MATCH sentinel; cleared at the start of every match.
 bool match_conceded();
 Zone::Ownership match_conceder();

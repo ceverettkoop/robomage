@@ -146,7 +146,22 @@ static const int CONCEDE_UNWIND_CAP = 10000;
 static bool g_match_conceded = false;
 static Zone::Ownership g_match_conceder = Zone::UNKNOWN;
 
+// Set whenever a concession sentinel is read at a decision (in
+// concede_current_game). run_sideboard_phase queries it so the choice-0 the
+// concession hands back is treated as a safe no-op there rather than as a real
+// sideboard menu pick — while the deck is off-size (mid-swap), index 0 is a
+// genuine swap, not Done. Query-and-clear.
+static bool g_concede_read_this_decision = false;
+
 bool concede_unwind_pending() { return g_concede_unwinding; }
+
+bool concede_read_this_decision() {
+    bool v = g_concede_read_this_decision;
+    g_concede_read_this_decision = false;
+    return v;
+}
+
+void concede_clear_read_flag() { g_concede_read_this_decision = false; }
 
 int concede_unwind_choice() {
     if (++g_concede_unwind_count > CONCEDE_UNWIND_CAP) {
@@ -166,6 +181,9 @@ bool match_conceded() { return g_match_conceded; }
 Zone::Ownership match_conceder() { return g_match_conceder; }
 
 void concede_current_game(Zone::Ownership conceder, bool whole_match) {
+    // Flag this read so the sideboard phase can tell a handed-back choice 0
+    // apart from a real menu index 0 (see run_sideboard_phase).
+    g_concede_read_this_decision = true;
     if (conceder != Zone::PLAYER_A && conceder != Zone::PLAYER_B) {
         // Guard rail: no seat owns this decision (should be unreachable — every
         // decision is read with priority, or the sideboard player, seated).
@@ -1024,6 +1042,11 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     std::vector<size_t> action_deck_idx;
     std::vector<bool> action_is_in;   // true = sideboard->maindeck (+1)
 
+    // Clear any stale read flag left by the just-ended game's in-game
+    // concession, so only a sentinel read DURING this phase trips the no-op
+    // guard below.
+    concede_clear_read_flag();
+
     while (true) {
         // A MATCH-scoped restore latched during a simulation unwinds through here
         // (its target is this very sideboard root, one dispatcher level up): bail
@@ -1155,6 +1178,18 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // A RESTORE latched during the query unwinds via choice 0; bail before
         // acting so no deck mutation happens on the rollback path.
         if (search_match_restore_pending()) return;
+
+        // A concession read during sideboarding is a safe no-op, never a menu
+        // pick: apply_concede_input hands back choice 0, which is only "Done"
+        // while the deck is balanced. A MATCH concession ends the whole match at
+        // the dispatcher top, so stop sideboarding now. A GAME concession has no
+        // live game to concede; while off-size (mid-swap) choice 0 is a real
+        // swap, so ignore it and re-prompt instead of mutating the deck. While
+        // balanced, choice 0 IS Done, so fall through and end the phase as before.
+        if (concede_read_this_decision()) {
+            if (match_conceded()) break;
+            if (!balanced) continue;
+        }
 
         const size_t pick = static_cast<size_t>(choice);
         if (balanced && pick == 0) break;  // Done
