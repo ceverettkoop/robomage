@@ -8,7 +8,9 @@ recorded session unchanged: the analysis browser's shard mode
 ``gui_browser``), ``az_inspect --shards`` / ``tui_az_inspect --shards``, and
 even ``az_train.load_window``.
 
-Row sources, mirroring the two self-play precedents:
+Row sources, mirroring the two self-play precedents — and built by the SAME
+two builders self-play uses (``az_selfplay.sample_from_search_result`` /
+``one_hot_sample``), so a recorded row is bit-identical to a self-play one:
   * A SEARCHED opponent decision — fed through :meth:`on_search_result`, the
     ``SearchController.on_result`` hook signature — becomes a full row: ``pi``
     is the root visit posterior, ``q`` the search's root value,
@@ -37,7 +39,8 @@ the match's full row prefix at every game boundary and on any explicit
 duplicated row, and a game is never split across files (the
 ``shard_replay.segment_matches`` contract). Rows of a game still in progress
 are flushed with ``z = 0`` (an unfinished game has no outcome; az_selfplay
-drops such rows at truncation, but here they are the whole point of mid-game
+drops such rows at truncation via ``_drop_unfinished``, which this module
+therefore deliberately does NOT call — here they are the whole point of mid-game
 analysis — the browser's net-V(s) overwrite makes them browsable, and the
 ``z = 0`` draws are the documented cost of pointing a TRAINER at a recorded
 dir).
@@ -53,8 +56,6 @@ import threading
 import time
 
 import numpy as np
-
-from env import MAX_ACTIONS, _SELF_IS_A_IDX
 
 
 def default_recording_dir(base_dir=None):
@@ -94,19 +95,13 @@ class ShardRecorder:
     def on_search_result(self, obs, num_choices, result, chosen):
         """``SearchController.on_result`` hook: stash the searched row; the
         matching :meth:`observe_step` call commits it."""
-        num_choices = int(num_choices)
-        pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-        pi[:num_choices] = result.policy_target(1.0).astype(np.float32)
-        mask = np.zeros(MAX_ACTIONS, dtype=bool)
-        mask[:num_choices] = True
+        from az_selfplay import sample_from_search_result
+        sample = sample_from_search_result(obs, num_choices, result)
+        # The builder leaves explored=0 for its caller to finalize; here the
+        # played action is the controller's `chosen`.
+        sample["explored"] = int(int(chosen) != int(result.best_action()))
         with self._lock:
-            self._pending = {
-                "obs": np.asarray(obs, dtype=np.float32).copy(),
-                "pi": pi, "mask": mask,
-                "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
-                "q": float(result.root_value),
-                "explored": int(int(chosen) != int(result.best_action())),
-            }
+            self._pending = sample
 
     def observe_step(self, obs, num_choices, action, reward, info, done):
         """``GameDriver.step_observer`` hook, once per stepped decision.
@@ -115,22 +110,14 @@ class ShardRecorder:
         opponent's search produced one, else a one-hot behavior row when the
         menu offered a real choice), then processes any game/match boundary
         this step's ``(reward, info)`` carries."""
+        from az_selfplay import one_hot_sample, winner_from_reward
         num_choices = int(num_choices)
         action = int(action)
         with self._lock:
             sample, self._pending = self._pending, None
             if sample is None and num_choices > 1 \
                     and 0 <= action < num_choices:
-                pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-                pi[action] = 1.0
-                mask = np.zeros(MAX_ACTIONS, dtype=bool)
-                mask[:num_choices] = True
-                sample = {
-                    "obs": np.asarray(obs, dtype=np.float32).copy(),
-                    "pi": pi, "mask": mask,
-                    "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
-                    "q": float("nan"), "explored": 0,
-                }
+                sample = one_hot_sample(obs, num_choices, action)
             if sample is not None:
                 sample["game_idx"] = self._games_done
                 self._samples.append(sample)
@@ -142,8 +129,7 @@ class ShardRecorder:
             # step without one is the bo1 ending.
             boundary = bool(info.get("game_result"))
             if boundary or (done and not boundary and self._samples):
-                self._game_winners.append(
-                    "A" if reward > 0 else ("B" if reward < 0 else None))
+                self._game_winners.append(winner_from_reward(reward))
                 self._games_done += 1
                 self._flush_locked()
             if done:

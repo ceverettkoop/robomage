@@ -68,6 +68,26 @@ def _onehot(rec, obs, num, action, reward=0.0, game_result=False, done=False):
                      {"game_result": game_result}, done)
 
 
+def _assert_searched_row_matches_selfplay(rec, obs, num, visits, root_value,
+                                          chosen):
+    """The recorder's searched row == az_selfplay's own sample builder output,
+    field for field (self-play then finalizes `explored` exactly as the
+    recorder does). Stashes and discards the row; nothing is committed."""
+    from az_selfplay import sample_from_search_result
+    result = _FakeResult(visits, root_value)
+    rec.on_search_result(obs, num, result, chosen)
+    got, rec._pending = rec._pending, None
+    want = sample_from_search_result(obs, num, result)
+    want["explored"] = int(int(chosen) != int(result.best_action()))
+    assert set(got) == set(want), (sorted(got), sorted(want))
+    for k, v in want.items():
+        g = got[k]
+        if isinstance(v, np.ndarray):
+            assert g.dtype == v.dtype and np.array_equal(g, v), k
+        else:
+            assert type(g) is type(v) and g == v, (k, g, v)
+
+
 def _check_schema(path):
     from az_selfplay import SHARD_KEYS
     d = np.load(path)
@@ -98,6 +118,12 @@ def main():
         # ── Match 0, game 0: A = the search opponent, B = the human ─────────
         # Two searched A rows (the second an EXPLORED off-argmax pick), one
         # human one-hot B row, one trivial (num==1) step that must NOT record.
+        # A searched row must be EXACTLY what self-play would build from the
+        # same (obs, num_choices, result) — the two share
+        # az_selfplay.sample_from_search_result, and this pins that.
+        _assert_searched_row_matches_selfplay(
+            rec, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=0)
+
         _searched(rec, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=0)
         _onehot(rec, _obs(False, 0, 1), 4, action=2)
         _onehot(rec, _obs(False, 0, 2), 1, action=0)          # no row

@@ -20,8 +20,8 @@ drive it in bo3.
 ``generate(scripted_opponent_frac=f)`` makes a fraction ``f`` of matches play the
 net+MCTS (focus seat) against the rule-based scripted:hard agent (opponent seat)
 instead of against itself; only the net seat's decisions become samples
-(:func:`_play_match_vs_scripted`). ``f=1.0`` trains entirely against the scripted
-agent. That path is Python-backend only (the C++ actor is pure self-play).
+(:func:`_play_match`'s ``agent``/``net_is_a``). ``f=1.0`` trains entirely
+against the scripted agent. That path is Python-backend only (the C++ actor is pure self-play).
 ``generate(exhaustive=True)`` plays the exact matchup matrix instead of a random
 draw, splitting HYBRID across both backends: actor for the pure self-play cells,
 Python for the vs-scripted cells (see :func:`_generate_hybrid`).
@@ -44,6 +44,7 @@ from __future__ import annotations
 import argparse
 import os
 import time
+from collections import namedtuple
 from typing import Optional
 
 import numpy as np
@@ -321,6 +322,170 @@ def _build_net(source: dict):
 
 
 # ----------------------------------------------------------------------
+# Shared sample builders / boundary helpers
+# ----------------------------------------------------------------------
+
+def winner_from_reward(reward) -> Optional[str]:
+    """The winner ('A'/'B'/None for a draw) implied by a step's reward delta.
+
+    The env's reward is always in PLAYER-A perspective (env.py's bo3 reward is
+    ±BO3_GAME_WIN_REWARD per game), so the sign alone names the winner. One
+    home for the rule, shared by every self-play/expert/recording loop that
+    reads a game boundary off ``(reward, info['game_result'])``."""
+    return "A" if reward > 0 else ("B" if reward < 0 else None)
+
+
+def _drop_unfinished(samples, game_winners):
+    """Drop samples belonging to a game that never finished, returning
+    ``(kept, dropped)``.
+
+    Used when a match TRUNCATED mid-game: the games that completed have a
+    winner (hence a valid z), the in-progress one does not. ``shard_record``
+    deliberately does NOT use this — it keeps in-progress rows at z = 0 so a
+    recording is browsable mid-game (see shard_record's module docstring)."""
+    n_done = len(game_winners)
+    kept = [s for s in samples if s["game_idx"] < n_done]
+    return kept, len(samples) - len(kept)
+
+
+def sample_from_search_result(obs, num_choices, result):
+    """Build a trainer-schema sample dict from a finished search at ``obs``.
+
+    ``pi`` is the root visit posterior (``result.policy_target(1.0)``) padded
+    into a MAX_ACTIONS row, ``mask`` the legal prefix, ``q`` the search's root
+    value, ``mover_is_a`` the priority seat read straight off the observation
+    (``_SELF_IS_A_IDX`` — identical to the play loops' ``priority_is_a``).
+    ``explored`` starts at 0; the CALLER finalizes it once it knows which
+    action was actually played, and attaches ``game_idx``.
+
+    Shared by :func:`_play_match` and ``shard_record.ShardRecorder`` so a
+    recorded searched row is bit-identical to a self-play one by construction.
+    ``np.asarray(obs, float32).copy()`` is exactly ``env._obs.copy()`` for the
+    float32 observation the env hands out."""
+    num_choices = int(num_choices)
+    pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
+    pi[:num_choices] = result.policy_target(1.0).astype(np.float32)
+    mask = np.zeros(MAX_ACTIONS, dtype=bool)
+    mask[:num_choices] = True
+    return {"obs": np.asarray(obs, dtype=np.float32).copy(), "pi": pi,
+            "mask": mask, "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
+            "q": float(result.root_value), "explored": 0}
+
+
+def one_hot_sample(obs, num_choices, action):
+    """Build a BEHAVIOR-CLONING sample dict: pi is a one-hot on ``action``.
+
+    No search ran, so there is no root value to bootstrap from: ``q = NaN`` and
+    ``explored = 0`` make :func:`compute_td_targets` leave ``td_q == z`` on the
+    row (the demonstration's own outcome is the whole signal). The caller
+    attaches ``game_idx``. Shared by :func:`_play_match_expert` and
+    ``shard_record.ShardRecorder``."""
+    num_choices = int(num_choices)
+    pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
+    pi[int(action)] = 1.0
+    mask = np.zeros(MAX_ACTIONS, dtype=bool)
+    mask[:num_choices] = True
+    return {"obs": np.asarray(obs, dtype=np.float32).copy(), "pi": pi,
+            "mask": mask, "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
+            "q": float("nan"), "explored": 0}
+
+
+# Per-match search knobs, built once per match and passed to
+# :func:`_search_and_sample` (which must stay a pure re-spelling of the
+# in-loop block it was extracted from — see its BIT CONTRACT note).
+_MatchKnobs = namedtuple("_MatchKnobs", (
+    "sims", "worlds", "temp_moves", "root_noise_eps", "root_noise_alpha",
+    "sb_sims", "sb_worlds", "sb_max_depth", "sb_rollout_turns", "sb_persist",
+    "merge_dupes"))
+
+
+def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
+                       priority_is_a, game_idx, game_move, sb_boundary,
+                       sb_stats):
+    """Run the search at the current decision and turn it into (action, sample,
+    sb_boundary).
+
+    BIT CONTRACT: this is the verbatim searched-decision block of
+    :func:`_play_match` (statement order around ``rng`` draws unchanged — the
+    single draw is the temperature ``rng.choice``), so extracting it leaves the
+    sampled play stream byte-identical. ``sb_stats`` is mutated in place with
+    the boundary-persistence counters; the returned ``sb_boundary`` replaces the
+    caller's (None outside a sideboard root)."""
+    from mcts import run_search, sb_root_key, walk_reuse_root
+
+    # A bo3 sideboard root is more expensive per sim (restore re-crosses
+    # init_ecs + deck load + shuffle) and has a game-long horizon, so it
+    # gets its own budget. Key ONLY off is_sideboard_phase — is_post_board
+    # / game_number still reflect the just-ended game at a g1->g2 root.
+    if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
+        kw = dict(sims=knobs.sb_sims, worlds=knobs.sb_worlds,
+                  max_depth=knobs.sb_max_depth,
+                  rollout_turns=knobs.sb_rollout_turns,
+                  root_noise_eps=knobs.root_noise_eps,
+                  root_noise_alpha=knobs.root_noise_alpha, rng=rng,
+                  merge_dupes=knobs.merge_dupes)
+        if knobs.sb_persist:
+            key = sb_root_key(env._obs)
+            b = sb_boundary
+            if b is not None and b["key"] == key:
+                walked = [walk_reuse_root(r, b["played"], num_choices,
+                                          priority_is_a)
+                          for r in b["roots"]]
+                kw.update(world_seeds=b["seeds"], reuse_roots=walked)
+            else:
+                b = {"key": key, "seeds": None, "roots": None,
+                     "played": [], "picks": [], "memo": {}}
+                sb_boundary = b
+            kw.update(rollout_memo=b["memo"],
+                      memo_picks=tuple(b["picks"]))
+            result = run_search(env, evaluator, **kw)
+            b["seeds"] = result.seeds
+            b["roots"] = result.roots
+            b["played"] = []
+            sb_stats["sb_reused_visits"] += result.reused_visits
+            sb_stats["sb_memo_hits"] += result.memo_hits
+        else:
+            result = run_search(env, evaluator, **kw)
+    else:
+        sb_boundary = None
+        result = run_search(env, evaluator, sims=knobs.sims,
+                            worlds=knobs.worlds,
+                            root_noise_eps=knobs.root_noise_eps,
+                            root_noise_alpha=knobs.root_noise_alpha, rng=rng,
+                            merge_dupes=knobs.merge_dupes)
+    visits = result.policy_target(1.0)              # normalized visit counts
+    sample = sample_from_search_result(env._obs, num_choices, result)
+    sample["game_idx"] = game_idx
+    # Temperature schedule is per-game: the first temp_moves decisions of
+    # EACH game sample from the visit counts, then switch to argmax.
+    if game_move < knobs.temp_moves:
+        action = int(rng.choice(num_choices, p=visits))
+    else:
+        action = result.best_action()
+    # An action other than the visit argmax is an EXPLORATORY move: it
+    # truncates every earlier sample's n-step bootstrap window (see
+    # compute_td_targets), because what follows is no longer the line the
+    # search endorsed.
+    sample["explored"] = int(action != result.best_action())
+    return action, sample, sb_boundary
+
+
+def _sb_latch_played(sb_boundary, obs, action):
+    """Latch a stepped action into the live sideboard boundary (no-op when
+    there is none). The walk plays the latched actions through the stored trees
+    at the next pick; only sideboard picks contribute memo descriptors. Takes
+    the PRE-step obs, matching the actor. A scripted seat's actions latch too —
+    the walk must replay the TRUE action sequence, whoever played it."""
+    if sb_boundary is None:
+        return
+    from mcts import sb_pick_descriptor
+    sb_boundary["played"].append(int(action))
+    d = sb_pick_descriptor(obs, int(action))
+    if d is not None:
+        sb_boundary["picks"].append(d)
+
+
+# ----------------------------------------------------------------------
 # One game of self-play
 # ----------------------------------------------------------------------
 
@@ -330,7 +495,7 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                 sb_persist=bool(DEFAULT_SB_PERSIST),
-                merge_dupes=True):
+                merge_dupes=True, agent=None, net_is_a=None):
     """Play one match (bo1: a single game; bo3: a best-of-three) and return
     (samples, game_winners, searched, fallback, dropped, sb_stats) — sb_stats
     reports the boundary persistence's reused visits + rollout-memo hits.
@@ -341,6 +506,17 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     so ``game_winners[sample['game_idx']]`` prices that sample. ``dropped`` counts
     samples discarded because the match TRUNCATED mid-game (the in-progress game
     has no result, so its samples carry no valid z).
+
+    Default (``net_is_a=None``) is PURE SELF-PLAY: the net+MCTS pilots both
+    seats. Passing ``net_is_a`` (with ``agent`` = a rule-based scripted:hard
+    agent) puts the net+MCTS on that ONE seat and the agent on the other. Only
+    the NET seat's decisions are then searched and recorded as samples — the
+    scripted seat is environment, not a policy to imitate. That is sound for the
+    value target as-is: :func:`_backfill_and_pack` prices every sample per-mover
+    (z = +1 iff its game's winner is that sample's mover), so a one-seat sample
+    stream needs no special handling. The ``agent`` branches consume no ``rng``
+    and ``net_to_move`` is constant True when ``net_is_a is None``, so pure
+    self-play draws exactly as it did before the two loops were merged.
 
     Game boundaries are detected from ``info['game_result']`` (the engine emitted a
     GAME_RESULT line on that step's read); the game's winner is the sign of that
@@ -372,9 +548,9 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     The hard constraint is therefore rng-DRAW-ORDER preservation: any edit must
     keep the statement order around ``rng`` draws intact so the sampled play
     stream is unchanged. Adding branches that consume no rng is fine."""
-    from mcts import run_search, sb_root_key, sb_pick_descriptor, walk_reuse_root
-
     obs, _ = env.reset(seed=seed)
+    if agent is not None:
+        agent.new_game()
     samples = []
     game_winners = []   # winner of each completed game, in order
     game_idx = 0        # index of the game currently in progress
@@ -389,225 +565,29 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     # the boundary's first search, every stepped action latched for the walk.
     sb_boundary = None
     sb_stats = {"sb_reused_visits": 0, "sb_memo_hits": 0}
+    knobs = _MatchKnobs(sims=sims, worlds=worlds, temp_moves=temp_moves,
+                        root_noise_eps=root_noise_eps,
+                        root_noise_alpha=root_noise_alpha, sb_sims=sb_sims,
+                        sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                        sb_rollout_turns=sb_rollout_turns,
+                        sb_persist=sb_persist, merge_dupes=merge_dupes)
 
     while not done:
         num_choices = env._num_choices
         priority_is_a = bool(env._obs[_SELF_IS_A_IDX] > 0.5)
-        searchable = bool(env.last_search_safe) and num_choices > 1
-
-        if searchable:
-            # A bo3 sideboard root is more expensive per sim (restore re-crosses
-            # init_ecs + deck load + shuffle) and has a game-long horizon, so it
-            # gets its own budget. Key ONLY off is_sideboard_phase — is_post_board
-            # / game_number still reflect the just-ended game at a g1->g2 root.
-            if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
-                kw = dict(sims=sb_sims, worlds=sb_worlds,
-                          max_depth=sb_max_depth,
-                          rollout_turns=sb_rollout_turns,
-                          root_noise_eps=root_noise_eps,
-                          root_noise_alpha=root_noise_alpha, rng=rng,
-                          merge_dupes=merge_dupes)
-                if sb_persist:
-                    key = sb_root_key(env._obs)
-                    b = sb_boundary
-                    if b is not None and b["key"] == key:
-                        walked = [walk_reuse_root(r, b["played"], num_choices,
-                                                  priority_is_a)
-                                  for r in b["roots"]]
-                        kw.update(world_seeds=b["seeds"], reuse_roots=walked)
-                    else:
-                        b = {"key": key, "seeds": None, "roots": None,
-                             "played": [], "picks": [], "memo": {}}
-                        sb_boundary = b
-                    kw.update(rollout_memo=b["memo"],
-                              memo_picks=tuple(b["picks"]))
-                    result = run_search(env, evaluator, **kw)
-                    b["seeds"] = result.seeds
-                    b["roots"] = result.roots
-                    b["played"] = []
-                    sb_stats["sb_reused_visits"] += result.reused_visits
-                    sb_stats["sb_memo_hits"] += result.memo_hits
-                else:
-                    result = run_search(env, evaluator, **kw)
-            else:
-                sb_boundary = None
-                result = run_search(env, evaluator, sims=sims, worlds=worlds,
-                                    root_noise_eps=root_noise_eps,
-                                    root_noise_alpha=root_noise_alpha, rng=rng,
-                                    merge_dupes=merge_dupes)
-            visits = result.policy_target(1.0)          # normalized visit counts
-            pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-            pi[:num_choices] = visits.astype(np.float32)
-            mask = np.zeros(MAX_ACTIONS, dtype=bool)
-            mask[:num_choices] = True
-            sample = {"obs": env._obs.copy(), "pi": pi, "mask": mask,
-                      "mover_is_a": priority_is_a, "game_idx": game_idx,
-                      "q": float(result.root_value), "explored": 0}
-            samples.append(sample)
-            searched += 1
-            # Temperature schedule is per-game: the first temp_moves decisions of
-            # EACH game sample from the visit counts, then switch to argmax.
-            if game_move < temp_moves:
-                action = int(rng.choice(num_choices, p=visits))
-            else:
-                action = result.best_action()
-            # An action other than the visit argmax is an EXPLORATORY move: it
-            # truncates every earlier sample's n-step bootstrap window (see
-            # compute_td_targets), because what follows is no longer the line the
-            # search endorsed.
-            sample["explored"] = int(action != result.best_action())
-        else:
-            priors, _ = evaluator.evaluate(env._obs, num_choices)
-            action = int(np.argmax(priors))
-            fallback += 1
-
-        # Latch every stepped action while a boundary is live (the walk plays
-        # them through the stored trees at the next pick; only sideboard picks
-        # contribute memo descriptors). Pre-step obs, matching the actor.
-        if sb_boundary is not None:
-            sb_boundary["played"].append(int(action))
-            d = sb_pick_descriptor(env._obs, int(action))
-            if d is not None:
-                sb_boundary["picks"].append(d)
-
-        obs, reward, terminated, truncated, info = env.step(action)
-        move += 1
-        game_move += 1
-        # A GAME_RESULT landed on this step -> the game the just-stepped action
-        # belonged to has finished. Record its winner and advance to the next game.
-        boundary = bool(info.get("game_result"))
-        if boundary:
-            game_winners.append("A" if reward > 0 else ("B" if reward < 0 else None))
-            game_idx += 1
-            game_move = 0
-            sb_boundary = None
-        if on_progress is not None and move % HEARTBEAT_MOVES == 0:
-            on_progress(move, searched, fallback)
-        if terminated or truncated:
-            done = True
-            if terminated and not boundary:
-                # bo1 mode emits no GAME_RESULT line — the single game ends with a
-                # plain "Player X wins" + terminated. Price the in-progress game
-                # from the terminal reward sign (bo3's final game already recorded
-                # via the boundary branch above, so guard on `not boundary`).
-                game_winners.append(
-                    "A" if reward > 0 else ("B" if reward < 0 else None))
-            if truncated:
-                # The match hit MAX_STEPS_BO3 mid-game: keep samples from the
-                # games that finished (they have a z), drop the in-progress game's
-                # samples (no result yet -> no valid target).
-                n_done = len(game_winners)
-                kept = [s for s in samples if s["game_idx"] < n_done]
-                dropped = len(samples) - len(kept)
-                samples = kept
-    return samples, game_winners, searched, fallback, dropped, sb_stats
-
-
-def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, worlds,
-                            temp_moves, root_noise_eps, root_noise_alpha, seed,
-                            on_progress=None,
-                            sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
-                            sb_max_depth=DEFAULT_SB_MAX_DEPTH,
-                            sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                            sb_persist=bool(DEFAULT_SB_PERSIST),
-                            merge_dupes=True):
-    """Play one match with the net+MCTS on ONE seat (``net_is_a``) and the
-    rule-based scripted:hard ``agent`` on the other, returning the same tuple as
-    :func:`_play_match`.
-
-    Only the NET seat's decisions are searched and recorded as samples — the
-    scripted seat is environment, not a policy to imitate. That is sound for the
-    value target as-is: :func:`_backfill_and_pack` prices every sample per-mover
-    (z = +1 iff its game's winner is that sample's mover), so a one-seat sample
-    stream needs no special handling.
-
-    Kept separate from :func:`_play_match` for the same reason as
-    :func:`_play_match_expert`: that function is pinned by
-    ``test_sideboard_selfplay.py`` (semantic, default ``make check``) and
-    ``test_actor_trains.py`` (statistical, opt-in ``actor`` tier), whose hard
-    constraint is that its rng draw order stay intact."""
-    from mcts import run_search, sb_root_key, sb_pick_descriptor, walk_reuse_root
-
-    obs, _ = env.reset(seed=seed)
-    agent.new_game()
-    samples = []
-    game_winners = []   # winner of each completed game, in order
-    game_idx = 0        # index of the game currently in progress
-    game_move = 0       # decisions made in the current game (temperature schedule)
-    move = 0            # decisions made in the whole match (heartbeat/progress)
-    done = False
-    dropped = 0
-    searched = 0
-    fallback = 0
-    sb_boundary = None
-    sb_stats = {"sb_reused_visits": 0, "sb_memo_hits": 0}
-
-    while not done:
-        num_choices = env._num_choices
-        priority_is_a = bool(env._obs[_SELF_IS_A_IDX] > 0.5)
-        net_to_move = (priority_is_a == net_is_a)
+        net_to_move = (True if net_is_a is None
+                       else (priority_is_a == bool(net_is_a)))
         searchable = (net_to_move and bool(env.last_search_safe)
                       and num_choices > 1)
 
         if searchable:
-            # A bo3 sideboard root is more expensive per sim (restore re-crosses
-            # init_ecs + deck load + shuffle) and has a game-long horizon, so it
-            # gets its own budget. Key ONLY off is_sideboard_phase — is_post_board
-            # / game_number still reflect the just-ended game at a g1->g2 root.
-            if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
-                kw = dict(sims=sb_sims, worlds=sb_worlds,
-                          max_depth=sb_max_depth,
-                          rollout_turns=sb_rollout_turns,
-                          root_noise_eps=root_noise_eps,
-                          root_noise_alpha=root_noise_alpha, rng=rng,
-                          merge_dupes=merge_dupes)
-                if sb_persist:
-                    key = sb_root_key(env._obs)
-                    b = sb_boundary
-                    if b is not None and b["key"] == key:
-                        walked = [walk_reuse_root(r, b["played"], num_choices,
-                                                  priority_is_a)
-                                  for r in b["roots"]]
-                        kw.update(world_seeds=b["seeds"], reuse_roots=walked)
-                    else:
-                        b = {"key": key, "seeds": None, "roots": None,
-                             "played": [], "picks": [], "memo": {}}
-                        sb_boundary = b
-                    kw.update(rollout_memo=b["memo"],
-                              memo_picks=tuple(b["picks"]))
-                    result = run_search(env, evaluator, **kw)
-                    b["seeds"] = result.seeds
-                    b["roots"] = result.roots
-                    b["played"] = []
-                    sb_stats["sb_reused_visits"] += result.reused_visits
-                    sb_stats["sb_memo_hits"] += result.memo_hits
-                else:
-                    result = run_search(env, evaluator, **kw)
-            else:
-                sb_boundary = None
-                result = run_search(env, evaluator, sims=sims, worlds=worlds,
-                                    root_noise_eps=root_noise_eps,
-                                    root_noise_alpha=root_noise_alpha, rng=rng,
-                                    merge_dupes=merge_dupes)
-            visits = result.policy_target(1.0)          # normalized visit counts
-            pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-            pi[:num_choices] = visits.astype(np.float32)
-            mask = np.zeros(MAX_ACTIONS, dtype=bool)
-            mask[:num_choices] = True
-            sample = {"obs": env._obs.copy(), "pi": pi, "mask": mask,
-                      "mover_is_a": priority_is_a, "game_idx": game_idx,
-                      "q": float(result.root_value), "explored": 0}
+            action, sample, sb_boundary = _search_and_sample(
+                env, evaluator, rng, knobs, num_choices=num_choices,
+                priority_is_a=priority_is_a, game_idx=game_idx,
+                game_move=game_move, sb_boundary=sb_boundary,
+                sb_stats=sb_stats)
             samples.append(sample)
             searched += 1
-            # Temperature schedule is per-game: the first temp_moves decisions of
-            # EACH game sample from the visit counts, then switch to argmax.
-            if game_move < temp_moves:
-                action = int(rng.choice(num_choices, p=visits))
-            else:
-                action = result.best_action()
-            # Exploratory (non-argmax) move: truncates earlier samples' n-step
-            # bootstrap windows (see compute_td_targets).
-            sample["explored"] = int(action != result.best_action())
         elif net_to_move:
             priors, _ = evaluator.evaluate(env._obs, num_choices)
             action = int(np.argmax(priors))
@@ -618,16 +598,7 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
             # prompts (auto_sideboard=False), as in generate_expert.
             action = int(agent.act(env._obs, num_choices)) if num_choices > 1 else 0
 
-        # Latch every stepped action while a boundary is live (the walk plays
-        # them through the stored trees at the next pick; only sideboard picks
-        # contribute memo descriptors). Pre-step obs, matching the actor. The
-        # scripted seat's actions latch too — the walk must replay the TRUE
-        # action sequence, whoever played it.
-        if sb_boundary is not None:
-            sb_boundary["played"].append(int(action))
-            d = sb_pick_descriptor(env._obs, int(action))
-            if d is not None:
-                sb_boundary["picks"].append(d)
+        _sb_latch_played(sb_boundary, env._obs, action)
 
         obs, reward, terminated, truncated, info = env.step(action)
         move += 1
@@ -636,11 +607,12 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
         # belonged to has finished. Record its winner and advance to the next game.
         boundary = bool(info.get("game_result"))
         if boundary:
-            game_winners.append("A" if reward > 0 else ("B" if reward < 0 else None))
+            game_winners.append(winner_from_reward(reward))
             game_idx += 1
             game_move = 0
             sb_boundary = None
-            agent.new_game()
+            if agent is not None:
+                agent.new_game()
         if on_progress is not None and move % HEARTBEAT_MOVES == 0:
             on_progress(move, searched, fallback)
         if terminated or truncated:
@@ -650,16 +622,12 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
                 # plain "Player X wins" + terminated. Price the in-progress game
                 # from the terminal reward sign (bo3's final game already recorded
                 # via the boundary branch above, so guard on `not boundary`).
-                game_winners.append(
-                    "A" if reward > 0 else ("B" if reward < 0 else None))
+                game_winners.append(winner_from_reward(reward))
             if truncated:
                 # The match hit MAX_STEPS_BO3 mid-game: keep samples from the
                 # games that finished (they have a z), drop the in-progress game's
                 # samples (no result yet -> no valid target).
-                n_done = len(game_winners)
-                kept = [s for s in samples if s["game_idx"] < n_done]
-                dropped = len(samples) - len(kept)
-                samples = kept
+                samples, dropped = _drop_unfinished(samples, game_winners)
     return samples, game_winners, searched, fallback, dropped, sb_stats
 
 
@@ -814,7 +782,7 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
     ``scripted_seats`` (when given) is a parallel list of per-match
     Optional[bool]: ``None`` = pure self-play (the net pilots both seats), else
     the value is ``net_is_a`` for a match whose OTHER seat is piloted by
-    scripted:hard (see :func:`_play_match_vs_scripted`)."""
+    scripted:hard (:func:`_play_match`'s ``agent``/``net_is_a`` arguments)."""
     import torch
     torch.set_num_threads(1)   # avoid oversubscription across worker processes
     from search_env import SearchRoboMageEnv
@@ -852,26 +820,17 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                               "searched": searched_ct, "fallback": fallback_ct})
 
             t0 = time.time()
-            if net_is_a is None:
-                samples, game_winners, searched, fallback, dropped, sb_st = _play_match(
-                    env, evaluator, rng, sims=sims, worlds=worlds,
-                    temp_moves=temp_moves, root_noise_eps=root_noise_eps,
-                    root_noise_alpha=root_noise_alpha, seed=seed,
-                    on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                    sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-                    sb_persist=sb_persist, merge_dupes=merge_dupes)
-            else:
+            if net_is_a is not None:
                 agent.set_deck_names(*matchups[m])
-                samples, game_winners, searched, fallback, dropped, sb_st = \
-                    _play_match_vs_scripted(
-                        env, evaluator, agent, rng, net_is_a=bool(net_is_a),
-                        sims=sims, worlds=worlds,
-                        temp_moves=temp_moves, root_noise_eps=root_noise_eps,
-                        root_noise_alpha=root_noise_alpha, seed=seed,
-                        on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                        sb_max_depth=sb_max_depth,
-                        sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
-                        merge_dupes=merge_dupes)
+            samples, game_winners, searched, fallback, dropped, sb_st = _play_match(
+                env, evaluator, rng, sims=sims, worlds=worlds,
+                temp_moves=temp_moves, root_noise_eps=root_noise_eps,
+                root_noise_alpha=root_noise_alpha, seed=seed,
+                on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
+                sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
+                sb_persist=sb_persist, merge_dupes=merge_dupes,
+                agent=(None if net_is_a is None else agent),
+                net_is_a=(None if net_is_a is None else bool(net_is_a)))
             buf.append(_backfill_and_pack(samples, game_winners, td_n=td_n))
             total_samples += len(samples)
             stats["searched"] += searched
@@ -999,10 +958,11 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     ``scripted_opponent_frac`` (0..1, default 0 = pure self-play) is the fraction
     of matches whose OPPONENT seat is piloted by the rule-based scripted:hard
     agent while the net+MCTS pilots the FOCUS seat; only the net seat's decisions
-    become samples (see :func:`_play_match_vs_scripted`). Which matches get a
-    scripted opponent is drawn from a dedicated seeded RNG stream indexed per
-    match, so it is reproducible and independent of the worker count. The C++
-    actor has no scripted-opponent support, so a nonzero fraction FORCES the
+    become samples (see :func:`_play_match`'s ``agent``/``net_is_a``). Which
+    matches get a scripted opponent is drawn from a dedicated seeded RNG stream
+    indexed per match, so it is reproducible and independent of the worker
+    count. The C++ actor has no scripted-opponent support, so a nonzero
+    fraction FORCES the
     Python backend (and is a loud error alongside an explicit ``use_actor=True``).
 
     ``exhaustive`` replaces the random schedule with the exact matchup MATRIX of
@@ -1698,7 +1658,9 @@ def _play_match_expert(env, agent, seed):
     anywhere, and those prompts are exactly the ones the net answers by raw
     policy at self-play time, so BC coverage there raises fallback quality.
     Returns (samples, game_winners, dropped) with the same boundary/truncation
-    semantics as :func:`_play_match` (kept separate: that function is pinned by
+    semantics as :func:`_play_match` (whose shared helpers — ``one_hot_sample``,
+    ``winner_from_reward``, ``_drop_unfinished`` — this loop uses), but kept a
+    separate function: :func:`_play_match` is pinned by
     ``test_sideboard_selfplay.py`` (semantic, default ``make check``) and
     ``test_actor_trains.py`` (statistical, opt-in ``actor`` tier), whose hard
     constraint is that its rng draw order stay intact)."""
@@ -1712,36 +1674,24 @@ def _play_match_expert(env, agent, seed):
     while not done:
         num_choices = env._num_choices
         if num_choices > 1:
-            priority_is_a = bool(env._obs[_SELF_IS_A_IDX] > 0.5)
             action = int(agent.act(env._obs, num_choices))
-            pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-            pi[action] = 1.0
-            mask = np.zeros(MAX_ACTIONS, dtype=bool)
-            mask[:num_choices] = True
-            # No search ran, so there is no root value to bootstrap from: q = NaN
-            # and explored = 0 make compute_td_targets leave td_q == z on every
-            # expert row (the demonstration's own outcome is the whole signal).
-            samples.append({"obs": env._obs.copy(), "pi": pi, "mask": mask,
-                            "mover_is_a": priority_is_a, "game_idx": game_idx,
-                            "q": float("nan"), "explored": 0})
+            sample = one_hot_sample(env._obs, num_choices, action)
+            sample["game_idx"] = game_idx
+            samples.append(sample)
         else:
             action = 0
         _, reward, terminated, truncated, info = env.step(action)
         boundary = bool(info.get("game_result"))
         if boundary:
-            game_winners.append("A" if reward > 0 else ("B" if reward < 0 else None))
+            game_winners.append(winner_from_reward(reward))
             game_idx += 1
             agent.new_game()
         if terminated or truncated:
             done = True
             if terminated and not boundary:
-                game_winners.append(
-                    "A" if reward > 0 else ("B" if reward < 0 else None))
+                game_winners.append(winner_from_reward(reward))
             if truncated:
-                n_done = len(game_winners)
-                kept = [s for s in samples if s["game_idx"] < n_done]
-                dropped = len(samples) - len(kept)
-                samples = kept
+                samples, dropped = _drop_unfinished(samples, game_winners)
     return samples, game_winners, dropped
 
 
