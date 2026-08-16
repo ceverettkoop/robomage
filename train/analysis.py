@@ -4300,6 +4300,30 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
     from opponents import SearchController
 
     class _SearchCompareController(SearchController):
+        """Records every searched root, by OVERRIDING ``choose`` outright rather
+        than hooking the base controller's ``_choose_impl``.
+
+        That is deliberate: this controller is a MEASUREMENT instrument for
+        "raw search vs raw net at every safe root", not a model of production
+        play. Routing it through the base implementation would let the base's
+        play-policy machinery decide *which* roots get recorded, silently
+        changing what the report means. So it omits, on purpose:
+
+          * the clock / pacing budget (every root gets the full sim budget,
+            so the KL and value-error stats are comparable root to root);
+          * the trivial-decision skip (a root the play policy would shortcut
+            is still a root the net has an opinion about — we want it);
+          * tree-following / root reuse across decisions (each root is searched
+            fresh, so no root inherits another's visit statistics);
+          * sideboard root persistence (only the sideboard *budget* is honored,
+            below — the boundary dict is play-policy state);
+          * the mirror-engine pool and the ``on_result`` tap (nothing else
+            consumes these results; ``self.records`` IS the output).
+
+        It does keep the base's ``stats`` counters and ``self._env``/rng, and
+        the sideboard budget split, so the printed decision counts still line up
+        with a normal search controller's."""
+
         def __init__(self):
             super().__init__(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                              temperature=0.0, label="search-compare", rng_seed=rng_seed,
@@ -4320,16 +4344,23 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
                 return int(np.argmax(priors))
             # bo3 sideboard root -> deeper/fewer-sim sideboard budget (game-long
             # horizon); in-game roots keep run_search's default max_depth (60).
+            # merge_dupes=True is run_search's default, but it is spelled out
+            # here because the report DEPENDS on it: _report_search_compare
+            # folds the raw priors through decode.menu_merge_reps to match the
+            # merged visit distribution. If these searches ever stopped merging
+            # duplicate edges, that fold would double-count and the reported KL
+            # / argmax agreement would be wrong.
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 result = run_search(env, self._evaluator, sims=self._sb_sims,
                                     worlds=self._sb_worlds, c_puct=self._c_puct,
                                     max_depth=self._sb_max_depth,
                                     rollout_turns=self._sb_rollout_turns,
-                                    rng=self._rng)
+                                    rng=self._rng, merge_dupes=True)
                 self.stats["sb_searched"] += 1
             else:
                 result = run_search(env, self._evaluator, sims=self._sims,
-                                    worlds=self._worlds, c_puct=self._c_puct, rng=self._rng)
+                                    worlds=self._worlds, c_puct=self._c_puct,
+                                    rng=self._rng, merge_dupes=True)
             self.stats["searched"] += 1
             self.stats["sims"] += result.sims_run
             self.stats["sim_steps"] += result.sim_steps
@@ -4379,7 +4410,9 @@ def _report_search_compare(ctrl, args):
         return
 
     # The search merges duplicate edges (visit mass sits on each group's
-    # representative), so fold the raw priors the same way before comparing —
+    # representative — see the explicit merge_dupes=True on the run_search calls
+    # in _SearchCompareController), so fold the raw priors the same way before
+    # comparing —
     # otherwise duplicate-heavy roots would report inflated KL and spurious
     # argmax disagreement (net's max prior on a copy search never visits).
     def _folded_priors(r):

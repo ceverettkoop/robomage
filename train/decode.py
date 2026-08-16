@@ -146,6 +146,31 @@ SELF_OPP_LABELS = {
     "opponent": "opponent",
 }
 
+# The two OPPONENT-perspective vocabularies below are co-located here so the
+# alternatives to the default are all readable in one place — but they are
+# deliberately NOT merged: they solve the same problem for two renderers that
+# want different words, and unifying them would change user-visible text.
+#
+#   MIRROR_LABELS (the game boards, via game_driver) is a STRUCTURAL KEY SWAP:
+#   it maps each label onto its opposite ("own"->"opp", "self"->"opponent"), so
+#   an obs decoded in the opponent's frame comes back out in the human's frame
+#   using decode's OWN neutral vocabulary. The board draws everything from the
+#   human's point of view already, so the swapped words drop straight in.
+#
+#   OPP_CTRL_LABELS (the analysis window) instead re-words into explicit
+#   POSSESSIVES ("theirs"/"yours", "them"/"you"). That window shows an
+#   opponent's menu next to a board drawn in the human's frame, where a merely
+#   swapped "own"/"opp" would still read ambiguously — spelling out whose
+#   permanent each row names is the whole point. OPP_PHRASES completes it for
+#   the two metadata-only player-target descriptions decode synthesizes (the
+#   engine's authored text isn't available for an obs we only hold a copy of).
+MIRROR_LABELS = {"own": "opp", "opp": "own", "self": "opponent", "opponent": "self"}
+
+OPP_CTRL_LABELS = {"own": "theirs", "opp": "yours",
+                   "self": "them", "opponent": "you"}
+OPP_PHRASES = (("Target yourself", "Target themselves"),
+               ("Target opponent", "Target you"))
+
 
 # ── Card-name helpers ─────────────────────────────────────────────────────────
 

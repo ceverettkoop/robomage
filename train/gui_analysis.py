@@ -43,7 +43,8 @@ from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QHeaderView, QLabel,
                                QVBoxLayout, QWidget)
 
 import decode
-from analysis_session import (AnalysisError, AnalysisRequest, AnalysisSession)
+from analysis_session import (AnalysisError, AnalysisRequest, AnalysisSession,
+                              analyze_refusal)
 from env import STATE_SIZE, _SELF_IS_A_IDX
 from game_driver import decode_human_frame, menu_label
 
@@ -60,14 +61,11 @@ _BRANCH_COLORS = ("#d8a12a", "#33d17a", "#3a9ad9", "#e05555")
 # its own mover's frame, so on the opponent's decision THEIR permanents come out
 # tagged "own" and yours "opp" — which reads backwards next to a board that is
 # always drawn in your frame ("Target Thespian's Stage (own)" is THEIR Stage).
-# Spell the possessives out so the row is unambiguous either way.
-_OPP_CTRL_LABELS = {"own": "theirs", "opp": "yours",
-                    "self": "them", "opponent": "you"}
-# decode's metadata-only player-target wording is likewise in the mover's frame
-# (the engine's authored descriptions aren't available for an obs we only hold a
-# copy of), so translate those two phrases to the viewer's frame as well.
-_OPP_PHRASES = (("Target yourself", "Target themselves"),
-                ("Target opponent", "Target you"))
+# Spell the possessives out so the row is unambiguous either way; the phrase
+# pairs do the same for decode's metadata-only player-target wording. Both are
+# defined in decode.py alongside the other controller-label vocabularies.
+_OPP_CTRL_LABELS = decode.OPP_CTRL_LABELS
+_OPP_PHRASES = decode.OPP_PHRASES
 
 
 def opp_menu_labels(obs, num_choices) -> dict:
@@ -686,13 +684,11 @@ class AnalysisWindow(QMainWindow):
         nothing."""
         if u.human_turn:
             self._worker.cancel()
-            eligible = bool(u.search_safe) and u.num_choices > 1
-            if not eligible:
+            reason = analyze_refusal(bool(u.search_safe), u.num_choices)
+            if reason is not None:
                 self._update = None
                 self._labels = {}
                 self._analyze_btn.setEnabled(False)
-                reason = ("only one legal action" if u.num_choices <= 1
-                          else "not snapshot-safe (mid-resolution prompt)")
                 self._set_status("idle", reason)
                 return
             self._update = u
@@ -704,7 +700,8 @@ class AnalysisWindow(QMainWindow):
             if self._auto.isChecked() and (self.isVisible() or self._smoke):
                 self.request_analyze()
             return
-        if not (u.opp_perspective and bool(u.search_safe) and u.num_choices > 1):
+        if not u.opp_perspective or analyze_refusal(bool(u.search_safe),
+                                                    u.num_choices) is not None:
             return
         # A real opponent decision: keep it as the F6 review root (its obs is
         # already a private copy) before they act on it.

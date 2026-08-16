@@ -174,6 +174,28 @@ class AnalysisRequest:
         )
 
 
+def analyze_refusal(search_safe: bool, num_choices: int) -> Optional[str]:
+    """None when a decision with these properties can be searched, else the
+    human-readable reason it cannot.
+
+    The ONE source of the two refusal strings, shared by ``can_analyze`` below
+    and by the GUI window's own arm/disarm branches (``gui_analysis.py``), which
+    decide the same thing straight off a StateUpdate without building an
+    AnalysisRequest.
+
+    Order matters when BOTH conditions hold (an unsafe root that also happens to
+    offer a single action): the single-choice reason is reported first, because
+    it is the more informative one for a human — "only one legal action" says the
+    search would be pointless, while snapshot-safety is an engine-internal
+    detail. This is the GUI's long-standing order; ``can_analyze`` was checking
+    safety first and now matches."""
+    if num_choices <= 1:
+        return "only one legal action"
+    if not search_safe:
+        return "not snapshot-safe (mid-resolution prompt)"
+    return None
+
+
 class AnalysisSession:
     """Owns the detached analysis engine(s) + the open IncrementalSearch(es)."""
 
@@ -219,11 +241,9 @@ class AnalysisSession:
             return f"analysis engine unavailable: {self._dead}"
         if not hasattr(self._primary, "_action_history"):
             return "session env is not search-capable (analysis disabled)"
-        if not req.search_safe:
-            return "not snapshot-safe (mid-resolution prompt)"
-        if req.num_choices <= 1:
-            return "only one legal action"
-        return None
+        # The two session-specific rungs above stay here; the decision-shaped
+        # ones are shared with the GUI.
+        return analyze_refusal(req.search_safe, req.num_choices)
 
     # ----- engine lifecycle / lockstep -----
 

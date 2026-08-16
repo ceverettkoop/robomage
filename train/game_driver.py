@@ -50,7 +50,8 @@ STEP_OBSERVE_DELAY = 0.2
 # (the opponent holds priority, so the state vector's "self" is them). Swapping
 # the labels keeps stack entries / announced targets worded from the human's
 # point of view; the structural self/opp fields are swapped separately.
-_MIRROR_LABELS = {"own": "opp", "opp": "own", "self": "opponent", "opponent": "self"}
+# Defined in decode.py alongside the other controller-label vocabularies.
+_MIRROR_LABELS = decode.MIRROR_LABELS
 
 # ActionRefZone (src/classes/gamestate.h) -> board zone a card widget lives in.
 # Only battlefield/hand have widgets; other zones (stack/gy/exile/player) map to
