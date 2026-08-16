@@ -86,9 +86,10 @@ fails, so one invocation reports every finding):
 Opt-in tiers (valid for --tier, NOT part of the default run):
 
   actor   Phase-D AZ actor gate: obs bit-parity (test_actor_parity.py), MCTS
-          visit-count parity (test_mcts_parity.py), and self-play shard schema /
-          trainer ingest (test_actor_shards.py). Self-skips with a message when
-          bin/az_actor is not built or torch is unavailable.
+          visit-count parity (test_mcts_parity.py), self-play shard schema /
+          trainer ingest (test_actor_shards.py), and trainer-interchangeability
+          of C++ vs Python shards (test_actor_trains.py). Self-skips with a
+          message when bin/az_actor is not built or torch is unavailable.
   analysis The GUI analysis window's engine core: chunked IncrementalSearch is
           bit-identical to run_search (pinned world seeds), pv/walk browse and
           replay lines then hand the engine back clean (driver discipline), an
@@ -809,7 +810,8 @@ def tier_actor(rep):
 
     tests = ["train/test_actor_parity.py",   # M5: obs bit-parity
              "train/test_mcts_parity.py",    # M6: MCTS visit-count parity
-             "train/test_actor_shards.py"]   # M7: shard schema / trainer ingest
+             "train/test_actor_shards.py",   # M7: shard schema / trainer ingest
+             "train/test_actor_trains.py"]   # M8: trainer-interchangeable shards
     for t in tests:
         r = subprocess.run([sys.executable, t], cwd=_REPO_ROOT,
                            capture_output=True, text=True)

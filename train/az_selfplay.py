@@ -363,8 +363,15 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
 
     ``on_progress(move, searched, fallback)``, when given, fires every
     HEARTBEAT_MOVES decisions. Observation-only: it must not (and cannot)
-    perturb the game or ``rng``, so play stays byte-identical with or without
-    it (the actor trains-identically gate replays this exact function)."""
+    perturb the game or ``rng``, so play stays byte-identical with or without it.
+
+    Pinned by ``test_sideboard_selfplay.py`` (tier ``sbselfplay``, in the default
+    ``make check``; semantic, not bit-identity) and by ``test_actor_trains.py``
+    (opt-in tier ``actor``; statistical — it replays this exact function and
+    compares the resulting shards' schema/trainability against the C++ actor's).
+    The hard constraint is therefore rng-DRAW-ORDER preservation: any edit must
+    keep the statement order around ``rng`` draws intact so the sampled play
+    stream is unchanged. Adding branches that consume no rng is fine."""
     from mcts import run_search, sb_root_key, sb_pick_descriptor, walk_reuse_root
 
     obs, _ = env.reset(seed=seed)
@@ -515,9 +522,10 @@ def _play_match_vs_scripted(env, evaluator, agent, rng, *, net_is_a, sims, world
     stream needs no special handling.
 
     Kept separate from :func:`_play_match` for the same reason as
-    :func:`_play_match_expert`: that function is pinned by the actor
-    trains-identically gate (and test_sideboard_selfplay.py) and must not grow
-    branches."""
+    :func:`_play_match_expert`: that function is pinned by
+    ``test_sideboard_selfplay.py`` (semantic, default ``make check``) and
+    ``test_actor_trains.py`` (statistical, opt-in ``actor`` tier), whose hard
+    constraint is that its rng draw order stay intact."""
     from mcts import run_search, sb_root_key, sb_pick_descriptor, walk_reuse_root
 
     obs, _ = env.reset(seed=seed)
@@ -1691,7 +1699,9 @@ def _play_match_expert(env, agent, seed):
     policy at self-play time, so BC coverage there raises fallback quality.
     Returns (samples, game_winners, dropped) with the same boundary/truncation
     semantics as :func:`_play_match` (kept separate: that function is pinned by
-    the actor trains-identically gate and must not grow branches)."""
+    ``test_sideboard_selfplay.py`` (semantic, default ``make check``) and
+    ``test_actor_trains.py`` (statistical, opt-in ``actor`` tier), whose hard
+    constraint is that its rng draw order stay intact)."""
     env.reset(seed=seed)
     agent.new_game()
     samples = []

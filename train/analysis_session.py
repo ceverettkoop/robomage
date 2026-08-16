@@ -46,7 +46,7 @@ from typing import Callable, List, Optional, Tuple
 import numpy as np
 
 from cli_spec import DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS
-from env import _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX
+from env import _IS_SIDEBOARD_IDX
 from mcts import IncrementalSearch, LiveStats, UniformEvaluator, _LockedEvaluator
 
 
@@ -155,7 +155,6 @@ class AnalysisRequest:
     num_choices: int
     history_len: int
     search_safe: bool
-    seat_is_a: bool          # obs perspective seat (True = Player A to move)
     is_sideboard: bool
 
     @classmethod
@@ -165,7 +164,6 @@ class AnalysisRequest:
             num_choices=int(u.num_choices),
             history_len=int(u.history_len),
             search_safe=bool(u.search_safe),
-            seat_is_a=bool(u.obs[_SELF_IS_A_IDX] > 0.5),
             is_sideboard=bool(u.obs[_IS_SIDEBOARD_IDX] > 0.5),
         )
 

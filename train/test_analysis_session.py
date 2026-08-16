@@ -51,7 +51,7 @@ import decode  # noqa: E402
 from analysis_session import (AnalysisConfig, AnalysisRequest,  # noqa: E402
                               AnalysisSession)
 from cli_spec import BINARY, BIN_DIR  # noqa: E402
-from env import STATE_SIZE, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX  # noqa: E402
+from env import STATE_SIZE, _IS_SIDEBOARD_IDX  # noqa: E402
 from mcts import (IncrementalSearch, UniformEvaluator,  # noqa: E402
                   run_search, run_search_parallel)
 from scripted_agent import make_agent  # noqa: E402
@@ -108,7 +108,6 @@ def _req(env):
         obs=obs, num_choices=env._num_choices,
         history_len=len(env._action_history),
         search_safe=bool(getattr(env, "last_search_safe", False)),
-        seat_is_a=bool(obs[_SELF_IS_A_IDX] > 0.5),
         is_sideboard=bool(obs[_IS_SIDEBOARD_IDX] > 0.5))
 
 
