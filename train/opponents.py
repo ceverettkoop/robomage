@@ -284,9 +284,10 @@ class MatchClock:
     spans a whole match (bo3 or bo1), and each searched decision draws a
     variable ``(min_s, max_s)`` deadline pair from it.
 
-    The allocation is ``remaining / C``, scaled by a difficulty multiplier
-    derived from the root priors (entropy / top-2 gap / menu width), and
-    clamped to ``[t_min, min(t_max, remaining/4)]``. C is the estimated
+    The allocation is ``remaining / C``, front-loaded by the pacing curve
+    below, scaled by a difficulty multiplier derived from the root priors
+    (entropy / top-2 gap / menu width), and clamped to
+    ``[t_min, min(t_max, remaining/4)]``. C is the estimated
     decisions left on this clock. The estimate starts from a fixed prior — a
     full bo3 match is assumed to run ``_MATCH_DEC_EST`` (300) decisions for
     one seat, ~``_GAME_DEC_EST`` (120) per game over ~2.5 expected games —
@@ -302,6 +303,30 @@ class MatchClock:
     in-search stability early-stop (see ``mcts.run_search``), which is what
     actually lets obvious decisions finish cheap and contested ones run long.
 
+    PACING is deliberately NON-LINEAR rather than a flat ``remaining / C``
+    proportional drip: the early decisions of a match are the ones whose lines
+    still branch, so the bank is spent front-loaded and the tail plays fast.
+    Above a ``_RESERVE_S`` (300s) final-five-minutes reserve the proportional
+    share is multiplied by ``1 + sqrt(frac)``, where ``frac`` is the fraction
+    of the ABOVE-RESERVE bank still unspent — ~2x at a full bank, decaying
+    concavely (sqrt, so it stays aggressive through the midgame) to exactly 1x
+    as the bank touches the reserve. Inside the reserve — and for any bank of
+    ``_RESERVE_S`` or less — the spend is the plain proportional share, i.e.
+    the clock turns conservative for its last five minutes.
+
+    MATCH-POINT CLOSEOUT: ``allocate`` optionally takes the root net's
+    mover-perspective ``value`` in ``[-1, 1]``. It is ignored everywhere except
+    the one state where it changes the plan — the agent on match point
+    (``self_wins == 1``) with the net calling the current game decisively won
+    (``value >= _CLOSEOUT_V``). There the clock stops budgeting for future
+    games that won't be played (``extra_games = 0``) and additionally shrinks
+    the current game's share by a factor ramping linearly from 1.0 at
+    ``_CLOSEOUT_V`` down to ``_CLOSEOUT_MIN_SCALE`` at ``value == 1.0``: a won
+    position needs less thought, so the bank is banked. The
+    ``_HORIZON_LO``/``_HORIZON_HI`` clamp still applies last, and in every
+    other state (0 or 2 wins, the opponent on match point, no value, or a value
+    below the threshold) the horizon is unchanged.
+
     Takes only decoded scalars, no obs vector — unit-testable without an engine.
     """
 
@@ -315,6 +340,9 @@ class MatchClock:
     _RATE_PRIOR_W = 8.0    # in-game rate revision: prior worth this many observed turns
     _HORIZON_LO, _HORIZON_HI = 8, 400
     _M_LO, _M_HI = 0.35, 1.75  # difficulty-multiplier clamp
+    _RESERVE_S = 300.0         # final-5-minutes conservative reserve (no boost)
+    _CLOSEOUT_V = 0.8          # root value at/above which a match point closes out
+    _CLOSEOUT_MIN_SCALE = 0.35  # in-game horizon scale at a value of 1.0
 
     def __init__(self, bank_s: float, *, t_min: float = 0.5,
                  t_max: float = 60.0, sb_t_max: float = 15.0):
@@ -345,10 +373,26 @@ class MatchClock:
             self._game_start_dec.append(self.decisions)
         self.decisions += 1
 
+    def _is_closeout(self, self_wins: int, value: Optional[float]) -> bool:
+        """True when the agent is on match point AND the root net calls the
+        game it is playing decisively won — the one state where ``value``
+        is allowed to move the horizon."""
+        return (self_wins == 1 and value is not None
+                and float(value) >= self._CLOSEOUT_V)
+
+    def _closeout_scale(self, value: float) -> float:
+        """In-game horizon scale for a closeout: 1.0 at ``_CLOSEOUT_V``,
+        ramping linearly down to ``_CLOSEOUT_MIN_SCALE`` at a value of 1.0."""
+        span = 1.0 - self._CLOSEOUT_V
+        t = (float(value) - self._CLOSEOUT_V) / span if span > 0.0 else 1.0
+        t = min(max(t, 0.0), 1.0)
+        return 1.0 - (1.0 - self._CLOSEOUT_MIN_SCALE) * t
+
     def _horizon(self, turn: int, game_number: int, self_wins: int,
-                 opp_wins: int) -> float:
+                 opp_wins: int, value: Optional[float] = None) -> float:
         """Estimated decisions left on this clock (one seat): the fixed match
-        prior revised by the observed per-game length and in-game pace."""
+        prior revised by the observed per-game length and in-game pace, then —
+        only on a match-point closeout — shortened by the root ``value``."""
         cur_start = self._game_start_dec[-1] if self._game_start_dec else 0
         in_cur = max(0, self.decisions - cur_start)
         # Completed games revise the per-game estimate: a match that reached
@@ -378,6 +422,11 @@ class MatchClock:
             extra_games = 1.5
         else:
             extra_games = 0.5
+        # Match-point closeout: this game IS the match, and the net says it is
+        # already won — drop the future-game budget entirely and think less.
+        if self._is_closeout(self_wins, value):
+            extra_games = 0.0
+            in_game *= self._closeout_scale(value)
         horizon = in_game + extra_games * (per_game + self._SB_DEC_EST)
         return min(max(horizon, self._HORIZON_LO), self._HORIZON_HI)
 
@@ -400,12 +449,28 @@ class MatchClock:
         m = 0.5 + 1.25 * h_norm - 1.0 * gap + 0.25 * width
         return min(max(m, self._M_LO), self._M_HI)
 
+    def _pace_boost(self, base: float) -> float:
+        """Front-load the bank: ~2x the proportional share while the bank is
+        full, decaying concavely to exactly 1x as it reaches ``_RESERVE_S``.
+        Inside the reserve (and for banks that never exceed it) this is a
+        no-op, so the last five minutes spend strictly proportionally."""
+        if self.bank <= self._RESERVE_S or self.remaining <= self._RESERVE_S:
+            return base
+        frac = ((self.remaining - self._RESERVE_S)
+                / (self.bank - self._RESERVE_S))  # 1.0 full -> 0.0 at reserve
+        return base * (1.0 + math.sqrt(frac))
+
     def allocate(self, *, turn: int, game_number: int, self_wins: int,
                  opp_wins: int, is_sideboard: bool, priors,
-                 num_choices: int) -> tuple[float, float]:
-        """Return the ``(min_s, max_s)`` deadline pair for one decision."""
-        c = self._horizon(turn, game_number, self_wins, opp_wins)
-        base = self.remaining / c
+                 num_choices: int, value: Optional[float] = None
+                 ) -> tuple[float, float]:
+        """Return the ``(min_s, max_s)`` deadline pair for one decision.
+
+        ``value`` is the root net's mover-perspective value estimate in
+        ``[-1, 1]`` (``None`` when unevaluated); it only ever matters on a
+        match-point closeout — see the class docstring."""
+        c = self._horizon(turn, game_number, self_wins, opp_wins, value)
+        base = self._pace_boost(self.remaining / c)
         m = self._difficulty(priors, num_choices)
         t_cap = self.sb_t_max if is_sideboard else self.t_max
         t_hi = min(base * m, t_cap, self.remaining / 4.0)
