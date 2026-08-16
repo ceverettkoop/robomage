@@ -15,6 +15,7 @@ import math
 import os
 import re
 import time
+from dataclasses import dataclass
 from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
@@ -1376,6 +1377,97 @@ def _effort_label(sims: int, worlds: int, time_budget: float | None,
     return f"{sims}x{worlds}"
 
 
+@dataclass(frozen=True)
+class _SearchKnobs:
+    """The parsed knob set shared by the ``mcts:`` and ``az:`` spec grammars.
+
+    Built by :func:`_parse_search_knobs`, consumed by
+    :func:`_build_search_controller`. ``v_scale`` is the one field the two
+    grammars treat differently: only ``mcts:`` consumes it (the PPO value
+    tanh scale of its PPOEvaluator rung); ``az:`` parses and ignores it, which
+    is what it always did — an ``az:...?vscale=`` token was silently dropped by
+    the query parser — so parsing it here is no grammar change."""
+
+    sims: int
+    worlds: int
+    c_puct: float
+    temperature: float
+    v_scale: float
+    rng_seed: int
+    procs: int
+    sb_sims: int
+    sb_worlds: int
+    sb_max_depth: int
+    sb_rollout_turns: int
+    sb_persist: int
+    time_budget: float | None
+    sims_cap: int
+    sb_sims_cap: int
+    clock: float | None
+    tmin: float
+    tmax: float
+    sb_tmax: float
+    paced: bool
+
+
+def _parse_search_knobs(spec: str) -> _SearchKnobs:
+    """Parse the search knobs out of a ``<base>?k=v&...`` controller spec.
+
+    ONE parser for both search grammars, so a knob added to ``mcts:`` cannot
+    silently miss ``az:``. Knob ORDER is load-bearing: a spec with two
+    malformed knobs reports the first one in this order, so keep the sequence
+    (and the defaults) as-is unless the error text is meant to change."""
+    _base, params = _parse_spec_query(spec)
+    sims = _spec_knob(params, "sims", 128, int, spec)
+    worlds = _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec)
+    c_puct = _spec_knob(params, "c", 1.5, float, spec)
+    temperature = _spec_knob(params, "temp", 0.0, float, spec)
+    v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
+    rng_seed = _spec_knob(params, "seed", 0, int, spec)
+    procs = _spec_knob(params, "procs", 1, int, spec)
+    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
+    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
+    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
+    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
+                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
+    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
+    time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
+    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
+    return _SearchKnobs(sims=sims, worlds=worlds, c_puct=c_puct,
+                        temperature=temperature, v_scale=v_scale,
+                        rng_seed=rng_seed, procs=procs, sb_sims=sb_sims,
+                        sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                        sb_rollout_turns=sb_rollout_turns,
+                        sb_persist=sb_persist, time_budget=time_budget,
+                        sims_cap=sims_cap, sb_sims_cap=sb_sims_cap,
+                        clock=clock, tmin=tmin, tmax=tmax, sb_tmax=sb_tmax,
+                        paced=paced)
+
+
+def _effort_label_for(knobs: _SearchKnobs) -> str:
+    """:func:`_effort_label` for a parsed knob set."""
+    return _effort_label(knobs.sims, knobs.worlds, knobs.time_budget, knobs.clock)
+
+
+def _build_search_controller(evaluator, label: str,
+                             knobs: _SearchKnobs) -> "SearchController":
+    """THE SearchController construction for both search grammars — the
+    factories differ only in which evaluator and label they hand over."""
+    return SearchController(evaluator, sims=knobs.sims, worlds=knobs.worlds,
+                            c_puct=knobs.c_puct, temperature=knobs.temperature,
+                            label=label, rng_seed=knobs.rng_seed,
+                            sb_sims=knobs.sb_sims, sb_worlds=knobs.sb_worlds,
+                            sb_max_depth=knobs.sb_max_depth,
+                            sb_rollout_turns=knobs.sb_rollout_turns,
+                            sb_persist=bool(knobs.sb_persist),
+                            time_budget=knobs.time_budget,
+                            sims_cap=knobs.sims_cap,
+                            sb_sims_cap=knobs.sb_sims_cap, procs=knobs.procs,
+                            clock=knobs.clock, clock_t_min=knobs.tmin,
+                            clock_t_max=knobs.tmax,
+                            clock_sb_t_max=knobs.sb_tmax, paced=knobs.paced)
+
+
 def _make_search_controller(spec: str, *,
                             checkpoint_resolver=None) -> "SearchController":
     """Build a SearchController from the part after "mcts:".
@@ -1394,41 +1486,18 @@ def _make_search_controller(spec: str, *,
     """
     from mcts import PPOEvaluator, UniformEvaluator
 
-    base, params = _parse_spec_query(spec)
-    sims = _spec_knob(params, "sims", 128, int, spec)
-    worlds = _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec)
-    c_puct = _spec_knob(params, "c", 1.5, float, spec)
-    temperature = _spec_knob(params, "temp", 0.0, float, spec)
-    v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
-    rng_seed = _spec_knob(params, "seed", 0, int, spec)
-    procs = _spec_knob(params, "procs", 1, int, spec)
-    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
-    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
-    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
-    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
-                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
-    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
-    time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
-    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
+    base, _params = _parse_spec_query(spec)
+    knobs = _parse_search_knobs(spec)
 
     if base.lower() == "uniform":
         evaluator = UniformEvaluator()
-        label = f"mcts:uniform({_effort_label(sims, worlds, time_budget, clock)})"
+        label = f"mcts:uniform({_effort_label_for(knobs)})"
     else:
         resolver = checkpoint_resolver or resolve_checkpoint
         model = _load_model(resolver(base))
-        evaluator = PPOEvaluator(model, v_scale=v_scale)
-        label = f"mcts:{base}({_effort_label(sims, worlds, time_budget, clock)})"
-    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-                            temperature=temperature, label=label, rng_seed=rng_seed,
-                            sb_sims=sb_sims, sb_worlds=sb_worlds,
-                            sb_max_depth=sb_max_depth,
-                            sb_rollout_turns=sb_rollout_turns,
-                            sb_persist=bool(sb_persist),
-                            time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
-                            clock=clock, clock_t_min=tmin, clock_t_max=tmax,
-                            clock_sb_t_max=sb_tmax, paced=paced)
+        evaluator = PPOEvaluator(model, v_scale=knobs.v_scale)
+        label = f"mcts:{base}({_effort_label_for(knobs)})"
+    return _build_search_controller(evaluator, label, knobs)
 
 
 class AZRawController:
@@ -1507,7 +1576,11 @@ def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
     arms a whole-match chess-clock bank (per-decision allocation bounded by
     tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` masks response-timing
     tells for human play (small jittered floor + occasional fake-think beats)."""
-    base, params = _parse_spec_query(spec)
+    base, _params = _parse_spec_query(spec)
+    # Ordering is load-bearing: the evaluator loads BEFORE any knob is parsed
+    # (so a bad checkpoint still reports before a malformed knob), and the
+    # azraw: seat returns before knob parsing (azraw: has never validated
+    # knobs — leave that status quo alone).
     # The PPO warm-start rung honours the caller's checkpoint resolver, same as
     # the plain-model and mcts: branches of make_controller (this used to be
     # silently dropped for az:/azraw: specs).
@@ -1515,31 +1588,9 @@ def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
         base, ppo_resolver=checkpoint_resolver or resolve_checkpoint)
     if not search:
         return AZRawController(evaluator, label=f"azraw:{base}")
-    sims = _spec_knob(params, "sims", 128, int, spec)
-    worlds = _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec)
-    c_puct = _spec_knob(params, "c", 1.5, float, spec)
-    temperature = _spec_knob(params, "temp", 0.0, float, spec)
-    rng_seed = _spec_knob(params, "seed", 0, int, spec)
-    procs = _spec_knob(params, "procs", 1, int, spec)
-    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
-    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
-    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
-    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
-                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
-    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
-    time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
-    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
-    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-                            temperature=temperature,
-                            label=f"az:{base}({_effort_label(sims, worlds, time_budget, clock)})",
-                            rng_seed=rng_seed, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                            sb_max_depth=sb_max_depth,
-                            sb_rollout_turns=sb_rollout_turns,
-                            sb_persist=bool(sb_persist),
-                            time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
-                            clock=clock, clock_t_min=tmin, clock_t_max=tmax,
-                            clock_sb_t_max=sb_tmax, paced=paced)
+    knobs = _parse_search_knobs(spec)   # vscale is parsed and ignored here
+    return _build_search_controller(
+        evaluator, f"az:{base}({_effort_label_for(knobs)})", knobs)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:
