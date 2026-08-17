@@ -1058,8 +1058,8 @@ def run_launcher(binary_path=None):
     The headless shell smokes hijack this entry: set
     ROBOMAGE_GUI_SESSION_SMOKE / ROBOMAGE_GUI_TRACE_SMOKE /
     ROBOMAGE_BROWSER_SMOKE and run `python train/gui_main.py`."""
-    from cli_spec import BINARY
-    binary_path = binary_path or BINARY
+    from cli_spec import INTERACTIVE_BINARY
+    binary_path = binary_path or INTERACTIVE_BINARY
     app = _ensure_app()
     window = MainWindow(binary_path)
     window.show()

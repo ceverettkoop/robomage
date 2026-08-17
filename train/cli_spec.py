@@ -27,6 +27,17 @@ BUILD = os.environ.get("ROBOMAGE_BUILD", "debug")
 BUILD_DIR = os.path.join(BIN_DIR, BUILD)  # where this config's binaries live
 BINARY = os.path.join(BUILD_DIR, "robomage")
 
+# Interactive / training tools (GUI, standalone analysis browser, PPO and AZ
+# training) default to the RELEASE build instead — debug's assertions and
+# -O0 make them noticeably slower and there's no need for the extra checking
+# once a card's behavior is already verified by `make check`. ROBOMAGE_BUILD
+# still overrides this the same as it overrides BUILD above (set it to
+# "debug" to force these tools back onto the debug binary, e.g. to reproduce
+# an assertion failure only the debug build catches).
+INTERACTIVE_BUILD = os.environ.get("ROBOMAGE_BUILD", "release")
+INTERACTIVE_BUILD_DIR = os.path.join(BIN_DIR, INTERACTIVE_BUILD)
+INTERACTIVE_BINARY = os.path.join(INTERACTIVE_BUILD_DIR, "robomage")
+
 # AlphaZero sideboard-root search budget (single home; imported by az_selfplay,
 # opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard
 # prompt IS a valid MCTS root, but each rollout there re-crosses init_ecs() + deck
@@ -397,10 +408,17 @@ class Tool:
 
 # ── Reusable argument groups (mirror the helper functions in the scripts) ─────
 
-def common_args():
-    """Args shared by every train.py subcommand (was train.py _add_common)."""
+def common_args(binary_default=BINARY):
+    """Args shared by every train.py subcommand (was train.py _add_common).
+
+    ``binary_default`` lets a subcommand override the engine binary default —
+    PPO training subcommands pass ``INTERACTIVE_BINARY`` (release-by-default;
+    see its definition above) since debug's assertions and -O0 make training
+    noticeably slower; observe (game watching, not training) keeps the plain
+    ``BINARY`` (debug-by-default) since it's usually paired with a debug
+    engine while iterating on a card/rule."""
     return [
-        Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
+        Arg("--binary", "str", default=binary_default, help="Path to robomage binary"),
         Arg("--bo3", "flag",
             help="Best-of-three match mode (deck swap + sideboarding between games)"),
     ]
@@ -586,7 +604,7 @@ def sim_args():
             help="Opponent's deck (.dk stem). REQUIRED for a model opponent (the "
                  "generalist encodes no deck); a scripted opponent defaults to a "
                  "mirror match (--deck-a)."),
-        Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
+        Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
         Arg("--bo3", "flag",
             help="Run best-of-three matches (decks must include SIDEBOARD entries)"),
         Arg("--out", "str", default=None,
@@ -614,7 +632,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _opponent_mode(),
         *opponent_pool_opts(),
         *train_opts(),
-        *common_args(),
+        *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("league", "PFSP league: train one generalist model per deck vs the whole field", items=[
         Arg("--resume", "flag",
@@ -696,7 +714,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Cap on unique opponent checkpoints kept resident, as a ratio of "
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
         *train_opts(),
-        *common_args(),
+        *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("exploiter",
         "Train a dedicated ARCHETYPE EXPLOITER vs the frozen generalist "
@@ -747,7 +765,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "existing exp_<archetype> checkpoint always wins over both — this "
                  "flag only affects the FIRST run of an archetype's exploiter."),
         *train_opts_except("total_timesteps", "fresh"),
-        *common_args(),
+        *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("curriculum",
         "Run / resume a multi-phase training PLAN (league, exploiter, az, "
@@ -807,7 +825,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Cap on unique opponent checkpoints kept resident, as a ratio of "
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
         *train_opts(),
-        *common_args(),
+        *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("fixed-model", "Train --deck vs a fixed (never-reloaded) opponent model", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck the model plays (.dk stem)"),
@@ -815,7 +833,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--load", "str", default=None, suggest="checkpoint",
             help="Resume from checkpoint .zip ('gen' or a path)"),
         *train_opts(),
-        *common_args(),
+        *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("alternate", "Swap which side is trained every N timesteps", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="First deck (.dk stem)"),
@@ -823,7 +841,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--every", "int", required=True, metavar="N",
             help="Swap the trained side every N timesteps"),
         *train_opts(),
-        *common_args(),
+        *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("observe",
         "Observe game(s) between any pair of {scripted | model} controllers "
@@ -1416,7 +1434,7 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="Which player the human controls, in CLI text mode (default: random)"),
         Arg("--seed", "int", default=None,
             help="Engine RNG seed for a reproducible game (CLI text mode; default: random)"),
-        Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
+        Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
     ]),
 ])
 
