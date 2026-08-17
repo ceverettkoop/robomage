@@ -1,24 +1,112 @@
-# Plan: cross-world leaf batching + GPU self-play inference
+# Plan: cross-world leaf batching + GPU self-play inference (AMD RX 6700)
 
-Status: DESIGN (nothing below is built). Companion measurement: the
-`bench_actor.py --batch` sweep (branch `claude/leaf-batching-mcts-assessment-*`)
-quantifies the CPU-side win of batching leaf evals; this doc is the follow-on
-plan. Scope is the **self-play generation** side of AZ training only — `az_train`
-SGD is fast enough on CPU and is deliberately out of scope.
+Status: Stage 0 is IMPLEMENTED (actor `--cross-world`; gates in
+`test_mcts_parity.py`); Stages A and C are DESIGN. Scope is the **self-play
+generation** side of AZ training only — `az_train` SGD is fast enough on CPU
+and is deliberately out of scope.
 
-The four stages are strictly ordered: each one is useful on its own, and each
-later stage consumes the previous one's machinery.
+Revision note: an earlier draft had a Stage B (multi-game actor processes via
+snapshot-multiplexed fibers). It is DROPPED: Stage C achieves cross-process
+batching without touching the actor's one-game-per-process structure, so B's
+complexity (fiber scheduling, snapshot context switches, `N_SNAPSHOT_SLOTS`
+growth) buys nothing C doesn't. The remaining ladder:
 
 ```
-Stage 0  cross-world batching      (CPU, no quality cost, K = worlds)
-Stage A  CUDA in the actor         (same K, GPU forward, validates the path)
-Stage B  multi-game actor process  (K = games x worlds, one process)
-Stage C  central inference server  (K = fleet-wide, the KataGo shape)
+Stage 0  cross-world batching       (CPU, no quality cost, K = worlds)  [BUILT]
+Sanity   time the net on the 6700   (10 minutes; gates all GPU work)
+Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)
+Stage C  central inference server   (K = fleet-wide, the KataGo shape)
 ```
 
-Throughout: `K` = rows per net forward. The measured CPU sweep tells us what
-amortization K buys; GPU economics need K >= ~32–64 to beat the CPU forward at
-this net size (CardGameExtractor trunk + [256,256] heads).
+Throughout: `K` = rows per net forward.
+
+## Target hardware: AMD Radeon RX 6700 (ROCm, not CUDA)
+
+The GPU is an RX 6700 — Navi 22, **`gfx1031`**, RDNA2, ~11–13 TFLOPS FP32,
+10 GB VRAM (ample; the net is tiny). Everything GPU-side goes through
+**PyTorch's ROCm build**, which deliberately masquerades as CUDA:
+`torch.cuda.is_available()` is True and `device="cuda"` targets the Radeon, so
+Python-side code needs no AMD-specific branches. Constraints to plan around:
+
+- **Officially unsupported card.** ROCm's support list does not include RDNA2
+  consumer parts. The standard community workaround is
+  `HSA_OVERRIDE_GFX_VERSION=10.3.0` (run `gfx1030` kernels — Navi 21/22 are
+  ISA-compatible), widely reported reliable for torch. Treat ROCm upgrades as
+  potentially breaking; pin the working ROCm/torch pair once found.
+- **Linux only.** No Windows torch-ROCm; WSL2 ROCm does not cover RDNA2.
+- **No matrix cores** (WMMA is RDNA3+): plain shader FP32/FP16 throughput.
+  Irrelevant at our scale — the fleet needs only ~3–6k leaf evals/s and even
+  a few effective TFLOPS is orders of magnitude past that at batch 128–256.
+- **Install**: `pip install torch --index-url
+  https://download.pytorch.org/whl/rocm6.2` (libtorch ships inside the same
+  wheel — Stage A links against it).
+
+## Sanity check — run BEFORE any GPU engineering
+
+Ten minutes on the 6700 box decides whether Stages A/C are live. With the
+ROCm wheel installed and `HSA_OVERRIDE_GFX_VERSION=10.3.0` exported:
+
+1. `torch.cuda.is_available()` → must be True;
+   `torch.cuda.get_device_name(0)` names the Radeon.
+2. Export the net once (`train/az_net.py --export gen`, or a fresh
+   `AZNet(obs_space_from_const())` under `torch.manual_seed(0)` where no
+   checkpoint exists) and `torch.jit.load` it.
+3. Time batched forwards, CPU vs GPU, e.g.:
+   ```python
+   import time, torch
+   m = torch.jit.load("gen__azfinal.ts.pt")
+   for dev in ("cpu", "cuda"):
+       net = m.to(dev)
+       for k in (1, 8, 64, 256):
+           obs = torch.randn(k, OBS_SIZE, device=dev)
+           mask = torch.ones(k, MAX_ACTIONS, dtype=torch.bool, device=dev)
+           for _ in range(10): net(obs, mask)          # warmup
+           torch.cuda.synchronize() if dev == "cuda" else None
+           t0 = time.perf_counter()
+           for _ in range(100): net(obs, mask)
+           torch.cuda.synchronize() if dev == "cuda" else None
+           print(dev, k, (time.perf_counter() - t0) / 100 * 1e3, "ms")
+   ```
+4. **Go/no-go**: GPU at k=256 should beat CPU-per-row by a wide margin
+   (order of magnitude expected); GPU at k=1 will likely LOSE to CPU —
+   that's the launch-latency economics the whole plan is built around, not a
+   failure. If the override crashes or numbers look broken, stop: stay on
+   the CPU path (Stage 0 alone) until the ROCm situation changes.
+
+## Why not the existing `--batch K` (virtual loss)?
+
+The actor's older batching collects K leaves **within one world's tree**
+under virtual loss. At the production budget (256 sims / 4 worlds = 64 sims
+per tree) a useful K is a large fraction of the tree, so selection quality —
+and the π visit targets the trainer learns from — degrades, and the config
+leaves the bit-parity envelope. Cross-world batching gets K = worlds with
+**zero** search-quality cost, because the worlds are independent trees.
+
+## Stage 0 — cross-world batching (CPU) — BUILT
+
+Implemented as `MCTSConfig::cross_world` / `az_actor --cross-world`
+(mutually exclusive with `--batch K>1`), plumbed through
+`actor_selfplay_cmd(cross_world=)` and `bench_actor.py --cross`.
+
+Mechanism: all world roots are built up front (ascending world order — the
+noise-rng stream is unchanged), then sims run round-robin across worlds. A
+freshly expanded (or depth-capped) leaf defers into the shared PendingLeaf
+batch; the batch is flushed in ONE forward before any world's own next
+descent starts (per-world in-flight flags; finalize flushes the tail), so
+**no virtual loss is applied** and every per-world tree is arithmetically
+identical to the sequential search. Only the batched GEMM's last-ulp logits
+can differ. Searches whose budget has leaf rollouts on (bo3 sideboard roots
+by default) keep the unchanged sequential path — a deferred leaf cannot
+drive a playout.
+
+Gates (`test_mcts_parity.py`): two EXACT uniform-evaluator legs — bo1 and
+bo3-sb-persist (with no net there is no GEMM, so cross vs sequential visits
+must match bit-for-bit; any difference is a scheduler bug) — plus a real-net
+argmax-agreement report (expected ~1.0, ulp flips on near-ties allowed).
+
+Knob guidance: prefer `--worlds 8` at fixed `--sims` — doubles K *and*
+determinization coverage; sweep 4 vs 8 through the az-eval gate before
+changing the default.
 
 ## Measured: CPU batch sweep (2026-08-17)
 
@@ -48,155 +136,58 @@ Readings:
 - Single-thread numbers = CPU-work reductions, so they translate ~directly to
   fleet throughput at fixed cores.
 
-## Why not just use the existing `--batch K` (virtual loss)?
+## Stage A — HIP/ROCm in the actor
 
-The actor's implemented batching collects K leaves **within one world's tree**
-under virtual loss. At the production budget (256 sims / 4 worlds = 64 sims per
-tree) a useful K is a large fraction of the tree, so selection quality — and
-therefore the π visit targets the trainer learns from — degrades, and the
-config leaves the `test_mcts_parity` bit-parity envelope. Cross-world batching
-gets K = worlds with **zero** search-quality cost, because the worlds are
-already independent trees.
-
-## Stage 0 — cross-world batching (CPU)
-
-**Idea.** Run the per-world sims round-robin instead of world-at-a-time:
-`w0.s0, w1.s0, …, w(W-1).s0, flush, w0.s1, …`. Each round, every world with
-remaining budget contributes at most one PendingLeaf; the round ends with ONE
-batched forward (`evaluate_double_batch`, K <= worlds). No virtual loss: a
-world's own next descent never starts before its previous leaf is backed up, so
-every tree evolves exactly as it does today.
-
-**Equivalence argument.** Round-robin vs sequential world order does not change
-any single world's sim sequence or the state each of its descents sees
-(IncrementalSearch already relies on exactly this to be bit-identical to
-`run_search`). Deferring the leaf eval to the end of the round backs it up
-before the world's next descent, so per-world trees are *arithmetically
-identical* to today's search. The only divergence is last-ulp: a batched GEMM's
-logits differ from single-row forwards. Under a UniformEvaluator there is no
-net, so visit counts must match **bit-exactly** — that is the CI gate for the
-scheduler (see Testing).
-
-**Changes (all in `src/actor/az_mcts.{h,cpp}` unless noted):**
-
-1. `MCTSConfig`: add `bool cross_world = false` (actor flag `--cross-world`,
-   plumbed through `actor_selfplay_cmd` like `--batch`). Mutually exclusive
-   with `batch > 1`.
-2. **Roots up front.** Move the `begin_world(w)` calls (root adoption + noise
-   draw + merge fold) for all worlds to search start, mirroring
-   `mcts.py::_init_worlds`. RNG stream is unchanged: sims draw nothing from the
-   noise rng, so hoisting the per-world gamma draws preserves the sequence.
-3. **Scheduler.** Replace the `cur_world`/`cur_sim` block loop in
-   `advance_after_restore`/`start_next_world_sim` with: `next_world` pointer +
-   per-world `remaining` budgets; after each `finish_sim`, advance to the next
-   world with budget; on wrap (a full round), `flush_pending()` first.
-   Worlds with zero top-up budget (boundary persistence) fold in as today.
-4. **PendingLeaf without virtual loss**, plus a `value_only` flag so the
-   depth-cap eval (today an immediate `eval_one`) can also be deferred — it
-   backs up a value but creates no node.
-5. **Terminals / memo hits** back up immediately as today (they need no eval);
-   the round's batch just comes up short.
-6. **Rollout roots stay on the immediate path** (`cur_rollout_turns > 0`
-   forces per-leaf eval, exactly like `batch > 1` today) — i.e. bo3 sideboard
-   roots see no change and no gain. Documented, accepted.
-7. **Knob interaction:** recommend `--worlds 8` at fixed `--sims` once this
-   lands — it doubles K *and* determinization coverage; quality moves up, not
-   down. Sweep 4 vs 8 through the az-eval gate before making it the default.
-
-**Testing.**
-- `test_mcts_parity.py` gains a cross-world line: UniformEvaluator (torch-free)
-  cross-world vs plain `run_search` — **exact** visit parity required (this
-  pins the scheduler). With the real net: argmax-agreement line only (GEMM ulp),
-  like today's batch=16 line.
-- `eval_search_gate.py` A/B same checkpoint, cross-world on vs off — strength
-  must be flat within noise.
-
-## Stage A — CUDA in the actor
-
-Smallest possible GPU step: same search, same K, the forward moves to the GPU.
-Its purpose is to validate the CUDA build/link/runtime path and get a real
-measurement of small-K GPU economics before any architecture work.
+Smallest possible GPU step: same search, same K (= worlds), the forward moves
+to the Radeon. Its purpose is validating the ROCm build/link/runtime path in
+C++ and measuring small-K GPU economics on this exact card before the server
+work.
 
 1. **`AZEvaluator` device support** (`src/actor/az_evaluator.cpp`): `load()`
-   takes a device string; `module_.to(device)`. `evaluate_double_batch` stages
-   the `[k, OBS]` batch in a pinned CPU tensor, `.to(device, /*non_blocking=*/
-   true)`, forwards, copies logits/value back to CPU. The double-precision
-   prior math (float32 softmax → float64 renormalize) stays on CPU, unchanged —
-   `AZEvalResultD` semantics identical.
-2. **Makefile**: when `$(LIBTORCH_DIR)/lib/libtorch_cuda.so` exists, append
-   `-ltorch_cuda -lc10_cuda` wrapped in `-Wl,--no-as-needed` (without it the
-   linker drops `libtorch_cuda` — no direct symbol refs — and CUDA silently
-   isn't registered at runtime). CPU-only venvs build exactly as today.
-3. **Flags**: `az_actor --device cpu|cuda` (default cpu);
-   `az_selfplay`/`az`/`az-league` pass-through `--actor-device`.
-4. **Fleet shape**: N processes sharing one GPU each own a CUDA context
-   (~hundreds of MB) and serialize on the device. Run fewer, fatter workers
-   (e.g. 8 x worlds=8) and/or enable CUDA MPS. This stage is expected to be
-   only a modest win — K = worlds is below the GPU break-even; that is fine,
-   it is the stepping stone, and the measurement decides whether B/C are
-   worth it.
-
-## Stage B — multiple concurrent games per actor process
-
-Goal: K = `games_in_flight x 1` leaves per flush (x worlds if the scheduler
-interleaves at world granularity), from ONE process — GPU batches in the 32–256
-range without any IPC.
-
-**The blocker and the key enabler.** The engine is global-state
-(`global_coordinator`, `cur_game`), so M games cannot coexist as live engine
-states. But `snapshot.h` already deep-copies the COMPLETE per-game state —
-`cur_game + ECS + card_db + match revealed arrays`, and MATCH scope even
-round-trips an `init_ecs()` teardown. So M games can coexist as M snapshot
-blobs, with exactly one hydrated in the engine at a time.
-
-**Design: fibers + snapshot context-switch.**
-
-- M worker fibers (ucontext/boost::context — or OS threads with a baton mutex,
-  same structure), each running its own `play_single_game`/match loop with its
-  own `AZMcts` instance and its own snapshot slot(s). Exactly one fiber runs at
-  a time; there is no engine-level concurrency.
-- **Yield point** = the natural pause the state machine already has: after a
-  sim latches its restore and the provider is back at AWAITING_ROOT, the
-  engine state equals the fiber's own search-root snapshot. Park there: no
-  extra capture needed. To resume fiber j: `snapshot_restore(slot_j)` and
-  continue its state machine. Context-switch cost ≈ one restore (~0.3–1 ms),
-  paid once per collected leaf — measure against the ~5–10 ms/sim baseline;
-  if it dominates, switch at coarser granularity (one full ROUND of a fiber's
-  worlds per turn) to amortize.
-- A shared `PendingLeaf` queue across fibers; the scheduler flushes one big
-  forward when every runnable fiber has contributed its round (or a row cap is
-  hit), then resumes fibers to back up their results. Cross-game rows are
-  independent — still no virtual loss anywhere.
-- `N_SNAPSHOT_SLOTS` (currently 4, `src/snapshot.h`) becomes M + spare; each
-  slot is a full deep copy, so M is bounded by memory — M = 8–16 is the
-  target range, which with worlds=8 already yields K = 64–128.
-- Shard writing: per-fiber sample buffers, flushed under the existing
-  per-match discipline; seeds partition exactly as the process-level fleet
-  does today (fiber i owns seed range i).
-- **Non-goals**: no engine de-globalization, no engine-thread parallelism.
-  The engine stays single-threaded; only the net forward is batched.
-
-This is the most invasive stage. It should only be built if Stage A's
-measurement shows small-K GPU forwards leaving most of the device idle AND
-Stage C's IPC route is unattractive (see below) — otherwise skip straight to C.
+   takes a device string; `module_.to(device)`. `evaluate_double_batch`
+   stages the `[k, OBS]` batch in a pinned CPU tensor,
+   `.to(device, /*non_blocking=*/true)`, forwards, copies logits/value back.
+   The double-precision prior math (float32 softmax → float64 renormalize)
+   stays on CPU, unchanged — `AZEvalResultD` semantics identical whether the
+   forward ran on CPU or GPU. (torch's HIP backend registers as `cuda`, so
+   the device string stays `"cuda"` even on the Radeon.)
+2. **Makefile**: when the venv libtorch has `lib/libtorch_hip.so`, append
+   `-ltorch_hip -lc10_hip` wrapped in `-Wl,--no-as-needed` (without it the
+   linker drops the lib — no direct symbol refs — and the backend silently
+   never registers; the same gotcha as CUDA's `torch_cuda`). CPU-only venvs
+   build exactly as today.
+3. **Flags**: `az_actor --device cpu|cuda` (default cpu; `"cuda"` = the
+   Radeon under ROCm); `az_selfplay`/`az`/`az-league` pass-through
+   `--actor-device`. Runtime env: `HSA_OVERRIDE_GFX_VERSION=10.3.0` must be
+   set for every actor process — export it in the launcher
+   (`_generate_actor`), not per-shell.
+4. **Fleet shape**: N processes sharing the one Radeon serialize on the
+   device and each hold a context. Run fewer, fatter workers (e.g. 8 x
+   `--worlds 8`). There is no AMD equivalent of CUDA MPS to lean on, which
+   is fine — Stage A is a stepping stone, and K = worlds is below GPU
+   break-even by design. The measurement (bench `--cross` leg with
+   `--actor-device cuda`) decides how quickly to move to C.
 
 ## Stage C — central inference server (the KataGo/ELF shape)
 
-One GPU-owning server process; the existing one-game-per-process actor fleet
-submits leaf batches over IPC and blocks for results. Achieves fleet-wide K
-(28 actors x worlds rows in flight) with NO change to the actor's game/search
-structure — C does not require B.
+One Radeon-owning server process; the existing one-game-per-process actor
+fleet submits leaf batches over IPC and blocks for results. Achieves
+fleet-wide K (workers x worlds rows in flight) with NO change to the actor's
+game/search structure.
 
 - **Transport**: Unix domain socket, length-prefixed binary frames.
   Request: `k, k x OBS_SIZE float32, k x int32 num_choices`. Reply:
-  `k x MAX_ACTIONS float32 logits, k x float32 value`. The server returns RAW
-  logits; the client keeps the exact double-precision prior computation
+  `k x MAX_ACTIONS float32 logits, k x float32 value`. The server returns
+  RAW logits; the client keeps the exact double-precision prior computation
   locally, so `AZEvalResultD` numerics are identical whether the forward ran
   locally or remotely.
-- **Server** (`train/az_eval_server.py`, ~150 lines): loads the `.ts.pt`
-  (or checkpoint) once, accumulates requests up to `max_batch` (256–512) or a
-  micro-timeout (~0.5–2 ms), one forward, dispatches replies. Torch already
-  lives in the venv; no new C++.
+- **Server** (`train/az_eval_server.py`, ~150 lines): venv ROCm torch, loads
+  the `.ts.pt` once, `.to("cuda")` (the Radeon), accumulates requests up to
+  `max_batch` (256–512) or a micro-timeout (~0.5–2 ms), one forward,
+  dispatches replies. Being a plain venv-python process, the whole
+  ROCm/HSA-override surface lives HERE and nowhere else — with Stage C in
+  place the actors can stay CPU-built (Stage A's HIP link becomes optional
+  validation tooling, not a production dependency).
 - **Client**: a second `AZEvaluator` backend (`--eval-server <socket>`)
   implementing `evaluate_double_batch`/`evaluate_double` over the socket.
   Everything above the evaluator interface is untouched — Stage 0's
@@ -207,23 +198,26 @@ structure — C does not require B.
   az-league slot (startup is seconds). Any transport/server error in the
   actor is FATAL AND LOUD (`exit(1)`), matching the evaluator's existing
   error discipline — no silent local fallback.
-- **Sizing sanity check**: ~28 actors x ~100–200 evals/s ≈ 3–6 k rows/s
-  fleet-wide; one GPU at batch 256 on this net does an order of magnitude
-  more. The engine (restore + path replay, ~0.5–1.5 ms/sim floor) becomes
-  the bottleneck again — which bounds the whole program at roughly
-  1/(engine share) per actor. That engine share is exactly what the CPU
-  batch sweep measures; read the ceiling off that number before promising
-  more.
+- **Sizing sanity check**: the fleet generates ~3–6k leaf evals/s; the 6700
+  at batch 256 on this small net does an order of magnitude more (confirm
+  with the sanity-check timing above). The engine (restore + path replay,
+  measured floor < 360 ms per 128-sim root) becomes the bottleneck again —
+  bounding the per-actor gain at roughly 3x over today's unbatched CPU
+  baseline, per the sweep table.
 
 ## Cross-cutting: what guards quality at every stage
 
-- The bit-parity harness (batch=1, CPU) stays green and untouched — it remains
-  the machinery gate. Cross-world adds the uniform-evaluator EXACT gate.
+- The bit-parity harness (batch=1, CPU) stays green and untouched — it
+  remains the machinery gate. Stage 0 adds the uniform-evaluator EXACT
+  gates for the cross scheduler.
 - Every stage lands behind a flag, default off, and must pass: (1) the
-  cross-world uniform parity gate, (2) an `eval_search_gate` A/B at equal sims
-  (strength flat), (3) an az-league slot where the candidate still clears the
-  az-eval promotion gate. The promotion gate bounds the blast radius of any
-  mistake to wasted compute — `gen__azfinal` cannot regress silently.
+  cross-world uniform parity gates, (2) an `eval_search_gate` A/B at equal
+  sims (strength flat), (3) an az-league slot where the candidate still
+  clears the az-eval promotion gate. The promotion gate bounds the blast
+  radius of any mistake to wasted compute — `gen__azfinal` cannot regress
+  silently.
 - π/z/td_q sample semantics are unchanged at every stage: Stage 0 produces
-  arithmetically identical visits; A/B/C only change WHERE the same forward
-  runs and how many rows share it.
+  arithmetically identical visits; A and C only change WHERE the same
+  forward runs and how many rows share it. GPU forwards differ from CPU in
+  last-ulp logits only — same class of difference the cross-world gates
+  already scope out via the uniform-evaluator legs.
