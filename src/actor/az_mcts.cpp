@@ -1047,7 +1047,15 @@ struct AZMcts::Impl {
     }
 
     int on_decision(const std::vector<LegalAction>& actions) {
-        const int menu_n = static_cast<int>(actions.size());
+        // populate_query (and therefore build_obs's num_choices, which is what
+        // root_n records) clamps an over-wide legal menu to MAX_ACTIONS, so
+        // every search roots on the clamped width and answers indices inside
+        // it. Compare and capture against the SAME clamped width here — a raw
+        // actions.size() would make the restore-contract tripwire below fire
+        // spuriously on any decision whose menu exceeds MAX_ACTIONS (root_n is
+        // clamped, the re-emitted actions.size() is not), and would also over-
+        // read the MAX_ACTIONS-wide per-action obs blocks in the debug capture.
+        const int menu_n = std::min(static_cast<int>(actions.size()), MAX_ACTIONS);
         int r;
         // AWAITING_ROOT only advances sim/world bookkeeping and never reads the
         // observation, so skip the full obs rebuild there — it fires once per
