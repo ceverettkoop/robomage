@@ -756,7 +756,11 @@ def tier_actor(rep):
     """Phase-D AZ actor gate (opt-in). Self-skips when bin/az_actor is missing or
     torch is unavailable; otherwise runs the actor/MCTS/shard parity tests as
     subprocesses and reports each PASS/FAIL through the Report."""
-    actor_bin = os.path.join(_REPO_ROOT, "bin", "az_actor")
+    # The actor lives next to the engine binary in the selected config dir
+    # (bin/<config>/), so derive it from runner.BINARY rather than hardcoding
+    # bin/az_actor — otherwise this gate looks in the wrong place after the
+    # per-config build split.
+    actor_bin = os.path.join(os.path.dirname(runner.BINARY), "az_actor")
     if not os.path.exists(actor_bin):
         print(f"  [skip] actor: {actor_bin} not built "
               "(build with `make actor`)", flush=True)

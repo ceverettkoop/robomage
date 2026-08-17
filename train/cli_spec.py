@@ -16,8 +16,16 @@ from archetypes import ARCHETYPES
 
 # ── Canonical CLI constants (single home; imported by env.py / train.py) ──────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BINARY = os.path.join(REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resource lookup
+# The Makefile writes each configuration's binaries to bin/<config>/ (see its
+# CONFIG variable): bin/debug/robomage from a plain `make`, bin/release/robomage
+# from `make BUILD=RELEASE`. Tooling selects one deliberately via ROBOMAGE_BUILD
+# (default "debug", matching a plain `make`); every command's --binary flag still
+# defaults to BINARY, so an explicit path stays an escape hatch. BIN_DIR stays the
+# launch cwd (the engine finds resources/ via getcwd()), independent of BUILD_DIR.
+BUILD = os.environ.get("ROBOMAGE_BUILD", "debug")
+BUILD_DIR = os.path.join(BIN_DIR, BUILD)  # where this config's binaries live
+BINARY = os.path.join(BUILD_DIR, "robomage")
 
 # AlphaZero sideboard-root search budget (single home; imported by az_selfplay,
 # opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard

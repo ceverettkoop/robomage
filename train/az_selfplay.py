@@ -50,7 +50,7 @@ import numpy as np
 
 try:
     from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
-    from cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+    from cli_spec import (BIN_DIR, BUILD_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
                           DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
                           DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
@@ -60,7 +60,7 @@ try:
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
-    from train.cli_spec import (BIN_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+    from train.cli_spec import (BIN_DIR, BUILD_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
                                 DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
                                 DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES,
                                 DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
@@ -71,7 +71,7 @@ except ImportError:  # pragma: no cover
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
-_ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+_ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
 _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
