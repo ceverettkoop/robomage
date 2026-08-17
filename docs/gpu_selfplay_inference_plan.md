@@ -20,6 +20,34 @@ Throughout: `K` = rows per net forward. The measured CPU sweep tells us what
 amortization K buys; GPU economics need K >= ~32–64 to beat the CPU forward at
 this net size (CardGameExtractor trunk + [256,256] heads).
 
+## Measured: CPU batch sweep (2026-08-17)
+
+`bench_actor.py --games 2 --sims 128 --worlds 4 --batch 1 4 8 16 --no-python`,
+release actor, fresh deterministic net, `league/ur_delver` mirror, single
+thread, 4-core cloud container. ms/dec = wall per SEARCHED root (128 sims
+each), the batch-comparable metric (game trajectories diverge across batch
+values, so decision counts differ; per-decision cost does not care).
+
+| batch | ms/dec | speedup |
+|------:|-------:|--------:|
+|     1 | 1008.5 |   1.00x |
+|     4 |  600.6 |   1.68x |
+|     8 |  486.0 |   2.08x |
+|    16 |  360.8 |   2.79x |
+
+Readings:
+- **Net share of per-sim cost is ~2/3 or more**: b=16 removes >64% of the
+  per-decision cost and the curve has not flattened, so the engine floor
+  (restore + path replay) is below 360 ms/dec — i.e. batching-only ceiling on
+  CPU is ~3–3.5x, and post-Stage-C the same floor bounds the per-actor gain.
+- **Cross-world batching (Stage 0) is worth ~1.7x at worlds=4 and ~2.1x at
+  worlds=8** (K = worlds, read off the b=4/b=8 rows) with zero quality cost.
+- The b=16 row runs HALF of each 32-sim world tree in flight under virtual
+  loss — quality-suspect at this budget; treat it as an upper bound on the
+  amortization curve, not a recommended config.
+- Single-thread numbers = CPU-work reductions, so they translate ~directly to
+  fleet throughput at fixed cores.
+
 ## Why not just use the existing `--batch K` (virtual loss)?
 
 The actor's implemented batching collects K leaves **within one world's tree**
