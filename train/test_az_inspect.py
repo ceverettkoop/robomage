@@ -268,6 +268,28 @@ def test_probes(net, sample):
     avg = azi.block_importance(net, sample, n_rows=6, donors=2, seed=0)
     check(len(avg["rows"]) == len(blocks) and avg["n"] == 6,
           "averaged attribution covers every block over the requested states")
+    check(all(r["dlat"] >= 0 and r["dz_sel"] >= 0 and r["dz_all"] >= 0
+              for r in avg["rows"]),
+          "read-out decomposition columns are magnitudes")
+    bidx = next(r for r in avg["rows"] if r["name"] == "matchup bucket idx")
+    check(bidx["dlat"] < 1e-6 and bidx["dz_sel"] < 1e-6,
+          "bucket-idx perturbation moves no latent (index is stripped from "
+          "the trunk) — its |dV| is pure read-out re-routing")
+
+    ro = azi.value_readouts(net, sample["obs"][0])
+    check(len(ro["rows"]) == net._n_buckets,
+          "value_readouts scores every critic column")
+    check(ro["selected"] == net.obs_value_bucket(sample["obs"][0]),
+          "readout's selected bucket is the one forward gathers")
+    check(abs(ro["value"] - azi.state_value(net, sample["obs"][0],
+                                            sample["mask"][0])) < 1e-6,
+          "the selected read-out IS the state's V")
+    bias = net.value_head.bias.detach().cpu().numpy()
+    check(all(abs(np.tanh(r["state_part"] + bias[r["bucket"]]) - r["v"]) < 1e-5
+              for r in ro["rows"]),
+          "each read-out's V reconstructs from its state part + bias")
+    check(all(-1.0 <= r["v"] <= 1.0 for r in ro["rows"]),
+          "read-out values are tanh-bounded")
 
     sites = azi.card_id_sites(sample["obs"][0])
     labels = [lab for lab, _, _ in sites]
@@ -611,6 +633,8 @@ def test_renders(net, path, sample, mat):
         "state": lambda: azi.render_state(sample, 0, net=net),
         "blocks": lambda: azi.render_block_importance(
             azi.state_block_importance(net, sample, 0, donors=2), single=True),
+        "readout": lambda: azi.render_value_readouts(
+            azi.value_readouts(net, sample["obs"][0])),
         "swap": lambda: azi.render_card_swap(
             azi.card_swap_probe(net, sample["obs"][0], sample["mask"][0],
                                 sites[0][1]), sites[0][0], top_n=3),

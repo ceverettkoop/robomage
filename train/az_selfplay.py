@@ -1665,7 +1665,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
 # Expert demonstrations (scripted:hard BC shards)
 # ----------------------------------------------------------------------
 
-def _play_match_expert(env, agent, seed):
+def _play_match_expert(env, agent, seed, opp_agent=None, focus_is_a=None):
     """Play one match with scripted:hard piloting BOTH seats, recording every
     multi-choice decision as a behavior-cloning sample: pi is a ONE-HOT on the
     expert's chosen action (vs self-play's visit distribution), z is the usual
@@ -1673,6 +1673,14 @@ def _play_match_expert(env, agent, seed):
     non-search-safe prompts are recorded too — a one-hot target is valid
     anywhere, and those prompts are exactly the ones the net answers by raw
     policy at self-play time, so BC coverage there raises fallback quality.
+
+    ``opp_agent`` (with ``focus_is_a`` naming the expert's seat) hands the
+    OTHER seat to a different agent — the weak-opponent expert mode: the expert
+    keeps the focus seat, and ONLY the focus seat's decisions are recorded
+    (the opponent's play is not demonstration-quality, so cloning it would
+    poison the policy targets). ``_backfill_and_pack`` prices every sample by
+    its own mover's outcome, so a one-seat sample list needs no other change.
+
     Returns (samples, game_winners, dropped) with the same boundary/truncation
     semantics as :func:`_play_match` (whose shared helpers — ``one_hot_sample``,
     ``winner_from_reward``, ``_drop_unfinished`` — this loop uses), but kept a
@@ -1682,6 +1690,8 @@ def _play_match_expert(env, agent, seed):
     constraint is that its rng draw order stay intact)."""
     env.reset(seed=seed)
     agent.new_game()
+    if opp_agent is not None:
+        opp_agent.new_game()
     samples = []
     game_winners = []
     game_idx = 0
@@ -1690,10 +1700,14 @@ def _play_match_expert(env, agent, seed):
     while not done:
         num_choices = env._num_choices
         if num_choices > 1:
-            action = int(agent.act(env._obs, num_choices))
-            sample = one_hot_sample(env._obs, num_choices, action)
-            sample["game_idx"] = game_idx
-            samples.append(sample)
+            mover_is_focus = (opp_agent is None or
+                              bool(env._obs[_SELF_IS_A_IDX] > 0.5) == focus_is_a)
+            seat_agent = agent if mover_is_focus else opp_agent
+            action = int(seat_agent.act(env._obs, num_choices))
+            if mover_is_focus:
+                sample = one_hot_sample(env._obs, num_choices, action)
+                sample["game_idx"] = game_idx
+                samples.append(sample)
         else:
             action = 0
         _, reward, terminated, truncated, info = env.step(action)
@@ -1702,6 +1716,8 @@ def _play_match_expert(env, agent, seed):
             game_winners.append(winner_from_reward(reward))
             game_idx += 1
             agent.new_game()
+            if opp_agent is not None:
+                opp_agent.new_game()
         if terminated or truncated:
             done = True
             if terminated and not boundary:
@@ -1713,7 +1729,8 @@ def _play_match_expert(env, agent, seed):
 
 def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
                     mirror_frac: float = DEFAULT_MIRROR_FRAC, bo3: bool = True,
-                    seed: int = 1, out_dir: Optional[str] = None) -> dict:
+                    seed: int = 1, out_dir: Optional[str] = None,
+                    opponent: Optional[str] = None) -> dict:
     """Write EXPERT demonstration shards: scripted:hard vs scripted:hard matches
     over the same seeded focus-vs-roster schedule self-play uses, packed into the
     trainer-compatible ``shard_*.npz`` format (pi = one-hot expert action).
@@ -1729,6 +1746,18 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
     needing demonstrations; opponents follow ``mirror_frac``/``roster`` like
     self-play. Torch-free and fast (no search), so it runs serially.
 
+    ``opponent`` (a scripted-agent spec, e.g. ``"scripted:random"``) hands the
+    opponent seat to a WEAKER tier while scripted:hard keeps the focus seat,
+    and records ONLY the focus seat's decisions. This is the fix for the case
+    the default mode gets wrong: when the expert deck LOSES its scripted:hard
+    matchups (doomsday does, everywhere but the mirror), hard-vs-hard shards
+    stamp z=-1 on every step of the combo line and reinforce the very value
+    collapse they were meant to break. Against a weak opponent the combo
+    actually wins, so the line's states are priced z=+1 — an optimistic
+    curriculum bias that later self-play recalibrates. Mirror games keep the
+    weak tier on the non-focus seat. Default None: hard both seats, both
+    recorded (the original behavior, schedule-identical for a given seed).
+
     Expert rows carry no search root value, so their shard columns are
     ``q = NaN``, ``explored = 0`` and ``td_q = z`` — the n-step TD target
     degenerates to the plain per-game outcome for behavior-cloning data."""
@@ -1742,29 +1771,39 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
     if bo3:
         _discard_pre_bo3_shards(out_dir)
 
-    schedule = build_matchup_schedule(focus, roster, games, mirror_frac, seed)
+    # The _ex form draws identically to build_matchup_schedule, so the pairs
+    # (and default-mode shards) are unchanged; focus_is_a routes the seats.
+    schedule = build_matchup_schedule_ex(focus, roster, games, mirror_frac, seed)
+    seats_txt = ("scripted:hard both seats" if opponent is None else
+                 f"scripted:hard focus seat vs {opponent}, focus rows only")
     print(f"[az-expert] focus={','.join(focus)} matches={games} "
-          f"bo3={bo3} mirror_frac={mirror_frac} (scripted:hard both seats)")
-    print(f"[az-expert] matchups: {_schedule_summary(schedule)}")
+          f"bo3={bo3} mirror_frac={mirror_frac} ({seats_txt})")
+    print(f"[az-expert] matchups: "
+          f"{_schedule_summary([(da, db) for da, db, _ in schedule])}")
     print(f"[az-expert] out_dir={out_dir}")
 
-    da0, db0 = schedule[0] if schedule else (None, None)
+    da0, db0 = (schedule[0][0], schedule[0][1]) if schedule else (None, None)
     env = SearchRoboMageEnv(deck_a=da0, deck_b=db0, bo3=bo3, auto_sideboard=False,
                            binary_path=INTERACTIVE_BINARY)
     # ScriptedAgent is seat-aware (keys its state and deck name off the obs's
     # self-is-A flag), so ONE shared hard-tier agent pilots both seats.
     agent = make_agent("scripted:hard")
+    opp_agent = make_agent(opponent) if opponent else None
     total_samples = 0
     shards = []
     buf = []
     shard_n = 0
-    stats = {"wins_a": 0, "wins_b": 0, "draws": 0, "games": 0, "dropped": 0}
+    stats = {"wins_a": 0, "wins_b": 0, "draws": 0, "games": 0, "dropped": 0,
+             "focus_match_wins": 0}
     try:
-        for m, (da, db) in enumerate(schedule):
+        for m, (da, db, focus_is_a) in enumerate(schedule):
             env._deck_a, env._deck_b = da, db
             agent.set_deck_names(da, db)
+            if opp_agent is not None:
+                opp_agent.set_deck_names(da, db)
             samples, game_winners, dropped = _play_match_expert(
-                env, agent, seed=seed + m)
+                env, agent, seed=seed + m,
+                opp_agent=opp_agent, focus_is_a=focus_is_a)
             buf.append(_backfill_and_pack(samples, game_winners))
             total_samples += len(samples)
             stats["games"] += len(game_winners)
@@ -1773,6 +1812,8 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
             stats["wins_a"] += int(mwinner == "A")
             stats["wins_b"] += int(mwinner == "B")
             stats["draws"] += int(mwinner == "DRAW")
+            stats["focus_match_wins"] += int(
+                mwinner == ("A" if focus_is_a else "B"))
             if _buffered(buf) >= FLUSH_SAMPLES:
                 shards.append(_write_shard(out_dir, _concat(buf), shard_n))
                 shard_n += 1
@@ -1782,7 +1823,8 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
     finally:
         env.close()
     print(f"[az-expert] done: {total_samples} samples, {len(shards)} shard(s)  "
-          f"A={stats['wins_a']} B={stats['wins_b']} draws={stats['draws']}"
+          f"A={stats['wins_a']} B={stats['wins_b']} draws={stats['draws']}  "
+          f"focus won {stats['focus_match_wins']}/{len(schedule)} matches"
           + (f"  dropped={stats['dropped']}" if stats["dropped"] else ""))
     return {"samples": total_samples, "shards": shards, "stats": stats,
             "out_dir": out_dir}
@@ -1809,7 +1851,8 @@ def run(args) -> None:
         generate_expert(args.deck, games=args.games,
                         mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
                         bo3=True, out_dir=args.out,
-                        seed=args.seed if args.seed is not None else 1)
+                        seed=args.seed if args.seed is not None else 1,
+                        opponent=getattr(args, "expert_opponent", None))
         return
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, checkpoint=args.checkpoint,
@@ -1878,6 +1921,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                     help="Write EXPERT demonstration shards instead of self-play: "
                          "scripted:hard both seats, pi = one-hot expert action "
                          "(always bo3; sims/worlds/checkpoint ignored)")
+    ap.add_argument("--expert-opponent", default=None,
+                    help="Expert mode only: scripted-agent spec for the OPPONENT "
+                         "seat (e.g. scripted:random / scripted:easy); "
+                         "scripted:hard keeps the focus seat and ONLY its "
+                         "decisions are recorded — so a combo deck's expert "
+                         "shards come from games the combo actually wins")
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--actor", action="store_true",
                    help="Force the C++ az_actor self-play backend (error if not built)")

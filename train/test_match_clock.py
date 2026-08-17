@@ -2,7 +2,8 @@
 
 Covers MatchClock's allocation math (horizon estimate, difficulty multiplier,
 clamps, Fischer floor, debit/reset), its non-linear front-loaded spend curve
-with the final-five-minutes reserve, and the match-point value closeout — all
+with the final-five-minutes reserve, the match-point value closeout, and the
+symmetric giveup deadline cap (a decisively-lost current game) — all
 pure Python, no engine binary — plus the SearchController paced-response floor
 on the fallback path (no bound env) with a stub evaluator.
 
@@ -287,8 +288,10 @@ def test_closeout() -> None:
     base_state = dict(turn=5, game_number=2, self_wins=1, opp_wins=0)
     none_hi = _hi(clock, **base_state)
 
-    # Fires ONLY at self_wins == 1 with value >= _CLOSEOUT_V.
-    for v in (-1.0, 0.0, 0.5, 0.79, 0.8, 0.9, 1.0):
+    # Fires ONLY at self_wins == 1 with value >= _CLOSEOUT_V. (Negatives stay
+    # above _GIVEUP_V so this isolates the closeout from the giveup cap, which
+    # test_giveup covers separately.)
+    for v in (-0.7, 0.0, 0.5, 0.79, 0.8, 0.9, 1.0):
         check(_hi(clock, turn=5, game_number=1, self_wins=0, opp_wins=0,
                   value=v)
               == _hi(clock, turn=5, game_number=1, self_wins=0, opp_wins=0),
@@ -301,7 +304,7 @@ def test_closeout() -> None:
                   value=v)
               == _hi(clock, turn=5, game_number=3, self_wins=2, opp_wins=0),
               f"2 wins with value {v} must be value-free (guard)")
-    for v in (-1.0, 0.0, 0.5, 0.7999):
+    for v in (-0.7, 0.0, 0.5, 0.7999):
         check(_hi(clock, value=v, **base_state) == none_hi,
               f"match point with a sub-threshold value {v} must be value-free")
 
@@ -350,6 +353,50 @@ def test_closeout() -> None:
 
     if not FAILURES:
         print("PASS: match-point value closeout")
+
+
+def test_giveup() -> None:
+    # Wide caps so the giveup cap is the binding constraint, not t_max.
+    clock = MatchClock(1800.0, t_max=1.0e6, sb_t_max=1.0e6)
+    base = dict(turn=5, game_number=2, self_wins=0, opp_wins=1)
+    none_hi = _hi(clock, **base)
+    check(none_hi > clock._GIVEUP_MAX_S,
+          f"test setup: uncapped deadline {none_hi} must exceed the cap")
+
+    # Fires at/below _GIVEUP_V regardless of match score, in-game only.
+    for v in (-1.0, -0.9, -0.75):
+        for state in (dict(turn=5, game_number=1, self_wins=0, opp_wins=0),
+                      dict(turn=5, game_number=2, self_wins=1, opp_wins=0),
+                      dict(turn=5, game_number=3, self_wins=1, opp_wins=1)):
+            check(_hi(clock, value=v, **state) == clock._GIVEUP_MAX_S,
+                  f"giveup should cap at {clock._GIVEUP_MAX_S} for value {v}")
+
+    # Above the threshold and with no value, unchanged.
+    for v in (-0.7499, -0.5, 0.0, 0.5, None):
+        check(_hi(clock, value=v, **base) == none_hi,
+              f"value {v} above the giveup threshold must not cap")
+
+    # Mutually exclusive with the match-point closeout: a decisively-WON game
+    # on match point takes the closeout path (bigger slice), never the giveup
+    # cap. A decisively-LOST game is never a closeout, so it always caps.
+    won_mp = dict(turn=5, game_number=2, self_wins=1, opp_wins=0)
+    check(_hi(clock, value=0.9, **won_mp) > clock._GIVEUP_MAX_S,
+          "a won match-point game must not be giveup-capped")
+
+    # Never at a sideboard root — that budget is for the NEXT game, not a
+    # doomed current one.
+    sb = dict(turn=0, game_number=2, self_wins=0, opp_wins=1, is_sideboard=True)
+    check(_hi(clock, value=-1.0, **sb) == _hi(clock, **sb),
+          "giveup must not cap a sideboard root")
+
+    # The Fischer floor still wins on an exhausted bank (cap is a ceiling only).
+    empty = MatchClock(1800.0, t_min=5.0, t_max=1.0e6)
+    empty.debit(1800.0)
+    check(_hi(empty, value=-1.0, **base) == empty.t_min,
+          "giveup cap must not drop below the t_min Fischer floor")
+
+    if not FAILURES:
+        print("PASS: giveup deadline cap")
 
 
 def test_legacy_regression_grid() -> None:
@@ -466,6 +513,7 @@ def main() -> int:
     test_allocation_math()
     test_pacing_curve()
     test_closeout()
+    test_giveup()
     test_legacy_regression_grid()
     if not math_only:
         test_paced_floor()

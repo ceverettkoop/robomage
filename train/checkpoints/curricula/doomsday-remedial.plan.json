@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "name": "doomsday-remedial",
+  "description": "Doomsday value-collapse remediation: 6 az-league rotations with the default plan's az-league properties (exhaustive self-play matrix on the C++ actor, 50 games, 28 workers, rotating 20-cell vs-scripted slice, gate every 2 slots), but the expert demonstration shards are REPLACED: instead of the default roster-wide scripted:hard-vs-hard experts (whose doomsday games all LOSE, stamping z=-1 on every step of the combo line and reinforcing the collapsed doomsday value buckets), each rotation writes scripted:hard league/wubg_doomsday vs scripted:random opponents -- 100 matches with mirror_frac 0 = ~10 per roster matchup -- recording ONLY the doomsday seat, so the combo line's states enter the window priced by games the combo actually wins. mirror_frac 0 is safe here: the exhaustive self-play matrix ignores it, so it shapes only the expert opponent draw. Ends with a 10-game-per-matchup round-robin of the AZ net (az:gen) vs scripted:hard appended to baseline_report.log.",
+  "phases": [
+    {
+      "kind": "az-league",
+      "rotations": 6,
+      "games": 50,
+      "overrides": {
+        "workers": 28,
+        "exhaustive_selfplay": true,
+        "actor": true,
+        "gate_every": 2,
+        "expert_decks": "league/wubg_doomsday",
+        "expert_opponent": "scripted:random",
+        "expert_games": 100,
+        "mirror_frac": 0.0
+      }
+    },
+    {
+      "kind": "baseline",
+      "model": "az:gen",
+      "games": 10,
+      "overrides": {
+        "all": true,
+        "workers": 28
+      }
+    }
+  ]
+}

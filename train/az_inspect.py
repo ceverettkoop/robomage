@@ -736,7 +736,13 @@ def obs_blocks():
         # the observation does not carry at all.
         ("hand cast costs", e.ACT_BLOCKS_END, e._BF_COST_START),
         ("battlefield ability costs", e._BF_COST_START, e.MATCHUP_TAIL_START),
-        ("matchup tail", e.MATCHUP_TAIL_START, e.OBS_SIZE),
+        # The tail's two halves are separated on purpose: permuting the bucket
+        # index re-routes the SAME latent through a different critic read-out
+        # (the index is stripped before the trunk), while permuting the one-hots
+        # perturbs the trunk's matchup conditioning — one combined row conflated
+        # read-out switching with representation change.
+        ("matchup bucket idx", e.BUCKET_IDX, e.ARCH_ONEHOT_START),
+        ("matchup arch one-hots", e.ARCH_ONEHOT_START, e.OBS_SIZE),
     ]
     blocks = [(n, int(s), int(t)) for n, s, t in blocks]
     blocks.sort(key=lambda b: b[1])
@@ -760,34 +766,125 @@ def state_value(net, obs_row, mask_row):
     return float(v[0])
 
 
-def block_importance(net, sample, n_rows=150, donors=3, seed=0, blocks=None):
-    """Permutation importance of each observation block on V.
+def value_latents(net, obs, batch=256):
+    """Batched value-body latents (the vector every critic column reads out)."""
+    import torch
+    out = []
+    net.eval()
+    with torch.no_grad():
+        for s in range(0, obs.shape[0], batch):
+            ob = torch.as_tensor(np.ascontiguousarray(obs[s:s + batch]))
+            out.append(net.value_body(net.trunk(ob)).cpu().numpy())
+    return np.concatenate(out)
+
+
+def _readout_decomposition(net, base_lat, pert_lat, sel):
+    """Split a perturbation's value-side effect into latent movement and what
+    the read-outs pass: per row, (||dlatent||, |dz| through the BASE state's
+    selected column, mean |dz| across live columns). Pre-tanh, so saturation
+    can't hide a shift. sel << all means the state's own matchup read-out
+    discards what the perturbed block moved."""
+    w = net.value_head.weight.detach().cpu().numpy()
+    live = ~net.dead_value_buckets()
+    if not live.any():
+        live = np.ones(w.shape[0], dtype=bool)
+    dlat = pert_lat - base_lat
+    dz = dlat @ w.T
+    return (np.linalg.norm(dlat, axis=1),
+            np.abs(dz[np.arange(len(sel)), sel]),
+            np.abs(dz[:, live]).mean(axis=1))
+
+
+def resolve_block(name, blocks=None):
+    """Resolve a block spec (exact or unique substring, case-insensitive)
+    to its ``(name, start, end)`` row in the obs-block table."""
+    blocks = blocks or obs_blocks()
+    want = name.strip().lower()
+    exact = [b for b in blocks if b[0].lower() == want]
+    if exact:
+        return exact[0]
+    hits = [b for b in blocks if want in b[0].lower()]
+    if len(hits) == 1:
+        return hits[0]
+    names = ", ".join(b[0] for b in (hits or blocks))
+    kind = "ambiguous" if hits else "unknown"
+    raise SystemExit(f"{kind} block {name!r} (want one of: {names})")
+
+
+def block_active_rows(obs, start, end):
+    """Row indices where the block deviates from its per-column modal value —
+    i.e. where it holds something beyond its empty/baseline pattern. Modal
+    (not zero) so card-id slots' -1 sentinel counts as empty."""
+    active = np.zeros(obs.shape[0], dtype=bool)
+    for c in range(start, end):
+        col = obs[:, c]
+        vals, counts = np.unique(col, return_counts=True)
+        active |= col != vals[np.argmax(counts)]
+    return np.flatnonzero(active)
+
+
+def policy_shift(p, q, mask):
+    """Per-row total variation distance between two legal-action policies."""
+    return 0.5 * np.abs(np.where(mask, p - q, 0.0)).sum(axis=1)
+
+
+def block_importance(net, sample, n_rows=150, donors=3, seed=0, blocks=None,
+                     only_active=None):
+    """Permutation importance of each observation block on V and on the policy.
 
     For each block, the block's floats are replaced by another sampled state's
     (a valid value for that block, unlike zeroing, which invents states the net
     never saw — a 0 life total is not "no information", it is "dead"), and the
-    mean |ΔV| is recorded. High = the evaluation leans on that block.
+    mean |ΔV| plus the mean total-variation policy shift are recorded.
+    High = that head leans on the block.
+
+    ``only_active`` names one block: evaluated rows AND donor draws are then
+    restricted to states where that block is non-empty, so a sparse block
+    (stack, known top-of-library) is scored on the states where it exists
+    instead of being averaged away by its empty majority.
     """
     blocks = blocks or obs_blocks()
     rng = np.random.default_rng(seed)
     obs, mask = sample["obs"], sample["mask"]
-    n = min(int(n_rows), obs.shape[0])
-    rows = np.sort(rng.choice(obs.shape[0], size=n, replace=False))
-    base, _ = predict(net, obs[rows], mask[rows])
+    pool = np.arange(obs.shape[0])
+    active_n = None
+    if only_active:
+        name, s, t = resolve_block(only_active, blocks)
+        only_active = name
+        pool = block_active_rows(obs, s, t)
+        active_n = pool.size
+        if pool.size < 2:
+            raise SystemExit(f"only {pool.size} sampled state(s) have "
+                             f"{name!r} active — raise --max-rows/--window")
+    n = min(int(n_rows), pool.size)
+    rows = np.sort(rng.choice(pool, size=n, replace=False))
+    base_v, base_p = predict(net, obs[rows], mask[rows])
+    base_lat = value_latents(net, obs[rows])
+    sel = np.array([net.obs_value_bucket(o) for o in obs[rows]])
     out = []
     for name, s, t in blocks:
-        acc = np.zeros(n)
+        acc_v = np.zeros(n)
+        acc_p = np.zeros(n)
+        acc_ro = np.zeros((3, n))
         for _ in range(int(donors)):
-            donor = rng.choice(obs.shape[0], size=n)
+            donor = rng.choice(pool, size=n)
             pert = obs[rows].copy()
             pert[:, s:t] = obs[donor][:, s:t]
-            v, _ = predict(net, pert, mask[rows])
-            acc += np.abs(v - base)
+            v, p = predict(net, pert, mask[rows])
+            acc_v += np.abs(v - base_v)
+            acc_p += policy_shift(base_p, p, mask[rows])
+            acc_ro += _readout_decomposition(
+                net, base_lat, value_latents(net, pert), sel)
         out.append({"name": name, "start": s, "width": t - s,
-                    "delta": float((acc / donors).mean())})
+                    "delta": float((acc_v / donors).mean()),
+                    "dpi": float((acc_p / donors).mean()),
+                    "dlat": float((acc_ro[0] / donors).mean()),
+                    "dz_sel": float((acc_ro[1] / donors).mean()),
+                    "dz_all": float((acc_ro[2] / donors).mean())})
     out.sort(key=lambda r: -r["delta"])
     return {"rows": out, "n": n, "donors": int(donors),
-            "base_spread": float(base.std())}
+            "only_active": only_active, "active_n": active_n,
+            "base_spread": float(base_v.std())}
 
 
 def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
@@ -796,7 +893,10 @@ def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
     blocks = blocks or obs_blocks()
     rng = np.random.default_rng(seed)
     obs, mask = sample["obs"], sample["mask"]
-    base = state_value(net, obs[row], mask[row])
+    base_v, base_p = predict(net, obs[row][None], mask[row][None])
+    base = float(base_v[0])
+    base_lat = np.repeat(value_latents(net, obs[row][None]), donors, axis=0)
+    sel = np.full(donors, net.obs_value_bucket(obs[row]))
     batch = np.repeat(obs[row][None], donors, axis=0)
     mk = np.repeat(mask[row][None], donors, axis=0)
     out = []
@@ -804,12 +904,70 @@ def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
         donor = rng.choice(obs.shape[0], size=donors)
         pert = batch.copy()
         pert[:, s:t] = obs[donor][:, s:t]
-        v, _ = predict(net, pert, mk)
+        v, p = predict(net, pert, mk)
+        dlat, dz_sel, dz_all = _readout_decomposition(
+            net, base_lat, value_latents(net, pert), sel)
         out.append({"name": name, "start": s, "width": t - s,
                     "delta": float(np.abs(v - base).mean()),
+                    "dpi": float(policy_shift(
+                        np.repeat(base_p, donors, axis=0), p, mk).mean()),
+                    "dlat": float(dlat.mean()),
+                    "dz_sel": float(dz_sel.mean()),
+                    "dz_all": float(dz_all.mean()),
                     "signed": float((v - base).mean())})
     out.sort(key=lambda r: -r["delta"])
     return {"rows": out, "base": base, "donors": int(donors)}
+
+
+def value_readouts(net, obs_row):
+    """Every critic column's V for ONE state — the same shared value latent
+    read out by all N_VALUE_BUCKETS matchup heads.
+
+    Splits each column's pre-tanh logit into its state-dependent part
+    (``w·latent``, what the board contributes) and its bias (the column's
+    outcome prior — exactly what a memorized column degenerates to). A state
+    whose selected column has ``|w·latent|`` far below the bias magnitude is
+    being valued by the matchup prior, not the position."""
+    import torch
+    net.eval()
+    with torch.no_grad():
+        ob = torch.as_tensor(np.ascontiguousarray(
+            np.asarray(obs_row, dtype=np.float32)[None]))
+        latent = net.value_body(net.trunk(ob))
+        z = net.value_head(latent)[0].cpu().numpy()
+        bias = net.value_head.bias.detach().cpu().numpy()
+    sel = net.obs_value_bucket(obs_row)
+    dead = net.dead_value_buckets()
+    rows = [{"bucket": i, "name": archetypes.bucket_name(i),
+             "v": float(np.tanh(z[i])), "prior": float(np.tanh(bias[i])),
+             "state_part": float(z[i] - bias[i]),
+             "selected": i == sel, "dead": bool(dead[i])}
+            for i in range(z.shape[0])]
+    live_v = np.tanh(z[~dead]) if (~dead).any() else np.tanh(z)
+    return {"rows": rows, "selected": sel,
+            "value": float(np.tanh(z[sel])),
+            "readout_spread": float(live_v.std())}
+
+
+def render_value_readouts(ro, top_n=None):
+    lines = ["V for THIS state under every matchup read-out (one shared "
+             "latent, 64 critic columns)",
+             f"  selected bucket ▶ {archetypes.bucket_name(ro['selected'])}"
+             f"  V={ro['value']:+.3f}   spread across live read-outs "
+             f"σ={ro['readout_spread']:.3f}",
+             "  state = the board's contribution (w·latent, pre-tanh); "
+             "prior = tanh(bias), the column's",
+             "  memorized outcome constant. |state| << the V spread means "
+             "the matchup prior is doing the valuing.", "",
+             f"    {'V':>7} {'prior':>7} {'state':>7}  bucket"]
+    rows = sorted(ro["rows"], key=lambda r: -r["v"])
+    for r in rows[:top_n]:
+        mark = "▶" if r["selected"] else ("×" if r["dead"] else " ")
+        lines.append(f"  {mark} {r['v']:+7.3f} {r['prior']:+7.3f} "
+                     f"{r['state_part']:+7.3f}  {r['name']}")
+    if ro["rows"] and any(r["dead"] for r in ro["rows"]):
+        lines.append("  (× = dead column: constant output, no state info)")
+    return lines
 
 
 def card_id_sites(obs_row):
@@ -1994,22 +2152,41 @@ def render_state(sample, row, net=None, top_n=12):
     return lines
 
 
-def render_block_importance(imp, top_n=20, single=False):
-    head = ("what THIS evaluation rests on" if single
-            else f"what the value head rests on, over {imp['n']} states")
+def render_block_importance(imp, top_n=20, single=False, sort="v"):
+    what = "policy" if sort == "pi" else "evaluation"
+    head = (f"what THIS {what} rests on" if single
+            else f"what the heads rest on, over {imp['n']} states"
+                 + (" (ranked by policy shift)" if sort == "pi" else ""))
     lines = [head,
-             "  each block's floats are replaced by another real state's; the "
-             "number is the mean |ΔV| that causes.", ""]
+             "  each block's floats are replaced by another real state's; "
+             "|ΔV| is the value shift, Δπ the total-variation policy shift "
+             "that causes.", ""]
     if single:
         lines.insert(1, f"  base V={imp['base']:+.3f}  "
                         f"({imp['donors']} donor states per block)")
-    top = imp["rows"][0]["delta"] or 1.0
-    lines.append(f"  {'block':<24} {'width':>6} {'mean |ΔV|':>10}"
+    elif imp.get("only_active"):
+        lines.insert(1, f"  states and donors restricted to the "
+                        f"{imp['active_n']} sampled states where "
+                        f"{imp['only_active']!r} is non-empty")
+    lines.append("  Δh = value-latent movement; |Δz| = pre-tanh shift through "
+                 "the state's own matchup")
+    lines.append("  read-out (sel) vs the live-column mean (all) — sel ≪ all "
+                 "means this matchup's read-out")
+    lines.append("  discards what the block moved; Δh ≈ 0 with big |ΔV| is "
+                 "pure read-out re-routing.")
+    rows = imp["rows"]
+    if sort == "pi":
+        rows = sorted(rows, key=lambda r: -r["dpi"])
+    top = rows[0]["dpi" if sort == "pi" else "delta"] or 1.0
+    lines.append(f"  {'block':<24} {'width':>6} {'mean |ΔV|':>10} {'Δπ':>7}"
+                 f" {'Δh':>7} {'|Δz|sel':>8} {'|Δz|all':>8}"
                  + ("  signed" if single else ""))
-    for r in imp["rows"][:top_n]:
+    for r in rows[:top_n]:
         sign = f"  {r['signed']:+.3f}" if single else ""
+        bar = _bar((r["dpi"] if sort == "pi" else r["delta"]) / top)
         lines.append(f"  {r['name']:<24} {r['width']:6d} {r['delta']:10.4f}"
-                     f"{sign}  {_bar(r['delta'] / top)}")
+                     f" {r['dpi']:7.4f} {r['dlat']:7.3f} {r['dz_sel']:8.3f}"
+                     f" {r['dz_all']:8.3f}{sign}  {bar}")
     return lines
 
 
@@ -2361,7 +2538,20 @@ def build_parser():
                    help="states averaged when --row is not given")
     p.add_argument("--donors", type=int, default=3,
                    help="donor states per block")
+    p.add_argument("--only-active", default=None, metavar="BLOCK",
+                   help="restrict states and donors to those where BLOCK "
+                        "(name or unique substring) is non-empty — scores a "
+                        "sparse block on the states where it exists")
+    p.add_argument("--sort", choices=("v", "pi"), default="v",
+                   help="rank by value shift (v) or policy shift (pi)")
     p.add_argument("--top", type=int, default=20)
+
+    p = sub.add_parser("readout", help="one state's V under every matchup "
+                                       "critic column (read-out vs prior)")
+    _add_shard_args(p)
+    p.add_argument("--row", type=int, default=0, help="which sampled decision")
+    p.add_argument("--top", type=int, default=None,
+                   help="show only the top-N columns by V (default: all)")
 
     p = sub.add_parser("swap", help="per-slot card valuation by identity swap")
     _add_shard_args(p)
@@ -2542,7 +2732,7 @@ def main(argv=None):
             policy_divergence(net, _sample(args), top_n=args.top))))
         return 0
 
-    if cmd in ("state", "blocks", "swap", "sweep"):
+    if cmd in ("state", "blocks", "swap", "sweep", "readout"):
         s = _sample(args)
         row = getattr(args, "row", 0)
         if row is not None and not 0 <= row < s["obs"].shape[0]:
@@ -2550,15 +2740,24 @@ def main(argv=None):
                              f"(0..{s['obs'].shape[0] - 1} in this sample)")
         if cmd == "state":
             print("\n".join(render_state(s, row, net=net, top_n=args.top)))
+        elif cmd == "readout":
+            print("\n".join(render_value_readouts(
+                value_readouts(net, s["obs"][row]), top_n=args.top)))
         elif cmd == "blocks":
             if args.row is None:
                 imp = block_importance(net, s, n_rows=args.rows,
-                                       donors=args.donors, seed=args.seed)
-                print("\n".join(render_block_importance(imp, top_n=args.top)))
+                                       donors=args.donors, seed=args.seed,
+                                       only_active=args.only_active)
+                print("\n".join(render_block_importance(imp, top_n=args.top,
+                                                        sort=args.sort)))
             else:
+                if args.only_active:
+                    raise SystemExit("--only-active applies to the aggregate "
+                                     "view; --row already names one state")
                 imp = state_block_importance(net, s, row, seed=args.seed)
                 print("\n".join(render_block_importance(imp, top_n=args.top,
-                                                        single=True)))
+                                                        single=True,
+                                                        sort=args.sort)))
         elif cmd == "swap":
             sites = card_id_sites(s["obs"][row])
             if not sites:

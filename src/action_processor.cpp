@@ -1312,7 +1312,13 @@ static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
         candidate.source = ability.source;
         candidate.controller = caster;
         if (!charm_mode_choosable(candidate, orderer, caster)) continue;
-        LegalAction la(PASS_PRIORITY, charm_mode_desc(ability, i));
+        // Ground every mode to the charm's source card so the serialized action
+        // carries that card's id/zone/controller instead of the null-source
+        // sentinel — otherwise each mode emits card_id -1 and the modes differ
+        // only by the raw option_ordinal scalar, which reads as "all modes
+        // identical" to the policy/search. The distinct option_ordinal still
+        // separates the modes from one another.
+        LegalAction la(PASS_PRIORITY, ability.source, charm_mode_desc(ability, i));
         la.category = ActionCategory::CHOOSE_MODE;
         la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
         mode_actions.push_back(la);

@@ -946,6 +946,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "scripted:hard pilots both seats and pi is a one-hot on the "
                  "expert's action (always bo3 to match the pooled shard window; "
                  "sims/worlds/checkpoint are ignored)"),
+        Arg("--expert-opponent", "str", default=None,
+            help="Expert mode only: scripted-agent spec for the OPPONENT seat "
+                 "(e.g. scripted:random / scripted:easy). scripted:hard keeps "
+                 "the focus seat and ONLY its decisions are recorded — so a "
+                 "combo deck's demonstrations come from games it actually "
+                 "wins. Default: hard both seats, both recorded"),
         _actor_mode(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
@@ -1095,6 +1101,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "value) to write no expert shards"),
         Arg("--expert-games", "int", default=DEFAULT_AZ_EXPERT_GAMES,
             help="Expert matches per expert deck per cycle"),
+        Arg("--expert-opponent", "str", default=None,
+            help="Scripted-agent spec for the expert games' OPPONENT seat "
+                 "(e.g. scripted:random / scripted:easy). scripted:hard keeps "
+                 "the focus seat and ONLY its decisions are recorded — so a "
+                 "combo deck's demonstrations come from games it actually "
+                 "wins. Default: hard both seats, both recorded"),
         Arg("--seed", "int", default=1),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per self-play game "
@@ -1235,6 +1247,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "value) to write no expert shards"),
         Arg("--expert-games", "int", default=DEFAULT_AZ_EXPERT_GAMES,
             help="Expert matches per expert deck per slot"),
+        Arg("--expert-opponent", "str", default=None,
+            help="Scripted-agent spec for the expert games' OPPONENT seat "
+                 "(e.g. scripted:random / scripted:easy). scripted:hard keeps "
+                 "the focus seat and ONLY its decisions are recorded — so a "
+                 "combo deck's demonstrations come from games it actually "
+                 "wins. Persisted in the resume sidecar. Default: hard both "
+                 "seats, both recorded"),
         Arg("--seed", "int", default=1,
             help="Base RNG seed (slot i uses seed+i)"),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,

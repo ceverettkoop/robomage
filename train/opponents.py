@@ -328,6 +328,17 @@ class MatchClock:
     other state (0 or 2 wins, the opponent on match point, no value, or a value
     below the threshold) the horizon is unchanged.
 
+    GIVING UP (the symmetric case): when the root ``value`` calls the current
+    game decisively LOST (``value <= _GIVEUP_V``), ``allocate`` caps the
+    per-decision deadline at ``_GIVEUP_MAX_S`` (still above the ``t_min``
+    Fischer floor) rather than spending the bank agonizing over a doomed
+    position — the time is banked for a game that can still be won. This is a
+    flat deadline cap in ``allocate`` (unlike the closeout, which scales the
+    horizon), applies in-game only (never at a sideboard root), and is
+    independent of the match score. It is mutually EXCLUSIVE with the closeout
+    (a game the net calls decisively WON): a decisive current game triggers at
+    most one of the two, never both.
+
     Takes only decoded scalars, no obs vector — unit-testable without an engine.
     """
 
@@ -344,6 +355,8 @@ class MatchClock:
     _RESERVE_S = 300.0         # final-5-minutes conservative reserve (no boost)
     _CLOSEOUT_V = 0.8          # root value at/above which a match point closes out
     _CLOSEOUT_MIN_SCALE = 0.35  # in-game horizon scale at a value of 1.0
+    _GIVEUP_V = -0.75          # root value at/below which the current game is lost
+    _GIVEUP_MAX_S = 3.0        # per-decision deadline cap once giving up
 
     def __init__(self, bank_s: float, *, t_min: float = 0.5,
                  t_max: float = 60.0, sb_t_max: float = 15.0):
@@ -474,6 +487,18 @@ class MatchClock:
         base = self._pace_boost(self.remaining / c)
         m = self._difficulty(priors, num_choices)
         t_cap = self.sb_t_max if is_sideboard else self.t_max
+        # Giving up: the net calls the current game decisively lost, so don't
+        # burn the bank agonizing over a doomed position — cap the deadline
+        # low (still above the Fischer floor) and bank the time for a game
+        # that can still be won. Applies in-game only, not at a sideboard root,
+        # and is mutually exclusive with the match-point closeout (a game the
+        # net calls decisively WON) — never both, so a "decisive" current game
+        # is handled by exactly one of the two.
+        giving_up = (not is_sideboard and value is not None
+                     and float(value) <= self._GIVEUP_V
+                     and not self._is_closeout(self_wins, value))
+        if giving_up:
+            t_cap = min(t_cap, max(self._GIVEUP_MAX_S, self.t_min))
         t_hi = min(base * m, t_cap, self.remaining / 4.0)
         t_hi = max(t_hi, self.t_min)  # Fischer floor: granted even when empty
         t_lo = min(max(0.25 * t_hi, self.t_min), t_hi)

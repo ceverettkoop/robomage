@@ -724,6 +724,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              gate_floor: float = DEFAULT_GATE_FLOOR,
              expert_decks=EXPERT_DECKS_ROSTER,
              expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
+             expert_opponent: Optional[str] = None,
              roster: Optional[list] = None, bo3: bool = True,
              gate: bool = True, exhaustive: bool = False,
              exhaustive_selfplay: bool = False,
@@ -771,6 +772,11 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     expert's action — into the same shard pool the trainer reads, so the net
     behavior-clones hand-coded combo lines (and prices mid-combo states by games
     the combo wins) that self-play search cannot discover on its own.
+    ``expert_opponent`` (a scripted spec, e.g. ``"scripted:random"``) weakens
+    the expert games' opponent seat and records only the focus seat — for a
+    combo deck that loses its hard-vs-hard matchups, this is what makes the
+    demonstrations come from games the combo actually wins (see
+    :func:`az_selfplay.generate_expert`).
 
     ``deck`` is the FOCUS pool — a str (single focus), a list of stems (a
     deck×opponent matrix), or None (default: the whole decks/league/ roster). Each
@@ -818,12 +824,14 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     if experts:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
-        print("=== az cycle: expert demonstrations (scripted:hard) ===")
+        print("=== az cycle: expert demonstrations (scripted:hard"
+              + (f" vs {expert_opponent}" if expert_opponent else "") + ") ===")
         print(f"[az cycle] expert decks: {expert_decks} -> {len(experts)} deck(s) "
               f"[{', '.join(experts)}] x {expert_games} matches each")
         gen["expert"] = az_selfplay.generate_expert(
             experts, games=expert_games * len(experts),
-            roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed)
+            roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed,
+            opponent=expert_opponent)
     else:
         print(f"[az cycle] expert decks: {expert_decks!r} -> none "
               f"(no expert shards this cycle)")
@@ -916,6 +924,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               gate_every: int = DEFAULT_GATE_EVERY,
               expert_decks=EXPERT_DECKS_ROSTER,
               expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
+              expert_opponent: Optional[str] = None,
               use_actor: Optional[bool] = None, resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
@@ -1028,6 +1037,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         # to themselves.
         expert_decks = p.get("expert_decks", None)
         expert_games = int(p.get("expert_games", expert_games))
+        expert_opponent = p.get("expert_opponent", expert_opponent)
         use_actor = p.get("use_actor", use_actor)
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
@@ -1097,7 +1107,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "scripted_cells": scripted_cells,
             "gate_floor": gate_floor, "gate_every": gate_every,
             "expert_decks": expert_decks,
-            "expert_games": expert_games, "use_actor": use_actor,
+            "expert_games": expert_games,
+            "expert_opponent": expert_opponent, "use_actor": use_actor,
             "bo3": bo3,
         },
     }
@@ -1201,6 +1212,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        scripted_opponent_frac=scripted_opponent_frac,
                        gate_floor=gate_floor,
                        expert_decks=expert_decks, expert_games=expert_games,
+                       expert_opponent=expert_opponent,
                        roster=roster, bo3=bo3, gate=do_gate,
                        exhaustive=exhaustive,
                        exhaustive_selfplay=exhaustive_selfplay,
@@ -1324,6 +1336,7 @@ def run_cycle(args) -> None:
              expert_decks=_split_decks(getattr(args, "expert_decks",
                                                EXPERT_DECKS_ROSTER)),
              expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
+             expert_opponent=getattr(args, "expert_opponent", None),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
              exhaustive=getattr(args, "exhaustive", False),
@@ -1366,6 +1379,7 @@ def run_league(args) -> None:
               expert_decks=_split_decks(getattr(args, "expert_decks",
                                                 EXPERT_DECKS_ROSTER)),
               expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
+              expert_opponent=getattr(args, "expert_opponent", None),
               use_actor=_resolve_use_actor(args), resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
