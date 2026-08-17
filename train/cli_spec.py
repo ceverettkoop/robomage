@@ -530,6 +530,16 @@ def _actor_mode():
             "built, else the pure-Python backend")
 
 
+def _actor_device():
+    """The --actor-device pass-through (az-selfplay / az / az-league): the C++
+    actor's ``--device`` (Stage A of docs/gpu_selfplay_inference_plan.md)."""
+    return Arg("--actor-device", "str", default="cpu",
+               help="Eval device for the C++ actor's net forwards: cpu (default) "
+                    "or cuda (the Radeon under the ROCm torch build; the launcher "
+                    "exports HSA_OVERRIDE_GFX_VERSION/HIP_VISIBLE_DEVICES for the "
+                    "actor processes). Python-backend games ignore it.")
+
+
 # n-step TD knobs. Two sides of one scheme, so their help lives in one place and
 # is reused verbatim by every subcommand that exposes them: --td-n is a
 # GENERATION knob (it is baked into the shard's td_q column at pack time), --q-mix
@@ -953,6 +963,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "combo deck's demonstrations come from games it actually "
                  "wins. Default: hard both seats, both recorded"),
         _actor_mode(),
+        _actor_device(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
@@ -1122,6 +1133,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Run bo1 self-play + gate. The az cycle defaults to bo3 matches "
                  "with a per-game value target; this opts back into single games"),
         _actor_mode(),
+        _actor_device(),
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
@@ -1272,6 +1284,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "bo3 matches with a per-game value target; this opts back into "
                  "single games (persisted in the resume sidecar)"),
         _actor_mode(),
+        _actor_device(),
     ]),
 ])
 

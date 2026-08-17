@@ -16,7 +16,7 @@ growth) buys nothing C doesn't. The remaining ladder:
 ```
 Stage 0  cross-world batching       (CPU, no quality cost, K = worlds)  [BUILT]
 Sanity   time the net on the 6700   (10 minutes; gates all GPU work)   [PASSED — GO]
-Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)
+Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)  [BUILT]
 Stage C  central inference server   (K = fleet-wide, the KataGo shape)
 ```
 
@@ -194,12 +194,26 @@ Readings:
 - Single-thread numbers = CPU-work reductions, so they translate ~directly to
   fleet throughput at fixed cores.
 
-## Stage A — HIP/ROCm in the actor
+## Stage A — HIP/ROCm in the actor — BUILT (2026-08-17)
 
 Smallest possible GPU step: same search, same K (= worlds), the forward moves
 to the Radeon. Its purpose is validating the ROCm build/link/runtime path in
 C++ and measuring small-K GPU economics on this exact card before the server
 work.
+
+Implemented as designed (items 1–3 below: `AZEvaluator::load(path, device)`
+with pinned staging + CPU prior math, the conditional `--no-as-needed`
+HIP link, `az_actor --device cpu|cuda` + the `--actor-device` pass-through on
+az-selfplay/az/az-league with the HSA override + `HIP_VISIBLE_DEVICES=0`
+exported by `_generate_actor`). Verified: a full cross-world searched game on
+the 6700 (1056 sims, clean GAME_RESULT). One landmine found and fixed:
+**TorchScript's NNC/TensorExpr fuser** effectively hangs (gdb-verified: the
+IRSimplifier grinds >4 min at 100% CPU on the first cuda forward) recompiling
+this gather-heavy module for the GPU — `AZEvaluator` now calls
+`torch::jit::setTensorExprFuserEnabled(false)` on non-cpu loads (the net is
+GEMM-dominated; fusion is worthless here). The CPU path never executes that
+branch, so the bit-parity envelope is untouched — `ci_check --tier actor`
+stays the machinery gate.
 
 1. **`AZEvaluator` device support** (`src/actor/az_evaluator.cpp`): `load()`
    takes a device string; `module_.to(device)`. `evaluate_double_batch`

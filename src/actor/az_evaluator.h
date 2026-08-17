@@ -41,8 +41,14 @@ public:
     ~AZEvaluator();
 
     // Load `<path>.ts.pt` and verify `<path>.ts.meta.json`. Fatal (stderr+exit)
-    // on any load/verify failure.
-    void load(const std::string& path);
+    // on any load/verify failure. `device` is "cpu" (default) or "cuda" — under
+    // the ROCm torch build "cuda" targets the Radeon (HIP registers as the cuda
+    // backend), so no AMD-specific string exists. On a non-cpu device the
+    // forward runs there and the logits/value are copied back; the
+    // double-precision prior math stays on CPU, so AZEvalResultD semantics are
+    // identical whichever device ran the GEMMs (Stage A of
+    // docs/gpu_selfplay_inference_plan.md).
+    void load(const std::string& path, const std::string& device = "cpu");
 
     // Forward the net for one decision. `obs` points at ACTOR_OBS_SIZE floats.
     AZEvalResult evaluate(const float* obs, int num_choices);

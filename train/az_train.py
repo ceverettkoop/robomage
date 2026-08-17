@@ -719,6 +719,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              eval_worlds: int = DEFAULT_AZ_EVAL_WORLDS,
              promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD, seed: int = 1,
              use_actor: Optional[bool] = None,
+             actor_device: str = "cpu",
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
@@ -812,6 +813,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                sb_rollout_turns=sb_rollout_turns,
                                sb_persist=bool(sb_persist),
                                workers=workers, seed=seed, use_actor=use_actor,
+                               actor_device=actor_device,
                                roster=roster, focus_decks=focus,
                                mirror_frac=mirror_frac,
                                scripted_opponent_frac=scripted_opponent_frac,
@@ -925,7 +927,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               expert_decks=EXPERT_DECKS_ROSTER,
               expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
               expert_opponent: Optional[str] = None,
-              use_actor: Optional[bool] = None, resume: bool = False,
+              use_actor: Optional[bool] = None, actor_device: str = "cpu",
+              resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
 
@@ -1039,6 +1042,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         expert_games = int(p.get("expert_games", expert_games))
         expert_opponent = p.get("expert_opponent", expert_opponent)
         use_actor = p.get("use_actor", use_actor)
+        actor_device = p.get("actor_device", actor_device)
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
         results = list(state.get("results", []))
@@ -1109,6 +1113,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "expert_decks": expert_decks,
             "expert_games": expert_games,
             "expert_opponent": expert_opponent, "use_actor": use_actor,
+            "actor_device": actor_device,
             "bo3": bo3,
         },
     }
@@ -1208,6 +1213,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
+                       actor_device=actor_device,
                        mirror_frac=mirror_frac,
                        scripted_opponent_frac=scripted_opponent_frac,
                        gate_floor=gate_floor,
@@ -1339,6 +1345,7 @@ def run_cycle(args) -> None:
              expert_opponent=getattr(args, "expert_opponent", None),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
+             actor_device=getattr(args, "actor_device", "cpu"),
              exhaustive=getattr(args, "exhaustive", False),
              exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
              exhaustive_repeats=getattr(args, "exhaustive_repeats",
@@ -1380,7 +1387,9 @@ def run_league(args) -> None:
                                                 EXPERT_DECKS_ROSTER)),
               expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
               expert_opponent=getattr(args, "expert_opponent", None),
-              use_actor=_resolve_use_actor(args), resume=args.resume,
+              use_actor=_resolve_use_actor(args),
+              actor_device=getattr(args, "actor_device", "cpu"),
+              resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
 

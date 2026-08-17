@@ -201,11 +201,22 @@ TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/incl
 ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
 
+# When the venv torch is a ROCm build (libtorch_hip.so present), link the HIP
+# backend too so `az_actor --device cuda` can reach the Radeon. The libs must be
+# wrapped in --no-as-needed: nothing references their symbols directly (the
+# backend registers itself via static initializers), so without it the linker
+# drops them and the device silently never exists — the same gotcha as CUDA's
+# torch_cuda. CPU-only venvs build exactly as before.
+ACTOR_TORCH_LIBS := -ltorch -ltorch_cpu -lc10
+ifneq (,$(wildcard $(LIBTORCH_DIR)/lib/libtorch_hip.so))
+ACTOR_TORCH_LIBS += -Wl,--no-as-needed -ltorch_hip -lc10_hip -Wl,--as-needed
+endif
+
 actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/az_actor $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) \
 		$(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
-		-L$(LIBTORCH_DIR)/lib -ltorch -ltorch_cpu -lc10 -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
+		-L$(LIBTORCH_DIR)/lib $(ACTOR_TORCH_LIBS) -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
 
 # ── actor-syntax — libtorch-free compile check of the actor's obs layout mirror ──
 # obs_builder.{h,cpp} carries the actor's copy of the observation layout, pinned by

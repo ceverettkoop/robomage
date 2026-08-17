@@ -14,6 +14,8 @@
 #include "machine_io.h"         // N_CARD_TYPES
 
 #include <ATen/Parallel.h>
+#include <torch/csrc/jit/passes/tensorexpr_fuser.h>
+#include <torch/cuda.h>
 #include <torch/script.h>
 
 // Any libtorch error path funnels here: report + hard exit so no C++ exception
@@ -43,13 +45,22 @@ static bool json_int_field(const std::string& text, const std::string& key, long
 
 struct AZEvaluator::Impl {
     torch::jit::Module module;
+    torch::Device device{torch::kCPU};
     bool loaded = false;
 };
+
+// Move a [k, OBS] CPU batch to the eval device. On cuda the staging copy goes
+// through pinned memory so the host->device transfer can be async; on cpu this
+// is the identity (`.to(cpu)` on a cpu tensor returns the same tensor).
+static torch::Tensor to_eval_device(const torch::Tensor& t, const torch::Device& device) {
+    if (device.is_cpu()) return t;
+    return t.pin_memory().to(device, /*non_blocking=*/true);
+}
 
 AZEvaluator::AZEvaluator() : impl_(std::make_unique<Impl>()) {}
 AZEvaluator::~AZEvaluator() = default;
 
-void AZEvaluator::load(const std::string& path) {
+void AZEvaluator::load(const std::string& path, const std::string& device) {
     // Single-threaded ATen for bit-parity with the Python reference driver
     // (torch.set_num_threads(1)); multithreaded reductions are not bit-stable.
     at::set_num_threads(1);
@@ -95,8 +106,30 @@ void AZEvaluator::load(const std::string& path) {
     }
 
     try {
+        impl_->device = torch::Device(device);
+    } catch (const std::exception& e) {
+        torch_fatal(std::string("invalid --device '") + device + "': " + e.what());
+    }
+    if (!impl_->device.is_cpu()) {
+        if (!impl_->device.is_cuda())
+            torch_fatal("unsupported --device '" + device + "' (use cpu or cuda)");
+        if (!torch::cuda::is_available())
+            torch_fatal("--device " + device + " requested but torch reports no cuda/HIP "
+                        "device (ROCm: is HSA_OVERRIDE_GFX_VERSION=10.3.0 exported, and is "
+                        "the venv torch the rocm build?)");
+        // The TorchScript NNC/TensorExpr fuser's IRSimplifier grinds for minutes
+        // (looks like a hang; gdb-verified) recompiling this module's gather-heavy
+        // graph for the cuda device. The net is GEMM-dominated, so elementwise
+        // fusion buys nothing here — skip the fuser entirely on the GPU path.
+        // CPU loads never reach this branch, so the bit-parity envelope of the
+        // default path is untouched.
+        torch::jit::setTensorExprFuserEnabled(false);
+    }
+
+    try {
         impl_->module = torch::jit::load(path);
         impl_->module.eval();
+        if (!impl_->device.is_cpu()) impl_->module.to(impl_->device);
         impl_->loaded = true;
     } catch (const std::exception& e) {
         torch_fatal(std::string("failed to load TorchScript module ") + path + ": " + e.what());
@@ -118,10 +151,13 @@ AZEvalResult AZEvaluator::evaluate(const float* obs, int num_choices) {
         auto mask_a = mask_t.accessor<bool, 2>();
         for (int i = 0; i < num_choices; i++) mask_a[0][i] = true;
 
-        std::vector<torch::jit::IValue> inputs{obs_t, mask_t};
+        std::vector<torch::jit::IValue> inputs{to_eval_device(obs_t, impl_->device),
+                                               to_eval_device(mask_t, impl_->device)};
         auto out = impl_->module.forward(inputs).toTuple();
-        torch::Tensor logits = out->elements()[0].toTensor();  // [1, MAX_ACTIONS]
-        torch::Tensor value = out->elements()[1].toTensor();   // [1]
+        // [1, MAX_ACTIONS] / [1]; copied back to CPU so the prior math below is
+        // device-independent (a no-op when the forward ran on CPU).
+        torch::Tensor logits = out->elements()[0].toTensor().to(torch::kCPU);
+        torch::Tensor value = out->elements()[1].toTensor().to(torch::kCPU);
 
         // softmax over the first num_choices logits (mirrors AZEvaluator in az_net.py).
         auto slice = logits.index({0, torch::indexing::Slice(0, num_choices)});
@@ -184,10 +220,12 @@ std::vector<AZEvalResultD> AZEvaluator::evaluate_double_batch(
                 torch_fatal("evaluate_double_batch(): num_choices out of range");
             for (int i = 0; i < nc; i++) mask_a[b][i] = true;
         }
-        std::vector<torch::jit::IValue> inputs{obs_t, mask_t};
+        std::vector<torch::jit::IValue> inputs{to_eval_device(obs_t, impl_->device),
+                                               to_eval_device(mask_t, impl_->device)};
         auto res = impl_->module.forward(inputs).toTuple();
-        torch::Tensor logits = res->elements()[0].toTensor();  // [k, MAX_ACTIONS]
-        torch::Tensor value = res->elements()[1].toTensor();   // [k]
+        // [k, MAX_ACTIONS] / [k], copied back to CPU (no-op for a CPU forward).
+        torch::Tensor logits = res->elements()[0].toTensor().to(torch::kCPU);
+        torch::Tensor value = res->elements()[1].toTensor().to(torch::kCPU);
         auto va = value.contiguous();
         auto vacc = va.accessor<float, 1>();
         for (int b = 0; b < k; b++) {

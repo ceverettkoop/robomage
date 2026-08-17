@@ -39,6 +39,11 @@ struct ActorConfig {
     std::string deck = "delver";
     std::string deck_b;  // empty -> mirror (= deck)
     std::string model;
+    // Eval device for the TorchScript forward: "cpu" (default) or "cuda" (the
+    // Radeon under the ROCm build — HIP registers as the cuda backend). Stage A
+    // of docs/gpu_selfplay_inference_plan.md; search math is device-independent
+    // (priors/value come back to CPU inside AZEvaluator).
+    std::string device = "cpu";
     std::string dump_obs;
     std::string dump_visits;
     std::string resources;  // empty -> <cwd>/resources
@@ -90,7 +95,8 @@ constexpr size_t FLUSH_SAMPLES = 4096;
 void print_usage(const char* prog) {
     std::fprintf(stderr,
                  "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
-                 "[--bo3] [--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
+                 "[--bo3] [--model <path.ts.pt> | --uniform] [--device cpu|cuda] "
+                 "[--dump-obs <file>]\n"
                  "       [--search [--sims N] [--worlds N] [--c F] [--batch K | "
                  "--cross-world] [--world-seeds BASE] [--dump-visits <file>]] "
                  "[--resources <dir>]\n"
@@ -143,6 +149,8 @@ int main(int argc, char const* argv[]) {
             cfg.bo3 = true;
         } else if (a == "--model") {
             cfg.model = need_arg(argc, argv, i, "--model");
+        } else if (a == "--device") {
+            cfg.device = need_arg(argc, argv, i, "--device");
         } else if (a == "--uniform") {
             cfg.uniform = true;
         } else if (a == "--dump-obs") {
@@ -251,7 +259,7 @@ int main(int argc, char const* argv[]) {
     InputLogger::instance().init_machine(cfg.seed, RESOURCE_DIR, false, DecisionLogHeader{});
 
     AZEvaluator evaluator;
-    if (!cfg.uniform) evaluator.load(cfg.model);
+    if (!cfg.uniform) evaluator.load(cfg.model, cfg.device);
 
     // Optional binary obs dump: per decision, int32 num_choices then
     // ACTOR_OBS_SIZE float32s (little-endian, raw append).
