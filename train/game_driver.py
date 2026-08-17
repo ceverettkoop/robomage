@@ -23,7 +23,8 @@ from dataclasses import dataclass
 import numpy as np
 
 from env import (NarrativeEnv, STATE_SIZE, _SELF_IS_A_IDX,
-                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE)
+                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
+                 CONCEDE_GAME, CONCEDE_MATCH)
 import decode
 
 # Abbreviations for the step phase strip (index aligns with the step one-hot).
@@ -49,7 +50,8 @@ STEP_OBSERVE_DELAY = 0.2
 # (the opponent holds priority, so the state vector's "self" is them). Swapping
 # the labels keeps stack entries / announced targets worded from the human's
 # point of view; the structural self/opp fields are swapped separately.
-_MIRROR_LABELS = {"own": "opp", "opp": "own", "self": "opponent", "opponent": "self"}
+# Defined in decode.py alongside the other controller-label vocabularies.
+_MIRROR_LABELS = decode.MIRROR_LABELS
 
 # ActionRefZone (src/classes/gamestate.h) -> board zone a card widget lives in.
 # Only battlefield/hand have widgets; other zones (stack/gy/exile/player) map to
@@ -353,6 +355,14 @@ class DriverSink:
     def on_game_over(self, text):
         """The game/match ended; `text` is the banner to show."""
 
+    # OPTIONAL (called only when the front end defines it — the driver looks it
+    # up duck-typed, so an older sink is unaffected):
+    #
+    # def on_timeout(self, seat, reason):
+    #     """A seat's hard clock ran out and the driver conceded the match on
+    #     its behalf. `seat` is "you"/"opponent"; `reason` is a display string
+    #     ("You lost on time." / "Model lost on time.")."""
+
 
 # ── The driver ────────────────────────────────────────────────────────────────
 
@@ -363,12 +373,24 @@ class GameDriver:
     autopass state machine, the quit flag, the running reward/match context, and
     the bo3 match banners. A front end constructs one with its sink, starts
     `run()` on a background thread, feeds the human's picks back via `submit`,
-    engages autopass via `engage_autopass`, and shuts it down via `request_quit`
-    (the front end still owns closing the env)."""
+    engages autopass via `engage_autopass`, resigns via `concede`, and shuts it
+    down via `request_quit` (the front end still owns closing the env).
+
+    Clocks. `human_clock_s` gives the HUMAN seat a wall-clock bank debited per
+    decision (a chess clock — only the time they are actually on the clock
+    counts); the opponent's bank belongs to its controller (opponents.MatchClock)
+    and is read duck-typed off `controller._clock` / `clock_fn`. With
+    `hard_timeout` set, a seat that reaches its own decision with an empty bank
+    loses the match on time: the driver concedes for it and reports the loss
+    (`sink.on_timeout` when the sink defines it, the log, and the final banner).
+    Both default off, so an untimed session behaves exactly as before and a
+    search opponent's clock stays SOFT (an empty bank only makes it think
+    faster)."""
 
     def __init__(self, env, opp_act, opp_is_a, is_model, opp_label, bo3, sink,
                  clock_fn=None, pace_idle=None, reset_options=None,
-                 replay_actions=None):
+                 replay_actions=None, controller=None,
+                 human_clock_s=None, hard_timeout=False):
         self._env = env
         self._opp_act = opp_act              # callable(obs, num_choices) -> int
         self._opp_is_a = opp_is_a
@@ -418,6 +440,28 @@ class GameDriver:
         # UI-thread list() snapshot is always a consistent replayable prefix
         # regardless of env class (plain TuiEnv has no _action_history).
         self.action_log = []
+        # ── Clocks / concession ──────────────────────────────────────────────
+        # The opponent Controller, when the front end passes it: the ONLY use is
+        # reading its match clock duck-typed (`ctrl._clock.remaining`, see
+        # opponents.MatchClock) for hard-timeout enforcement. None => fall back
+        # to clock_fn, which build_session already wires to the same bank.
+        self._controller = controller
+        # The human seat's own wall-clock bank in seconds, debited per decision
+        # like a chess clock. None (the default) = untimed, exactly as before.
+        self._human_clock_s = None if human_clock_s is None else float(human_clock_s)
+        self._human_remaining = self._human_clock_s
+        # Hard mode: an exhausted bank concedes the MATCH for that seat instead
+        # of merely degrading its play (the search controller's own clock is
+        # soft — it just thinks faster). Off by default, so a driver built the
+        # old way behaves identically.
+        self._hard_timeout = bool(hard_timeout)
+        # Set when the driver injected a MATCH concession (the human asked, or a
+        # hard clock ran out): (loser_seat, reason). The single source of truth
+        # for a driver-forced match end — it decides the final banner in
+        # _winner_text (a match conceded between games carries no game result, so
+        # the running reward cannot be trusted there) AND gates _hard_timeout_seat
+        # so a fired timeout never re-fires.
+        self._forfeit = None
         # Optional per-decision observer (e.g. shard_record.ShardRecorder
         # .observe_step), called on the worker thread after each MAIN-LOOP
         # env.step with (pre_step_obs, num_choices, action, reward, info,
@@ -429,6 +473,7 @@ class GameDriver:
     # ----- the loop (worker thread) -----
 
     def run(self) -> None:
+        import queue
         env = self._env
         try:
             obs, _ = env.reset(options=self._reset_options)
@@ -494,7 +539,15 @@ class GameDriver:
 
                 opp_acted = False
                 autopass_acted = False
-                if opp_turn:
+                # Hard clock: a seat whose bank is empty at its own decision
+                # loses the match on time — the driver concedes for it (CR
+                # 104.3a) instead of asking it to act. Never fires with
+                # hard_timeout off, so the default path is untouched.
+                timed_out = self._hard_timeout_seat(opp_turn, human_must_act)
+                if timed_out is not None:
+                    action = CONCEDE_MATCH
+                    self._report_timeout(timed_out)
+                elif opp_turn:
                     # A model/search opponent can take seconds to answer; show a
                     # thinking indicator around the call (the driver runs on a
                     # worker thread, so the UI stays live meanwhile). The finally
@@ -514,9 +567,37 @@ class GameDriver:
                     action = pass_idx
                     autopass_acted = True
                 else:
-                    action = self._human_q.get()       # blocks until UI delivers
-                    if action is None:                 # quit signalled
+                    # Debit the human's bank with the time they spend on this
+                    # decision (a chess clock: only their own thinking counts).
+                    # Under a hard clock, block only as long as the bank holds:
+                    # if it runs out while they deliberate they lose on time HERE,
+                    # not merely at their NEXT decision — otherwise a human could
+                    # think indefinitely on their own turn and never time out,
+                    # making the hard clock unenforceable against an opponent-side
+                    # one. The bank is > 0 here (an already-empty bank fires the
+                    # top-of-decision check above), so the wait is always positive.
+                    think_t0 = time.monotonic()
+                    block_s = (self._human_remaining
+                               if (self._hard_timeout
+                                   and self._human_remaining is not None)
+                               else None)
+                    try:
+                        action = (self._human_q.get(timeout=block_s)
+                                  if block_s is not None
+                                  else self._human_q.get())
+                        expired = False
+                    except queue.Empty:
+                        expired = True
+                    self._debit_human(time.monotonic() - think_t0)
+                    if expired:                        # bank ran out mid-decision
+                        action = CONCEDE_MATCH
+                        self._report_timeout("you")
+                    elif action is None:               # quit signalled
                         return
+                    elif action == CONCEDE_MATCH:
+                        # Record the human's match concession now that the loop
+                        # has the sentinel in hand to step — see concede().
+                        self._forfeit = ("you", "conceded the match")
 
                 self.action_log.append(int(action))
                 # Copy the pre-step obs before stepping — the env may reuse
@@ -540,6 +621,14 @@ class GameDriver:
                 # UPKEEP stop mark never fires during those decisions).
                 if self._autopass and info.get("game_result"):
                     self._autopass = False
+                # A finished game (bo3 continuing) clears any input the human
+                # queued during it but that the loop never consumed — e.g. a
+                # concession clicked while the opponent held priority, whose game
+                # then ended by other means before the sentinel was read. Left in
+                # place it would be picked up at the NEXT game's first human
+                # decision, auto-conceding a game the human never chose to.
+                if info.get("game_result") and not done:
+                    self._drain_pending_input()
                 flushed = env.flush_lines()
                 self._sink.on_log(flushed)
 
@@ -648,6 +737,101 @@ class GameDriver:
         except Exception:
             self._human_q.put(idx)
 
+    def _drain_pending_input(self) -> None:
+        """Discard any input queued but not yet consumed by the loop.
+
+        Called at a bo3 game boundary: a concession (or other action) the human
+        submitted out of turn during the finished game must not leak into the
+        next game's first decision. A pending quit (None) is preserved and
+        re-queued so shutdown still fires."""
+        import queue
+        quit_pending = False
+        while True:
+            try:
+                item = self._human_q.get_nowait()
+            except queue.Empty:
+                break
+            if item is None:               # a quit must survive the drain
+                quit_pending = True
+        if quit_pending:
+            self.submit(None)
+
+    def concede(self, match: bool = False) -> None:
+        """Concede on the HUMAN's behalf (CR 104.3a) at their next decision.
+
+        Queues the engine's out-of-band concession sentinel exactly like a
+        chosen action index, so it is delivered by the same thread-safe path a
+        click uses: if the loop is blocked on the human's decision it is taken
+        immediately, otherwise it waits (the queue holds it) until the human is
+        next on the clock — the opponent's decision in flight is never
+        interrupted mid-search.
+
+        `match=False` concedes the current GAME: in a bo3 the match continues
+        exactly as after any other game loss (the loser is on the play next
+        game, both players sideboard). `match=True` concedes the MATCH: the
+        current game is lost and the match ends immediately with the opponent
+        as the winner, whatever the score was.
+
+        A match concession records the forfeit (self._forfeit) only when the loop
+        actually consumes the sentinel — see run() — NOT here at request time: a
+        match that ended by other means (e.g. the opponent's in-flight move ending
+        the game in the human's favour) before the queued sentinel was read must
+        not be misreported as a concession the human never got to make."""
+        self.submit(CONCEDE_MATCH if match else CONCEDE_GAME)
+
+    # ----- clocks (hard timeout) -----
+
+    def _debit_human(self, elapsed_s: float) -> None:
+        """Charge the human's bank for one decision (no-op when untimed)."""
+        if self._human_remaining is None:
+            return
+        self._human_remaining = max(0.0, self._human_remaining - max(0.0, float(elapsed_s)))
+
+    def human_clock_remaining(self):
+        """Seconds left on the human's bank, or None when they are untimed.
+        A single float read, so it is safe from the front end's UI thread."""
+        return self._human_remaining
+
+    def _opp_clock_remaining(self):
+        """Seconds left on the OPPONENT's bank, or None when it has no clock.
+
+        The bank belongs to the controller (opponents.MatchClock, which the
+        search controller debits itself after every searched decision), so read
+        it duck-typed rather than keeping a second, drifting copy here:
+        `controller._clock.remaining` when the front end passed the controller,
+        else the equivalent `clock_fn` build_session already wires up."""
+        clock = getattr(self._controller, "_clock", None)
+        if clock is not None:
+            remaining = getattr(clock, "remaining", None)
+            return None if remaining is None else float(remaining)
+        if self._clock_fn is not None:
+            remaining = self._clock_fn()
+            return None if remaining is None else float(remaining)
+        return None
+
+    def _hard_timeout_seat(self, opp_turn, human_must_act):
+        """"you" / "opponent" when THAT seat is on the clock right now with an
+        exhausted bank, else None. Only the seat about to act can flag: a clock
+        runs out ON your own decision, and an autopass window costs no time."""
+        if not self._hard_timeout or self._forfeit is not None:
+            return None
+        remaining = (self._opp_clock_remaining() if opp_turn
+                     else (self._human_remaining if human_must_act else None))
+        if remaining is None or remaining > 0.0:
+            return None
+        return "opponent" if opp_turn else "you"
+
+    def _report_timeout(self, seat) -> None:
+        """Record and announce a hard-timeout loss (the driver has just chosen
+        CONCEDE_MATCH for `seat`)."""
+        who = "You" if seat == "you" else self._opp_label
+        reason = f"{who} lost on time."
+        self._forfeit = (seat, "lost on time")
+        self._sink.on_log([f"=== {reason} ==="])
+        on_timeout = getattr(self._sink, "on_timeout", None)
+        if on_timeout is not None:
+            on_timeout(seat, reason)
+
     def engage_autopass(self) -> bool:
         """Engage autopass from the current human decision: queue a pass now and
         set the flag so the loop keeps passing every optional window until the
@@ -715,7 +899,16 @@ class GameDriver:
     def _winner_text(self) -> str:
         human_is_a = not self._opp_is_a
         human_wins = (self._reward > 0 and human_is_a) or (self._reward < 0 and not human_is_a)
-        if self._reward == 0:
+        note = ""
+        if self._forfeit is not None:
+            # A match conceded by the driver (the human asked, or a hard clock
+            # ran out) decides the banner by itself: the conceding seat loses
+            # whatever the score, and a concession taken between games carries
+            # no game result for the reward to read.
+            loser, why = self._forfeit
+            human_wins = (loser == "opponent")
+            note = f" — {why}"
+        elif self._reward == 0:
             return "Game over — no winner detected (draw?)."
         # In bo3 the terminal reward is the DECIDING GAME's result (±1.0), whose
         # sign is also the match winner's; report it with the
@@ -725,12 +918,22 @@ class GameDriver:
         if self._bo3:
             score = ""
             if self._match:
-                you = self._match["self_wins"] + (1 if human_wins else 0)
-                opp = self._match["opp_wins"] + (0 if human_wins else 1)
+                if self._forfeit is not None and self._match.get("is_sideboard"):
+                    # A match conceded (or a clock that ran out) BETWEEN games
+                    # played no extra game: report the actual game tally, matching
+                    # the engine's MATCH_RESULT, rather than crediting a phantom
+                    # deciding game that was never played (a 0–0 concession would
+                    # otherwise render 0–1).
+                    you = self._match["self_wins"]
+                    opp = self._match["opp_wins"]
+                else:
+                    you = self._match["self_wins"] + (1 if human_wins else 0)
+                    opp = self._match["opp_wins"] + (0 if human_wins else 1)
                 score = f" ({you}–{opp})"
-            return (f"=== You win the match!{score} ===" if human_wins
-                    else f"=== {self._opp_label} wins the match{score}. ===")
-        return "=== You win! ===" if human_wins else f"=== {self._opp_label} wins. ==="
+            return (f"=== You win the match!{score}{note} ===" if human_wins
+                    else f"=== {self._opp_label} wins the match{score}{note}. ===")
+        return (f"=== You win!{note} ===" if human_wins
+                else f"=== {self._opp_label} wins{note}. ===")
 
 
 # ── Session assembly ──────────────────────────────────────────────────────────
@@ -755,11 +958,18 @@ class Session:
     engine_seed: object = None   # force the engine --seed (saved-session restore)
     record_dir: object = None    # shard-recording directory (front end sets it;
     #                              the pane builds a shard_record.ShardRecorder)
+    opponent_spec: object = None  # the agent spec string the opponent was built
+    #                               from (recorder sidecar / value-net derivation)
+    # Hard-clock settings for the GameDriver this session builds (see its
+    # docstring). Defaults leave the session untimed and soft, as before.
+    human_clock_s: object = None
+    hard_timeout: bool = False
 
 
 def build_session(binary_path, model_path, human_player=None,
                   human_deck="delver", model_deck="delver", bo3=True,
-                  analysis=False, step_pacing=False, engine_seed=None):
+                  analysis=False, step_pacing=False, engine_seed=None,
+                  human_clock_s=None, hard_timeout=False):
     """Assemble the engine env, opponent controller, and seat/clock/pace plumbing
     for one session (front-end-agnostic). Returns a Session.
 
@@ -775,7 +985,9 @@ def build_session(binary_path, model_path, human_player=None,
     step (passive BSTATE frames, ~0.2s dwell per step) instead of
     fast-forwarding between decisions — the GUI turns this on. `engine_seed`
     forces the engine --seed on reset (saved-session restore); None lets the
-    env pick its own.
+    env pick its own. `human_clock_s`/`hard_timeout` are carried on the Session
+    for the front end to hand to its GameDriver (see GameDriver's docstring);
+    both default to today's untimed, soft behaviour.
     """
     from opponents import make_controller, is_scripted_spec
 
@@ -827,4 +1039,6 @@ def build_session(binary_path, model_path, human_player=None,
                    opp_label=opp_label, human_deck=human_deck, opp_deck=model_deck,
                    bo3=bo3, clock_fn=clock_fn,
                    pace_idle=getattr(ctrl, "pace_idle", None),
-                   controller=ctrl, engine_seed=engine_seed)
+                   controller=ctrl, engine_seed=engine_seed,
+                   opponent_spec=(spec if isinstance(spec, str) else None),
+                   human_clock_s=human_clock_s, hard_timeout=hard_timeout)

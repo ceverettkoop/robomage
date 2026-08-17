@@ -16,8 +16,16 @@ from archetypes import ARCHETYPES
 
 # ── Canonical CLI constants (single home; imported by env.py / train.py) ──────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BINARY = os.path.join(REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resource lookup
+# The Makefile writes each configuration's binaries to bin/<config>/ (see its
+# CONFIG variable): bin/debug/robomage from a plain `make`, bin/release/robomage
+# from `make BUILD=RELEASE`. Tooling selects one deliberately via ROBOMAGE_BUILD
+# (default "debug", matching a plain `make`); every command's --binary flag still
+# defaults to BINARY, so an explicit path stays an escape hatch. BIN_DIR stays the
+# launch cwd (the engine finds resources/ via getcwd()), independent of BUILD_DIR.
+BUILD = os.environ.get("ROBOMAGE_BUILD", "debug")
+BUILD_DIR = os.path.join(BIN_DIR, BUILD)  # where this config's binaries live
+BINARY = os.path.join(BUILD_DIR, "robomage")
 
 # AlphaZero sideboard-root search budget (single home; imported by az_selfplay,
 # opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard
@@ -1352,13 +1360,27 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="Search opponent only (az:/mcts: --model): number of engine "
                  "processes to fan the determinized worlds across for a faster "
                  "search (world-parallel; more procs = more sims/decision in the "
-                 "same wall-clock). Default 1 (TUI only)"),
+                 "same wall-clock). Default for interactive play is AUTO — half "
+                 "the visible cores, capped at the world count (TUI only)"),
         Arg("--match-clock", "float", default=None,
             help="Search opponent only: total wall-clock thinking bank in "
                  "seconds for the WHOLE match (chess clock; 1500 = 25 min for "
                  "a bo3). Each decision draws a variable budget from the bank "
                  "— harder decisions earn more time, obvious ones stop early. "
                  "Appends clock= to the spec (TUI only)"),
+        Arg("--human-clock", "float", default=None,
+            help="Arm YOUR OWN chess clock: total wall-clock thinking bank in "
+                 "seconds for the whole match, debited by the time you spend "
+                 "on each of your decisions (the opponent's bank is the "
+                 "separate --match-clock). Unset = untimed. On its own the "
+                 "bank is only a readout; add --hard-timeout to make it "
+                 "decisive (TUI/GUI only)"),
+        Arg("--hard-timeout", "flag",
+            help="Losing on time is real: a seat that reaches its own decision "
+                 "with an empty bank concedes the match (CR 104.3a). Applies to "
+                 "both your --human-clock and a search opponent's --match-clock, "
+                 "whose bank is otherwise SOFT (it just thinks faster). "
+                 "TUI/GUI only"),
         Arg("--paced", "flag",
             help="Mask opponent response-timing tells: a small jittered "
                  "(~0.02-0.05s) floor on every decision, plus occasional "

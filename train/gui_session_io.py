@@ -61,9 +61,11 @@ def _now():
 
 def save_replay(path, *, engine_seed, actions, deck_a, deck_b, human_deck,
                 opp_deck, human_is_a, bo3, opponent_spec, analysis=None,
-                binary=None, final_obs=None, in_progress=True):
+                binary=None, final_obs=None, in_progress=True, extra=None):
     """Write a play-session replay spec. `actions` is the driver's action_log
-    snapshot; `final_obs` (the obs at save time) stamps the divergence hash."""
+    snapshot; `final_obs` (the obs at save time) stamps the divergence hash.
+    `extra` merges additional keys into the doc (e.g. the shard recorder's
+    ``row_decision_idx``); reserved keys cannot be overridden."""
     doc = {
         "format": PLAY_FORMAT, "version": PLAY_VERSION,
         "engine_seed": int(engine_seed) if engine_seed is not None else None,
@@ -80,6 +82,8 @@ def save_replay(path, *, engine_seed, actions, deck_a, deck_b, human_deck,
         "in_progress": bool(in_progress),
         "saved_at": _now(),
     }
+    if extra:
+        doc.update({k: v for k, v in extra.items() if k not in doc})
     with open(path, "w") as f:
         json.dump(doc, f, indent=1)
     return path
@@ -333,7 +337,12 @@ def trace_from_replay(replay, binary_path, value_fn=None, viewpoint=None):
                  "opp_actions": [], "engine_seed": replay["engine_seed"],
                  "prefix_len": [], "model_is_a": view_is_a,
                  "clock_remaining": [], "clock_bank": None,
-                 "opp_clock_bank": None}
+                 "opp_clock_bank": None,
+                 # Absolute seat decks: the browser's replay-to-step search
+                 # rebuilds an env from these (no model-seat deck swap).
+                 "replay_decks": {"deck_a": replay["deck_a"],
+                                  "deck_b": replay["deck_b"],
+                                  "bo3": bool(replay.get("bo3", True))}}
 
         def on_query(d):
             if d.priority_is_a != view_is_a:

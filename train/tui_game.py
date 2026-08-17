@@ -26,7 +26,8 @@ from textual.app import App, ComposeResult
 from textual.content import Content
 from textual.containers import Horizontal, HorizontalScroll, Vertical, VerticalScroll
 from textual.message import Message
-from textual.widgets import Footer, Header, OptionList, RichLog, Static
+from textual.screen import ModalScreen
+from textual.widgets import Button, Footer, Header, Label, OptionList, RichLog, Static
 from textual.widgets.option_list import Option, OptionDoesNotExist
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
@@ -177,6 +178,49 @@ class OppThinking(Message):
         super().__init__()
 
 
+class ConfirmScreen(ModalScreen):
+    """A modal "are you sure?" with N labelled choices plus Cancel.
+
+    Dismisses with the chosen value, or None for Cancel / escape — so any exit
+    other than an explicit click on a choice is a cancel, which is the right
+    default for the irreversible actions it guards (conceding). Each choice is
+    a (label, value) pair; the caller reads the value in its push_screen
+    callback."""
+
+    BINDINGS = [("escape", "cancel", "Cancel")]
+
+    DEFAULT_CSS = """
+    ConfirmScreen { align: center middle; }
+    #confirm-box { width: auto; max-width: 64; height: auto; padding: 1 2;
+                   border: round $error; background: $panel; }
+    #confirm-buttons { height: auto; padding-top: 1; }
+    #confirm-buttons Button { margin: 0 1 0 0; }
+    """
+
+    def __init__(self, question, choices):
+        super().__init__()
+        self._question = question
+        self._choices = list(choices)
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="confirm-box"):
+            yield Label(self._question)
+            with Horizontal(id="confirm-buttons"):
+                for i, (label, _value) in enumerate(self._choices):
+                    yield Button(label, variant="error", id=f"choice-{i}")
+                yield Button("Cancel", variant="primary", id="cancel")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        bid = event.button.id or ""
+        if not bid.startswith("choice-"):
+            self.dismiss(None)
+            return
+        self.dismiss(self._choices[int(bid.split("-", 1)[1])][1])
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
 class _AppSink:
     """Adapts GameDriver's sink callbacks (fired on the worker thread) to Textual
     messages posted onto the app. Textual's post_message is thread-safe from a
@@ -253,6 +297,9 @@ class GameApp(App):
         ("q", "inspect", "Oracle (hold)"),
         ("space", "pass_zero", "Pass"),
         ("p", "autopass", "Autopass"),
+        # Conceding is irreversible, so it takes a modifier key AND a confirm
+        # modal — never a bare letter that could be hit while picking actions.
+        ("ctrl+r", "concede", "Concede"),
         ("greater_than_sign", "resize_log(1)", "Bigger log"),
         ("less_than_sign", "resize_log(-1)", "Smaller log"),
         ("0", "pick('0')", "Pick"),
@@ -273,13 +320,23 @@ class GameApp(App):
         # queue, the autopass/quit state, the running reward + bo3 match context,
         # and the winner/game-break banners; the app just marshals its sink
         # callbacks onto the UI thread and delivers the human's picks back.
-        self._driver = GameDriver(
+        # NAME IT `_game_driver`, never `_driver`: textual.app.App keeps its own
+        # terminal Driver in `self._driver` and REASSIGNS it while starting up,
+        # so an attribute of that name is silently replaced the moment the app
+        # runs (on_mount then called HeadlessDriver.run and the board died).
+        self._game_driver = GameDriver(
             env=session.env, opp_act=session.opp_act, opp_is_a=session.opp_is_a,
             is_model=session.is_model, opp_label=session.opp_label,
             bo3=session.bo3, sink=_AppSink(self),
-            clock_fn=session.clock_fn, pace_idle=session.pace_idle)
+            clock_fn=session.clock_fn, pace_idle=session.pace_idle,
+            controller=session.controller,
+            human_clock_s=session.human_clock_s,
+            hard_timeout=session.hard_timeout)
         self._actions = []
         self._awaiting = False
+        # Set by on_game_over — after it, conceding is meaningless (and the
+        # driver loop is gone, so the queued sentinel would never be read).
+        self._game_over = False
         # Elapsed-seconds ticker for the "opponent is thinking" indicator (a
         # model/search opponent only). Started/stopped on the UI thread by
         # on_opp_thinking; None while idle. See OppThinking.
@@ -332,14 +389,15 @@ class GameApp(App):
                           f"{self._opp_label} (Player {opp_seat}, {self._opp_deck})")
         self._log("[b]Game starting…[/b]  Click a card or pick a numbered action. "
                   "Keys: digits = pick, space = pass, p = autopass, "
-                  "hold q or right-click a card = show oracle text, ctrl+q = quit.")
+                  "hold q or right-click a card = show oracle text, "
+                  "ctrl+r = concede, ctrl+q = quit.")
         self._drive()
 
     # ----- the driver (background thread) -----
 
     @work(thread=True, exclusive=True)
     def _drive(self) -> None:
-        self._driver.run()
+        self._game_driver.run()
 
     # ----- message handlers (UI thread) -----
 
@@ -383,7 +441,7 @@ class GameApp(App):
             if u.actions:
                 opt.highlighted = 0
             self.query_one("#prompt", Static).update(prompt_text(obs, u.num_choices, gs))
-        elif self._driver._autopass:
+        elif self._game_driver._autopass:
             self.query_one("#prompt", Static).update("Autopass — passing to next upkeep…")
         else:
             self.query_one("#prompt", Static).update(f"{self._opp_label} is thinking…")
@@ -409,7 +467,7 @@ class GameApp(App):
     def _tick_think(self) -> None:
         elapsed = int(time.monotonic() - self._think_start)
         bank = ""
-        remaining = self._driver.clock_remaining()
+        remaining = self._game_driver.clock_remaining()
         if remaining is not None:
             r = int(remaining)
             bank = f"  ·  bank {r // 60}:{r % 60:02d}"
@@ -418,6 +476,7 @@ class GameApp(App):
 
     def on_game_over(self, message: GameOver) -> None:
         self._awaiting = False
+        self._game_over = True
         self.query_one("#actions", OptionList).clear_options()
         self.query_one("#prompt", Static).update(message.text + "  (press q to quit)")
         self._log(f"[b]{message.text}[/b]")
@@ -583,12 +642,50 @@ class GameApp(App):
         # it returns False and we leave the human's menu untouched. On engage,
         # disable input directly (not via _submit) so no stray keypress is queued
         # while the driver auto-drives — input stays disabled until autopass stops.
-        if not self._driver.engage_autopass():
+        if not self._game_driver.engage_autopass():
             return
         self._write_event("[You] Autopass to next upkeep")
         self._awaiting = False
         self.query_one("#actions", OptionList).clear_options()
         self.query_one("#prompt", Static).update("Autopass — passing to next upkeep…")
+
+    def action_concede(self) -> None:
+        """Ctrl+R = concede (CR 104.3a), behind a confirmation modal.
+
+        In a bo3 the modal offers both scopes — conceding the GAME is an
+        ordinary game loss and the match plays on (sideboard, next game), while
+        conceding the MATCH ends it now. A single game has only the one
+        meaningful choice: conceding it hands the whole thing to the opponent."""
+        if self._game_over:
+            return
+        if self._bo3:
+            question = ("Concede?\n\n"
+                        "· Concede game — you lose this game; the match "
+                        "continues (sideboard, next game).\n"
+                        "· Concede match — the match ends now, "
+                        f"{self._opp_label} wins it.")
+            choices = [("Concede game", "game"), ("Concede match", "match")]
+        else:
+            # Single game: conceding the game IS conceding the match, so only
+            # the game scope is offered (CONCEDE_GAME already ends everything).
+            question = ("Concede the game?\n\nThis is a single game, so "
+                        f"conceding it loses the match to {self._opp_label}.")
+            choices = [("Concede game", "game")]
+        self.push_screen(ConfirmScreen(question, choices), self._on_concede)
+
+    def _on_concede(self, choice) -> None:
+        """ConfirmScreen callback: None = cancelled, else "game"/"match"."""
+        if choice not in ("game", "match"):
+            return
+        match = choice == "match"
+        self._write_event("[You] Concede the match" if match
+                          else "[You] Concede the game")
+        # The driver queues the sentinel on the same channel a click uses, so it
+        # is taken at the human's next decision; disable input meanwhile.
+        self._awaiting = False
+        self.query_one("#actions", OptionList).clear_options()
+        self.query_one("#prompt", Static).update("Conceding…")
+        self._game_driver.concede(match=match)
 
     def action_pass_zero(self) -> None:
         """Spacebar = pass, but only when action 0 is the pass option.
@@ -659,7 +756,7 @@ class GameApp(App):
         # Flag the shutdown via the driver first: if it is blocked in a long
         # opponent search, on_unmount's env.close() kills the engine and the pipe
         # read errors out in the driver, which then returns silently on that flag.
-        self._driver.request_quit()
+        self._game_driver.request_quit()
         self.exit()
 
     def on_unmount(self) -> None:
@@ -675,7 +772,7 @@ class GameApp(App):
         self._awaiting = False
         self.query_one("#actions", OptionList).clear_options()
         self.query_one("#prompt", Static).update("…")
-        self._driver.submit(idx)
+        self._game_driver.submit(idx)
 
     def _log(self, text: str) -> None:
         """Write a styled (markup) line — used for app messages, not engine text."""
@@ -797,7 +894,8 @@ class GameApp(App):
 # ── Entry point (called by play.py --tui) ─────────────────────────────────────
 
 def run(binary_path, model_path, human_player=None,
-        human_deck="delver", model_deck="delver", bo3=True):
+        human_deck="delver", model_deck="delver", bo3=True,
+        human_clock_s=None, hard_timeout=False):
     """Launch the TUI. `model_path` of None/"scripted" ⇒ rule-based opponent.
 
     Any agent spec ``opponents.make_controller`` accepts works here — a
@@ -806,8 +904,14 @@ def run(binary_path, model_path, human_player=None,
 
     `bo3` (default True) plays a best-of-three match — with sideboarding between
     games — in a single engine process; pass ``bo3=False`` for a single game.
+
+    `human_clock_s` arms the human's own chess-clock bank (play.py
+    ``--human-clock``); with `hard_timeout` (``--hard-timeout``) an exhausted
+    bank concedes the match for whichever seat ran out. Both default off, so an
+    untimed session behaves exactly as before.
     """
     GameApp(build_session(binary_path, model_path, human_player=human_player,
                           human_deck=human_deck, model_deck=model_deck,
-                          bo3=bo3)).run()
+                          bo3=bo3, human_clock_s=human_clock_s,
+                          hard_timeout=hard_timeout)).run()
     return 0

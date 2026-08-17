@@ -392,8 +392,13 @@ int main(int argc, char const* argv[]) {
             EcsSystems sys = init_ecs();
             if (cfg.selfplay) mcts->begin_match();  // reset per-game move counter + samples
             int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
-            std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
-                        winner == Zone::PLAYER_A ? "A" : "B");
+            bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
+                        winner != static_cast<int>(Zone::PLAYER_B);
+            if (draw)
+                std::printf("GAME_RESULT: %d draw\n", g + 1);
+            else
+                std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
+                            winner == Zone::PLAYER_A ? "A" : "B");
             std::fflush(stdout);
             backfill_selfplay(winner);
         }

@@ -34,6 +34,13 @@ fails, so one invocation reports every finding):
           per-game per-mover, and both readers (shard_replay records,
           az_inspect samples) round-trip it (train/test_shard_record.py).
           Torch-free, engine-free, instant.
+  concede The CR 104.3a concession sentinels (CONCEDE_GAME -2 / CONCEDE_MATCH
+          -3, accepted wherever the engine reads a decision): a bo1 concede
+          loses for the conceding seat, a bo3 game concede is an ordinary game
+          loss the match continues past (sideboard, game 2), a match concede
+          ends the match with MATCH_RESULT naming the opponent, and the
+          sentinel is logged so --replay reproduces the concession
+          (train/test_concede.py). Torch-free; needs bin/robomage; ~0.5s.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -65,7 +72,9 @@ fails, so one invocation reports every finding):
           run_search and a run_search_parallel over primary+mirror (worlds split
           across processes) merge to bit-identical visits; a mirror stays in
           lockstep through a full bo3; a desynced mirror disables the pool and
-          the primary plays on (train/test_mirror_search.py). Torch-free.
+          the primary plays on; a persisted bo3 sideboard boundary played over
+          the pool is bit-identical to the serial one
+          (train/test_mirror_search.py). Torch-free.
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
           matches — catches unintended narrative/behavior drift.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
@@ -77,9 +86,10 @@ fails, so one invocation reports every finding):
 Opt-in tiers (valid for --tier, NOT part of the default run):
 
   actor   Phase-D AZ actor gate: obs bit-parity (test_actor_parity.py), MCTS
-          visit-count parity (test_mcts_parity.py), and self-play shard schema /
-          trainer ingest (test_actor_shards.py). Self-skips with a message when
-          bin/az_actor is not built or torch is unavailable.
+          visit-count parity (test_mcts_parity.py), self-play shard schema /
+          trainer ingest (test_actor_shards.py), and trainer-interchangeability
+          of C++ vs Python shards (test_actor_trains.py). Self-skips with a
+          message when bin/az_actor is not built or torch is unavailable.
   analysis The GUI analysis window's engine core: chunked IncrementalSearch is
           bit-identical to run_search (pinned world seeds), pv/walk browse and
           replay lines then hand the engine back clean (driver discipline), an
@@ -143,9 +153,9 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "obsinv", "actorobs",
-             "pergame", "snapshot", "sbselfplay", "mirror", "replay", "smoke",
-             "fuzz"]
+ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "concede", "obsinv",
+             "actorobs", "pergame", "snapshot", "sbselfplay", "mirror",
+             "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -334,6 +344,24 @@ def tier_shardrec(rep):
                               f"{r.stdout}{r.stderr}")
 
 
+def tier_concede(rep):
+    """Concession regression (CR 104.3a, train/test_concede.py).
+
+    Drives the engine's out-of-band concede sentinels through RoboMageEnv: bo1
+    concede loses for the conceding seat, a bo3 game concede leaves the match
+    running (sideboard phase, game 2), a match concede ends it with the
+    opponent as MATCH_RESULT winner, and the sentinel is recorded in the
+    decision log so --replay reproduces the concession. Torch-free; needs
+    bin/robomage; well under a second."""
+    r = subprocess.run([sys.executable, "train/test_concede.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("concede", "concession violation "
+                             f"(test_concede.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
+
+
 def tier_snapshot(rep):
     """The --search-server snapshot/restore/determinize protocol regression.
 
@@ -386,8 +414,10 @@ def tier_mirror(rep):
     """World-parallel mirror-pool search regression (interactive play only).
 
     Runs train/test_mirror_search.py: bit-exact single-vs-parallel visit merge,
-    lockstep across a bo3, and graceful pool-disable on mirror drift. Torch-free
-    and quick; needs bin/robomage."""
+    lockstep across a bo3, graceful pool-disable on mirror drift, and
+    serial-vs-parallel bit-identity of a PERSISTED bo3 sideboard boundary
+    (pinned seeds + reuse roots + shared rollout memo). Torch-free and quick;
+    needs bin/robomage."""
     r = subprocess.run([sys.executable, "train/test_mirror_search.py"],
                        cwd=_REPO_ROOT, capture_output=True, text=True)
     print(r.stdout, end="", flush=True)
@@ -756,7 +786,11 @@ def tier_actor(rep):
     """Phase-D AZ actor gate (opt-in). Self-skips when bin/az_actor is missing or
     torch is unavailable; otherwise runs the actor/MCTS/shard parity tests as
     subprocesses and reports each PASS/FAIL through the Report."""
-    actor_bin = os.path.join(_REPO_ROOT, "bin", "az_actor")
+    # The actor lives next to the engine binary in the selected config dir
+    # (bin/<config>/), so derive it from runner.BINARY rather than hardcoding
+    # bin/az_actor — otherwise this gate looks in the wrong place after the
+    # per-config build split.
+    actor_bin = os.path.join(os.path.dirname(runner.BINARY), "az_actor")
     if not os.path.exists(actor_bin):
         print(f"  [skip] actor: {actor_bin} not built "
               "(build with `make actor`)", flush=True)
@@ -780,7 +814,8 @@ def tier_actor(rep):
 
     tests = ["train/test_actor_parity.py",   # M5: obs bit-parity
              "train/test_mcts_parity.py",    # M6: MCTS visit-count parity
-             "train/test_actor_shards.py"]   # M7: shard schema / trainer ingest
+             "train/test_actor_shards.py",   # M7: shard schema / trainer ingest
+             "train/test_actor_trains.py"]   # M8: trainer-interchangeable shards
     for t in tests:
         r = subprocess.run([sys.executable, t], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
@@ -850,6 +885,8 @@ def main(argv=None):
             tier_curriculum(rep)
         elif t == "shardrec":
             tier_shardrec(rep)
+        elif t == "concede":
+            tier_concede(rep)
         elif t == "obsinv":
             tier_obsinv(rep)
         elif t == "actorobs":

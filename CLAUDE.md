@@ -793,6 +793,19 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 
+**Concession sentinels (CR 104.3a):** besides an action index, the engine accepts
+`-2` (`CONCEDE_GAME`) and `-3` (`CONCEDE_MATCH`) wherever it reads a decision — machine
+mode, `--replay`, the in-process actor provider, and the CLI prompt. The seat the pending
+decision belongs to loses the game (`-3` also ends the MATCH immediately, with
+`MATCH_RESULT` naming the opponent whatever the score). The loss runs through the ordinary
+`Game::player_loses` path, so `GAME_RESULT`, loser-on-the-play, sideboarding and the RL
+reward are unchanged; the sentinel is written to the RMLOG decision log, so a concession
+replays. Between games (the sideboard phase) there is no live game: `-2` is ignored safely,
+`-3` still ends the match. Python constants live in `train/env.py` (`CONCEDE_GAME` /
+`CONCEDE_MATCH`, stepped through `RoboMageEnv.step` without the confirm-slot remap);
+`GameDriver.concede(match=…)` injects one for the human seat. Regression:
+`train/test_concede.py` (`make check` tier `concede`).
+
 **Two perspective flags** worth knowing without opening the source: in the state vector, one flag marks whether the priority player is the active player (perspective-relative) and another marks whether "self" is Player A (absolute); AND-ing their agreement recovers `active_is_a`. See `src/machine_io.h` for their exact indices.
 
 ### Interactive front ends: TUI, GUI, and the analysis window
@@ -839,7 +852,7 @@ win%), a branch value chart (bold mean per top branch + thin per-world lines for
 determinization spread, always in the human's perspective), and a PV scrubber that walks a
 branch's principal variation on the analysis engine and renders each hypothetical future board
 (`MiniBoard`, reusing `CardWidget`). Evaluator is selectable (default `az:gen` — AZ checkpoint
-else PPO warm-start via `opponents._load_az_evaluator`; also `mcts:gen`, `uniform`).
+else PPO warm-start via `opponents.load_az_evaluator`; also `mcts:gen`, `uniform`).
 Constraints: since the snapshot-safe conversion (branch `snapshot_safe`) every decision kind is
 loop-safe and a legal search root — the greyed-out state remains only for the documented
 residual `safe=0` prompts (see docs/alphazero_status.md's safe-window section); opponent-decision analysis
@@ -866,7 +879,17 @@ searched decisions land with their full visit posterior / root value / explored 
 browsable. One shard file per match, atomically rewritten at each game boundary and on demand,
 so the dir is always valid for every existing shard consumer (`az_train.load_window`,
 `az_inspect --shards`, `tui_az_inspect --shards`, `tui_analysis --shards`, the GUI browser's
-shard mode) — rows of the game still in progress carry `z=0` until it finishes. **View ▸
+shard mode) — rows of the game still in progress carry `z=0` until it finishes. Each shard
+also gets a same-stem **`.rmplay` replay sidecar** (engine seed + the match's full action
+log + per-row replay positions, `gui_session_io.save_replay` format), which
+`shard_replay.load_replay_sidecars` attaches to the browsable records — so a recording is
+**exactly replayable**: both analysis browsers gained a `search` menu entry (**F6**,
+`browse_session.run_replay_search` / `EngineCore.search_step`) that replays the recording to
+the selected decision on a throwaway `SearchRoboMageEnv` (recorded seed + action prefix,
+obs verified against the recorded state) and runs a determinized MCTS there from the mover's
+perspective — the live analysis window's F6 review, offline. Works without a live env/model
+(shard-browse and traces-only modes included); training-pool shards and pre-sidecar
+recordings self-report as non-replayable. **View ▸
 Analyze Recording… (F10)** flushes mid-game and opens the recording in a shard-mode
 `BrowserPane` in a SECOND window (the live game keeps running); viewpoint seat defaults to the
 opponent so you page the model's decisions, and the analysis dialog's seat toggle shows your

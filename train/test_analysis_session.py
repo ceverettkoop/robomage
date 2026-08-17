@@ -9,7 +9,9 @@ Proves the guarantees the analysis window relies on:
      trees, so interleaving across worlds cannot change them). Also checks the
      new ``SearchResult.q/w_sum/world_values`` fields are populated and
      self-consistent, in both ``run_search`` and a mirrored
-     ``run_search_parallel`` merge.
+     ``run_search_parallel`` merge. A companion drawn-seed check pins the seed
+     DERIVATION itself (no pinned world seeds: the same rng state must yield the
+     same per-world seeds in ``IncrementalSearch`` and ``run_search``).
   2. pv/walk driver discipline — a principal variation reads out with
      non-increasing visits; walking it replays decodable states; the snapshot
      survives an idle pause (parked search) and further chunks; after close()
@@ -22,7 +24,13 @@ Proves the guarantees the analysis window relies on:
      window's "opponent's last decision" review) respawns the analysis engine
      at that history prefix, analyzes there without touching the live env, and
      then follows the live game forward again.
-  5. cancellation — a cross-thread stop event ends an unlimited analyze()
+  5. world-parallel analysis — a run split across N detached engines
+     (``AnalysisConfig.procs``) merges to a bit-identical search to the
+     one-engine run with the same seed (visits/w_sum/q/root_value/world_values),
+     browses (pv/walk) a world owned by a non-first engine to the same line,
+     and rewinds the whole fleet together. A non-positive ``chunk_sims`` (which
+     would spin an uncapped run forever) is rejected loudly.
+  6. cancellation — a cross-thread stop event ends an unlimited analyze()
      within one chunk; the parked search stays browsable; a re-analyze at the
      same decision succeeds.
 
@@ -45,7 +53,7 @@ import decode  # noqa: E402
 from analysis_session import (AnalysisConfig, AnalysisRequest,  # noqa: E402
                               AnalysisSession)
 from cli_spec import BINARY, BIN_DIR  # noqa: E402
-from env import STATE_SIZE, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX  # noqa: E402
+from env import STATE_SIZE, _IS_SIDEBOARD_IDX  # noqa: E402
 from mcts import (IncrementalSearch, UniformEvaluator,  # noqa: E402
                   run_search, run_search_parallel)
 from scripted_agent import make_agent  # noqa: E402
@@ -102,7 +110,6 @@ def _req(env):
         obs=obs, num_choices=env._num_choices,
         history_len=len(env._action_history),
         search_safe=bool(getattr(env, "last_search_safe", False)),
-        seat_is_a=bool(obs[_SELF_IS_A_IDX] > 0.5),
         is_sideboard=bool(obs[_IS_SIDEBOARD_IDX] > 0.5))
 
 
@@ -155,6 +162,49 @@ def test_chunked_parity():
                 s.close()
             return (f"64 sims in chunks 5+16+43 bit-equal to run_search "
                     f"(visits {r.visits.astype(int).tolist()})")
+        finally:
+            env.close()
+    finally:
+        _rm(paths)
+
+
+def test_drawn_seed_parity():
+    """DRAWN (not pinned) world seeds: IncrementalSearch derives the same
+    per-world determinize seeds as run_search from the same rng state.
+
+    test_chunked_parity pins WORLD_SEEDS on both sides, so it cannot see a
+    divergence in the seed DERIVATION itself (one rng.integers(1, 2**31-1) draw
+    per world, w = 0..worlds-1, and no other draw). This closes that gap: same
+    default_rng(SEARCH_SEED), no world_seeds, seeds must be equal — and with
+    equal per-world sim totals the visit vectors must then be array_equal."""
+    deck_a, deck_b, paths = _write_decks()
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        ev = UniformEvaluator()
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+
+            r = run_search(env, ev, worlds=4, sims=64,
+                           rng=np.random.default_rng(SEARCH_SEED))
+            s = IncrementalSearch(env, ev, worlds=4,
+                                  rng=np.random.default_rng(SEARCH_SEED))
+            try:
+                if list(s.seeds) != list(r.seeds):
+                    raise AnalysisTestError(
+                        f"drawn seeds {list(s.seeds)} != run_search "
+                        f"{list(r.seeds)}")
+                stats = s.run_chunk(64)     # 64 = 4 worlds * 16 sims each
+                if stats.sims_run != r.sims_run:
+                    raise AnalysisTestError(
+                        f"sims_run {stats.sims_run} != {r.sims_run}")
+                if not np.array_equal(stats.visits, r.visits):
+                    raise AnalysisTestError(
+                        f"drawn-seed visits {stats.visits} != {r.visits}")
+            finally:
+                s.close()
+            return (f"drawn world seeds {list(r.seeds)} identical; 64 sims "
+                    f"visit-equal (visits {r.visits.astype(int).tolist()})")
         finally:
             env.close()
     finally:
@@ -376,6 +426,220 @@ def test_rewind_to_earlier_decision():
         _rm(paths)
 
 
+class _ValueEvaluator(UniformEvaluator):
+    """Uniform priors, but a DETERMINISTIC non-neutral value read off the obs.
+
+    UniformEvaluator backs up 0.0 from every non-terminal leaf, so its W sums
+    are exact zeros — which would make a w_sum/q/root_value parity check
+    vacuous. These irrational-looking float values make the merged sums depend
+    on real floating-point addition, so the parity claim is actually tested."""
+
+    def evaluate(self, obs: np.ndarray, num_choices: int):
+        priors, _ = super().evaluate(obs, num_choices)
+        return priors, float(np.tanh(float(np.sum(obs[:512])) * 0.017))
+
+
+def test_parallel_analysis_parity():
+    """World-parallel analysis (cfg.procs=2) merges to the SAME search as the
+    one-engine run with the same cfg.seed: bit-identical visits/w_sum/q/
+    root_value/world_values, and a world owned by the SECOND engine browses
+    (pv/walk) to the same line."""
+    deck_a, deck_b, paths = _write_decks()
+    worlds, cap = 4, 16          # cap divisible by worlds: 4 sims per world
+    far_world = worlds - 1       # lives in engine 2's slice under a 2-way split
+
+    def _cfg(procs):
+        return AnalysisConfig(evaluator_spec="uniform", worlds=worlds,
+                              chunk_sims=4, max_sims=cap, seed=SEARCH_SEED,
+                              procs=procs)
+
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+            # Analyze a MID-GAME decision (wider menu, deeper trees, real value
+            # mass backed up) rather than the opening mulligan.
+            agent = make_agent("scripted")
+            agent.new_game()
+            for _ in range(24):
+                _, _, term, trunc, _ = env.step(
+                    agent.act(env._obs, env._num_choices))
+                if term or trunc:
+                    raise AnalysisTestError("game ended before the parity test")
+            _drive_to_safe(env, min_nc=3)
+            req = _req(env)
+
+            runs = {}
+            for procs in (1, 2):
+                session = AnalysisSession(env, _cfg(procs),
+                                          evaluator=_ValueEvaluator(),
+                                          evaluator_label="uniform")
+                try:
+                    stats = session.analyze(req)
+                    if len(session._envs) != procs:
+                        raise AnalysisTestError(
+                            f"procs={procs} spawned {len(session._envs)} engines")
+                    if stats.sims_run != cap:
+                        raise AnalysisTestError(
+                            f"procs={procs} ran {stats.sims_run} != {cap} sims")
+                    best = int(np.argmax(stats.visits))
+                    pv = [(p.action, p.visits, p.q, p.seat_is_a)
+                          for p in session.pv(best, world=far_world)]
+                    nodes = session.walk(far_world, [p[0] for p in pv])
+                    runs[procs] = (stats, best, pv, nodes)
+                finally:
+                    session.close()
+
+            (s1, best1, pv1, nodes1) = runs[1]
+            (s2, best2, pv2, nodes2) = runs[2]
+            if not np.array_equal(s1.visits, s2.visits):
+                raise AnalysisTestError(
+                    f"parallel visits {s2.visits} != serial {s1.visits}")
+            if not np.array_equal(s1.w_sum, s2.w_sum):
+                raise AnalysisTestError("parallel w_sum != serial w_sum")
+            if not np.array_equal(s1.q, s2.q):
+                raise AnalysisTestError("parallel q != serial q")
+            if s1.root_value != s2.root_value:
+                raise AnalysisTestError(
+                    f"parallel root_value {s2.root_value} != {s1.root_value}")
+            if not np.array_equal(s1.world_values, s2.world_values):
+                raise AnalysisTestError(
+                    "parallel world_values != serial (world order broken?)")
+            if not np.array_equal(s1.world_visits, s2.world_visits):
+                raise AnalysisTestError("parallel world_visits != serial")
+            if s1.sims_run != s2.sims_run or s1.sim_steps != s2.sim_steps:
+                raise AnalysisTestError("parallel sims/steps != serial")
+            if best1 != best2 or pv1 != pv2:
+                raise AnalysisTestError(
+                    f"PV of world {far_world} differs: {pv2} != {pv1}")
+            if len(nodes1) != len(nodes2):
+                raise AnalysisTestError("walked line lengths differ")
+            for n1, n2 in zip(nodes1, nodes2):
+                if n1.terminal != n2.terminal:
+                    raise AnalysisTestError("walked terminals differ")
+                if (n1.obs is None) != (n2.obs is None):
+                    raise AnalysisTestError("walked obs presence differs")
+                if n1.obs is not None and not np.array_equal(n1.obs, n2.obs):
+                    raise AnalysisTestError("walked state differs")
+            return (f"{worlds} worlds / {cap} sims over {req.num_choices} "
+                    f"choices: 2-engine merge bit-equal to 1-engine (visits "
+                    f"{s1.visits.astype(int).tolist()}, |w_sum| "
+                    f"{float(np.abs(s1.w_sum).sum()):.3f}), world {far_world} "
+                    f"PV {len(pv1)} steps identical")
+        finally:
+            env.close()
+    finally:
+        _rm(paths)
+
+
+def test_parallel_rewind():
+    """The F6-style rewind works with a fleet: a request for an EARLIER
+    decision respawns EVERY engine at that prefix and analyzes there, leaving
+    the live env untouched; the fleet then follows the live game forward."""
+    deck_a, deck_b, paths = _write_decks()
+    cfg = AnalysisConfig(evaluator_spec="uniform", worlds=2, chunk_sims=4,
+                         max_sims=8, seed=SEARCH_SEED, procs=2)
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        session = AnalysisSession(env, cfg, evaluator=UniformEvaluator(),
+                                  evaluator_label="uniform")
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+            old = _req(env)
+            session.analyze(old)
+            if len(session._envs) != 2:
+                raise AnalysisTestError(
+                    f"procs=2 spawned {len(session._envs)} engines")
+
+            agent = make_agent("scripted")
+            agent.new_game()
+            for _ in range(8):
+                _, _, term, trunc, _ = env.step(
+                    agent.act(env._obs, env._num_choices))
+                if term or trunc:
+                    raise AnalysisTestError("game ended before the rewind test")
+            _drive_to_safe(env)
+            new = _req(env)
+            if new.history_len <= old.history_len:
+                raise AnalysisTestError("live game did not advance")
+            session.analyze(new)              # forward delta into both engines
+
+            before = env._obs.copy()
+            stats = session.analyze(old)      # <- the rewind
+            if stats.sims_run != cfg.max_sims:
+                raise AnalysisTestError(
+                    f"rewound analyze ran {stats.sims_run} != {cfg.max_sims}")
+            if len(session._envs) != 2:
+                raise AnalysisTestError("rewind lost an engine")
+            if session._synced_len != old.history_len:
+                raise AnalysisTestError(
+                    f"fleet synced at {session._synced_len} != {old.history_len}")
+            if not np.array_equal(env._obs, before):
+                raise AnalysisTestError("rewind touched the LIVE env's state")
+            # Every engine must browse its own world after the respawn.
+            best = int(np.argmax(stats.visits))
+            for w in range(cfg.worlds):
+                session.pv(best, world=w)
+            stats2 = session.analyze(new)     # and forward again
+            if stats2.sims_run != cfg.max_sims:
+                raise AnalysisTestError(
+                    f"re-forward analyze ran {stats2.sims_run}")
+            return (f"2-engine fleet rewound {new.history_len} -> "
+                    f"{old.history_len} and forward again, live env untouched")
+        finally:
+            session.close()
+            env.close()
+    finally:
+        _rm(paths)
+
+
+def test_chunk_sims_zero_rejected():
+    """A non-positive chunk_sims runs no sims, so an uncapped analyze() would
+    spin forever — it must fail loudly instead, at construction AND when a
+    live-edited config reaches analyze(). Same for a negative procs."""
+    from analysis_session import AnalysisError
+
+    try:
+        AnalysisConfig(evaluator_spec="uniform", chunk_sims=0)
+        raise AnalysisTestError("AnalysisConfig(chunk_sims=0) was accepted")
+    except ValueError:
+        pass
+    try:
+        AnalysisConfig(evaluator_spec="uniform", procs=-1)
+        raise AnalysisTestError("AnalysisConfig(procs=-1) was accepted")
+    except ValueError:
+        pass
+
+    deck_a, deck_b, paths = _write_decks()
+    cfg = AnalysisConfig(evaluator_spec="uniform", worlds=2, chunk_sims=4,
+                         max_sims=0, seed=SEARCH_SEED, procs=1)
+    try:
+        env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b)
+        session = AnalysisSession(env, cfg, evaluator=UniformEvaluator(),
+                                  evaluator_label="uniform")
+        try:
+            env.reset(options={"engine_seed": SEED})
+            _drive_to_safe(env)
+            session.cfg.chunk_sims = 0        # the window edits knobs live
+            try:
+                session.analyze(_req(env))
+                raise AnalysisTestError("analyze accepted chunk_sims=0")
+            except AnalysisError as e:
+                if "chunk_sims" not in str(e):
+                    raise AnalysisTestError(f"unhelpful message: {e}")
+            if session._envs:
+                raise AnalysisTestError(
+                    "a rejected config still spawned an engine")
+            return "chunk_sims=0 rejected at construction and at analyze()"
+        finally:
+            session.close()
+            env.close()
+    finally:
+        _rm(paths)
+
+
 def test_cancellation():
     """A cross-thread stop event ends an unlimited analyze() promptly; the
     parked search stays browsable; re-analyzing the same decision works."""
@@ -523,10 +787,14 @@ def test_opp_result_hook():
 
 TESTS = [
     ("chunked_parity", test_chunked_parity),
+    ("drawn_seed_parity", test_drawn_seed_parity),
     ("parallel_merge_fields", test_parallel_merge_fields),
     ("pv_walk_discipline", test_pv_walk_discipline),
     ("session_lockstep_bo3", test_session_lockstep_bo3),
     ("rewind_to_earlier_decision", test_rewind_to_earlier_decision),
+    ("parallel_analysis_parity", test_parallel_analysis_parity),
+    ("parallel_rewind", test_parallel_rewind),
+    ("chunk_sims_zero_rejected", test_chunk_sims_zero_rejected),
     ("cancellation", test_cancellation),
     ("evaluator_note", test_evaluator_note),
     ("opp_result_hook", test_opp_result_hook),

@@ -14,7 +14,7 @@ Two-phase by design, matching the browser's threading contract:
 the per-game step lists (the ndarray rows themselves are append-only, never
 mutated); :func:`build_sample` and :func:`run_probe` run on a worker thread
 and do the stacking and the torch work. The probe net comes from
-:func:`load_probe_net` — ``opponents._load_az_evaluator``'s AZNet (the AZ
+:func:`load_probe_net` — ``opponents.load_az_evaluator``'s AZNet (the AZ
 checkpoint when one exists, else the PPO warm-start), so the probes work with
 only a PPO ``gen`` trained.
 
@@ -50,8 +50,14 @@ _MAX_SWAP_SITES = 6       # card-swap sites probed per decision (cost control)
 
 
 def probe_model_spec(model_spec):
-    """The _load_az_evaluator base for a browser model spec: strip the ?knob
-    query and any az:/azraw:/mcts: wrapper prefix."""
+    """The ``opponents.load_az_evaluator`` base for a browser model spec: strip
+    the ?knob query and any az:/azraw:/mcts: wrapper prefix.
+
+    Note an ``mcts:`` spec is deliberately treated AS AN AZ SPEC here: its base
+    goes through the same ladder, so the probes get an AZNet (the AZ checkpoint
+    when one exists, else a warm-start from that PPO checkpoint) rather than the
+    PPOEvaluator the mcts: seat itself would play with. The probes need an
+    AZNet's heads; there is no PPO probe path."""
     base = (model_spec or "gen").split("?", 1)[0].strip()
     low = base.lower()
     for pre in ("az:", "azraw:", "mcts:"):
@@ -63,8 +69,8 @@ def probe_model_spec(model_spec):
 def load_probe_net(model_spec):
     """(AZNet, label) for the probes. Raises with a readable message when
     torch / a checkpoint is unavailable (the front end shows it verbatim)."""
-    from opponents import _load_az_evaluator
-    evaluator, resolved = _load_az_evaluator(probe_model_spec(model_spec))
+    from opponents import load_az_evaluator
+    evaluator, resolved = load_az_evaluator(probe_model_spec(model_spec))
     net = getattr(evaluator, "_net", None)   # AZEvaluator holds the AZNet
     if net is None:
         raise RuntimeError(

@@ -9,10 +9,21 @@
 #include "classes/deck.h"
 #include "components/zone.h"
 
-// Out-of-band flag values returned by get_input() / get_int_input(). Negative
-// integers that do not correspond to any legal action index.
-#define PASS_TURN_CMD -2
-#define FLAG_QUIT -3
+// Out-of-band values accepted BY get_input() as input, or returned by
+// get_int_input(). Negative integers that do not correspond to any legal action
+// index. -1 is the confirm-slot sentinel (the Python env remaps the confirm slot
+// to -1; get_input remaps it back to the last action index), so the concession
+// sentinels start at -2.
+//
+// CONCEDE_GAME / CONCEDE_MATCH are protocol INPUT on every path (machine mode,
+// replay, CLI): the seat the pending decision belongs to concedes per CR 104.3a.
+// PASS_TURN_CMD / FLAG_QUIT are CLI-only markers produced by the 'z'/'q' keys
+// and never appear in an input stream, so they sit far out of the way of any
+// value a driver could send.
+#define CONCEDE_GAME -2
+#define CONCEDE_MATCH -3
+#define PASS_TURN_CMD -100
+#define FLAG_QUIT -101
 
 // Everything the RMLOG v2 decision-log header records beyond the seed: the
 // state-affecting launch flags and both decklists (verbatim file text), so a

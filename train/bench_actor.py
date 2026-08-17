@@ -9,7 +9,7 @@ per-decision cost so the C++ actor's speedup is a headline number.
           "decisions" = the searched-sample count from its
           `SELFPLAY: total_samples=` line.
   Leg B — az_selfplay in-process, single worker: the same N games driven through
-          az_selfplay's own _play_game loop (no multiprocessing), wall-timed;
+          az_selfplay's own _play_match loop (no multiprocessing), wall-timed;
           "decisions" = the searched-sample count.
 
 Both legs load the identical deterministic AZNet (torch.manual_seed(0), exported
@@ -37,16 +37,18 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import (AZNet, obs_space_from_const, load_az, AZEvaluator,
                     save_torchscript, torchscript_export_path)
-from cli_spec import BIN_DIR
+from cli_spec import BIN_DIR, BUILD_DIR
 import az_selfplay
 
-ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+# BUILD_DIR (bin/<config>/) is where the actor binary lives; BIN_DIR (bin/) stays
+# the launch cwd used below for resource lookup.
+ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 _TOTAL = re.compile(r"^SELFPLAY: total_samples=(\d+) shards=(\d+)$")
 
 
 def _cpp_leg(ts_path, out_dir, args):
     # Shared argv builder (az_selfplay.actor_selfplay_cmd) pins the same
-    # noise/temperature knobs _python_leg passes to _play_game, so the two legs
+    # noise/temperature knobs _python_leg passes to _play_match, so the two legs
     # measure the identical workload by construction.
     cmd = az_selfplay.actor_selfplay_cmd(
         ACTOR_BIN, deck=args.deck, deck_b=getattr(args, "deck_b", None),
@@ -82,7 +84,8 @@ def _python_leg(ckpt, out_dir, args):
     try:
         for g in range(args.games):
             seed = args.seed + g
-            samples, _winner, _searched, _fallback = az_selfplay._play_game(
+            (samples, _game_winners, _searched, _fallback,
+             _dropped, _sb_stats) = az_selfplay._play_match(
                 env, evaluator, rng, sims=args.sims, worlds=args.worlds,
                 temp_moves=az_selfplay.DEFAULT_TEMP_MOVES,
                 root_noise_eps=az_selfplay.DEFAULT_ROOT_NOISE_EPS,

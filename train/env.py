@@ -26,6 +26,13 @@ For mandatory-choice loops (declare attackers / blockers):
 
     e.g. num_choices=3 means actions 0,1 are creatures and action 2 = confirm.
 
+Concession (CR 104.3a):
+    CONCEDE_GAME (-2) / CONCEDE_MATCH (-3) may be stepped in place of any action
+    index at any decision — they are always legal, so they skip the confirm-slot
+    remap and the action mask. The seat facing that decision loses the game (and,
+    for -3, the match); the engine then reports the ordinary
+    GAME_RESULT/MATCH_RESULT terminal, so reward/terminated read as for any loss.
+
 Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
@@ -189,6 +196,21 @@ def _decode_char_block(raw, count, width):
             chunk = chunk[:end]
         out.append(chunk.decode("utf-8", errors="replace"))
     return out
+
+# ── Concession sentinels (CR 104.3a; src/input_logger.h) ─────────────────────
+# Out-of-band decision INPUTS, not action indices: sent in place of an action at
+# any decision, they make the seat facing that decision lose. -1 is already the
+# confirm-slot sentinel, so these start at -2.
+#   CONCEDE_GAME  — lose the current game. In a bo3 the match continues exactly
+#                   as after any other game loss (GAME_RESULT, loser on the
+#                   play, sideboarding).
+#   CONCEDE_MATCH — lose the current game AND the match: MATCH_RESULT reports
+#                   the opponent as the winner whatever the score is.
+# Always legal, so `step()` sends them through untouched — no confirm-slot remap
+# and no action-mask involvement.
+CONCEDE_GAME = -2
+CONCEDE_MATCH = -3
+CONCEDE_ACTIONS = (CONCEDE_GAME, CONCEDE_MATCH)
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
 SHAPING_MANA_WASTED      = -0.00  # per drain event with mana remaining in pool; commented out because we aren't letting it float anymore
@@ -916,6 +938,17 @@ class RoboMageEnv(gym.Env):
             # index 0, not the -1/N empty sentinel), so its value estimate
             # would be garbage. The pre-action state is a faithful stand-in.
             return self._obs.copy(), 0.0, False, True, {}
+
+        # A concession (CR 104.3a) is not an action index: it is legal at every
+        # decision and must reach the engine verbatim, so it bypasses the
+        # confirm-slot remap below. The engine ends the game (or match) from the
+        # conceding seat and plays on to the ordinary GAME_RESULT/MATCH_RESULT
+        # terminal, so the read below yields the usual reward/terminated.
+        if int(action) in CONCEDE_ACTIONS:
+            self._send(int(action))
+            obs, info = self._read_until_query()
+            return (obs, info.get("reward", 0.0), info.get("done", False),
+                    False, info)
 
         # Remap: if the last query included a confirm slot (num_choices had +1),
         # and the agent chose the last index, send -1 to the game.

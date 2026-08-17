@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <limits>
 #include <map>
 #include <memory>
@@ -13,7 +14,9 @@
 #include <vector>
 
 #include "az_evaluator.h"
+#include "classes/action.h"   // LegalAction::description (divergence diagnostic)
 #include "classes/game.h"     // cur_game.turn (rollout horizon check)
+#include "cli_output.h"       // step_to_string (divergence diagnostic)
 #include "components/zone.h"  // Zone::PLAYER_A / PLAYER_B
 #include "error.h"
 #include "menu_merge.h"       // menu_merge_reps (duplicate-edge merging)
@@ -139,6 +142,11 @@ struct AZMcts::Impl {
     bool root_is_a = false;
     bool root_is_sb = false;  // this root is a bo3 sideboard prompt (sample tag)
     std::vector<double> root_priors;
+    // Human-readable descriptions of the CURRENT search root's live menu, captured
+    // at search start (release-safe, unlike the NDEBUG-only dbg_menu float capture).
+    // Used only by dump_divergence() to compare the root menu against the live menu
+    // when a returned action index lands outside the engine's current menu.
+    std::vector<std::string> root_menu_desc;
     std::vector<int64_t> visit_totals;  // summed root.N across worlds
     double value_acc = 0.0;
     int sims_run = 0;
@@ -1005,26 +1013,125 @@ struct AZMcts::Impl {
         return chosen;
     }
 
+    // Rich divergence diagnostic (release-safe): the action index we are about to
+    // hand the engine falls outside its live menu, so the caller's
+    // check_machine_choice is about to fatal. Print the full search context first
+    // — which phase produced the index, this search's root width, and the root vs
+    // live menus decoded — so a rare self-play divergence (e.g. a miracle prompt
+    // whose affordability shifted between the search root and the restored line)
+    // leaves enough of a trail to root-cause without a live repro.
+    void dump_divergence(const std::vector<LegalAction>& actions, int r) const {
+        const char* phname = phase == IDLE          ? "IDLE"
+                             : phase == DESCENDING   ? "DESCENDING"
+                             : phase == ROLLOUT      ? "ROLLOUT"
+                                                     : "AWAITING_ROOT";
+        std::string live;
+        for (size_t i = 0; i < actions.size(); i++)
+            live += "\n    [" + std::to_string(i) + "] " + actions[i].description;
+        std::string root;
+        for (size_t i = 0; i < root_menu_desc.size(); i++)
+            root += "\n    [" + std::to_string(i) + "] " + root_menu_desc[i];
+        std::fprintf(
+            stderr,
+            "az_mcts DIVERGENCE: about to return index %d into a %zu-action live menu "
+            "(turn=%zu step=%s)\n"
+            "  phase=%s this_root=%d root_n=%d move_counter=%ld "
+            "world=%d/%d sim=%d/%d sims_run=%d sb_active=%d sideboard_phase=%d\n"
+            "  live menu (%zu action(s)):%s\n"
+            "  search-root menu (%zu action(s)):%s\n",
+            r, actions.size(), cur_game.turn, step_to_string(cur_game.cur_step),
+            phname, this_root, root_n, move_counter, cur_world, cur_worlds, cur_sim,
+            cur_sims, sims_run, sb_active ? 1 : 0, sideboard_phase ? 1 : 0,
+            actions.size(), live.c_str(), root_menu_desc.size(), root.c_str());
+        std::fflush(stderr);
+    }
+
     int on_decision(const std::vector<LegalAction>& actions) {
+        const int menu_n = static_cast<int>(actions.size());
+        int r;
         // AWAITING_ROOT only advances sim/world bookkeeping and never reads the
         // observation, so skip the full obs rebuild there — it fires once per
         // simulation, right after the cooperative restore.
-        if (phase == AWAITING_ROOT) return advance_after_restore();
-        ActorObs ob = build_obs(actions);
-        const float* o = ob.obs.data();
-        int nc = ob.num_choices;
-        switch (phase) {
-            case IDLE:
-                return begin_or_fallback(o, nc);
-            case DESCENDING:
-                return descend_step(o, nc);
-            case ROLLOUT:
-                return rollout_step(o, nc);
-            case AWAITING_ROOT:
-                break;  // handled above
+        if (phase == AWAITING_ROOT) {
+            // Restore contract tripwire: the loop-top re-derivation after a
+            // snapshot restore must re-emit the SAME decision this search
+            // rooted on — the action returned below is answered blindly, so a
+            // different query here (state outside the snapshot leaking into
+            // the re-derivation, e.g. the resolution_just_completed miracle
+            // window) would be silently consumed and corrupt the whole line,
+            // surfacing plies later as a world-consistency violation at best.
+            // Fail at the source instead. The width compare is one integer
+            // against the vector already in hand; the debug build additionally
+            // compares the full per-action menu content against the root's.
+            if (menu_n != root_n) {
+                fatal_error("az_mcts: restored root re-derived a different decision: "
+                            "search rooted on " + std::to_string(root_n) +
+                            " choices, engine re-emitted " + std::to_string(menu_n) +
+                            "\n  root#" + std::to_string(this_root) +
+                            " world=" + std::to_string(cur_world) +
+                            " sim=" + std::to_string(cur_sim) +
+                            " sideboard=" + std::to_string(sideboard_phase ? 1 : 0));
+            }
+#ifndef NDEBUG
+            {
+                ActorObs ob = build_obs(actions);
+                std::vector<float> want, got;
+                capture_menu(root_obs.data(), root_n, want);
+                capture_menu(ob.obs.data(), menu_n, got);
+                if (want != got) {
+                    std::vector<float> got_state;
+                    capture_state(ob.obs.data(), got_state);
+                    std::vector<float> want_state;
+                    capture_state(root_obs.data(), want_state);
+                    fatal_error("az_mcts: restored root re-derived a same-width but "
+                                "different decision (root#" + std::to_string(this_root) +
+                                " world=" + std::to_string(cur_world) +
+                                " sim=" + std::to_string(cur_sim) + ")" +
+                                "\n  root menu (at search begin):\n" + fmt_state(want_state) +
+                                fmt_menu(want) +
+                                "  engine menu (re-emitted):\n" + fmt_state(got_state) +
+                                fmt_menu(got));
+                }
+            }
+#endif
+            r = advance_after_restore();
+        } else {
+            ActorObs ob = build_obs(actions);
+            const float* o = ob.obs.data();
+            int nc = ob.num_choices;
+            switch (phase) {
+                case IDLE: {
+                    // A searchable IDLE decision opens a new search root; record its
+                    // live menu descriptions for the divergence diagnostic (this is
+                    // the ONLY place root_menu_desc is refreshed, so it always names
+                    // the root of the search that produced the returned index).
+                    bool searching = search_loop_safe() && nc > 1;
+                    r = begin_or_fallback(o, nc);
+                    if (searching) {
+                        root_menu_desc.clear();
+                        for (const auto& a : actions)
+                            root_menu_desc.push_back(a.description);
+                    }
+                    break;
+                }
+                case DESCENDING:
+                    r = descend_step(o, nc);
+                    break;
+                case ROLLOUT:
+                    r = rollout_step(o, nc);
+                    break;
+                default:
+                    fatal_error("az_mcts: unreachable phase");
+                    r = 0;
+                    break;
+            }
         }
-        fatal_error("az_mcts: unreachable phase");
-        return 0;
+        // The returned index is fed straight to the engine's input; if it is out of
+        // range the caller's check_machine_choice will fatal with only the menu.
+        // Emit the search-side context first so the two together fully localize the
+        // divergence. (No recovery here — a wrong index must still fail loudly.)
+        if (r < 0 || r >= menu_n) dump_divergence(actions, r);
+        return r;
     }
 
     bool on_game_end(int winner) {

@@ -28,13 +28,17 @@ train/.venv/bin/pip install -r train/requirements-gui.txt       # PySide6, optio
 ## Building
 
 ```bash
-make                  # default build is headless; with debug symbols
-make BUILD=RELEASE    # optimized
+make                  # default build is headless; with debug symbols -> bin/debug/robomage
+make BUILD=RELEASE    # optimized                                  -> bin/release/robomage
 ```
 
 Card scripts live in `bin/resources/cardsfolder/` and `bin/resources/tokenscripts`. See the card-forge repository for compatible scripts. `tools/forge_fetch/provision_decks.py` will automatically download any missing scripts based on cards listed in card_vocab.h.
 
-The binary is written to `bin/robomage`.
+Each configuration writes to its own tree — `bin/debug/robomage` (and `obj/debug/`) from a plain
+`make`, `bin/release/robomage` (and `obj/release/`) from `make BUILD=RELEASE` — so the two builds
+never clobber each other and no `make clean` is needed when switching between them. Python tooling
+runs the debug binary by default; set `ROBOMAGE_BUILD=release` to reach the optimized one (or pass a
+command's `--binary` flag explicitly).
 
 ## Quick start — play the v0.2 release
 
@@ -46,7 +50,8 @@ generalist, and `az/gen__azfinal.pt`, the AlphaZero net) already in place under
 # grab robomage-0.2.tar.gz from https://github.com/ceverettkoop/robomage/releases/latest
 tar xzf robomage-0.2.tar.gz && cd robomage-0.2
 
-make BUILD=RELEASE                                              # optimized engine -> bin/robomage
+make BUILD=RELEASE                                              # optimized engine -> bin/release/robomage
+export ROBOMAGE_BUILD=release                                   # point tooling at the optimized binary
 python3 -m venv train/.venv
 train/.venv/bin/pip install --upgrade pip
 train/.venv/bin/pip install numpy gymnasium stable-baselines3 sb3-contrib

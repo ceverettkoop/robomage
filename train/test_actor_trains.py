@@ -16,7 +16,7 @@ producers draw from independent RNG streams, so their datasets are
   2. Dataset A: run ``bin/az_actor --selfplay`` (2 games, sims 16, worlds 2) into
      tmp dir A.
   3. Dataset B: run the Python self-play loop in-process, single-worker (reusing
-     az_selfplay's own _play_game / _backfill_and_pack / _write_shard helpers,
+     az_selfplay's own _play_match / _backfill_and_pack / _write_shard helpers,
      unmodified), same net/deck/sims/worlds/seed, into tmp dir B.
   4. Assert both datasets share the exact trainer schema (keys/dtypes/shapes via
      az_train.load_window) and that their value-range stats agree within loose
@@ -45,7 +45,7 @@ from az_net import (AZNet, obs_space_from_const, load_az, AZEvaluator,
                     decay_exempt_param_groups, save_torchscript,
                     torchscript_export_path)
 from env import OBS_SIZE, MAX_ACTIONS
-from cli_spec import BIN_DIR
+from cli_spec import BIN_DIR, BUILD_DIR
 import az_selfplay
 import az_train
 
@@ -63,7 +63,7 @@ TRAIN_BS = 64
 # the exact LR.
 TRAIN_LR = 3e-4
 TRAIN_SEED = 0
-ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 
 _TALLY = re.compile(r"^SELFPLAY: game (\d+) samples=(\d+) winner=(A|B|DRAW)$")
 
@@ -109,14 +109,15 @@ def _python_selfplay(ckpt, out_dir):
     try:
         for g in range(GAMES):
             seed = SEED + 0 * 100000 + g          # worker_idx 0 seed schedule
-            samples, winner, _searched, _fallback = az_selfplay._play_game(
+            (samples, game_winners, _searched, _fallback,
+             _dropped, _sb_stats) = az_selfplay._play_match(
                 env, evaluator, rng, sims=SIMS, worlds=WORLDS,
                 temp_moves=az_selfplay.DEFAULT_TEMP_MOVES,
                 root_noise_eps=az_selfplay.DEFAULT_ROOT_NOISE_EPS,
                 root_noise_alpha=az_selfplay.DEFAULT_ROOT_NOISE_ALPHA, seed=seed)
-            buf.append(az_selfplay._backfill_and_pack(samples, winner))
+            buf.append(az_selfplay._backfill_and_pack(samples, game_winners))
             tallies.append((g + 1, len(samples),
-                            winner if winner else "DRAW"))
+                            az_selfplay._match_winner(game_winners)))
         if buf:
             az_selfplay._write_shard(out_dir, az_selfplay._concat(buf), 0)
     finally:

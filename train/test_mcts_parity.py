@@ -40,7 +40,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import AZNet, obs_space_from_const, save_torchscript, torchscript_export_path
 from env import MAX_ACTIONS, _MATCH_CTX_START, _SELF_IS_A_IDX
-from cli_spec import BIN_DIR
+from cli_spec import BIN_DIR, BUILD_DIR
 import runner
 from search_env import SearchRoboMageEnv
 
@@ -65,7 +65,7 @@ SB_ROLLOUT_TURNS = 3
 # is_sideboard_phase flag in the state vector (env's _MATCH_CTX layout:
 # game_number, self_wins, opp_wins, sideboard_phase).
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
-ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 
 
 def _seeds_for(root_index: int) -> list:

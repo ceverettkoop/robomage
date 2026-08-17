@@ -90,7 +90,10 @@ from browse_session import (CAPTURE_LOCK as _CAPTURE_LOCK, capture as _capture,
                             result_str as _result_str,
                             has_probs as _has_probs, probs_guard as _probs_guard,
                             run_shap as _run_shap, ANALYSES as _ANALYSES,
-                            ENGINE_MENU as _ENGINE_MENU)
+                            ENGINE_MENU as _ENGINE_MENU,
+                            REPLAY_MENU as _REPLAY_MENU,
+                            replay_search_decks as _replay_search_decks,
+                            run_replay_search as _run_replay_search)
 
 
 # ── Clickable V(s) histogram ──────────────────────────────────────────────────
@@ -383,6 +386,7 @@ class AnalysisApp(App):
         Binding("home", "step_home", "first", priority=True),
         Binding("end", "step_end", "last", priority=True),
         Binding("w", "whatif", "Whatif @ step"),
+        Binding("f6", "search", "Search @ step"),
     ]
 
     # ── Responsive vertical budget ────────────────────────────────────────────
@@ -468,6 +472,8 @@ class AnalysisApp(App):
         for key, label, _fn in _ANALYSES:
             menu.add_option(Option(label, id=key))
         for key, label in _ENGINE_MENU:
+            menu.add_option(Option(label, id=key))
+        for key, label in _REPLAY_MENU:
             menu.add_option(Option(label, id=key))
         hist = self.query_one("#vhist", ValueHistogram)
         hist.border_title = "V(s) over game — click a bar to jump to that decision"
@@ -651,6 +657,37 @@ class AnalysisApp(App):
         finally:
             self.post_message(EngineIdle())
 
+    @work(thread=True, group="engine")
+    def _search_worker(self, gn: int, step: int) -> None:
+        """Replay-to-step MCTS analysis (the live analysis window's F6 review,
+        offline): rebuilds the position from the game's recorded seed + action
+        log on a throwaway search env — no live env/model needed, so it runs
+        in shard replay too."""
+        try:
+            game = self._games[gn]
+            decks = _replay_search_decks(game, self._args)
+            if decks is None:
+                self.post_message(AnalysisDone(
+                    f"search — game {gn}, step {step}",
+                    "This session does not know the game's seat decks — "
+                    "cannot build a replay env."))
+                return
+            deck_a, deck_b, bo3 = decks
+            binary = getattr(self._args, "binary", None)
+            if not binary:
+                from runner import BINARY as binary
+            spec = getattr(self._args, "model", None) or "az:gen"
+            text = _run_replay_search(game, step, binary=binary,
+                                      deck_a=deck_a, deck_b=deck_b, bo3=bo3,
+                                      eval_spec=spec)
+            self.post_message(AnalysisDone(f"search — game {gn}, step {step}",
+                                           text))
+        except Exception:
+            self.post_message(AnalysisDone("search error",
+                                           traceback.format_exc()))
+        finally:
+            self.post_message(EngineIdle())
+
     # ----- analysis worker (trace crunching only; no env) -----
 
     @work(thread=True, group="analysis")
@@ -750,6 +787,9 @@ class AnalysisApp(App):
 
     def action_whatif(self) -> None:
         self._run_menu_entry("whatif")
+
+    def action_search(self) -> None:
+        self._run_menu_entry("search")
 
     async def _select_game(self, gn: int) -> None:
         if not (0 <= gn < len(self._games)):
@@ -936,9 +976,11 @@ class AnalysisApp(App):
             for ln in opp_lines:
                 out.append(f"  opp → {ln}\n", style="dim")
         if g.get("shard"):
-            out.append("\n⛁ shard replay: chosen = argmax(visits) — sampled, "
-                       "not exact, inside each game's temperature window; "
-                       "unsearched (fallback) decisions are not recorded\n",
+            out.append("\n⛁ shard replay: chosen = argmax(recorded π) — "
+                       "sampled decisions (a game's temperature window) are "
+                       "reconstructed, not exact. Training shards omit "
+                       "unsearched decisions; play recordings keep them as "
+                       "one-hot rows (a flat 100% = no search ran there)\n",
                        style="dim italic")
         return out
 
@@ -1004,6 +1046,26 @@ class AnalysisApp(App):
     # ----- analyses menu -----
 
     def _run_menu_entry(self, key: str) -> None:
+        if key == "search":
+            # Replay-to-step MCTS: needs only the game's recorded seed/action
+            # log (not the live env), so it works in shard replay too.
+            if self._cur_game is None:
+                self.notify("Select a game and step first.", severity="warning")
+                return
+            if self._engine_busy:
+                self.notify("Engine is busy (simulating or branching) — try "
+                            "again when it finishes.", severity="warning")
+                return
+            if self._games[self._cur_game].get("live"):
+                self.notify("The live game has no finished record yet.",
+                            severity="warning")
+                return
+            self._engine_busy = True
+            self._refresh_summary()
+            self.notify(f"Replaying game {self._cur_game} to step "
+                        f"{self._cur_step} and searching…")
+            self._search_worker(self._cur_game, self._cur_step)
+            return
         if key in ("whatif", "run5", "run20"):
             if self._env is None or self._model is None:
                 msg = ("Not available in shard replay — branching/simulating "

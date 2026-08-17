@@ -5,7 +5,8 @@ so the Textual TUI and the Qt GUI cannot drift: the games store and step
 cursor, the analyses registry and its one process-global stdout-capture lock,
 the presentation-data helpers (game-list labels, decision rows, phase strip,
 clock line), the V(s) histogram geometry/bucketing model, and the engine-side
-job bodies (load, collect with live streaming, whatif, shard replay).
+job bodies (load, collect with live streaming, whatif, shard replay, and the
+replay-to-step MCTS `search_step`).
 
 Threading contract (mirrors tui_analysis's @work groups):
   * `BrowseStore` is UI-thread-only — the front end applies events to it on its
@@ -33,7 +34,8 @@ import numpy as np
 
 import analysis as an
 import decode
-from env import STATE_SIZE, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
+from env import (STATE_SIZE, _SELF_IS_A_IDX, _STEP_ONEHOT_START,
+                 _STEP_ONEHOT_SIZE)
 
 # ── Stdout capture ────────────────────────────────────────────────────────────
 # One lock around every stdout capture: engine and analysis workers run in
@@ -131,6 +133,103 @@ ENGINE_MENU = [
     ("run5", "run +5 — simulate 5 more games"),
     ("run20", "run +20 — simulate 20 more games"),
 ]
+
+# Replay-search entry: needs a REPLAYABLE game (recorded engine seed + action
+# log — a recording's .rmplay sidecars, or a replay-enabled collector trace),
+# not the session's live env, so it stays available in shard-browse mode.
+REPLAY_MENU = [
+    ("search", "search — replay to current step + MCTS analysis "
+               "(the live window's F6 review, offline)"),
+]
+
+
+def replay_search_decks(game, args):
+    """The (deck_a, deck_b, bo3) a replay-search env must be built with:
+    the record's own absolute-seat decks (a recording's sidecar), else the
+    session args'. Returns None when neither knows the decks."""
+    rd = game.get("replay_decks")
+    if rd and rd.get("deck_a") and rd.get("deck_b"):
+        return rd["deck_a"], rd["deck_b"], bool(rd.get("bo3", True))
+    deck_a = getattr(args, "deck_a", None)
+    deck_b = getattr(args, "deck_b", None)
+    if deck_a and deck_b:
+        return deck_a, deck_b, bool(getattr(args, "bo3", True))
+    return None
+
+
+def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
+                      eval_spec="az:gen", sims=256, worlds=4):
+    """Replay ``game`` to model decision ``step`` on a fresh search env and
+    run a determinized MCTS there — the offline equivalent of the live
+    analysis window's F6 "opponent's last decision" review. Returns display
+    text.
+
+    ``deck_a``/``deck_b`` must be the ABSOLUTE seat decks of the recorded
+    session (see :func:`replay_search_decks`) — the replay resets with the
+    recorded engine seed and feeds the recorded action log, so no
+    model-seat deck swap applies. The reached obs is verified against the
+    recorded one before searching (divergence is reported, not hidden)."""
+    import mcts
+    from search_env import SearchRoboMageEnv
+    from analysis_session import load_analysis_evaluator
+
+    if not an._game_is_replayable(game):
+        return ("This game has no recorded seed/action log. Training-pool "
+                "shards and recordings made before the replay sidecar cannot "
+                "be replayed — record a new session to enable this view.")
+    prefix = game["prefix_len"][step]
+    if prefix is None or game["full_actions"] is None:
+        return "This step has no recorded replay position."
+    lines = []
+    env = SearchRoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
+                            bo3=bool(bo3))
+    try:
+        obs, _ = env.reset(options={"engine_seed": game["engine_seed"]})
+        for a in game["full_actions"][:int(prefix)]:
+            obs, _r, term, trunc, _ = env.step(int(a))
+            if term or trunc:
+                return (f"Replay ended early inside the action prefix — "
+                        f"cannot reach step {step} (deck files changed since "
+                        f"the recording?).")
+        expected = np.asarray(game["observations"][step], dtype=np.float32)
+        if not np.allclose(obs, expected, atol=1e-4):
+            n_diff = int(np.sum(~np.isclose(obs, expected, atol=1e-4)))
+            lines.append(f"WARNING: replay diverged from the recorded state "
+                         f"({n_diff} obs floats differ) — the search below "
+                         f"may not describe the recorded position.")
+            lines.append("")
+        if not getattr(env, "last_search_safe", 0):
+            lines.append("This decision is not a legal search root "
+                         "(safe=0 prompt) — no search possible here.")
+            return "\n".join(lines)
+        evaluator, label = load_analysis_evaluator(eval_spec)
+        res = mcts.run_search(env, evaluator, sims=int(sims),
+                              worlds=int(worlds),
+                              rng=np.random.default_rng(0))
+        num = int(game["num_choices"][step])
+        played = int(game["actions"][step])
+        tot = max(float(res.visits.sum()), 1.0)
+        q = res.q if res.q is not None else np.zeros(num)
+        mover = "A" if bool(expected[_SELF_IS_A_IDX] > 0.5) else "B"
+        lines.append(f"MCTS @ step {step} (mover: Player {mover}) — {label}, "
+                     f"{res.sims_run} sims x {worlds} worlds, root value "
+                     f"{res.root_value:+.3f} "
+                     f"(win% {50.0 * (1.0 + res.root_value):.1f})")
+        lines.append("")
+        lines.append(f"   {'visits':>6} {'v%':>7} {'prior':>6} {'Q':>7}  action")
+        for i in np.argsort(-res.visits):
+            i = int(i)
+            mark = "▶" if i == played else " "
+            lines.append(f" {mark} {int(res.visits[i]):>6} "
+                         f"{res.visits[i] / tot:>7.1%} {res.priors[i]:>6.3f} "
+                         f"{float(q[i]):>+7.3f}  [{i}] "
+                         f"{an._action_desc(expected, i)}")
+        lines.append("")
+        lines.append("▶ = the action played in the recording. Q and the root "
+                     "value are from the MOVER's perspective.")
+        return "\n".join(lines)
+    finally:
+        env.close()
 
 
 # ── Presentation-data helpers (pure over game dicts) ──────────────────────────
@@ -663,6 +762,34 @@ class EngineCore:
             self.emit(AnalysisDone(f"whatif — game {gn}, step {step}", text))
         except Exception:
             self.emit(AnalysisDone("whatif error", traceback.format_exc()))
+        finally:
+            self.emit(EngineIdle())
+
+    def search_step(self, gn, step, game):
+        """Replay-to-step MCTS analysis (REPLAY_MENU's 'search'): rebuilds the
+        position from the game's recorded seed + action log on a throwaway
+        search env, so it needs no live env/model — available in shard-browse
+        mode (recordings with .rmplay sidecars) and for replay-enabled traces
+        alike. `game` is the (immutable) finished dict."""
+        try:
+            decks = replay_search_decks(game, self.args)
+            if decks is None:
+                self.emit(AnalysisDone(
+                    f"search — game {gn}, step {step}",
+                    "This session does not know the game's seat decks — "
+                    "cannot build a replay env."))
+                return
+            deck_a, deck_b, bo3 = decks
+            binary = getattr(self.args, "binary", None)
+            if not binary:
+                from runner import BINARY as binary
+            spec = getattr(self.args, "model", None) or "az:gen"
+            text = run_replay_search(game, step, binary=binary,
+                                     deck_a=deck_a, deck_b=deck_b, bo3=bo3,
+                                     eval_spec=spec)
+            self.emit(AnalysisDone(f"search — game {gn}, step {step}", text))
+        except Exception:
+            self.emit(AnalysisDone("search error", traceback.format_exc()))
         finally:
             self.emit(EngineIdle())
 

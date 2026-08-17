@@ -15,6 +15,7 @@ import math
 import os
 import re
 import time
+from dataclasses import dataclass
 from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
@@ -41,6 +42,11 @@ _SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard",
 # 'gen__v{steps}.zip' snapshots. 'gen' is reserved — a roster/league deck may not
 # be named 'gen' (see ``assert_not_reserved_deck``).
 GEN_STEM = "gen"
+
+# Determinized worlds per search when a spec names no worlds= knob (the mcts:/az:
+# grammar default). Also the cap an interactive front end's auto procs count is
+# clamped to — see default_search_procs.
+DEFAULT_SEARCH_WORLDS = 4
 
 # Checkpoint stem prefix of an ARCHETYPE EXPLOITER: a dedicated run whose learner
 # pilots one archetype's decks against the frozen generalist, saved under its own
@@ -279,9 +285,10 @@ class MatchClock:
     spans a whole match (bo3 or bo1), and each searched decision draws a
     variable ``(min_s, max_s)`` deadline pair from it.
 
-    The allocation is ``remaining / C``, scaled by a difficulty multiplier
-    derived from the root priors (entropy / top-2 gap / menu width), and
-    clamped to ``[t_min, min(t_max, remaining/4)]``. C is the estimated
+    The allocation is ``remaining / C``, front-loaded by the pacing curve
+    below, scaled by a difficulty multiplier derived from the root priors
+    (entropy / top-2 gap / menu width), and clamped to
+    ``[t_min, min(t_max, remaining/4)]``. C is the estimated
     decisions left on this clock. The estimate starts from a fixed prior — a
     full bo3 match is assumed to run ``_MATCH_DEC_EST`` (300) decisions for
     one seat, ~``_GAME_DEC_EST`` (120) per game over ~2.5 expected games —
@@ -297,6 +304,30 @@ class MatchClock:
     in-search stability early-stop (see ``mcts.run_search``), which is what
     actually lets obvious decisions finish cheap and contested ones run long.
 
+    PACING is deliberately NON-LINEAR rather than a flat ``remaining / C``
+    proportional drip: the early decisions of a match are the ones whose lines
+    still branch, so the bank is spent front-loaded and the tail plays fast.
+    Above a ``_RESERVE_S`` (300s) final-five-minutes reserve the proportional
+    share is multiplied by ``1 + sqrt(frac)``, where ``frac`` is the fraction
+    of the ABOVE-RESERVE bank still unspent — ~2x at a full bank, decaying
+    concavely (sqrt, so it stays aggressive through the midgame) to exactly 1x
+    as the bank touches the reserve. Inside the reserve — and for any bank of
+    ``_RESERVE_S`` or less — the spend is the plain proportional share, i.e.
+    the clock turns conservative for its last five minutes.
+
+    MATCH-POINT CLOSEOUT: ``allocate`` optionally takes the root net's
+    mover-perspective ``value`` in ``[-1, 1]``. It is ignored everywhere except
+    the one state where it changes the plan — the agent on match point
+    (``self_wins == 1``) with the net calling the current game decisively won
+    (``value >= _CLOSEOUT_V``). There the clock stops budgeting for future
+    games that won't be played (``extra_games = 0``) and additionally shrinks
+    the current game's share by a factor ramping linearly from 1.0 at
+    ``_CLOSEOUT_V`` down to ``_CLOSEOUT_MIN_SCALE`` at ``value == 1.0``: a won
+    position needs less thought, so the bank is banked. The
+    ``_HORIZON_LO``/``_HORIZON_HI`` clamp still applies last, and in every
+    other state (0 or 2 wins, the opponent on match point, no value, or a value
+    below the threshold) the horizon is unchanged.
+
     Takes only decoded scalars, no obs vector — unit-testable without an engine.
     """
 
@@ -310,6 +341,9 @@ class MatchClock:
     _RATE_PRIOR_W = 8.0    # in-game rate revision: prior worth this many observed turns
     _HORIZON_LO, _HORIZON_HI = 8, 400
     _M_LO, _M_HI = 0.35, 1.75  # difficulty-multiplier clamp
+    _RESERVE_S = 300.0         # final-5-minutes conservative reserve (no boost)
+    _CLOSEOUT_V = 0.8          # root value at/above which a match point closes out
+    _CLOSEOUT_MIN_SCALE = 0.35  # in-game horizon scale at a value of 1.0
 
     def __init__(self, bank_s: float, *, t_min: float = 0.5,
                  t_max: float = 60.0, sb_t_max: float = 15.0):
@@ -340,10 +374,26 @@ class MatchClock:
             self._game_start_dec.append(self.decisions)
         self.decisions += 1
 
+    def _is_closeout(self, self_wins: int, value: Optional[float]) -> bool:
+        """True when the agent is on match point AND the root net calls the
+        game it is playing decisively won — the one state where ``value``
+        is allowed to move the horizon."""
+        return (self_wins == 1 and value is not None
+                and float(value) >= self._CLOSEOUT_V)
+
+    def _closeout_scale(self, value: float) -> float:
+        """In-game horizon scale for a closeout: 1.0 at ``_CLOSEOUT_V``,
+        ramping linearly down to ``_CLOSEOUT_MIN_SCALE`` at a value of 1.0."""
+        span = 1.0 - self._CLOSEOUT_V
+        t = (float(value) - self._CLOSEOUT_V) / span if span > 0.0 else 1.0
+        t = min(max(t, 0.0), 1.0)
+        return 1.0 - (1.0 - self._CLOSEOUT_MIN_SCALE) * t
+
     def _horizon(self, turn: int, game_number: int, self_wins: int,
-                 opp_wins: int) -> float:
+                 opp_wins: int, value: Optional[float] = None) -> float:
         """Estimated decisions left on this clock (one seat): the fixed match
-        prior revised by the observed per-game length and in-game pace."""
+        prior revised by the observed per-game length and in-game pace, then —
+        only on a match-point closeout — shortened by the root ``value``."""
         cur_start = self._game_start_dec[-1] if self._game_start_dec else 0
         in_cur = max(0, self.decisions - cur_start)
         # Completed games revise the per-game estimate: a match that reached
@@ -373,6 +423,11 @@ class MatchClock:
             extra_games = 1.5
         else:
             extra_games = 0.5
+        # Match-point closeout: this game IS the match, and the net says it is
+        # already won — drop the future-game budget entirely and think less.
+        if self._is_closeout(self_wins, value):
+            extra_games = 0.0
+            in_game *= self._closeout_scale(value)
         horizon = in_game + extra_games * (per_game + self._SB_DEC_EST)
         return min(max(horizon, self._HORIZON_LO), self._HORIZON_HI)
 
@@ -395,12 +450,28 @@ class MatchClock:
         m = 0.5 + 1.25 * h_norm - 1.0 * gap + 0.25 * width
         return min(max(m, self._M_LO), self._M_HI)
 
+    def _pace_boost(self, base: float) -> float:
+        """Front-load the bank: ~2x the proportional share while the bank is
+        full, decaying concavely to exactly 1x as it reaches ``_RESERVE_S``.
+        Inside the reserve (and for banks that never exceed it) this is a
+        no-op, so the last five minutes spend strictly proportionally."""
+        if self.bank <= self._RESERVE_S or self.remaining <= self._RESERVE_S:
+            return base
+        frac = ((self.remaining - self._RESERVE_S)
+                / (self.bank - self._RESERVE_S))  # 1.0 full -> 0.0 at reserve
+        return base * (1.0 + math.sqrt(frac))
+
     def allocate(self, *, turn: int, game_number: int, self_wins: int,
                  opp_wins: int, is_sideboard: bool, priors,
-                 num_choices: int) -> tuple[float, float]:
-        """Return the ``(min_s, max_s)`` deadline pair for one decision."""
-        c = self._horizon(turn, game_number, self_wins, opp_wins)
-        base = self.remaining / c
+                 num_choices: int, value: Optional[float] = None
+                 ) -> tuple[float, float]:
+        """Return the ``(min_s, max_s)`` deadline pair for one decision.
+
+        ``value`` is the root net's mover-perspective value estimate in
+        ``[-1, 1]`` (``None`` when unevaluated); it only ever matters on a
+        match-point closeout — see the class docstring."""
+        c = self._horizon(turn, game_number, self_wins, opp_wins, value)
+        base = self._pace_boost(self.remaining / c)
         m = self._difficulty(priors, num_choices)
         t_cap = self.sb_t_max if is_sideboard else self.t_max
         t_hi = min(base * m, t_cap, self.remaining / 4.0)
@@ -539,8 +610,12 @@ class SearchController:
         # determinize seeds (latched from the boundary's first search); roots =
         # the previous search's SearchResult.roots (walked down the history
         # delta at the next pick); picks = descriptors of the real picks since
-        # the boundary root (the memo key base). Single-env path only —
-        # procs>1 sb searches stay fresh.
+        # the boundary root (the memo key base). Works at any procs: the
+        # parallel search forwards the same seeds/roots/memo per world (world
+        # order == env order), and the latched per-world state is
+        # engine-agnostic — so if the mirror pool dies mid-boundary (fail-open)
+        # the next pick simply re-partitions the same seeds/roots across the
+        # remaining env count, or runs serially, with nothing lost.
         self._sbp_key = None
         self._sbp_seeds = None
         self._sbp_roots = None
@@ -609,7 +684,8 @@ class SearchController:
         return float(self._rng.uniform(self._PACE_IDLE_MIN_S,
                                        self._PACE_IDLE_MAX_S))
 
-    _FOLLOW_MIN_VISITS = 16  # combined visits a followed node needs to be trusted
+    _FOLLOW_MIN_VISITS = 32   # combined visits a followed node needs to be trusted
+    _FOLLOW_MIN_SHARE = 0.66  # and the share of them the winning action must hold
 
     # Opponent action categories whose menus are built from PUBLIC state only
     # (priority pass, combat declarations and confirms) — the one case where a
@@ -666,7 +742,9 @@ class SearchController:
         Worlds that never simulated the real line drop out; the survivors'
         visit counts at the reached node are the answer. Divergence — a gate
         firing, an unexplored real action, a menu-size or seat mismatch at the
-        reached node, or fewer than ``_FOLLOW_MIN_VISITS`` combined visits —
+        reached node, fewer than ``_FOLLOW_MIN_VISITS`` combined visits, or a
+        most-visited action holding less than ``_FOLLOW_MIN_SHARE`` of them (a
+        contested node's plurality is exploration noise, not a conclusion) —
         drops the trees and returns None so a fresh search runs. On success
         the reached nodes become the new follow roots and the fingerprint
         ratchets to the current one, so a whole expected sequence can be
@@ -722,20 +800,20 @@ class SearchController:
         visits = np.zeros(num_choices, dtype=np.float64)
         for n in nodes:
             visits += n.N
-        if visits.sum() < self._FOLLOW_MIN_VISITS:
+        total = visits.sum()
+        if (total < self._FOLLOW_MIN_VISITS
+                or visits.max() < self._FOLLOW_MIN_SHARE * total):
             self._drop_trees()
             return None
         self._followed_trees = nodes
         self._followed_hist_len = len(hist)
         self._followed_fp = cur  # ratchet: a card that hides re-triggers on re-reveal
-        if self._temperature <= 1e-6:
-            return int(np.argmax(visits))
-        pi = visits ** (1.0 / self._temperature)
-        return int(self._rng.choice(num_choices, p=pi / pi.sum()))
+        from mcts import sample_visits
+        return sample_visits(visits, self._temperature, self._rng)
 
     def _choose_impl(self, obs, num_choices, action_masks=None,
                      decoded_actions=None) -> int:
-        from mcts import run_search, run_search_parallel
+        from mcts import run_search, run_search_parallel, sample_visits
         from decode import menu_is_interchangeable
 
         # Sideboard-boundary identity of this decision (None off the sideboard
@@ -782,7 +860,9 @@ class SearchController:
         # Mirror pool: with procs>1 the worlds fan out across procs-1 extra engine
         # processes (interactive only; duck-typed so a plain env is tolerated).
         # envs is None => procs==1 (or no mirror support) => the original
-        # single-env run_search call, byte-identical.
+        # single-env run_search call, byte-identical. Either way the same kw dict
+        # (sideboard-boundary seeds/roots/memo included) is forwarded unchanged,
+        # so boundary persistence behaves identically on both paths.
         envs = None
         if self._procs > 1:
             ensure = getattr(env, "ensure_mirrors", None)
@@ -806,14 +886,18 @@ class SearchController:
             # Difficulty signal: one extra deterministic root eval (run_search
             # re-evaluates internally). Cheap next to a multi-second search,
             # draws no rng, and keeps the parity-sensitive search code untouched.
-            priors, _ = self._evaluator.evaluate(obs, num_choices)
+            priors, v = self._evaluator.evaluate(obs, num_choices)
             turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
             g = int(round(float(obs[_MATCH_CTX_START]) * 3))
             ws = int(round(float(obs[_MATCH_CTX_START + 1]) * 2))
             wo = int(round(float(obs[_MATCH_CTX_START + 2]) * 2))
+            # The same root eval's value head feeds the match-point closeout
+            # (mover perspective already == "self", so no negation; see
+            # MatchClock's closeout docs — inert except at 1 win + v >= 0.8).
             tmin_s, alloc = self._clock.allocate(
                 turn=turn, game_number=g, self_wins=ws, opp_wins=wo,
-                is_sideboard=is_sb, priors=priors, num_choices=num_choices)
+                is_sideboard=is_sb, priors=priors, num_choices=num_choices,
+                value=v)
             # An explicit time= budget acts as a per-decision ceiling.
             tb = alloc if tb is None else min(alloc, tb)
             tmin_s = min(tmin_s, tb)
@@ -827,7 +911,7 @@ class SearchController:
                 rng=self._rng, time_budget_s=tb,
                 time_budget_min_s=tmin_s,
                 merge_dupes=self._merge_dupes)
-            persist_here = sbp_key is not None and envs is None
+            persist_here = sbp_key is not None
             if persist_here:
                 # Boundary continue: same identity AND every action since the
                 # previous search is our own (the engine runs one seat's picks
@@ -857,8 +941,6 @@ class SearchController:
                     self._drop_boundary()
                 kw.update(rollout_memo=self._sbp_memo,
                           memo_picks=tuple(self._sbp_picks))
-            elif sbp_key is not None:
-                self._drop_boundary()  # procs>1: no persistence, stay fresh
             result = _search(**kw)
             self.stats["sb_searched"] += 1
             if persist_here:
@@ -894,11 +976,7 @@ class SearchController:
             self._drop_trees()
         if result.stopped_early:
             self.stats["early_stops"] += 1
-        if self._temperature <= 1e-6:
-            chosen = result.best_action()
-        else:
-            pi = result.policy_target(self._temperature)
-            chosen = int(self._rng.choice(len(pi), p=pi))
+        chosen = sample_visits(result.visits, self._temperature, self._rng)
         self._sbp_latch(obs, chosen)
         if self.on_result is not None:
             try:
@@ -1179,9 +1257,11 @@ def make_controller(spec, *,
         return _make_search_controller(s[len("mcts:"):],
                                        checkpoint_resolver=checkpoint_resolver)
     if low.startswith("az:"):
-        return _make_az_controller(s[len("az:"):], search=True)
+        return _make_az_controller(s[len("az:"):], search=True,
+                                   checkpoint_resolver=checkpoint_resolver)
     if low.startswith("azraw:"):
-        return _make_az_controller(s[len("azraw:"):], search=False)
+        return _make_az_controller(s[len("azraw:"):], search=False,
+                                   checkpoint_resolver=checkpoint_resolver)
     resolver = checkpoint_resolver or resolve_checkpoint
     path = resolver(s)
     return ModelController(_load_model(path), label=s, deterministic=deterministic)
@@ -1216,6 +1296,28 @@ def _spec_knob(params: dict, key: str, default, conv, spec: str):
         raise ValueError(
             f"bad controller spec {spec!r}: knob '{key}' needs a "
             f"{conv.__name__} value, got {raw!r}") from None
+
+
+def default_search_procs(worlds: int = DEFAULT_SEARCH_WORLDS) -> int:
+    """The engine-process count an INTERACTIVE front end should fan a search's
+    worlds across when the user did not ask for one.
+
+    Half the visible cores (at least 1), capped at ``worlds`` — a world is the
+    unit of parallelism, so more processes than worlds would idle, and leaving
+    half the machine free keeps the UI (and the human's own machine) responsive
+    while a search runs. NOT the spec-grammar default: a bare ``mcts:``/``az:``
+    spec still builds procs=1 so gates, eval and parity runs stay reproducible;
+    only play.py / the GUI launcher opt in to this.
+    """
+    return min(int(worlds), max(1, (os.cpu_count() or 2) // 2))
+
+
+def default_search_procs_for_spec(spec: str) -> int:
+    """:func:`default_search_procs` for a controller spec, reading the spec's own
+    ``worlds=`` knob (default :data:`DEFAULT_SEARCH_WORLDS`) as the cap."""
+    _base, params = _parse_spec_query(spec or "")
+    return default_search_procs(
+        _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec))
 
 
 def _boolean(raw: str) -> bool:
@@ -1280,6 +1382,97 @@ def _effort_label(sims: int, worlds: int, time_budget: float | None,
     return f"{sims}x{worlds}"
 
 
+@dataclass(frozen=True)
+class _SearchKnobs:
+    """The parsed knob set shared by the ``mcts:`` and ``az:`` spec grammars.
+
+    Built by :func:`_parse_search_knobs`, consumed by
+    :func:`_build_search_controller`. ``v_scale`` is the one field the two
+    grammars treat differently: only ``mcts:`` consumes it (the PPO value
+    tanh scale of its PPOEvaluator rung); ``az:`` parses and ignores it, which
+    is what it always did — an ``az:...?vscale=`` token was silently dropped by
+    the query parser — so parsing it here is no grammar change."""
+
+    sims: int
+    worlds: int
+    c_puct: float
+    temperature: float
+    v_scale: float
+    rng_seed: int
+    procs: int
+    sb_sims: int
+    sb_worlds: int
+    sb_max_depth: int
+    sb_rollout_turns: int
+    sb_persist: int
+    time_budget: float | None
+    sims_cap: int
+    sb_sims_cap: int
+    clock: float | None
+    tmin: float
+    tmax: float
+    sb_tmax: float
+    paced: bool
+
+
+def _parse_search_knobs(spec: str) -> _SearchKnobs:
+    """Parse the search knobs out of a ``<base>?k=v&...`` controller spec.
+
+    ONE parser for both search grammars, so a knob added to ``mcts:`` cannot
+    silently miss ``az:``. Knob ORDER is load-bearing: a spec with two
+    malformed knobs reports the first one in this order, so keep the sequence
+    (and the defaults) as-is unless the error text is meant to change."""
+    _base, params = _parse_spec_query(spec)
+    sims = _spec_knob(params, "sims", 128, int, spec)
+    worlds = _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec)
+    c_puct = _spec_knob(params, "c", 1.5, float, spec)
+    temperature = _spec_knob(params, "temp", 0.0, float, spec)
+    v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
+    rng_seed = _spec_knob(params, "seed", 0, int, spec)
+    procs = _spec_knob(params, "procs", 1, int, spec)
+    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
+    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
+    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
+    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
+                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
+    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
+    time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
+    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
+    return _SearchKnobs(sims=sims, worlds=worlds, c_puct=c_puct,
+                        temperature=temperature, v_scale=v_scale,
+                        rng_seed=rng_seed, procs=procs, sb_sims=sb_sims,
+                        sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                        sb_rollout_turns=sb_rollout_turns,
+                        sb_persist=sb_persist, time_budget=time_budget,
+                        sims_cap=sims_cap, sb_sims_cap=sb_sims_cap,
+                        clock=clock, tmin=tmin, tmax=tmax, sb_tmax=sb_tmax,
+                        paced=paced)
+
+
+def _effort_label_for(knobs: _SearchKnobs) -> str:
+    """:func:`_effort_label` for a parsed knob set."""
+    return _effort_label(knobs.sims, knobs.worlds, knobs.time_budget, knobs.clock)
+
+
+def _build_search_controller(evaluator, label: str,
+                             knobs: _SearchKnobs) -> "SearchController":
+    """THE SearchController construction for both search grammars — the
+    factories differ only in which evaluator and label they hand over."""
+    return SearchController(evaluator, sims=knobs.sims, worlds=knobs.worlds,
+                            c_puct=knobs.c_puct, temperature=knobs.temperature,
+                            label=label, rng_seed=knobs.rng_seed,
+                            sb_sims=knobs.sb_sims, sb_worlds=knobs.sb_worlds,
+                            sb_max_depth=knobs.sb_max_depth,
+                            sb_rollout_turns=knobs.sb_rollout_turns,
+                            sb_persist=bool(knobs.sb_persist),
+                            time_budget=knobs.time_budget,
+                            sims_cap=knobs.sims_cap,
+                            sb_sims_cap=knobs.sb_sims_cap, procs=knobs.procs,
+                            clock=knobs.clock, clock_t_min=knobs.tmin,
+                            clock_t_max=knobs.tmax,
+                            clock_sb_t_max=knobs.sb_tmax, paced=knobs.paced)
+
+
 def _make_search_controller(spec: str, *,
                             checkpoint_resolver=None) -> "SearchController":
     """Build a SearchController from the part after "mcts:".
@@ -1298,41 +1491,18 @@ def _make_search_controller(spec: str, *,
     """
     from mcts import PPOEvaluator, UniformEvaluator
 
-    base, params = _parse_spec_query(spec)
-    sims = _spec_knob(params, "sims", 128, int, spec)
-    worlds = _spec_knob(params, "worlds", 4, int, spec)
-    c_puct = _spec_knob(params, "c", 1.5, float, spec)
-    temperature = _spec_knob(params, "temp", 0.0, float, spec)
-    v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
-    rng_seed = _spec_knob(params, "seed", 0, int, spec)
-    procs = _spec_knob(params, "procs", 1, int, spec)
-    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
-    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
-    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
-    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
-                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
-    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
-    time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
-    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
+    base, _params = _parse_spec_query(spec)
+    knobs = _parse_search_knobs(spec)
 
     if base.lower() == "uniform":
         evaluator = UniformEvaluator()
-        label = f"mcts:uniform({_effort_label(sims, worlds, time_budget, clock)})"
+        label = f"mcts:uniform({_effort_label_for(knobs)})"
     else:
         resolver = checkpoint_resolver or resolve_checkpoint
         model = _load_model(resolver(base))
-        evaluator = PPOEvaluator(model, v_scale=v_scale)
-        label = f"mcts:{base}({_effort_label(sims, worlds, time_budget, clock)})"
-    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-                            temperature=temperature, label=label, rng_seed=rng_seed,
-                            sb_sims=sb_sims, sb_worlds=sb_worlds,
-                            sb_max_depth=sb_max_depth,
-                            sb_rollout_turns=sb_rollout_turns,
-                            sb_persist=bool(sb_persist),
-                            time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
-                            clock=clock, clock_t_min=tmin, clock_t_max=tmax,
-                            clock_sb_t_max=sb_tmax, paced=paced)
+        evaluator = PPOEvaluator(model, v_scale=knobs.v_scale)
+        label = f"mcts:{base}({_effort_label_for(knobs)})"
+    return _build_search_controller(evaluator, label, knobs)
 
 
 class AZRawController:
@@ -1350,15 +1520,32 @@ class AZRawController:
         return int(np.argmax(priors))
 
 
-def _load_az_evaluator(base: str):
-    """Load an AZNet -> AZEvaluator for the generalist contract. Accepts:
+def load_az_evaluator(base: str, *, ppo_resolver=None, on_warm_start=None):
+    """THE evaluator ladder: load an AZNet -> AZEvaluator for the generalist
+    contract. Returns ``(AZEvaluator, resolved)``. Accepts:
       - ``'gen'`` → the generalist AZ checkpoint (``gen__azfinal.pt`` / newest
         ``gen__azv*.pt``), else a warm-start from the ``gen`` PPO checkpoint;
       - an explicit ``.pt`` AZ path (loaded directly), or an explicit ``.zip``
         PPO path (warm-started).
     A bare per-deck shorthand (``az:delver``) is rejected with a clear error via
-    ``resolve_checkpoint`` — the model is the ONE generalist and the deck it
-    pilots travels as a separate parameter.
+    the PPO resolver — the model is the ONE generalist and the deck it pilots
+    travels as a separate parameter.
+
+    ``ppo_resolver`` maps a PPO spec to a checkpoint path for the warm-start
+    rung; it defaults to :func:`resolve_checkpoint` (strict — raises on a bare
+    deck shorthand). analysis.py injects its own LENIENT ``_resolve_model_path``
+    instead, which is why this is a parameter rather than a hardcoded call.
+    ``on_warm_start(base, ppo_path)`` is a notification hook fired just before
+    the warm-start (the sites that want a "no AZ checkpoint; warm-starting…"
+    line pass a printer); this function itself never prints.
+
+    Shared by opponents' ``az:``/``azraw:`` factories, analysis.py
+    (``_load_az_analysis_model`` / ``_build_search_evaluator``),
+    ``analysis_session.load_analysis_evaluator`` and
+    ``shard_probes.load_probe_net``. NOT used by the trainer-side net
+    resolvers (``az_selfplay.resolve_source``/``_build_net``,
+    ``az_train._init_net``) — see the cross-reference comments there.
+
     Lazy import so opponents.py stays torch-free until a model seat is built."""
     from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
     az = resolve_az_checkpoint(base)
@@ -1367,11 +1554,18 @@ def _load_az_evaluator(base: str):
     if base.endswith(".pt"):
         return AZEvaluator(load_az(base)), base   # explicit AZ path; load_az raises if missing
     # Otherwise a PPO spec to warm-start from: 'gen' or an explicit .zip.
-    # resolve_checkpoint raises a clear error on a bare (non-'gen') deck shorthand.
-    return AZEvaluator(from_ppo(resolve_checkpoint(base))), base
+    # The default resolver raises a clear error on a bare (non-'gen') deck shorthand.
+    ppo_path = (ppo_resolver or resolve_checkpoint)(base)
+    if on_warm_start is not None:
+        on_warm_start(base, ppo_path)
+    return AZEvaluator(from_ppo(ppo_path)), base
 
 
-def _make_az_controller(spec: str, *, search: bool):
+# Back-compat alias for the pre-promotion private name.
+_load_az_evaluator = load_az_evaluator
+
+
+def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
     Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=&sb_persist=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
@@ -1387,35 +1581,21 @@ def _make_az_controller(spec: str, *, search: bool):
     arms a whole-match chess-clock bank (per-decision allocation bounded by
     tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` masks response-timing
     tells for human play (small jittered floor + occasional fake-think beats)."""
-    base, params = _parse_spec_query(spec)
-    evaluator, resolved = _load_az_evaluator(base)
+    base, _params = _parse_spec_query(spec)
+    # Ordering is load-bearing: the evaluator loads BEFORE any knob is parsed
+    # (so a bad checkpoint still reports before a malformed knob), and the
+    # azraw: seat returns before knob parsing (azraw: has never validated
+    # knobs — leave that status quo alone).
+    # The PPO warm-start rung honours the caller's checkpoint resolver, same as
+    # the plain-model and mcts: branches of make_controller (this used to be
+    # silently dropped for az:/azraw: specs).
+    evaluator, resolved = load_az_evaluator(
+        base, ppo_resolver=checkpoint_resolver or resolve_checkpoint)
     if not search:
         return AZRawController(evaluator, label=f"azraw:{base}")
-    sims = _spec_knob(params, "sims", 128, int, spec)
-    worlds = _spec_knob(params, "worlds", 4, int, spec)
-    c_puct = _spec_knob(params, "c", 1.5, float, spec)
-    temperature = _spec_knob(params, "temp", 0.0, float, spec)
-    rng_seed = _spec_knob(params, "seed", 0, int, spec)
-    procs = _spec_knob(params, "procs", 1, int, spec)
-    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
-    sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
-    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
-    sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
-                                  DEFAULT_SB_ROLLOUT_TURNS, int, spec)
-    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
-    time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
-    clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
-    return SearchController(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-                            temperature=temperature,
-                            label=f"az:{base}({_effort_label(sims, worlds, time_budget, clock)})",
-                            rng_seed=rng_seed, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                            sb_max_depth=sb_max_depth,
-                            sb_rollout_turns=sb_rollout_turns,
-                            sb_persist=bool(sb_persist),
-                            time_budget=time_budget,
-                            sims_cap=sims_cap, sb_sims_cap=sb_sims_cap, procs=procs,
-                            clock=clock, clock_t_min=tmin, clock_t_max=tmax,
-                            clock_sb_t_max=sb_tmax, paced=paced)
+    knobs = _parse_search_knobs(spec)   # vscale is parsed and ignored here
+    return _build_search_controller(
+        evaluator, f"az:{base}({_effort_label_for(knobs)})", knobs)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:

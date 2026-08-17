@@ -37,6 +37,19 @@ any **error** (warnings alone still pass).
 | `smoke` | deterministic league games with the scripted **hard** agent across the league mirrors + a ring of crosses (fixed seeds) | a crash, an incomplete game, or an `ERROR:`/`FATAL:` line |
 | `fuzz` | short random coverage fuzz (the `explore` agent) over the league mirrors (fixed seeds on PR) | same as smoke |
 
+### Opt-in tiers (valid for `--tier`, not part of the default run)
+
+| Tier | What it checks | Needs |
+|---|---|---|
+| `actor` | the Phase-D AZ actor: obs bit-parity (`test_actor_parity.py`), MCTS visit-count parity (`test_mcts_parity.py`), self-play shard schema / trainer ingest (`test_actor_shards.py`), and trainer-interchangeability of C++ vs Python shards (`test_actor_trains.py` — same schema, both loss trajectories finite and decreasing) | `bin/az_actor` (`make actor`) + torch; self-skips otherwise |
+| `analysis` | the GUI analysis window's engine core — chunked `IncrementalSearch` bit-identical to `run_search`, detached-mirror lockstep, cancellation (`test_analysis_session.py`) — plus the shard-replay reconstruction behind `tui_analysis --shards` (`test_shard_replay.py`) | torch-free; `bin/robomage` |
+| `azinspect` | the AZ checkpoint inspector's views against a fresh net + synthetic shards (`test_az_inspect.py`) | torch; no engine binary |
+| `gui` | headless PySide6 shell smokes (play board, shard recording, analysis window, save/reopen, browser) | PySide6 |
+
+```bash
+train/.venv/bin/python train/ci_check.py --tier actor
+```
+
 Useful flags: `--tier pygen,vocab` (subset), `--smoke-games N` / `--fuzz-games N`
 (depth), `--seed N`, `--matchups mirrors|ring|mirrors+ring|all|"a:b,c:d"`,
 `--out-dir DIR` (transcripts + relocated draw logs; `ci_out/` by default).

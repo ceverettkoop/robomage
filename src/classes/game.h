@@ -180,6 +180,12 @@ struct Game {
         int prev_turn_active_spell_count = 0;
         size_t seed;
         size_t timestamp = 0;
+        // Monotonic source for Zone::obj_gen (CR 400.7 object identity). Handed out and
+        // post-incremented on every Orderer::add_to_zone, so each zone entry gets a
+        // globally-unique stamp that no recycled entity id can collide with. Starts at 1 so
+        // 0 stays reserved for "never stamped". Purely internal (not serialized into the ML
+        // observation); deterministic because the add_to_zone call sequence is deterministic.
+        uint64_t next_obj_gen = 1;
         size_t turn = 0;
         Step cur_step = UNTAP;
         Entity player_a_entity;
@@ -782,6 +788,15 @@ struct Game {
         // monarch (725.3). No-op if `player` is already the monarch. Sourceless inherent monarch
         // triggers (end-step draw, steal-on-combat-damage) are fired by check_triggered_abilities.
         void set_monarch(Entity player_entity);
+
+        // The one place a player LOSING decides the game: marks the game over and credits the
+        // win to their opponent (a two-player game, so the last player standing wins — CR
+        // 104.2a). Shared by the state-based-action losses (0 or less life 704.5a, drawing from
+        // an empty library 704.5c) and by conceding (CR 104.3a, see concede_current_game in
+        // game_driver.h). Unconditional by design: callers that must not overwrite an
+        // already-decided game check `ended` first, exactly as they did when they assigned
+        // `ended`/`winner` inline.
+        void player_loses(Zone::Ownership loser);
 
         void record_action(int category, int card_vocab_idx, bool player_a);
         void clear_known_top_library(bool player_a_owner);

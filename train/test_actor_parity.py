@@ -33,12 +33,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import AZNet, obs_space_from_const, save_torchscript, torchscript_export_path
 from env import RoboMageEnv, OBS_SIZE, MAX_ACTIONS
-from cli_spec import REPO_ROOT, BIN_DIR
+from cli_spec import REPO_ROOT, BIN_DIR, BUILD_DIR
 import runner
 
 DECK = "league/ur_delver"
 SEED = 1
-ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 
 
 class AZRawController:

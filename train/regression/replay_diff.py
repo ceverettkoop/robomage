@@ -29,11 +29,17 @@ from pathlib import Path
 _HERE = Path(__file__).resolve().parent
 _TRAIN = _HERE.parent
 _REPO = _TRAIN.parent
-_BINARY = _REPO / "bin" / "robomage"
 _CORPUS = _HERE / "corpus"
 
 # test_harness owns the BQUERY binary protocol + scripted agent.
 sys.path.insert(0, str(_TRAIN))
+
+# Resolve the engine binary through cli_spec so it honors the per-config build
+# split (bin/<config>/robomage) and ROBOMAGE_BUILD, instead of the retired
+# bin/robomage path — otherwise the replay tier can't find the binary and
+# ci_check misreports it as corpus drift.
+from cli_spec import BINARY as _BINARY_STR  # noqa: E402
+_BINARY = Path(_BINARY_STR)
 
 # Single seed governing the engine RNG for every scenario. Drawn once at random
 # (secrets.randbelow) and then frozen here so the corpus is reproducible but not

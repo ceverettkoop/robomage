@@ -1005,6 +1005,12 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     return true;
 }
 
+bool Ability::target_gen_current(Entity cand, uint64_t recorded_gen) const {
+    if (recorded_gen == 0) return true;  // no snapshot taken — keep prior behavior
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return true;  // e.g. a player target
+    return global_coordinator.GetComponent<Zone>(cand).obj_gen == recorded_gen;
+}
+
 bool Ability::is_target_valid() const {
     // Optional targeting: no target chosen is valid
     if (target == 0 && targets.empty() && target_min == 0) return true;
@@ -1012,14 +1018,19 @@ bool Ability::is_target_valid() const {
     // Multi-target abilities (target_max > 1) populate `targets`. CR 608.2b: the spell or
     // ability is countered on resolution only if ALL of its targets are illegal; with at
     // least one still-legal target it resolves, affecting only the legal ones (resolve()
-    // prunes the illegal targets before dispatching to the effect handler).
+    // prunes the illegal targets before dispatching to the effect handler). A target that
+    // changed zones since selection is a new object (CR 400.7) and is illegal even if a same-id
+    // incarnation now looks legal — gated by the parallel obj_gen snapshot in target_gens.
     if (!targets.empty()) {
-        for (Entity t : targets)
-            if (is_legal_target(t, controller)) return true;
+        for (size_t i = 0; i < targets.size(); i++) {
+            uint64_t g = i < target_gens.size() ? target_gens[i] : 0;
+            if (is_legal_target(targets[i], controller) && target_gen_current(targets[i], g))
+                return true;
+        }
         return false;
     }
 
-    return is_legal_target(target, controller);
+    return is_legal_target(target, controller) && target_gen_current(target, target_gen);
 }
 
 // Evaluates a condition SVar expression against cur_game state.
@@ -1736,16 +1747,20 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                 // ones here so every effect handler downstream sees legal targets only; the all-illegal
                 // case was already countered by the is_target_valid gate above.
                 if (!targets.empty()) {
-                    for (auto it = targets.begin(); it != targets.end();) {
-                        if (!is_legal_target(*it, controller)) {
-                            std::string tname = entity_name(*it);
+                    for (size_t i = 0; i < targets.size();) {
+                        uint64_t g = i < target_gens.size() ? target_gens[i] : 0;
+                        if (!is_legal_target(targets[i], controller) ||
+                            !target_gen_current(targets[i], g)) {
+                            std::string tname = entity_name(targets[i]);
                             game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
-                            it = targets.erase(it);
+                            targets.erase(targets.begin() + i);
+                            if (i < target_gens.size()) target_gens.erase(target_gens.begin() + i);
                         } else {
-                            ++it;
+                            ++i;
                         }
                     }
                     target = targets.empty() ? 0 : targets[0];
+                    target_gen = target_gens.empty() ? 0 : target_gens[0];
                 }
             }
             // RememberTargets/RememberObjects: stash the target(s) so chained

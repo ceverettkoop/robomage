@@ -1,9 +1,10 @@
 /.DS_Store
 lib/libraylib.a
-bin/robomage
+bin/*/robomage
 compile_commands.json
 obj/*.o
 obj/*/*.o
+obj/*/*/*.o
 bin/resources/cardsfolder/*/*.txt
 bin/resources/cardsfolder/.DS_Store
 # Codegen derived from gitignored/fetched card-script content — regenerated on every
@@ -33,6 +34,7 @@ bin/resources/decks/temp/*
 .claude/settings.local.json
 diag_draw_*.txt
 obj/*/*.d
+obj/*/*/*.d
 obj/*.d
 train/replays/*
 corpus/
@@ -54,7 +56,7 @@ train/recordings/
 train/az_data/
 
 # In-process AlphaZero actor binary (Phase D) — built by `make actor`
-bin/az_actor
+bin/*/az_actor
 
 # Cached Scryfall card art for the PySide6 board (train/scryfall_cache.py) —
 # downloaded on demand, never committed. Delete misses.json to retry lookups.

@@ -90,6 +90,10 @@ _KEYS_TEXT = """Game board:
   F10             analyze the session's shard recording (when
                   "Record shards" was ticked) in a second window
 
+Game menu (no shortcuts — conceding is deliberate, and confirmed):
+  Concede Game    lose this game; in a bo3 the match continues
+  Concede Match   end the match now in your opponent's favour
+
 Application:
   Ctrl+N          new play session
   Ctrl+Shift+N    new analysis session
@@ -358,8 +362,9 @@ class SessionManager(QObject):
     def new_play_session(self, opts, replay=None):
         """Build a play session from an options dict (NewPlaySessionDialog
         keys: binary, model_path, human_player, human_deck, model_deck, bo3,
-        analysis; plus optional engine_seed). `replay` is a loaded .rmplay doc
-        — its actions are fast-forwarded before the interactive loop."""
+        analysis, human_clock_s, hard_timeout; plus optional engine_seed).
+        `replay` is a loaded .rmplay doc — its actions are fast-forwarded
+        before the interactive loop."""
         if not self._teardown_current(confirm=True):
             return False
         session = None
@@ -370,7 +375,9 @@ class SessionManager(QObject):
                 human_player=opts.get("human_player"),
                 human_deck=opts["human_deck"], model_deck=opts["model_deck"],
                 bo3=opts.get("bo3", True), analysis=analysis_cfg is not None,
-                step_pacing=True, engine_seed=opts.get("engine_seed"))
+                step_pacing=True, engine_seed=opts.get("engine_seed"),
+                human_clock_s=opts.get("human_clock_s"),
+                hard_timeout=bool(opts.get("hard_timeout", False)))
             session.analysis_cfg = analysis_cfg
             if opts.get("record_shards"):
                 from shard_record import default_recording_dir
@@ -800,6 +807,16 @@ class MainWindow(QMainWindow):
         self._act_quit = self._action("Quit", self._quit, "Ctrl+Q")
         filem.addAction(self._act_quit)
 
+        # Game: in-game actions on the live play session (empty of meaning in
+        # any other mode, so every entry is disabled there by _sync_actions).
+        gamem = bar.addMenu("&Game")
+        self._act_concede_game = self._action(
+            "Concede Game", lambda: self._concede(False))
+        self._act_concede_match = self._action(
+            "Concede Match", lambda: self._concede(True))
+        gamem.addAction(self._act_concede_game)
+        gamem.addAction(self._act_concede_match)
+
         viewm = bar.addMenu("&View")
         self._act_analysis_win = self._action(
             "Analysis Window", self._toggle_analysis_window, "F9")
@@ -848,6 +865,20 @@ class MainWindow(QMainWindow):
         self._act_analysis_win.setEnabled(has_analysis)
         self._act_analysis_win.setChecked(
             bool(has_analysis and pane._analysis.isVisible()))
+        # Concede: only on a live play session, and only for a scope that is
+        # still meaningful (single game => "Concede Match" is the same action,
+        # so the pane reports it unavailable; both go dead at game over).
+        for act, is_match in ((self._act_concede_game, False),
+                              (self._act_concede_match, True)):
+            act.setEnabled(mode == "play" and pane is not None
+                           and pane.can_concede(is_match))
+        # Single game: the one entry conceding it IS conceding the match — say
+        # so rather than leaving a misleading "Concede Game" label.
+        one_game = (mode == "play" and pane is not None
+                    and not getattr(pane, "_bo3", True))
+        self._act_concede_game.setText(
+            "Concede Game (= the match)" if one_game else "Concede Game")
+
         rec = (getattr(pane, "recorder", None)
                if mode == "play" and pane is not None else None)
         self._act_analyze_rec.setEnabled(
@@ -927,6 +958,18 @@ class MainWindow(QMainWindow):
             except Exception:                              # noqa: BLE001
                 pass
 
+    def _concede(self, match):
+        """Game ▸ Concede Game / Concede Match. The pane owns the confirmation
+        dialog and the driver call; it returns False when it declined (not a
+        play session, already over, or the human cancelled)."""
+        pane = self.manager.pane
+        if self.manager.mode != "play" or pane is None:
+            return
+        if pane.concede(match=match):
+            self.statusBar().showMessage(
+                "Match conceded." if match else "Game conceded.", 5000)
+        self._sync_actions()
+
     def _toggle_analysis_window(self, checked):
         pane = self.manager.pane
         if (self.manager.mode != "play" or pane is None
@@ -965,11 +1008,14 @@ class MainWindow(QMainWindow):
 
 def run(binary_path, model_path, human_player=None,
         human_deck="delver", model_deck="delver", bo3=True, analysis=False,
-        record_shards=False):
+        record_shards=False, human_clock_s=None, hard_timeout=False):
     """play.py --gui entry: MainWindow + a play session built directly (no
     dialog). Same signature/semantics as tui_game.run. Returns the exit code;
     the ROBOMAGE_ANALYSIS_SMOKE / record-shards smoke exit-1 checks live
-    here."""
+    here.
+
+    `human_clock_s` / `hard_timeout` are play.py's --human-clock /
+    --hard-timeout (the launcher dialog has its own fields for them)."""
     app = _ensure_app()
     window = MainWindow(binary_path)
     window.show()
@@ -977,7 +1023,8 @@ def run(binary_path, model_path, human_player=None,
                 human_player=human_player, human_deck=human_deck,
                 model_deck=model_deck, bo3=bo3,
                 analysis=({} if analysis else None),
-                record_shards=record_shards)
+                record_shards=record_shards,
+                human_clock_s=human_clock_s, hard_timeout=hard_timeout)
     if not window.manager.new_play_session(opts):
         return 1
     # Capture the recorder before the smoke path tears the pane down.

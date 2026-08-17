@@ -16,6 +16,18 @@ decision point and that index is what gets sent / logged, so deterministic
 replay is unaffected. A spec list can even be replayed back as a plain
 ``--actions`` integer list (see ``PlayController.resolved``).
 
+**One spec does NOT resolve to a menu index: ``concede``.** A concession (CR
+104.3a) is an out-of-band decision INPUT, not a legal action the engine offers,
+so ``concede`` / ``concede:match`` resolve to the negative sentinels
+``env.CONCEDE_GAME`` (-2) / ``env.CONCEDE_MATCH`` (-3). The contract for every
+consumer is the same as for a normal index: **pass the resolver's ``index``
+straight to ``env.step``** — which sends the sentinels through verbatim (no
+confirm-slot remap, no action mask) and logs them for replay. Callers that
+merely forward the returned int (``opponents.HumanController``,
+``opponents.PlayController``, and ``runner.drive_game`` behind them) therefore
+support ``concede`` with no change; only a caller that *validates* the index
+against ``0 <= i < num_choices`` would need to special-case it.
+
 Why this survives dynamic menus: a spec is matched against the decoded action
 list for *that one decision* (category + card name + controller + the
 engine-authored description), so reordering, extra priority passes, or new
@@ -49,6 +61,9 @@ Grammar (case-insensitive; one spec resolves to exactly one action):
     sb-in:<card> | sb-out:<card> | sb-done    sideboarding (bo3)
     companion:<card>          pay {3}, companion sideboard->hand (COMPANION)
     desc:<text>               match ANY action by description substring
+    concede | concede:game    concede the current game (CR 104.3a); in a bo3 the
+                              match continues            -> env.CONCEDE_GAME (-2)
+    concede:match             concede the whole match    -> env.CONCEDE_MATCH (-3)
     #<n>  or a bare integer   literal action index (escape hatch)
 
   Optional leading SEAT KEY (``A:`` / ``B:``, case-insensitive) pins a spec to a
@@ -80,6 +95,7 @@ Grammar (case-insensitive; one spec resolves to exactly one action):
 import re
 
 import decode
+from env import CONCEDE_GAME, CONCEDE_MATCH   # (decode already imports env)
 
 # ── Verb -> the ActionCategory ints it may resolve to ─────────────────────────
 # (ints mirror src/classes/action.h, surfaced in train/_enums.py::_CAT_NAMES.)
@@ -106,6 +122,16 @@ _VERB_CATS = {
     "mode": {31}, "color": {32}, "name": {34}, "free": {42},
     "exile": {49},   # exile a card from the graveyard to pay an Escape cost
     "desc": set(),   # any category — pure description-substring match
+    # Not a menu action at all: resolves to a negative concession sentinel that
+    # the caller steps directly (see the module docstring's contract note).
+    "concede": set(),
+}
+
+# `concede:<arg>` -> sentinel. A bare `concede` (empty arg) is the GAME concede,
+# the conservative reading of "I'm done with this one" in a bo3.
+_CONCEDE_SENTINEL = {
+    "": CONCEDE_GAME, "game": CONCEDE_GAME, "g": CONCEDE_GAME,
+    "match": CONCEDE_MATCH, "m": CONCEDE_MATCH,
 }
 
 _COLOR_CAT = {"w": 13, "u": 14, "b": 15, "r": 16, "g": 17, "c": 18}
@@ -145,7 +171,7 @@ class Intent:
     """A parsed spec: what the user wants, independent of any concrete menu."""
 
     __slots__ = ("verb", "cats", "card", "side", "seat", "color", "keyword",
-                 "literal", "raw")
+                 "literal", "sentinel", "raw")
 
     def __init__(self, raw):
         self.raw = raw
@@ -157,6 +183,7 @@ class Intent:
         self.color = None       # mana category int, or None
         self.keyword = None     # 'done' | 'fail' | 'keep' | 'mulligan' | None
         self.literal = None     # literal action index for '#N' / bare int
+        self.sentinel = None    # out-of-band decision input (concede), or None
 
 
 class ResolveResult:
@@ -228,7 +255,15 @@ def parse_spec(token):
 
     low = arg.lower()
 
-    if verb in ("mulligan", "keep"):
+    if verb == "concede":
+        # Resolves to a sentinel, never to a menu index — the argument only
+        # picks WHICH concession, so an unknown one is a typo worth erroring on
+        # (silently conceding the whole match on a misspelling would be awful).
+        if low not in _CONCEDE_SENTINEL:
+            raise ValueError(f"unknown concede scope {arg!r} in spec {raw!r} "
+                             f"(use 'concede' / 'concede:game' / 'concede:match')")
+        intent.sentinel = _CONCEDE_SENTINEL[low]
+    elif verb in ("mulligan", "keep"):
         intent.keyword = verb
     elif verb in ("attack", "block") and low in ("done", "confirm", ""):
         intent.keyword = "done"
@@ -291,11 +326,20 @@ def resolve(token, actions):
     ``decode.decode_actions_from_obs``). Returns a :class:`ResolveResult`.
 
     Exact card-name matches are preferred; only if none match is a unique
-    substring match accepted. Multiple matches at either level => ambiguous."""
+    substring match accepted. Multiple matches at either level => ambiguous.
+
+    ``index`` is a menu index for every verb except ``concede``, which yields a
+    negative out-of-band sentinel; either way the caller steps it directly."""
     try:
         intent = parse_spec(token)
     except ValueError as e:
         return ResolveResult(None, False, reason=str(e), kind="parse_error")
+
+    # A concession is legal at EVERY decision and is not in the menu, so it
+    # resolves without looking at `actions` at all. The returned index is the
+    # negative sentinel the caller steps verbatim (see the module docstring).
+    if intent.sentinel is not None:
+        return ResolveResult(intent.sentinel, True)
 
     if intent.literal is not None:
         if 0 <= intent.literal < len(actions):

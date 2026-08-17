@@ -8,7 +8,9 @@ recorded session unchanged: the analysis browser's shard mode
 ``gui_browser``), ``az_inspect --shards`` / ``tui_az_inspect --shards``, and
 even ``az_train.load_window``.
 
-Row sources, mirroring the two self-play precedents:
+Row sources, mirroring the two self-play precedents — and built by the SAME
+two builders self-play uses (``az_selfplay.sample_from_search_result`` /
+``one_hot_sample``), so a recorded row is bit-identical to a self-play one:
   * A SEARCHED opponent decision — fed through :meth:`on_search_result`, the
     ``SearchController.on_result`` hook signature — becomes a full row: ``pi``
     is the root visit posterior, ``q`` the search's root value,
@@ -33,11 +35,16 @@ from each row's own mover's perspective via ``az_selfplay._backfill_and_pack``.
 File protocol: ONE file per match — ``shard_{ts}_{pid}_{n}.npz`` with ``n``
 the match index — atomically REWRITTEN (write ``.tmp`` + ``os.replace``) with
 the match's full row prefix at every game boundary and on any explicit
-:meth:`flush`. Readers glob ``shard_*.npz`` and never see a partial file or a
+:meth:`flush`. When the session wires ``replay_meta``/``seed_fn`` (see the
+class docstring) each flush also rewrites a same-stem ``.rmplay`` replay
+sidecar — engine seed + full action log + per-row replay prefixes — making
+the recording exactly replayable for the browser's replay-to-step MCTS
+analysis. Readers glob ``shard_*.npz`` and never see a partial file or a
 duplicated row, and a game is never split across files (the
 ``shard_replay.segment_matches`` contract). Rows of a game still in progress
 are flushed with ``z = 0`` (an unfinished game has no outcome; az_selfplay
-drops such rows at truncation, but here they are the whole point of mid-game
+drops such rows at truncation via ``_drop_unfinished``, which this module
+therefore deliberately does NOT call — here they are the whole point of mid-game
 analysis — the browser's net-V(s) overwrite makes them browsable, and the
 ``z = 0`` draws are the documented cost of pointing a TRAINER at a recorded
 dir).
@@ -54,8 +61,6 @@ import time
 
 import numpy as np
 
-from env import MAX_ACTIONS, _SELF_IS_A_IDX
-
 
 def default_recording_dir(base_dir=None):
     """A fresh per-session recording directory:
@@ -70,9 +75,26 @@ def default_recording_dir(base_dir=None):
 
 
 class ShardRecorder:
-    """Accumulate play-session decisions and write trainer-schema shards."""
+    """Accumulate play-session decisions and write trainer-schema shards.
 
-    def __init__(self, out_dir, td_n=None):
+    With ``replay_meta`` (static session facts: ``deck_a``/``deck_b``/
+    ``human_deck``/``opp_deck``/``human_is_a``/``bo3``/``opponent_spec``/
+    ``binary``) and ``seed_fn`` (returns the env's ``last_engine_seed``), each
+    match's shard also gets a ``.rmplay`` REPLAY SIDECAR (same stem,
+    ``gui_session_io.save_replay`` format): the engine seed, every action index
+    stepped this match (the recorder's own per-step tally — the
+    ``step_observer`` hook sees every main-loop decision, 1-choice ones
+    included), and ``row_decision_idx`` mapping each recorded shard row to its
+    position in that action list. The sidecar makes a recording exactly
+    replayable: ``shard_replay`` attaches seed/actions/prefixes to the
+    browsable records, enabling the browser's replay-to-step MCTS analysis
+    (and whatif) on recorded sessions. ``replay_prefix`` seeds the action list
+    for a session continued from a saved ``.rmplay`` (whose replayed prefix
+    the observer never sees). Without ``replay_meta``/``seed_fn`` no sidecar
+    is written and behavior is exactly as before."""
+
+    def __init__(self, out_dir, td_n=None, replay_meta=None, seed_fn=None,
+                 replay_prefix=None):
         if td_n is None:
             from cli_spec import DEFAULT_AZ_TD_N
             td_n = DEFAULT_AZ_TD_N
@@ -87,6 +109,13 @@ class ShardRecorder:
         self._pending = None      # stashed searched row awaiting observe_step
         self._dirty = False       # rows not yet on disk
         self.rows_recorded = 0
+        self._replay_meta = dict(replay_meta) if replay_meta else None
+        self._seed_fn = seed_fn
+        # This match's full action list (replayed prefix + every observed
+        # step). The prefix applies to the FIRST match only — a continued
+        # session resumes mid-match; any later match starts from its own reset.
+        self._match_actions = list(replay_prefix) if replay_prefix else []
+        self._match_over = False   # sidecar in_progress flag source
         os.makedirs(out_dir, exist_ok=True)
 
     # ----- taps (driver worker thread) -----
@@ -94,19 +123,13 @@ class ShardRecorder:
     def on_search_result(self, obs, num_choices, result, chosen):
         """``SearchController.on_result`` hook: stash the searched row; the
         matching :meth:`observe_step` call commits it."""
-        num_choices = int(num_choices)
-        pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-        pi[:num_choices] = result.policy_target(1.0).astype(np.float32)
-        mask = np.zeros(MAX_ACTIONS, dtype=bool)
-        mask[:num_choices] = True
+        from az_selfplay import sample_from_search_result
+        sample = sample_from_search_result(obs, num_choices, result)
+        # The builder leaves explored=0 for its caller to finalize; here the
+        # played action is the controller's `chosen`.
+        sample["explored"] = int(int(chosen) != int(result.best_action()))
         with self._lock:
-            self._pending = {
-                "obs": np.asarray(obs, dtype=np.float32).copy(),
-                "pi": pi, "mask": mask,
-                "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
-                "q": float(result.root_value),
-                "explored": int(int(chosen) != int(result.best_action())),
-            }
+            self._pending = sample
 
     def observe_step(self, obs, num_choices, action, reward, info, done):
         """``GameDriver.step_observer`` hook, once per stepped decision.
@@ -115,24 +138,21 @@ class ShardRecorder:
         opponent's search produced one, else a one-hot behavior row when the
         menu offered a real choice), then processes any game/match boundary
         this step's ``(reward, info)`` carries."""
+        from az_selfplay import one_hot_sample, winner_from_reward
         num_choices = int(num_choices)
         action = int(action)
         with self._lock:
+            self._match_actions.append(action)
             sample, self._pending = self._pending, None
             if sample is None and num_choices > 1 \
                     and 0 <= action < num_choices:
-                pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-                pi[action] = 1.0
-                mask = np.zeros(MAX_ACTIONS, dtype=bool)
-                mask[:num_choices] = True
-                sample = {
-                    "obs": np.asarray(obs, dtype=np.float32).copy(),
-                    "pi": pi, "mask": mask,
-                    "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
-                    "q": float("nan"), "explored": 0,
-                }
+                sample = one_hot_sample(obs, num_choices, action)
             if sample is not None:
                 sample["game_idx"] = self._games_done
+                # Replay position of THIS decision: the action list up to (not
+                # including) the action just appended is the prefix that parks
+                # a replaying env exactly at it.
+                sample["decision_idx"] = len(self._match_actions) - 1
                 self._samples.append(sample)
                 self.rows_recorded += 1
                 self._dirty = True
@@ -142,13 +162,17 @@ class ShardRecorder:
             # step without one is the bo1 ending.
             boundary = bool(info.get("game_result"))
             if boundary or (done and not boundary and self._samples):
-                self._game_winners.append(
-                    "A" if reward > 0 else ("B" if reward < 0 else None))
+                self._game_winners.append(winner_from_reward(reward))
                 self._games_done += 1
                 self._flush_locked()
             if done:
+                self._match_over = True
                 if self._dirty:
                     self._flush_locked()
+                elif self._samples:
+                    # Rows already on disk, but the sidecar's in_progress flag
+                    # must still flip to a finished match.
+                    self._write_sidecar_locked()
                 # The match is over: the next rows open a new shard file.
                 if self._samples:
                     self._match_idx += 1
@@ -156,6 +180,8 @@ class ShardRecorder:
                 self._game_winners = []
                 self._games_done = 0
                 self._dirty = False
+                self._match_actions = []
+                self._match_over = False
 
     # ----- flush (any thread) -----
 
@@ -190,5 +216,37 @@ class ShardRecorder:
         with open(tmp, "wb") as f:
             np.savez_compressed(f, **{k: arrays[k] for k in SHARD_KEYS})
         os.replace(tmp, path)
+        self._write_sidecar_locked()
         self._dirty = False
         return path
+
+    def _write_sidecar_locked(self):
+        """Write/refresh this match's ``.rmplay`` replay sidecar (same stem as
+        the shard, atomic replace). Skipped without ``replay_meta``/``seed_fn``
+        or before the env's first reset has produced a seed."""
+        meta, seed_fn = self._replay_meta, self._seed_fn
+        if meta is None or seed_fn is None or not self._samples:
+            return
+        seed = seed_fn()
+        if seed is None:
+            return
+        import gui_session_io
+        path = os.path.join(
+            self.out_dir,
+            f"shard_{self._ts}_{os.getpid()}_{self._match_idx}"
+            + gui_session_io.PLAY_EXT)
+        tmp = path + ".tmp"
+        gui_session_io.save_replay(
+            tmp,
+            engine_seed=seed,
+            actions=self._match_actions,
+            deck_a=meta.get("deck_a"), deck_b=meta.get("deck_b"),
+            human_deck=meta.get("human_deck"), opp_deck=meta.get("opp_deck"),
+            human_is_a=bool(meta.get("human_is_a", True)),
+            bo3=bool(meta.get("bo3", True)),
+            opponent_spec=meta.get("opponent_spec"),
+            binary=meta.get("binary"),
+            in_progress=not self._match_over,
+            extra={"row_decision_idx":
+                   [int(s["decision_idx"]) for s in self._samples]})
+        os.replace(tmp, path)

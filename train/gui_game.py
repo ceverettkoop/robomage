@@ -739,6 +739,10 @@ class DriverBridge(QObject):
     log_lines = Signal(object)
     opp_thinking = Signal(bool)
     game_over = Signal(str)
+    # seat ("you"/"opponent"), reason ("You lost on time.") — the driver's
+    # OPTIONAL sink hook, fired when a hard clock ran out and it conceded the
+    # match for that seat. A game_over banner follows on its own.
+    timed_out = Signal(str, str)
 
     # DriverSink interface (called on the worker thread).
     def on_state(self, u):
@@ -752,6 +756,9 @@ class DriverBridge(QObject):
 
     def on_game_over(self, text):
         self.game_over.emit(text)
+
+    def on_timeout(self, seat, reason):
+        self.timed_out.emit(str(seat), str(reason))
 
 
 # ── Scryfall image provider ───────────────────────────────────────────────────
@@ -1023,6 +1030,10 @@ class PlayPane(QWidget):
         # only); started/stopped on the UI thread by on_opp_thinking.
         self._think_timer = None
         self._think_start = 0.0
+        # Display reason from the driver's on_timeout hook ("You lost on
+        # time."), kept so the phase strip keeps showing it after the prompt is
+        # overwritten by the game-over banner.
+        self._timeout_reason = None
 
         # Smoke-test auto-drive (headless CI-less sanity check). See module docs.
         self._smoke_n = _smoke_n_from_env()
@@ -1046,6 +1057,7 @@ class PlayPane(QWidget):
         self._bridge.log_lines.connect(self.on_log_lines)
         self._bridge.opp_thinking.connect(self.on_opp_thinking)
         self._bridge.game_over.connect(self.on_game_over)
+        self._bridge.timed_out.connect(self.on_timeout)
         self._provider.image_ready.connect(self._on_image_ready)
         # Frameless oracle-text popup, parented to the window so it centers on it
         # and stays above it (see OraclePopup); shown on Q-hold / right-click-hold.
@@ -1058,7 +1070,13 @@ class PlayPane(QWidget):
             is_model=session.is_model, opp_label=session.opp_label,
             bo3=session.bo3, sink=self._bridge,
             clock_fn=session.clock_fn, pace_idle=session.pace_idle,
-            reset_options=reset_options, replay_actions=replay_actions)
+            reset_options=reset_options, replay_actions=replay_actions,
+            # Clocks: the opponent's bank is read duck-typed off its controller,
+            # the human's is the launcher's "Human clock (s)" field, and
+            # hard_timeout makes an exhausted bank concede the match.
+            controller=session.controller,
+            human_clock_s=session.human_clock_s,
+            hard_timeout=session.hard_timeout)
 
         # Analysis window (separate top-level window; F9 toggles). Built only
         # when the session was assembled with an AnalysisConfig — its worker
@@ -1083,7 +1101,28 @@ class PlayPane(QWidget):
         self.recorder = None
         if getattr(session, "record_dir", None):
             from shard_record import ShardRecorder
-            self.recorder = ShardRecorder(session.record_dir)
+            # Replay sidecar wiring: absolute-seat decks + the env's actual
+            # seed (read lazily at flush — reset happens on the worker thread
+            # after this constructor) make each match's shard exactly
+            # replayable in the browser (replay-to-step MCTS analysis).
+            human_is_a = not self._opp_is_a
+            env = session.env
+            self.recorder = ShardRecorder(
+                session.record_dir,
+                replay_meta={
+                    "deck_a": (self._human_deck if human_is_a
+                               else self._opp_deck),
+                    "deck_b": (self._opp_deck if human_is_a
+                               else self._human_deck),
+                    "human_deck": self._human_deck,
+                    "opp_deck": self._opp_deck,
+                    "human_is_a": human_is_a,
+                    "bo3": self._bo3,
+                    "opponent_spec": getattr(session, "opponent_spec", None),
+                    "binary": getattr(env, "binary_path", None),
+                },
+                seed_fn=lambda: getattr(env, "last_engine_seed", None),
+                replay_prefix=replay_actions)
             self._driver.step_observer = self.recorder.observe_step
             ctrl = getattr(session, "controller", None)
             if ctrl is not None and hasattr(ctrl, "on_result"):
@@ -1407,6 +1446,60 @@ class PlayPane(QWidget):
             self._analysis.on_game_over()
         if self._smoke_n is not None:
             QTimer.singleShot(80, self.session_finished.emit)
+
+    def on_timeout(self, seat, reason):
+        """A hard clock ran out (GameDriver's optional on_timeout sink hook):
+        the driver has already conceded the match for `seat`. Show WHY here —
+        the game-over banner that follows carries the same note, but this lands
+        immediately, before the engine has finished ending the match."""
+        self._timeout_reason = reason
+        self._prompt.setText(f"⏱ {reason}")
+        self._append_log(f"=== {reason} ===")
+
+    # ----- concede (CR 104.3a) -----
+
+    def can_concede(self, match=False):
+        """Whether a concede entry should be enabled right now.
+        Meaningless once the game/match is over (the driver loop is gone, so a
+        queued sentinel would never be read); a MATCH concede is additionally
+        only offered in a bo3 — in a single game conceding the game already
+        ends everything, so the two entries would be the same action."""
+        if self.game_over:
+            return False
+        return self._bo3 if match else True
+
+    def concede(self, match=False, confirm=True):
+        """Concede the game (or the whole match) on the human's behalf, behind a
+        Yes/No confirmation. Returns True if the concession was actually queued.
+
+        The driver takes the sentinel at the human's next decision — an
+        opponent search in flight is never interrupted mid-think — so the board
+        is left disabled with a "Conceding…" prompt until it lands."""
+        if not self.can_concede(match):
+            return False
+        if confirm and not _smoke_n_from_env():
+            if self._bo3 and match:
+                text = ("Concede the match?\n\nThe match ends immediately and "
+                        f"{self._opp_label} wins it, whatever the score is.")
+            elif self._bo3:
+                text = ("Concede this game?\n\nYou lose the current game; the "
+                        "match continues exactly as after any other game loss "
+                        "(you sideboard, and the next game starts).")
+            else:
+                text = ("Concede the game?\n\nThis is a single game, so "
+                        f"conceding it loses the match to {self._opp_label}.")
+            resp = QMessageBox.question(
+                self, "Concede?", text,
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+            if resp != QMessageBox.StandardButton.Yes:
+                return False
+        self._append_log("[You] Concede the match" if match
+                         else "[You] Concede the game")
+        self._awaiting = False
+        self._menu.clear()
+        self._prompt.setText("Conceding...")
+        self._driver.concede(match=match)
+        return True
 
     # ----- input -----
 
@@ -1818,7 +1911,22 @@ class PlayPane(QWidget):
         active = "A" if gs["active_is_a"] else "B"
         prio = gs["priority_player"]
         return (self._match_strip(gs.get("match"))
-                + f"Turn {gs['turn']} · Active {active} · Priority {prio}")
+                + f"Turn {gs['turn']} · Active {active} · Priority {prio}"
+                + self._clock_strip())
+
+    def _clock_strip(self):
+        """"· ⏱ 12:34" for the human's own chess-clock bank, or "" when this
+        session is untimed. Piggybacks on the per-decision status refresh — the
+        bank is only debited when a decision completes, so there is nothing for
+        a separate ticker to show between them. A timeout replaces it with the
+        reason, which outlives the prompt."""
+        if self._timeout_reason is not None:
+            return f"  ·  ⏱ {self._timeout_reason}"
+        remaining = self._driver.human_clock_remaining()
+        if remaining is None:
+            return ""
+        r = max(0, int(remaining))
+        return f"  ·  ⏱ you {r // 60}:{r % 60:02d}"
 
     def _match_strip(self, match):
         """Compact bo3 score prefix ("Game 2 · You 1-0 · "), or "" outside a
@@ -1934,16 +2042,19 @@ _LAUNCHER_DEFAULTS = {
     "opponent": "az:gen",
     "player": "",                            # Random seat
     "bo3": True,
+    "human_clock": None,                     # your own bank: unset = untimed
+    "hard_timeout": False,                   # an empty bank only informs, by default
     "sims": None,                            # no sims cap — the match clock paces it
     "worlds": 8,
     "think_time": None,
-    "search_procs": None,
+    "search_procs": None,                    # auto: half the cores, capped at worlds
     "match_clock": 1500.0,                   # 25 min of thinking for the whole bo3
     "paced": True,
     "record_shards": False,
     "analysis_enabled": True,
     "analysis_evaluator": "az:gen",
     "analysis_worlds": 4,
+    "analysis_procs": None,                  # auto: half the cores, capped at worlds
     "analysis_cap": 2000,
     "analysis_auto": True,
 }
@@ -1995,8 +2106,9 @@ class NewPlaySessionDialog(QDialog):
     """The File ▸ New Session ▸ Play… dialog (also the no-arguments intro).
 
     Exposes the same game-running knobs as the TUI play form — the human's deck,
-    the opponent's deck, the opponent controller, which seat the human takes, and
-    the match format — and seeds every field from the last session's choices
+    the opponent's deck, the opponent controller, which seat the human takes,
+    the match format, and the human's own chess clock (play.py --human-clock /
+    --hard-timeout) — and seeds every field from the last session's choices
     (persisted to ~/.robomage/gui_launcher.json). On Start it hands a plain options
     dict back to the host (gui_main.SessionManager), which assembles the session
     and shows the board."""
@@ -2040,6 +2152,24 @@ class NewPlaySessionDialog(QDialog):
         self._format.setCurrentIndex(0 if _cfg_get(cfg, "bo3") else 1)
         form.addRow("Match format", self._format)
 
+        # YOUR own chess clock — the mirror of the search opponent's "Match
+        # clock (s)", but it applies whatever the opponent is, so it lives here
+        # in Game setup rather than in the search-only group.
+        self._human_clock = self._float_field(
+            _cfg_get(cfg, "human_clock"),
+            "Your whole-match thinking bank in seconds, debited by the time "
+            "you spend on each of your own decisions (chess clock; 1500 = 25 "
+            "min for a bo3). '(default)' = untimed.")
+        self._hard_timeout = QCheckBox("Hard timeout — running out loses the match")
+        self._hard_timeout.setChecked(bool(_cfg_get(cfg, "hard_timeout")))
+        self._hard_timeout.setToolTip(
+            "A seat that reaches its own decision with an empty bank concedes "
+            "the match (CR 104.3a). Applies to your clock above AND to a "
+            "search opponent's match clock, which is otherwise SOFT (an empty "
+            "bank just makes it think faster).")
+        form.addRow("Your clock (s)", self._human_clock)
+        form.addRow(self._hard_timeout)
+
         box = QGroupBox("Game setup")
         box.setLayout(form)
 
@@ -2075,7 +2205,9 @@ class NewPlaySessionDialog(QDialog):
         """The az:/mcts:-only search-tuning group (hidden for other opponents).
         Each field's '(default)' sentinel (a spinbox at its minimum) means 'omit
         the knob'; set values are appended to the spec query the same way
-        play.py's --sims/--worlds/--think-time/--search-procs/--match-clock do."""
+        play.py's --sims/--worlds/--think-time/--search-procs/--match-clock do.
+        Search procs is the one exception: unset means AUTO (half the cores,
+        capped at the world count), matching play.py's interactive default."""
         form = QFormLayout()
         form.setSpacing(8)
         self._sims = self._int_field(
@@ -2088,10 +2220,19 @@ class NewPlaySessionDialog(QDialog):
             "sims as fit in this budget (overrides the sims terminator).")
         self._search_procs = self._int_field(
             _cfg_get(cfg, "search_procs"), "Engine processes to fan the worlds across "
-            "(world-parallel search; default 1).")
+            "(world-parallel search). '(default)' means AUTO: half the visible "
+            "cores, capped at the world count. Set a value to override.")
         self._match_clock = self._float_field(
             _cfg_get(cfg, "match_clock"), "Whole-match thinking bank in seconds (chess "
-            "clock; 1500 = 25 min for a bo3). Each decision draws a variable budget.")
+            "clock; 1500 = 25 min for a bo3). Each decision draws a variable budget. "
+            "Mutually exclusive with a Simulations cap — a clocked search is paced "
+            "by the clock alone.")
+        # Match clock and a fixed sims budget are mutually exclusive: setting one
+        # parks the other on its "(default)" sentinel and disables it. On load a
+        # persisted clock wins over a persisted sims value (no silent cap).
+        self._sims.valueChanged.connect(self._sync_clock_sims_exclusivity)
+        self._match_clock.valueChanged.connect(self._sync_clock_sims_exclusivity)
+        self._sync_clock_sims_exclusivity()
         self._paced = QComboBox()
         self._paced.addItem("Default (on with a time/clock budget)", None)
         self._paced.addItem("On — mask response-timing tells", True)
@@ -2139,6 +2280,11 @@ class NewPlaySessionDialog(QDialog):
         self._analysis_worlds = self._int_field(
             _cfg_get(cfg, "analysis_worlds"),
             "Determinized worlds per analysis run (hidden-zone samples).")
+        self._analysis_procs = self._int_field(
+            _cfg_get(cfg, "analysis_procs"),
+            "Detached analysis engines to fan the worlds across "
+            "((default) = half the cores, capped at the world count). "
+            "The merged result is the same either way — just faster.")
         self._analysis_cap = QSpinBox()
         self._analysis_cap.setRange(-1, 1_000_000)
         self._analysis_cap.setSpecialValueText("(default)")
@@ -2152,6 +2298,7 @@ class NewPlaySessionDialog(QDialog):
         form.addRow(self._analysis_enable)
         form.addRow("Evaluator", self._analysis_eval)
         form.addRow("Worlds", self._analysis_worlds)
+        form.addRow("Search procs", self._analysis_procs)
         form.addRow("Sims cap", self._analysis_cap)
         form.addRow(self._analysis_auto)
         box = QGroupBox("Analysis window (MCTS evaluation of your decisions)")
@@ -2200,6 +2347,28 @@ class NewPlaySessionDialog(QDialog):
         """A spinbox's value, or None when it's parked on its '(default)' sentinel."""
         return sb.value() if sb.value() != sb.minimum() else None
 
+    def _sync_clock_sims_exclusivity(self, *_):
+        """Enforce Match clock XOR Simulations: whichever is set disables the
+        other (parked on its "(default)" sentinel). Clock checked first, so a
+        persisted clock beats a persisted sims value at dialog load."""
+        if getattr(self, "_excl_guard", False):
+            return
+        self._excl_guard = True
+        try:
+            if self._spin_value(self._match_clock) is not None:
+                self._sims.setValue(self._sims.minimum())
+                self._sims.setEnabled(False)
+                self._match_clock.setEnabled(True)
+            elif self._spin_value(self._sims) is not None:
+                self._match_clock.setValue(self._match_clock.minimum())
+                self._match_clock.setEnabled(False)
+                self._sims.setEnabled(True)
+            else:
+                self._sims.setEnabled(True)
+                self._match_clock.setEnabled(True)
+        finally:
+            self._excl_guard = False
+
     def _update_search_visibility(self, *_):
         self._search_box.setVisible(self._is_search_spec(self._opponent_spec()))
         self.adjustSize()
@@ -2240,6 +2409,13 @@ class NewPlaySessionDialog(QDialog):
         worlds = self._spin_value(self._worlds)
         time_val = self._spin_value(self._think_time)
         procs = self._spin_value(self._search_procs)
+        if procs is None:
+            # Unset means AUTO for interactive play (not the spec grammar's
+            # procs=1): fan the worlds across half the cores, capped at the
+            # world count in effect. Mirrors play.py's --search-procs default.
+            from opponents import default_search_procs, DEFAULT_SEARCH_WORLDS
+            procs = default_search_procs(
+                worlds if worlds is not None else DEFAULT_SEARCH_WORLDS)
         clock = self._spin_value(self._match_clock)
         pairs = [("sims", sims), ("worlds", worlds), ("time", time_val),
                  ("procs", procs), ("clock", clock)]
@@ -2294,21 +2470,27 @@ class NewPlaySessionDialog(QDialog):
             cap = self._analysis_cap.value()
             analysis = dict(evaluator=evaluator,
                             worlds=self._spin_value(self._analysis_worlds),
+                            procs=self._spin_value(self._analysis_procs),
                             max_sims=None if cap < 0 else cap,
                             auto=self._analysis_auto.isChecked())
 
         player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
         bo3 = bool(self._format.currentData())
         record = self._record.isChecked() and self._is_search_spec(opponent)
+        human_clock = self._spin_value(self._human_clock)
+        hard_timeout = self._hard_timeout.isChecked()
         self._options = dict(binary=self._binary, model_path=model_path,
                              human_player=player, human_deck=human_deck,
                              model_deck=model_deck, bo3=bo3, analysis=analysis,
-                             record_shards=record)
+                             record_shards=record,
+                             human_clock_s=human_clock,
+                             hard_timeout=hard_timeout)
         # Persist the BASE opponent + individual knobs (not the composed spec) so
         # the fields autofill cleanly next session without double-appending.
         _save_launcher_config(dict(
             human_deck=human_deck, model_deck=model_deck, opponent=opponent,
             player=player or "", bo3=bo3,
+            human_clock=human_clock, hard_timeout=hard_timeout,
             sims=self._spin_value(self._sims), worlds=self._spin_value(self._worlds),
             think_time=self._spin_value(self._think_time),
             search_procs=self._spin_value(self._search_procs),
@@ -2318,6 +2500,7 @@ class NewPlaySessionDialog(QDialog):
             analysis_enabled=self._analysis_enable.isChecked(),
             analysis_evaluator=self._combo_spec(self._analysis_eval),
             analysis_worlds=self._spin_value(self._analysis_worlds),
+            analysis_procs=self._spin_value(self._analysis_procs),
             analysis_cap=None if self._analysis_cap.value() < 0
             else self._analysis_cap.value(),
             analysis_auto=self._analysis_auto.isChecked()))
@@ -2378,7 +2561,8 @@ def _analysis_cfg_from(opts):
 
     if os.environ.get("ROBOMAGE_ANALYSIS_SMOKE"):
         return AnalysisConfig(evaluator_spec="uniform", worlds=2,
-                              chunk_sims=8, max_sims=32, auto_analyze=True)
+                              chunk_sims=8, max_sims=32, auto_analyze=True,
+                              procs=1)   # one engine: keep the smoke cheap
     if opts is None:
         return None
     cfg = AnalysisConfig()
@@ -2386,6 +2570,9 @@ def _analysis_cfg_from(opts):
         cfg.evaluator_spec = opts["evaluator"]
     if opts.get("worlds"):
         cfg.worlds = int(opts["worlds"])
+    if opts.get("procs") is not None:
+        # 0/unset stays AnalysisConfig's auto sentinel (default_search_procs).
+        cfg.procs = int(opts["procs"])
     if opts.get("max_sims") is not None:
         cfg.max_sims = int(opts["max_sims"])
     cfg.auto_analyze = bool(opts.get("auto", True))

@@ -184,7 +184,14 @@ def _init_net(from_ppo: Optional[str], fresh: bool):
     """Return (net, prior_steps, provenance-string) for the ONE generalist AZ net.
 
     Every slot/cycle trains THE gen net, so init resolves the gen checkpoints, not
-    a per-deck file."""
+    a per-deck file.
+
+    Deliberately NOT the shared ladder ``opponents.load_az_evaluator``: this is
+    the TRAINING contract, with different policy at every rung — it continues the
+    CANDIDATE line (``prefer="snapshot"``), honours an explicit ``--fresh`` gate,
+    has a random-init rung, reports resumed STEP COUNTS and a provenance string,
+    and returns a bare net rather than an AZEvaluator. Keep the two in sync in
+    SPIRIT (AZ checkpoint -> PPO warm-start -> …), not in code."""
     from az_net import (AZNet, load_az, from_ppo as warm_from_ppo,
                         resolve_az_checkpoint)
     from opponents import resolve_checkpoint
