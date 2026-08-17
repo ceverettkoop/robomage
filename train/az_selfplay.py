@@ -1954,6 +1954,22 @@ def _resolve_use_actor(args) -> Optional[bool]:
     return None
 
 
+def resolve_seed(args, label="az-selfplay") -> int:
+    """--seed N -> N. No --seed -> a randomly drawn base seed, PRINTED so the
+    run stays reproducible after the fact (and persisted by the drivers'
+    resume sidecars). Under --resume the sidecar's recorded seed wins anyway,
+    so no draw happens (and no misleading print)."""
+    if getattr(args, "seed", None) is not None:
+        return int(args.seed)
+    if getattr(args, "resume", False):
+        return 1  # discarded: the resume sidecar restores its recorded seed
+    import random
+    seed = random.SystemRandom().randrange(1, 2**31)
+    print(f"[{label}] --seed not given: randomly drawn base seed = {seed}",
+          flush=True)
+    return seed
+
+
 def resolve_eval_server(args) -> Optional[bool]:
     """--eval-server -> True (forced), --no-eval-server -> False, neither ->
     None (AUTO: use a cuda central server iff it starts). Shared with
@@ -1973,12 +1989,12 @@ def run(args) -> None:
         generate_expert(args.deck, games=args.games,
                         mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
                         bo3=True, out_dir=args.out,
-                        seed=args.seed if args.seed is not None else 1,
+                        seed=resolve_seed(args),
                         opponent=getattr(args, "expert_opponent", None))
         return
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, checkpoint=args.checkpoint,
-             temp_moves=args.temp_moves, seed=args.seed if args.seed is not None else 1,
+             temp_moves=args.temp_moves, seed=resolve_seed(args),
              out_dir=args.out, use_actor=_resolve_use_actor(args),
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),

@@ -980,7 +980,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); else a "
                  "uniform league-roster draw"),
         Arg("--out", "str", default=None, help="Output dir (default az_data/gen)"),
-        Arg("--seed", "int", default=1, help="Base RNG seed"),
+        Arg("--seed", "int", default=None,
+            help="Base RNG seed (default: randomly drawn at launch and "
+                 "printed, so the run stays reproducible after the fact)"),
         Arg("--expert", "flag",
             help="Write EXPERT demonstration shards instead of self-play: "
                  "scripted:hard pilots both seats and pi is a one-hot on the "
@@ -1150,7 +1152,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
                  "wins. Default: hard both seats, both recorded"),
-        Arg("--seed", "int", default=1),
+        Arg("--seed", "int", default=None,
+            help="Base RNG seed (default: randomly drawn at launch and printed)"),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per self-play game "
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); "
@@ -1300,8 +1303,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "combo deck's demonstrations come from games it actually "
                  "wins. Persisted in the resume sidecar. Default: hard both "
                  "seats, both recorded"),
-        Arg("--seed", "int", default=1,
-            help="Base RNG seed (slot i uses seed+i)"),
+        Arg("--seed", "int", default=None,
+            help="Base RNG seed (slot i uses seed+i; default: randomly drawn "
+                 "at launch and printed — a --resume run restores the "
+                 "sidecar's recorded seed instead)"),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per self-play game "
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); "
