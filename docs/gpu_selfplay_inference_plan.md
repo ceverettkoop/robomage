@@ -1,7 +1,9 @@
 # Plan: cross-world leaf batching + GPU self-play inference (AMD RX 6700)
 
 Status: Stage 0 is IMPLEMENTED (actor `--cross-world`; gates in
-`test_mcts_parity.py`); Stages A and C are DESIGN. Scope is the **self-play
+`test_mcts_parity.py`); the sanity check is PASSED — verdict **GO** (2026-08-17,
+measured results in the sanity section below, working torch pair pinned in the
+Install bullet); Stages A and C are DESIGN. Scope is the **self-play
 generation** side of AZ training only — `az_train` SGD is fast enough on CPU
 and is deliberately out of scope.
 
@@ -13,7 +15,7 @@ growth) buys nothing C doesn't. The remaining ladder:
 
 ```
 Stage 0  cross-world batching       (CPU, no quality cost, K = worlds)  [BUILT]
-Sanity   time the net on the 6700   (10 minutes; gates all GPU work)
+Sanity   time the net on the 6700   (10 minutes; gates all GPU work)   [PASSED — GO]
 Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)
 Stage C  central inference server   (K = fleet-wide, the KataGo shape)
 ```
@@ -37,9 +39,25 @@ Python-side code needs no AMD-specific branches. Constraints to plan around:
 - **No matrix cores** (WMMA is RDNA3+): plain shader FP32/FP16 throughput.
   Irrelevant at our scale — the fleet needs only ~3–6k leaf evals/s and even
   a few effective TFLOPS is orders of magnitude past that at batch 128–256.
-- **Install**: `pip install torch --index-url
-  https://download.pytorch.org/whl/rocm6.2` (libtorch ships inside the same
-  wheel — Stage A links against it).
+- **Install — the pinned working pair (verified 2026-08-17)**:
+  `train/.venv/bin/pip install torch==2.10.0+rocm7.0 --index-url
+  https://download.pytorch.org/whl/rocm7.0` (libtorch ships inside the same
+  wheel — Stage A links against it). Why this exact pair and not the ROCm 6.x
+  this bullet originally named: the venv is Python 3.14, and the rocm6.x
+  indexes top out at torch 2.9.1 for cp314 — whose `torch.jit.script` is
+  broken on 3.14 (`__annotations__` → `__annotate_func__`), so it can run but
+  not CREATE `.ts.pt` exports, which az training writes per candidate.
+  2.10.0+rocm7.0 passes the full sanity check on the 6700 (HIP 7.0 + the gfx
+  override, timings equivalent to 2.9.1+rocm6.4) and matches the torch
+  version the venv ran before the CUDA→ROCm swap.
+- **Swapping the venv's torch invalidates the actor binaries.**
+  `bin/{debug,release}/az_actor` link libtorch out of the venv by rpath but
+  are compiled against its headers; a version swap under existing binaries
+  crashes at runtime (observed: c10 `set_stride` abort from 2.9.1-era inlined
+  header code calling 2.10 libs). After ANY venv torch change: `make actor`,
+  `make actor BUILD=RELEASE`, then `train/.venv/bin/python train/ci_check.py
+  --tier actor` (full tier green on 2.10.0+rocm7.0, 2026-08-17: obs bit-exact,
+  MCTS visit parity exact incl. the cross-world gates, shard + trainer legs).
 
 ## Sanity check — run BEFORE any GPU engineering
 
@@ -72,6 +90,29 @@ ROCm wheel installed and `HSA_OVERRIDE_GFX_VERSION=10.3.0` exported:
    that's the launch-latency economics the whole plan is built around, not a
    failure. If the override crashes or numbers look broken, stop: stay on
    the CPU path (Stage 0 alone) until the ROCm situation changes.
+
+### Measured 2026-08-17 — PASSED, verdict GO
+
+torch `2.10.0+rocm7.0`, `HSA_OVERRIDE_GFX_VERSION=10.3.0`,
+`HIP_VISIBLE_DEVICES=0` (device 0 is the 6700; device 1 is the Raphael iGPU —
+pin it out), net `gen__azfinal.ts.pt` (OBS_SIZE 7161, MAX_ACTIONS 64),
+100 timed forwards after 10 warmups, no crashes:
+
+| k   | CPU ms/fwd | GPU ms/fwd | GPU rows/s | GPU/CPU |
+|-----|-----------|-----------|------------|---------|
+| 1   | 1.88      | 3.34      | 299        | 0.56x   |
+| 8   | 3.50      | 3.71      | 2 154      | 0.94x   |
+| 64  | 17.8      | 4.50      | 14 223     | 3.95x   |
+| 256 | 66.0      | 8.18      | 31 312     | 8.07x   |
+
+GPU@256 beats CPU-per-row (k=1) by **59x**; k=1 loses exactly as predicted,
+crossover sits near k≈8–16. CPU saturates ~3.9–4.1k rows/s regardless of
+batch; GPU@256 delivers ~31k rows/s — several times the fleet's ~3–6k leaf
+evals/s need. Implication for the ladder: at Stage 0/A's per-process
+K = worlds (default 4) the GPU does NOT pay (below crossover); the win is
+Stage C's fleet-wide K. (2.9.1+rocm6.4 measured equivalent — 8.54 ms @
+k=256 — so the ROCm major version is not the bottleneck; 2.10/rocm7.0 is
+pinned for the py3.14 `jit.script` fix.)
 
 ## Why not the existing `--batch K` (virtual loss)?
 
