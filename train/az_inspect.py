@@ -766,6 +766,35 @@ def state_value(net, obs_row, mask_row):
     return float(v[0])
 
 
+def value_latents(net, obs, batch=256):
+    """Batched value-body latents (the vector every critic column reads out)."""
+    import torch
+    out = []
+    net.eval()
+    with torch.no_grad():
+        for s in range(0, obs.shape[0], batch):
+            ob = torch.as_tensor(np.ascontiguousarray(obs[s:s + batch]))
+            out.append(net.value_body(net.trunk(ob)).cpu().numpy())
+    return np.concatenate(out)
+
+
+def _readout_decomposition(net, base_lat, pert_lat, sel):
+    """Split a perturbation's value-side effect into latent movement and what
+    the read-outs pass: per row, (||dlatent||, |dz| through the BASE state's
+    selected column, mean |dz| across live columns). Pre-tanh, so saturation
+    can't hide a shift. sel << all means the state's own matchup read-out
+    discards what the perturbed block moved."""
+    w = net.value_head.weight.detach().cpu().numpy()
+    live = ~net.dead_value_buckets()
+    if not live.any():
+        live = np.ones(w.shape[0], dtype=bool)
+    dlat = pert_lat - base_lat
+    dz = dlat @ w.T
+    return (np.linalg.norm(dlat, axis=1),
+            np.abs(dz[np.arange(len(sel)), sel]),
+            np.abs(dz[:, live]).mean(axis=1))
+
+
 def resolve_block(name, blocks=None):
     """Resolve a block spec (exact or unique substring, case-insensitive)
     to its ``(name, start, end)`` row in the obs-block table."""
@@ -830,10 +859,13 @@ def block_importance(net, sample, n_rows=150, donors=3, seed=0, blocks=None,
     n = min(int(n_rows), pool.size)
     rows = np.sort(rng.choice(pool, size=n, replace=False))
     base_v, base_p = predict(net, obs[rows], mask[rows])
+    base_lat = value_latents(net, obs[rows])
+    sel = np.array([net.obs_value_bucket(o) for o in obs[rows]])
     out = []
     for name, s, t in blocks:
         acc_v = np.zeros(n)
         acc_p = np.zeros(n)
+        acc_ro = np.zeros((3, n))
         for _ in range(int(donors)):
             donor = rng.choice(pool, size=n)
             pert = obs[rows].copy()
@@ -841,9 +873,14 @@ def block_importance(net, sample, n_rows=150, donors=3, seed=0, blocks=None,
             v, p = predict(net, pert, mask[rows])
             acc_v += np.abs(v - base_v)
             acc_p += policy_shift(base_p, p, mask[rows])
+            acc_ro += _readout_decomposition(
+                net, base_lat, value_latents(net, pert), sel)
         out.append({"name": name, "start": s, "width": t - s,
                     "delta": float((acc_v / donors).mean()),
-                    "dpi": float((acc_p / donors).mean())})
+                    "dpi": float((acc_p / donors).mean()),
+                    "dlat": float((acc_ro[0] / donors).mean()),
+                    "dz_sel": float((acc_ro[1] / donors).mean()),
+                    "dz_all": float((acc_ro[2] / donors).mean())})
     out.sort(key=lambda r: -r["delta"])
     return {"rows": out, "n": n, "donors": int(donors),
             "only_active": only_active, "active_n": active_n,
@@ -858,6 +895,8 @@ def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
     obs, mask = sample["obs"], sample["mask"]
     base_v, base_p = predict(net, obs[row][None], mask[row][None])
     base = float(base_v[0])
+    base_lat = np.repeat(value_latents(net, obs[row][None]), donors, axis=0)
+    sel = np.full(donors, net.obs_value_bucket(obs[row]))
     batch = np.repeat(obs[row][None], donors, axis=0)
     mk = np.repeat(mask[row][None], donors, axis=0)
     out = []
@@ -866,10 +905,15 @@ def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
         pert = batch.copy()
         pert[:, s:t] = obs[donor][:, s:t]
         v, p = predict(net, pert, mk)
+        dlat, dz_sel, dz_all = _readout_decomposition(
+            net, base_lat, value_latents(net, pert), sel)
         out.append({"name": name, "start": s, "width": t - s,
                     "delta": float(np.abs(v - base).mean()),
                     "dpi": float(policy_shift(
                         np.repeat(base_p, donors, axis=0), p, mk).mean()),
+                    "dlat": float(dlat.mean()),
+                    "dz_sel": float(dz_sel.mean()),
+                    "dz_all": float(dz_all.mean()),
                     "signed": float((v - base).mean())})
     out.sort(key=lambda r: -r["delta"])
     return {"rows": out, "base": base, "donors": int(donors)}
@@ -2124,17 +2168,25 @@ def render_block_importance(imp, top_n=20, single=False, sort="v"):
         lines.insert(1, f"  states and donors restricted to the "
                         f"{imp['active_n']} sampled states where "
                         f"{imp['only_active']!r} is non-empty")
+    lines.append("  Δh = value-latent movement; |Δz| = pre-tanh shift through "
+                 "the state's own matchup")
+    lines.append("  read-out (sel) vs the live-column mean (all) — sel ≪ all "
+                 "means this matchup's read-out")
+    lines.append("  discards what the block moved; Δh ≈ 0 with big |ΔV| is "
+                 "pure read-out re-routing.")
     rows = imp["rows"]
     if sort == "pi":
         rows = sorted(rows, key=lambda r: -r["dpi"])
     top = rows[0]["dpi" if sort == "pi" else "delta"] or 1.0
     lines.append(f"  {'block':<24} {'width':>6} {'mean |ΔV|':>10} {'Δπ':>7}"
+                 f" {'Δh':>7} {'|Δz|sel':>8} {'|Δz|all':>8}"
                  + ("  signed" if single else ""))
     for r in rows[:top_n]:
         sign = f"  {r['signed']:+.3f}" if single else ""
         bar = _bar((r["dpi"] if sort == "pi" else r["delta"]) / top)
         lines.append(f"  {r['name']:<24} {r['width']:6d} {r['delta']:10.4f}"
-                     f" {r['dpi']:7.4f}{sign}  {bar}")
+                     f" {r['dpi']:7.4f} {r['dlat']:7.3f} {r['dz_sel']:8.3f}"
+                     f" {r['dz_all']:8.3f}{sign}  {bar}")
     return lines
 
 

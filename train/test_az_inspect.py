@@ -268,6 +268,13 @@ def test_probes(net, sample):
     avg = azi.block_importance(net, sample, n_rows=6, donors=2, seed=0)
     check(len(avg["rows"]) == len(blocks) and avg["n"] == 6,
           "averaged attribution covers every block over the requested states")
+    check(all(r["dlat"] >= 0 and r["dz_sel"] >= 0 and r["dz_all"] >= 0
+              for r in avg["rows"]),
+          "read-out decomposition columns are magnitudes")
+    bidx = next(r for r in avg["rows"] if r["name"] == "matchup bucket idx")
+    check(bidx["dlat"] < 1e-6 and bidx["dz_sel"] < 1e-6,
+          "bucket-idx perturbation moves no latent (index is stripped from "
+          "the trunk) — its |dV| is pure read-out re-routing")
 
     ro = azi.value_readouts(net, sample["obs"][0])
     check(len(ro["rows"]) == net._n_buckets,
