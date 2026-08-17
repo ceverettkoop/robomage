@@ -53,6 +53,13 @@ struct Ability{
     Entity source = 0;
     Entity target = 0;
     std::vector<Entity> targets;    // used when target_max > 1
+    // CR 400.7 / 608.2b object-identity snapshot, parallel to target/targets: the
+    // Zone::obj_gen of each chosen target AT SELECTION time. Re-checked at resolution so a
+    // target that changed zones (and is thus a new object) is treated as illegal, even when the
+    // same entity id reoccupies its old zone (Tamiyo/Ajani exile-and-return-transformed). 0 means
+    // "not snapshotted" (auto-targeted / copied-target paths keep their prior behavior).
+    uint64_t target_gen = 0;
+    std::vector<uint64_t> target_gens;
     Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
@@ -853,6 +860,11 @@ struct Ability{
     // legal targets (build_valid_targets) and to re-verify chosen targets at
     // resolution (is_target_valid).
     bool is_legal_target(Entity cand, Zone::Ownership caster) const;
+    // CR 400.7 object-identity re-verification: true if `cand` is still the same object that was
+    // targeted, i.e. its current Zone::obj_gen matches `recorded_gen` snapshotted at selection.
+    // A recorded 0 (never snapshotted — auto-targeted/copied path) or a target with no Zone
+    // (a player) passes. Paired with is_legal_target at every resolution-time target check.
+    bool target_gen_current(Entity cand, uint64_t recorded_gen) const;
 private:
     // Per-effect resolution now lives in src/effects/effect_*.cpp, dispatched by
     // effects::handler_for(). resolve() keeps only target validity + condition

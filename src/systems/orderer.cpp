@@ -261,6 +261,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (on_bottom) target_zone.distance_from_top = back + 1;
     target_zone.location = destination;
 
+    // CR 400.7: entering a zone makes this a NEW object. Stamp a globally-unique generation so a
+    // spell/ability that targeted the OLD object can detect at resolution that the object it chose
+    // no longer exists (Tamiyo/Ajani exile-and-return-transformed, any same-resolution flicker),
+    // even when the same entity id re-enters its former zone as a same-type object. See Zone::obj_gen.
+    target_zone.obj_gen = cur_game.next_obj_gen++;
+
     // CR 400.7: a card returning to the battlefield is a NEW object. Its previous battlefield
     // components are normally gone already — stripped by the state-based pass while it was away —
     // but a card that leaves AND returns within a single resolution (same-resolution flicker,
@@ -576,7 +582,14 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE,
     // closes the library gap, and updates the known-top-of-library cache.
     add_to_zone(false, top, Zone::HAND);
-    pl.cards_drawn_this_turn.push_back(top);
+    // Count this card as "drawn this turn" only for a real in-game draw. The opening hand /
+    // mulligan draws (draw_hands, fire_draw_event=false) happen during setup, not during a turn
+    // (CR 103.5 / 702.94a), so they must not seed cards_drawn_this_turn — otherwise on turn 1 the
+    // first real draw reports an inflated ordinal and a Mode$ Drawn | Number$ N trigger (Tamiyo,
+    // Inquisitive Student's "your third card in a turn") never matches, and Sylvan Library would
+    // treat the opening hand as cards drawn this turn. This mirrors the fire_draw_event gate the
+    // miracle/event logic below already uses.
+    if (fire_draw_event) pl.cards_drawn_this_turn.push_back(top);
 
     // Miracle (CR 702.94): if this is the FIRST card its controller has drawn this turn and it
     // carries the Miracle keyword, its owner may reveal it and cast it for its miracle

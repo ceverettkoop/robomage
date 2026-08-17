@@ -1145,6 +1145,32 @@ static int select_single_target(Ability &ability, const std::vector<Entity> &val
     return choice;
 }
 
+// Snapshot each chosen target's Zone::obj_gen once selection completes (CR 400.7 object
+// identity). is_target_valid re-checks these at resolution so a target that changed zones
+// between selection and resolution — a new object — is treated as illegal even if a same-id
+// incarnation looks legal (Tamiyo/Ajani exile-and-return-transformed). A non-Zone target (a
+// player) stamps 0, which the check treats as "skip".
+//
+// An object that entered its zone through Orderer::add_to_zone already carries a nonzero
+// obj_gen; but one placed directly (a preset battlefield in a test scenario, a token created in
+// play, any bootstrap path that AddComponents Zone without a move) still reads 0. Lazily assign
+// it a fresh unique generation HERE, at first targeting, so it has a stable nonzero baseline —
+// otherwise a preset/token target would keep target_gen 0 and the object-identity check would be
+// silently skipped for it (letting the very exile-and-return-transform case slip through). The
+// object's obj_gen then changes on any later add_to_zone, tripping the fizzle exactly as for a
+// normally-cast permanent.
+static void stamp_target_gens(Ability &ability) {
+    auto gen_of = [](Entity e) -> uint64_t {
+        if (e == 0 || !global_coordinator.entity_has_component<Zone>(e)) return 0;
+        auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.obj_gen == 0) z.obj_gen = cur_game.next_obj_gen++;
+        return z.obj_gen;
+    };
+    ability.target_gens.clear();
+    for (Entity t : ability.targets) ability.target_gens.push_back(gen_of(t));
+    ability.target_gen = gen_of(ability.target);
+}
+
 TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker &asker,
                                std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
     if (!rt.active) {
@@ -1187,6 +1213,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
         std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
         if (select_single_target(ability, valid_targets, false, asker) < 0)
             return TargetStatus::SUSPENDED;
+        stamp_target_gens(ability);
         rt = TargetSelectRT{};
         return TargetStatus::DONE;
     }
@@ -1216,6 +1243,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
     }
     // Set primary target to first chosen (for backward compat)
     if (!ability.targets.empty()) ability.target = ability.targets[0];
+    stamp_target_gens(ability);
     rt = TargetSelectRT{};
     return TargetStatus::DONE;
 }

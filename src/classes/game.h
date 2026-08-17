@@ -180,6 +180,12 @@ struct Game {
         int prev_turn_active_spell_count = 0;
         size_t seed;
         size_t timestamp = 0;
+        // Monotonic source for Zone::obj_gen (CR 400.7 object identity). Handed out and
+        // post-incremented on every Orderer::add_to_zone, so each zone entry gets a
+        // globally-unique stamp that no recycled entity id can collide with. Starts at 1 so
+        // 0 stays reserved for "never stamped". Purely internal (not serialized into the ML
+        // observation); deterministic because the add_to_zone call sequence is deterministic.
+        uint64_t next_obj_gen = 1;
         size_t turn = 0;
         Step cur_step = UNTAP;
         Entity player_a_entity;
