@@ -24,6 +24,12 @@ Then a K=16 batched-leaf sanity check reruns the C++ side with --batch 16 (same
 seeds) and REPORTS (does not assert) the argmax-agreement fraction against the
 batch=1 visits — expected high but not 100% (virtual loss perturbs collection).
 
+Cross-world batching (--cross-world; Stage 0 of
+docs/gpu_selfplay_inference_plan.md) gets two legs: EXACT visit gates under
+--uniform (bo1 + bo3-sb-persist — with no net, the scheduler must reproduce the
+sequential visits bit-for-bit), and a real-net argmax-agreement REPORT (only the
+batched forward's last-ulp logits can differ).
+
 Run: train/.venv/bin/python train/test_mcts_parity.py
 """
 
@@ -232,12 +238,15 @@ def _read_visits_dump(path):
 
 
 def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
-               merge_dupes=True):
+               merge_dupes=True, cross_world=False, uniform=False):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
-           "--model", ts_path, "--dump-visits", dump_path, "--games", "1",
+           "--dump-visits", dump_path, "--games", "1",
            "--merge-dupes", str(int(merge_dupes))]
+    cmd += ["--uniform"] if uniform else ["--model", ts_path]
+    if cross_world:
+        cmd.append("--cross-world")
     if bo3:
         cmd.append("--bo3")
     if sb is not None:
@@ -455,6 +464,60 @@ def main():
             f"(batch=1 {len(actor1)} roots, batch=16 {len(actor16)} roots)")
         print(f"REPORT: batch=16 vs batch=1 argmax agreement over {prefix} "
               f"comparable roots = {agree}/{prefix} = {frac:.3f}{diverged}")
+
+        # 6) Cross-world batching (Stage 0 of docs/gpu_selfplay_inference_plan.md).
+        # (a) EXACT gates, --uniform: the uniform evaluator returns identical
+        # priors however leaves are grouped, so the cross-world scheduler must
+        # reproduce the sequential (batch=1) visits BIT-EXACT — any difference
+        # is a scheduling bug, isolated from batched-GEMM numerics. bo1 covers
+        # the plain in-game case; the bo3 sb-persist case covers the mode split
+        # (sideboard roots keep the sequential rollout path while in-game roots
+        # run cross) plus boundary persistence under the cross scheduler.
+        for tag, kw in (("xw-uniform-bo1", {}),
+                        ("xw-uniform-bo3-sb-persist",
+                         dict(bo3=True, sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH,
+                                            SB_ROLLOUT_TURNS), sb_persist=True))):
+            d_seq = os.path.join(td, f"visits_{tag}_seq.bin")
+            d_xw = os.path.join(td, f"visits_{tag}_xw.bin")
+            a_seq = _run_actor(None, d_seq, batch=1, uniform=True, **kw)
+            a_xw = _run_actor(None, d_xw, batch=1, uniform=True,
+                              cross_world=True, **kw)
+            if a_seq is None or a_xw is None:
+                return 1
+            rc, total_sims = _compare_visits(tag, a_seq, a_xw)
+            if rc:
+                print(f"FAIL [{tag}]: cross-world scheduler diverged from the "
+                      f"sequential search under a uniform evaluator (the "
+                      f"'actor'/'python' rows above are sequential/cross-world)",
+                      file=sys.stderr)
+                return rc
+            print(f"PASS [{tag}]: cross-world visits bit-exact vs sequential "
+                  f"over {len(a_seq)} searched roots ({total_sims} total root "
+                  f"visits, uniform evaluator)")
+
+        # (b) REPORT, real net: cross-world vs batch=1 differ only by the
+        # batched forward's last-ulp logits, so argmax agreement over the
+        # aligned prefix should be ~1.0 (same shape as the batch=16 report;
+        # not asserted — ulp flips on near-ties are legitimate).
+        dumpxw = os.path.join(td, "visits_xw.bin")
+        actorxw = _run_actor(ts_path, dumpxw, batch=1, cross_world=True)
+        if actorxw is None:
+            print("WARN: --cross-world run failed; skipping agreement report",
+                  file=sys.stderr)
+            return 1
+        prefix = 0
+        for (r1, nc1, _), (rx, ncx, _) in zip(actor1, actorxw):
+            if r1 != rx or nc1 != ncx:
+                break
+            prefix += 1
+        agree = sum(1 for i in range(prefix)
+                    if int(np.argmax(actor1[i][2])) == int(np.argmax(actorxw[i][2])))
+        frac = agree / prefix if prefix else 1.0
+        diverged = "" if prefix == len(actor1) else (
+            f"; games diverge after root {prefix} "
+            f"(batch=1 {len(actor1)} roots, cross-world {len(actorxw)} roots)")
+        print(f"REPORT: cross-world vs batch=1 (net) argmax agreement over "
+              f"{prefix} comparable roots = {agree}/{prefix} = {frac:.3f}{diverged}")
     return 0
 
 

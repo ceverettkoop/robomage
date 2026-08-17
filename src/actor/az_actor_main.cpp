@@ -52,6 +52,9 @@ struct ActorConfig {
     int worlds = 4;
     double c_puct = 1.5;
     int batch = 1;
+    // Cross-world batched leaf evaluation (see az_mcts.h). Mutually exclusive
+    // with --batch K>1.
+    bool cross_world = false;
     uint32_t world_seeds = 42;  // --world-seeds base (see az_mcts.h seed formula)
     // bo3 sideboard-root budget (mirrors az_selfplay.py). -1 = inherit the in-game
     // sims/worlds/max_depth.
@@ -88,8 +91,9 @@ void print_usage(const char* prog) {
     std::fprintf(stderr,
                  "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
                  "[--bo3] [--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
-                 "       [--search [--sims N] [--worlds N] [--c F] [--batch K] "
-                 "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
+                 "       [--search [--sims N] [--worlds N] [--c F] [--batch K | "
+                 "--cross-world] [--world-seeds BASE] [--dump-visits <file>]] "
+                 "[--resources <dir>]\n"
                  "       [--sb-sims N] [--sb-worlds N] [--sb-max-depth N] "
                  "(bo3 sideboard-root budget; -1=inherit)\n"
                  "       [--rollout-turns N] [--sb-rollout-turns N] "
@@ -155,6 +159,8 @@ int main(int argc, char const* argv[]) {
             cfg.c_puct = std::stod(need_arg(argc, argv, i, "--c"));
         } else if (a == "--batch") {
             cfg.batch = std::stoi(need_arg(argc, argv, i, "--batch"));
+        } else if (a == "--cross-world") {
+            cfg.cross_world = true;
         } else if (a == "--world-seeds") {
             cfg.world_seeds = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--world-seeds")));
@@ -204,6 +210,12 @@ int main(int argc, char const* argv[]) {
     if (!cfg.uniform && cfg.model.empty()) {
         std::fprintf(stderr, "error: one of --model <path.ts.pt> or --uniform is required\n");
         print_usage(argv[0]);
+        return 2;
+    }
+
+    if (cfg.cross_world && cfg.batch > 1) {
+        std::fprintf(stderr, "error: --cross-world and --batch K>1 are mutually "
+                             "exclusive (two different leaf-deferral disciplines)\n");
         return 2;
     }
 
@@ -260,6 +272,7 @@ int main(int argc, char const* argv[]) {
         mc.worlds = cfg.worlds;
         mc.c_puct = cfg.c_puct;
         mc.batch = cfg.batch;
+        mc.cross_world = cfg.cross_world;
         mc.world_seed_base = cfg.world_seeds;
         mc.sb_sims = cfg.sb_sims;              // -1 = inherit in-game sims
         mc.sb_worlds = cfg.sb_worlds;          // -1 = inherit in-game worlds

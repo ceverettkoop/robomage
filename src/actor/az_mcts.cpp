@@ -172,6 +172,16 @@ struct AZMcts::Impl {
     uint32_t cur_world_seed = 0;
     Node* cur_root = nullptr;
 
+    // ── cross-world batching (cfg.cross_world; see az_mcts.h) ──────────────
+    // Latched per search at root setup: cross scheduling applies only when the
+    // budget in force has rollouts OFF (a deferred leaf cannot drive a playout,
+    // same restriction as batch>1). world_seeds/world_pending are indexed by
+    // world; a set pending flag means that world's previous sim deferred a
+    // leaf that has not been flushed yet.
+    bool cross_active = false;
+    std::vector<uint32_t> world_seeds;
+    std::vector<uint8_t> world_pending;
+
     // ── sideboard-boundary persistence (mirrors mcts.py's boundary consumers:
     // sb_root_key / walk_reuse_root / rollout_memo_*) ──────────────────────
     std::vector<Node*> world_roots;    // this search's per-world roots
@@ -482,6 +492,54 @@ struct AZMcts::Impl {
         value_acc += wsum;
     }
 
+    // ── cross-world scheduler (cross_active searches only) ─────────────────
+    // Build ALL world roots up front (begin_world in ascending world order —
+    // the same order the sequential loop draws each world's noise in, so the
+    // rng stream is unchanged; nothing during a sim draws from it), record
+    // each world's determinize seed, then start the first budgeted world's
+    // sim. Returns the first descent action, or -1 when no world has top-up
+    // budget (caller finalizes; inherited worlds are accumulated there).
+    int start_cross_search() {
+        world_seeds.assign(static_cast<size_t>(cur_worlds), 0u);
+        world_pending.assign(static_cast<size_t>(cur_worlds), 0);
+        for (int w = 0; w < cur_worlds; w++) {
+            begin_world(w);
+            world_seeds[static_cast<size_t>(w)] = cur_world_seed;
+        }
+        cur_world = -1;
+        return schedule_next_cross();
+    }
+
+    // Round-robin: the next world after cur_world (wrapping, cur_world itself
+    // included last) with remaining budget runs one sim. Budgets count down at
+    // sim START (a deferred leaf's backup is bookkeeping, not budget). The
+    // flush-before-reentry rule is what makes deferral loss-free: a world with
+    // an in-flight PendingLeaf is flushed before its own next descent selects,
+    // so every tree sees exactly the backups the sequential loop would have
+    // applied. Returns the descent's first action, or -1 when every budget is
+    // spent (caller finalizes; the final flush happens there).
+    int schedule_next_cross() {
+        for (int k = 1; k <= cur_worlds; k++) {
+            int w = (cur_world + k + cur_worlds) % cur_worlds;
+            if (cur_budgets[static_cast<size_t>(w)] <= 0) continue;
+            if (world_pending[static_cast<size_t>(w)]) flush_pending();
+            cur_budgets[static_cast<size_t>(w)] -= 1;
+            cur_world = w;
+            cur_sim = sims_per_world - cur_budgets[static_cast<size_t>(w)] - 1;
+            cur_root = world_roots[static_cast<size_t>(w)];
+            cur_world_seed = world_seeds[static_cast<size_t>(w)];
+            determinize_hidden_state(cur_world_seed);
+#ifndef NDEBUG
+            std::fprintf(stderr, "[sim] root=%d world=%d sim=%d (cross)\n",
+                         this_root, cur_world, cur_sim);
+#endif
+            int a = start_descent();
+            phase = DESCENDING;
+            return a;
+        }
+        return -1;
+    }
+
     void flush_pending() {
         if (pending.empty()) return;
         const int k = static_cast<int>(pending.size());
@@ -505,12 +563,22 @@ struct AZMcts::Impl {
         }
         for (int i = 0; i < k; i++) {
             PendingLeaf& pl = pending[static_cast<size_t>(i)];
-            remove_virtual_loss(pl.path);
+            // Cross-world deferral applies no virtual loss (one leaf per world,
+            // flushed before that world's own next descent), so there is none
+            // to remove.
+            if (cfg.batch > 1) remove_virtual_loss(pl.path);
             bool is_a = pl.obs[SELF_IS_A_IDX] > 0.5f;
+            // The find() guard serves two cases: under batch>1 virtual loss,
+            // two same-world descents can defer the same unexpanded leaf (the
+            // second result only backs up); under cross-world, a DEPTH-CAP
+            // deferral targets an already-existing child (value-only backup,
+            // mirrors the sequential depth-cap eval).
             if (pl.parent->children.find(pl.action) == pl.parent->children.end()) {
                 pl.parent->children[pl.action] =
                     make_node(pl.num_choices, res[static_cast<size_t>(i)].priors, is_a);
                 init_merge(pl.parent->children[pl.action], pl.obs.data());
+                fill_pick_meta(pl.parent->children[pl.action], pl.obs.data(),
+                               pl.num_choices);
 #ifndef NDEBUG
                 capture_menu(pl.obs.data(), pl.num_choices,
                              pl.parent->children[pl.action]->dbg_menu);
@@ -520,6 +588,7 @@ struct AZMcts::Impl {
             backup(pl.path, res[static_cast<size_t>(i)].value, is_a);
         }
         pending.clear();
+        std::fill(world_pending.begin(), world_pending.end(), 0);
     }
 
     // ── sideboard-boundary helpers (mirror mcts.py's shared helpers) ───────
@@ -760,6 +829,16 @@ struct AZMcts::Impl {
         }
         cur_world = 0;
         cur_sim = 0;
+        // Cross-world scheduling only when this search's budget has rollouts
+        // OFF (same restriction as batch>1 — a deferred leaf cannot drive a
+        // playout); a rollout-budget search under --cross-world runs the
+        // unchanged sequential path below, with per-leaf immediate evals.
+        cross_active = cfg.cross_world && cur_rollout_turns == 0;
+        if (cross_active) {
+            int a = start_cross_search();
+            if (a < 0) return finalize();
+            return a;
+        }
         // Sim 0: the snapshot IS the current (clean) root state, so determinize
         // directly — no intervening restore (mcts.py restores before every sim,
         // but restore-immediately-after-snapshot is a no-op). A fully-inherited
@@ -778,16 +857,20 @@ struct AZMcts::Impl {
         auto it = parent->children.find(paction);
         if (it == parent->children.end()) {
             // New leaf. Rollouts force the immediate (batch=1) eval path —
-            // a deferred PendingLeaf cannot drive a playout.
+            // a deferred PendingLeaf cannot drive a playout (cross_active is
+            // never set on a rollout-budget search).
             bool leaf_is_a = o[SELF_IS_A_IDX] > 0.5f;
-            if (cfg.batch > 1 && cur_rollout_turns == 0) {
+            if ((cfg.batch > 1 || cross_active) && cur_rollout_turns == 0) {
                 PendingLeaf pl;
                 pl.obs.assign(o, o + ACTOR_OBS_SIZE);
                 pl.num_choices = nc;
                 pl.path = path;
                 pl.parent = parent;
                 pl.action = paction;
-                apply_virtual_loss(path);
+                if (cross_active)
+                    world_pending[static_cast<size_t>(cur_world)] = 1;
+                else
+                    apply_virtual_loss(path);
                 pending.push_back(std::move(pl));
                 finish_sim();
                 return 0;
@@ -901,6 +984,23 @@ struct AZMcts::Impl {
 #endif
         // Descend into the existing child (node = child). Depth cap: value-only.
         if (static_cast<int>(path.size()) >= cur_max_depth) {
+            // Cross-world defers the depth-cap eval too: the child exists, so
+            // flush's find() guard skips node creation and only backs the
+            // batched value up (obs seat == child->self_is_a by the
+            // world-consistency check above). batch>1 keeps its documented
+            // immediate eval here.
+            if (cross_active) {
+                PendingLeaf pl;
+                pl.obs.assign(o, o + ACTOR_OBS_SIZE);
+                pl.num_choices = nc;
+                pl.path = path;
+                pl.parent = parent;
+                pl.action = paction;
+                world_pending[static_cast<size_t>(cur_world)] = 1;
+                pending.push_back(std::move(pl));
+                finish_sim();
+                return 0;
+            }
             AZEvalResultD r = eval_one(o, nc);
             backup(path, r.value, child->self_is_a);
             finish_sim();
@@ -914,6 +1014,15 @@ struct AZMcts::Impl {
     }
 
     int advance_after_restore() {
+        // Cross-world scheduling: the finished sim's budget was decremented at
+        // its start, so advancing is just picking the next budgeted world
+        // round-robin (finalize when none remains — it runs the final flush
+        // and accumulates every world).
+        if (cross_active) {
+            int a = schedule_next_cross();
+            if (a < 0) return finalize();
+            return a;
+        }
         // We are back at the restored true root. The just-finished sim was
         // (cur_world, cur_sim); advance to the next sim / world / finalize.
         cur_sim += 1;
@@ -941,7 +1050,18 @@ struct AZMcts::Impl {
         // real step (a real game-end with a live snapshot would park in the
         // intercept). mcts.py: env.restore(0); env.release() — the restore already
         // happened via the last sim's cooperative unwind, so only release remains.
-        if (cfg.batch > 1) flush_pending();
+        if (cfg.batch > 1 || cross_active) flush_pending();
+        if (cross_active) {
+            // The sequential loop accumulates each world as its budget runs
+            // out; cross mode defers ALL accumulation to here (after the final
+            // flush), in ascending world order — the same summation order, so
+            // value_acc's float result is unchanged. Zero-budget (fully
+            // inherited) worlds fold in their cumulative visits here too.
+            for (int w = 0; w < cur_worlds; w++) {
+                cur_root = world_roots[static_cast<size_t>(w)];
+                accumulate_world();
+            }
+        }
         snapshot_release_all();
 
         SearchRootResult sr;

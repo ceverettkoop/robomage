@@ -46,7 +46,7 @@ ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 _TOTAL = re.compile(r"^SELFPLAY: total_samples=(\d+) shards=(\d+)$")
 
 
-def _cpp_leg(ts_path, out_dir, args, batch=1):
+def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False):
     # Shared argv builder (az_selfplay.actor_selfplay_cmd) pins the same
     # noise/temperature knobs _python_leg passes to _play_match, so the two legs
     # measure the identical workload by construction.
@@ -54,7 +54,7 @@ def _cpp_leg(ts_path, out_dir, args, batch=1):
         ACTOR_BIN, deck=args.deck, deck_b=getattr(args, "deck_b", None),
         seed=args.seed, games=args.games,
         sims=args.sims, worlds=args.worlds, model=ts_path, out_dir=out_dir,
-        batch=batch)
+        batch=batch, cross_world=cross_world)
     env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     t0 = time.perf_counter()
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
@@ -119,6 +119,9 @@ def main():
     ap.add_argument("--batch", type=int, nargs="+", default=[1],
                     help="actor --batch values to sweep on the C++ leg "
                          "(K>1 = virtual-loss batched leaf evaluation)")
+    ap.add_argument("--cross", action="store_true",
+                    help="add a --cross-world leg (round-robin worlds, one "
+                         "leaf per world per forward, no virtual loss)")
     ap.add_argument("--no-python", action="store_true",
                     help="skip leg B (Python az_selfplay) — batch-sweep only")
     args = ap.parse_args()
@@ -148,6 +151,14 @@ def main():
             if a is None:
                 return 1
             rows.append(_row(f"C++  (az_actor) b={k}", args.games, a[0], a[1]))
+        if args.cross:
+            print("[bench] leg A: C++ bin/az_actor --selfplay (cross-world) ...",
+                  flush=True)
+            a = _cpp_leg(ts_path, os.path.join(td, "cpp_xw"), args,
+                         cross_world=True)
+            if a is None:
+                return 1
+            rows.append(_row("C++  (az_actor) b=xw", args.games, a[0], a[1]))
         rb = None
         if not args.no_python:
             print("[bench] leg B: Python az_selfplay (in-process, 1 worker) ...",

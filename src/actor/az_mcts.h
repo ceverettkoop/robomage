@@ -43,6 +43,18 @@ struct MCTSConfig {
     double c_puct = 1.5;
     int max_depth = 60;
     int batch = 1;                  // 1 = exact mcts.py parity; K>1 = virtual-loss batching
+    // Cross-world batched leaf evaluation (Stage 0 of
+    // docs/gpu_selfplay_inference_plan.md): run the per-world sims round-robin
+    // and defer each freshly expanded (or depth-capped) leaf into a PendingLeaf,
+    // flushed in one batched forward (K <= worlds) before any world's OWN next
+    // descent starts — so NO virtual loss is needed and every per-world tree is
+    // arithmetically identical to the sequential batch=1 search. Only the
+    // batched GEMM's last-ulp logits can differ; under a uniform evaluator the
+    // visit counts are bit-identical (the test_mcts_parity cross-world gate).
+    // Mutually exclusive with batch > 1. Inert (sequential path, unbatched) for
+    // a search whose budget has leaf rollouts on — sb roots by default — since
+    // a deferred leaf cannot drive a playout.
+    bool cross_world = false;
     uint32_t world_seed_base = 42;  // world seed(root r, world w) = base + 100003*r + w
     // Merge interchangeable duplicate menu actions into one search edge
     // (src/actor/menu_merge.h, mirroring mcts.py's run_search merge_dupes

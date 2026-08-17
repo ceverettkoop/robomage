@@ -1456,7 +1456,7 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                        sb_persist=bool(DEFAULT_SB_PERSIST),
                        merge_dupes=True,
-                       td_n=DEFAULT_TD_N, batch=1) -> list:
+                       td_n=DEFAULT_TD_N, batch=1, cross_world=False) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -1475,8 +1475,13 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     ``batch`` (default 1) is the actor's ``--batch K`` batched-leaf-evaluation
     knob: K>1 defers leaf net evals into one TorchScript forward per K leaves
     under virtual loss (bench/experiment use — batch>1 leaves the mcts.py
-    bit-parity envelope). The flag is only appended when != 1, so the default
-    argv stays byte-identical to the pre-batch builder."""
+    bit-parity envelope). ``cross_world`` is the actor's ``--cross-world``
+    knob (mutually exclusive with batch>1): round-robin the worlds and batch
+    one leaf per world per forward with NO virtual loss, so visits stay
+    arithmetically identical to the unbatched search (see
+    docs/gpu_selfplay_inference_plan.md, Stage 0). Both flags are only
+    appended when non-default, so the default argv stays byte-identical to
+    the pre-batch builder."""
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
@@ -1488,6 +1493,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--merge-dupes", str(int(merge_dupes))]
     if batch != 1:
         cmd += ["--batch", str(batch)]
+    if cross_world:
+        cmd += ["--cross-world"]
     if bo3:
         cmd += ["--bo3",
                 "--sb-sims", str(sb_sims),
