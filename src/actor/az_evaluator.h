@@ -50,6 +50,16 @@ public:
     // docs/gpu_selfplay_inference_plan.md).
     void load(const std::string& path, const std::string& device = "cpu");
 
+    // Stage C (docs/gpu_selfplay_inference_plan.md): instead of loading a local
+    // module, connect to a central inference server (train/az_eval_server.py)
+    // over the Unix domain socket at `socket_path`. A layout hello
+    // (OBS_SIZE/MAX_ACTIONS) is verified at connect; every evaluate_* then
+    // ships the [k, OBS] rows + num_choices over the socket and gets RAW
+    // logits/value back, with the double-precision prior math still computed
+    // LOCALLY — AZEvalResultD numerics are identical to a local forward.
+    // Mutually exclusive with load(); fatal (stderr+exit) on any socket error.
+    void connect_server(const std::string& socket_path);
+
     // Forward the net for one decision. `obs` points at ACTOR_OBS_SIZE floats.
     AZEvalResult evaluate(const float* obs, int num_choices);
 

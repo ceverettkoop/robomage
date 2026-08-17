@@ -948,7 +948,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
              slot: int = 0,
              td_n: int = DEFAULT_TD_N,
-             actor_device: str = "cpu") -> dict:
+             actor_device: str = "cpu",
+             eval_server: bool = False) -> dict:
     """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
     ``games`` is a count of MATCHES (bo1: one game each; bo3: up to three games
@@ -1175,7 +1176,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
                                 sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
                                 sb_rollout_turns=sb_rollout_turns,
                                 sb_persist=sb_persist,
-                                actor_device=actor_device, **common)
+                                actor_device=actor_device,
+                                eval_server=eval_server, **common)
     if use_actor:
         # The C++ actor mirrors the Python match loop for bo3 (Stage 6), including
         # the searched sideboard roots — pass bo3 + the sb budget through so the
@@ -1186,6 +1188,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
                                sb_rollout_turns=sb_rollout_turns,
                                sb_persist=sb_persist,
                                actor_device=actor_device,
+                               eval_server=eval_server,
                                **common)
     return _generate_python(deck, bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth,
@@ -1223,7 +1226,8 @@ def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                      sb_persist=bool(DEFAULT_SB_PERSIST),
                      merge_dupes=True,
-                     td_n=DEFAULT_TD_N, actor_device="cpu") -> dict:
+                     td_n=DEFAULT_TD_N, actor_device="cpu",
+                     eval_server=False) -> dict:
     """Split an exhaustive-matrix schedule across BOTH backends: the C++ actor
     plays the pure self-play cells (it is much faster per match), the Python
     multiprocess backend the vs-scripted cells (the actor has no scripted seat).
@@ -1252,7 +1256,8 @@ def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
         print(f"[az-selfplay] hybrid pass 1/2: ACTOR ({len(self_sched)} matches)")
         summaries.append(_generate_actor(
             deck, schedule=self_sched, seed=seed + _HYBRID_ACTOR_SEED_OFFSET,
-            actor_bin=actor_bin, actor_device=actor_device, **kw))
+            actor_bin=actor_bin, actor_device=actor_device,
+            eval_server=eval_server, **kw))
     if scr_sched:
         print(f"[az-selfplay] hybrid pass 2/2: PYTHON ({len(scr_sched)} "
               f"vs-scripted matches)")
@@ -1460,7 +1465,7 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        sb_persist=bool(DEFAULT_SB_PERSIST),
                        merge_dupes=True,
                        td_n=DEFAULT_TD_N, batch=1, cross_world=False,
-                       device="cpu") -> list:
+                       device="cpu", eval_server=None) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -1485,12 +1490,18 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     arithmetically identical to the unbatched search (see
     docs/gpu_selfplay_inference_plan.md, Stage 0). ``device`` is the actor's
     ``--device`` (Stage A): "cpu" (default) or "cuda" — the Radeon under the
-    ROCm torch build. All three are only appended when non-default, so the
-    default argv stays byte-identical to the pre-batch builder."""
+    ROCm torch build. ``eval_server`` (Stage C) is the Unix-socket path of a
+    running ``train/az_eval_server.py``; when set the actor evaluates leaves
+    there instead of loading the model locally (``--eval-server`` replaces
+    ``--model``; ``device`` is inert — the server owns the device). All of
+    these are only appended when non-default, so the default argv stays
+    byte-identical to the pre-batch builder."""
+    model_args = (["--eval-server", eval_server] if eval_server
+                  else ["--model", model])
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
-           "--model", model, "--out-dir", out_dir,
+           *model_args, "--out-dir", out_dir,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
            "--temp-moves", str(temp_moves),
@@ -1500,7 +1511,7 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
         cmd += ["--batch", str(batch)]
     if cross_world:
         cmd += ["--cross-world"]
-    if device != "cpu":
+    if device != "cpu" and not eval_server:
         cmd += ["--device", device]
     if bo3:
         cmd += ["--bo3",
@@ -1524,11 +1535,13 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                     sb_persist=bool(DEFAULT_SB_PERSIST),
                     merge_dupes=True,
-                    td_n=DEFAULT_TD_N, actor_device="cpu") -> dict:
+                    td_n=DEFAULT_TD_N, actor_device="cpu",
+                    eval_server=False) -> dict:
     import glob
     import shlex
     import shutil
     import subprocess
+    import tempfile
     import threading
     from collections import Counter
 
@@ -1536,12 +1549,12 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     # build needs the RDNA2 override in ITS environment — export it here in the
     # launcher (respecting an existing value) instead of relying on the shell.
     # HIP_VISIBLE_DEVICES pins device 0 (the discrete card; device 1 is the CPU's
-    # iGPU, which the gfx override would misconfigure).
-    actor_env = None
-    if actor_device != "cpu":
-        actor_env = dict(os.environ)
-        actor_env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
-        actor_env.setdefault("HIP_VISIBLE_DEVICES", "0")
+    # iGPU, which the gfx override would misconfigure). The Stage C central
+    # server needs the same env (it owns the GPU), so build it for either mode.
+    gpu_env = dict(os.environ)
+    gpu_env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
+    gpu_env.setdefault("HIP_VISIBLE_DEVICES", "0")
+    actor_env = gpu_env if (actor_device != "cpu" and not eval_server) else None
 
     ts_path, tmpdir = _ensure_actor_torchscript(source)
     out_dir = os.path.abspath(out_dir)
@@ -1560,6 +1573,37 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     pre = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
     total_samples = 0
     agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
+
+    # Stage C: one central inference server owns the GPU for the whole fleet;
+    # each actor connects with --eval-server instead of loading the net. The
+    # socket lives in a short mkdtemp dir (AF_UNIX paths cap at ~107 chars, so
+    # out_dir is not a safe home for it). Fresh server per generation pass —
+    # startup is seconds and checkpoint rotation stays trivial.
+    server_proc = None
+    server_sock = None
+    server_dir = None
+    if eval_server:
+        import sys
+        server_dir = tempfile.mkdtemp(prefix="azev-")
+        server_sock = os.path.join(server_dir, "s")
+        server_py = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "az_eval_server.py")
+        server_cmd = [sys.executable, server_py,
+                      "--model", ts_path, "--socket", server_sock,
+                      "--device", actor_device if actor_device != "cpu" else "cuda"]
+        server_proc = subprocess.Popen(server_cmd, env=gpu_env, text=True, bufsize=1,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT)
+        for line in server_proc.stdout:
+            print(f"[az-selfplay] {line.rstrip()}", flush=True)
+            if line.startswith("READY "):
+                break
+        else:
+            raise RuntimeError(
+                f"az_eval_server exited before READY (rc={server_proc.wait()})")
+        # Keep draining its output so the pipe never fills.
+        threading.Thread(target=lambda: [None for _ in server_proc.stdout],
+                         daemon=True).start()
 
     # Live progress: a reader thread per group echoes each actor SELFPLAY: game
     # line as it lands (with a running cross-group total + ETA) while accumulating
@@ -1600,7 +1644,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
             sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
             sb_persist=sb_persist, merge_dupes=merge_dupes, td_n=td_n,
-            device=actor_device)
+            device=actor_device, eval_server=server_sock)
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1, env=actor_env,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1682,6 +1726,14 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                 rec["p"].terminate()
         if tmpdir:
             shutil.rmtree(tmpdir, ignore_errors=True)
+        if server_proc is not None:
+            server_proc.terminate()
+            try:
+                server_proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                server_proc.kill()
+        if server_dir:
+            shutil.rmtree(server_dir, ignore_errors=True)
 
     post = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
     all_shards = sorted(post - pre)
@@ -1901,7 +1953,8 @@ def run(args) -> None:
              sb_persist=bool(getattr(args, "sb_persist", DEFAULT_SB_PERSIST)),
              merge_dupes=bool(getattr(args, "merge_dupes", 1)),
              td_n=int(getattr(args, "td_n", DEFAULT_TD_N)),
-             actor_device=getattr(args, "actor_device", "cpu"))
+             actor_device=getattr(args, "actor_device", "cpu"),
+             eval_server=bool(getattr(args, "eval_server", False)))
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:

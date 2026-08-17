@@ -17,7 +17,7 @@ growth) buys nothing C doesn't. The remaining ladder:
 Stage 0  cross-world batching       (CPU, no quality cost, K = worlds)  [BUILT]
 Sanity   time the net on the 6700   (10 minutes; gates all GPU work)   [PASSED — GO]
 Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)  [BUILT]
-Stage C  central inference server   (K = fleet-wide, the KataGo shape)
+Stage C  central inference server   (K = fleet-wide, the KataGo shape)  [BUILT]
 ```
 
 Throughout: `K` = rows per net forward.
@@ -240,12 +240,27 @@ stays the machinery gate.
    break-even by design. The measurement (bench `--cross` leg with
    `--actor-device cuda`) decides how quickly to move to C.
 
-## Stage C — central inference server (the KataGo/ELF shape)
+## Stage C — central inference server (the KataGo/ELF shape) — BUILT (2026-08-17)
 
 One Radeon-owning server process; the existing one-game-per-process actor
 fleet submits leaf batches over IPC and blocks for results. Achieves
 fleet-wide K (workers x worlds rows in flight) with NO change to the actor's
 game/search structure.
+
+Implemented as designed below: `train/az_eval_server.py` (UDS, hello layout
+handshake, micro-timeout batching, raw logits + value replies, fresh server
+per generation pass) and the `AZEvaluator::connect_server` socket backend
+behind `az_actor --eval-server <socket>` (exactly one of --model/--uniform/
+--eval-server; the prior math stays local). Driver: the `--eval-server` flag
+on az-selfplay/az/az-league (persisted in the az-league resume sidecar) makes
+`_generate_actor` start the server (on `--actor-device`, default cuda, with
+the ROCm env exports), wait for READY, hand every actor the socket, and tear
+it down in the same `finally` as the fleet. The socket lives in a short
+`mkdtemp` dir — AF_UNIX paths cap at ~107 chars, so `out_dir` is not a safe
+home for it. Verified: single actor game over the socket (GPU server, clean
+GAME_RESULT, same outcome as the Stage A local-GPU game on the same seed) and
+an end-to-end `train.py az-selfplay --actor --eval-server` pass. Meaningful
+strength/throughput benchmarks are deliberately NOT designed yet.
 
 - **Transport**: Unix domain socket, length-prefixed binary frames.
   Request: `k, k x OBS_SIZE float32, k x int32 num_choices`. Reply:

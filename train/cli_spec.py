@@ -537,7 +537,20 @@ def _actor_device():
                help="Eval device for the C++ actor's net forwards: cpu (default) "
                     "or cuda (the Radeon under the ROCm torch build; the launcher "
                     "exports HSA_OVERRIDE_GFX_VERSION/HIP_VISIBLE_DEVICES for the "
-                    "actor processes). Python-backend games ignore it.")
+                    "actor processes). Python-backend games ignore it. With "
+                    "--eval-server it selects the SERVER's device instead "
+                    "(cpu -> the server still defaults to cuda).")
+
+
+def _eval_server():
+    """The --eval-server flag (az-selfplay / az / az-league): Stage C central
+    inference (docs/gpu_selfplay_inference_plan.md)."""
+    return Arg("--eval-server", "flag",
+               help="Start one central train/az_eval_server.py owning the GPU "
+                    "and have every C++ actor evaluate leaves over its Unix "
+                    "socket (fleet-wide forward batches) instead of loading "
+                    "the net per process. Actor backend only; a fresh server "
+                    "is started per generation pass.")
 
 
 # n-step TD knobs. Two sides of one scheme, so their help lives in one place and
@@ -964,6 +977,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "wins. Default: hard both seats, both recorded"),
         _actor_mode(),
         _actor_device(),
+        _eval_server(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
@@ -1134,6 +1148,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "with a per-game value target; this opts back into single games"),
         _actor_mode(),
         _actor_device(),
+        _eval_server(),
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
@@ -1285,6 +1300,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "single games (persisted in the resume sidecar)"),
         _actor_mode(),
         _actor_device(),
+        _eval_server(),
     ]),
 ])
 
