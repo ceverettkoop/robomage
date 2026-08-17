@@ -1053,6 +1053,47 @@ struct AZMcts::Impl {
         // observation, so skip the full obs rebuild there — it fires once per
         // simulation, right after the cooperative restore.
         if (phase == AWAITING_ROOT) {
+            // Restore contract tripwire: the loop-top re-derivation after a
+            // snapshot restore must re-emit the SAME decision this search
+            // rooted on — the action returned below is answered blindly, so a
+            // different query here (state outside the snapshot leaking into
+            // the re-derivation, e.g. the resolution_just_completed miracle
+            // window) would be silently consumed and corrupt the whole line,
+            // surfacing plies later as a world-consistency violation at best.
+            // Fail at the source instead. The width compare is one integer
+            // against the vector already in hand; the debug build additionally
+            // compares the full per-action menu content against the root's.
+            if (menu_n != root_n) {
+                fatal_error("az_mcts: restored root re-derived a different decision: "
+                            "search rooted on " + std::to_string(root_n) +
+                            " choices, engine re-emitted " + std::to_string(menu_n) +
+                            "\n  root#" + std::to_string(this_root) +
+                            " world=" + std::to_string(cur_world) +
+                            " sim=" + std::to_string(cur_sim) +
+                            " sideboard=" + std::to_string(sideboard_phase ? 1 : 0));
+            }
+#ifndef NDEBUG
+            {
+                ActorObs ob = build_obs(actions);
+                std::vector<float> want, got;
+                capture_menu(root_obs.data(), root_n, want);
+                capture_menu(ob.obs.data(), menu_n, got);
+                if (want != got) {
+                    std::vector<float> got_state;
+                    capture_state(ob.obs.data(), got_state);
+                    std::vector<float> want_state;
+                    capture_state(root_obs.data(), want_state);
+                    fatal_error("az_mcts: restored root re-derived a same-width but "
+                                "different decision (root#" + std::to_string(this_root) +
+                                " world=" + std::to_string(cur_world) +
+                                " sim=" + std::to_string(cur_sim) + ")" +
+                                "\n  root menu (at search begin):\n" + fmt_state(want_state) +
+                                fmt_menu(want) +
+                                "  engine menu (re-emitted):\n" + fmt_state(got_state) +
+                                fmt_menu(got));
+                }
+            }
+#endif
             r = advance_after_restore();
         } else {
             ActorObs ob = build_obs(actions);
