@@ -736,7 +736,13 @@ def obs_blocks():
         # the observation does not carry at all.
         ("hand cast costs", e.ACT_BLOCKS_END, e._BF_COST_START),
         ("battlefield ability costs", e._BF_COST_START, e.MATCHUP_TAIL_START),
-        ("matchup tail", e.MATCHUP_TAIL_START, e.OBS_SIZE),
+        # The tail's two halves are separated on purpose: permuting the bucket
+        # index re-routes the SAME latent through a different critic read-out
+        # (the index is stripped before the trunk), while permuting the one-hots
+        # perturbs the trunk's matchup conditioning — one combined row conflated
+        # read-out switching with representation change.
+        ("matchup bucket idx", e.BUCKET_IDX, e.ARCH_ONEHOT_START),
+        ("matchup arch one-hots", e.ARCH_ONEHOT_START, e.OBS_SIZE),
     ]
     blocks = [(n, int(s), int(t)) for n, s, t in blocks]
     blocks.sort(key=lambda b: b[1])
@@ -867,6 +873,57 @@ def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
                     "signed": float((v - base).mean())})
     out.sort(key=lambda r: -r["delta"])
     return {"rows": out, "base": base, "donors": int(donors)}
+
+
+def value_readouts(net, obs_row):
+    """Every critic column's V for ONE state — the same shared value latent
+    read out by all N_VALUE_BUCKETS matchup heads.
+
+    Splits each column's pre-tanh logit into its state-dependent part
+    (``w·latent``, what the board contributes) and its bias (the column's
+    outcome prior — exactly what a memorized column degenerates to). A state
+    whose selected column has ``|w·latent|`` far below the bias magnitude is
+    being valued by the matchup prior, not the position."""
+    import torch
+    net.eval()
+    with torch.no_grad():
+        ob = torch.as_tensor(np.ascontiguousarray(
+            np.asarray(obs_row, dtype=np.float32)[None]))
+        latent = net.value_body(net.trunk(ob))
+        z = net.value_head(latent)[0].cpu().numpy()
+        bias = net.value_head.bias.detach().cpu().numpy()
+    sel = net.obs_value_bucket(obs_row)
+    dead = net.dead_value_buckets()
+    rows = [{"bucket": i, "name": archetypes.bucket_name(i),
+             "v": float(np.tanh(z[i])), "prior": float(np.tanh(bias[i])),
+             "state_part": float(z[i] - bias[i]),
+             "selected": i == sel, "dead": bool(dead[i])}
+            for i in range(z.shape[0])]
+    live_v = np.tanh(z[~dead]) if (~dead).any() else np.tanh(z)
+    return {"rows": rows, "selected": sel,
+            "value": float(np.tanh(z[sel])),
+            "readout_spread": float(live_v.std())}
+
+
+def render_value_readouts(ro, top_n=None):
+    lines = ["V for THIS state under every matchup read-out (one shared "
+             "latent, 64 critic columns)",
+             f"  selected bucket ▶ {archetypes.bucket_name(ro['selected'])}"
+             f"  V={ro['value']:+.3f}   spread across live read-outs "
+             f"σ={ro['readout_spread']:.3f}",
+             "  state = the board's contribution (w·latent, pre-tanh); "
+             "prior = tanh(bias), the column's",
+             "  memorized outcome constant. |state| << the V spread means "
+             "the matchup prior is doing the valuing.", "",
+             f"    {'V':>7} {'prior':>7} {'state':>7}  bucket"]
+    rows = sorted(ro["rows"], key=lambda r: -r["v"])
+    for r in rows[:top_n]:
+        mark = "▶" if r["selected"] else ("×" if r["dead"] else " ")
+        lines.append(f"  {mark} {r['v']:+7.3f} {r['prior']:+7.3f} "
+                     f"{r['state_part']:+7.3f}  {r['name']}")
+    if ro["rows"] and any(r["dead"] for r in ro["rows"]):
+        lines.append("  (× = dead column: constant output, no state info)")
+    return lines
 
 
 def card_id_sites(obs_row):
@@ -2437,6 +2494,13 @@ def build_parser():
                    help="rank by value shift (v) or policy shift (pi)")
     p.add_argument("--top", type=int, default=20)
 
+    p = sub.add_parser("readout", help="one state's V under every matchup "
+                                       "critic column (read-out vs prior)")
+    _add_shard_args(p)
+    p.add_argument("--row", type=int, default=0, help="which sampled decision")
+    p.add_argument("--top", type=int, default=None,
+                   help="show only the top-N columns by V (default: all)")
+
     p = sub.add_parser("swap", help="per-slot card valuation by identity swap")
     _add_shard_args(p)
     p.add_argument("--row", type=int, default=0, help="which sampled decision")
@@ -2616,7 +2680,7 @@ def main(argv=None):
             policy_divergence(net, _sample(args), top_n=args.top))))
         return 0
 
-    if cmd in ("state", "blocks", "swap", "sweep"):
+    if cmd in ("state", "blocks", "swap", "sweep", "readout"):
         s = _sample(args)
         row = getattr(args, "row", 0)
         if row is not None and not 0 <= row < s["obs"].shape[0]:
@@ -2624,6 +2688,9 @@ def main(argv=None):
                              f"(0..{s['obs'].shape[0] - 1} in this sample)")
         if cmd == "state":
             print("\n".join(render_state(s, row, net=net, top_n=args.top)))
+        elif cmd == "readout":
+            print("\n".join(render_value_readouts(
+                value_readouts(net, s["obs"][row]), top_n=args.top)))
         elif cmd == "blocks":
             if args.row is None:
                 imp = block_importance(net, s, n_rows=args.rows,

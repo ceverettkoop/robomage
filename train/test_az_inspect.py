@@ -269,6 +269,21 @@ def test_probes(net, sample):
     check(len(avg["rows"]) == len(blocks) and avg["n"] == 6,
           "averaged attribution covers every block over the requested states")
 
+    ro = azi.value_readouts(net, sample["obs"][0])
+    check(len(ro["rows"]) == net._n_buckets,
+          "value_readouts scores every critic column")
+    check(ro["selected"] == net.obs_value_bucket(sample["obs"][0]),
+          "readout's selected bucket is the one forward gathers")
+    check(abs(ro["value"] - azi.state_value(net, sample["obs"][0],
+                                            sample["mask"][0])) < 1e-6,
+          "the selected read-out IS the state's V")
+    bias = net.value_head.bias.detach().cpu().numpy()
+    check(all(abs(np.tanh(r["state_part"] + bias[r["bucket"]]) - r["v"]) < 1e-5
+              for r in ro["rows"]),
+          "each read-out's V reconstructs from its state part + bias")
+    check(all(-1.0 <= r["v"] <= 1.0 for r in ro["rows"]),
+          "read-out values are tanh-bounded")
+
     sites = azi.card_id_sites(sample["obs"][0])
     labels = [lab for lab, _, _ in sites]
     check(any(_PLANTED in lab for lab in labels),
@@ -611,6 +626,8 @@ def test_renders(net, path, sample, mat):
         "state": lambda: azi.render_state(sample, 0, net=net),
         "blocks": lambda: azi.render_block_importance(
             azi.state_block_importance(net, sample, 0, donors=2), single=True),
+        "readout": lambda: azi.render_value_readouts(
+            azi.value_readouts(net, sample["obs"][0])),
         "swap": lambda: azi.render_card_swap(
             azi.card_swap_probe(net, sample["obs"][0], sample["mask"][0],
                                 sites[0][1]), sites[0][0], top_n=3),

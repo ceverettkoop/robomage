@@ -37,6 +37,7 @@ PROBE_MENU = [
     ("probe_state", "net state — recorded π vs net at current step"),
     ("probe_blocks", "net blocks — what this evaluation rests on"),
     ("probe_blocks_pi", "net blocks (policy) — what this policy rests on"),
+    ("probe_readout", "net readout — V under every matchup column here"),
     ("probe_swap", "net swap — card-identity ΔV at current step"),
     ("probe_sweeps", "net sweeps — life/hand/turn response here"),
     ("probe_kl", "net KL — search vs net by action category (all)"),
@@ -44,8 +45,8 @@ PROBE_MENU = [
 ]
 PROBE_KEYS = frozenset(k for k, _ in PROBE_MENU)
 DECISION_PROBES = frozenset(
-    ("probe_state", "probe_blocks", "probe_blocks_pi", "probe_swap",
-     "probe_sweeps"))
+    ("probe_state", "probe_blocks", "probe_blocks_pi", "probe_readout",
+     "probe_swap", "probe_sweeps"))
 
 _MAX_POOL_ROWS = 2000     # cap for the pooled views / donor pool
 _MAX_SWAP_SITES = 6       # card-swap sites probed per decision (cost control)
@@ -186,6 +187,8 @@ def run_probe(key, net, snap):
                 lines.append(f"({len(sites) - _MAX_SWAP_SITES} more sites not "
                              f"probed — cap {_MAX_SWAP_SITES} per run)")
             return lines
+        if key == "probe_readout":
+            return azi.render_value_readouts(azi.value_readouts(net, obs_row))
         if key == "probe_sweeps":
             return azi.render_sweeps(net, obs_row, mask_row)
 
