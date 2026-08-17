@@ -36,6 +36,7 @@ from env import MAX_ACTIONS, OBS_SIZE
 PROBE_MENU = [
     ("probe_state", "net state — recorded π vs net at current step"),
     ("probe_blocks", "net blocks — what this evaluation rests on"),
+    ("probe_blocks_pi", "net blocks (policy) — what this policy rests on"),
     ("probe_swap", "net swap — card-identity ΔV at current step"),
     ("probe_sweeps", "net sweeps — life/hand/turn response here"),
     ("probe_kl", "net KL — search vs net by action category (all)"),
@@ -43,7 +44,8 @@ PROBE_MENU = [
 ]
 PROBE_KEYS = frozenset(k for k, _ in PROBE_MENU)
 DECISION_PROBES = frozenset(
-    ("probe_state", "probe_blocks", "probe_swap", "probe_sweeps"))
+    ("probe_state", "probe_blocks", "probe_blocks_pi", "probe_swap",
+     "probe_sweeps"))
 
 _MAX_POOL_ROWS = 2000     # cap for the pooled views / donor pool
 _MAX_SWAP_SITES = 6       # card-swap sites probed per decision (cost control)
@@ -164,9 +166,11 @@ def run_probe(key, net, snap):
         obs_row, mask_row = sample["obs"][row], sample["mask"][row]
         if key == "probe_state":
             return azi.render_state(sample, row, net=net)
-        if key == "probe_blocks":
+        if key in ("probe_blocks", "probe_blocks_pi"):
             imp = azi.state_block_importance(net, sample, row, donors=16)
-            return (azi.render_block_importance(imp, top_n=20, single=True)
+            sort = "pi" if key == "probe_blocks_pi" else "v"
+            return (azi.render_block_importance(imp, top_n=20, single=True,
+                                                sort=sort)
                     + ["", f"(donor states drawn from the {sample['obs'].shape[0]}"
                            " browsed decisions)"])
         if key == "probe_swap":

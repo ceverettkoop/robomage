@@ -760,34 +760,88 @@ def state_value(net, obs_row, mask_row):
     return float(v[0])
 
 
-def block_importance(net, sample, n_rows=150, donors=3, seed=0, blocks=None):
-    """Permutation importance of each observation block on V.
+def resolve_block(name, blocks=None):
+    """Resolve a block spec (exact or unique substring, case-insensitive)
+    to its ``(name, start, end)`` row in the obs-block table."""
+    blocks = blocks or obs_blocks()
+    want = name.strip().lower()
+    exact = [b for b in blocks if b[0].lower() == want]
+    if exact:
+        return exact[0]
+    hits = [b for b in blocks if want in b[0].lower()]
+    if len(hits) == 1:
+        return hits[0]
+    names = ", ".join(b[0] for b in (hits or blocks))
+    kind = "ambiguous" if hits else "unknown"
+    raise SystemExit(f"{kind} block {name!r} (want one of: {names})")
+
+
+def block_active_rows(obs, start, end):
+    """Row indices where the block deviates from its per-column modal value —
+    i.e. where it holds something beyond its empty/baseline pattern. Modal
+    (not zero) so card-id slots' -1 sentinel counts as empty."""
+    active = np.zeros(obs.shape[0], dtype=bool)
+    for c in range(start, end):
+        col = obs[:, c]
+        vals, counts = np.unique(col, return_counts=True)
+        active |= col != vals[np.argmax(counts)]
+    return np.flatnonzero(active)
+
+
+def policy_shift(p, q, mask):
+    """Per-row total variation distance between two legal-action policies."""
+    return 0.5 * np.abs(np.where(mask, p - q, 0.0)).sum(axis=1)
+
+
+def block_importance(net, sample, n_rows=150, donors=3, seed=0, blocks=None,
+                     only_active=None):
+    """Permutation importance of each observation block on V and on the policy.
 
     For each block, the block's floats are replaced by another sampled state's
     (a valid value for that block, unlike zeroing, which invents states the net
     never saw — a 0 life total is not "no information", it is "dead"), and the
-    mean |ΔV| is recorded. High = the evaluation leans on that block.
+    mean |ΔV| plus the mean total-variation policy shift are recorded.
+    High = that head leans on the block.
+
+    ``only_active`` names one block: evaluated rows AND donor draws are then
+    restricted to states where that block is non-empty, so a sparse block
+    (stack, known top-of-library) is scored on the states where it exists
+    instead of being averaged away by its empty majority.
     """
     blocks = blocks or obs_blocks()
     rng = np.random.default_rng(seed)
     obs, mask = sample["obs"], sample["mask"]
-    n = min(int(n_rows), obs.shape[0])
-    rows = np.sort(rng.choice(obs.shape[0], size=n, replace=False))
-    base, _ = predict(net, obs[rows], mask[rows])
+    pool = np.arange(obs.shape[0])
+    active_n = None
+    if only_active:
+        name, s, t = resolve_block(only_active, blocks)
+        only_active = name
+        pool = block_active_rows(obs, s, t)
+        active_n = pool.size
+        if pool.size < 2:
+            raise SystemExit(f"only {pool.size} sampled state(s) have "
+                             f"{name!r} active — raise --max-rows/--window")
+    n = min(int(n_rows), pool.size)
+    rows = np.sort(rng.choice(pool, size=n, replace=False))
+    base_v, base_p = predict(net, obs[rows], mask[rows])
     out = []
     for name, s, t in blocks:
-        acc = np.zeros(n)
+        acc_v = np.zeros(n)
+        acc_p = np.zeros(n)
         for _ in range(int(donors)):
-            donor = rng.choice(obs.shape[0], size=n)
+            donor = rng.choice(pool, size=n)
             pert = obs[rows].copy()
             pert[:, s:t] = obs[donor][:, s:t]
-            v, _ = predict(net, pert, mask[rows])
-            acc += np.abs(v - base)
+            v, p = predict(net, pert, mask[rows])
+            acc_v += np.abs(v - base_v)
+            acc_p += policy_shift(base_p, p, mask[rows])
         out.append({"name": name, "start": s, "width": t - s,
-                    "delta": float((acc / donors).mean())})
+                    "delta": float((acc_v / donors).mean()),
+                    "dpi": float((acc_p / donors).mean())})
     out.sort(key=lambda r: -r["delta"])
     return {"rows": out, "n": n, "donors": int(donors),
-            "base_spread": float(base.std())}
+            "only_active": only_active, "active_n": active_n,
+            "base_spread": float(base_v.std())}
 
 
 def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
@@ -796,7 +850,8 @@ def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
     blocks = blocks or obs_blocks()
     rng = np.random.default_rng(seed)
     obs, mask = sample["obs"], sample["mask"]
-    base = state_value(net, obs[row], mask[row])
+    base_v, base_p = predict(net, obs[row][None], mask[row][None])
+    base = float(base_v[0])
     batch = np.repeat(obs[row][None], donors, axis=0)
     mk = np.repeat(mask[row][None], donors, axis=0)
     out = []
@@ -804,9 +859,11 @@ def state_block_importance(net, sample, row, donors=16, seed=0, blocks=None):
         donor = rng.choice(obs.shape[0], size=donors)
         pert = batch.copy()
         pert[:, s:t] = obs[donor][:, s:t]
-        v, _ = predict(net, pert, mk)
+        v, p = predict(net, pert, mk)
         out.append({"name": name, "start": s, "width": t - s,
                     "delta": float(np.abs(v - base).mean()),
+                    "dpi": float(policy_shift(
+                        np.repeat(base_p, donors, axis=0), p, mk).mean()),
                     "signed": float((v - base).mean())})
     out.sort(key=lambda r: -r["delta"])
     return {"rows": out, "base": base, "donors": int(donors)}
@@ -1994,22 +2051,33 @@ def render_state(sample, row, net=None, top_n=12):
     return lines
 
 
-def render_block_importance(imp, top_n=20, single=False):
-    head = ("what THIS evaluation rests on" if single
-            else f"what the value head rests on, over {imp['n']} states")
+def render_block_importance(imp, top_n=20, single=False, sort="v"):
+    what = "policy" if sort == "pi" else "evaluation"
+    head = (f"what THIS {what} rests on" if single
+            else f"what the heads rest on, over {imp['n']} states"
+                 + (" (ranked by policy shift)" if sort == "pi" else ""))
     lines = [head,
-             "  each block's floats are replaced by another real state's; the "
-             "number is the mean |ΔV| that causes.", ""]
+             "  each block's floats are replaced by another real state's; "
+             "|ΔV| is the value shift, Δπ the total-variation policy shift "
+             "that causes.", ""]
     if single:
         lines.insert(1, f"  base V={imp['base']:+.3f}  "
                         f"({imp['donors']} donor states per block)")
-    top = imp["rows"][0]["delta"] or 1.0
-    lines.append(f"  {'block':<24} {'width':>6} {'mean |ΔV|':>10}"
+    elif imp.get("only_active"):
+        lines.insert(1, f"  states and donors restricted to the "
+                        f"{imp['active_n']} sampled states where "
+                        f"{imp['only_active']!r} is non-empty")
+    rows = imp["rows"]
+    if sort == "pi":
+        rows = sorted(rows, key=lambda r: -r["dpi"])
+    top = rows[0]["dpi" if sort == "pi" else "delta"] or 1.0
+    lines.append(f"  {'block':<24} {'width':>6} {'mean |ΔV|':>10} {'Δπ':>7}"
                  + ("  signed" if single else ""))
-    for r in imp["rows"][:top_n]:
+    for r in rows[:top_n]:
         sign = f"  {r['signed']:+.3f}" if single else ""
+        bar = _bar((r["dpi"] if sort == "pi" else r["delta"]) / top)
         lines.append(f"  {r['name']:<24} {r['width']:6d} {r['delta']:10.4f}"
-                     f"{sign}  {_bar(r['delta'] / top)}")
+                     f" {r['dpi']:7.4f}{sign}  {bar}")
     return lines
 
 
@@ -2361,6 +2429,12 @@ def build_parser():
                    help="states averaged when --row is not given")
     p.add_argument("--donors", type=int, default=3,
                    help="donor states per block")
+    p.add_argument("--only-active", default=None, metavar="BLOCK",
+                   help="restrict states and donors to those where BLOCK "
+                        "(name or unique substring) is non-empty — scores a "
+                        "sparse block on the states where it exists")
+    p.add_argument("--sort", choices=("v", "pi"), default="v",
+                   help="rank by value shift (v) or policy shift (pi)")
     p.add_argument("--top", type=int, default=20)
 
     p = sub.add_parser("swap", help="per-slot card valuation by identity swap")
@@ -2553,12 +2627,18 @@ def main(argv=None):
         elif cmd == "blocks":
             if args.row is None:
                 imp = block_importance(net, s, n_rows=args.rows,
-                                       donors=args.donors, seed=args.seed)
-                print("\n".join(render_block_importance(imp, top_n=args.top)))
+                                       donors=args.donors, seed=args.seed,
+                                       only_active=args.only_active)
+                print("\n".join(render_block_importance(imp, top_n=args.top,
+                                                        sort=args.sort)))
             else:
+                if args.only_active:
+                    raise SystemExit("--only-active applies to the aggregate "
+                                     "view; --row already names one state")
                 imp = state_block_importance(net, s, row, seed=args.seed)
                 print("\n".join(render_block_importance(imp, top_n=args.top,
-                                                        single=True)))
+                                                        single=True,
+                                                        sort=args.sort)))
         elif cmd == "swap":
             sites = card_id_sites(s["obs"][row])
             if not sites:
