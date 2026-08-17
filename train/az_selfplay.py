@@ -1456,7 +1456,7 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                        sb_persist=bool(DEFAULT_SB_PERSIST),
                        merge_dupes=True,
-                       td_n=DEFAULT_TD_N) -> list:
+                       td_n=DEFAULT_TD_N, batch=1) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -1470,7 +1470,13 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     With ``bo3`` each of ``games`` units is a best-of-three MATCH (the actor spaces
     match seeds by 3 internally), and the ``sb_*`` knobs set the searched
     sideboard-root budget (``--sb-sims``/``--sb-worlds``/``--sb-max-depth``/
-    ``--sb-rollout-turns``); they are inert for bo1."""
+    ``--sb-rollout-turns``); they are inert for bo1.
+
+    ``batch`` (default 1) is the actor's ``--batch K`` batched-leaf-evaluation
+    knob: K>1 defers leaf net evals into one TorchScript forward per K leaves
+    under virtual loss (bench/experiment use — batch>1 leaves the mcts.py
+    bit-parity envelope). The flag is only appended when != 1, so the default
+    argv stays byte-identical to the pre-batch builder."""
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
@@ -1480,6 +1486,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--temp-moves", str(temp_moves),
            "--td-n", str(td_n),
            "--merge-dupes", str(int(merge_dupes))]
+    if batch != 1:
+        cmd += ["--batch", str(batch)]
     if bo3:
         cmd += ["--bo3",
                 "--sb-sims", str(sb_sims),
