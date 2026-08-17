@@ -272,9 +272,31 @@ against a fresh local reference (~minutes) for protocol iteration; the
 default `--legs full` keeps every slow Python-reference gate.
 `bench_actor.py` gained `--device cpu|cuda`, `--eval-server DEV`, and
 `--fleet N` (N concurrent actors, per-leg evals/s column) for fleet
-throughput measurement; production-budget numbers not yet recorded. A
-strength gate (az-eval A/B, promotion-gated az-league slot) remains the
-deliberately-un-built track before --eval-server becomes a default.
+throughput measurement. A strength gate (az-eval A/B, promotion-gated
+az-league slot) remains the deliberately-un-built track before
+--eval-server becomes a default.
+
+### Measured: fleet throughput (2026-08-17, the Ryzen 9 7950X + RX 6700 box)
+
+`ROBOMAGE_BUILD=release bench_actor.py --games 2 --sims 128 --worlds 8
+--cross --fleet 8 --eval-server cuda --no-python --seed 11` — 8 concurrent
+release actors per leg, 16 games/leg. All three legs produced the identical
+2478 decisions: cross-world is arithmetically identical to sequential and the
+server is bit-transparent, so every leg played the SAME games —
+apples-to-apples by construction.
+
+| leg (n=8)            | s/game | games/hr | ms/dec | fleet evals/s | speedup |
+|----------------------|-------:|---------:|-------:|--------------:|--------:|
+| CPU b=1              |  20.6  |    175   | 133.1  |     962       |  1.00x  |
+| CPU cross-world      |   6.3  |    573   |  40.6  |    3156       |  3.28x  |
+| cross-world + srv-gpu|   4.5  |    807   |  28.8  |    4442       | **4.62x** |
+
+Stage 0 alone: 3.28x at worlds=8 (better than the small-container 2.17x).
+The GPU server adds 1.41x on top — 4.62x total, ABOVE the ~3-3.5x ceiling
+projected from the container's engine floor (this box's floor is lower). The
+server ran at ~4.4k evals/s of its ~30k capability, so the engine is the
+bottleneck again as designed, with ~7x GPU headroom for a bigger fleet or
+higher sims.
 
 - **Transport**: Unix domain socket, length-prefixed binary frames.
   Request: `k, k x OBS_SIZE float32, k x int32 num_choices`. Reply:
