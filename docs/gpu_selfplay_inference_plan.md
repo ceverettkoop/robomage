@@ -259,8 +259,22 @@ it down in the same `finally` as the fleet. The socket lives in a short
 `mkdtemp` dir — AF_UNIX paths cap at ~107 chars, so `out_dir` is not a safe
 home for it. Verified: single actor game over the socket (GPU server, clean
 GAME_RESULT, same outcome as the Stage A local-GPU game on the same seed) and
-an end-to-end `train.py az-selfplay --actor --eval-server` pass. Meaningful
-strength/throughput benchmarks are deliberately NOT designed yet.
+an end-to-end `train.py az-selfplay --actor --eval-server` pass.
+
+Test/bench coverage (2026-08-17): `test_mcts_parity.py` gained a
+**`server-cpu` EXACT gate** (a CPU server must be bit-transparent through the
+wire protocol — PASS, 387/387 roots identical to the local forward; runs in
+CI with no GPU, rides the existing `actor` tier) and a **`server-gpu` drift
+REPORT** (one bo1 game, report-only, self-skips without a GPU — measured
+387/387 argmax agreement with visit-count L1 drift max=0: on this net the
+GPU's ulp differences flipped nothing). `--legs server` runs just these
+against a fresh local reference (~minutes) for protocol iteration; the
+default `--legs full` keeps every slow Python-reference gate.
+`bench_actor.py` gained `--device cpu|cuda`, `--eval-server DEV`, and
+`--fleet N` (N concurrent actors, per-leg evals/s column) for fleet
+throughput measurement; production-budget numbers not yet recorded. A
+strength gate (az-eval A/B, promotion-gated az-league slot) remains the
+deliberately-un-built track before --eval-server becomes a default.
 
 - **Transport**: Unix domain socket, length-prefixed binary frames.
   Request: `k, k x OBS_SIZE float32, k x int32 num_choices`. Reply:

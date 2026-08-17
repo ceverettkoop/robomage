@@ -46,29 +46,65 @@ ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 _TOTAL = re.compile(r"^SELFPLAY: total_samples=(\d+) shards=(\d+)$")
 
 
-def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False):
+def _gpu_env():
+    """Env for anything touching the Radeon (mirrors az_selfplay's launcher)."""
+    env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
+    env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
+    env.setdefault("HIP_VISIBLE_DEVICES", "0")
+    return env
+
+
+def _start_eval_server(ts_path, sock, device):
+    """Start train/az_eval_server.py, wait for READY. None if it died first."""
+    server_py = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             "az_eval_server.py")
+    proc = subprocess.Popen([sys.executable, server_py, "--model", ts_path,
+                             "--socket", sock, "--device", device],
+                            env=_gpu_env(), text=True, bufsize=1,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in proc.stdout:
+        if line.startswith("READY "):
+            import threading
+            threading.Thread(target=lambda: [None for _ in proc.stdout],
+                             daemon=True).start()
+            return proc
+    proc.wait()
+    return None
+
+
+def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False,
+             device="cpu", eval_server=None, fleet=1):
     # Shared argv builder (az_selfplay.actor_selfplay_cmd) pins the same
     # noise/temperature knobs _python_leg passes to _play_match, so the two legs
-    # measure the identical workload by construction.
-    cmd = az_selfplay.actor_selfplay_cmd(
-        ACTOR_BIN, deck=args.deck, deck_b=getattr(args, "deck_b", None),
-        seed=args.seed, games=args.games,
-        sims=args.sims, worlds=args.worlds, model=ts_path, out_dir=out_dir,
-        batch=batch, cross_world=cross_world)
-    env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
+    # measure the identical workload by construction. ``fleet`` > 1 launches
+    # that many CONCURRENT actor processes, each playing args.games games on a
+    # disjoint seed range — the Stage C shape (decisions/dt then measures
+    # fleet-wide throughput, not single-process latency).
+    def _cmd(i):
+        return az_selfplay.actor_selfplay_cmd(
+            ACTOR_BIN, deck=args.deck, deck_b=getattr(args, "deck_b", None),
+            seed=args.seed + i * 100000, games=args.games,
+            sims=args.sims, worlds=args.worlds, model=ts_path, out_dir=out_dir,
+            batch=batch, cross_world=cross_world,
+            device=device, eval_server=eval_server)
+    env = _gpu_env() if (device != "cpu" and not eval_server) else dict(
+        os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     t0 = time.perf_counter()
-    proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE, env=env)
+    procs = [subprocess.Popen(_cmd(i), cwd=BIN_DIR, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, env=env)
+             for i in range(fleet)]
+    outs = [p.communicate() for p in procs]
     dt = time.perf_counter() - t0
-    if proc.returncode != 0:
-        print("FAIL: az_actor exited nonzero:\n"
-              + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
-        return None
     decisions = 0
-    for line in proc.stdout.decode("utf-8", "replace").splitlines():
-        m = _TOTAL.match(line.strip())
-        if m:
-            decisions = int(m.group(1))
+    for p, (out, err) in zip(procs, outs):
+        if p.returncode != 0:
+            print("FAIL: az_actor exited nonzero:\n"
+                  + err.decode("utf-8", "replace"), file=sys.stderr)
+            return None
+        for line in out.decode("utf-8", "replace").splitlines():
+            m = _TOTAL.match(line.strip())
+            if m:
+                decisions += int(m.group(1))
     return dt, decisions
 
 
@@ -124,6 +160,18 @@ def main():
                          "leaf per world per forward, no virtual loss)")
     ap.add_argument("--no-python", action="store_true",
                     help="skip leg B (Python az_selfplay) — batch-sweep only")
+    ap.add_argument("--device", default="cpu", choices=["cpu", "cuda"],
+                    help="local eval device for the C++ legs (Stage A; cuda = "
+                         "the Radeon under the ROCm build)")
+    ap.add_argument("--eval-server", default=None, metavar="DEV",
+                    choices=["cpu", "cuda"],
+                    help="add a Stage C leg: one central az_eval_server on DEV, "
+                         "actors evaluate over its socket")
+    ap.add_argument("--fleet", type=int, default=1,
+                    help="concurrent actor processes per C++ leg (each plays "
+                         "--games games on a disjoint seed range); with "
+                         "--eval-server this measures the fleet-wide batching "
+                         "the server exists for")
     args = ap.parse_args()
 
     if not os.path.exists(ACTOR_BIN):
@@ -143,22 +191,55 @@ def main():
         ts_path = torchscript_export_path(ckpt)
         save_torchscript(net, ts_path)
 
+        # Fleet legs play fleet * games games total; _row needs the real count.
+        leg_games = args.games * args.fleet
+        dev_lbl = "" if args.device == "cpu" else f" {args.device}"
+        fleet_lbl = "" if args.fleet == 1 else f" n={args.fleet}"
         rows = []
         for k in args.batch:
-            print(f"[bench] leg A: C++ bin/az_actor --selfplay (batch={k}) ...",
-                  flush=True)
-            a = _cpp_leg(ts_path, os.path.join(td, f"cpp_b{k}"), args, batch=k)
+            print(f"[bench] leg A: C++ bin/az_actor --selfplay (batch={k}"
+                  f"{dev_lbl}{fleet_lbl}) ...", flush=True)
+            a = _cpp_leg(ts_path, os.path.join(td, f"cpp_b{k}"), args, batch=k,
+                         device=args.device, fleet=args.fleet)
             if a is None:
                 return 1
-            rows.append(_row(f"C++  (az_actor) b={k}", args.games, a[0], a[1]))
+            rows.append(_row(f"C++ b={k}{dev_lbl}{fleet_lbl}", leg_games,
+                             a[0], a[1]))
         if args.cross:
-            print("[bench] leg A: C++ bin/az_actor --selfplay (cross-world) ...",
-                  flush=True)
+            print(f"[bench] leg A: C++ bin/az_actor --selfplay (cross-world"
+                  f"{dev_lbl}{fleet_lbl}) ...", flush=True)
             a = _cpp_leg(ts_path, os.path.join(td, "cpp_xw"), args,
-                         cross_world=True)
+                         cross_world=True, device=args.device, fleet=args.fleet)
             if a is None:
                 return 1
-            rows.append(_row("C++  (az_actor) b=xw", args.games, a[0], a[1]))
+            rows.append(_row(f"C++ b=xw{dev_lbl}{fleet_lbl}", leg_games,
+                             a[0], a[1]))
+        if args.eval_server:
+            # Stage C: one server owns the device; the whole fleet shares it.
+            # Cross-world keeps each actor's request K = worlds with no quality
+            # cost, so it is the natural pairing.
+            sock = os.path.join(td, "evs")
+            print(f"[bench] leg C: az_eval_server({args.eval_server}) + "
+                  f"{args.fleet} actor(s), cross-world ...", flush=True)
+            server = _start_eval_server(ts_path, sock, args.eval_server)
+            if server is None:
+                print("FAIL: az_eval_server died before READY (no usable "
+                      "GPU?)", file=sys.stderr)
+                return 1
+            try:
+                a = _cpp_leg(ts_path, os.path.join(td, "cpp_srv"), args,
+                             cross_world=True, eval_server=sock,
+                             fleet=args.fleet)
+            finally:
+                server.terminate()
+                try:
+                    server.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    server.kill()
+            if a is None:
+                return 1
+            rows.append(_row(f"C++ xw srv-{args.eval_server}{fleet_lbl}",
+                             leg_games, a[0], a[1]))
         rb = None
         if not args.no_python:
             print("[bench] leg B: Python az_selfplay (in-process, 1 worker) ...",
@@ -167,13 +248,17 @@ def main():
             rb = _row("Python (az_selfplay)", args.games, b[0], b[1])
 
     ra = rows[0]
-    print("\n" + "=" * 66)
-    print(f"{'leg':<22}{'s/game':>10}{'games/hr':>12}{'decisions':>11}{'ms/dec':>10}")
-    print("-" * 66)
+    print("\n" + "=" * 78)
+    print(f"{'leg':<22}{'s/game':>10}{'games/hr':>12}{'decisions':>11}{'ms/dec':>10}"
+          f"{'evals/s':>12}")
+    print("-" * 78)
     for r in rows + ([rb] if rb is not None else []):
+        # ~sims leaf evals per searched root: the fleet-wide net throughput,
+        # directly comparable to the sanity sweep's rows/s numbers.
+        evals_s = args.sims * 1000.0 / r["ms_dec"] if r["ms_dec"] > 0 else 0.0
         print(f"{r['name']:<22}{r['s_game']:>10.3f}{r['games_hr']:>12.1f}"
-              f"{r['decisions']:>11d}{r['ms_dec']:>10.2f}")
-    print("=" * 66)
+              f"{r['decisions']:>11d}{r['ms_dec']:>10.2f}{evals_s:>12.0f}")
+    print("=" * 78)
     # Batch sweep: per-decision speedup of each batch>1 leg over the first
     # (baseline) batch value. Decision counts differ across batch values (the
     # trees diverge), so ms/dec — same sims per searched root — is the metric.
