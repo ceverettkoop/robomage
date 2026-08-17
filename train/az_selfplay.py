@@ -51,7 +51,8 @@ import numpy as np
 
 try:
     from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
-    from cli_spec import (BIN_DIR, BUILD_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+    from cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
+                          DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
                           DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
                           DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
@@ -61,7 +62,8 @@ try:
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
-    from train.cli_spec import (BIN_DIR, BUILD_DIR, DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
+    from train.cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
+                                DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
                                 DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
                                 DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES,
                                 DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
@@ -72,7 +74,10 @@ except ImportError:  # pragma: no cover
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
-_ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
+# Self-play defaults to the RELEASE engine build for speed (see cli_spec.py's
+# INTERACTIVE_BINARY doc comment); ROBOMAGE_BUILD overrides both this and the
+# az_actor path below.
+_ACTOR_BIN = os.path.join(INTERACTIVE_BUILD_DIR, "az_actor")
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
 _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
@@ -808,7 +813,8 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
 
     n_matches = len(matchups)
     da0, db0 = matchups[0] if matchups else (None, None)
-    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0, bo3=bo3, auto_sideboard=False)
+    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0, bo3=bo3, auto_sideboard=False,
+                           binary_path=INTERACTIVE_BINARY)
     total_samples = 0
     shards = []
     buf = []
@@ -1743,7 +1749,8 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
     print(f"[az-expert] out_dir={out_dir}")
 
     da0, db0 = schedule[0] if schedule else (None, None)
-    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0, bo3=bo3, auto_sideboard=False)
+    env = SearchRoboMageEnv(deck_a=da0, deck_b=db0, bo3=bo3, auto_sideboard=False,
+                           binary_path=INTERACTIVE_BINARY)
     # ScriptedAgent is seat-aware (keys its state and deck name off the obs's
     # self-is-A flag), so ONE shared hard-tier agent pilots both seats.
     agent = make_agent("scripted:hard")

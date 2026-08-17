@@ -484,16 +484,19 @@ def _gate_matchup_worker(mi: int, dx: str, dy: str, per: int, cand_spec: str,
     only from ``mi`` make every matchup's result identical to the serial
     loop's, regardless of worker count or scheduling."""
     from runner import run_match
+    from cli_spec import INTERACTIVE_BINARY
     half = per // 2
     mw = ml = md = 0
     mseed = seed + mi * 100003
     if per - half:  # candidate (piloting dx) in seat A
         r = run_match(cand_spec, opp_spec, deck_a=dx, deck_b=dy,
-                      games=per - half, bo3=bo3, seed=mseed, transcript="quiet")
+                      games=per - half, bo3=bo3, seed=mseed, transcript="quiet",
+                      binary_path=INTERACTIVE_BINARY)
         mw += r.wins; ml += r.losses; md += r.draws
     if half:        # candidate (piloting dx) in seat B — flip tally to cand view
         r = run_match(opp_spec, cand_spec, deck_a=dy, deck_b=dx,
-                      games=half, bo3=bo3, seed=mseed + per, transcript="quiet")
+                      games=half, bo3=bo3, seed=mseed + per, transcript="quiet",
+                      binary_path=INTERACTIVE_BINARY)
         mw += r.losses; ml += r.wins; md += r.draws
     return mi, mw, ml, md
 

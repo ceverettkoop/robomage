@@ -675,7 +675,7 @@ class AnalysisApp(App):
             deck_a, deck_b, bo3 = decks
             binary = getattr(self._args, "binary", None)
             if not binary:
-                from runner import BINARY as binary
+                from cli_spec import INTERACTIVE_BINARY as binary
             spec = getattr(self._args, "model", None) or "az:gen"
             text = _run_replay_search(game, step, binary=binary,
                                       deck_a=deck_a, deck_b=deck_b, bo3=bo3,
