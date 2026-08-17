@@ -543,14 +543,31 @@ def _actor_device():
 
 
 def _eval_server():
-    """The --eval-server flag (az-selfplay / az / az-league): Stage C central
-    inference (docs/gpu_selfplay_inference_plan.md)."""
-    return Arg("--eval-server", "flag",
-               help="Start one central train/az_eval_server.py owning the GPU "
-                    "and have every C++ actor evaluate leaves over its Unix "
-                    "socket (fleet-wide forward batches) instead of loading "
-                    "the net per process. Actor backend only; a fresh server "
-                    "is started per generation pass.")
+    """The --eval-server | --no-eval-server pair (az-selfplay / az /
+    az-league): Stage C central inference (docs/gpu_selfplay_inference_plan.md).
+    Default (neither) is AUTO: start a cuda server iff the box has a usable
+    GPU, else fall back to local-CPU actors with a printed notice."""
+    return MutexGroup([
+        Arg("--eval-server", "flag",
+            help="Force the central train/az_eval_server.py: one GPU-owning "
+                 "server, every C++ actor evaluates leaves over its Unix "
+                 "socket (fleet-wide forward batches). Error if it cannot "
+                 "start. Actor backend only; fresh server per generation pass."),
+        Arg("--no-eval-server", "flag",
+            help="Never start the central server — actors load the net and "
+                 "forward locally (on --actor-device)."),
+    ], label="eval-server",
+       help="Central-inference server — (neither) = AUTO: use a cuda server "
+            "iff it starts (no usable GPU -> local-CPU actors, with a notice)")
+
+
+def _no_cross_world():
+    """--no-cross-world (az-selfplay / az / az-league): Stage 0 kill switch."""
+    return Arg("--no-cross-world", "flag",
+               help="Disable the actor's cross-world batched leaf evaluation "
+                    "(default ON — visits are arithmetically identical to the "
+                    "sequential search, ~1.7-3.3x per decision; see "
+                    "docs/gpu_selfplay_inference_plan.md Stage 0)")
 
 
 # n-step TD knobs. Two sides of one scheme, so their help lives in one place and
@@ -978,6 +995,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _actor_mode(),
         _actor_device(),
         _eval_server(),
+        _no_cross_world(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
@@ -1149,6 +1167,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _actor_mode(),
         _actor_device(),
         _eval_server(),
+        _no_cross_world(),
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
@@ -1301,6 +1320,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _actor_mode(),
         _actor_device(),
         _eval_server(),
+        _no_cross_world(),
     ]),
 ])
 

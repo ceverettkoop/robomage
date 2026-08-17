@@ -298,6 +298,27 @@ server ran at ~4.4k evals/s of its ~30k capability, so the engine is the
 bottleneck again as designed, with ~7x GPU headroom for a bigger fleet or
 higher sims.
 
+### Production defaults (2026-08-17)
+
+On the strength of the bit-exactness gates and the bench above, the actor
+backend now DEFAULTS to both stages, driver-side (the az_actor binary's own
+defaults are unchanged):
+
+- **Cross-world ON** (`generate(cross_world=True)`); kill switch
+  `--no-cross-world`. Zero quality cost by construction.
+- **Eval-server AUTO** (`eval_server=None`): `_generate_actor` tries to start
+  a cuda `az_eval_server`; if it cannot (no usable GPU — e.g. CI containers),
+  it prints a notice and falls back to local-CPU actors. `--eval-server`
+  forces it (fatal if it cannot start), `--no-eval-server` disables it.
+  Verified both ways: AUTO->GPU on this box; AUTO->clean CPU fallback with
+  `HIP_VISIBLE_DEVICES=-1`.
+
+Both knobs are persisted in the az-league resume sidecar (an interrupted
+pre-defaults run resumes with its OWN recorded settings, not the new
+defaults). All checked-in curricula compose to plain argv with no actor-knob
+overrides, so every az/az-league/az-selfplay phase inherits these defaults;
+PPO phases (league/exploiter/baseline) don't touch the actor backend.
+
 - **Transport**: Unix domain socket, length-prefixed binary frames.
   Request: `k, k x OBS_SIZE float32, k x int32 num_choices`. Reply:
   `k x MAX_ACTIONS float32 logits, k x float32 value`. The server returns
