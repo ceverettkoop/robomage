@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import AZNet, obs_space_from_const, save_torchscript, torchscript_export_path
 from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _MATCH_CTX_START
-from cli_spec import BIN_DIR
+from cli_spec import BIN_DIR, BUILD_DIR
 # Write-order shard sort lives in shard_replay (shared with the browse path).
 from shard_replay import shard_sort_key as _shard_sort_key
 from az_selfplay import SHARD_KEYS
@@ -52,7 +52,7 @@ BO3_SB_ROLLOUT_TURNS = 2  # small pin: exercises the actor's leaf-rollout path c
 # is_sideboard_phase flag in the obs (env's _MATCH_CTX layout: game_number,
 # self_wins, opp_wins, sideboard_phase).
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
-ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 
 _TALLY = re.compile(r"^SELFPLAY: game (\d+) samples=(\d+) winner=(A|B|DRAW)$")
 

@@ -87,8 +87,10 @@ from opponents import (make_controller, ActionListController,
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 _REPO_ROOT = Path(__file__).resolve().parent.parent
-_BIN_DIR = _REPO_ROOT / "bin"
-_BINARY = _BIN_DIR / "robomage"
+_BIN_DIR = _REPO_ROOT / "bin"  # resource cwd (not per-config)
+# Engine binary via runner/cli_spec so the harness honors the per-config build
+# split (bin/<config>/robomage) and ROBOMAGE_BUILD, not the retired bin/robomage.
+_BINARY = Path(runner.BINARY)
 _DECKS_DIR = _BIN_DIR / "resources" / "decks"
 
 

@@ -37,10 +37,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import (AZNet, obs_space_from_const, load_az, AZEvaluator,
                     save_torchscript, torchscript_export_path)
-from cli_spec import BIN_DIR
+from cli_spec import BIN_DIR, BUILD_DIR
 import az_selfplay
 
-ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+# BUILD_DIR (bin/<config>/) is where the actor binary lives; BIN_DIR (bin/) stays
+# the launch cwd used below for resource lookup.
+ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 _TOTAL = re.compile(r"^SELFPLAY: total_samples=(\d+) shards=(\d+)$")
 
 

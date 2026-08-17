@@ -122,7 +122,7 @@ if __name__ == "__main__":
     ap.add_argument("--worlds", type=int, default=4, help="determinized worlds (default 4)")
     ap.add_argument("--games", type=int, default=20, help="games per matchup (default 20)")
     ap.add_argument("--seed", type=int, default=1, help="base seed (game i uses seed+i)")
-    ap.add_argument("--binary", default=os.path.join(repo, "bin", "robomage"))
+    ap.add_argument("--binary", default=runner.BINARY)
     ap.add_argument("--decks-dir", default=os.path.join(repo, "bin", "resources", "decks"))
     ap.add_argument("--log", default=os.path.join(repo, "train", "checkpoints",
                                                   "az_baseline_report.log"))

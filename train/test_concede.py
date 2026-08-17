@@ -46,8 +46,10 @@ from env import (CONCEDE_GAME, CONCEDE_MATCH, GAME_LOSS_REWARD, GAME_WIN_REWARD,
                  NarrativeEnv, STATE_SIZE, _SELF_IS_A_IDX)
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_BIN_DIR = os.path.join(_REPO_ROOT, "bin")
-_BINARY = os.path.join(_BIN_DIR, "robomage")
+_BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # resource/log cwd (not per-config)
+# Resolve the engine binary through cli_spec so it honors the per-config build
+# split (bin/<config>/robomage) and ROBOMAGE_BUILD, not the retired bin/robomage.
+from cli_spec import BINARY as _BINARY  # noqa: E402
 
 DECK_A = "delver"
 DECK_B = "mav"

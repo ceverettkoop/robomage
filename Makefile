@@ -19,10 +19,17 @@ ifeq ($(PLATFORM), OSX)
 	CXX=clang++
 endif
 
-ODIR=obj
+# Per-configuration output trees. CONFIG (set in the BUILD if/else below) selects
+# debug vs release so the two builds never clobber each other's objects or binary:
+#   obj/debug/…   bin/debug/robomage      (plain `make`)
+#   obj/release/… bin/release/robomage    (`make BUILD=RELEASE`)
+# This also removes the old "must `make clean` when switching BUILD" hazard: object
+# files are keyed on source path alone, so a config switch used to relink stale
+# objects compiled with the wrong flags. Separate trees give each config its own.
+ODIR=obj/$(CONFIG)
 SRCDIR=src
 DEPFLAGS = -MMD -MP
-BINDIR=bin
+BINDIR=bin/$(CONFIG)
 BINNAME=robomage
 
 # Python used to regenerate the train/ codegen files. Prefer the project venv;
@@ -45,9 +52,11 @@ CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion -Wno-sign-conversion -Wno-conversion
 
 ifeq ($(BUILD),RELEASE)
+	CONFIG := release
 	CFLAGS += -O2 -flto -march=native -DNDEBUG
 	CXXFLAGS += -O2 -flto -march=native -DNDEBUG
 else
+	CONFIG := debug
 	CFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS) $(C_CHECKFLAGS)
 	CXXFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS)
 	LDFLAGS += -rdynamic
@@ -149,7 +158,7 @@ regen:
 # behavior — investigate it; if the change is intentional, run `make regen` to
 # re-record and commit the new corpus.
 refetch:
-	rm -f $(BINDIR)/resources/cardsfolder/*/*.txt $(BINDIR)/resources/tokenscripts/*.txt
+	rm -f bin/resources/cardsfolder/*/*.txt bin/resources/tokenscripts/*.txt
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) check
 
@@ -212,14 +221,17 @@ actor-syntax: pygen
 
 .PHONY: all pygen check regen refetch clean actor actor-syntax
 
-# Remove everything under the object tree (the compile rules mkdir -p subdirs
-# back on demand), not per-level globs that silently miss deeper nesting, plus
-# the linked binary so a failed build can't leave a stale bin/robomage for the
-# harness/CI to use. $(ODIR)/* (not $(ODIR)) keeps the git-tracked
-# obj/.gitphony placeholder; bin/ is kept — it holds resources/ and decks.
+# Remove BOTH configs' object trees and engine binaries (not just the current
+# CONFIG's), so a plain `make clean` is config-independent — the compile rules
+# mkdir -p the per-config subdirs back on demand. `obj/*` (glob skips dotfiles)
+# keeps the git-tracked obj/.gitphony placeholder while removing obj/debug and
+# obj/release; `bin/*/robomage` removes both configs' linked binaries so a failed
+# build can't leave a stale one for the harness/CI. bin/ itself is kept — it holds
+# resources/ and decks — and bin/*/az_actor is left in place (it is expensive to
+# relink against libtorch and is gitignored separately).
 clean:
-	rm -rf $(ODIR)/*
-	rm -f $(BINDIR)/$(BINNAME)
+	rm -rf obj/*
+	rm -f bin/*/$(BINNAME)
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),

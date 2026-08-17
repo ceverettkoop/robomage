@@ -45,7 +45,7 @@ from az_net import (AZNet, obs_space_from_const, load_az, AZEvaluator,
                     decay_exempt_param_groups, save_torchscript,
                     torchscript_export_path)
 from env import OBS_SIZE, MAX_ACTIONS
-from cli_spec import BIN_DIR
+from cli_spec import BIN_DIR, BUILD_DIR
 import az_selfplay
 import az_train
 
@@ -63,7 +63,7 @@ TRAIN_BS = 64
 # the exact LR.
 TRAIN_LR = 3e-4
 TRAIN_SEED = 0
-ACTOR_BIN = os.path.join(BIN_DIR, "az_actor")
+ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 
 _TALLY = re.compile(r"^SELFPLAY: game (\d+) samples=(\d+) winner=(A|B|DRAW)$")
 
