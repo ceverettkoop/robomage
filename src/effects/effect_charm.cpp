@@ -93,7 +93,14 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
                     (i < ab.charm_choice_descriptions.size() && !ab.charm_choice_descriptions[i].empty())
                         ? ab.charm_choice_descriptions[i]
                         : ("Mode " + std::to_string(i + 1));
-                LegalAction la(PASS_PRIORITY, desc);
+                // Ground every mode to the charm's source card so the serialized
+                // action carries that card's id/zone/controller instead of the
+                // null-source sentinel — otherwise each mode emits card_id -1 and
+                // the modes differ only by the raw option_ordinal scalar, which
+                // reads as "all modes identical" to the policy/search (they were
+                // indistinguishable apart from a lone ordinal). The distinct
+                // option_ordinal still separates the modes from one another.
+                LegalAction la(PASS_PRIORITY, ab.source, desc);
                 la.category = ActionCategory::CHOOSE_MODE;
                 la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
                 mode_actions.push_back(la);
