@@ -560,6 +560,21 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 continue;
             }
         }
+        // A mandatory choice armed DURING a resolution — the miracle trigger
+        // arming its cast window (CR 702.94a: that cast decision is part of the
+        // trigger's resolution, not a later priority action) — must be presented
+        // before priority is offered on the post-resolution state. A completed
+        // resolution reaches here without re-running the pre-advance check
+        // above, and letting the armed flag linger across one priority round
+        // breaks snapshot restores: the restored loop-top re-derivation DOES
+        // run the pre-advance check, so a search rooted at that priority
+        // decision re-derived the miracle prompt instead of its own menu (the
+        // az_mcts world-consistency violation).
+        if (cur_game.is_mandatory_choice_pending()) {
+            populate_gamestate(&gs, viewer);
+            proc_mandatory_choice(cur_game, sys.orderer);
+            continue;
+        }
         // Post-advance SBE: something resolved (or nothing advanced) this
         // iteration — run state-based effects before offering priority. A
         // resolution completed via the RESOLUTION dispatch lands here directly,
