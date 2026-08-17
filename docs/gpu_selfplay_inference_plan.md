@@ -99,10 +99,27 @@ can differ. Searches whose budget has leaf rollouts on (bo3 sideboard roots
 by default) keep the unchanged sequential path — a deferred leaf cannot
 drive a playout.
 
-Gates (`test_mcts_parity.py`): two EXACT uniform-evaluator legs — bo1 and
-bo3-sb-persist (with no net there is no GEMM, so cross vs sequential visits
-must match bit-for-bit; any difference is a scheduler bug) — plus a real-net
-argmax-agreement report (expected ~1.0, ulp flips on near-ties allowed).
+Gates (`test_mcts_parity.py`), all green 2026-08-17 (release actor, plus
+`make check` fully green on the same tree):
+
+- Every pre-existing batch=1 gate unchanged and exact (bo1 387 roots, bo3
+  2319, no-merge 931, both sb-budget modes).
+- `xw-uniform-bo1`: cross-world visits **bit-exact** vs sequential over
+  1968 searched roots (31488 root visits).
+- `xw-uniform-bo3-sb-persist`: **bit-exact** over 5337 roots (85360 visits)
+  — the sequential/cross mode split and boundary persistence hold together.
+- Real-net report: **387/387 = 1.000** argmax agreement over the full game —
+  the batched forward's ulp differences never flipped a decision (contrast
+  virtual-loss batch=16: 0.960 over only 25 roots before the games diverge).
+
+Measured (same bench protocol as the sweep below; note both legs play
+IDENTICAL games — equal decision counts — which is the arithmetic-identity
+property showing up live):
+
+| worlds | b=1 ms/dec | cross ms/dec | speedup |
+|-------:|-----------:|-------------:|--------:|
+|      4 |     1108.6 |        643.4 | **1.72x** |
+|      8 |     1022.7 |        471.2 | **2.17x** |
 
 Knob guidance: prefer `--worlds 8` at fixed `--sims` — doubles K *and*
 determinization coverage; sweep 4 vs 8 through the az-eval gate before
