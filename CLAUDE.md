@@ -66,7 +66,31 @@ The deprecated C++ raylib GUI was removed entirely; there is no `GUI=TRUE` build
 (`make HEADLESS=TRUE` is still accepted as a redundant no-op for backward compatibility.
 PySide6 is an optional Python extra: `pip install -r train/requirements-gui.txt`.)
 
-The compiled binary is output to `bin/robomage`.
+The compiled binary is output to `bin/<config>/robomage` — `bin/debug/robomage` from a plain
+`make`, `bin/release/robomage` from `make BUILD=RELEASE` (separate object/output trees per
+config, so switching `BUILD` never requires `make clean`).
+
+**Which binary the Python tooling runs is a separate, independent choice from which one you
+just built** — every `train/` entry point resolves its engine binary through `ROBOMAGE_BUILD`
+(`train/cli_spec.py`), defaulting to a build tier per tool:
+
+- **Debug by default** (`bin/debug/robomage`) — the test harness, `ci_check`/`make check`,
+  `observe`, `baseline`, and anything else driven by `common_args()`'s plain default: these are
+  correctness/verification tools, so the extra assertions (`-D_GLIBCXX_ASSERTIONS`, no `-O2`)
+  are worth the slowdown.
+- **Release by default** (`bin/release/robomage`) — the GUI (`gui.sh` / `play.py --gui`), the
+  standalone TUI analysis browser (`tui_analysis.py` / `analysis.py`'s `interactive`/`search`/
+  `browse` subcommands), and every PPO/AZ training driver (`train.py train/league/exploiter/
+  sweep/fixed-model/alternate/az-selfplay/az-train/az-eval/az/az-league`). These push a lot of
+  decisions through the engine where speed matters more than assertions, so a plain `make`
+  alone isn't enough for them — you also need `make BUILD=RELEASE` before running one, or they
+  fail to find `bin/release/robomage`.
+
+**Override**: set the `ROBOMAGE_BUILD` environment variable to force every tool (both tiers
+above) onto a specific config — e.g. `ROBOMAGE_BUILD=debug train/.venv/bin/python train/train.py
+league` runs training against the debug binary instead (useful to reproduce an assertion
+failure the debug build catches but release doesn't). Every subcommand also accepts an explicit
+`--binary <path>` flag as a per-invocation escape hatch, independent of `ROBOMAGE_BUILD`.
 
 **Codegen is part of the build.** The default `make` target runs `pygen` before compiling,
 which regenerates ALL auto-generated files **unconditionally on every build** (they

@@ -62,3 +62,5 @@ bin/*/az_actor
 # downloaded on demand, never committed. Delete misses.json to retry lookups.
 bin/resources/card_images/
 train/az/*
+bin/az_actor
+bin/robomage
