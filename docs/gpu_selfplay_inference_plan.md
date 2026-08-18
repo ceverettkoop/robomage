@@ -393,7 +393,12 @@ check (a distinct seat-B net must change the game), EXACT two-model visit
 parity vs a two-controller Python reference — one `ParitySearchController`
 per seat, each owning its evaluator, sharing one global root counter, i.e.
 literally an az_eval gate match on the Python backend — for bo1 AND
-bo3-sb-persist, plus a two-model cross-world agreement report.
+bo3-sb-persist, plus a two-model cross-world agreement report. All green
+2026-08-18 (debug actor, world-consistency instrumentation active): the
+bo3-sb-persist two-model parity ran exact over 2172 searched roots (33800
+root visits), and the two-model cross-world report agreed 570/570 = 1.000
+over the full bo1 game. `test_az_gate.py` (driver: tallies, determinism,
+guards) and the full default `make check` passed on the same tree.
 
 ## Follow-on (DESIGN): Stage I/II/III — the C++ actor behind interactive search
 
