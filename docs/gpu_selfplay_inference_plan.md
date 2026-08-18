@@ -1,12 +1,13 @@
 # Plan: cross-world leaf batching + GPU self-play inference (AMD RX 6700)
 
-Status: Stage 0 is IMPLEMENTED (actor `--cross-world`, exposed as
-`--cross-world` on `az-selfplay`/`az`/`az-league` and persisted in the
-az-league resume sidecar; gates in `test_mcts_parity.py`), and the
-**scripted-oracle vs-scripted mode is IMPLEMENTED** (see its section below) —
-Stages A and C are DESIGN. Scope is the **self-play generation** side of AZ
-training only — `az_train` SGD is fast enough on CPU and is deliberately out
-of scope.
+Status: EVERY stage is BUILT. Stage 0 (actor `--cross-world`, default ON —
+`--no-cross-world` disables, persisted in the az-league resume sidecar), the
+**scripted-oracle vs-scripted mode** (see its section below), the sanity check
+(PASSED — verdict **GO**, 2026-08-17, measured results in the sanity section,
+working torch pair pinned in the Install bullet), Stage A (`--device cuda` /
+`--actor-device`), and Stage C (`train/az_eval_server.py` + `--eval-server`,
+AUTO by default). Scope is the **self-play generation** side of AZ training
+only — `az_train` SGD is fast enough on CPU and is deliberately out of scope.
 
 Revision note: an earlier draft had a Stage B (multi-game actor processes via
 snapshot-multiplexed fibers). It is DROPPED: Stage C achieves cross-process
@@ -17,9 +18,9 @@ growth) buys nothing C doesn't. The remaining ladder:
 ```
 Stage 0  cross-world batching       (CPU, no quality cost, K = worlds)  [BUILT]
 Oracle   vs-scripted cells on the actor (scripted_oracle.py)            [BUILT]
-Sanity   time the net on the 6700   (10 minutes; gates all GPU work)
-Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)
-Stage C  central inference server   (K = fleet-wide, the KataGo shape)
+Sanity   time the net on the 6700   (10 minutes; gates all GPU work)   [PASSED — GO]
+Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)  [BUILT]
+Stage C  central inference server   (K = fleet-wide, the KataGo shape)  [BUILT]
 ```
 
 Throughout: `K` = rows per net forward.
@@ -41,9 +42,25 @@ Python-side code needs no AMD-specific branches. Constraints to plan around:
 - **No matrix cores** (WMMA is RDNA3+): plain shader FP32/FP16 throughput.
   Irrelevant at our scale — the fleet needs only ~3–6k leaf evals/s and even
   a few effective TFLOPS is orders of magnitude past that at batch 128–256.
-- **Install**: `pip install torch --index-url
-  https://download.pytorch.org/whl/rocm6.2` (libtorch ships inside the same
-  wheel — Stage A links against it).
+- **Install — the pinned working pair (verified 2026-08-17)**:
+  `train/.venv/bin/pip install torch==2.10.0+rocm7.0 --index-url
+  https://download.pytorch.org/whl/rocm7.0` (libtorch ships inside the same
+  wheel — Stage A links against it). Why this exact pair and not the ROCm 6.x
+  this bullet originally named: the venv is Python 3.14, and the rocm6.x
+  indexes top out at torch 2.9.1 for cp314 — whose `torch.jit.script` is
+  broken on 3.14 (`__annotations__` → `__annotate_func__`), so it can run but
+  not CREATE `.ts.pt` exports, which az training writes per candidate.
+  2.10.0+rocm7.0 passes the full sanity check on the 6700 (HIP 7.0 + the gfx
+  override, timings equivalent to 2.9.1+rocm6.4) and matches the torch
+  version the venv ran before the CUDA→ROCm swap.
+- **Swapping the venv's torch invalidates the actor binaries.**
+  `bin/{debug,release}/az_actor` link libtorch out of the venv by rpath but
+  are compiled against its headers; a version swap under existing binaries
+  crashes at runtime (observed: c10 `set_stride` abort from 2.9.1-era inlined
+  header code calling 2.10 libs). After ANY venv torch change: `make actor`,
+  `make actor BUILD=RELEASE`, then `train/.venv/bin/python train/ci_check.py
+  --tier actor` (full tier green on 2.10.0+rocm7.0, 2026-08-17: obs bit-exact,
+  MCTS visit parity exact incl. the cross-world gates, shard + trainer legs).
 
 ## Sanity check — run BEFORE any GPU engineering
 
@@ -76,6 +93,29 @@ ROCm wheel installed and `HSA_OVERRIDE_GFX_VERSION=10.3.0` exported:
    that's the launch-latency economics the whole plan is built around, not a
    failure. If the override crashes or numbers look broken, stop: stay on
    the CPU path (Stage 0 alone) until the ROCm situation changes.
+
+### Measured 2026-08-17 — PASSED, verdict GO
+
+torch `2.10.0+rocm7.0`, `HSA_OVERRIDE_GFX_VERSION=10.3.0`,
+`HIP_VISIBLE_DEVICES=0` (device 0 is the 6700; device 1 is the Raphael iGPU —
+pin it out), net `gen__azfinal.ts.pt` (OBS_SIZE 7161, MAX_ACTIONS 64),
+100 timed forwards after 10 warmups, no crashes:
+
+| k   | CPU ms/fwd | GPU ms/fwd | GPU rows/s | GPU/CPU |
+|-----|-----------|-----------|------------|---------|
+| 1   | 1.88      | 3.34      | 299        | 0.56x   |
+| 8   | 3.50      | 3.71      | 2 154      | 0.94x   |
+| 64  | 17.8      | 4.50      | 14 223     | 3.95x   |
+| 256 | 66.0      | 8.18      | 31 312     | 8.07x   |
+
+GPU@256 beats CPU-per-row (k=1) by **59x**; k=1 loses exactly as predicted,
+crossover sits near k≈8–16. CPU saturates ~3.9–4.1k rows/s regardless of
+batch; GPU@256 delivers ~31k rows/s — several times the fleet's ~3–6k leaf
+evals/s need. Implication for the ladder: at Stage 0/A's per-process
+K = worlds (default 4) the GPU does NOT pay (below crossover); the win is
+Stage C's fleet-wide K. (2.9.1+rocm6.4 measured equivalent — 8.54 ms @
+k=256 — so the ROCm major version is not the bottleneck; 2.10/rocm7.0 is
+pinned for the py3.14 `jit.script` fix.)
 
 ## Why not the existing `--batch K` (virtual loss)?
 
@@ -196,12 +236,26 @@ visit-parity gates, not statistical — `scripted-uniform` and `scripted-net`
 plus `scripted-xw-uniform` (cross-world + scripted seat composition, actor vs
 actor).
 
-## Stage A — HIP/ROCm in the actor
+## Stage A — HIP/ROCm in the actor — BUILT (2026-08-17)
 
 Smallest possible GPU step: same search, same K (= worlds), the forward moves
 to the Radeon. Its purpose is validating the ROCm build/link/runtime path in
 C++ and measuring small-K GPU economics on this exact card before the server
 work.
+
+Implemented as designed (items 1–3 below: `AZEvaluator::load(path, device)`
+with pinned staging + CPU prior math, the conditional `--no-as-needed`
+HIP link, `az_actor --device cpu|cuda` + the `--actor-device` pass-through on
+az-selfplay/az/az-league with the HSA override + `HIP_VISIBLE_DEVICES=0`
+exported by `_generate_actor`). Verified: a full cross-world searched game on
+the 6700 (1056 sims, clean GAME_RESULT). One landmine found and fixed:
+**TorchScript's NNC/TensorExpr fuser** effectively hangs (gdb-verified: the
+IRSimplifier grinds >4 min at 100% CPU on the first cuda forward) recompiling
+this gather-heavy module for the GPU — `AZEvaluator` now calls
+`torch::jit::setTensorExprFuserEnabled(false)` on non-cpu loads (the net is
+GEMM-dominated; fusion is worthless here). The CPU path never executes that
+branch, so the bit-parity envelope is untouched — `ci_check --tier actor`
+stays the machinery gate.
 
 1. **`AZEvaluator` device support** (`src/actor/az_evaluator.cpp`): `load()`
    takes a device string; `module_.to(device)`. `evaluate_double_batch`
@@ -228,12 +282,84 @@ work.
    break-even by design. The measurement (bench `--cross` leg with
    `--actor-device cuda`) decides how quickly to move to C.
 
-## Stage C — central inference server (the KataGo/ELF shape)
+## Stage C — central inference server (the KataGo/ELF shape) — BUILT (2026-08-17)
 
 One Radeon-owning server process; the existing one-game-per-process actor
 fleet submits leaf batches over IPC and blocks for results. Achieves
 fleet-wide K (workers x worlds rows in flight) with NO change to the actor's
 game/search structure.
+
+Implemented as designed below: `train/az_eval_server.py` (UDS, hello layout
+handshake, micro-timeout batching, raw logits + value replies, fresh server
+per generation pass) and the `AZEvaluator::connect_server` socket backend
+behind `az_actor --eval-server <socket>` (exactly one of --model/--uniform/
+--eval-server; the prior math stays local). Driver: the `--eval-server` flag
+on az-selfplay/az/az-league (persisted in the az-league resume sidecar) makes
+`_generate_actor` start the server (on `--actor-device`, default cuda, with
+the ROCm env exports), wait for READY, hand every actor the socket, and tear
+it down in the same `finally` as the fleet. The socket lives in a short
+`mkdtemp` dir — AF_UNIX paths cap at ~107 chars, so `out_dir` is not a safe
+home for it. Verified: single actor game over the socket (GPU server, clean
+GAME_RESULT, same outcome as the Stage A local-GPU game on the same seed) and
+an end-to-end `train.py az-selfplay --actor --eval-server` pass.
+
+Test/bench coverage (2026-08-17): `test_mcts_parity.py` gained a
+**`server-cpu` EXACT gate** (a CPU server must be bit-transparent through the
+wire protocol — PASS, 387/387 roots identical to the local forward; runs in
+CI with no GPU, rides the existing `actor` tier) and a **`server-gpu` drift
+REPORT** (one bo1 game, report-only, self-skips without a GPU — measured
+387/387 argmax agreement with visit-count L1 drift max=0: on this net the
+GPU's ulp differences flipped nothing). `--legs server` runs just these
+against a fresh local reference (~minutes) for protocol iteration; the
+default `--legs full` keeps every slow Python-reference gate.
+`bench_actor.py` gained `--device cpu|cuda`, `--eval-server DEV`, and
+`--fleet N` (N concurrent actors, per-leg evals/s column) for fleet
+throughput measurement. A strength gate (az-eval A/B, promotion-gated
+az-league slot) remains the deliberately-un-built track before
+--eval-server becomes a default.
+
+### Measured: fleet throughput (2026-08-17, the Ryzen 9 7950X + RX 6700 box)
+
+`ROBOMAGE_BUILD=release bench_actor.py --games 2 --sims 128 --worlds 8
+--cross --fleet 8 --eval-server cuda --no-python --seed 11` — 8 concurrent
+release actors per leg, 16 games/leg. All three legs produced the identical
+2478 decisions: cross-world is arithmetically identical to sequential and the
+server is bit-transparent, so every leg played the SAME games —
+apples-to-apples by construction.
+
+| leg (n=8)            | s/game | games/hr | ms/dec | fleet evals/s | speedup |
+|----------------------|-------:|---------:|-------:|--------------:|--------:|
+| CPU b=1              |  20.6  |    175   | 133.1  |     962       |  1.00x  |
+| CPU cross-world      |   6.3  |    573   |  40.6  |    3156       |  3.28x  |
+| cross-world + srv-gpu|   4.5  |    807   |  28.8  |    4442       | **4.62x** |
+
+Stage 0 alone: 3.28x at worlds=8 (better than the small-container 2.17x).
+The GPU server adds 1.41x on top — 4.62x total, ABOVE the ~3-3.5x ceiling
+projected from the container's engine floor (this box's floor is lower). The
+server ran at ~4.4k evals/s of its ~30k capability, so the engine is the
+bottleneck again as designed, with ~7x GPU headroom for a bigger fleet or
+higher sims.
+
+### Production defaults (2026-08-17)
+
+On the strength of the bit-exactness gates and the bench above, the actor
+backend now DEFAULTS to both stages, driver-side (the az_actor binary's own
+defaults are unchanged):
+
+- **Cross-world ON** (`generate(cross_world=True)`); kill switch
+  `--no-cross-world`. Zero quality cost by construction.
+- **Eval-server AUTO** (`eval_server=None`): `_generate_actor` tries to start
+  a cuda `az_eval_server`; if it cannot (no usable GPU — e.g. CI containers),
+  it prints a notice and falls back to local-CPU actors. `--eval-server`
+  forces it (fatal if it cannot start), `--no-eval-server` disables it.
+  Verified both ways: AUTO->GPU on this box; AUTO->clean CPU fallback with
+  `HIP_VISIBLE_DEVICES=-1`.
+
+Both knobs are persisted in the az-league resume sidecar (an interrupted
+pre-defaults run resumes with its OWN recorded settings, not the new
+defaults). All checked-in curricula compose to plain argv with no actor-knob
+overrides, so every az/az-league/az-selfplay phase inherits these defaults;
+PPO phases (league/exploiter/baseline) don't touch the actor backend.
 
 - **Transport**: Unix domain socket, length-prefixed binary frames.
   Request: `k, k x OBS_SIZE float32, k x int32 num_choices`. Reply:
@@ -269,24 +395,24 @@ game/search structure.
 
 The recipe for bringing all of this up on the RX 6700 box (Linux), in order —
 each step gates the next. Steps 1–4 are CPU-only and prove the machinery;
-5–6 are the GPU go/no-go; 7 is how to turn it on for real training.
+5–6 exercise the GPU paths; 7 is how it runs for real training.
 
 1. **Environment**: `python -m venv train/.venv` (or reuse; the repo's
    SessionStart hook / normal setup provisions the harness deps), then the
-   ROCm torch:
-   `pip install torch --index-url https://download.pytorch.org/whl/rocm6.2`.
-   Export `HSA_OVERRIDE_GFX_VERSION=10.3.0` in the shell profile (the 6700 is
-   `gfx1031`; this runs the supported `gfx1030` kernels). Pin the
-   ROCm/torch pair that works.
+   ROCm torch — the **pinned working pair from the Install bullet above**
+   (`torch==2.10.0+rocm7.0`). The launchers export
+   `HSA_OVERRIDE_GFX_VERSION=10.3.0` and `HIP_VISIBLE_DEVICES=0` for actor
+   and server processes themselves; export them in the shell profile too for
+   ad-hoc python.
 2. **Build**: `make BUILD=RELEASE && make actor BUILD=RELEASE` (the actor
-   auto-detects the venv libtorch), then `make check` — the default gate must
-   be green before anything else.
+   auto-detects the venv libtorch and links HIP when present), then
+   `make check` — the default gate must be green before anything else.
 3. **Parity suite** (CPU, release actor — the full machinery check):
    `ROBOMAGE_BUILD=release train/.venv/bin/python train/ci_check.py --tier actor`
    (or `train/test_mcts_parity.py` directly). Must print PASS for every gate:
-   the batch=1 legs, `xw-uniform-*` (cross-world scheduler bit-exact),
-   `scripted-uniform`/`scripted-net` (oracle routing bit-exact), and
-   `scripted-xw-uniform` (composition).
+   the batch=1 legs, `xw-uniform-*` (cross-world scheduler bit-exact), the
+   Stage C server legs, `scripted-uniform`/`scripted-net` (oracle routing
+   bit-exact), and `scripted-xw-uniform` (composition).
 4. **CPU throughput baselines** (single-thread; ratios are what matter):
    ```
    ROBOMAGE_BUILD=release train/.venv/bin/python train/bench_actor.py \
@@ -297,21 +423,72 @@ each step gates the next. Steps 1–4 are CPU-only and prove the machinery;
    The first reproduces the cross-world speedup (~2.2x at worlds=8); the
    second times the vs-scripted mode, C++ actor+oracle vs the Python backend
    on the identical workload.
-5. **GPU sanity check** (the ten-minute go/no-go from the section above):
-   confirm `torch.cuda.is_available()` names the Radeon, then time batched
-   TorchScript forwards CPU vs GPU at k in {1, 8, 64, 256}. GPU must win big
-   at k=256; GPU losing at k=1 is expected. A crash or garbage numbers =
-   stop; stay on the CPU path (Stage 0 + oracle already carry ~2-3x).
-6. **Stage A/C bring-up** (once built): rerun step 4's bench with the actor's
-   `--device cuda` (Stage A) or against the inference server (Stage C), and
-   rerun step 3 — the uniform gates are device-independent (no net), and the
-   net legs are argmax-agreement reports.
-7. **Turn it on for training**: `--cross-world` on `az-selfplay`/`az`/
-   `az-league` (persisted in the az-league resume sidecar; the whole matrix
-   incl. vs-scripted cells runs on the actor automatically when it is built).
-   Before making any new config the default for a long run, A/B it once
-   through `eval_search_gate.py` at equal sims and let one az-league slot
-   pass the az-eval promotion gate.
+5. **GPU sanity check** (the ten-minute go/no-go; PASSED 2026-08-17, results
+   in the sanity section): confirm `torch.cuda.is_available()` names the
+   Radeon, then time batched TorchScript forwards CPU vs GPU at k in
+   {1, 8, 64, 256}. GPU must win big at k=256; GPU losing at k=1 is expected.
+6. **GPU bench legs** (Stage A/C): rerun step 4's bench with `--device cuda`
+   (Stage A, local GPU forwards) and `--eval-server cuda --fleet N` (Stage C,
+   fleet-wide server batching — the production shape); the uniform parity
+   gates are device-independent, the net legs are argmax-agreement reports.
+7. **Real training**: the defaults already do the right thing —
+   `az-selfplay`/`az`/`az-league` run cross-world ON (`--no-cross-world`
+   disables) with eval-server AUTO (a cuda server if it starts, else
+   local-CPU actors), the whole matrix incl. vs-scripted cells on the actor.
+   All of it persists in the az-league resume sidecar. Before committing a
+   long run to a new config, A/B it once through `eval_search_gate.py` at
+   equal sims and let one az-league slot pass the az-eval promotion gate.
+
+## Follow-on (DESIGN): Stage I/II/III — the C++ actor behind interactive search
+
+The GUI board, the GUI analysis window, and the TUI analysis browser run the
+PYTHON search stack (`mcts.py` `run_search`/`IncrementalSearch` over
+`SearchRoboMageEnv`, evaluator on CPU) — none of the ladder above applies to
+them today, and pointing their k=1 evals at the GPU alone would be a LOSS
+(below the k≈8–16 crossover). The port that does pay is replacing the Python
+tree with the actor's — cross-world batching plus the C++/Python per-decision
+gap is roughly an order of magnitude more sims per second of think time, and
+the cpu/cuda/eval-server evaluator backends come along for free.
+
+Key insight making this small: the front ends never need the Python tree,
+only search RESULTS (per-action visits/Q/priors, PV boards, chunked
+progress), and they already keep analysis engines in lockstep by **engine
+seed + action-prefix replay** (`spawn_detached_mirror`, the F6 offline
+shard-replay search, the `.rmplay` sidecars). That replay contract is exactly
+the interface an actor process can accept — so the work is "teach the actor
+to be an interactive search service", not "rewrite the GUI". The live game's
+`bin/robomage --machine` subprocess, GameDriver, decode, shard recording
+(`on_result` is producer-agnostic), and the GUI itself are untouched;
+`AnalysisSession` is Qt-free and already isolates the searching engine
+behind a narrow seam, so it grows an `engine=actor` toggle with the Python
+path kept as fallback and parity reference.
+
+Stages, each flag-gated and bit-exactness-gated like Stages 0/A/C:
+
+- **Stage I — one-shot serve (play opponents + F6 review)** (~2 sessions):
+  `az_actor --serve` speaking a small stdio/UDS protocol — layout HELLO,
+  `NEWGAME seed decks bo3`, `STEP <action>` (forward replay for lockstep;
+  rewind = RESET + shorter prefix, today's respawn path), `SEARCH
+  sims/worlds/seeds` returning per-action rows (visits, Q, prior, per-world
+  values — already computed internally, today only file-dumped via
+  `--dump-visits`), plus a Python `ActorSearchClient` implementing the
+  surface `SearchController` expects. Play opponents and the F6 review use
+  one-shot searches, so this stage needs NO search-loop refactor.
+- **Stage II — chunked incremental search (live analysis window)**
+  (~1–2 sessions): restructure `AZMcts`'s sim loop into a resumable stepper
+  (run N sims -> report -> resume -> cancel; the `IncrementalSearch` shape).
+  Cross-world wrinkle: chunk boundaries must flush the shared PendingLeaf
+  batch (the finalize-tail logic already does this). Gate: chunked ==
+  unchunked, bit-exact.
+- **Stage III — PV/walk for the scrubber** (~1 session): walk the
+  argmax(visits) chain on a scratch world (the snapshot/restore machinery
+  sims already use), emitting the obs vector at each node via `obs_builder`;
+  the GUI's existing decode + `MiniBoard` render it unchanged.
+
+Gates: a serve-mode leg in `test_mcts_parity.py` asserting served visits ==
+`--dump-visits` == the Python reference for the same world seeds, plus the
+Stage II chunking-invariance gate. Sideboard budgets/rollouts/persistence
+and duplicate-edge merging are already in the actor and inherit.
 
 ## Cross-cutting: what guards quality at every stage
 

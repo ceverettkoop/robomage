@@ -115,6 +115,16 @@ expansions. Prefer bare `make` and `... | grep -i error` over
 `make 2>&1 | grep ... ; echo "EXIT:${PIPESTATUS[0]}"`; read the printed output for status
 instead of `$PIPESTATUS`.
 
+## Long-running commands (Claude)
+
+When Claude runs a long command (build, training, gate, fuzz, bench) it must run it **in the
+background** and make the live output inspectable by the user:
+
+- Always state the task's output-file path in chat when launching it, so the user can
+  `tail -f` it while it runs. (No symlinks or other indirection — just the path.)
+- Foreground runs stream nothing until they exit (for Claude AND the user), so anything
+  expected to take more than ~30 s should be backgrounded rather than run with a long timeout.
+
 ## Testing guidelines
 -**The standard gate is `make check`** (builds + runs `train/ci_check.py`: codegen-sync,
  vocab coverage, byte-identical replay corpus, deterministic league smoke, short fuzz). It

@@ -530,6 +530,46 @@ def _actor_mode():
             "built, else the pure-Python backend")
 
 
+def _actor_device():
+    """The --actor-device pass-through (az-selfplay / az / az-league): the C++
+    actor's ``--device`` (Stage A of docs/gpu_selfplay_inference_plan.md)."""
+    return Arg("--actor-device", "str", default="cpu",
+               help="Eval device for the C++ actor's net forwards: cpu (default) "
+                    "or cuda (the Radeon under the ROCm torch build; the launcher "
+                    "exports HSA_OVERRIDE_GFX_VERSION/HIP_VISIBLE_DEVICES for the "
+                    "actor processes). Python-backend games ignore it. With "
+                    "--eval-server it selects the SERVER's device instead "
+                    "(cpu -> the server still defaults to cuda).")
+
+
+def _eval_server():
+    """The --eval-server | --no-eval-server pair (az-selfplay / az /
+    az-league): Stage C central inference (docs/gpu_selfplay_inference_plan.md).
+    Default (neither) is AUTO: start a cuda server iff the box has a usable
+    GPU, else fall back to local-CPU actors with a printed notice."""
+    return MutexGroup([
+        Arg("--eval-server", "flag",
+            help="Force the central train/az_eval_server.py: one GPU-owning "
+                 "server, every C++ actor evaluates leaves over its Unix "
+                 "socket (fleet-wide forward batches). Error if it cannot "
+                 "start. Actor backend only; fresh server per generation pass."),
+        Arg("--no-eval-server", "flag",
+            help="Never start the central server — actors load the net and "
+                 "forward locally (on --actor-device)."),
+    ], label="eval-server",
+       help="Central-inference server — (neither) = AUTO: use a cuda server "
+            "iff it starts (no usable GPU -> local-CPU actors, with a notice)")
+
+
+def _no_cross_world():
+    """--no-cross-world (az-selfplay / az / az-league): Stage 0 kill switch."""
+    return Arg("--no-cross-world", "flag",
+               help="Disable the actor's cross-world batched leaf evaluation "
+                    "(default ON — visits are arithmetically identical to the "
+                    "sequential search, ~1.7-3.3x per decision; see "
+                    "docs/gpu_selfplay_inference_plan.md Stage 0)")
+
+
 # n-step TD knobs. Two sides of one scheme, so their help lives in one place and
 # is reused verbatim by every subcommand that exposes them: --td-n is a
 # GENERATION knob (it is baked into the shard's td_q column at pack time), --q-mix
@@ -913,12 +953,6 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
-        Arg("--cross-world", "flag",
-            help="Actor backend only: round-robin the determinized worlds and "
-                 "batch one leaf per world per net forward (no virtual loss; "
-                 "visits identical to the unbatched search, ~1.7-2.2x per "
-                 "searched root — docs/gpu_selfplay_inference_plan.md). "
-                 "Inert on the Python backend."),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
         Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
@@ -946,7 +980,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); else a "
                  "uniform league-roster draw"),
         Arg("--out", "str", default=None, help="Output dir (default az_data/gen)"),
-        Arg("--seed", "int", default=1, help="Base RNG seed"),
+        Arg("--seed", "int", default=None,
+            help="Base RNG seed (default: randomly drawn at launch and "
+                 "printed, so the run stays reproducible after the fact)"),
         Arg("--expert", "flag",
             help="Write EXPERT demonstration shards instead of self-play: "
                  "scripted:hard pilots both seats and pi is a one-hot on the "
@@ -959,6 +995,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "combo deck's demonstrations come from games it actually "
                  "wins. Default: hard both seats, both recorded"),
         _actor_mode(),
+        _actor_device(),
+        _eval_server(),
+        _no_cross_world(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
@@ -1025,12 +1064,6 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
-        Arg("--cross-world", "flag",
-            help="Actor backend only: round-robin the determinized worlds and "
-                 "batch one leaf per world per net forward (no virtual loss; "
-                 "visits identical to the unbatched search, ~1.7-2.2x per "
-                 "searched root — docs/gpu_selfplay_inference_plan.md). "
-                 "Inert on the Python backend."),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
@@ -1118,7 +1151,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
                  "wins. Default: hard both seats, both recorded"),
-        Arg("--seed", "int", default=1),
+        Arg("--seed", "int", default=None,
+            help="Base RNG seed (default: randomly drawn at launch and printed)"),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per self-play game "
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); "
@@ -1133,6 +1167,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Run bo1 self-play + gate. The az cycle defaults to bo3 matches "
                  "with a per-game value target; this opts back into single games"),
         _actor_mode(),
+        _actor_device(),
+        _eval_server(),
+        _no_cross_world(),
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
@@ -1157,12 +1194,6 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
-        Arg("--cross-world", "flag",
-            help="Actor backend only: round-robin the determinized worlds and "
-                 "batch one leaf per world per net forward (no virtual loss; "
-                 "visits identical to the unbatched search, ~1.7-2.2x per "
-                 "searched root — docs/gpu_selfplay_inference_plan.md). "
-                 "Inert on the Python backend."),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
@@ -1271,8 +1302,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "combo deck's demonstrations come from games it actually "
                  "wins. Persisted in the resume sidecar. Default: hard both "
                  "seats, both recorded"),
-        Arg("--seed", "int", default=1,
-            help="Base RNG seed (slot i uses seed+i)"),
+        Arg("--seed", "int", default=None,
+            help="Base RNG seed (slot i uses seed+i; default: randomly drawn "
+                 "at launch and printed — a --resume run restores the "
+                 "sidecar's recorded seed instead)"),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per self-play game "
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); "
@@ -1289,6 +1322,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "bo3 matches with a per-game value target; this opts back into "
                  "single games (persisted in the resume sidecar)"),
         _actor_mode(),
+        _actor_device(),
+        _eval_server(),
+        _no_cross_world(),
     ]),
 ])
 

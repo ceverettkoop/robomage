@@ -242,13 +242,16 @@ def _read_visits_dump(path):
 
 def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
                merge_dupes=True, cross_world=False, uniform=False,
-               deck_b=None, scripted_sock=None):
+               deck_b=None, scripted_sock=None, eval_server=None):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
            "--dump-visits", dump_path, "--games", "1",
            "--merge-dupes", str(int(merge_dupes))]
-    cmd += ["--uniform"] if uniform else ["--model", ts_path]
+    if eval_server is not None:
+        cmd += ["--eval-server", eval_server]
+    else:
+        cmd += ["--uniform"] if uniform else ["--model", ts_path]
     if cross_world:
         cmd.append("--cross-world")
     if deck_b is not None:
@@ -268,6 +271,41 @@ def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
               + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
         return None
     return _read_visits_dump(dump_path)
+
+
+def _start_eval_server(ts_path, sock, device):
+    """Start train/az_eval_server.py and wait for its READY line. Returns the
+    Popen, or None if the server died before READY (e.g. --device cuda on a
+    box with no usable GPU — the caller treats that as a skip, not a failure).
+    The ROCm RDNA2 env overrides are applied for a cuda server, mirroring
+    az_selfplay._generate_actor."""
+    server_py = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             "az_eval_server.py")
+    env = dict(os.environ)
+    if device != "cpu":
+        env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
+        env.setdefault("HIP_VISIBLE_DEVICES", "0")
+    proc = subprocess.Popen([sys.executable, server_py, "--model", ts_path,
+                             "--socket", sock, "--device", device],
+                            env=env, text=True, bufsize=1,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in proc.stdout:
+        if line.startswith("READY "):
+            # Drain further output so the pipe never fills.
+            import threading
+            threading.Thread(target=lambda: [None for _ in proc.stdout],
+                             daemon=True).start()
+            return proc
+    proc.wait()
+    return None
+
+
+def _stop_eval_server(proc):
+    proc.terminate()
+    try:
+        proc.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        proc.kill()
 
 
 def _python_reference(ts_path, bo3, sb_budget=False, sb_persist=False,
@@ -371,7 +409,91 @@ def _sb_root_summary(records, is_sb):
     return f"{len(sums)} sideboard root(s), visit totals {sums}"
 
 
+def _server_legs(td, ts_path, actor1):
+    """Stage C legs (docs/gpu_selfplay_inference_plan.md), compared against
+    ``actor1`` (the local --model bo1 visit records).
+
+    (a) EXACT gate, --device cpu: a CPU server forwards the SAME TorchScript
+    module single-threaded, and the client keeps the prior math local — so the
+    wire protocol must be bit-transparent: server-backed visits equal the local
+    --model visits exactly. Runs in CI with no GPU.
+
+    (b) REPORT, --device cuda, ONE bo1 game: the GPU's GEMMs may differ from
+    CPU in last-ulp logits, so visits may drift — quantified as argmax
+    agreement + visit L1 over the aligned prefix (not asserted; ulp flips on
+    near-ties are legitimate). Skips cleanly where no usable GPU exists (the
+    server dies before READY)."""
+    sock = os.path.join(td, "evs")
+    server = _start_eval_server(ts_path, sock, "cpu")
+    if server is None:
+        print("FAIL [server-cpu]: az_eval_server.py exited before READY",
+              file=sys.stderr)
+        return 1
+    try:
+        dump_srv = os.path.join(td, "visits_server_cpu.bin")
+        actor_srv = _run_actor(ts_path, dump_srv, batch=1, eval_server=sock)
+    finally:
+        _stop_eval_server(server)
+    if actor_srv is None:
+        return 1
+    rc, total_sims = _compare_visits("server-cpu", actor_srv, actor1)
+    if rc:
+        print("FAIL [server-cpu]: server-backed visits diverged from the "
+              "local --model search (the 'actor'/'python' rows above are "
+              "server/local) — the wire protocol or the client's local "
+              "prior math is not bit-transparent", file=sys.stderr)
+        return rc
+    print(f"PASS [server-cpu]: eval-server visits bit-exact vs local "
+          f"forward over {len(actor_srv)} searched roots ({total_sims} "
+          f"total root visits)")
+
+    server = _start_eval_server(ts_path, sock, "cuda")
+    if server is None:
+        print("REPORT: server-gpu drift skipped (no usable GPU — "
+              "az_eval_server --device cuda died before READY)")
+        return 0
+    try:
+        dump_gpu = os.path.join(td, "visits_server_gpu.bin")
+        actor_gpu = _run_actor(ts_path, dump_gpu, batch=1, eval_server=sock)
+    finally:
+        _stop_eval_server(server)
+    if actor_gpu is None:
+        print("WARN: server-gpu run failed; skipping drift report",
+              file=sys.stderr)
+        return 0
+    prefix = 0
+    for (r1, nc1, _), (rg, ncg, _) in zip(actor1, actor_gpu):
+        if r1 != rg or nc1 != ncg:
+            break
+        prefix += 1
+    agree = sum(1 for i in range(prefix)
+                if int(np.argmax(actor1[i][2])) == int(np.argmax(actor_gpu[i][2])))
+    frac = agree / prefix if prefix else 1.0
+    drift = [int(np.abs(actor_gpu[i][2] - actor1[i][2]).sum())
+             for i in range(prefix)]
+    diverged = "" if prefix == len(actor1) else (
+        f"; games diverge after root {prefix} "
+        f"(cpu {len(actor1)} roots, gpu {len(actor_gpu)} roots)")
+    print(f"REPORT: server-gpu vs local-cpu (one bo1 game) argmax agreement "
+          f"over {prefix} comparable roots = {agree}/{prefix} = {frac:.3f}; "
+          f"visit-count L1 drift max={max(drift) if drift else 0} "
+          f"mean={sum(drift)/len(drift):.2f}{diverged}"
+          if drift else
+          f"REPORT: server-gpu vs local-cpu: no comparable roots{diverged}")
+    return 0
+
+
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(
+        description="MCTS visit-parity gates (C++ actor vs Python reference)")
+    ap.add_argument("--legs", choices=["full", "server"], default="full",
+                    help="'full' (default) runs every gate incl. the slow "
+                         "Python-reference legs; 'server' runs only the Stage C "
+                         "eval-server legs against a fresh local bo1 reference "
+                         "(~minutes — for iterating on server/protocol work)")
+    args = ap.parse_args()
+
     if not os.path.exists(ACTOR_BIN):
         print(f"FAIL: {ACTOR_BIN} not found — build it with `make actor`",
               file=sys.stderr)
@@ -385,6 +507,17 @@ def main():
         net.save(ckpt)
         ts_path = torchscript_export_path(ckpt)
         save_torchscript(net, ts_path)
+
+        if args.legs == "server":
+            # Fast path: one local bo1 game as the reference, then the Stage C
+            # legs only — no Python-reference searches.
+            dump1 = os.path.join(td, "visits_b1_bo1.bin")
+            actor1 = _run_actor(ts_path, dump1, batch=1)
+            if actor1 is None:
+                return 1
+            print(f"[legs=server] local bo1 reference: {len(actor1)} searched "
+                  f"roots")
+            return _server_legs(td, ts_path, actor1)
 
         # bo1 game AND a full bo3 match. The bo3 case exercises the between-games
         # sideboard-phase decisions, which are now SEARCHED MCTS roots on BOTH
@@ -561,6 +694,11 @@ def main():
             f"(batch=1 {len(actor1)} roots, cross-world {len(actorxw)} roots)")
         print(f"REPORT: cross-world vs batch=1 (net) argmax agreement over "
               f"{prefix} comparable roots = {agree}/{prefix} = {frac:.3f}{diverged}")
+
+        # 7) Stage C central inference server.
+        rc = _server_legs(td, ts_path, actor1)
+        if rc:
+            return rc
 
         # ── Vs-scripted parity (actor + scripted oracle vs the Python
         # reference). Both sides run the IDENTICAL scripted_agent code on

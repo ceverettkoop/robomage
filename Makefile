@@ -108,12 +108,21 @@ all: pygen program
 # a keyword), which is exactly how a stale card_props.py got committed. Running the
 # generators unconditionally here closes that hole; they write-if-changed
 # (train/gen_util.py), so an unchanged output keeps its mtime and forces no recompile.
-# stdout is muted (real failures raise and exit nonzero); errors still surface on stderr.
+# Each generator announces itself and reports OK/FAILED; WARNING lines (e.g. a missing
+# card script zeroing a cost row) are surfaced instead of muted, the rest of the
+# verbose output is kept quiet, and a failure dumps the generator's full log.
 pygen:
-	@$(PYTHON) train/gen_enums.py >/dev/null
-	@$(PYTHON) train/gen_card_costs.py >/dev/null
-	@$(PYTHON) train/gen_card_props.py >/dev/null
-	@$(PYTHON) train/gen_archetypes.py >/dev/null
+	@echo "[pygen] regenerating codegen (enums, card costs, card props, archetypes)"
+	@for g in gen_enums gen_card_costs gen_card_props gen_archetypes; do \
+	  log=$$(mktemp); \
+	  if $(PYTHON) train/$$g.py >$$log 2>&1; then \
+	    grep -i "warning" $$log | sed "s/^[[:space:]]*/[pygen] $$g: /"; \
+	    echo "[pygen] $$g OK"; \
+	  else \
+	    cat $$log; echo "[pygen] $$g FAILED"; rm -f $$log; exit 1; \
+	  fi; \
+	  rm -f $$log; \
+	done
 
 # The generated C++ mirror headers (src/gen/*.h) are #included by the engine, and
 # src/gen/card_costs_gen.h is UNTRACKED — so guarantee pygen has produced them before any
@@ -192,11 +201,22 @@ TORCH_INCLUDES := -isystem $(LIBTORCH_DIR)/include -isystem $(LIBTORCH_DIR)/incl
 ACTOR_CXXFLAGS := $(filter-out -fno-exceptions,$(CXXFLAGS)) $(TORCH_INCLUDES)
 ACTOR_IFLAGS := $(IFLAGS) -I$(SRCDIR)
 
+# When the venv torch is a ROCm build (libtorch_hip.so present), link the HIP
+# backend too so `az_actor --device cuda` can reach the Radeon. The libs must be
+# wrapped in --no-as-needed: nothing references their symbols directly (the
+# backend registers itself via static initializers), so without it the linker
+# drops them and the device silently never exists — the same gotcha as CUDA's
+# torch_cuda. CPU-only venvs build exactly as before.
+ACTOR_TORCH_LIBS := -ltorch -ltorch_cpu -lc10
+ifneq (,$(wildcard $(LIBTORCH_DIR)/lib/libtorch_hip.so))
+ACTOR_TORCH_LIBS += -Wl,--no-as-needed -ltorch_hip -lc10_hip -Wl,--as-needed
+endif
+
 actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/az_actor $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ) \
 		$(LDFLAGS) $(LDLIBS) $(PLATFLAGS) \
-		-L$(LIBTORCH_DIR)/lib -ltorch -ltorch_cpu -lc10 -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
+		-L$(LIBTORCH_DIR)/lib $(ACTOR_TORCH_LIBS) -Wl,-rpath,$(abspath $(LIBTORCH_DIR)/lib)
 
 # ── actor-syntax — libtorch-free compile check of the actor's obs layout mirror ──
 # obs_builder.{h,cpp} carries the actor's copy of the observation layout, pinned by

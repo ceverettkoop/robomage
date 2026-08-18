@@ -719,6 +719,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              eval_worlds: int = DEFAULT_AZ_EVAL_WORLDS,
              promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD, seed: int = 1,
              use_actor: Optional[bool] = None,
+             actor_device: str = "cpu",
+             eval_server: Optional[bool] = None,
+             cross_world: bool = True,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
@@ -730,7 +733,6 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              exhaustive_selfplay: bool = False,
              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
-             cross_world: bool = False,
              slot: int = 0) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
@@ -813,6 +815,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                sb_rollout_turns=sb_rollout_turns,
                                sb_persist=bool(sb_persist),
                                workers=workers, seed=seed, use_actor=use_actor,
+                               actor_device=actor_device,
+                               eval_server=eval_server,
+                               cross_world=cross_world,
                                roster=roster, focus_decks=focus,
                                mirror_frac=mirror_frac,
                                scripted_opponent_frac=scripted_opponent_frac,
@@ -820,7 +825,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                exhaustive_selfplay=exhaustive_selfplay,
                                exhaustive_repeats=exhaustive_repeats,
                                scripted_cells=scripted_cells, slot=slot,
-                               cross_world=cross_world, td_n=td_n)
+                               td_n=td_n)
     experts = _resolve_expert_decks(expert_decks)
     if experts:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
@@ -921,13 +926,15 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               exhaustive_selfplay: bool = False,
               exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
               scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
-              cross_world: bool = False,
               gate_floor: float = DEFAULT_GATE_FLOOR,
               gate_every: int = DEFAULT_GATE_EVERY,
               expert_decks=EXPERT_DECKS_ROSTER,
               expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
               expert_opponent: Optional[str] = None,
-              use_actor: Optional[bool] = None, resume: bool = False,
+              use_actor: Optional[bool] = None, actor_device: str = "cpu",
+              eval_server: Optional[bool] = None,
+              cross_world: bool = True,
+              resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
 
@@ -1030,7 +1037,6 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         exhaustive_selfplay = bool(p.get("exhaustive_selfplay", False))
         exhaustive_repeats = int(p.get("exhaustive_repeats", 1))
         scripted_cells = int(p.get("scripted_cells", 0))
-        cross_world = bool(p.get("cross_world", False))
         gate_floor = float(p.get("gate_floor", gate_floor))
         gate_every = int(p.get("gate_every", gate_every))
         # The RAW user value (sentinel included) is what the sidecar carries;
@@ -1042,6 +1048,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         expert_games = int(p.get("expert_games", expert_games))
         expert_opponent = p.get("expert_opponent", expert_opponent)
         use_actor = p.get("use_actor", use_actor)
+        actor_device = p.get("actor_device", actor_device)
+        eval_server = p.get("eval_server", eval_server)
+        cross_world = bool(p.get("cross_world", cross_world))
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
         results = list(state.get("results", []))
@@ -1108,11 +1117,13 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "exhaustive_selfplay": exhaustive_selfplay,
             "exhaustive_repeats": exhaustive_repeats,
             "scripted_cells": scripted_cells,
-            "cross_world": cross_world,
             "gate_floor": gate_floor, "gate_every": gate_every,
             "expert_decks": expert_decks,
             "expert_games": expert_games,
             "expert_opponent": expert_opponent, "use_actor": use_actor,
+            "actor_device": actor_device,
+            "eval_server": eval_server,
+            "cross_world": cross_world,
             "bo3": bo3,
         },
     }
@@ -1213,6 +1224,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
+                       actor_device=actor_device,
+                       eval_server=eval_server,
+                       cross_world=cross_world,
                        mirror_frac=mirror_frac,
                        scripted_opponent_frac=scripted_opponent_frac,
                        gate_floor=gate_floor,
@@ -1222,8 +1236,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        exhaustive=exhaustive,
                        exhaustive_selfplay=exhaustive_selfplay,
                        exhaustive_repeats=exhaustive_repeats,
-                       scripted_cells=scripted_cells,
-                       cross_world=cross_world, slot=si)
+                       scripted_cells=scripted_cells, slot=si)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         last_snapshot = tr.get("snapshot")
         if ev is None:
@@ -1313,6 +1326,7 @@ def _split_decks(val) -> Optional[list]:
 
 
 def run_cycle(args) -> None:
+    import az_selfplay
     # --deck (comma-joined multipick) is the FOCUS pool and --opponents the
     # opponent pool for this cycle's self-play + gating; either default (None/empty)
     # falls back to the whole decks/league/ roster inside az_cycle. So a bare
@@ -1334,7 +1348,7 @@ def run_cycle(args) -> None:
              window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
              promote_threshold=args.promote_threshold,
-             seed=args.seed if args.seed is not None else 1,
+             seed=az_selfplay.resolve_seed(args, "az"),
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
@@ -1345,16 +1359,19 @@ def run_cycle(args) -> None:
              expert_opponent=getattr(args, "expert_opponent", None),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
+             actor_device=getattr(args, "actor_device", "cpu"),
+             eval_server=az_selfplay.resolve_eval_server(args),
+             cross_world=not getattr(args, "no_cross_world", False),
              exhaustive=getattr(args, "exhaustive", False),
              exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
              exhaustive_repeats=getattr(args, "exhaustive_repeats",
                                         DEFAULT_AZ_EXHAUSTIVE_REPEATS),
              scripted_cells=getattr(args, "scripted_cells",
-                                    DEFAULT_AZ_SCRIPTED_CELLS),
-             cross_world=bool(getattr(args, "cross_world", False)))
+                                    DEFAULT_AZ_SCRIPTED_CELLS))
 
 
 def run_league(args) -> None:
+    import az_selfplay
     az_league(decks=args.decks, rotations=args.rotations,
               cycles_per_deck=args.cycles_per_deck,
               games=args.games, sims=args.sims, worlds=args.worlds,
@@ -1370,7 +1387,7 @@ def run_league(args) -> None:
               window=args.window, eval_games=args.eval_games,
               eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
               promote_threshold=args.promote_threshold,
-              seed=args.seed if args.seed is not None else 1,
+              seed=az_selfplay.resolve_seed(args, "az-league"),
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
               scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
               matrix=getattr(args, "matrix", False),
@@ -1380,7 +1397,6 @@ def run_league(args) -> None:
                                          DEFAULT_AZ_EXHAUSTIVE_REPEATS),
               scripted_cells=getattr(args, "scripted_cells",
                                      DEFAULT_AZ_SCRIPTED_CELLS),
-              cross_world=bool(getattr(args, "cross_world", False)),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
               gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
               # Raw value: az_cycle resolves the roster/none sentinel per slot.
@@ -1388,7 +1404,11 @@ def run_league(args) -> None:
                                                 EXPERT_DECKS_ROSTER)),
               expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
               expert_opponent=getattr(args, "expert_opponent", None),
-              use_actor=_resolve_use_actor(args), resume=args.resume,
+              use_actor=_resolve_use_actor(args),
+              actor_device=getattr(args, "actor_device", "cpu"),
+              eval_server=az_selfplay.resolve_eval_server(args),
+              cross_world=not getattr(args, "no_cross_world", False),
+              resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
 

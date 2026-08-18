@@ -950,8 +950,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
              slot: int = 0,
-             cross_world: bool = False,
-             td_n: int = DEFAULT_TD_N) -> dict:
+             td_n: int = DEFAULT_TD_N,
+             actor_device: str = "cpu",
+             eval_server: Optional[bool] = None,
+             cross_world: bool = True) -> dict:
     """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
     ``games`` is a count of MATCHES (bo1: one game each; bo3: up to three games
@@ -1156,14 +1158,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
                                sb_rollout_turns=sb_rollout_turns,
                                sb_persist=sb_persist,
                                scripted_seats=scripted_seats,
+                               actor_device=actor_device,
+                               eval_server=eval_server,
                                cross_world=cross_world,
                                **common)
-    if cross_world:
-        # The Python search has no cross-world scheduler (mcts.py evaluates
-        # leaves one at a time); the knob is actor-only, so say so rather than
-        # silently ignoring it.
-        print("[az-selfplay] note: --cross-world is inert on the PYTHON "
-              "backend (actor-only leaf batching)")
     return _generate_python(deck, bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth,
                             sb_rollout_turns=sb_rollout_turns,
@@ -1363,6 +1361,7 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        sb_persist=bool(DEFAULT_SB_PERSIST),
                        merge_dupes=True,
                        td_n=DEFAULT_TD_N, batch=1, cross_world=False,
+                       device="cpu", eval_server=None,
                        scripted_seat=None, scripted_oracle=None) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
@@ -1386,9 +1385,14 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     knob (mutually exclusive with batch>1): round-robin the worlds and batch
     one leaf per world per forward with NO virtual loss, so visits stay
     arithmetically identical to the unbatched search (see
-    docs/gpu_selfplay_inference_plan.md, Stage 0). Both flags are only
-    appended when non-default, so the default argv stays byte-identical to
-    the pre-batch builder.
+    docs/gpu_selfplay_inference_plan.md, Stage 0). ``device`` is the actor's
+    ``--device`` (Stage A): "cpu" (default) or "cuda" — the Radeon under the
+    ROCm torch build. ``eval_server`` (Stage C) is the Unix-socket path of a
+    running ``train/az_eval_server.py``; when set the actor evaluates leaves
+    there instead of loading the model locally (``--eval-server`` replaces
+    ``--model``; ``device`` is inert — the server owns the device). All of
+    these are only appended when non-default, so the default argv stays
+    byte-identical to the pre-batch builder.
 
     ``scripted_seat`` ('A'/'B', with ``scripted_oracle`` = the oracle's Unix
     socket path) puts scripted:hard on that seat via train/scripted_oracle.py —
@@ -1396,10 +1400,12 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     the other (net) seat, mirroring _play_match's agent/net_is_a mode."""
     if (scripted_seat is None) != (scripted_oracle is None):
         raise ValueError("scripted_seat and scripted_oracle go together")
+    model_args = (["--eval-server", eval_server] if eval_server
+                  else ["--model", model])
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
-           "--model", model, "--out-dir", out_dir,
+           *model_args, "--out-dir", out_dir,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
            "--temp-moves", str(temp_moves),
@@ -1412,6 +1418,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     if scripted_seat is not None:
         cmd += ["--scripted-seat", str(scripted_seat),
                 "--scripted-oracle", str(scripted_oracle)]
+    if device != "cpu" and not eval_server:
+        cmd += ["--device", device]
     if bo3:
         cmd += ["--bo3",
                 "--sb-sims", str(sb_sims),
@@ -1458,18 +1466,37 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                     sb_persist=bool(DEFAULT_SB_PERSIST),
                     merge_dupes=True,
-                    scripted_seats=None, cross_world=False,
-                    td_n=DEFAULT_TD_N) -> dict:
+                    scripted_seats=None,
+                    td_n=DEFAULT_TD_N, actor_device="cpu",
+                    eval_server=None, cross_world=True) -> dict:
     """``scripted_seats`` (optional) is a per-match parallel list of
     Optional[bool] net_is_a values, same shape :func:`_generate_python` takes:
     ``None`` = pure self-play, else scripted:hard pilots the OTHER seat via the
-    scripted oracle (one oracle process serves every group of the pass)."""
+    scripted oracle (one oracle process serves every group of the pass).
+
+    ``eval_server`` is tri-state: True forces the Stage C central server
+    (fatal if it cannot start), False disables it, and None — the default —
+    is AUTO: try to start a cuda server and fall back to local-CPU actors
+    with a printed notice when the box has no usable GPU. ``cross_world``
+    (default True) turns on Stage 0 cross-world leaf batching — visits are
+    arithmetically identical to the sequential search, so it is pure speed."""
     import glob
     import shlex
     import shutil
     import subprocess
+    import tempfile
     import threading
     from collections import Counter
+
+    # Stage A (docs/gpu_selfplay_inference_plan.md): a cuda actor on the ROCm
+    # build needs the RDNA2 override in ITS environment — export it here in the
+    # launcher (respecting an existing value) instead of relying on the shell.
+    # HIP_VISIBLE_DEVICES pins device 0 (the discrete card; device 1 is the CPU's
+    # iGPU, which the gfx override would misconfigure). The Stage C central
+    # server needs the same env (it owns the GPU), so build it for either mode.
+    gpu_env = dict(os.environ)
+    gpu_env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
+    gpu_env.setdefault("HIP_VISIBLE_DEVICES", "0")
 
     ts_path, tmpdir = _ensure_actor_torchscript(source)
     out_dir = os.path.abspath(out_dir)
@@ -1505,6 +1532,53 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     pre = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
     total_samples = 0
     agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
+
+    # Stage C: one central inference server owns the GPU for the whole fleet;
+    # each actor connects with --eval-server instead of loading the net. The
+    # socket lives in a short mkdtemp dir (AF_UNIX paths cap at ~107 chars, so
+    # out_dir is not a safe home for it). Fresh server per generation pass —
+    # startup is seconds and checkpoint rotation stays trivial.
+    server_proc = None
+    server_sock = None
+    server_dir = None
+    if eval_server is not False:
+        import sys
+        server_dir = tempfile.mkdtemp(prefix="azev-")
+        server_sock = os.path.join(server_dir, "s")
+        server_py = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "az_eval_server.py")
+        server_cmd = [sys.executable, server_py,
+                      "--model", ts_path, "--socket", server_sock,
+                      "--device", actor_device if actor_device != "cpu" else "cuda"]
+        server_proc = subprocess.Popen(server_cmd, env=gpu_env, text=True, bufsize=1,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT)
+        ready = False
+        for line in server_proc.stdout:
+            print(f"[az-selfplay] {line.rstrip()}", flush=True)
+            if line.startswith("READY "):
+                ready = True
+                break
+        if ready:
+            # Keep draining its output so the pipe never fills.
+            threading.Thread(target=lambda: [None for _ in server_proc.stdout],
+                             daemon=True).start()
+        else:
+            rc = server_proc.wait()
+            server_proc = None
+            server_sock = None
+            shutil.rmtree(server_dir, ignore_errors=True)
+            server_dir = None
+            if eval_server:  # forced — no silent fallback
+                raise RuntimeError(
+                    f"az_eval_server exited before READY (rc={rc})")
+            print("[az-selfplay] eval-server AUTO: no usable GPU (server "
+                  "failed to start) — actors run local-CPU forwards",
+                  flush=True)
+    print(f"[az-selfplay] actor eval: "
+          f"{'central server at ' + server_sock if server_sock else 'local ' + actor_device}"
+          f", cross-world={'on' if cross_world else 'off'}", flush=True)
+    actor_env = gpu_env if (actor_device != "cpu" and server_sock is None) else None
 
     # Live progress: a reader thread per group echoes each actor SELFPLAY: game
     # line as it lands (with a running cross-group total + ETA) while accumulating
@@ -1545,10 +1619,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
             sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
             sb_persist=sb_persist, merge_dupes=merge_dupes, td_n=td_n,
+            device=actor_device, eval_server=server_sock,
             cross_world=cross_world, scripted_seat=st,
             scripted_oracle=(oracle_sock if st is not None else None))
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
-        p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
+        p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1, env=actor_env,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out_lines, err_lines = [], []
         threads = [
@@ -1635,6 +1710,14 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             shutil.rmtree(oracle_dir, ignore_errors=True)
         if tmpdir:
             shutil.rmtree(tmpdir, ignore_errors=True)
+        if server_proc is not None:
+            server_proc.terminate()
+            try:
+                server_proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                server_proc.kill()
+        if server_dir:
+            shutil.rmtree(server_dir, ignore_errors=True)
 
     post = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
     all_shards = sorted(post - pre)
@@ -1830,6 +1913,33 @@ def _resolve_use_actor(args) -> Optional[bool]:
     return None
 
 
+def resolve_seed(args, label="az-selfplay") -> int:
+    """--seed N -> N. No --seed -> a randomly drawn base seed, PRINTED so the
+    run stays reproducible after the fact (and persisted by the drivers'
+    resume sidecars). Under --resume the sidecar's recorded seed wins anyway,
+    so no draw happens (and no misleading print)."""
+    if getattr(args, "seed", None) is not None:
+        return int(args.seed)
+    if getattr(args, "resume", False):
+        return 1  # discarded: the resume sidecar restores its recorded seed
+    import random
+    seed = random.SystemRandom().randrange(1, 2**31)
+    print(f"[{label}] --seed not given: randomly drawn base seed = {seed}",
+          flush=True)
+    return seed
+
+
+def resolve_eval_server(args) -> Optional[bool]:
+    """--eval-server -> True (forced), --no-eval-server -> False, neither ->
+    None (AUTO: use a cuda central server iff it starts). Shared with
+    az_train's dispatch so both entrances resolve identically."""
+    if getattr(args, "eval_server", False):
+        return True
+    if getattr(args, "no_eval_server", False):
+        return False
+    return None
+
+
 def run(args) -> None:
     """train.py dispatch entry."""
     if getattr(args, "expert", False):
@@ -1838,12 +1948,12 @@ def run(args) -> None:
         generate_expert(args.deck, games=args.games,
                         mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
                         bo3=True, out_dir=args.out,
-                        seed=args.seed if args.seed is not None else 1,
+                        seed=resolve_seed(args),
                         opponent=getattr(args, "expert_opponent", None))
         return
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
              workers=args.workers, checkpoint=args.checkpoint,
-             temp_moves=args.temp_moves, seed=args.seed if args.seed is not None else 1,
+             temp_moves=args.temp_moves, seed=resolve_seed(args),
              out_dir=args.out, use_actor=_resolve_use_actor(args),
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
@@ -1853,8 +1963,10 @@ def run(args) -> None:
                                       DEFAULT_SB_ROLLOUT_TURNS),
              sb_persist=bool(getattr(args, "sb_persist", DEFAULT_SB_PERSIST)),
              merge_dupes=bool(getattr(args, "merge_dupes", 1)),
-             cross_world=bool(getattr(args, "cross_world", False)),
-             td_n=int(getattr(args, "td_n", DEFAULT_TD_N)))
+             td_n=int(getattr(args, "td_n", DEFAULT_TD_N)),
+             actor_device=getattr(args, "actor_device", "cpu"),
+             eval_server=resolve_eval_server(args),
+             cross_world=not getattr(args, "no_cross_world", False))
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -1877,11 +1989,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                     help="Merge interchangeable duplicate menu actions into one "
                          "search edge (decode.menu_merge_reps; default 1, pass "
                          "0 for the legacy per-copy edges)")
-    ap.add_argument("--cross-world", action="store_true",
-                    help="Actor backend only: round-robin the determinized "
-                         "worlds and batch one leaf per world per net forward "
-                         "(no virtual loss; visits identical to the unbatched "
-                         "search — see docs/gpu_selfplay_inference_plan.md)")
+    ap.add_argument("--no-cross-world", action="store_true",
+                    help="Disable the actor's cross-world batched leaf "
+                         "evaluation (on by default; no virtual loss — visits "
+                         "identical to the unbatched search, see "
+                         "docs/gpu_selfplay_inference_plan.md)")
     ap.add_argument("--td-n", type=int, default=DEFAULT_TD_N,
                     help="n-step TD horizon baked into each sample's td_q "
                          "(default %d); the chain is shortened at the next "
