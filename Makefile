@@ -210,7 +210,7 @@ actor: pygen $(ENGINE_OBJ_NO_MAIN) $(ACTOR_OBJ)
 # reason: it is the C++ twin of az_selfplay.py's n-step TD rule and must stay
 # compilable wherever libtorch is not installed.
 ACTOR_SYNTAX_SRCS := $(SRCDIR)/actor/obs_builder.cpp $(SRCDIR)/actor/npz_writer.cpp \
-                     $(SRCDIR)/actor/td_targets.cpp
+                     $(SRCDIR)/actor/td_targets.cpp $(SRCDIR)/actor/oracle_client.cpp
 
 actor-syntax: pygen
 	@for f in $(ACTOR_SYNTAX_SRCS); do \

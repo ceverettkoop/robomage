@@ -21,10 +21,13 @@ drive it in bo3.
 net+MCTS (focus seat) against the rule-based scripted:hard agent (opponent seat)
 instead of against itself; only the net seat's decisions become samples
 (:func:`_play_match`'s ``agent``/``net_is_a``). ``f=1.0`` trains entirely
-against the scripted agent. That path is Python-backend only (the C++ actor is pure self-play).
+against the scripted agent. Vs-scripted matches run on EITHER backend: the C++
+actor ships the scripted seat's real decisions to train/scripted_oracle.py
+(one shared oracle process per pass), so the same scripted:hard agent answers
+whichever backend plays the match.
 ``generate(exhaustive=True)`` plays the exact matchup matrix instead of a random
-draw, splitting HYBRID across both backends: actor for the pure self-play cells,
-Python for the vs-scripted cells (see :func:`_generate_hybrid`).
+draw; with the actor built the WHOLE matrix (self-play and vs-scripted cells
+alike) runs on the actor, vs-scripted cells via the oracle.
 ``generate(exhaustive_selfplay=True)`` narrows that matrix to the pure self-play
 cells only (one match per unordered deck pair, no scripted/Python component), and
 ``exhaustive_repeats=n`` plays every cell of the matrix n times.
@@ -207,8 +210,8 @@ def build_exhaustive_schedule_ex(focus_decks, opponent_decks, seed: int,
     :func:`rotating_scripted_pairs` gives this ``slot``, so a run's slots tile the
     whole ordered list over time. They are added ONCE per call (an absolute
     per-slot count, NOT multiplied by ``repeats``) and marked exactly like the
-    full matrix's scripted cells, so the hybrid backend routes them to Python
-    while the actor keeps the self-play cells.
+    full matrix's scripted cells, so the actor plays them via the scripted
+    oracle right alongside the self-play cells.
 
     The seeded RNG randomizes only each cell's seat assignment and the
     interleaving of the two families (scripted cells cost less wall-clock than
@@ -947,6 +950,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
              slot: int = 0,
+             cross_world: bool = False,
              td_n: int = DEFAULT_TD_N) -> dict:
     """Generate ``games`` self-play MATCHES over a FOCUS pool and write shards.
 
@@ -977,19 +981,16 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     become samples (see :func:`_play_match`'s ``agent``/``net_is_a``). Which
     matches get a scripted opponent is drawn from a dedicated seeded RNG stream
     indexed per match, so it is reproducible and independent of the worker
-    count. The C++ actor has no scripted-opponent support, so a nonzero
-    fraction FORCES the
-    Python backend (and is a loud error alongside an explicit ``use_actor=True``).
+    count. Vs-scripted matches run on either backend: the actor plays them via
+    the scripted oracle (--scripted-seat), the Python backend in-process.
 
     ``exhaustive`` replaces the random schedule with the exact matchup MATRIX of
     :func:`build_exhaustive_schedule_ex`: one vs-scripted match per ORDERED
     (focus x roster) pair plus one pure self-play match per UNORDERED pair —
     155 matches on the 10-deck league roster, each cell exactly once. ``games``,
-    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored (loudly). The
-    backend goes HYBRID (:func:`_generate_hybrid`): the C++ actor, when built,
-    plays the pure self-play cells and the Python backend the vs-scripted cells
-    (the actor has no scripted seat); ``use_actor=False`` keeps everything on
-    Python, ``use_actor=True`` demands the actor binary but remains hybrid.
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored (loudly). With
+    the actor built the WHOLE matrix runs on the actor (vs-scripted cells via
+    the oracle); ``use_actor=False`` keeps everything on Python.
 
     ``exhaustive_selfplay`` (implies ``exhaustive``) narrows that matrix to the
     pure SELF-PLAY family only — one match per UNORDERED deck pair, mirrors
@@ -1003,8 +1004,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     the full ordered (focus, opponent) pair list starting at offset
     ``(slot * k) % n_ordered`` and wrapping, so an az-league run's successive
     ``slot``s tile every ordered pair over time (a standalone cycle is slot 0).
-    They are marked exactly like the full matrix's scripted cells, so the backend
-    goes HYBRID for them — actor self-play cells, Python scripted cells — with no
+    They are marked exactly like the full matrix's scripted cells, so the actor
+    plays them via the scripted oracle alongside the self-play cells with no
     special-casing. ``k=0`` disables; it is IGNORED (with a printed note) under
     full ``exhaustive``, which already plays every ordered pair.
 
@@ -1050,10 +1051,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
         roster = league_roster()
     focus = list(focus_decks) if focus_decks else [deck]
 
-    # Build the schedule BEFORE choosing a backend: whether this run needs the
-    # hybrid split is a property of the schedule (does it contain vs-scripted
-    # cells?), not of the exhaustive flags — a self-play matrix carrying a
-    # rotating scripted_cells slice needs the split just as the full matrix does.
+    # Build the schedule BEFORE choosing a backend: the per-match scripted
+    # seats are a property of the schedule (which cells are vs-scripted?), not
+    # of the exhaustive flags — a self-play matrix carrying a rotating
+    # scripted_cells slice carries seats just as the full matrix does.
     if exhaustive:
         sched_ex, scripted_seats = build_exhaustive_schedule_ex(
             focus, roster, seed, include_scripted=not exhaustive_selfplay,
@@ -1094,45 +1095,19 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
         # backend-agnostic (the .bo3_migrated sentinel gates it either way) and
         # runs regardless of which backend generates the bo3 shards below.
         _discard_pre_bo3_shards(out_dir)
-    requested = use_actor        # None = AUTO, True = --actor, False = --no-actor
+    # use_actor: None = AUTO (use the actor iff built), True = --actor, False = --no-actor
     if use_actor is None:
         use_actor = have_actor
         chosen = "AUTO"
     else:
         chosen = "forced"
-    hybrid = False
-    if exhaustive and n_scr and n_scr < len(schedule):
-        # HYBRID backend: the C++ actor (when built) plays the pure self-play
-        # cells while the Python backend plays the vs-scripted cells (the actor
-        # has no scripted-opponent seat). --no-actor keeps everything on the
-        # Python path; --actor demands the binary but is still hybrid — the
-        # scripted cells can never run on the actor.
-        if requested is False:
-            chosen = "forced PYTHON"
-        elif not have_actor:
-            if requested is True:
-                raise FileNotFoundError(
-                    f"--actor requested but the actor binary is not built at "
-                    f"{_ACTOR_BIN} (build it with `make actor`, or pass "
-                    f"--no-actor)")
-            chosen = "AUTO->PYTHON (actor absent)"
-        else:
-            hybrid = True
-            chosen = "HYBRID (forced)" if requested is True else "AUTO->HYBRID"
-        use_actor = False
-    elif exhaustive and n_scr:
-        # Degenerate matrix: every cell is a vs-scripted cell (e.g. a one-deck
-        # roster whose only self-play cell was dropped) — pure Python.
-        use_actor = False
-        chosen += "->PYTHON (all cells vs-scripted)"
-    elif use_actor and scripted_opponent_frac > 0.0:
-        if chosen == "forced":
-            raise ValueError(
-                "--actor is incompatible with --scripted-opponent-frac > 0: the "
-                "C++ az_actor plays pure self-play (no scripted-opponent seat). "
-                "Drop --actor (or pass --no-actor) to use the Python backend.")
-        use_actor = False
-        chosen = "AUTO->PYTHON (scripted opponent)"
+    # Vs-scripted cells no longer demote to the Python backend: the actor plays
+    # them natively by shipping the scripted seat's real decisions to
+    # train/scripted_oracle.py (--scripted-seat/--scripted-oracle), so the SAME
+    # scripted:hard agent answers either way and _generate_actor takes a MIXED
+    # schedule (groups keyed by matchup + scripted seat, one shared oracle
+    # process per pass). The Python backend remains the --no-actor /
+    # actor-absent path; the old HYBRID actor+Python split is retired.
     if use_actor and not have_actor:
         raise FileNotFoundError(
             f"--actor requested but the actor binary is not built at {_ACTOR_BIN} "
@@ -1158,8 +1133,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
         print(f"[az-selfplay] scripted-opponent games: {n_scripted}/{len(schedule)} "
               f"({how}; scripted:hard on the opponent seat, "
               f"net samples only)")
-    backend_lbl = ("HYBRID" if hybrid
-                   else "ACTOR" if use_actor else "PYTHON")
+    backend_lbl = "ACTOR" if use_actor else "PYTHON"
+    if use_actor and scripted_seats is not None and any(
+            s is not None for s in scripted_seats):
+        backend_lbl = "ACTOR+ORACLE"
     print(f"[az-selfplay] backend={backend_lbl} ({chosen}); "
           f"az_actor {'present' if have_actor else 'absent'}")
 
@@ -1168,101 +1145,30 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed, td_n=td_n,
                   merge_dupes=merge_dupes)
-    if hybrid:
-        return _generate_hybrid(deck, scripted_seats=scripted_seats,
-                                actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
-                                sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
-                                sb_rollout_turns=sb_rollout_turns,
-                                sb_persist=sb_persist, **common)
     if use_actor:
         # The C++ actor mirrors the Python match loop for bo3 (Stage 6), including
         # the searched sideboard roots — pass bo3 + the sb budget through so the
         # actor argv carries --bo3 and --sb-sims/--sb-worlds/--sb-max-depth. The
-        # sb_* knobs are inert for bo1.
+        # sb_* knobs are inert for bo1. Vs-scripted matches ride the same pass:
+        # scripted_seats keys the per-group --scripted-seat/--scripted-oracle.
         return _generate_actor(deck, actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
                                sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
                                sb_rollout_turns=sb_rollout_turns,
                                sb_persist=sb_persist,
+                               scripted_seats=scripted_seats,
+                               cross_world=cross_world,
                                **common)
+    if cross_world:
+        # The Python search has no cross-world scheduler (mcts.py evaluates
+        # leaves one at a time); the knob is actor-only, so say so rather than
+        # silently ignoring it.
+        print("[az-selfplay] note: --cross-world is inert on the PYTHON "
+              "backend (actor-only leaf batching)")
     return _generate_python(deck, bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
                             sb_max_depth=sb_max_depth,
                             sb_rollout_turns=sb_rollout_turns,
                             sb_persist=sb_persist, scripted_seats=scripted_seats,
                             **common)
-
-
-# ----------------------------------------------------------------------
-# Hybrid backend (exhaustive matrix: actor self-play + Python vs-scripted)
-# ----------------------------------------------------------------------
-
-# Seed offset for the hybrid's actor pass, so its per-group seed ranges never
-# collide with the Python pass's game seeds run in the same invocation.
-_HYBRID_ACTOR_SEED_OFFSET = 10_000_019
-
-
-def _merge_summaries(a: dict, b: dict) -> dict:
-    """Fold two backend summary dicts (same shape both backends return) into
-    one: samples/shards concatenate, stats sum key-wise (a key missing from one
-    side counts 0)."""
-    stats = dict(a["stats"])
-    for k, v in b["stats"].items():
-        stats[k] = stats.get(k, 0) + v
-    return {"samples": a["samples"] + b["samples"],
-            "shards": list(a["shards"]) + list(b["shards"]),
-            "stats": stats, "out_dir": a["out_dir"], "source": a["source"]}
-
-
-def _generate_hybrid(deck, *, source, schedule, scripted_seats, sims, worlds,
-                     workers, temp_moves, root_noise_eps, root_noise_alpha,
-                     out_dir, seed, actor_bin, bo3=False,
-                     sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
-                     sb_max_depth=DEFAULT_SB_MAX_DEPTH,
-                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                     sb_persist=bool(DEFAULT_SB_PERSIST),
-                     merge_dupes=True,
-                     td_n=DEFAULT_TD_N) -> dict:
-    """Split an exhaustive-matrix schedule across BOTH backends: the C++ actor
-    plays the pure self-play cells (it is much faster per match), the Python
-    multiprocess backend the vs-scripted cells (the actor has no scripted seat).
-    The passes run sequentially, each with the full ``workers`` budget, and both
-    write trainer-compatible ``shard_*.npz`` files into the same ``out_dir``
-    (filenames are globally unique), so the merged summary's shard list is
-    exactly what an auto (``window=0``) training window should count.
-
-    The actor pass runs on a derived seed stream
-    (``seed + _HYBRID_ACTOR_SEED_OFFSET``) so its game seeds never collide with
-    the Python pass's; per-pass reproducibility is unchanged."""
-    self_sched = [m for m, s in zip(schedule, scripted_seats) if s is None]
-    scr_sched = [m for m, s in zip(schedule, scripted_seats) if s is not None]
-    scr_seats = [s for s in scripted_seats if s is not None]
-    print(f"[az-selfplay] hybrid split: {len(self_sched)} pure self-play "
-          f"matches -> ACTOR, {len(scr_sched)} vs-scripted matches -> PYTHON "
-          f"(sequential, {workers} workers each)")
-    kw = dict(source=source, sims=sims, worlds=worlds, workers=workers,
-              temp_moves=temp_moves, root_noise_eps=root_noise_eps,
-              root_noise_alpha=root_noise_alpha, out_dir=out_dir, bo3=bo3,
-              sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
-              sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
-              merge_dupes=merge_dupes, td_n=td_n)
-    summaries = []
-    if self_sched:
-        print(f"[az-selfplay] hybrid pass 1/2: ACTOR ({len(self_sched)} matches)")
-        summaries.append(_generate_actor(
-            deck, schedule=self_sched, seed=seed + _HYBRID_ACTOR_SEED_OFFSET,
-            actor_bin=actor_bin, **kw))
-    if scr_sched:
-        print(f"[az-selfplay] hybrid pass 2/2: PYTHON ({len(scr_sched)} "
-              f"vs-scripted matches)")
-        summaries.append(_generate_python(
-            deck, schedule=scr_sched, seed=seed, scripted_seats=scr_seats,
-            **kw))
-    merged = summaries[0]
-    for s in summaries[1:]:
-        merged = _merge_summaries(merged, s)
-    print(f"[az-selfplay] hybrid done: {merged['samples']} samples, "
-          f"{len(merged['shards'])} shards from {len(schedule)} matches "
-          f"(ACTOR {len(self_sched)} + PYTHON {len(scr_sched)})")
-    return merged
 
 
 # ----------------------------------------------------------------------
@@ -1456,7 +1362,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                        sb_persist=bool(DEFAULT_SB_PERSIST),
                        merge_dupes=True,
-                       td_n=DEFAULT_TD_N, batch=1, cross_world=False) -> list:
+                       td_n=DEFAULT_TD_N, batch=1, cross_world=False,
+                       scripted_seat=None, scripted_oracle=None) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -1481,7 +1388,14 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     arithmetically identical to the unbatched search (see
     docs/gpu_selfplay_inference_plan.md, Stage 0). Both flags are only
     appended when non-default, so the default argv stays byte-identical to
-    the pre-batch builder."""
+    the pre-batch builder.
+
+    ``scripted_seat`` ('A'/'B', with ``scripted_oracle`` = the oracle's Unix
+    socket path) puts scripted:hard on that seat via train/scripted_oracle.py —
+    the actor ships that seat's real decisions to the oracle and searches only
+    the other (net) seat, mirroring _play_match's agent/net_is_a mode."""
+    if (scripted_seat is None) != (scripted_oracle is None):
+        raise ValueError("scripted_seat and scripted_oracle go together")
     cmd = [actor_bin, "--selfplay", "--deck", deck,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds),
@@ -1495,6 +1409,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
         cmd += ["--batch", str(batch)]
     if cross_world:
         cmd += ["--cross-world"]
+    if scripted_seat is not None:
+        cmd += ["--scripted-seat", str(scripted_seat),
+                "--scripted-oracle", str(scripted_oracle)]
     if bo3:
         cmd += ["--bo3",
                 "--sb-sims", str(sb_sims),
@@ -1509,6 +1426,30 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     return cmd
 
 
+def _spawn_oracle():
+    """Start train/scripted_oracle.py on a fresh Unix socket and block until it
+    signals ready. Returns (proc, socket_path, tmpdir); the caller terminates
+    the proc and removes tmpdir. One oracle serves every actor process of a
+    pass (per-connection agents), so this is called at most once per pass."""
+    import subprocess
+    import sys
+    import tempfile
+    tmpdir = tempfile.mkdtemp(prefix="rm_oracle_")
+    sock = os.path.join(tmpdir, "oracle.sock")
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "scripted_oracle.py")
+    r, w = os.pipe()
+    proc = subprocess.Popen([sys.executable, script, "--socket", sock,
+                             "--ready-fd", str(w)], pass_fds=(w,))
+    os.close(w)
+    ready = os.read(r, 1)
+    os.close(r)
+    if not ready:
+        proc.wait()
+        raise RuntimeError("scripted oracle failed to start (see stderr above)")
+    return proc, sock, tmpdir
+
+
 def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
                     actor_bin, bo3=False, sb_sims=DEFAULT_SB_SIMS,
@@ -1517,7 +1458,12 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                     sb_persist=bool(DEFAULT_SB_PERSIST),
                     merge_dupes=True,
+                    scripted_seats=None, cross_world=False,
                     td_n=DEFAULT_TD_N) -> dict:
+    """``scripted_seats`` (optional) is a per-match parallel list of
+    Optional[bool] net_is_a values, same shape :func:`_generate_python` takes:
+    ``None`` = pure self-play, else scripted:hard pilots the OTHER seat via the
+    scripted oracle (one oracle process serves every group of the pass)."""
     import glob
     import shlex
     import shutil
@@ -1533,11 +1479,28 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     games = len(schedule)
     unit = "matches" if bo3 else "games"
 
-    # Group the schedule into per-(deck_a, deck_b) actor invocations so each actor
-    # process runs one matchup batch (mirror or cross-deck) with a DISJOINT seed
-    # range. Groups are run with bounded concurrency (<= workers at a time).
-    groups = [((da, db), n) for (da, db), n in sorted(Counter(schedule).items())]
+    # Group the schedule into per-(deck_a, deck_b, scripted-seat) actor
+    # invocations so each actor process runs one matchup batch (mirror or
+    # cross-deck, self-play or vs-scripted) with a DISJOINT seed range. Groups
+    # are run with bounded concurrency (<= workers at a time). The seat letter
+    # is the SCRIPTED seat ('A'/'B', from the schedule's net_is_a: net on A ->
+    # scripted B), None for pure self-play.
+    if scripted_seats is None:
+        seats = [None] * len(schedule)
+    else:
+        seats = [None if s is None else ("B" if s else "A")
+                 for s in scripted_seats]
+    keyed = list(zip(schedule, seats))
+    groups = sorted(Counter(keyed).items(),
+                    key=lambda kv: (kv[0][0], kv[0][1] or ""))
     total_groups = len(groups)
+
+    # One shared oracle process for every vs-scripted group of this pass.
+    oracle_proc = None
+    oracle_sock = None
+    oracle_dir = None
+    if any(st is not None for st in seats):
+        oracle_proc, oracle_sock, oracle_dir = _spawn_oracle()
 
     pre = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
     total_samples = 0
@@ -1572,7 +1535,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         stream.close()
 
     def _launch(gi):
-        (da, db), n = groups[gi]
+        ((da, db), st), n = groups[gi]
         base = seed + gi * 100000
         cmd = actor_selfplay_cmd(
             actor_bin, deck=da, deck_b=db, seed=base, games=n,
@@ -1581,7 +1544,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
             bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
             sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-            sb_persist=sb_persist, merge_dupes=merge_dupes, td_n=td_n)
+            sb_persist=sb_persist, merge_dupes=merge_dupes, td_n=td_n,
+            cross_world=cross_world, scripted_seat=st,
+            scripted_oracle=(oracle_sock if st is not None else None))
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1594,8 +1559,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         ]
         for t in threads:
             t.start()
-        return {"gi": gi, "da": da, "db": db, "n": n, "p": p, "cmd": cmd,
-                "threads": threads, "out": out_lines, "err": err_lines}
+        return {"gi": gi, "da": da, "db": db, "st": st, "n": n, "p": p,
+                "cmd": cmd, "threads": threads, "out": out_lines,
+                "err": err_lines}
 
     failed = []
 
@@ -1613,8 +1579,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         agg["wins_a"] += wa
         agg["wins_b"] += wb
         agg["draws"] += dr
-        print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}: {unit}={rec['n']} "
-              f"samples={s} A={wa} B={wb} draws={dr}")
+        lbl = "" if rec["st"] is None else f" (scripted {rec['st']})"
+        print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}{lbl}: "
+              f"{unit}={rec['n']} samples={s} A={wa} B={wb} draws={dr}")
 
     cap = max(1, workers)
     active = []
@@ -1661,6 +1628,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         for rec in active:
             if rec["p"].poll() is None:
                 rec["p"].terminate()
+        if oracle_proc is not None:
+            oracle_proc.terminate()
+            oracle_proc.wait()
+        if oracle_dir:
+            shutil.rmtree(oracle_dir, ignore_errors=True)
         if tmpdir:
             shutil.rmtree(tmpdir, ignore_errors=True)
 
@@ -1881,6 +1853,7 @@ def run(args) -> None:
                                       DEFAULT_SB_ROLLOUT_TURNS),
              sb_persist=bool(getattr(args, "sb_persist", DEFAULT_SB_PERSIST)),
              merge_dupes=bool(getattr(args, "merge_dupes", 1)),
+             cross_world=bool(getattr(args, "cross_world", False)),
              td_n=int(getattr(args, "td_n", DEFAULT_TD_N)))
 
 
@@ -1904,6 +1877,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                     help="Merge interchangeable duplicate menu actions into one "
                          "search edge (decode.menu_merge_reps; default 1, pass "
                          "0 for the legacy per-copy edges)")
+    ap.add_argument("--cross-world", action="store_true",
+                    help="Actor backend only: round-robin the determinized "
+                         "worlds and batch one leaf per world per net forward "
+                         "(no virtual loss; visits identical to the unbatched "
+                         "search — see docs/gpu_selfplay_inference_plan.md)")
     ap.add_argument("--td-n", type=int, default=DEFAULT_TD_N,
                     help="n-step TD horizon baked into each sample's td_q "
                          "(default %d); the chain is shortened at the next "

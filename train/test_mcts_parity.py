@@ -51,6 +51,9 @@ import runner
 from search_env import SearchRoboMageEnv
 
 DECK = "league/ur_delver"
+# Opponent deck of the vs-scripted parity legs (cross-deck, so the scripted
+# agent's deck-aware heuristics see real deck names on both sides).
+SCRIPTED_DECK_B = "league/gw_maverick"
 SEED = 1
 SIMS = 16
 WORLDS = 2
@@ -238,7 +241,8 @@ def _read_visits_dump(path):
 
 
 def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
-               merge_dupes=True, cross_world=False, uniform=False):
+               merge_dupes=True, cross_world=False, uniform=False,
+               deck_b=None, scripted_sock=None):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
@@ -247,6 +251,10 @@ def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
     cmd += ["--uniform"] if uniform else ["--model", ts_path]
     if cross_world:
         cmd.append("--cross-world")
+    if deck_b is not None:
+        cmd += ["--deck-b", deck_b]
+    if scripted_sock is not None:
+        cmd += ["--scripted-seat", "B", "--scripted-oracle", scripted_sock]
     if bo3:
         cmd.append("--bo3")
     if sb is not None:
@@ -284,6 +292,41 @@ def _python_reference(ts_path, bo3, sb_budget=False, sb_persist=False,
     finally:
         env.close()
     return ctrl.records, ctrl.is_sb, ctrl.rep_records
+
+
+def _python_reference_scripted(ts_path, deck_b, uniform=False):
+    """The vs-scripted twin of :func:`_python_reference` (bo1): net+MCTS on
+    seat A (ParitySearchController, same seed formula), scripted:hard on seat B
+    — the EXACT `_play_match` agent/net_is_a semantics: the scripted seat's
+    decisions come from ``agent.act`` on the same obs the actor ships to the
+    oracle, with no search, no record, and (bo1) one ``new_game`` at start.
+    Both sides run the identical scripted_agent code on bit-identical
+    observations, so whole-game visit parity is EXACT, not statistical."""
+    from mcts import UniformEvaluator
+    from scripted_agent import make_agent
+    ev = UniformEvaluator() if uniform else TSEvaluator(ts_path)
+    ctrl = ParitySearchController(ev)
+    agent = make_agent("scripted:hard")
+    agent.set_deck_names(DECK, deck_b)
+    env = SearchRoboMageEnv(deck_a=DECK, deck_b=deck_b)
+    env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    ctrl.bind_env(env)
+    try:
+        env.reset(options={"engine_seed": SEED})
+        agent.new_game()
+        done = False
+        while not done:
+            nc = env._num_choices
+            o = env._obs
+            if o[_SELF_IS_A_IDX] > 0.5:
+                a = ctrl.choose(o, nc)
+            else:
+                a = int(agent.act(o, nc)) if nc > 1 else 0
+            _obs, _r, term, trunc, _info = env.step(a)
+            done = term or trunc
+    finally:
+        env.close()
+    return ctrl.records
 
 
 def _compare_visits(tag, actor1, py):
@@ -518,6 +561,60 @@ def main():
             f"(batch=1 {len(actor1)} roots, cross-world {len(actorxw)} roots)")
         print(f"REPORT: cross-world vs batch=1 (net) argmax agreement over "
               f"{prefix} comparable roots = {agree}/{prefix} = {frac:.3f}{diverged}")
+
+        # ── Vs-scripted parity (actor + scripted oracle vs the Python
+        # reference). Both sides run the IDENTICAL scripted_agent code on
+        # bit-identical observations (obs builder parity), so these are EXACT
+        # gates like bo1 — under the real net too, since only the net seat
+        # searches and its evaluator is the same TorchScript graph on both
+        # sides. Cross-deck matchup so the agent's deck-aware heuristics see
+        # real deck names. The composition leg then pins cross-world + scripted
+        # (actor vs actor, uniform, no Python needed).
+        import az_selfplay
+        oracle_proc, oracle_sock, oracle_dir = az_selfplay._spawn_oracle()
+        try:
+            for tag, uni in (("scripted-uniform", True), ("scripted-net", False)):
+                d_scr = os.path.join(td, f"visits_{tag}.bin")
+                a_scr = _run_actor(None if uni else ts_path, d_scr, batch=1,
+                                   uniform=uni, deck_b=SCRIPTED_DECK_B,
+                                   scripted_sock=oracle_sock)
+                if a_scr is None:
+                    return 1
+                py_scr = _python_reference_scripted(ts_path, SCRIPTED_DECK_B,
+                                                    uniform=uni)
+                rc, total_sims = _compare_visits(tag, a_scr, py_scr)
+                if rc:
+                    return rc
+                print(f"PASS [{tag}]: vs-scripted visit parity exact over "
+                      f"{len(a_scr)} searched roots ({total_sims} total root "
+                      f"visits) [net seat A, scripted:hard seat B via oracle, "
+                      f"{DECK} vs {SCRIPTED_DECK_B}]")
+            d_sx = os.path.join(td, "visits_scripted_xw.bin")
+            a_sx = _run_actor(None, d_sx, batch=1, uniform=True,
+                              deck_b=SCRIPTED_DECK_B, scripted_sock=oracle_sock,
+                              cross_world=True)
+            if a_sx is None:
+                return 1
+            d_ss = os.path.join(td, "visits_scripted_seq.bin")
+            a_ss = _run_actor(None, d_ss, batch=1, uniform=True,
+                              deck_b=SCRIPTED_DECK_B, scripted_sock=oracle_sock)
+            if a_ss is None:
+                return 1
+            rc, total_sims = _compare_visits("scripted-xw-uniform", a_ss, a_sx)
+            if rc:
+                print("FAIL [scripted-xw-uniform]: cross-world + scripted-seat "
+                      "composition diverged from the sequential scheduler "
+                      "(the 'actor'/'python' rows above are sequential/"
+                      "cross-world)", file=sys.stderr)
+                return rc
+            print(f"PASS [scripted-xw-uniform]: cross-world + scripted seat "
+                  f"bit-exact vs sequential over {len(a_ss)} searched roots "
+                  f"({total_sims} total root visits, uniform evaluator)")
+        finally:
+            import shutil
+            oracle_proc.terminate()
+            oracle_proc.wait()
+            shutil.rmtree(oracle_dir, ignore_errors=True)
     return 0
 
 

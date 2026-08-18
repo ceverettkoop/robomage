@@ -913,6 +913,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
+        Arg("--cross-world", "flag",
+            help="Actor backend only: round-robin the determinized worlds and "
+                 "batch one leaf per world per net forward (no virtual loss; "
+                 "visits identical to the unbatched search, ~1.7-2.2x per "
+                 "searched root — docs/gpu_selfplay_inference_plan.md). "
+                 "Inert on the Python backend."),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
         Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
@@ -1019,6 +1025,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        Arg("--cross-world", "flag",
+            help="Actor backend only: round-robin the determinized worlds and "
+                 "batch one leaf per world per net forward (no virtual loss; "
+                 "visits identical to the unbatched search, ~1.7-2.2x per "
+                 "searched root — docs/gpu_selfplay_inference_plan.md). "
+                 "Inert on the Python backend."),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
@@ -1053,9 +1065,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "self-play match per UNORDERED pair, mirrors included — "
                  "10x10 + 55 = 155 matches on the 10-deck roster, every cell "
                  "exactly once. --games/--mirror-frac/--scripted-opponent-frac "
-                 "are ignored. HYBRID backend: the C++ actor (when built) "
-                 "plays the pure self-play cells, the Python backend the "
-                 "vs-scripted cells; --no-actor keeps everything on Python"),
+                 "are ignored. With the actor built the WHOLE matrix runs on "
+                 "it (vs-scripted cells via the scripted oracle); --no-actor "
+                 "keeps everything on Python"),
         Arg("--exhaustive-selfplay", "flag",
             help="Exhaustive matrix restricted to the pure SELF-PLAY cells "
                  "(implies --exhaustive): one bo3 match per UNORDERED deck "
@@ -1074,10 +1086,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "wrapping, so successive az-league slots cover every ordered "
                  f"pair in turn (default {DEFAULT_AZ_SCRIPTED_CELLS}; 0 "
                  "disables). A standalone az cycle is slot 0. These cells are "
-                 "marked exactly like --exhaustive's, so the hybrid backend "
-                 "routes them to Python while the C++ actor plays the "
-                 "self-play cells. Ignored (with a note) under full "
-                 "--exhaustive."),
+                 "marked exactly like --exhaustive's, so the C++ actor plays "
+                 "them via the scripted oracle alongside the self-play cells. "
+                 "Ignored (with a note) under full --exhaustive."),
         Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
             help="Total gate matches, split over the roster-wide panel (a mirror "
                  "per roster deck + direction-balanced cross pairs; default "
@@ -1146,6 +1157,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        Arg("--cross-world", "flag",
+            help="Actor backend only: round-robin the determinized worlds and "
+                 "batch one leaf per world per net forward (no virtual loss; "
+                 "visits identical to the unbatched search, ~1.7-2.2x per "
+                 "searched root — docs/gpu_selfplay_inference_plan.md). "
+                 "Inert on the Python backend."),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
             help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
@@ -1208,9 +1225,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "pure self-play match per UNORDERED pair, mirrors included "
                  "(10x10 + 55 = 155 matches on the 10-deck roster). "
                  "--games/--mirror-frac/--scripted-opponent-frac are ignored. "
-                 "HYBRID backend: the C++ actor (when built) plays the pure "
-                 "self-play cells, the Python backend the vs-scripted cells; "
-                 "--no-actor keeps everything on Python. A rotation counts "
+                 "With the actor built the WHOLE matrix runs on it "
+                 "(vs-scripted cells via the scripted oracle); --no-actor "
+                 "keeps everything on Python. A rotation counts "
                  "--cycles-per-deck matrix cycles, as with --matrix."),
         Arg("--exhaustive-selfplay", "flag",
             help="Exhaustive matrix restricted to the pure SELF-PLAY cells "
@@ -1233,8 +1250,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "wrapping, so successive slots cover every ordered pair in "
                  f"turn (default {DEFAULT_AZ_SCRIPTED_CELLS}; 0 disables). "
                  "These cells are marked exactly like --exhaustive's, so the "
-                 "hybrid backend routes them to Python while the C++ actor "
-                 "plays the self-play cells. Ignored (with a note) under full "
+                 "C++ actor plays them via the scripted oracle alongside the "
+                 "self-play cells. Ignored (with a note) under full "
                  "--exhaustive (persisted in the resume sidecar)."),
         Arg("--expert-decks", "str", default=EXPERT_DECKS_ROSTER,
             suggest="league_deck", multi=True,

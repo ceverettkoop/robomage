@@ -1,9 +1,12 @@
 # Plan: cross-world leaf batching + GPU self-play inference (AMD RX 6700)
 
-Status: Stage 0 is IMPLEMENTED (actor `--cross-world`; gates in
-`test_mcts_parity.py`); Stages A and C are DESIGN. Scope is the **self-play
-generation** side of AZ training only — `az_train` SGD is fast enough on CPU
-and is deliberately out of scope.
+Status: Stage 0 is IMPLEMENTED (actor `--cross-world`, exposed as
+`--cross-world` on `az-selfplay`/`az`/`az-league` and persisted in the
+az-league resume sidecar; gates in `test_mcts_parity.py`), and the
+**scripted-oracle vs-scripted mode is IMPLEMENTED** (see its section below) —
+Stages A and C are DESIGN. Scope is the **self-play generation** side of AZ
+training only — `az_train` SGD is fast enough on CPU and is deliberately out
+of scope.
 
 Revision note: an earlier draft had a Stage B (multi-game actor processes via
 snapshot-multiplexed fibers). It is DROPPED: Stage C achieves cross-process
@@ -13,6 +16,7 @@ growth) buys nothing C doesn't. The remaining ladder:
 
 ```
 Stage 0  cross-world batching       (CPU, no quality cost, K = worlds)  [BUILT]
+Oracle   vs-scripted cells on the actor (scripted_oracle.py)            [BUILT]
 Sanity   time the net on the 6700   (10 minutes; gates all GPU work)
 Stage A  HIP/ROCm in the actor      (same K, GPU forward, validates the path)
 Stage C  central inference server   (K = fleet-wide, the KataGo shape)
@@ -153,6 +157,45 @@ Readings:
 - Single-thread numbers = CPU-work reductions, so they translate ~directly to
   fleet throughput at fixed cores.
 
+## Vs-scripted cells on the actor — the scripted oracle — BUILT
+
+The last Python-backend slice of az generation was the vs-scripted cells
+(exhaustive-matrix scripted cells, `--scripted-cells`, `scripted_opponent_frac`)
+— the rule-based scripted:hard agent lives only in Python. Rather than port
+~2,300 lines of heuristics to C++ (a permanent behavioral-parity liability),
+the actor ships the scripted seat's REAL decisions to Python:
+
+- **`train/scripted_oracle.py`** — a torch-free Unix-socket server answering
+  `scripted_action(obs, nc)` from the same observation the actor already
+  builds bit-exactly. One oracle serves a whole actor fleet; each actor
+  process holds one connection with its OWN agent instance (the agent carries
+  per-game state), configured by a HELLO frame (deck names + tier) and reset
+  by NEW_GAME frames at exactly `_play_match`'s `agent.new_game()` call sites
+  (match start + every GAME_RESULT).
+- **`az_actor --scripted-seat A|B --scripted-oracle <socket>`** — that seat's
+  real decisions come from the oracle (`src/actor/oracle_client.{h,cpp}`,
+  fatal-loud on any transport error): no search, no sample, no
+  searched/fallback counters, but they DO advance the per-game tau counter
+  and latch into a live sideboard boundary — mirroring `_play_match`'s
+  agent/net_is_a branch exactly. Search simulations never consult the oracle
+  (tree play is net-both-seats on both backends), so the net seat's searches
+  run with cross-world batching as usual.
+- **Routing** (`az_selfplay.generate`): with the actor built, the WHOLE
+  schedule — self-play and vs-scripted cells alike — runs on the actor
+  (`_generate_actor` groups by matchup + scripted seat and spawns one shared
+  oracle per pass). The old HYBRID actor+Python split is retired; the Python
+  backend remains the `--no-actor` / actor-absent path.
+- **Cost**: an oracle round-trip (~0.1 ms IPC + the agent's own compute) is
+  paid only at the scripted seat's real decisions — a few hundred per game
+  against ~1e5 engine sim-steps of search.
+
+Gates (`test_mcts_parity.py`): both sides run the IDENTICAL scripted_agent
+code on bit-identical observations, so these are EXACT whole-game
+visit-parity gates, not statistical — `scripted-uniform` and `scripted-net`
+(actor+oracle vs the Python reference, cross-deck ur_delver vs gw_maverick),
+plus `scripted-xw-uniform` (cross-world + scripted seat composition, actor vs
+actor).
+
 ## Stage A — HIP/ROCm in the actor
 
 Smallest possible GPU step: same search, same K (= worlds), the forward moves
@@ -221,6 +264,54 @@ game/search structure.
   measured floor < 360 ms per 128-sim root) becomes the bottleneck again —
   bounding the per-actor gain at roughly 3x over today's unbatched CPU
   baseline, per the sweep table.
+
+## On the GPU machine: checking & benchmarking
+
+The recipe for bringing all of this up on the RX 6700 box (Linux), in order —
+each step gates the next. Steps 1–4 are CPU-only and prove the machinery;
+5–6 are the GPU go/no-go; 7 is how to turn it on for real training.
+
+1. **Environment**: `python -m venv train/.venv` (or reuse; the repo's
+   SessionStart hook / normal setup provisions the harness deps), then the
+   ROCm torch:
+   `pip install torch --index-url https://download.pytorch.org/whl/rocm6.2`.
+   Export `HSA_OVERRIDE_GFX_VERSION=10.3.0` in the shell profile (the 6700 is
+   `gfx1031`; this runs the supported `gfx1030` kernels). Pin the
+   ROCm/torch pair that works.
+2. **Build**: `make BUILD=RELEASE && make actor BUILD=RELEASE` (the actor
+   auto-detects the venv libtorch), then `make check` — the default gate must
+   be green before anything else.
+3. **Parity suite** (CPU, release actor — the full machinery check):
+   `ROBOMAGE_BUILD=release train/.venv/bin/python train/ci_check.py --tier actor`
+   (or `train/test_mcts_parity.py` directly). Must print PASS for every gate:
+   the batch=1 legs, `xw-uniform-*` (cross-world scheduler bit-exact),
+   `scripted-uniform`/`scripted-net` (oracle routing bit-exact), and
+   `scripted-xw-uniform` (composition).
+4. **CPU throughput baselines** (single-thread; ratios are what matter):
+   ```
+   ROBOMAGE_BUILD=release train/.venv/bin/python train/bench_actor.py \
+       --games 2 --sims 128 --worlds 8 --batch 1 --cross --no-python
+   ROBOMAGE_BUILD=release train/.venv/bin/python train/bench_actor.py \
+       --games 2 --sims 128 --worlds 4 --batch 1 --cross --scripted
+   ```
+   The first reproduces the cross-world speedup (~2.2x at worlds=8); the
+   second times the vs-scripted mode, C++ actor+oracle vs the Python backend
+   on the identical workload.
+5. **GPU sanity check** (the ten-minute go/no-go from the section above):
+   confirm `torch.cuda.is_available()` names the Radeon, then time batched
+   TorchScript forwards CPU vs GPU at k in {1, 8, 64, 256}. GPU must win big
+   at k=256; GPU losing at k=1 is expected. A crash or garbage numbers =
+   stop; stay on the CPU path (Stage 0 + oracle already carry ~2-3x).
+6. **Stage A/C bring-up** (once built): rerun step 4's bench with the actor's
+   `--device cuda` (Stage A) or against the inference server (Stage C), and
+   rerun step 3 — the uniform gates are device-independent (no net), and the
+   net legs are argmax-agreement reports.
+7. **Turn it on for training**: `--cross-world` on `az-selfplay`/`az`/
+   `az-league` (persisted in the az-league resume sidecar; the whole matrix
+   incl. vs-scripted cells runs on the actor automatically when it is built).
+   Before making any new config the default for a long run, A/B it once
+   through `eval_search_gate.py` at equal sims and let one az-league slot
+   pass the az-eval promotion gate.
 
 ## Cross-cutting: what guards quality at every stage
 

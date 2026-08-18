@@ -23,6 +23,7 @@
 #include "az_evaluator.h"
 #include "az_mcts.h"
 #include "npz_writer.h"
+#include "oracle_client.h"
 #include "td_targets.h"
 #include "classes/deck.h"
 #include "classes/match_state.h"
@@ -82,6 +83,11 @@ struct ActorConfig {
     std::string out_dir;               // empty -> ../train/az_data/<deck>
     bool rng_seed_set = false;
     uint32_t rng_seed = 0;             // default derived from --seed
+    // vs-scripted seat (--scripted-seat A|B + --scripted-oracle <socket>):
+    // that seat's real decisions come from the scripted-agent oracle
+    // (train/scripted_oracle.py); the OTHER seat searches as usual. 0 = none.
+    int scripted_seat = 0;             // 0 none, 1 = Player A, 2 = Player B
+    std::string scripted_oracle;       // Unix socket path
 };
 
 // Shard flush threshold — mirrors az_selfplay.py::FLUSH_SAMPLES.
@@ -103,7 +109,9 @@ void print_usage(const char* prog) {
                  "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
                  "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
-                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n",
+                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n"
+                 "       [--scripted-seat A|B --scripted-oracle <socket>] "
+                 "(vs-scripted: that seat plays via train/scripted_oracle.py)\n",
                  prog);
 }
 
@@ -195,6 +203,18 @@ int main(int argc, char const* argv[]) {
             cfg.rng_seed = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--rng-seed")));
             cfg.rng_seed_set = true;
+        } else if (a == "--scripted-seat") {
+            std::string s = need_arg(argc, argv, i, "--scripted-seat");
+            if (s == "A" || s == "a") {
+                cfg.scripted_seat = 1;
+            } else if (s == "B" || s == "b") {
+                cfg.scripted_seat = 2;
+            } else {
+                std::fprintf(stderr, "error: --scripted-seat takes A or B\n");
+                return 2;
+            }
+        } else if (a == "--scripted-oracle") {
+            cfg.scripted_oracle = need_arg(argc, argv, i, "--scripted-oracle");
         } else if (a == "--resources") {
             cfg.resources = need_arg(argc, argv, i, "--resources");
         } else if (a == "--help" || a == "-h") {
@@ -216,6 +236,17 @@ int main(int argc, char const* argv[]) {
     if (cfg.cross_world && cfg.batch > 1) {
         std::fprintf(stderr, "error: --cross-world and --batch K>1 are mutually "
                              "exclusive (two different leaf-deferral disciplines)\n");
+        return 2;
+    }
+
+    if ((cfg.scripted_seat != 0) != !cfg.scripted_oracle.empty()) {
+        std::fprintf(stderr, "error: --scripted-seat and --scripted-oracle must "
+                             "be given together\n");
+        return 2;
+    }
+    if (cfg.scripted_seat != 0 && !cfg.search) {
+        std::fprintf(stderr, "error: --scripted-seat requires --search (the "
+                             "other seat is the searching net seat)\n");
         return 2;
     }
 
@@ -286,8 +317,20 @@ int main(int argc, char const* argv[]) {
         mc.noise_alpha = cfg.noise_alpha;
         mc.temp_moves = cfg.temp_moves;
         mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
+        mc.scripted_seat = cfg.scripted_seat;
         mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator);
         search_set_game_end_hook([&](int winner) { return mcts->on_game_end(winner); });
+    }
+
+    // vs-scripted: connect to the scripted-agent oracle and route the scripted
+    // seat's real decisions to it (see az_mcts.h's scripted_seat contract).
+    std::unique_ptr<ScriptedOracle> oracle;
+    if (cfg.scripted_seat != 0) {
+        oracle = std::make_unique<ScriptedOracle>();
+        oracle->connect(cfg.scripted_oracle, cfg.deck, deck_b_name_eff,
+                        "scripted:hard");
+        mcts->set_scripted_provider(
+            [&oracle](const float* o, int nc) { return oracle->act(o, nc); });
     }
 
     // Self-play shard accumulator: default out-dir ../train/az_data/<deck> (the
@@ -390,10 +433,17 @@ int main(int argc, char const* argv[]) {
             unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
             std::srand(match_seed);
             if (cfg.selfplay) mcts->begin_match();
+            // agent.new_game() at match start + after every completed game —
+            // the exact call sites az_selfplay._play_match uses (reset + each
+            // GAME_RESULT boundary, before the next game's sideboard prompts).
+            if (oracle) oracle->new_game();
             play_bo3_match(
                 deck_a, deck_b, match_seed,
                 [&](int, bool) {},
-                [&](int, int winner) { backfill_selfplay(winner); });
+                [&](int, int winner) {
+                    backfill_selfplay(winner);
+                    if (oracle) oracle->new_game();
+                });
         }
     } else {
         for (int g = 0; g < cfg.games; g++) {
@@ -404,6 +454,7 @@ int main(int argc, char const* argv[]) {
             match_reset_revealed();
             EcsSystems sys = init_ecs();
             if (cfg.selfplay) mcts->begin_match();  // reset per-game move counter + samples
+            if (oracle) oracle->new_game();
             int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
             bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
                         winner != static_cast<int>(Zone::PLAYER_B);

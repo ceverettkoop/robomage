@@ -133,6 +133,8 @@ struct AZMcts::Impl {
 
     MCTSConfig cfg;
     AZEvaluator* eval;  // null → uniform evaluator (torch-free)
+    // vs-scripted: the scripted seat's decision source (the oracle client).
+    std::function<int(const float*, int)> scripted_provider;
     Phase phase = IDLE;
     int root_counter = 0;
 
@@ -729,6 +731,30 @@ struct AZMcts::Impl {
 
     // ── phase handlers ─────────────────────────────────────────────────────
     int begin_or_fallback(const float* o, int nc) {
+        // Vs-scripted seat (mirrors _play_match's non-net_to_move branch): the
+        // scripted seat's real decisions come from the oracle provider — no
+        // search, no sample, no searched/fallback counters — but they DO
+        // advance the per-game tau counter (Python's game_move counts every
+        // decision, both seats) and latch into a live sideboard boundary (the
+        // walk must replay the true action sequence, whoever played it).
+        // Search simulations never reach here (DESCENDING/ROLLOUT phases), so
+        // tree play stays net-both-seats exactly like the Python reference.
+        if (cfg.scripted_seat != 0 &&
+            (o[SELF_IS_A_IDX] > 0.5f) == (cfg.scripted_seat == 1)) {
+            move_counter += 1;
+            int a = 0;
+            if (nc > 1) {
+                if (!scripted_provider)
+                    fatal_error("az_mcts: scripted_seat is set but no scripted "
+                                "provider was installed (set_scripted_provider)");
+                a = scripted_provider(o, nc);
+            }
+            if (sb_active) {
+                sb_played.push_back(a);
+                note_pick_from_obs(o, a, sb_picks);
+            }
+            return a;
+        }
         bool searchable = search_loop_safe() && nc > 1;
         if (!searchable) {
             // A trivial / unsafe real decision: not stored, evaluator-argmax
@@ -1296,6 +1322,9 @@ int AZMcts::on_decision(const std::vector<LegalAction>& actions) {
     return impl_->on_decision(actions);
 }
 bool AZMcts::on_game_end(int winner) { return impl_->on_game_end(winner); }
+void AZMcts::set_scripted_provider(std::function<int(const float*, int)> fn) {
+    impl_->scripted_provider = std::move(fn);
+}
 const std::vector<SearchRootResult>& AZMcts::results() const { return impl_->results; }
 void AZMcts::begin_match() { impl_->begin_match(); }
 void AZMcts::end_game() { impl_->end_game(); }

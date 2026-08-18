@@ -46,19 +46,34 @@ ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 _TOTAL = re.compile(r"^SELFPLAY: total_samples=(\d+) shards=(\d+)$")
 
 
-def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False):
+def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False,
+             scripted=False):
     # Shared argv builder (az_selfplay.actor_selfplay_cmd) pins the same
     # noise/temperature knobs _python_leg passes to _play_match, so the two legs
-    # measure the identical workload by construction.
+    # measure the identical workload by construction. --scripted puts
+    # scripted:hard on seat B via the oracle (net seat A), matching
+    # _python_leg's agent/net_is_a=True mode.
+    oracle = None
+    if scripted:
+        oracle = az_selfplay._spawn_oracle()  # (proc, sock, tmpdir)
     cmd = az_selfplay.actor_selfplay_cmd(
         ACTOR_BIN, deck=args.deck, deck_b=getattr(args, "deck_b", None),
         seed=args.seed, games=args.games,
         sims=args.sims, worlds=args.worlds, model=ts_path, out_dir=out_dir,
-        batch=batch, cross_world=cross_world)
+        batch=batch, cross_world=cross_world,
+        scripted_seat=("B" if scripted else None),
+        scripted_oracle=(oracle[1] if scripted else None))
     env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     t0 = time.perf_counter()
-    proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE, env=env)
+    try:
+        proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, env=env)
+    finally:
+        if oracle is not None:
+            import shutil
+            oracle[0].terminate()
+            oracle[0].wait()
+            shutil.rmtree(oracle[2], ignore_errors=True)
     dt = time.perf_counter() - t0
     if proc.returncode != 0:
         print("FAIL: az_actor exited nonzero:\n"
@@ -72,7 +87,7 @@ def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False):
     return dt, decisions
 
 
-def _python_leg(ckpt, out_dir, args):
+def _python_leg(ckpt, out_dir, args, scripted=False):
     torch.set_num_threads(1)
     net = load_az(ckpt)
     evaluator = AZEvaluator(net)
@@ -80,6 +95,11 @@ def _python_leg(ckpt, out_dir, args):
     from search_env import SearchRoboMageEnv
     deck_b = getattr(args, "deck_b", None) or args.deck
     env = SearchRoboMageEnv(deck_a=args.deck, deck_b=deck_b)
+    agent = None
+    if scripted:
+        from scripted_agent import make_agent
+        agent = make_agent("scripted:hard")
+        agent.set_deck_names(args.deck, deck_b)
     decisions = 0
     t0 = time.perf_counter()
     try:
@@ -90,7 +110,8 @@ def _python_leg(ckpt, out_dir, args):
                 env, evaluator, rng, sims=args.sims, worlds=args.worlds,
                 temp_moves=az_selfplay.DEFAULT_TEMP_MOVES,
                 root_noise_eps=az_selfplay.DEFAULT_ROOT_NOISE_EPS,
-                root_noise_alpha=az_selfplay.DEFAULT_ROOT_NOISE_ALPHA, seed=seed)
+                root_noise_alpha=az_selfplay.DEFAULT_ROOT_NOISE_ALPHA, seed=seed,
+                agent=agent, net_is_a=(True if scripted else None))
             decisions += len(samples)
     finally:
         env.close()
@@ -124,6 +145,11 @@ def main():
                          "leaf per world per forward, no virtual loss)")
     ap.add_argument("--no-python", action="store_true",
                     help="skip leg B (Python az_selfplay) — batch-sweep only")
+    ap.add_argument("--scripted", action="store_true",
+                    help="bench the vs-scripted mode instead of pure self-play: "
+                         "net+MCTS on seat A, scripted:hard on seat B (the C++ "
+                         "leg via the scripted oracle, the Python leg "
+                         "in-process) — both legs the same workload")
     args = ap.parse_args()
 
     if not os.path.exists(ACTOR_BIN):
@@ -143,27 +169,30 @@ def main():
         ts_path = torchscript_export_path(ckpt)
         save_torchscript(net, ts_path)
 
+        scripted = bool(args.scripted)
         rows = []
         for k in args.batch:
-            print(f"[bench] leg A: C++ bin/az_actor --selfplay (batch={k}) ...",
-                  flush=True)
-            a = _cpp_leg(ts_path, os.path.join(td, f"cpp_b{k}"), args, batch=k)
+            print(f"[bench] leg A: C++ bin/az_actor --selfplay (batch={k}"
+                  f"{', scripted B' if scripted else ''}) ...", flush=True)
+            a = _cpp_leg(ts_path, os.path.join(td, f"cpp_b{k}"), args, batch=k,
+                         scripted=scripted)
             if a is None:
                 return 1
             rows.append(_row(f"C++  (az_actor) b={k}", args.games, a[0], a[1]))
         if args.cross:
-            print("[bench] leg A: C++ bin/az_actor --selfplay (cross-world) ...",
-                  flush=True)
+            print(f"[bench] leg A: C++ bin/az_actor --selfplay (cross-world"
+                  f"{', scripted B' if scripted else ''}) ...", flush=True)
             a = _cpp_leg(ts_path, os.path.join(td, "cpp_xw"), args,
-                         cross_world=True)
+                         cross_world=True, scripted=scripted)
             if a is None:
                 return 1
             rows.append(_row("C++  (az_actor) b=xw", args.games, a[0], a[1]))
         rb = None
         if not args.no_python:
-            print("[bench] leg B: Python az_selfplay (in-process, 1 worker) ...",
-                  flush=True)
-            b = _python_leg(ckpt, os.path.join(td, "py"), args)
+            print(f"[bench] leg B: Python az_selfplay (in-process, 1 worker"
+                  f"{', scripted B' if scripted else ''}) ...", flush=True)
+            b = _python_leg(ckpt, os.path.join(td, "py"), args,
+                            scripted=scripted)
             rb = _row("Python (az_selfplay)", args.games, b[0], b[1])
 
     ra = rows[0]

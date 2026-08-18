@@ -30,6 +30,7 @@
 // through the provider. See az_mcts.cpp for the exact mapping to mcts.py.
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -119,6 +120,16 @@ struct MCTSConfig {
     double noise_alpha = 1.0;       // Dirichlet concentration
     int temp_moves = 20;            // # of leading real moves that sample-from-visits
     uint32_t selfplay_rng_seed = 0; // seeds the per-run noise+sampling RNG
+
+    // ── vs-scripted seat (mirrors az_selfplay._play_match's agent/net_is_a) ──
+    // 0 = none (pure self-play); 1 = Player A, 2 = Player B is piloted by the
+    // scripted oracle (set_scripted_provider). That seat's REAL decisions are
+    // answered by the provider — no search, no sample, no searched/fallback
+    // counters — but they DO advance the per-game tau counter (Python's
+    // game_move counts every decision) and latch into a live sideboard
+    // boundary. Search simulations never consult the provider: tree play is
+    // net-both-seats, exactly like the Python reference.
+    int scripted_seat = 0;
 };
 
 // One stored self-play training sample (z + td_q are backfilled at real game end).
@@ -166,6 +177,11 @@ public:
 
     // Per-searched-root results, in order.
     const std::vector<SearchRootResult>& results() const;
+
+    // vs-scripted: install the scripted seat's decision source (the oracle
+    // client). Required when cfg.scripted_seat != 0 — a scripted-seat decision
+    // with no provider is fatal. fn(obs, num_choices) -> action index.
+    void set_scripted_provider(std::function<int(const float*, int)> fn);
 
     // ── self-play ───────────────────────────────────────────────────────────
     // Full reset of per-match sample-buffer state (real-move counter + stored
