@@ -1292,14 +1292,91 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
 # C++ actor backend (bin/az_actor --selfplay)
 # ----------------------------------------------------------------------
 
-def _ensure_actor_torchscript(source: dict):
+def actor_gpu_env() -> dict:
+    """The environment for GPU-capable actor/server subprocesses.
+
+    Stage A (docs/gpu_selfplay_inference_plan.md): a cuda actor or eval server
+    on the ROCm build needs the RDNA2 override in ITS environment — exported
+    here in the launcher (respecting existing values) instead of relying on
+    the shell. HIP_VISIBLE_DEVICES pins device 0 (the discrete card; device 1
+    is the CPU's iGPU, which the gfx override would misconfigure). Shared by
+    ``_generate_actor`` and az_train's actor-backed gate."""
+    env = dict(os.environ)
+    env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
+    env.setdefault("HIP_VISIBLE_DEVICES", "0")
+    return env
+
+
+def start_eval_server(ts_path: str, *, device: str = "cuda",
+                      forced: bool = False, tag: str = "az-selfplay"):
+    """Start a ``train/az_eval_server.py`` serving ``ts_path`` (Stage C).
+
+    Returns ``(proc, socket_path, tmpdir)`` once the server printed READY. The
+    socket lives in a short ``mkdtemp`` dir (AF_UNIX paths cap at ~107 chars,
+    so run out-dirs are not a safe home for it); the CALLER owns teardown —
+    terminate ``proc`` and remove ``tmpdir`` (see :func:`stop_eval_server`).
+    On a failed start (typically: no usable GPU) the server process and dir
+    are already cleaned up; ``forced`` raises RuntimeError, else — the AUTO
+    contract — returns ``(None, None, None)`` for the caller to fall back to
+    local forwards with its own notice."""
+    import subprocess
+    import shutil
+    import sys
+    import tempfile
+    import threading
+
+    server_dir = tempfile.mkdtemp(prefix="azev-")
+    server_sock = os.path.join(server_dir, "s")
+    server_py = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             "az_eval_server.py")
+    server_cmd = [sys.executable, server_py,
+                  "--model", ts_path, "--socket", server_sock,
+                  "--device", device]
+    server_proc = subprocess.Popen(server_cmd, env=actor_gpu_env(), text=True,
+                                   bufsize=1, stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT)
+    ready = False
+    for line in server_proc.stdout:
+        print(f"[{tag}] {line.rstrip()}", flush=True)
+        if line.startswith("READY "):
+            ready = True
+            break
+    if ready:
+        # Keep draining its output so the pipe never fills.
+        threading.Thread(target=lambda: [None for _ in server_proc.stdout],
+                         daemon=True).start()
+        return server_proc, server_sock, server_dir
+    rc = server_proc.wait()
+    shutil.rmtree(server_dir, ignore_errors=True)
+    if forced:  # forced — no silent fallback
+        raise RuntimeError(f"az_eval_server exited before READY (rc={rc})")
+    return None, None, None
+
+
+def stop_eval_server(server_proc, server_dir) -> None:
+    """Tear down a :func:`start_eval_server` pair (either may be None)."""
+    import shutil
+    import subprocess
+    if server_proc is not None:
+        server_proc.terminate()
+        try:
+            server_proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            server_proc.kill()
+    if server_dir:
+        shutil.rmtree(server_dir, ignore_errors=True)
+
+
+def _ensure_actor_torchscript(source: dict, tag: str = "az-selfplay"):
     """Return (ts_path, tmpdir) — a TorchScript ``.ts.pt`` the actor can load.
 
     * mode 'az'  : export/refresh the ``.ts.pt`` sibling of the state_dict ``.pt``
       (re-export when missing or older than the ``.pt`` — mtime check). No tmpdir.
     * mode 'ppo' : materialize the AZNet warm-started from the PPO ``.zip`` and
       serialize it to a throwaway temp ``.ts.pt`` (tmpdir returned for cleanup).
-    * mode 'random' : same, but from a fresh random AZNet."""
+    * mode 'random' : same, but from a fresh random AZNet.
+
+    Shared with az_train's actor-backed gate (``tag`` labels its prints)."""
     from az_net import (load_az, from_ppo, AZNet, save_torchscript,
                         torchscript_export_path)
     mode, path = source["mode"], source["path"]
@@ -1308,17 +1385,17 @@ def _ensure_actor_torchscript(source: dict):
         stale = (not os.path.exists(ts)) or \
             (os.path.getmtime(ts) < os.path.getmtime(path))
         if stale:
-            print(f"[az-selfplay] exporting TorchScript sibling {ts}")
+            print(f"[{tag}] exporting TorchScript sibling {ts}")
             save_torchscript(load_az(path), ts)
         else:
-            print(f"[az-selfplay] using existing TorchScript {ts}")
+            print(f"[{tag}] using existing TorchScript {ts}")
         return ts, None
     import tempfile
     net = from_ppo(path) if mode == "ppo" else AZNet().eval()
     tmpdir = tempfile.mkdtemp(prefix="az_actor_ts_")
     ts = os.path.join(tmpdir, "model.ts.pt")
     save_torchscript(net, ts)
-    print(f"[az-selfplay] exported temp TorchScript {ts} (mode={mode})")
+    print(f"[{tag}] exported temp TorchScript {ts} (mode={mode})")
     return ts, tmpdir
 
 
@@ -1484,19 +1561,12 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     import shlex
     import shutil
     import subprocess
-    import tempfile
     import threading
     from collections import Counter
 
-    # Stage A (docs/gpu_selfplay_inference_plan.md): a cuda actor on the ROCm
-    # build needs the RDNA2 override in ITS environment — export it here in the
-    # launcher (respecting an existing value) instead of relying on the shell.
-    # HIP_VISIBLE_DEVICES pins device 0 (the discrete card; device 1 is the CPU's
-    # iGPU, which the gfx override would misconfigure). The Stage C central
-    # server needs the same env (it owns the GPU), so build it for either mode.
-    gpu_env = dict(os.environ)
-    gpu_env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
-    gpu_env.setdefault("HIP_VISIBLE_DEVICES", "0")
+    # GPU-capable env for cuda actors and the Stage C central server (the
+    # ROCm RDNA2 override + discrete-GPU pin) — see actor_gpu_env().
+    gpu_env = actor_gpu_env()
 
     ts_path, tmpdir = _ensure_actor_torchscript(source)
     out_dir = os.path.abspath(out_dir)
@@ -1542,36 +1612,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     server_sock = None
     server_dir = None
     if eval_server is not False:
-        import sys
-        server_dir = tempfile.mkdtemp(prefix="azev-")
-        server_sock = os.path.join(server_dir, "s")
-        server_py = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 "az_eval_server.py")
-        server_cmd = [sys.executable, server_py,
-                      "--model", ts_path, "--socket", server_sock,
-                      "--device", actor_device if actor_device != "cpu" else "cuda"]
-        server_proc = subprocess.Popen(server_cmd, env=gpu_env, text=True, bufsize=1,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT)
-        ready = False
-        for line in server_proc.stdout:
-            print(f"[az-selfplay] {line.rstrip()}", flush=True)
-            if line.startswith("READY "):
-                ready = True
-                break
-        if ready:
-            # Keep draining its output so the pipe never fills.
-            threading.Thread(target=lambda: [None for _ in server_proc.stdout],
-                             daemon=True).start()
-        else:
-            rc = server_proc.wait()
-            server_proc = None
-            server_sock = None
-            shutil.rmtree(server_dir, ignore_errors=True)
-            server_dir = None
-            if eval_server:  # forced — no silent fallback
-                raise RuntimeError(
-                    f"az_eval_server exited before READY (rc={rc})")
+        server_proc, server_sock, server_dir = start_eval_server(
+            ts_path,
+            device=actor_device if actor_device != "cpu" else "cuda",
+            forced=bool(eval_server), tag="az-selfplay")
+        if server_proc is None:
             print("[az-selfplay] eval-server AUTO: no usable GPU (server "
                   "failed to start) — actors run local-CPU forwards",
                   flush=True)
@@ -1710,14 +1755,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             shutil.rmtree(oracle_dir, ignore_errors=True)
         if tmpdir:
             shutil.rmtree(tmpdir, ignore_errors=True)
-        if server_proc is not None:
-            server_proc.terminate()
-            try:
-                server_proc.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                server_proc.kill()
-        if server_dir:
-            shutil.rmtree(server_dir, ignore_errors=True)
+        stop_eval_server(server_proc, server_dir)
 
     post = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
     all_shards = sorted(post - pre)

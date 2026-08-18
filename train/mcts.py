@@ -51,6 +51,15 @@ class Evaluator(Protocol):
     priors: float array of length num_choices summing to 1.
     value: in [-1, 1], from the perspective of the player to move in `obs`
     (the engine serializes obs from the priority player's view).
+
+    An evaluator MAY additionally provide ``evaluate_batch(obs_batch,
+    num_choices_list) -> list[(priors, value)]`` — one forward over k rows,
+    each row's priors/value computed exactly as ``evaluate`` would. The
+    cross-world batched search uses it when present (``az_net.AZEvaluator``
+    implements it; this is where a GPU device pays — see
+    docs/gpu_selfplay_inference_plan.md); evaluators without it are called
+    row-by-row, which keeps torch-free/uniform evaluators BIT-IDENTICAL to
+    the sequential search under cross-world scheduling.
     """
 
     def evaluate(self, obs: np.ndarray, num_choices: int) -> tuple[np.ndarray, float]:
@@ -430,11 +439,24 @@ def run_search(
     time_budget_s: Optional[float] = None,
     time_budget_min_s: Optional[float] = None,
     merge_dupes: bool = True,
+    cross_world: bool = False,
 ) -> SearchResult:
     """Search the env's current decision. The env must be parked at a real,
     loop-safe decision (env.last_search_safe). On return the env is back at
     that same decision with all snapshots released, ready for the chosen real
     step().
+
+    ``cross_world`` (default False — the sequential reference path stays
+    byte-identical): run the per-world sims ROUND-ROBIN and defer each freshly
+    expanded (or depth-capped) leaf's net evaluation into a shared pending
+    batch, flushed in one ``evaluate_batch`` forward before any world's own
+    next descent starts — the Python twin of the C++ actor's Stage 0
+    scheduler (see the "Cross-world batched leaf evaluation" block below).
+    Per-world trees are arithmetically identical to the sequential search;
+    only a batched GEMM's last-ulp logits can differ, and an evaluator
+    without ``evaluate_batch`` is bit-identical. Ignored (sequential path)
+    when the budget has ``rollout_turns > 0`` — a deferred leaf cannot drive
+    a playout, the same restriction the actor enforces.
 
     ``reuse_roots`` (optional, boundary persistence): a per-world list of
     previously-searched ``_Node`` trees (or ``None`` entries) to adopt as this
@@ -542,14 +564,60 @@ def run_search(
         sims_run += 1
         sim_steps += v[1]
 
+    # Cross-world deferral applies only when the budget in force has rollouts
+    # OFF (the actor's restriction, latched per search); with it on, the
+    # sequential path below runs regardless of the flag.
+    cross = bool(cross_world) and rollout_turns == 0
+    pending: list = []
+    world_pending = [False] * worlds
+
+    def _one_sim_cross(w: int) -> None:
+        # The deferring twin of _one_sim: flush the shared batch before this
+        # world's OWN next descent (its previous leaf must be backed up and
+        # expanded first — that is what keeps the per-world trees identical to
+        # the sequential search), then descend and park at the leaf.
+        nonlocal sims_run, sim_steps
+        if world_pending[w]:
+            _flush_pending(evaluator, pending, world_pending, merge_dupes,
+                           memo_ctx is not None)
+        env.restore(snapshot_slot)
+        q = env.determinize(seeds[w])
+        _check_root_query(q, root_n, w)
+        if memo_ctx is not None:
+            memo_ctx["world_seed"] = seeds[w]
+        pl, steps = _simulate_defer(env, roots[w], c_puct, max_depth)
+        if pl is not None:
+            pending.append(pl)
+            world_pending[w] = True
+        sims_run += 1
+        sim_steps += steps
+
+    step_fn = _one_sim_cross if cross else _one_sim
+
     stopped_early = False
     if time_budget_s is None:
-        # UNCHANGED sequential per-world loop (parity corpus / self-play depend
-        # on this exact order and count; budgets[w] == sims_per_world for every
-        # world when reuse_roots is None, so the iteration is byte-identical).
-        for w in range(worlds):
-            for _ in range(budgets[w]):
-                _one_sim(w)
+        if cross:
+            # Round-robin over the worlds (skipping exhausted budgets) so the
+            # pending batch collects one leaf per world (K = worlds) between
+            # flushes. Interleaving order does not affect any world's own tree
+            # — each is private — so visits equal the sequential loop's.
+            remaining = list(budgets)
+            left = sum(remaining)
+            w = 0
+            while left > 0:
+                if remaining[w] > 0:
+                    step_fn(w)
+                    remaining[w] -= 1
+                    left -= 1
+                w = (w + 1) % worlds
+        else:
+            # UNCHANGED sequential per-world loop (parity corpus / self-play
+            # depend on this exact order and count; budgets[w] ==
+            # sims_per_world for every world when reuse_roots is None, so the
+            # iteration is byte-identical).
+            for w in range(worlds):
+                for _ in range(budgets[w]):
+                    _one_sim(w)
     else:
         deadline = time.monotonic() + float(time_budget_s)
         min_deadline = None
@@ -557,9 +625,13 @@ def run_search(
             min_deadline = time.monotonic() + min(
                 float(time_budget_min_s), float(time_budget_s))
         cap = sims if sims and sims > 0 else None
-        # Floor: one sim per world, unconditionally.
+        # Floor: one sim per world, unconditionally. (step_fn defers under
+        # cross-world — the timed loop below is already a round-robin, so the
+        # deferral discipline slots straight in; the stability check reads the
+        # roots' backed-up stats, at most one unflushed leaf per world behind,
+        # which is well inside its approximation.)
         for w in range(worlds):
-            _one_sim(w)
+            step_fn(w)
         i = 0
         since_check = 0
         prev_top = -1
@@ -573,9 +645,15 @@ def run_search(
                 if stop:
                     stopped_early = True
                     break
-            _one_sim(i % worlds)
+            step_fn(i % worlds)
             i += 1
             since_check += 1
+
+    # Cross-world tail: the last round's deferred leaves flush before the
+    # aggregate (the actor's finalize does the same).
+    if cross:
+        _flush_pending(evaluator, pending, world_pending, merge_dupes,
+                       memo_ctx is not None)
 
     visit_totals, w_totals, world_values, value_acc = _aggregate_roots(
         roots, root_n)
@@ -620,6 +698,17 @@ class _LockedEvaluator:
         with self._lock:
             return self._evaluator.evaluate(obs, num_choices)
 
+    def evaluate_batch(self, obs_batch, num_choices):
+        """Locked pass-through so a cross-world search behind the lock keeps
+        its batched forward (row-by-row under the lock when the inner
+        evaluator has no batch entry point — same results either way)."""
+        with self._lock:
+            inner = getattr(self._evaluator, "evaluate_batch", None)
+            if inner is not None:
+                return inner(obs_batch, num_choices)
+            return [self._evaluator.evaluate(o, n)
+                    for o, n in zip(obs_batch, num_choices)]
+
 
 def run_search_parallel(
     envs: Sequence[SearchRoboMageEnv],
@@ -640,8 +729,13 @@ def run_search_parallel(
     time_budget_s: Optional[float] = None,
     time_budget_min_s: Optional[float] = None,
     merge_dupes: bool = True,
+    cross_world: bool = False,
 ) -> SearchResult:
     """World-parallel :func:`run_search` for INTERACTIVE search only.
+
+    ``cross_world`` is forwarded per worker, so each env batches the leaves of
+    its OWN world slice (K = slice size) — the visits stay equal to the
+    1-env cross-world run by the same argument that makes the split exact.
 
     The ``worlds`` determinized worlds of a search are fully independent (own root
     node, own seed, own per-sim restore+determinize), so they split cleanly across
@@ -689,7 +783,8 @@ def run_search_parallel(
             world_seeds=world_seeds, reuse_roots=reuse_roots,
             rollout_memo=rollout_memo, memo_picks=memo_picks,
             time_budget_s=time_budget_s,
-            time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes)
+            time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes,
+            cross_world=cross_world)
 
     assert root_noise_eps == 0.0, (
         "run_search_parallel is inference-only: root dirichlet noise would consume "
@@ -753,7 +848,8 @@ def run_search_parallel(
                          if reuse_roots is not None else None),
             rollout_memo=rollout_memo, memo_picks=memo_picks,
             time_budget_s=time_budget_s,
-            time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes)
+            time_budget_min_s=time_budget_min_s, merge_dupes=merge_dupes,
+            cross_world=cross_world)
 
     results: list[Optional[SearchResult]] = [None] * n_envs
     errors: list[tuple[int, Exception]] = []
@@ -1112,6 +1208,128 @@ def _simulate(
     return leaf_value, steps
 
 
+# ── Cross-world batched leaf evaluation ──────────────────────────────────────
+# The Python twin of the C++ actor's cross-world scheduler (Stage 0 of
+# docs/gpu_selfplay_inference_plan.md, src/actor/az_mcts.cpp): worlds run
+# round-robin, each freshly expanded (or depth-capped) leaf DEFERS its net
+# evaluation into a shared pending batch, and the batch is flushed in one
+# forward before any world's OWN next descent starts — so no virtual loss is
+# needed and every per-world tree is arithmetically identical to the
+# sequential search. Only a batched GEMM's last-ulp logits can differ; an
+# evaluator without ``evaluate_batch`` (uniform, PPO) is called row-by-row and
+# stays BIT-IDENTICAL. Searches whose budget has leaf rollouts on keep the
+# sequential path (a deferred leaf cannot drive a playout), mirroring the
+# actor's restriction.
+
+
+class _PendingLeaf:
+    """A descent parked at its evaluation point, awaiting the batched forward.
+
+    ``parent is None`` marks a DEPTH-CAP leaf (the reached child already
+    exists: value-only backup, no node creation) — the same distinction the
+    actor's flush_pending draws via its children.find guard."""
+
+    __slots__ = ("obs", "num_choices", "path", "parent", "action", "child_is_a")
+
+    def __init__(self, obs, num_choices, path, parent, action, child_is_a):
+        self.obs = obs
+        self.num_choices = num_choices
+        self.path = path
+        self.parent = parent
+        self.action = action
+        self.child_is_a = child_is_a
+
+
+def _backup(path, leaf_value: float, leaf_seat_is_a: bool) -> None:
+    """The one backup rule (verbatim from :func:`_simulate`'s tail, which keeps
+    its own inline copy — its statement stream is bit-pinned)."""
+    for parent, action in path:
+        parent.N[action] += 1
+        parent.W[action] += (leaf_value if parent.self_is_a == leaf_seat_is_a
+                             else -leaf_value)
+
+
+def _simulate_defer(
+    env: SearchRoboMageEnv,
+    root: _Node,
+    c_puct: float,
+    max_depth: int,
+) -> tuple[Optional[_PendingLeaf], int]:
+    """One PUCT descent that PARKS at its evaluation point instead of
+    evaluating: returns ``(pending_leaf, steps)`` for a leaf awaiting the
+    batched forward, or ``(None, steps)`` when the sim ended at a TERMINAL
+    (whose exact ±1/0 value needs no net and was backed up in place — same as
+    the sequential path). The descent arithmetic (select, world-consistency
+    check, depth-cap ordering) mirrors :func:`_simulate` exactly; rollouts and
+    the sideboard rollout memo are deliberately absent — cross-world
+    scheduling only runs when the budget in force has rollouts OFF, where both
+    are inert. ``obs`` is COPIED into the pending leaf (the env reuses its
+    query buffer on the next sim_step)."""
+    node = root
+    path: list[tuple[_Node, int]] = []
+    steps = 0
+    while True:
+        action = node.select(c_puct)
+        query: SimQuery = env.sim_step(action)
+        steps += 1
+        path.append((node, action))
+
+        if query.terminal is not None:
+            _backup(path, _terminal_value(query.terminal, root.self_is_a),
+                    root.self_is_a)
+            return None, steps
+
+        child = node.children.get(action)
+        if child is None:
+            return _PendingLeaf(
+                obs=query.obs.copy(), num_choices=query.num_choices,
+                path=path, parent=node, action=action,
+                child_is_a=bool(query.obs[_SELF_IS_A_IDX] > 0.5)), steps
+
+        if child.num_choices != query.num_choices:
+            raise RuntimeError(
+                f"world-consistency violation: node expected {child.num_choices} "
+                f"choices, engine gave {query.num_choices}")
+        node = child
+
+        if len(path) >= max_depth:
+            # Depth cap: the child exists — value-only backup at flush.
+            return _PendingLeaf(
+                obs=query.obs.copy(), num_choices=query.num_choices,
+                path=path, parent=None, action=action,
+                child_is_a=node.self_is_a), steps
+
+
+def _flush_pending(evaluator: Evaluator, pending: list, world_pending,
+                   merge_dupes: bool, memo_enabled: bool = False) -> None:
+    """Evaluate every pending leaf (ONE ``evaluate_batch`` forward when the
+    evaluator has one and k > 1, else row-by-row — bit-identical to
+    sequential), then create/back up each in submission order. Clears
+    ``pending`` and every ``world_pending`` flag."""
+    if not pending:
+        return
+    batch_fn = getattr(evaluator, "evaluate_batch", None)
+    if batch_fn is not None and len(pending) > 1:
+        results = batch_fn([pl.obs for pl in pending],
+                           [pl.num_choices for pl in pending])
+    else:
+        results = [evaluator.evaluate(pl.obs, pl.num_choices)
+                   for pl in pending]
+    for pl, (priors, value) in zip(pending, results):
+        if pl.parent is not None and pl.action not in pl.parent.children:
+            pm = (pick_meta_for(pl.obs, pl.num_choices)
+                  if memo_enabled else None)
+            rep = (menu_merge_reps(pl.obs, pl.num_choices)
+                   if merge_dupes else None)
+            pl.parent.children[pl.action] = _Node(
+                pl.num_choices, priors, pl.child_is_a, pick_meta=pm, rep=rep)
+        _backup(pl.path, float(value), pl.child_is_a)
+    pending.clear()
+    if world_pending is not None:
+        for i in range(len(world_pending)):
+            world_pending[i] = False
+
+
 # ── Incremental (chunked) search for interactive analysis ─────────────────────
 
 @dataclass
@@ -1175,6 +1393,15 @@ class IncrementalSearch:
     replay hypothetical lines after the last chunk. The owner MUST call
     :meth:`close` (restore + release) before the env takes any real step —
     the same driver discipline as every snapshot consumer.
+
+    ``cross_world`` (default False) applies the same deferred-batch discipline
+    as :func:`run_search`'s cross-world mode inside each chunk: the chunk's
+    round-robin defers every fresh/depth-capped leaf, flushes before a
+    world's own next descent, and flushes the tail at the CHUNK boundary — so
+    ``stats()``/``pv()``/``walk()`` between chunks always see fully backed-up
+    trees. Per-world trees stay arithmetically identical to the sequential
+    chunked search (bit-identical for evaluators without ``evaluate_batch``);
+    ignored when ``rollout_turns > 0``, like the fixed-budget path.
     """
 
     def __init__(self, env: SearchRoboMageEnv, evaluator: Evaluator, *,
@@ -1183,7 +1410,8 @@ class IncrementalSearch:
                  rng: Optional[np.random.Generator] = None,
                  snapshot_slot: int = 0,
                  world_seeds: Optional[Sequence[int]] = None,
-                 merge_dupes: bool = True):
+                 merge_dupes: bool = True,
+                 cross_world: bool = False):
         _check_world_seeds(world_seeds, worlds)
         rng = rng if rng is not None else np.random.default_rng()
         self._env = env
@@ -1193,6 +1421,11 @@ class IncrementalSearch:
         self._rollout_turns = rollout_turns
         self._slot = snapshot_slot
         self._worlds = worlds
+        # Cross-world deferral state (see the class docstring): inert unless
+        # requested AND the budget has rollouts off, like run_search.
+        self._cross = bool(cross_world) and rollout_turns == 0
+        self._pending: list = []
+        self._world_pending = [False] * worlds
         self.root_obs = env._obs.copy()
         self.num_choices = env._num_choices
         self.root_is_a = bool(self.root_obs[_SELF_IS_A_IDX] > 0.5)
@@ -1224,15 +1457,32 @@ class IncrementalSearch:
         for _ in range(max(0, int(n_sims))):
             w = self._next_world
             self._next_world = (w + 1) % self._worlds
+            if self._cross and self._world_pending[w]:
+                # This world's previous leaf must be expanded + backed up
+                # before its next descent (the cross-world identity rule).
+                _flush_pending(self._evaluator, self._pending,
+                               self._world_pending, self._merge_dupes)
             env.restore(self._slot)
             q = env.determinize(self.seeds[w])
             _check_root_query(q, self.num_choices, w)
-            _, steps = _simulate(env, self._evaluator, self.roots[w],
-                                 self._c_puct, self._max_depth,
-                                 self._rollout_turns, self._rollout_anchor,
-                                 merge_dupes=self._merge_dupes)
+            if self._cross:
+                pl, steps = _simulate_defer(env, self.roots[w], self._c_puct,
+                                            self._max_depth)
+                if pl is not None:
+                    self._pending.append(pl)
+                    self._world_pending[w] = True
+            else:
+                _, steps = _simulate(env, self._evaluator, self.roots[w],
+                                     self._c_puct, self._max_depth,
+                                     self._rollout_turns, self._rollout_anchor,
+                                     merge_dupes=self._merge_dupes)
             self.sims_run += 1
             self.sim_steps += steps
+        if self._cross:
+            # Chunk boundary: flush the tail so stats()/pv()/walk() (and a
+            # possible close()) always see fully backed-up trees.
+            _flush_pending(self._evaluator, self._pending, self._world_pending,
+                           self._merge_dupes)
         return self.stats()
 
     def stats(self) -> LiveStats:

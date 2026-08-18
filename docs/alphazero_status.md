@@ -46,6 +46,22 @@ phases, decisions, risks) is summarized at the bottom.
 > self-play, and `az_data/{deck}/` sharding described below are historical; commit
 > hashes / run logs are kept as records.
 
+> **Update (gate on the C++ actor, 2026-08-18).** The `az_eval` promotion gate's
+> panel now plays on the C++ actor by default — two-model matches via
+> `az_actor --model-b`/`--eval-server-b` (each REAL decision searched by the
+> seat-to-move's own net, per-seat evaluator selection in `AZMcts`), with
+> cross-world leaf batching and the optional Stage C GPU eval-server (one
+> server per net). AUTO uses the actor whenever `bin/az_actor` is built AND an
+> incumbent exists; the no-incumbent vs-scripted fallback stays on the Python
+> `run_match` path. Panel, seat split, per-matchup seeds and the
+> aggregate/floor/promotion logic are unchanged; knobs mirror the generation
+> side (`az-eval --actor/--no-actor --actor-device --eval-server/
+> --no-eval-server --no-cross-world`; the `az`/`az-league` gate inherits the
+> cycle's values). Gated by `test_mcts_parity.py`'s `gate` leg family
+> (same-net identity bit-exact, EXACT two-model parity vs a two-controller
+> Python reference) and `test_az_gate.py` (driver tally/determinism/guards) —
+> see docs/gpu_selfplay_inference_plan.md "Stage G".
+
 ## What is DONE and pushed
 
 ### Phase A — engine snapshot/rollback + search protocol (commits `c6c0a33`, `4937a0e`)

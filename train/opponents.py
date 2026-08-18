@@ -574,7 +574,8 @@ class SearchController:
                  sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1,
                  clock: float | None = None, clock_t_min: float = 0.5,
                  clock_t_max: float = 60.0, clock_sb_t_max: float = 15.0,
-                 paced: bool = False, merge_dupes: bool = True):
+                 paced: bool = False, merge_dupes: bool = True,
+                 cross_world: bool = True):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         if procs < 1:
             raise ValueError(f"procs must be >= 1, got {procs}")
@@ -605,6 +606,13 @@ class SearchController:
         # the controller's lifetime — must not flip across a sideboard
         # boundary's persisted trees.
         self._merge_dupes = bool(merge_dupes)
+        # Cross-world batched leaf evaluation (mcts.run_search's cross_world;
+        # spec knob xw=). Default ON — the C++ actor's production default:
+        # visits are arithmetically identical to the sequential search, so
+        # only wall-clock changes. run_search itself falls back to the
+        # sequential path for any budget with rollouts on (sb roots by
+        # default), so passing it unconditionally is safe.
+        self._cross_world = bool(cross_world)
         # Mirror-pool engine count for world-parallel interactive search. procs==1
         # (the default) keeps the single-env run_search call site byte-identical
         # (parity depends on it); procs>1 fans the worlds across procs-1 extra
@@ -935,7 +943,8 @@ class SearchController:
                 rollout_turns=self._sb_rollout_turns,
                 rng=self._rng, time_budget_s=tb,
                 time_budget_min_s=tmin_s,
-                merge_dupes=self._merge_dupes)
+                merge_dupes=self._merge_dupes,
+                cross_world=self._cross_world)
             persist_here = sbp_key is not None
             if persist_here:
                 # Boundary continue: same identity AND every action since the
@@ -981,7 +990,8 @@ class SearchController:
                 sims=(self._sims_cap if timed else self._sims),
                 worlds=self._worlds, c_puct=self._c_puct,
                 rng=self._rng, time_budget_s=tb, time_budget_min_s=tmin_s,
-                merge_dupes=self._merge_dupes)
+                merge_dupes=self._merge_dupes,
+                cross_world=self._cross_world)
         self.stats["searched"] += 1
         self.stats["sims"] += result.sims_run
         self.stats["sim_steps"] += result.sim_steps
@@ -1438,6 +1448,8 @@ class _SearchKnobs:
     tmax: float
     sb_tmax: float
     paced: bool
+    cross_world: bool
+    device: str
 
 
 def _parse_search_knobs(spec: str) -> _SearchKnobs:
@@ -1463,6 +1475,15 @@ def _parse_search_knobs(spec: str) -> _SearchKnobs:
     sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
     time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
     clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
+    # xw: cross-world batched leaf evaluation (mcts.run_search cross_world) —
+    # default ON, matching the C++ actor's production default; visits are
+    # arithmetically identical to the sequential search (last-ulp batched-GEMM
+    # logits only), so it is pure speed. xw=0 is the kill switch. device: the
+    # evaluator's torch device ("" = ROBOMAGE_EVAL_DEVICE, else cpu) — az:
+    # consumes it (the AZNet forward moves there); mcts: parses and ignores it
+    # like vscale's asymmetry (the PPO evaluator stays on CPU).
+    cross_world = _spec_knob(params, "xw", 1, int, spec)
+    device = _spec_knob(params, "device", "", str, spec)
     return _SearchKnobs(sims=sims, worlds=worlds, c_puct=c_puct,
                         temperature=temperature, v_scale=v_scale,
                         rng_seed=rng_seed, procs=procs, sb_sims=sb_sims,
@@ -1471,7 +1492,8 @@ def _parse_search_knobs(spec: str) -> _SearchKnobs:
                         sb_persist=sb_persist, time_budget=time_budget,
                         sims_cap=sims_cap, sb_sims_cap=sb_sims_cap,
                         clock=clock, tmin=tmin, tmax=tmax, sb_tmax=sb_tmax,
-                        paced=paced)
+                        paced=paced, cross_world=bool(cross_world),
+                        device=device)
 
 
 def _effort_label_for(knobs: _SearchKnobs) -> str:
@@ -1495,7 +1517,8 @@ def _build_search_controller(evaluator, label: str,
                             sb_sims_cap=knobs.sb_sims_cap, procs=knobs.procs,
                             clock=knobs.clock, clock_t_min=knobs.tmin,
                             clock_t_max=knobs.tmax,
-                            clock_sb_t_max=knobs.sb_tmax, paced=knobs.paced)
+                            clock_sb_t_max=knobs.sb_tmax, paced=knobs.paced,
+                            cross_world=knobs.cross_world)
 
 
 def _make_search_controller(spec: str, *,
@@ -1512,7 +1535,9 @@ def _make_search_controller(spec: str, *,
     player turns, 0 = off) / sb_persist (persist trees + rollout memo across
     a boundary's picks, 1/0), and the match-clock knobs clock (whole-match
     wall-clock bank in seconds, allocated per decision) / tmin / tmax /
-    sb_tmax / paced (response-timing masking for human play).
+    sb_tmax / paced (response-timing masking for human play). xw (default 1)
+    toggles cross-world batched leaf evaluation; device is parsed for grammar
+    parity with az: but ignored here (the PPO evaluator stays on CPU).
     """
     from mcts import PPOEvaluator, UniformEvaluator
 
@@ -1545,7 +1570,8 @@ class AZRawController:
         return int(np.argmax(priors))
 
 
-def load_az_evaluator(base: str, *, ppo_resolver=None, on_warm_start=None):
+def load_az_evaluator(base: str, *, ppo_resolver=None, on_warm_start=None,
+                      device: str | None = None):
     """THE evaluator ladder: load an AZNet -> AZEvaluator for the generalist
     contract. Returns ``(AZEvaluator, resolved)``. Accepts:
       - ``'gen'`` → the generalist AZ checkpoint (``gen__azfinal.pt`` / newest
@@ -1571,19 +1597,29 @@ def load_az_evaluator(base: str, *, ppo_resolver=None, on_warm_start=None):
     resolvers (``az_selfplay.resolve_source``/``_build_net``,
     ``az_train._init_net``) — see the cross-reference comments there.
 
+    ``device`` is the evaluator's torch device: an explicit value (a spec
+    ``device=`` knob, an AnalysisConfig field) wins, else the
+    ``ROBOMAGE_EVAL_DEVICE`` environment variable, else cpu
+    (:func:`az_net.resolve_eval_device`). Off-cpu the AZNet forward — single
+    rows and the cross-world ``evaluate_batch`` alike — runs there; priors
+    math stays on CPU, and the RDNA2 env defaults are applied in-process
+    (:func:`az_net.ensure_rocm_env`).
+
     Lazy import so opponents.py stays torch-free until a model seat is built."""
-    from az_net import AZEvaluator, load_az, from_ppo, resolve_az_checkpoint
+    from az_net import (AZEvaluator, load_az, from_ppo, resolve_az_checkpoint,
+                        resolve_eval_device)
+    dev = resolve_eval_device(device)
     az = resolve_az_checkpoint(base)
     if az:
-        return AZEvaluator(load_az(az)), az
+        return AZEvaluator(load_az(az), device=dev), az
     if base.endswith(".pt"):
-        return AZEvaluator(load_az(base)), base   # explicit AZ path; load_az raises if missing
+        return AZEvaluator(load_az(base), device=dev), base   # explicit AZ path; load_az raises if missing
     # Otherwise a PPO spec to warm-start from: 'gen' or an explicit .zip.
     # The default resolver raises a clear error on a bare (non-'gen') deck shorthand.
     ppo_path = (ppo_resolver or resolve_checkpoint)(base)
     if on_warm_start is not None:
         on_warm_start(base, ppo_path)
-    return AZEvaluator(from_ppo(ppo_path)), base
+    return AZEvaluator(from_ppo(ppo_path), device=dev), base
 
 
 # Back-compat alias for the pre-promotion private name.
@@ -1605,8 +1641,11 @@ def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
     rollout). ``clock=<seconds>``
     arms a whole-match chess-clock bank (per-decision allocation bounded by
     tmin/tmax, sideboard roots by sb_tmax); ``paced=1`` masks response-timing
-    tells for human play (small jittered floor + occasional fake-think beats)."""
-    base, _params = _parse_spec_query(spec)
+    tells for human play (small jittered floor + occasional fake-think beats).
+    ``xw=0`` disables cross-world batched leaf evaluation (default on —
+    arithmetically identical visits, pure speed); ``device=cuda`` moves the
+    AZNet forward onto the GPU (default: ROBOMAGE_EVAL_DEVICE, else cpu)."""
+    base, params = _parse_spec_query(spec)
     # Ordering is load-bearing: the evaluator loads BEFORE any knob is parsed
     # (so a bad checkpoint still reports before a malformed knob), and the
     # azraw: seat returns before knob parsing (azraw: has never validated
@@ -1614,8 +1653,11 @@ def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
     # The PPO warm-start rung honours the caller's checkpoint resolver, same as
     # the plain-model and mcts: branches of make_controller (this used to be
     # silently dropped for az:/azraw: specs).
+    # device= must reach the evaluator load, which precedes knob parsing —
+    # read it raw here (a junk value falls back to the loud AZEvaluator error).
     evaluator, resolved = load_az_evaluator(
-        base, ppo_resolver=checkpoint_resolver or resolve_checkpoint)
+        base, ppo_resolver=checkpoint_resolver or resolve_checkpoint,
+        device=params.get("device") or None)
     if not search:
         return AZRawController(evaluator, label=f"azraw:{base}")
     knobs = _parse_search_knobs(spec)   # vscale is parsed and ignored here
