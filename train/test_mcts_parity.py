@@ -30,6 +30,13 @@ docs/gpu_selfplay_inference_plan.md) gets two legs: EXACT visit gates under
 sequential visits bit-for-bit), and a real-net argmax-agreement REPORT (only the
 batched forward's last-ulp logits can differ).
 
+Two-model gate matches (az_actor --model-b — the az_eval promotion gate's actor
+backend) get their own leg family (see _gate_legs): same-net identity gates
+(bit-identical to single-model), a wiring check (a distinct second net must
+change the game), EXACT parity vs a two-controller Python gate reference
+(per-seat evaluators, shared global root counter), and a cross-world agreement
+report on the two-model game.
+
 Run: train/.venv/bin/python train/test_mcts_parity.py
 """
 
@@ -120,11 +127,15 @@ class ParitySearchController:
     wants_search_env = True
 
     def __init__(self, evaluator, sb_budget=False, sb_persist=False,
-                 merge_dupes=True):
+                 merge_dupes=True, share_with=None):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         self.ev = evaluator
         self.env = None
-        self.root_counter = 0
+        # Searched-root counter, boxed so a two-seat GATE reference (one
+        # controller per seat, each with its OWN evaluator) can share one
+        # global counter — mirroring the actor, whose root_counter (and hence
+        # the per-root world-seed formula) runs across BOTH seats' searches.
+        self.counter = [0]
         self.records = []  # list[(root_index, num_choices, np.int64[num_choices])]
         self.is_sb = []    # parallel to records: was each searched root a sideboard root
         # Duplicate-edge merging (must match the actor's --merge-dupes).
@@ -145,6 +156,14 @@ class ParitySearchController:
         # visits). The boundary dict holds key/root_r/roots/played/picks/memo.
         self.sb_persist = sb_persist
         self._boundary = None
+        # Gate reference: share the counter and the record streams with the
+        # other seat's controller so both seats append into ONE global
+        # search-order stream, exactly like the actor's single Impl.
+        if share_with is not None:
+            self.counter = share_with.counter
+            self.records = share_with.records
+            self.is_sb = share_with.is_sb
+            self.rep_records = share_with.rep_records
 
     def bind_env(self, env):
         self.env = env
@@ -171,8 +190,8 @@ class ParitySearchController:
             chosen = int(np.argmax(priors))
             self._latch(obs, chosen)
             return chosen
-        r = self.root_counter
-        self.root_counter += 1
+        r = self.counter[0]
+        self.counter[0] += 1
         is_sb = bool(obs[_IS_SIDEBOARD_IDX] > 0.5)
         if self.sb_budget and is_sb:
             kw = dict(sims=SB_SIMS, worlds=SB_WORLDS, max_depth=SB_MAX_DEPTH,
@@ -239,7 +258,7 @@ def _read_visits_dump(path):
 
 def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
                merge_dupes=True, cross_world=False, uniform=False,
-               eval_server=None):
+               eval_server=None, model_b=None):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
@@ -249,6 +268,8 @@ def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
         cmd += ["--eval-server", eval_server]
     else:
         cmd += ["--uniform"] if uniform else ["--model", ts_path]
+    if model_b is not None:
+        cmd += ["--model-b", model_b]
     if cross_world:
         cmd.append("--cross-world")
     if bo3:
@@ -323,6 +344,29 @@ def _python_reference(ts_path, bo3, sb_budget=False, sb_persist=False,
     finally:
         env.close()
     return ctrl.records, ctrl.is_sb, ctrl.rep_records
+
+
+def _python_reference_gate(ts_a, ts_b, bo3, sb_budget=False, sb_persist=False):
+    """Two-model gate reference: seat A searches with ``ts_a``'s net, seat B
+    with ``ts_b``'s — one ParitySearchController per seat, each owning its
+    evaluator, SHARING one root counter and one record stream (the actor's
+    single root_counter runs across both seats). This is exactly the shape of
+    an az_eval gate match on the Python backend, so exact visit parity here is
+    the gate-correctness proof for ``az_actor --model-b``."""
+    ctrl_a = ParitySearchController(TSEvaluator(ts_a), sb_budget=sb_budget,
+                                    sb_persist=sb_persist)
+    ctrl_b = ParitySearchController(TSEvaluator(ts_b), sb_budget=sb_budget,
+                                    sb_persist=sb_persist, share_with=ctrl_a)
+    env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
+    env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    ctrl_a.bind_env(env)
+    ctrl_b.bind_env(env)
+    try:
+        obs, _ = env.reset(options={"engine_seed": SEED})
+        runner.drive_game(env, obs, ctrl_a, ctrl_b)
+    finally:
+        env.close()
+    return ctrl_a.records
 
 
 def _compare_visits(tag, actor1, py):
@@ -441,15 +485,134 @@ def _server_legs(td, ts_path, actor1):
     return 0
 
 
+def _gate_legs(td, ts_path, actor1):
+    """Two-model gate legs (az_actor --model-b, the az_eval gate's backend).
+
+    (a) gate-identity EXACT gates (bo1 + bo3-sb-persist): ``--model A
+    --model-b A`` must be bit-identical to the single-model ``--model A`` run
+    — the per-seat evaluator selection is a pure no-op when both seats hold
+    the same net, so ANY difference is a selection/plumbing bug.
+
+    (b) gate-wiring: a ``--model A --model-b B`` run (B = a second,
+    differently-seeded net) must DIFFER from the single-model A run — if the
+    two streams were identical, --model-b was silently ignored (two
+    independently random nets agreeing on every searched root of a full game
+    is not a real possibility).
+
+    (c) gate-parity EXACT gate (bo1 + bo3-sb-persist): the (A, B) actor run vs
+    the two-controller Python reference (seat A's controller owns net A, seat
+    B's net B, shared global root counter — exactly an az_eval gate match on
+    the Python backend). Proves the actor's per-seat routing is precisely
+    "the root mover's net evaluates that decision's whole search".
+
+    (d) REPORT: (A, B) cross-world vs sequential argmax agreement — the gate
+    driver defaults to --cross-world, whose visits differ from sequential only
+    by the batched forward's last-ulp logits."""
+    # Second deterministic net, differently seeded: the "incumbent".
+    torch.manual_seed(1)
+    net_b = AZNet(obs_space_from_const()).eval()
+    ckpt_b = os.path.join(td, "parity_b__azfinal.pt")
+    net_b.save(ckpt_b)
+    ts_b = torchscript_export_path(ckpt_b)
+    save_torchscript(net_b, ts_b)
+
+    sb_kw = dict(bo3=True, sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH,
+                               SB_ROLLOUT_TURNS), sb_persist=True)
+
+    # (a) identity: same net on both seats == single-model, bit-exact.
+    for tag, kw, ref in (("gate-id-bo1", {}, actor1),
+                         ("gate-id-bo3-sb-persist", sb_kw, None)):
+        if ref is None:
+            d_ref = os.path.join(td, f"visits_{tag}_single.bin")
+            ref = _run_actor(ts_path, d_ref, batch=1, **kw)
+            if ref is None:
+                return 1
+        d_id = os.path.join(td, f"visits_{tag}_twomodel.bin")
+        actor_id = _run_actor(ts_path, d_id, batch=1, model_b=ts_path, **kw)
+        if actor_id is None:
+            return 1
+        rc, total_sims = _compare_visits(tag, actor_id, ref)
+        if rc:
+            print(f"FAIL [{tag}]: --model-b <same net> diverged from the "
+                  f"single-model run (the 'actor'/'python' rows above are "
+                  f"two-model/single-model) — the per-seat evaluator "
+                  f"selection is not a no-op for identical nets",
+                  file=sys.stderr)
+            return rc
+        print(f"PASS [{tag}]: --model-b (same net) bit-identical to the "
+              f"single-model run over {len(actor_id)} searched roots "
+              f"({total_sims} total root visits)")
+
+    # (b)+(c): the real two-model game, actor vs Python gate reference.
+    d_ab = os.path.join(td, "visits_gate_ab_bo1.bin")
+    actor_ab = _run_actor(ts_path, d_ab, batch=1, model_b=ts_b)
+    if actor_ab is None:
+        return 1
+    same = (len(actor_ab) == len(actor1)
+            and all(a[0] == b[0] and a[1] == b[1] and np.array_equal(a[2], b[2])
+                    for a, b in zip(actor_ab, actor1)))
+    if same:
+        print("FAIL [gate-wiring]: the (A, B) two-model run is bit-identical "
+              "to the single-model A run — --model-b appears to be ignored",
+              file=sys.stderr)
+        return 1
+    print(f"PASS [gate-wiring]: --model-b (distinct net) changed the game "
+          f"({len(actor_ab)} vs {len(actor1)} searched roots)")
+
+    for tag, akw, pkw in (
+            ("gate-parity-bo1", {}, {}),
+            ("gate-parity-bo3-sb-persist", sb_kw,
+             dict(sb_budget=True, sb_persist=True))):
+        d = os.path.join(td, f"visits_{tag}.bin")
+        actor_two = _run_actor(ts_path, d, batch=1, model_b=ts_b, **akw)
+        if actor_two is None:
+            return 1
+        py_two = _python_reference_gate(ts_path, ts_b,
+                                        bo3=bool(akw.get("bo3")), **pkw)
+        rc, total_sims = _compare_visits(tag, actor_two, py_two)
+        if rc:
+            print(f"FAIL [{tag}]: two-model actor diverged from the "
+                  f"two-controller Python gate reference", file=sys.stderr)
+            return rc
+        print(f"PASS [{tag}]: two-model (A vs B) visit parity exact over "
+              f"{len(actor_two)} searched roots ({total_sims} total root "
+              f"visits)")
+
+    # (d) cross-world on the two-model game (the gate driver's default).
+    d_xw = os.path.join(td, "visits_gate_ab_xw.bin")
+    actor_xw = _run_actor(ts_path, d_xw, batch=1, model_b=ts_b,
+                          cross_world=True)
+    if actor_xw is None:
+        print("WARN: two-model --cross-world run failed; skipping report",
+              file=sys.stderr)
+        return 1
+    prefix = 0
+    for (r1, nc1, _), (rx, ncx, _) in zip(actor_ab, actor_xw):
+        if r1 != rx or nc1 != ncx:
+            break
+        prefix += 1
+    agree = sum(1 for i in range(prefix)
+                if int(np.argmax(actor_ab[i][2])) == int(np.argmax(actor_xw[i][2])))
+    frac = agree / prefix if prefix else 1.0
+    diverged = "" if prefix == len(actor_ab) else (
+        f"; games diverge after root {prefix} "
+        f"(sequential {len(actor_ab)} roots, cross-world {len(actor_xw)} roots)")
+    print(f"REPORT: two-model cross-world vs sequential argmax agreement over "
+          f"{prefix} comparable roots = {agree}/{prefix} = {frac:.3f}{diverged}")
+    return 0
+
+
 def main():
     import argparse
     ap = argparse.ArgumentParser(
         description="MCTS visit-parity gates (C++ actor vs Python reference)")
-    ap.add_argument("--legs", choices=["full", "server"], default="full",
+    ap.add_argument("--legs", choices=["full", "server", "gate"], default="full",
                     help="'full' (default) runs every gate incl. the slow "
                          "Python-reference legs; 'server' runs only the Stage C "
                          "eval-server legs against a fresh local bo1 reference "
-                         "(~minutes — for iterating on server/protocol work)")
+                         "(~minutes — for iterating on server/protocol work); "
+                         "'gate' runs only the two-model (--model-b) gate legs "
+                         "the az_eval actor backend rides on")
     args = ap.parse_args()
 
     if not os.path.exists(ACTOR_BIN):
@@ -466,16 +629,18 @@ def main():
         ts_path = torchscript_export_path(ckpt)
         save_torchscript(net, ts_path)
 
-        if args.legs == "server":
-            # Fast path: one local bo1 game as the reference, then the Stage C
-            # legs only — no Python-reference searches.
+        if args.legs in ("server", "gate"):
+            # Fast path: one local bo1 game as the reference, then only the
+            # requested leg family — no full Python-reference sweep.
             dump1 = os.path.join(td, "visits_b1_bo1.bin")
             actor1 = _run_actor(ts_path, dump1, batch=1)
             if actor1 is None:
                 return 1
-            print(f"[legs=server] local bo1 reference: {len(actor1)} searched "
-                  f"roots")
-            return _server_legs(td, ts_path, actor1)
+            print(f"[legs={args.legs}] local bo1 reference: {len(actor1)} "
+                  f"searched roots")
+            if args.legs == "server":
+                return _server_legs(td, ts_path, actor1)
+            return _gate_legs(td, ts_path, actor1)
 
         # bo1 game AND a full bo3 match. The bo3 case exercises the between-games
         # sideboard-phase decisions, which are now SEARCHED MCTS roots on BOTH
@@ -655,6 +820,11 @@ def main():
 
         # 7) Stage C central inference server.
         rc = _server_legs(td, ts_path, actor1)
+        if rc:
+            return rc
+
+        # 8) Two-model gate legs (az_actor --model-b — the az_eval gate backend).
+        rc = _gate_legs(td, ts_path, actor1)
         if rc:
             return rc
     return 0

@@ -39,6 +39,16 @@ struct ActorConfig {
     std::string deck = "delver";
     std::string deck_b;  // empty -> mirror (= deck)
     std::string model;
+    // Two-model gate/eval matches (the az_eval promotion gate on the actor):
+    // Player B's OWN evaluator source — a local TorchScript (--model-b) or a
+    // second central-server socket (--eval-server-b). Empty (default) = both
+    // seats share the one seat-A evaluator (pure self-play / parity, exactly
+    // as before). Requires a seat-A net source (--model or --eval-server, not
+    // --uniform) and is incompatible with --selfplay: gate games measure
+    // strength between two DIFFERENT nets, so their decisions are not
+    // self-play training data.
+    std::string model_b;
+    std::string eval_server_b;
     // Eval device for the TorchScript forward: "cpu" (default) or "cuda" (the
     // Radeon under the ROCm build — HIP registers as the cuda backend). Stage A
     // of docs/gpu_selfplay_inference_plan.md; search math is device-independent
@@ -101,6 +111,9 @@ void print_usage(const char* prog) {
                  "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
                  "[--bo3] [--model <path.ts.pt> | --uniform | --eval-server <socket>] "
                  "[--device cpu|cuda] [--dump-obs <file>]\n"
+                 "       [--model-b <path.ts.pt> | --eval-server-b <socket>] "
+                 "(seat-B evaluator for two-model gate/eval matches; "
+                 "incompatible with --selfplay/--uniform)\n"
                  "       [--search [--sims N] [--worlds N] [--c F] [--batch K | "
                  "--cross-world] [--world-seeds BASE] [--dump-visits <file>]] "
                  "[--resources <dir>]\n"
@@ -153,6 +166,10 @@ int main(int argc, char const* argv[]) {
             cfg.bo3 = true;
         } else if (a == "--model") {
             cfg.model = need_arg(argc, argv, i, "--model");
+        } else if (a == "--model-b") {
+            cfg.model_b = need_arg(argc, argv, i, "--model-b");
+        } else if (a == "--eval-server-b") {
+            cfg.eval_server_b = need_arg(argc, argv, i, "--eval-server-b");
         } else if (a == "--device") {
             cfg.device = need_arg(argc, argv, i, "--device");
         } else if (a == "--eval-server") {
@@ -229,6 +246,26 @@ int main(int argc, char const* argv[]) {
         print_usage(argv[0]);
         return 2;
     }
+    const bool have_b = !cfg.model_b.empty() || !cfg.eval_server_b.empty();
+    if (have_b) {
+        if (!cfg.model_b.empty() && !cfg.eval_server_b.empty()) {
+            std::fprintf(stderr, "error: --model-b and --eval-server-b are mutually "
+                                 "exclusive (one seat-B evaluator source)\n");
+            return 2;
+        }
+        if (cfg.uniform) {
+            std::fprintf(stderr, "error: a seat-B evaluator (--model-b/"
+                                 "--eval-server-b) requires a seat-A net source "
+                                 "(--model or --eval-server), not --uniform\n");
+            return 2;
+        }
+        if (cfg.selfplay) {
+            std::fprintf(stderr, "error: --selfplay is incompatible with a seat-B "
+                                 "evaluator: two-model games are gate/eval matches, "
+                                 "not self-play training data\n");
+            return 2;
+        }
+    }
 
     if (cfg.cross_world && cfg.batch > 1) {
         std::fprintf(stderr, "error: --cross-world and --batch K>1 are mutually "
@@ -272,6 +309,18 @@ int main(int argc, char const* argv[]) {
         evaluator.connect_server(cfg.eval_server);
     else if (!cfg.uniform)
         evaluator.load(cfg.model, cfg.device);
+    // Seat-B evaluator (two-model gate/eval matches): its own local module or
+    // its own server connection; null pointer = single-model (both seats on
+    // `evaluator`).
+    AZEvaluator evaluator_b;
+    AZEvaluator* eval_b_ptr = nullptr;
+    if (!cfg.eval_server_b.empty()) {
+        evaluator_b.connect_server(cfg.eval_server_b);
+        eval_b_ptr = &evaluator_b;
+    } else if (!cfg.model_b.empty()) {
+        evaluator_b.load(cfg.model_b, cfg.device);
+        eval_b_ptr = &evaluator_b;
+    }
 
     // Optional binary obs dump: per decision, int32 num_choices then
     // ACTOR_OBS_SIZE float32s (little-endian, raw append).
@@ -306,7 +355,8 @@ int main(int argc, char const* argv[]) {
         mc.noise_alpha = cfg.noise_alpha;
         mc.temp_moves = cfg.temp_moves;
         mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
-        mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator);
+        mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator,
+                                        eval_b_ptr);
         search_set_game_end_hook([&](int winner) { return mcts->on_game_end(winner); });
     }
 
@@ -340,7 +390,13 @@ int main(int argc, char const* argv[]) {
             if (mcts) return mcts->on_decision(actions);
             ActorObs ob = build_obs(actions);
             if (cfg.uniform) return 0;
-            return evaluator.argmax_action(ob.obs.data(), ob.num_choices);
+            // Greedy path: same per-seat selection as the search path — seat B's
+            // decisions use its own net when one was given.
+            AZEvaluator& e =
+                (eval_b_ptr != nullptr && ob.obs[ACTOR_SELF_IS_A_IDX] <= 0.5f)
+                    ? evaluator_b
+                    : evaluator;
+            return e.argmax_action(ob.obs.data(), ob.num_choices);
         });
 
     // Player A plays --deck; Player B plays --deck-b (defaults to --deck: mirror).

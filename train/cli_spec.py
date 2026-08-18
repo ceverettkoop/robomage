@@ -1043,6 +1043,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "max(1, cpu-1), capped at the panel size; 1 = serial). "
                  "Result-identical for any worker count — per-matchup seeds "
                  "and fresh controllers make matchups independent"),
+        # Gate backend (mirrors the az-selfplay/az knobs): the C++ actor plays
+        # candidate-vs-incumbent two-model matches (--model-b) with cross-world
+        # batching and the optional Stage C eval-server (one per net). The
+        # no-incumbent vs-scripted fallback always stays on Python.
+        _actor_mode(),
+        _actor_device(),
+        _eval_server(),
+        _no_cross_world(),
     ]),
     Sub("az",
         "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "

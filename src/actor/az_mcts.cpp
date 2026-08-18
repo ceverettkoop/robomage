@@ -132,7 +132,14 @@ struct AZMcts::Impl {
     enum Phase { IDLE, DESCENDING, ROLLOUT, AWAITING_ROOT };
 
     MCTSConfig cfg;
-    AZEvaluator* eval;  // null → uniform evaluator (torch-free)
+    // ACTIVE evaluator: every eval_one/eval_priors/flush_pending forward of the
+    // decision in flight goes through this pointer. Single-model runs point it
+    // at eval_a once and never touch it; two-model runs (eval_b set — gate/eval
+    // matches) re-select it at every REAL decision by the seat to move (see
+    // begin_or_fallback). Null → uniform evaluator (torch-free).
+    AZEvaluator* eval;
+    AZEvaluator* eval_a;  // Player A's net (== the single net when eval_b null)
+    AZEvaluator* eval_b;  // Player B's net (null → single-model: A's for both)
     Phase phase = IDLE;
     int root_counter = 0;
 
@@ -232,8 +239,8 @@ struct AZMcts::Impl {
     std::vector<float> root_obs;             // clean root obs (captured before determinize)
     std::vector<SelfPlaySample> game_samples; // samples stored this game
 
-    explicit Impl(const MCTSConfig& c, AZEvaluator* e)
-        : cfg(c), eval(e), rng(c.selfplay_rng_seed) {}
+    explicit Impl(const MCTSConfig& c, AZEvaluator* e, AZEvaluator* eb)
+        : cfg(c), eval(e), eval_a(e), eval_b(eb), rng(c.selfplay_rng_seed) {}
 
     void begin_match() {
         move_counter = 0;
@@ -729,6 +736,14 @@ struct AZMcts::Impl {
 
     // ── phase handlers ─────────────────────────────────────────────────────
     int begin_or_fallback(const float* o, int nc) {
+        // Per-seat evaluator selection (two-model gate/eval matches). The seat
+        // to move at this REAL decision owns the net for everything the
+        // decision spawns — the root priors, every sim leaf/rollout eval and
+        // the fallback argmax — matching the Python gate, where each seat's
+        // SearchController carries its own evaluator through its whole search.
+        // Selected only here (a real decision at IDLE): sim steps and restores
+        // re-enter through other phases and must keep the ROOT mover's net.
+        if (eval_b) eval = (o[SELF_IS_A_IDX] > 0.5f) ? eval_a : eval_b;
         bool searchable = search_loop_safe() && nc > 1;
         if (!searchable) {
             // A trivial / unsafe real decision: not stored, evaluator-argmax
@@ -1288,8 +1303,9 @@ struct AZMcts::Impl {
     }
 };
 
-AZMcts::AZMcts(const MCTSConfig& cfg, AZEvaluator* evaluator)
-    : impl_(std::make_unique<Impl>(cfg, evaluator)) {}
+AZMcts::AZMcts(const MCTSConfig& cfg, AZEvaluator* evaluator,
+               AZEvaluator* evaluator_b)
+    : impl_(std::make_unique<Impl>(cfg, evaluator, evaluator_b)) {}
 AZMcts::~AZMcts() = default;
 
 int AZMcts::on_decision(const std::vector<LegalAction>& actions) {

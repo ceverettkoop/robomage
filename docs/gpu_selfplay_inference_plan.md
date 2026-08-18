@@ -272,9 +272,8 @@ against a fresh local reference (~minutes) for protocol iteration; the
 default `--legs full` keeps every slow Python-reference gate.
 `bench_actor.py` gained `--device cpu|cuda`, `--eval-server DEV`, and
 `--fleet N` (N concurrent actors, per-leg evals/s column) for fleet
-throughput measurement. A strength gate (az-eval A/B, promotion-gated
-az-league slot) remains the deliberately-un-built track before
---eval-server becomes a default.
+throughput measurement. The promotion gate itself now ALSO runs on the
+actor (two-model matches) — see "Stage G" below.
 
 ### Measured: fleet throughput (2026-08-17, the Ryzen 9 7950X + RX 6700 box)
 
@@ -348,6 +347,53 @@ PPO phases (league/exploiter/baseline) don't touch the actor backend.
   measured floor < 360 ms per 128-sim root) becomes the bottleneck again —
   bounding the per-actor gain at roughly 3x over today's unbatched CPU
   baseline, per the sweep table.
+
+## Stage G — the promotion gate (az_eval) on the actor — BUILT (2026-08-18)
+
+The last Python search loop in the training cycle was the GATE: `az_eval`
+played its roster-wide candidate-vs-incumbent panel through `run_match` with
+`az:` controllers (Python `mcts.run_search`, one driver process ping-ponging
+with one engine subprocess per match), so a GPU-served generation pass still
+gated at Python-search speed. The gate now runs on the same actor ladder:
+
+- **Two-model actor matches** — `az_actor --model-b <ts>` /
+  `--eval-server-b <socket>` gives seat B its OWN evaluator. Selection is
+  per REAL decision by the seat to move (`AZMcts` re-points its active
+  evaluator at `begin_or_fallback`), and the selected net evaluates EVERY
+  node of that decision's search — either seat's simulated positions — which
+  is exactly the Python gate's semantics (each seat's controller owns its
+  evaluator for its whole search). `--search` without `--selfplay` is
+  already the actor's eval mode: no root noise, argmax(visits) at searched
+  roots, raw-policy argmax elsewhere. A seat-B evaluator is refused alongside
+  `--selfplay` (gate games are not training data) or `--uniform`.
+- **Driver** — `az_train.az_eval` gained the standard backend knobs
+  (`use_actor`/`actor_device`/`eval_server`/`cross_world`; CLI: `az-eval
+  --actor/--no-actor --actor-device --eval-server/--no-eval-server
+  --no-cross-world`, and the `az`/`az-league` gate inherits the cycle's
+  values). AUTO plays the panel on the actor whenever the binary is built AND
+  an incumbent exists; the no-incumbent-yet fallback (vs scripted) and a
+  missing binary stay on the Python `run_match` path. Each matchup becomes
+  two actor legs (candidate seat A, then seats+nets swapped) with the same
+  panel, per-matchup seed derivation and seat split as the Python path, run
+  as a sliding pool of `workers` actor processes; MATCH_RESULT/GAME_RESULT
+  lines are tallied into the unchanged aggregate/per-deck-floor/promotion
+  logic. The two backends play different engine game seeds internally, so
+  their per-match results are deterministic per backend but not
+  bit-comparable to each other.
+- **GPU** — the gate needs TWO nets, so eval-server AUTO starts one
+  `az_eval_server.py` per net (candidate + incumbent) on the one GPU; each
+  leg connects `--eval-server`/`--eval-server-b` to the socket matching its
+  orientation. Cross-world batching is on by default (arithmetically
+  identical visits — it can never change a gate verdict).
+
+Gates (`test_mcts_parity.py`, new `gate` leg family; `--legs gate` runs just
+them against a fresh bo1 reference): same-net identity (`--model A
+--model-b A` bit-identical to `--model A`, bo1 + bo3-sb-persist), a wiring
+check (a distinct seat-B net must change the game), EXACT two-model visit
+parity vs a two-controller Python reference — one `ParitySearchController`
+per seat, each owning its evaluator, sharing one global root counter, i.e.
+literally an az_eval gate match on the Python backend — for bo1 AND
+bo3-sb-persist, plus a two-model cross-world agreement report.
 
 ## Follow-on (DESIGN): Stage I/II/III — the C++ actor behind interactive search
 

@@ -150,7 +150,15 @@ struct SearchRootResult {
 class AZMcts {
 public:
     // `evaluator` may be null for a uniform (torch-free) evaluator.
-    AZMcts(const MCTSConfig& cfg, AZEvaluator* evaluator);
+    // `evaluator_b` (gate/eval matches, az_actor --model-b) is Player B's OWN
+    // evaluator: when non-null, each REAL decision selects the net by the seat
+    // to move — Player A's decisions (searches, fallbacks) use `evaluator`,
+    // Player B's use `evaluator_b` — and the selected net evaluates EVERY
+    // node of that decision's search (either seat's simulated positions),
+    // mirroring the Python gate where each seat's controller owns its
+    // evaluator. Null (the default) keeps the single-model behavior exactly.
+    AZMcts(const MCTSConfig& cfg, AZEvaluator* evaluator,
+           AZEvaluator* evaluator_b = nullptr);
     ~AZMcts();
 
     // Input-provider hook body: called for every machine decision. Returns the
