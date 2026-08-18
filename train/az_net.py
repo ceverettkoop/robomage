@@ -792,6 +792,20 @@ class AZEvaluator:
     unaffected — the policy head is shared across matchups."""
 
     def __init__(self, net: "AZNet", device: str = "cpu", warn: bool = True):
+        if device != "cpu":
+            # In-process GPU eval (GUI play / analysis window): the ROCm RDNA2
+            # env defaults must be in place before the first cuda touch
+            # initializes the HIP runtime; harmless everywhere else. Then fail
+            # LOUDLY when the device cannot serve — a user who opted into the
+            # GPU wants to know, not to silently search on CPU.
+            ensure_rocm_env()
+            if not torch.cuda.is_available():
+                raise RuntimeError(
+                    f"AZEvaluator device={device!r} requested but "
+                    f"torch.cuda.is_available() is False — install the ROCm "
+                    f"(or CUDA) torch build, or drop the device knob "
+                    f"(ROBOMAGE_EVAL_DEVICE / device=/GUI 'Eval device') to "
+                    f"stay on CPU.")
         self._net = net.to(device).eval()
         self._device = device
         self._mask = np.zeros(MAX_ACTIONS, dtype=bool)
@@ -833,6 +847,61 @@ class AZEvaluator:
             priors = np.full(num_choices, 1.0 / num_choices)
             total = 1.0
         return priors / total, v
+
+    def evaluate_batch(self, obs_batch, num_choices):
+        """Batched :meth:`evaluate`: ONE forward over ``k`` rows, returning
+        ``[(priors, value), ...]`` in order. Each row's priors are computed
+        exactly as the single-row path (float32 softmax over that row's first
+        ``num_choices`` logits, widened to float64, renormalized with the same
+        uniform fallback), so a cross-world deferred leaf's result differs
+        from the sequential search only by the batched GEMM's last-ulp
+        logits. This is the entry point where a non-cpu ``device`` pays —
+        k rows share one launch (see docs/gpu_selfplay_inference_plan.md)."""
+        k = len(num_choices)
+        obs_arr = np.stack([np.asarray(o, dtype=np.float32)
+                            for o in obs_batch])
+        mask = np.zeros((k, MAX_ACTIONS), dtype=bool)
+        for i, nc in enumerate(num_choices):
+            mask[i, :int(nc)] = True
+        for o in obs_batch:   # per-row dead-bucket warning, as evaluate() does
+            self._check_bucket(o)
+        with torch.no_grad():
+            obs_t = torch.as_tensor(obs_arr, device=self._device)
+            mask_t = torch.as_tensor(mask, device=self._device)
+            logits, value = self._net(obs_t, mask_t)
+            logits = logits.detach().cpu()
+            values = value.detach().cpu().reshape(-1)
+        out = []
+        for i, nc in enumerate(num_choices):
+            nc = int(nc)
+            probs = torch.softmax(logits[i, :nc], dim=-1)
+            priors = probs.numpy().astype(np.float64)
+            total = priors.sum()
+            if not np.isfinite(total) or total <= 0.0:
+                priors = np.full(nc, 1.0 / nc)
+                total = 1.0
+            out.append((priors / total, float(values[i].item())))
+        return out
+
+
+def ensure_rocm_env() -> None:
+    """Set the ROCm RDNA2 env defaults IN-PROCESS (respecting existing
+    values), for code that runs a cuda forward inside the current process —
+    the GUI's play evaluator and analysis window, unlike the actor fleet,
+    whose launcher exports the same pair per subprocess
+    (az_selfplay.actor_gpu_env). Must run before the first cuda touch; a
+    no-op on CUDA/NVIDIA builds and CPU-only boxes (the variables are only
+    read by the HIP runtime)."""
+    os.environ.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
+    os.environ.setdefault("HIP_VISIBLE_DEVICES", "0")
+
+
+def resolve_eval_device(device=None) -> str:
+    """The evaluator device for interactive search/analysis: an explicit
+    ``device`` argument (a spec ``device=`` knob, a GUI field) wins; else the
+    ``ROBOMAGE_EVAL_DEVICE`` environment variable (the one switch that moves
+    EVERY analysis/search evaluator in a process onto the GPU); else cpu."""
+    return device or os.environ.get("ROBOMAGE_EVAL_DEVICE") or "cpu"
 
 
 # ----------------------------------------------------------------------

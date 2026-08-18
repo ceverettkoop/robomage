@@ -75,6 +75,12 @@ fails, so one invocation reports every finding):
           the primary plays on; a persisted bo3 sideboard boundary played over
           the pool is bit-identical to the serial one
           (train/test_mirror_search.py). Torch-free.
+  xwsearch Cross-world batched leaf evaluation in the Python search stack
+          (mcts.run_search / IncrementalSearch cross_world — GUI play +
+          analysis): uniform-evaluator EXACT parity vs the sequential search,
+          ragged-chunk parity, rollout-budget inertness; torch-only legs
+          (evaluate_batch rows, real-net agreement) self-skip without torch
+          (train/test_xw_search.py).
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
           matches — catches unintended narrative/behavior drift.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
@@ -157,7 +163,7 @@ LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "concede", "obsinv",
              "actorobs", "pergame", "snapshot", "sbselfplay", "mirror",
-             "replay", "smoke", "fuzz"]
+             "xwsearch", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -427,6 +433,25 @@ def tier_mirror(rep):
         rep.error("mirror", "mirror-pool search violation "
                             f"(test_mirror_search.py exit {r.returncode}):\n"
                             f"{r.stdout}{r.stderr}")
+
+
+def tier_xwsearch(rep):
+    """Cross-world batched leaf evaluation in the PYTHON search stack (the GUI
+    play / analysis modes' scheduler — mcts.run_search / IncrementalSearch
+    cross_world).
+
+    Runs train/test_xw_search.py: uniform-evaluator EXACT gates (cross-world
+    == sequential bit-for-bit, run_search + ragged-chunk IncrementalSearch,
+    plus rollout-budget inertness) and, when torch is installed, the
+    AZEvaluator.evaluate_batch row-consistency + real-net agreement legs
+    (self-skip without torch, so the tier stays green in CPU-only CI)."""
+    r = subprocess.run([sys.executable, "train/test_xw_search.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("xwsearch", "cross-world search violation "
+                              f"(test_xw_search.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
 
 
 def tier_analysis(rep):
@@ -908,6 +933,8 @@ def main(argv=None):
             tier_smoke(rep, args, out_dir)
         elif t == "fuzz":
             tier_fuzz(rep, args, out_dir)
+        elif t == "xwsearch":
+            tier_xwsearch(rep)
         elif t == "actor":
             tier_actor(rep)
         elif t == "analysis":

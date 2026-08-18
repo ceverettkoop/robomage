@@ -400,16 +400,156 @@ root visits), and the two-model cross-world report agreed 570/570 = 1.000
 over the full bo1 game. `test_az_gate.py` (driver: tallies, determinism,
 guards) and the full default `make check` passed on the same tree.
 
+## Stage P — cross-world + GPU in the PYTHON search stack (GUI play & analysis) — BUILT (2026-08-18)
+
+The interactive front ends (GUI human-vs-computer play, the GUI analysis
+window, the TUI analysis browser, the F6 offline replay search) run the
+PYTHON search (`mcts.py`), which evaluated leaves one at a time on CPU. They
+now get the same two levers, WITHOUT waiting for the full Stage I/II/III
+actor port:
+
+- **Cross-world batched leaf evaluation in `mcts.py`** — `run_search(...,
+  cross_world=True)` / `IncrementalSearch(..., cross_world=True)`: the Python
+  twin of the actor's Stage 0 scheduler (`_simulate_defer` + `_flush_pending`
+  — round-robin worlds, defer each fresh/depth-capped leaf, flush in one
+  forward before a world's own next descent; terminals back up in place;
+  budgets with rollouts on keep the sequential path). Per-world trees are
+  arithmetically identical to the sequential search; an evaluator without
+  `evaluate_batch` is called row-by-row and stays BIT-IDENTICAL (the gate).
+  `run_search_parallel` forwards it per worker (K = world slice);
+  `IncrementalSearch` flushes at chunk boundaries so `stats()`/`pv()`/
+  `walk()` always see fully backed-up trees.
+- **Batched + device-aware evaluator** — `az_net.AZEvaluator.evaluate_batch`
+  (one forward over k rows, per-row prior math identical to `evaluate`) and
+  the existing `device=` parameter wired through the loaders:
+  `opponents.load_az_evaluator(device=)` and
+  `analysis_session.load_analysis_evaluator(device=)`. Device resolution is
+  `az_net.resolve_eval_device`: explicit value > `ROBOMAGE_EVAL_DEVICE` env
+  var > cpu. Off-cpu, `az_net.ensure_rocm_env()` applies the RDNA2 defaults
+  IN-PROCESS (the GUI is one process — no launcher to export them) before
+  the first cuda touch, and an unusable device fails LOUDLY (no silent CPU
+  fallback for an explicit opt-in). The eager AZNet has no TorchScript
+  fuser, so Stage A's NNC landmine does not apply here.
+- **Wiring** — spec knobs `xw=0/1` (default 1) and `device=` on `az:`/`mcts:`
+  controller specs (`SearchController(cross_world=True)` is the production
+  default, mirroring the actor; `mcts:` parses `device` but keeps the PPO
+  evaluator on CPU); `AnalysisConfig.cross_world`/`.device` for the analysis
+  window; GUI launcher fields ("Eval device" combo + "Cross-world batched
+  leaf evaluation" checkbox in BOTH the search-opponent and analysis groups,
+  persisted like every other launcher knob); the F6 offline replay search
+  (`browse_session.run_replay_search`) runs cross-world unconditionally and
+  follows the env var for its device. `ROBOMAGE_EVAL_DEVICE=cuda` is the one
+  switch that moves every analysis/search evaluator of a process onto the
+  GPU.
+
+Economics note: per-process K here is `worlds` (4–8), which sits at the GPU
+crossover (k≈8 ~ break-even, see the sanity table) — so on this card the GPU
+device knob is roughly neutral for play at `worlds=8` and pays as world
+counts/procs grow; cross-world batching itself pays on CPU regardless
+(one k-row GEMM per round instead of k singles). The big interactive win
+remains the Stage I/II/III actor port below.
+
+Gates (`train/test_xw_search.py`, default `make check` tier `xwsearch`):
+uniform-evaluator EXACT parity (cross == sequential bit-for-bit; run_search
++ ragged-chunk IncrementalSearch over several searched roots of a real
+game), rollout-budget inertness (flag on == off), and — when torch is
+present — `evaluate_batch` row-consistency vs `evaluate` plus a real-net
+cross-vs-sequential argmax agreement report (measured 4/4 = 1.000 on the
+fresh deterministic net; CPU containers self-skip the torch legs).
+
+## Verification checklist — exhaustively exercising the new modes on the ROCm box
+
+Everything below assumes the 7950X + RX 6700 box with the pinned wheel
+(`torch==2.10.0+rocm7.0`, see the Install bullet; after ANY venv torch
+change: `make actor && make actor BUILD=RELEASE`, then `ci_check --tier
+actor`). `make && make BUILD=RELEASE` first so both engine tiers exist.
+Steps are ordered cheapest-first; each names its pass criterion. `[GPU]`
+marks the legs that need the Radeon — everything else also re-verifies on any
+CPU box.
+
+1. **Machinery gates (CPU, ~minutes each).**
+   - `make check` — must be fully green; includes the new `xwsearch` tier,
+     whose torch legs now RUN (they self-skip only without torch).
+   - `train/.venv/bin/python train/ci_check.py --tier actor` — the full actor
+     tier: obs parity, MCTS visit parity including the two-model `gate` legs
+     (`--legs gate` for just those), shards, trainer, and the az_eval gate
+     driver (`test_az_gate.py`).
+   - `train/.venv/bin/python train/ci_check.py --tier analysis` — the
+     analysis-core regression (AnalysisConfig now carries
+     `cross_world`/`device`; the tier must stay green with the defaults).
+2. **[GPU] Eval-server legs (Stage C/G plumbing).**
+   `ROBOMAGE_BUILD=release train/.venv/bin/python train/test_mcts_parity.py
+   --legs server` — the `server-cpu` EXACT gate must pass and the
+   `server-gpu` drift REPORT must actually run (it self-skips without a GPU;
+   expect argmax agreement ~1.000, visit L1 drift ~0).
+3. **[GPU] The gate (az_eval) end-to-end on the actor.**
+   `train/.venv/bin/python train/train.py az-eval --candidate gen --games 8
+   --sims 16 --seed 3` — the header must print `backend=ACTOR (AUTO)` and
+   `actor eval: central servers (cand+inc) on gpu` (TWO `az_eval_server`
+   READY lines, one per net). Re-run with `--no-eval-server
+   --actor-device cuda` (local Stage A forwards) and `--no-eval-server`
+   (local CPU) — all three must produce the same panel shape and, per seed,
+   deterministic tallies (identical when re-run with the same flags). Then
+   `--no-actor` once to confirm the Python fallback path still runs. (No
+   incumbent yet? Promote one first or expect the printed
+   `AUTO->PYTHON (no incumbent)`.)
+4. **[GPU] GUI play, human vs computer.**
+   `./gui.sh` → File ▸ New Session ▸ Play… → opponent `az:gen`; in "Search
+   opponent settings" set **Eval device = GPU (cuda / ROCm)** and leave
+   **Cross-world batched leaf evaluation** checked. Play several turns:
+   `rocm-smi` (or `radeontop`) must show GPU activity while the opponent
+   thinks, and the opponent must play at normal strength/latency. Flip the
+   checkbox off for one session (sequential + GPU), and once set the device
+   back to CPU with the checkbox on (cross + CPU — the everyday default):
+   all four combinations must play cleanly. Also verify the loud-failure
+   path once on a CPU-only shell: `HIP_VISIBLE_DEVICES=-1` + device=GPU must
+   produce the clear AZEvaluator error, not a silent CPU game.
+5. **[GPU] GUI analysis window (live).**
+   Same session with the analysis group's **Eval device = GPU** and
+   cross-world checked, window open (F9): F5-analyze several of your own
+   decisions and F6-review an opponent decision (reveal toggle required).
+   The table must fill at the usual rate or faster, and per-action Q/visit%
+   values must look sane (compare a position against a CPU-device run —
+   verdicts should agree; exact visit equality is NOT expected on GPU, ulp
+   drift is legitimate).
+6. **[GPU] Recording + offline replay search (F6/F10 + browsers).**
+   Play a short recorded session ("Record shards" on), then:
+   - View ▸ Analyze Recording… (F10) → in the browser run the `search` (F6)
+     replay-to-step search on a model decision;
+   - `ROBOMAGE_EVAL_DEVICE=cuda train/.venv/bin/python train/tui_analysis.py
+     gen --opponent scripted --deck-b league/gw_maverick --n-games 2` → menu
+     `search` on a step.
+   Both must complete and mark the recorded/played action `▶`; with the env
+   var set, GPU activity confirms the device took effect (the replay search
+   is cross-world unconditionally).
+7. **[GPU] Self-play generation defaults still healthy after the mcts.py
+   changes** (regression breadth, ~10 min):
+   `train/.venv/bin/python train/train.py az-selfplay --games 4 --sims 32
+   --seed 5` — expect `backend=ACTOR`, `eval-server AUTO` starting a cuda
+   server, cross-world on, clean GAME/SELFPLAY lines and shards written.
+8. **Throughput spot-check (optional).** `ROBOMAGE_BUILD=release
+   train/.venv/bin/python train/bench_actor.py --games 2 --sims 128
+   --worlds 8 --cross --fleet 8 --eval-server cuda --no-python --seed 11`
+   — expect the fleet table in the Stage C section's ballpark (~4.5x over
+   CPU b=1). Numbers materially below it mean an env regression (check the
+   HSA override and that device 0 is the discrete card).
+
+A red step 1 is a code bug — fix before touching GPU legs. A red `[GPU]` step
+with green CPU legs is an environment problem first (wheel pin, HSA
+override, device pinning): re-run the sanity-check timing table above before
+suspecting the code.
+
 ## Follow-on (DESIGN): Stage I/II/III — the C++ actor behind interactive search
 
 The GUI board, the GUI analysis window, and the TUI analysis browser run the
 PYTHON search stack (`mcts.py` `run_search`/`IncrementalSearch` over
-`SearchRoboMageEnv`, evaluator on CPU) — none of the ladder above applies to
-them today, and pointing their k=1 evals at the GPU alone would be a LOSS
-(below the k≈8–16 crossover). The port that does pay is replacing the Python
-tree with the actor's — cross-world batching plus the C++/Python per-decision
-gap is roughly an order of magnitude more sims per second of think time, and
-the cpu/cuda/eval-server evaluator backends come along for free.
+`SearchRoboMageEnv`). Stage P above gave that stack cross-world batching and
+a device-aware batched evaluator, which is what makes a GPU eval even
+break-even there (k=1 was a LOSS, below the k≈8–16 crossover). The port that
+pays much more is replacing the Python tree with the actor's — cross-world
+batching plus the C++/Python per-decision gap is roughly an order of
+magnitude more sims per second of think time, and the cpu/cuda/eval-server
+evaluator backends come along for free.
 
 Key insight making this small: the front ends never need the Python tree,
 only search RESULTS (per-action visits/Q/priors, PV boards, chunked
