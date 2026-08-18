@@ -349,6 +349,57 @@ PPO phases (league/exploiter/baseline) don't touch the actor backend.
   bounding the per-actor gain at roughly 3x over today's unbatched CPU
   baseline, per the sweep table.
 
+## Follow-on (DESIGN): Stage I/II/III — the C++ actor behind interactive search
+
+The GUI board, the GUI analysis window, and the TUI analysis browser run the
+PYTHON search stack (`mcts.py` `run_search`/`IncrementalSearch` over
+`SearchRoboMageEnv`, evaluator on CPU) — none of the ladder above applies to
+them today, and pointing their k=1 evals at the GPU alone would be a LOSS
+(below the k≈8–16 crossover). The port that does pay is replacing the Python
+tree with the actor's — cross-world batching plus the C++/Python per-decision
+gap is roughly an order of magnitude more sims per second of think time, and
+the cpu/cuda/eval-server evaluator backends come along for free.
+
+Key insight making this small: the front ends never need the Python tree,
+only search RESULTS (per-action visits/Q/priors, PV boards, chunked
+progress), and they already keep analysis engines in lockstep by **engine
+seed + action-prefix replay** (`spawn_detached_mirror`, the F6 offline
+shard-replay search, the `.rmplay` sidecars). That replay contract is exactly
+the interface an actor process can accept — so the work is "teach the actor
+to be an interactive search service", not "rewrite the GUI". The live game's
+`bin/robomage --machine` subprocess, GameDriver, decode, shard recording
+(`on_result` is producer-agnostic), and the GUI itself are untouched;
+`AnalysisSession` is Qt-free and already isolates the searching engine
+behind a narrow seam, so it grows an `engine=actor` toggle with the Python
+path kept as fallback and parity reference.
+
+Stages, each flag-gated and bit-exactness-gated like Stages 0/A/C:
+
+- **Stage I — one-shot serve (play opponents + F6 review)** (~2 sessions):
+  `az_actor --serve` speaking a small stdio/UDS protocol — layout HELLO,
+  `NEWGAME seed decks bo3`, `STEP <action>` (forward replay for lockstep;
+  rewind = RESET + shorter prefix, today's respawn path), `SEARCH
+  sims/worlds/seeds` returning per-action rows (visits, Q, prior, per-world
+  values — already computed internally, today only file-dumped via
+  `--dump-visits`), plus a Python `ActorSearchClient` implementing the
+  surface `SearchController` expects. Play opponents and the F6 review use
+  one-shot searches, so this stage needs NO search-loop refactor.
+- **Stage II — chunked incremental search (live analysis window)**
+  (~1–2 sessions): restructure `AZMcts`'s sim loop into a resumable stepper
+  (run N sims -> report -> resume -> cancel; the `IncrementalSearch` shape).
+  Cross-world wrinkle: chunk boundaries must flush the shared PendingLeaf
+  batch (the finalize-tail logic already does this). Gate: chunked ==
+  unchunked, bit-exact.
+- **Stage III — PV/walk for the scrubber** (~1 session): walk the
+  argmax(visits) chain on a scratch world (the snapshot/restore machinery
+  sims already use), emitting the obs vector at each node via `obs_builder`;
+  the GUI's existing decode + `MiniBoard` render it unchanged.
+
+Gates: a serve-mode leg in `test_mcts_parity.py` asserting served visits ==
+`--dump-visits` == the Python reference for the same world seeds, plus the
+Stage II chunking-invariance gate. Sideboard budgets/rollouts/persistence
+and duplicate-edge merging are already in the actor and inherit.
+
 ## Cross-cutting: what guards quality at every stage
 
 - The bit-parity harness (batch=1, CPU) stays green and untouched — it
