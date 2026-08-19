@@ -115,6 +115,16 @@ expansions. Prefer bare `make` and `... | grep -i error` over
 `make 2>&1 | grep ... ; echo "EXIT:${PIPESTATUS[0]}"`; read the printed output for status
 instead of `$PIPESTATUS`.
 
+## Long-running commands (Claude)
+
+When Claude runs a long command (build, training, gate, fuzz, bench) it must run it **in the
+background** and make the live output inspectable by the user:
+
+- Always state the task's output-file path in chat when launching it, so the user can
+  `tail -f` it while it runs. (No symlinks or other indirection — just the path.)
+- Foreground runs stream nothing until they exit (for Claude AND the user), so anything
+  expected to take more than ~30 s should be backgrounded rather than run with a long timeout.
+
 ## Testing guidelines
 -**The standard gate is `make check`** (builds + runs `train/ci_check.py`: codegen-sync,
  vocab coverage, byte-identical replay corpus, deterministic league smoke, short fuzz). It
@@ -644,7 +654,7 @@ train/.venv/bin/python train/train.py exploiter --archetype burn --resume       
 train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
 train/.venv/bin/python train/train.py az-league --matrix --expert-decks league/wubg_doomsday  # whole-roster focus matrix + scripted:hard expert (BC) shards for the combo deck each slot
-train/.venv/bin/python train/train.py az-league --exhaustive --rotations 2 --gate-every 0 --window 0 --workers 28  # EXACT matchup matrix each slot (one bo3 match vs scripted:hard per ordered deck pair + one self-play match per unordered pair = 155 on the 10-deck roster; HYBRID backend: C++ actor plays the self-play cells when built, Python the vs-scripted cells), auto 2x shard window (0 = twice this slot's new shards, so the previous pass stays in-window), ungated (--gate-every 0: no gates; final candidate promoted to gen__azfinal unconditionally at completion)
+train/.venv/bin/python train/train.py az-league --exhaustive --rotations 2 --gate-every 0 --window 0 --workers 28  # EXACT matchup matrix each slot (one bo3 match vs scripted:hard per ordered deck pair + one self-play match per unordered pair = 155 on the 10-deck roster; with the C++ actor built the WHOLE matrix runs on it — vs-scripted cells ship the scripted seat's decisions to train/scripted_oracle.py — else pure Python), auto 2x shard window (0 = twice this slot's new shards, so the previous pass stays in-window), ungated (--gate-every 0: no gates; final candidate promoted to gen__azfinal unconditionally at completion)
 train/.venv/bin/python train/train.py az-league --exhaustive-selfplay --exhaustive-repeats 2 --gate-every 0 --window 0 --workers 28  # same EXACT matrix narrowed to the PURE SELF-PLAY cells only (one bo3 match per UNORDERED deck pair, mirrors included = 55 on the 10-deck roster; NO vs-scripted cells, so the whole slot runs on the C++ actor with no Python fallback), --exhaustive-repeats N plays every cell N times per slot (2 = every self-play matchup twice). Both flags apply to `train.py az` too, and are persisted in the az-league resume sidecar. Plan file: curricula/az_selfplay_matrix.plan.json
 
 # Curriculum: a multi-phase plan (league -> exploiter -> league -> az-league -> baseline) in one file

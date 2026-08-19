@@ -6,14 +6,17 @@
   z)``, snapshot the CANDIDATE to ``gen__azv{steps}.pt``. ``gen__azfinal.pt`` (the
   incumbent) is written ONLY by the ``az_eval`` promotion gate — training never
   touches it.
-- ``az_eval`` : candidate-vs-incumbent gating via ``run_match`` with ``az``
-  controllers at low sims over a ROSTER-WIDE panel (a mirror for every roster
-  deck, so every deck the net must pilot is measured, plus direction-balanced
-  cross pairings), seats alternating (half the games each way); promote the
-  candidate to ``gen__azfinal.pt`` on aggregate win-rate, subject to a per-deck
-  floor veto (a candidate that collapsed at piloting any one deck is rejected
-  even when its aggregate clears the bar), printing a per-matchup and
-  per-piloted-deck breakdown.
+- ``az_eval`` : candidate-vs-incumbent gating at low sims over a ROSTER-WIDE
+  panel (a mirror for every roster deck, so every deck the net must pilot is
+  measured, plus direction-balanced cross pairings), seats alternating (half
+  the games each way); promote the candidate to ``gen__azfinal.pt`` on
+  aggregate win-rate, subject to a per-deck floor veto (a candidate that
+  collapsed at piloting any one deck is rejected even when its aggregate
+  clears the bar), printing a per-matchup and per-piloted-deck breakdown.
+  The panel plays on the C++ actor by default (two-model ``az_actor
+  --model-b`` matches with cross-world leaf batching and the optional Stage C
+  GPU eval-server — one server per net); the no-incumbent-yet fallback (vs
+  scripted) runs on the Python ``run_match`` path with ``az`` controllers.
 - ``az_cycle`` : one sequential generate -> train -> eval iteration.
 
 Exposed to ``train.py`` as the ``az-train`` / ``az-eval`` / ``az`` subcommands.
@@ -501,6 +504,231 @@ def _gate_matchup_worker(mi: int, dx: str, dy: str, per: int, cand_spec: str,
     return mi, mw, ml, md
 
 
+def _gate_actor_cmd(actor_bin: str, *, deck_a: str, deck_b: str, games: int,
+                    seed: int, sims: int, worlds: int, c_puct: float,
+                    model_a: Optional[str], model_b: Optional[str],
+                    server_a: Optional[str], server_b: Optional[str],
+                    bo3: bool, sb_sims: int, sb_worlds: int, sb_max_depth: int,
+                    sb_rollout_turns: int, sb_persist: bool,
+                    cross_world: bool, device: str) -> list:
+    """Build a ``bin/az_actor --search`` argv for one gate leg: seat A's net
+    (``model_a`` or central-server socket ``server_a``) piloting ``deck_a`` vs
+    seat B's net piloting ``deck_b``. ``--search`` WITHOUT ``--selfplay`` is
+    the actor's eval mode — no root Dirichlet noise, argmax(visits) at every
+    searched root, raw-policy argmax at unsafe/trivial decisions — matching
+    the Python gate's ``az:`` controllers (temperature 0)."""
+    cmd = [actor_bin, "--search", "--deck", deck_a, "--deck-b", deck_b,
+           "--seed", str(seed), "--games", str(games),
+           "--sims", str(sims), "--worlds", str(worlds), "--c", str(c_puct),
+           "--merge-dupes", "1"]
+    cmd += (["--eval-server", server_a] if server_a else ["--model", model_a])
+    cmd += (["--eval-server-b", server_b] if server_b else ["--model-b", model_b])
+    if cross_world:
+        cmd += ["--cross-world"]
+    if device != "cpu" and not server_a:
+        cmd += ["--device", device]
+    if bo3:
+        cmd += ["--bo3",
+                "--sb-sims", str(sb_sims),
+                "--sb-worlds", str(sb_worlds),
+                "--sb-max-depth", str(sb_max_depth),
+                "--sb-rollout-turns", str(sb_rollout_turns),
+                "--sb-persist", str(int(sb_persist))]
+    return cmd
+
+
+def _parse_gate_output(stdout: str, bo3: bool) -> tuple:
+    """Tally one gate actor leg's stdout into ``(wins_a, wins_b, draws)`` —
+    per-MATCH ``MATCH_RESULT:`` lines in bo3 (a bo3 match has no draw),
+    per-GAME ``GAME_RESULT:`` lines in bo1."""
+    wa = wb = dr = 0
+    for line in stdout.splitlines():
+        if bo3:
+            if line.startswith("MATCH_RESULT: Player A wins"):
+                wa += 1
+            elif line.startswith("MATCH_RESULT: Player B wins"):
+                wb += 1
+        elif line.startswith("GAME_RESULT:"):
+            if "Player A wins" in line:
+                wa += 1
+            elif "Player B wins" in line:
+                wb += 1
+            elif "draw" in line:
+                dr += 1
+    return wa, wb, dr
+
+
+def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
+                      cand_ts: str, inc_ts: str, sims: int, worlds: int,
+                      c_puct: float, sb_sims: int, sb_worlds: int,
+                      sb_max_depth: int, sb_rollout_turns: int,
+                      sb_persist: bool, bo3: bool, seed: int, workers: int,
+                      actor_device: str, eval_server, cross_world: bool,
+                      tag_of) -> dict:
+    """Play the gate's matchup panel on the C++ actor and return
+    ``{mi: (mw, ml, md)}`` from the CANDIDATE's view.
+
+    Each matchup ``(dx, dy)`` becomes TWO actor legs so seats alternate exactly
+    like the Python path's two ``run_match`` calls: candidate-piloting-``dx``
+    in seat A for ``per - per//2`` matches, then in seat B (nets and decks both
+    swapped) for ``per//2``, the B leg's tally flipped to the candidate's view.
+    Per-leg seeds derive only from the matchup index (``seed + mi*100003``,
+    B leg offset ``+ per``) — the same derivation as
+    :func:`_gate_matchup_worker` — so results are independent of scheduling
+    order and worker count.
+
+    ``eval_server`` is the tri-state Stage C knob (None AUTO / True forced /
+    False off). The gate needs TWO nets, so it starts one
+    ``train/az_eval_server.py`` PER NET (candidate + incumbent) on the one GPU
+    — each actor leg connects its ``--eval-server``/``--eval-server-b`` to the
+    socket matching its seat orientation. AUTO falls back to local forwards
+    (on ``actor_device``) with a notice when the servers cannot start.
+    Cross-world leaf batching (Stage 0) is on by default — visits are
+    arithmetically identical to the sequential search, so it never changes a
+    gate verdict, only its wall-clock."""
+    import shlex
+    import subprocess
+    import threading
+    from az_selfplay import (actor_gpu_env, start_eval_server, stop_eval_server)
+    from cli_spec import BIN_DIR
+
+    # One eval server per net (candidate + incumbent) — the wire protocol
+    # serves ONE module per socket, and two tiny-net servers share the GPU
+    # comfortably (each leg's requests batch fleet-wide per net).
+    cand_srv = inc_srv = (None, None, None)
+    if eval_server is not False:
+        dev = actor_device if actor_device != "cpu" else "cuda"
+        cand_srv = start_eval_server(cand_ts, device=dev,
+                                     forced=bool(eval_server), tag="az-eval")
+        if cand_srv[0] is not None:
+            try:
+                inc_srv = start_eval_server(inc_ts, device=dev,
+                                            forced=bool(eval_server),
+                                            tag="az-eval")
+            finally:
+                if inc_srv[0] is None:
+                    stop_eval_server(cand_srv[0], cand_srv[2])
+                    cand_srv = (None, None, None)
+        if cand_srv[0] is None:
+            print("[az-eval] eval-server AUTO: no usable GPU (server failed "
+                  "to start) — gate actors run local forwards on "
+                  f"{actor_device}", flush=True)
+    cand_sock, inc_sock = cand_srv[1], inc_srv[1]
+    print(f"[az-eval] actor eval: "
+          f"{'central servers (cand+inc) on gpu' if cand_sock else 'local ' + actor_device}"
+          f", cross-world={'on' if cross_world else 'off'}", flush=True)
+    actor_env = (actor_gpu_env()
+                 if (actor_device != "cpu" and cand_sock is None) else None)
+
+    # Two legs per matchup; a leg's tally is flipped to the candidate's view
+    # when the candidate sat in seat B.
+    jobs = []   # (mi, cand_is_a, argv)
+    half = per // 2
+    for mi, (dx, dy) in enumerate(matchups):
+        mseed = seed + mi * 100003
+        common = dict(sims=sims, worlds=worlds, c_puct=c_puct, bo3=bo3,
+                      sb_sims=sb_sims, sb_worlds=sb_worlds,
+                      sb_max_depth=sb_max_depth,
+                      sb_rollout_turns=sb_rollout_turns,
+                      sb_persist=sb_persist, cross_world=cross_world,
+                      device=actor_device)
+        if per - half:  # candidate (piloting dx) in seat A
+            jobs.append((mi, True, _gate_actor_cmd(
+                actor_bin, deck_a=dx, deck_b=dy, games=per - half, seed=mseed,
+                model_a=cand_ts, model_b=inc_ts, server_a=cand_sock,
+                server_b=inc_sock, **common)))
+        if half:        # candidate (piloting dx) in seat B
+            jobs.append((mi, False, _gate_actor_cmd(
+                actor_bin, deck_a=dy, deck_b=dx, games=half, seed=mseed + per,
+                model_a=inc_ts, model_b=cand_ts, server_a=inc_sock,
+                server_b=cand_sock, **common)))
+
+    tallies = {mi: [0, 0, 0] for mi in range(len(matchups))}
+    legs_left = {mi: 0 for mi in range(len(matchups))}
+    for mi, _cia, _cmd in jobs:
+        legs_left[mi] += 1
+    done_matchups = 0
+    failed = []
+
+    def _pump(stream, sink):
+        for line in stream:
+            sink.append(line)
+        stream.close()
+
+    def _launch(job):
+        mi, cand_is_a, cmd = job
+        # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
+        p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
+                             env=actor_env, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out_lines, err_lines = [], []
+        threads = [threading.Thread(target=_pump, args=(p.stdout, out_lines),
+                                    daemon=True),
+                   threading.Thread(target=_pump, args=(p.stderr, err_lines),
+                                    daemon=True)]
+        for t in threads:
+            t.start()
+        return {"mi": mi, "cand_is_a": cand_is_a, "p": p, "cmd": cmd,
+                "threads": threads, "out": out_lines, "err": err_lines}
+
+    def _reap(rec):
+        nonlocal done_matchups
+        rec["p"].wait()
+        for t in rec["threads"]:
+            t.join()
+        mi = rec["mi"]
+        if rec["p"].returncode != 0:
+            failed.append((mi, rec["p"].returncode, rec["cmd"],
+                           "".join(rec["err"])))
+            return
+        wa, wb, dr = _parse_gate_output("".join(rec["out"]), bo3)
+        mw, ml = (wa, wb) if rec["cand_is_a"] else (wb, wa)
+        t = tallies[mi]
+        t[0] += mw; t[1] += ml; t[2] += dr
+        legs_left[mi] -= 1
+        if legs_left[mi] == 0:
+            done_matchups += 1
+            dx, dy = matchups[mi]
+            print(f"[az-eval]   {tag_of(dx, dy)}: {t[0]}W-{t[1]}L-{t[2]}D "
+                  f"({done_matchups}/{len(matchups)})", flush=True)
+
+    active = []
+    try:
+        # Sliding pool (same shape as az_selfplay._generate_actor): keep up to
+        # `workers` actor legs in flight, launching the next as any one exits.
+        next_j = 0
+        while next_j < len(jobs) or active:
+            while next_j < len(jobs) and len(active) < workers:
+                active.append(_launch(jobs[next_j]))
+                next_j += 1
+            done = [rec for rec in active if rec["p"].poll() is not None]
+            if not done:
+                time.sleep(0.2)
+                continue
+            for rec in done:
+                _reap(rec)
+                active.remove(rec)
+        if failed:
+            for mi, rc, cmd, err in failed:
+                tail = "\n".join(err.strip().splitlines()[-40:])
+                repro = " ".join(shlex.quote(str(c)) for c in cmd)
+                print(f"[az-eval] gate leg (matchup {mi}: "
+                      f"{tag_of(*matchups[mi])}) FAILED (exit {rc})\n"
+                      f"  reproduce (run from {BIN_DIR}):\n    {repro}\n"
+                      f"  stderr tail:\n{tail}")
+            raise RuntimeError(
+                f"az_actor gate: {len(failed)} leg(s) failed (first: matchup "
+                f"{failed[0][0]}, exit {failed[0][1]}); see the FAILED "
+                f"block(s) above for the repro command and stderr tail")
+    finally:
+        for rec in active:
+            if rec["p"].poll() is None:
+                rec["p"].terminate()
+        stop_eval_server(cand_srv[0], cand_srv[2])
+        stop_eval_server(inc_srv[0], inc_srv[2])
+    return {mi: tuple(t) for mi, t in tallies.items()}
+
+
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = DEFAULT_AZ_EVAL_GAMES, sims: int = DEFAULT_AZ_EVAL_SIMS,
             worlds: int = DEFAULT_AZ_EVAL_WORLDS, c_puct: float = 1.5,
@@ -515,7 +743,10 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             gate_floor: float = DEFAULT_GATE_FLOOR,
             floor_min_matches: int = DEFAULT_GATE_FLOOR_MIN,
             ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 1, bo3: bool = True,
-            workers: Optional[int] = None) -> dict:
+            workers: Optional[int] = None,
+            use_actor: Optional[bool] = None, actor_device: str = "cpu",
+            eval_server: Optional[bool] = None,
+            cross_world: bool = True) -> dict:
     """ROSTER-WIDE gate: play ``candidate`` vs ``incumbent`` over a panel of
     matchups covering EVERY deck in ``roster`` (default: the whole decks/league/
     roster) as pilot — a mirror per deck plus direction-balanced cross pairings
@@ -551,7 +782,24 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     independent and every matchup's seeds derive only from its panel index
     (and its controllers are built fresh per matchup — see
     :func:`_gate_matchup_worker`), so the aggregate/breakdown/veto results are
-    identical for ANY worker count; only per-matchup print order varies."""
+    identical for ANY worker count; only per-matchup print order varies.
+
+    ``use_actor`` picks the gate BACKEND (mirroring
+    :func:`az_selfplay.generate`): None (AUTO, default) plays the panel on the
+    C++ ``bin/az_actor`` — two-model gate matches via ``--model-b``, each
+    seat's decisions searched by its own net — whenever the binary is built
+    AND an incumbent exists; the no-incumbent-yet fallback (vs scripted) and
+    a missing binary stay on the Python ``run_match`` path. True forces the
+    actor (loud error when impossible), False forces Python. The actor
+    backend runs with cross-world leaf batching (``cross_world``, default on
+    — visits arithmetically identical to the sequential search) and the
+    Stage C GPU eval-server per the tri-state ``eval_server`` knob (None
+    AUTO / True forced / False off; TWO servers, one per net — see
+    :func:`_gate_actor_panel`); ``actor_device`` is the local-forward device
+    when no server runs. Both backends decide the gate from the same panel,
+    seat split and per-matchup seed derivation, but play different engine
+    game seeds internally, so their per-match RESULTS are not bit-comparable
+    — each backend is deterministic for a given seed."""
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
     cand_path = resolve_az_checkpoint(candidate, prefer="snapshot") or candidate
@@ -575,12 +823,43 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     if workers is None:
         workers = max(1, (os.cpu_count() or 2) - 1)
     workers = max(1, min(int(workers), len(matchups)))
+
+    # Backend: the C++ actor plays candidate-vs-incumbent two-model matches
+    # (--model-b); the vs-scripted fallback (no incumbent yet) has no actor
+    # seat, so it stays on the Python run_match path — as does a missing
+    # binary under AUTO.
+    from az_selfplay import _ACTOR_BIN
+    have_actor = os.path.exists(_ACTOR_BIN)
+    if use_actor is False:
+        backend, chosen = "python", "forced PYTHON"
+    elif not have_inc:
+        if use_actor:
+            raise ValueError(
+                "--actor gate requested but there is no incumbent yet — the "
+                "vs-scripted fallback runs on the Python backend (the C++ "
+                "actor has no scripted seat). Drop --actor, or promote a "
+                "first incumbent.")
+        backend = "python"
+        chosen = "AUTO->PYTHON (no incumbent: scripted opponent)"
+    elif not have_actor:
+        if use_actor:
+            raise FileNotFoundError(
+                f"--actor gate requested but the actor binary is not built at "
+                f"{_ACTOR_BIN} (build it with `make actor`, or pass "
+                f"--no-actor)")
+        backend, chosen = "python", "AUTO->PYTHON (actor absent)"
+    else:
+        backend = "actor"
+        chosen = "forced" if use_actor else "AUTO"
+
     unit = "matches" if bo3 else "games"
     print(f"[az-eval] {len(matchups)} matchup(s) x {per} {unit} "
           f"({'bo3' if bo3 else 'bo1'}, seats alternating, {workers} worker(s)): "
           f"candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
+    print(f"[az-eval] backend={backend.upper()} ({chosen}); "
+          f"az_actor {'present' if have_actor else 'absent'}")
 
     def _tag(dx: str, dy: str) -> str:
         return f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
@@ -589,7 +868,20 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     # and the specs (fresh controllers per matchup), so the parallel fan-out is
     # result-identical to the serial loop for any worker count.
     tallies: dict = {}       # mi -> (mw, ml, md), candidate's view
-    if workers > 1:
+    if backend == "actor":
+        from az_selfplay import _ensure_actor_torchscript
+        cand_ts, _ = _ensure_actor_torchscript({"mode": "az", "path": cand_path},
+                                               tag="az-eval")
+        inc_ts, _ = _ensure_actor_torchscript({"mode": "az", "path": inc_path},
+                                              tag="az-eval")
+        tallies = _gate_actor_panel(
+            matchups, per, actor_bin=_ACTOR_BIN, cand_ts=cand_ts, inc_ts=inc_ts,
+            sims=sims, worlds=worlds, c_puct=c_puct, sb_sims=sb_sims,
+            sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+            sb_rollout_turns=sb_rollout_turns, sb_persist=bool(sb_persist),
+            bo3=bo3, seed=seed, workers=workers, actor_device=actor_device,
+            eval_server=eval_server, cross_world=cross_world, tag_of=_tag)
+    elif workers > 1:
         import multiprocessing as mp
         from concurrent.futures import ProcessPoolExecutor, as_completed
         ctx = mp.get_context("spawn")
@@ -719,6 +1011,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              eval_worlds: int = DEFAULT_AZ_EVAL_WORLDS,
              promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD, seed: int = 1,
              use_actor: Optional[bool] = None,
+             actor_device: str = "cpu",
+             eval_server: Optional[bool] = None,
+             cross_world: bool = True,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
@@ -739,9 +1034,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     matrix (see :func:`az_selfplay.build_exhaustive_schedule_ex`): one bo3 match
     vs scripted:hard per ORDERED focus x opponent pair plus one pure self-play
     match per UNORDERED pair — 155 matches on the 10-deck roster. ``games``,
-    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and the backend
-    goes HYBRID: the C++ actor (when built) plays the pure self-play cells, the
-    Python backend the vs-scripted cells (the actor has no scripted seat).
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored; with the actor
+    built the WHOLE matrix runs on it (vs-scripted cells via the scripted
+    oracle, train/scripted_oracle.py).
 
     ``exhaustive_selfplay`` (implies ``exhaustive``) drops the vs-scripted family:
     the cycle plays ONLY the pure self-play cells, one bo3 match per unordered
@@ -752,8 +1047,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     per cycle, rotating through the ordered (focus, opponent) pair list by
     ``slot`` — az-league passes its slot index, a standalone cycle is slot 0 —
     so coverage of every ordered pair accumulates across a run. The cells are
-    marked like the full matrix's, so the hybrid backend routes them to Python
-    while the actor plays the self-play cells.
+    marked like the full matrix's, so the actor plays them via the scripted
+    oracle alongside the self-play cells.
 
     ``window=0`` sizes the training window automatically: 2x the shards THIS
     cycle's generation just wrote (self-play + expert), so each training pass
@@ -812,6 +1107,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                sb_rollout_turns=sb_rollout_turns,
                                sb_persist=bool(sb_persist),
                                workers=workers, seed=seed, use_actor=use_actor,
+                               actor_device=actor_device,
+                               eval_server=eval_server,
+                               cross_world=cross_world,
                                roster=roster, focus_decks=focus,
                                mirror_frac=mirror_frac,
                                scripted_opponent_frac=scripted_opponent_frac,
@@ -849,13 +1147,18 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
         print("=== az cycle: eval/gate skipped (gated every K slots) ===")
         return {"generate": gen, "train": tr, "eval": None}
     print("=== az cycle: eval/gate (aggregate) ===")
+    # The gate inherits the cycle's actor-backend knobs (backend choice,
+    # device, Stage C eval-server tri-state, cross-world), so a GPU-served
+    # generation pass gates on the same machinery.
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
                  worlds=eval_worlds, sb_sims=sb_sims, sb_worlds=sb_worlds,
                  sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
                  sb_persist=sb_persist,
                  promote_threshold=promote_threshold,
                  promote=True, seed=seed, roster=roster, gate_floor=gate_floor,
-                 bo3=bo3, workers=workers)
+                 bo3=bo3, workers=workers, use_actor=use_actor,
+                 actor_device=actor_device, eval_server=eval_server,
+                 cross_world=cross_world)
     return {"generate": gen, "train": tr, "eval": ev}
 
 
@@ -925,7 +1228,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               expert_decks=EXPERT_DECKS_ROSTER,
               expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
               expert_opponent: Optional[str] = None,
-              use_actor: Optional[bool] = None, resume: bool = False,
+              use_actor: Optional[bool] = None, actor_device: str = "cpu",
+              eval_server: Optional[bool] = None,
+              cross_world: bool = True,
+              resume: bool = False,
               bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
     """Rotate ``az_cycle`` over the league roster.
 
@@ -949,9 +1255,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     10-deck roster; see :func:`az_selfplay.build_exhaustive_schedule_ex`)
     instead of a random draw. Slot accounting follows the matrix rule (a
     rotation = ``cycles_per_deck`` whole-roster cycles); ``games``,
-    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and self-play
-    runs on the HYBRID backend — the C++ actor (when built) plays the pure
-    self-play cells, the Python backend the vs-scripted cells.
+    ``mirror_frac`` and ``scripted_opponent_frac`` are ignored, and with the
+    actor built the whole matrix runs on it — vs-scripted cells via the
+    scripted oracle.
 
     ``exhaustive_selfplay=True`` (implies ``exhaustive``) keeps only the pure
     SELF-PLAY family of that matrix: every slot plays one bo3 match per
@@ -1039,6 +1345,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         expert_games = int(p.get("expert_games", expert_games))
         expert_opponent = p.get("expert_opponent", expert_opponent)
         use_actor = p.get("use_actor", use_actor)
+        actor_device = p.get("actor_device", actor_device)
+        eval_server = p.get("eval_server", eval_server)
+        cross_world = bool(p.get("cross_world", cross_world))
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
         results = list(state.get("results", []))
@@ -1109,6 +1418,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "expert_decks": expert_decks,
             "expert_games": expert_games,
             "expert_opponent": expert_opponent, "use_actor": use_actor,
+            "actor_device": actor_device,
+            "eval_server": eval_server,
+            "cross_world": cross_world,
             "bo3": bo3,
         },
     }
@@ -1136,6 +1448,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
           f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth} "
           f"sb_rollout_turns={sb_rollout_turns} sb_persist={sb_persist}  "
           f"batches={batches} window={window_txt} td_n={td_n} q_mix={q_mix}  "
+          f"cross_world={int(cross_world)}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
           f"gate_floor={gate_floor} gate_every={gate_txt}")
     if gate_every == 0 and total is None:
@@ -1208,6 +1521,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        eval_games=eval_games, eval_sims=eval_sims,
                        eval_worlds=eval_worlds, promote_threshold=promote_threshold,
                        seed=slot_seed, use_actor=use_actor,
+                       actor_device=actor_device,
+                       eval_server=eval_server,
+                       cross_world=cross_world,
                        mirror_frac=mirror_frac,
                        scripted_opponent_frac=scripted_opponent_frac,
                        gate_floor=gate_floor,
@@ -1283,6 +1599,7 @@ def run_train(args) -> None:
 
 
 def run_eval(args) -> None:
+    import az_selfplay
     # az-eval defaults to bo3 matches; --bo1 opts back into single games.
     az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
@@ -1296,7 +1613,11 @@ def run_eval(args) -> None:
             gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
             seed=args.seed if args.seed is not None else 1,
             bo3=not getattr(args, "bo1", False),
-            workers=getattr(args, "workers", None))
+            workers=getattr(args, "workers", None),
+            use_actor=_resolve_use_actor(args),
+            actor_device=getattr(args, "actor_device", "cpu"),
+            eval_server=az_selfplay.resolve_eval_server(args),
+            cross_world=not getattr(args, "no_cross_world", False))
 
 
 def _split_decks(val) -> Optional[list]:
@@ -1307,6 +1628,7 @@ def _split_decks(val) -> Optional[list]:
 
 
 def run_cycle(args) -> None:
+    import az_selfplay
     # --deck (comma-joined multipick) is the FOCUS pool and --opponents the
     # opponent pool for this cycle's self-play + gating; either default (None/empty)
     # falls back to the whole decks/league/ roster inside az_cycle. So a bare
@@ -1328,7 +1650,7 @@ def run_cycle(args) -> None:
              window=args.window, eval_games=args.eval_games,
              eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
              promote_threshold=args.promote_threshold,
-             seed=args.seed if args.seed is not None else 1,
+             seed=az_selfplay.resolve_seed(args, "az"),
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
@@ -1339,6 +1661,9 @@ def run_cycle(args) -> None:
              expert_opponent=getattr(args, "expert_opponent", None),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
+             actor_device=getattr(args, "actor_device", "cpu"),
+             eval_server=az_selfplay.resolve_eval_server(args),
+             cross_world=not getattr(args, "no_cross_world", False),
              exhaustive=getattr(args, "exhaustive", False),
              exhaustive_selfplay=getattr(args, "exhaustive_selfplay", False),
              exhaustive_repeats=getattr(args, "exhaustive_repeats",
@@ -1348,6 +1673,7 @@ def run_cycle(args) -> None:
 
 
 def run_league(args) -> None:
+    import az_selfplay
     az_league(decks=args.decks, rotations=args.rotations,
               cycles_per_deck=args.cycles_per_deck,
               games=args.games, sims=args.sims, worlds=args.worlds,
@@ -1363,7 +1689,7 @@ def run_league(args) -> None:
               window=args.window, eval_games=args.eval_games,
               eval_sims=args.eval_sims, eval_worlds=args.eval_worlds,
               promote_threshold=args.promote_threshold,
-              seed=args.seed if args.seed is not None else 1,
+              seed=az_selfplay.resolve_seed(args, "az-league"),
               mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
               scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
               matrix=getattr(args, "matrix", False),
@@ -1380,7 +1706,11 @@ def run_league(args) -> None:
                                                 EXPERT_DECKS_ROSTER)),
               expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
               expert_opponent=getattr(args, "expert_opponent", None),
-              use_actor=_resolve_use_actor(args), resume=args.resume,
+              use_actor=_resolve_use_actor(args),
+              actor_device=getattr(args, "actor_device", "cpu"),
+              eval_server=az_selfplay.resolve_eval_server(args),
+              cross_world=not getattr(args, "no_cross_world", False),
+              resume=args.resume,
               bo3=not getattr(args, "bo1", False))
 
 

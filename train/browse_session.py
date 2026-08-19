@@ -203,9 +203,13 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
                          "(safe=0 prompt) — no search possible here.")
             return "\n".join(lines)
         evaluator, label = load_analysis_evaluator(eval_spec)
+        # Cross-world batching is arithmetically identical to the sequential
+        # search, so the offline review keeps it on unconditionally; the
+        # evaluator's device follows ROBOMAGE_EVAL_DEVICE via the loader.
         res = mcts.run_search(env, evaluator, sims=int(sims),
                               worlds=int(worlds),
-                              rng=np.random.default_rng(0))
+                              rng=np.random.default_rng(0),
+                              cross_world=True)
         num = int(game["num_choices"][step])
         played = int(game["actions"][step])
         tot = max(float(res.visits.sum()), 1.0)

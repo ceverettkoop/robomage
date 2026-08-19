@@ -2051,12 +2051,16 @@ _LAUNCHER_DEFAULTS = {
     "match_clock": 1500.0,                   # 25 min of thinking for the whole bo3
     "paced": True,
     "record_shards": False,
+    "search_xw": True,                       # cross-world batched leaf eval (identical visits)
+    "search_device": "",                     # "" = CPU (or ROBOMAGE_EVAL_DEVICE); "cuda" = GPU
     "analysis_enabled": True,
     "analysis_evaluator": "az:gen",
     "analysis_worlds": 4,
     "analysis_procs": None,                  # auto: half the cores, capped at worlds
     "analysis_cap": 2000,
     "analysis_auto": True,
+    "analysis_xw": True,                     # cross-world batched leaf eval
+    "analysis_device": "",                   # evaluator device, as search_device
 }
 
 
@@ -2248,16 +2252,42 @@ class NewPlaySessionDialog(QDialog):
             "other decision (yours included) as a one-hot row. Analyze them "
             "live from View ▸ Analyze Recording… (F10), or later with the "
             "analysis browser / az-inspect pointed at the directory.")
+        self._search_device = self._device_combo(
+            _cfg_get(cfg, "search_device"),
+            "Torch device for the opponent's net forwards: CPU, or the GPU "
+            "(cuda — the Radeon under the ROCm torch build; the RDNA2 env "
+            "defaults are applied in-process). The GPU pays in proportion to "
+            "the rows per forward, i.e. together with cross-world batching "
+            "and higher world counts.")
+        self._search_xw = QCheckBox("Cross-world batched leaf evaluation")
+        self._search_xw.setChecked(bool(_cfg_get(cfg, "search_xw")))
+        self._search_xw.setToolTip(
+            "Batch each round's leaf evaluations (one per determinized world) "
+            "into a single net forward. Visit counts are arithmetically "
+            "identical to the sequential search — this is pure speed. "
+            "Uncheck only to debug.")
         form.addRow("Simulations", self._sims)
         form.addRow("Worlds", self._worlds)
         form.addRow("Think time (s)", self._think_time)
         form.addRow("Search procs", self._search_procs)
         form.addRow("Match clock (s)", self._match_clock)
+        form.addRow("Eval device", self._search_device)
+        form.addRow(self._search_xw)
         form.addRow("Paced responses", self._paced)
         form.addRow(self._record)
         box = QGroupBox("Search opponent settings")
         box.setLayout(form)
         return box
+
+    @staticmethod
+    def _device_combo(current, tooltip):
+        combo = QComboBox()
+        combo.addItem("CPU (default)", "")
+        combo.addItem("GPU (cuda / ROCm)", "cuda")
+        idx = combo.findData(current or "")
+        combo.setCurrentIndex(idx if idx >= 0 else 0)
+        combo.setToolTip(tooltip)
+        return combo
 
     def _build_analysis_box(self, cfg):
         """The analysis-window group: enable + evaluator + search knobs. Unlike
@@ -2295,11 +2325,24 @@ class NewPlaySessionDialog(QDialog):
             "adjustable in the window too).")
         self._analysis_auto = QCheckBox("Auto-analyze each decision")
         self._analysis_auto.setChecked(bool(_cfg_get(cfg, "analysis_auto")))
+        self._analysis_device = self._device_combo(
+            _cfg_get(cfg, "analysis_device"),
+            "Torch device for the analysis evaluator's net forwards (az:/"
+            "checkpoint specs; uniform and mcts: stay on CPU). GPU pays "
+            "together with cross-world batching and higher world counts.")
+        self._analysis_xw = QCheckBox("Cross-world batched leaf evaluation")
+        self._analysis_xw.setChecked(bool(_cfg_get(cfg, "analysis_xw")))
+        self._analysis_xw.setToolTip(
+            "Batch each analysis round's leaf evaluations (one per world) "
+            "into a single net forward — identical visit counts, faster "
+            "chunks. Uncheck only to debug.")
         form.addRow(self._analysis_enable)
         form.addRow("Evaluator", self._analysis_eval)
         form.addRow("Worlds", self._analysis_worlds)
         form.addRow("Search procs", self._analysis_procs)
         form.addRow("Sims cap", self._analysis_cap)
+        form.addRow("Eval device", self._analysis_device)
+        form.addRow(self._analysis_xw)
         form.addRow(self._analysis_auto)
         box = QGroupBox("Analysis window (MCTS evaluation of your decisions)")
         box.setLayout(form)
@@ -2420,6 +2463,13 @@ class NewPlaySessionDialog(QDialog):
         pairs = [("sims", sims), ("worlds", worlds), ("time", time_val),
                  ("procs", procs), ("clock", clock)]
         pairs = [(k, v) for k, v in pairs if v is not None]
+        # Cross-world batching defaults ON in the controller; only the off
+        # position needs a knob. The device knob is appended only when set.
+        if not self._search_xw.isChecked():
+            pairs.append(("xw", 0))
+        dev = self._search_device.currentData()
+        if dev:
+            pairs.append(("device", dev))
         # Paced: explicit On/Off wins; on Default, mirror play.py and turn pacing
         # on whenever the opponent has a variable time budget (think-time/clock).
         paced = self._paced.currentData()
@@ -2472,7 +2522,9 @@ class NewPlaySessionDialog(QDialog):
                             worlds=self._spin_value(self._analysis_worlds),
                             procs=self._spin_value(self._analysis_procs),
                             max_sims=None if cap < 0 else cap,
-                            auto=self._analysis_auto.isChecked())
+                            auto=self._analysis_auto.isChecked(),
+                            xw=self._analysis_xw.isChecked(),
+                            device=self._analysis_device.currentData() or "")
 
         player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
         bo3 = bool(self._format.currentData())
@@ -2497,6 +2549,10 @@ class NewPlaySessionDialog(QDialog):
             match_clock=self._spin_value(self._match_clock),
             paced=self._paced.currentData(),
             record_shards=self._record.isChecked(),
+            search_xw=self._search_xw.isChecked(),
+            search_device=self._search_device.currentData() or "",
+            analysis_xw=self._analysis_xw.isChecked(),
+            analysis_device=self._analysis_device.currentData() or "",
             analysis_enabled=self._analysis_enable.isChecked(),
             analysis_evaluator=self._combo_spec(self._analysis_eval),
             analysis_worlds=self._spin_value(self._analysis_worlds),
@@ -2576,6 +2632,8 @@ def _analysis_cfg_from(opts):
     if opts.get("max_sims") is not None:
         cfg.max_sims = int(opts["max_sims"])
     cfg.auto_analyze = bool(opts.get("auto", True))
+    cfg.cross_world = bool(opts.get("xw", True))
+    cfg.device = str(opts.get("device") or "")
     return cfg
 
 

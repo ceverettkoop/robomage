@@ -23,6 +23,7 @@
 #include "az_evaluator.h"
 #include "az_mcts.h"
 #include "npz_writer.h"
+#include "oracle_client.h"
 #include "td_targets.h"
 #include "classes/deck.h"
 #include "classes/match_state.h"
@@ -39,6 +40,25 @@ struct ActorConfig {
     std::string deck = "delver";
     std::string deck_b;  // empty -> mirror (= deck)
     std::string model;
+    // Two-model gate/eval matches (the az_eval promotion gate on the actor):
+    // Player B's OWN evaluator source — a local TorchScript (--model-b) or a
+    // second central-server socket (--eval-server-b). Empty (default) = both
+    // seats share the one seat-A evaluator (pure self-play / parity, exactly
+    // as before). Requires a seat-A net source (--model or --eval-server, not
+    // --uniform) and is incompatible with --selfplay: gate games measure
+    // strength between two DIFFERENT nets, so their decisions are not
+    // self-play training data.
+    std::string model_b;
+    std::string eval_server_b;
+    // Eval device for the TorchScript forward: "cpu" (default) or "cuda" (the
+    // Radeon under the ROCm build — HIP registers as the cuda backend). Stage A
+    // of docs/gpu_selfplay_inference_plan.md; search math is device-independent
+    // (priors/value come back to CPU inside AZEvaluator).
+    std::string device = "cpu";
+    // Stage C: Unix-socket path of a central inference server
+    // (train/az_eval_server.py). Mutually exclusive with --model/--uniform;
+    // --device is inert with it (the server owns the device).
+    std::string eval_server;
     std::string dump_obs;
     std::string dump_visits;
     std::string resources;  // empty -> <cwd>/resources
@@ -52,6 +72,9 @@ struct ActorConfig {
     int worlds = 4;
     double c_puct = 1.5;
     int batch = 1;
+    // Cross-world batched leaf evaluation (see az_mcts.h). Mutually exclusive
+    // with --batch K>1.
+    bool cross_world = false;
     uint32_t world_seeds = 42;  // --world-seeds base (see az_mcts.h seed formula)
     // bo3 sideboard-root budget (mirrors az_selfplay.py). -1 = inherit the in-game
     // sims/worlds/max_depth.
@@ -79,6 +102,11 @@ struct ActorConfig {
     std::string out_dir;               // empty -> ../train/az_data/<deck>
     bool rng_seed_set = false;
     uint32_t rng_seed = 0;             // default derived from --seed
+    // vs-scripted seat (--scripted-seat A|B + --scripted-oracle <socket>):
+    // that seat's real decisions come from the scripted-agent oracle
+    // (train/scripted_oracle.py); the OTHER seat searches as usual. 0 = none.
+    int scripted_seat = 0;             // 0 none, 1 = Player A, 2 = Player B
+    std::string scripted_oracle;       // Unix socket path
 };
 
 // Shard flush threshold — mirrors az_selfplay.py::FLUSH_SAMPLES.
@@ -87,9 +115,14 @@ constexpr size_t FLUSH_SAMPLES = 4096;
 void print_usage(const char* prog) {
     std::fprintf(stderr,
                  "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
-                 "[--bo3] [--model <path.ts.pt> | --uniform] [--dump-obs <file>]\n"
-                 "       [--search [--sims N] [--worlds N] [--c F] [--batch K] "
-                 "[--world-seeds BASE] [--dump-visits <file>]] [--resources <dir>]\n"
+                 "[--bo3] [--model <path.ts.pt> | --uniform | --eval-server <socket>] "
+                 "[--device cpu|cuda] [--dump-obs <file>]\n"
+                 "       [--model-b <path.ts.pt> | --eval-server-b <socket>] "
+                 "(seat-B evaluator for two-model gate/eval matches; "
+                 "incompatible with --selfplay/--uniform)\n"
+                 "       [--search [--sims N] [--worlds N] [--c F] [--batch K | "
+                 "--cross-world] [--world-seeds BASE] [--dump-visits <file>]] "
+                 "[--resources <dir>]\n"
                  "       [--sb-sims N] [--sb-worlds N] [--sb-max-depth N] "
                  "(bo3 sideboard-root budget; -1=inherit)\n"
                  "       [--rollout-turns N] [--sb-rollout-turns N] "
@@ -99,7 +132,9 @@ void print_usage(const char* prog) {
                  "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
                  "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
-                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n",
+                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n"
+                 "       [--scripted-seat A|B --scripted-oracle <socket>] "
+                 "(vs-scripted: that seat plays via train/scripted_oracle.py)\n",
                  prog);
 }
 
@@ -139,6 +174,14 @@ int main(int argc, char const* argv[]) {
             cfg.bo3 = true;
         } else if (a == "--model") {
             cfg.model = need_arg(argc, argv, i, "--model");
+        } else if (a == "--model-b") {
+            cfg.model_b = need_arg(argc, argv, i, "--model-b");
+        } else if (a == "--eval-server-b") {
+            cfg.eval_server_b = need_arg(argc, argv, i, "--eval-server-b");
+        } else if (a == "--device") {
+            cfg.device = need_arg(argc, argv, i, "--device");
+        } else if (a == "--eval-server") {
+            cfg.eval_server = need_arg(argc, argv, i, "--eval-server");
         } else if (a == "--uniform") {
             cfg.uniform = true;
         } else if (a == "--dump-obs") {
@@ -155,6 +198,8 @@ int main(int argc, char const* argv[]) {
             cfg.c_puct = std::stod(need_arg(argc, argv, i, "--c"));
         } else if (a == "--batch") {
             cfg.batch = std::stoi(need_arg(argc, argv, i, "--batch"));
+        } else if (a == "--cross-world") {
+            cfg.cross_world = true;
         } else if (a == "--world-seeds") {
             cfg.world_seeds = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--world-seeds")));
@@ -189,6 +234,18 @@ int main(int argc, char const* argv[]) {
             cfg.rng_seed = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--rng-seed")));
             cfg.rng_seed_set = true;
+        } else if (a == "--scripted-seat") {
+            std::string s = need_arg(argc, argv, i, "--scripted-seat");
+            if (s == "A" || s == "a") {
+                cfg.scripted_seat = 1;
+            } else if (s == "B" || s == "b") {
+                cfg.scripted_seat = 2;
+            } else {
+                std::fprintf(stderr, "error: --scripted-seat takes A or B\n");
+                return 2;
+            }
+        } else if (a == "--scripted-oracle") {
+            cfg.scripted_oracle = need_arg(argc, argv, i, "--scripted-oracle");
         } else if (a == "--resources") {
             cfg.resources = need_arg(argc, argv, i, "--resources");
         } else if (a == "--help" || a == "-h") {
@@ -201,9 +258,49 @@ int main(int argc, char const* argv[]) {
         }
     }
 
-    if (!cfg.uniform && cfg.model.empty()) {
-        std::fprintf(stderr, "error: one of --model <path.ts.pt> or --uniform is required\n");
+    if ((!cfg.uniform && cfg.model.empty() && cfg.eval_server.empty()) ||
+        (cfg.uniform && !cfg.model.empty()) ||
+        (!cfg.eval_server.empty() && (cfg.uniform || !cfg.model.empty()))) {
+        std::fprintf(stderr, "error: exactly one of --model <path.ts.pt>, --uniform, "
+                             "or --eval-server <socket> is required\n");
         print_usage(argv[0]);
+        return 2;
+    }
+    const bool have_b = !cfg.model_b.empty() || !cfg.eval_server_b.empty();
+    if (have_b) {
+        if (!cfg.model_b.empty() && !cfg.eval_server_b.empty()) {
+            std::fprintf(stderr, "error: --model-b and --eval-server-b are mutually "
+                                 "exclusive (one seat-B evaluator source)\n");
+            return 2;
+        }
+        if (cfg.uniform) {
+            std::fprintf(stderr, "error: a seat-B evaluator (--model-b/"
+                                 "--eval-server-b) requires a seat-A net source "
+                                 "(--model or --eval-server), not --uniform\n");
+            return 2;
+        }
+        if (cfg.selfplay) {
+            std::fprintf(stderr, "error: --selfplay is incompatible with a seat-B "
+                                 "evaluator: two-model games are gate/eval matches, "
+                                 "not self-play training data\n");
+            return 2;
+        }
+    }
+
+    if (cfg.cross_world && cfg.batch > 1) {
+        std::fprintf(stderr, "error: --cross-world and --batch K>1 are mutually "
+                             "exclusive (two different leaf-deferral disciplines)\n");
+        return 2;
+    }
+
+    if ((cfg.scripted_seat != 0) != !cfg.scripted_oracle.empty()) {
+        std::fprintf(stderr, "error: --scripted-seat and --scripted-oracle must "
+                             "be given together\n");
+        return 2;
+    }
+    if (cfg.scripted_seat != 0 && !cfg.search) {
+        std::fprintf(stderr, "error: --scripted-seat requires --search (the "
+                             "other seat is the searching net seat)\n");
         return 2;
     }
 
@@ -239,7 +336,22 @@ int main(int argc, char const* argv[]) {
     InputLogger::instance().init_machine(cfg.seed, RESOURCE_DIR, false, DecisionLogHeader{});
 
     AZEvaluator evaluator;
-    if (!cfg.uniform) evaluator.load(cfg.model);
+    if (!cfg.eval_server.empty())
+        evaluator.connect_server(cfg.eval_server);
+    else if (!cfg.uniform)
+        evaluator.load(cfg.model, cfg.device);
+    // Seat-B evaluator (two-model gate/eval matches): its own local module or
+    // its own server connection; null pointer = single-model (both seats on
+    // `evaluator`).
+    AZEvaluator evaluator_b;
+    AZEvaluator* eval_b_ptr = nullptr;
+    if (!cfg.eval_server_b.empty()) {
+        evaluator_b.connect_server(cfg.eval_server_b);
+        eval_b_ptr = &evaluator_b;
+    } else if (!cfg.model_b.empty()) {
+        evaluator_b.load(cfg.model_b, cfg.device);
+        eval_b_ptr = &evaluator_b;
+    }
 
     // Optional binary obs dump: per decision, int32 num_choices then
     // ACTOR_OBS_SIZE float32s (little-endian, raw append).
@@ -260,6 +372,7 @@ int main(int argc, char const* argv[]) {
         mc.worlds = cfg.worlds;
         mc.c_puct = cfg.c_puct;
         mc.batch = cfg.batch;
+        mc.cross_world = cfg.cross_world;
         mc.world_seed_base = cfg.world_seeds;
         mc.sb_sims = cfg.sb_sims;              // -1 = inherit in-game sims
         mc.sb_worlds = cfg.sb_worlds;          // -1 = inherit in-game worlds
@@ -273,8 +386,21 @@ int main(int argc, char const* argv[]) {
         mc.noise_alpha = cfg.noise_alpha;
         mc.temp_moves = cfg.temp_moves;
         mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
-        mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator);
+        mc.scripted_seat = cfg.scripted_seat;
+        mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator,
+                                        eval_b_ptr);
         search_set_game_end_hook([&](int winner) { return mcts->on_game_end(winner); });
+    }
+
+    // vs-scripted: connect to the scripted-agent oracle and route the scripted
+    // seat's real decisions to it (see az_mcts.h's scripted_seat contract).
+    std::unique_ptr<ScriptedOracle> oracle;
+    if (cfg.scripted_seat != 0) {
+        oracle = std::make_unique<ScriptedOracle>();
+        oracle->connect(cfg.scripted_oracle, cfg.deck, deck_b_name_eff,
+                        "scripted:hard");
+        mcts->set_scripted_provider(
+            [&oracle](const float* o, int nc) { return oracle->act(o, nc); });
     }
 
     // Self-play shard accumulator: default out-dir ../train/az_data/<deck> (the
@@ -307,7 +433,13 @@ int main(int argc, char const* argv[]) {
             if (mcts) return mcts->on_decision(actions);
             ActorObs ob = build_obs(actions);
             if (cfg.uniform) return 0;
-            return evaluator.argmax_action(ob.obs.data(), ob.num_choices);
+            // Greedy path: same per-seat selection as the search path — seat B's
+            // decisions use its own net when one was given.
+            AZEvaluator& e =
+                (eval_b_ptr != nullptr && ob.obs[ACTOR_SELF_IS_A_IDX] <= 0.5f)
+                    ? evaluator_b
+                    : evaluator;
+            return e.argmax_action(ob.obs.data(), ob.num_choices);
         });
 
     // Player A plays --deck; Player B plays --deck-b (defaults to --deck: mirror).
@@ -377,10 +509,17 @@ int main(int argc, char const* argv[]) {
             unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
             std::srand(match_seed);
             if (cfg.selfplay) mcts->begin_match();
+            // agent.new_game() at match start + after every completed game —
+            // the exact call sites az_selfplay._play_match uses (reset + each
+            // GAME_RESULT boundary, before the next game's sideboard prompts).
+            if (oracle) oracle->new_game();
             play_bo3_match(
                 deck_a, deck_b, match_seed,
                 [&](int, bool) {},
-                [&](int, int winner) { backfill_selfplay(winner); });
+                [&](int, int winner) {
+                    backfill_selfplay(winner);
+                    if (oracle) oracle->new_game();
+                });
         }
     } else {
         for (int g = 0; g < cfg.games; g++) {
@@ -391,6 +530,7 @@ int main(int argc, char const* argv[]) {
             match_reset_revealed();
             EcsSystems sys = init_ecs();
             if (cfg.selfplay) mcts->begin_match();  // reset per-game move counter + samples
+            if (oracle) oracle->new_game();
             int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
             bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
                         winner != static_cast<int>(Zone::PLAYER_B);

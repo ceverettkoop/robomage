@@ -30,6 +30,7 @@
 // through the provider. See az_mcts.cpp for the exact mapping to mcts.py.
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -43,6 +44,18 @@ struct MCTSConfig {
     double c_puct = 1.5;
     int max_depth = 60;
     int batch = 1;                  // 1 = exact mcts.py parity; K>1 = virtual-loss batching
+    // Cross-world batched leaf evaluation (Stage 0 of
+    // docs/gpu_selfplay_inference_plan.md): run the per-world sims round-robin
+    // and defer each freshly expanded (or depth-capped) leaf into a PendingLeaf,
+    // flushed in one batched forward (K <= worlds) before any world's OWN next
+    // descent starts — so NO virtual loss is needed and every per-world tree is
+    // arithmetically identical to the sequential batch=1 search. Only the
+    // batched GEMM's last-ulp logits can differ; under a uniform evaluator the
+    // visit counts are bit-identical (the test_mcts_parity cross-world gate).
+    // Mutually exclusive with batch > 1. Inert (sequential path, unbatched) for
+    // a search whose budget has leaf rollouts on — sb roots by default — since
+    // a deferred leaf cannot drive a playout.
+    bool cross_world = false;
     uint32_t world_seed_base = 42;  // world seed(root r, world w) = base + 100003*r + w
     // Merge interchangeable duplicate menu actions into one search edge
     // (src/actor/menu_merge.h, mirroring mcts.py's run_search merge_dupes
@@ -107,6 +120,16 @@ struct MCTSConfig {
     double noise_alpha = 1.0;       // Dirichlet concentration
     int temp_moves = 20;            // # of leading real moves that sample-from-visits
     uint32_t selfplay_rng_seed = 0; // seeds the per-run noise+sampling RNG
+
+    // ── vs-scripted seat (mirrors az_selfplay._play_match's agent/net_is_a) ──
+    // 0 = none (pure self-play); 1 = Player A, 2 = Player B is piloted by the
+    // scripted oracle (set_scripted_provider). That seat's REAL decisions are
+    // answered by the provider — no search, no sample, no searched/fallback
+    // counters — but they DO advance the per-game tau counter (Python's
+    // game_move counts every decision) and latch into a live sideboard
+    // boundary. Search simulations never consult the provider: tree play is
+    // net-both-seats, exactly like the Python reference.
+    int scripted_seat = 0;
 };
 
 // One stored self-play training sample (z + td_q are backfilled at real game end).
@@ -138,7 +161,15 @@ struct SearchRootResult {
 class AZMcts {
 public:
     // `evaluator` may be null for a uniform (torch-free) evaluator.
-    AZMcts(const MCTSConfig& cfg, AZEvaluator* evaluator);
+    // `evaluator_b` (gate/eval matches, az_actor --model-b) is Player B's OWN
+    // evaluator: when non-null, each REAL decision selects the net by the seat
+    // to move — Player A's decisions (searches, fallbacks) use `evaluator`,
+    // Player B's use `evaluator_b` — and the selected net evaluates EVERY
+    // node of that decision's search (either seat's simulated positions),
+    // mirroring the Python gate where each seat's controller owns its
+    // evaluator. Null (the default) keeps the single-model behavior exactly.
+    AZMcts(const MCTSConfig& cfg, AZEvaluator* evaluator,
+           AZEvaluator* evaluator_b = nullptr);
     ~AZMcts();
 
     // Input-provider hook body: called for every machine decision. Returns the
@@ -154,6 +185,11 @@ public:
 
     // Per-searched-root results, in order.
     const std::vector<SearchRootResult>& results() const;
+
+    // vs-scripted: install the scripted seat's decision source (the oracle
+    // client). Required when cfg.scripted_seat != 0 — a scripted-seat decision
+    // with no provider is fatal. fn(obs, num_choices) -> action index.
+    void set_scripted_provider(std::function<int(const float*, int)> fn);
 
     // ── self-play ───────────────────────────────────────────────────────────
     // Full reset of per-match sample-buffer state (real-move counter + stored

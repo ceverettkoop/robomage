@@ -55,7 +55,7 @@ class AnalysisError(RuntimeError):
     """A refused or failed analysis request (reason in str(e))."""
 
 
-def load_analysis_evaluator(spec: str):
+def load_analysis_evaluator(spec: str, device: str | None = None):
     """Build the evaluator behind an analysis-window spec. Returns
     (evaluator, label).
 
@@ -66,6 +66,11 @@ def load_analysis_evaluator(spec: str):
                               checkpoint. Default base is "gen" (the one
                               generalist).
       - "mcts:<base>"      -> PPOEvaluator over the MaskablePPO checkpoint.
+
+    ``device`` (AZ rung only; the uniform/PPO rungs stay CPU): the torch
+    device for the AZNet forward — an explicit value wins, else the
+    ``ROBOMAGE_EVAL_DEVICE`` environment variable, else cpu (see
+    ``opponents.load_az_evaluator``).
     """
     spec = (spec or "az:gen").strip()
     if spec.lower() == "uniform":
@@ -83,7 +88,7 @@ def load_analysis_evaluator(spec: str):
     from opponents import load_az_evaluator
 
     base = spec.split(":", 1)[1] if spec.startswith("az:") else spec
-    evaluator, resolved = load_az_evaluator(base or "gen")
+    evaluator, resolved = load_az_evaluator(base or "gen", device=device)
     return evaluator, f"az:{resolved}"
 
 
@@ -106,6 +111,18 @@ class AnalysisConfig:
     # 1 = one engine (the original serial behavior), N = N engines. More
     # engines than worlds would idle, so the count is clamped to `worlds`.
     procs: int = 0
+    # Cross-world batched leaf evaluation inside each engine's chunks
+    # (mcts.IncrementalSearch cross_world): default ON — visits are
+    # arithmetically identical to the sequential chunked search, so the
+    # analysis verdicts never change, only their wall clock. Off is the kill
+    # switch (and what pre-existing tests construct implicitly through
+    # IncrementalSearch's own default).
+    cross_world: bool = True
+    # Torch device for the AZ evaluator's forwards ("" = ROBOMAGE_EVAL_DEVICE,
+    # else cpu; "cuda" = the Radeon under the ROCm build). Pays in proportion
+    # to the rows per forward — i.e. alongside cross_world, which is what
+    # turns per-leaf singles into K-row batches.
+    device: str = ""
 
     def __post_init__(self):
         self.validate()
@@ -359,7 +376,7 @@ class AnalysisSession:
     def _ensure_evaluator(self):
         if self._evaluator is None:
             self._evaluator, self.evaluator_label = load_analysis_evaluator(
-                self.cfg.evaluator_spec)
+                self.cfg.evaluator_spec, device=self.cfg.device or None)
         return self._evaluator
 
     def analyze(self, req: AnalysisRequest, *,
@@ -408,7 +425,8 @@ class AnalysisSession:
                                else cfg.max_depth),
                     rollout_turns=(cfg.sb_rollout_turns if req.is_sideboard
                                    else 0),
-                    world_seeds=seeds[lo:hi], merge_dupes=cfg.merge_dupes))
+                    world_seeds=seeds[lo:hi], merge_dupes=cfg.merge_dupes,
+                    cross_world=cfg.cross_world))
             if n_eng > 1:
                 pool = ThreadPoolExecutor(max_workers=n_eng,
                                           thread_name_prefix="analysis")
