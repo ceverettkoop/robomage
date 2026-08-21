@@ -69,6 +69,7 @@ _ANALYSIS_DEFAULTS = {
     "match_clock": None,
     "shards_on": False,
     "shards": "",
+    "shard_limit": 0,
     "seat": "A",
     "no_net": False,
 }
@@ -254,6 +255,14 @@ class NewAnalysisSessionDialog(QDialog):
         self._no_net = QCheckBox("No value net — use recorded outcomes (torch-free)")
         self._no_net.setChecked(bool(get("no_net")))
         sform.addRow(self._no_net)
+        self._shard_limit = QSpinBox()
+        self._shard_limit.setRange(0, 500)
+        self._shard_limit.setValue(int(get("shard_limit") or 0))
+        self._shard_limit.setToolTip(
+            "Maximum bo3 matches to load from the shards directory "
+            "(0 = load every match). Each kept match gets a value-net V(s) "
+            "pass, so a cap can speed up loading a very large pool.")
+        sform.addRow("Max matches (0 = all)", self._shard_limit)
         self._shards_box.setLayout(sform)
         self._shards_box.toggled.connect(self._update_enabled)
 
@@ -296,7 +305,10 @@ class NewAnalysisSessionDialog(QDialog):
             "opponent": NewPlaySessionDialog._combo_spec(self._opponent),
             "deck_a": self._deck_a.currentText().strip(),
             "deck_b": deck_b or None,
-            "n_games": int(self._n_games.value()),
+            # In shard mode n_games is the match-load cap (0 = all); in sim
+            # mode it is the number of games to simulate on startup.
+            "n_games": (int(self._shard_limit.value()) if shards_on
+                        else int(self._n_games.value())),
             "bo3": self._bo3.isChecked(),
             "think_time": NewPlaySessionDialog._spin_value(self._think_time),
             "match_clock": NewPlaySessionDialog._spin_value(self._match_clock),
@@ -326,11 +338,14 @@ class NewAnalysisSessionDialog(QDialog):
         _save_launcher_config({
             "model": opts["model"], "opponent": opts["opponent"],
             "deck_a": opts["deck_a"], "deck_b": opts["deck_b"] or "",
-            "n_games": opts["n_games"], "bo3": opts["bo3"],
+            # Persist the sim "Games" field itself (opts["n_games"] is the
+            # shard-load cap in shard mode); the shard cap saves separately.
+            "n_games": int(self._n_games.value()), "bo3": opts["bo3"],
             "think_time": opts["think_time"],
             "match_clock": opts["match_clock"],
             "shards_on": self._shards_box.isChecked(),
             "shards": self._shards_dir.text().strip(),
+            "shard_limit": int(self._shard_limit.value()),
             "seat": opts["seat"], "no_net": opts["no_net"],
         }, _ANALYSIS_LAUNCHER_CONFIG)
         self.accept()
