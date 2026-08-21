@@ -8,8 +8,6 @@
       "rotations": 0,
       "games": 50,
       "overrides": {
-        "sb_sims": 128,
-        "sb_max_depth": 128,
         "sb_rollout_turns": 6,
         "workers": 28,
         "gate_every": 3,

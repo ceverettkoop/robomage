@@ -76,18 +76,13 @@ struct ActorConfig {
     // with --batch K>1.
     bool cross_world = false;
     uint32_t world_seeds = 42;  // --world-seeds base (see az_mcts.h seed formula)
-    // bo3 sideboard-root budget (mirrors az_selfplay.py). -1 = inherit the in-game
-    // sims/worlds/max_depth.
-    int sb_sims = -1;
+    // bo3 sideboard plan-search budget (mirrors az_selfplay.py / az_mcts.h).
+    // -1 = the compiled defaults (kDefaultSb* in az_mcts.cpp).
+    int sb_branches = -1;
     int sb_worlds = -1;
-    int sb_max_depth = -1;
-    // Leaf-rollout horizon in player turns (see az_mcts.h). 0 = off;
-    // sb value -1 = inherit --rollout-turns.
-    int rollout_turns = 0;
     int sb_rollout_turns = -1;
-    // Sideboard-boundary tree persistence + rollout memo (see az_mcts.h).
-    // Default mirrors cli_spec.DEFAULT_SB_PERSIST.
-    int sb_persist = 1;
+    // In-game leaf-rollout horizon in player turns (see az_mcts.h). 0 = off.
+    int rollout_turns = 0;
     // Duplicate-edge merging (see az_mcts.h / menu_merge.h; must match the
     // Python side's merge_dupes or visit parity breaks).
     int merge_dupes = 1;
@@ -123,12 +118,10 @@ void print_usage(const char* prog) {
                  "       [--search [--sims N] [--worlds N] [--c F] [--batch K | "
                  "--cross-world] [--world-seeds BASE] [--dump-visits <file>]] "
                  "[--resources <dir>]\n"
-                 "       [--sb-sims N] [--sb-worlds N] [--sb-max-depth N] "
-                 "(bo3 sideboard-root budget; -1=inherit)\n"
-                 "       [--rollout-turns N] [--sb-rollout-turns N] "
-                 "(leaf-rollout horizon in player turns; 0=off, sb -1=inherit)\n"
-                 "       [--sb-persist 0|1] (persist trees + rollout memo across a "
-                 "bo3 sideboard boundary)\n"
+                 "       [--sb-branches N] [--sb-worlds N] [--sb-rollout-turns N] "
+                 "(bo3 sideboard plan-search budget; -1=compiled defaults)\n"
+                 "       [--rollout-turns N] "
+                 "(in-game leaf-rollout horizon in player turns; 0=off)\n"
                  "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
                  "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
@@ -203,18 +196,14 @@ int main(int argc, char const* argv[]) {
         } else if (a == "--world-seeds") {
             cfg.world_seeds = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--world-seeds")));
-        } else if (a == "--sb-sims") {
-            cfg.sb_sims = std::stoi(need_arg(argc, argv, i, "--sb-sims"));
+        } else if (a == "--sb-branches") {
+            cfg.sb_branches = std::stoi(need_arg(argc, argv, i, "--sb-branches"));
         } else if (a == "--sb-worlds") {
             cfg.sb_worlds = std::stoi(need_arg(argc, argv, i, "--sb-worlds"));
-        } else if (a == "--sb-max-depth") {
-            cfg.sb_max_depth = std::stoi(need_arg(argc, argv, i, "--sb-max-depth"));
         } else if (a == "--rollout-turns") {
             cfg.rollout_turns = std::stoi(need_arg(argc, argv, i, "--rollout-turns"));
         } else if (a == "--sb-rollout-turns") {
             cfg.sb_rollout_turns = std::stoi(need_arg(argc, argv, i, "--sb-rollout-turns"));
-        } else if (a == "--sb-persist") {
-            cfg.sb_persist = std::stoi(need_arg(argc, argv, i, "--sb-persist"));
         } else if (a == "--merge-dupes") {
             cfg.merge_dupes = std::stoi(need_arg(argc, argv, i, "--merge-dupes"));
         } else if (a == "--selfplay") {
@@ -374,12 +363,10 @@ int main(int argc, char const* argv[]) {
         mc.batch = cfg.batch;
         mc.cross_world = cfg.cross_world;
         mc.world_seed_base = cfg.world_seeds;
-        mc.sb_sims = cfg.sb_sims;              // -1 = inherit in-game sims
-        mc.sb_worlds = cfg.sb_worlds;          // -1 = inherit in-game worlds
-        mc.sb_max_depth = cfg.sb_max_depth;    // -1 = inherit in-game max_depth
+        mc.sb_branches = cfg.sb_branches;      // -1 = compiled default
+        mc.sb_worlds = cfg.sb_worlds;          // -1 = compiled default
         mc.rollout_turns = cfg.rollout_turns;
-        mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = inherit rollout_turns
-        mc.sb_tree_persist = cfg.sb_persist != 0;
+        mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = compiled default
         mc.merge_dupes = cfg.merge_dupes != 0;
         mc.selfplay = cfg.selfplay;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
@@ -555,8 +542,12 @@ int main(int argc, char const* argv[]) {
     if (dump) std::fclose(dump);
 
     // --dump-visits: per searched root, int32 root_index, int32 num_choices,
-    // int64[num_choices] summed visit counts (little-endian). The parity test
-    // reads this and asserts an exact match against the Python run_search visits.
+    // then the root's record. A TREE root writes int64[num_choices] summed
+    // visit counts; a PLAN (sideboard) root writes num_choices as its NEGATIVE
+    // (the record-type tag) followed by float64 q[num_choices] and
+    // pi[num_choices]. Little-endian throughout; the parity test reads this
+    // and asserts an exact match against the Python run_search /
+    // run_plan_search results.
     if (cfg.search && !cfg.dump_visits.empty()) {
         search_clear_game_end_hook();
         FILE* vf = std::fopen(cfg.dump_visits.c_str(), "wb");
@@ -565,9 +556,18 @@ int main(int argc, char const* argv[]) {
             int32_t ri = static_cast<int32_t>(r.root_index);
             int32_t nc = static_cast<int32_t>(r.num_choices);
             std::fwrite(&ri, sizeof(int32_t), 1, vf);
-            std::fwrite(&nc, sizeof(int32_t), 1, vf);
-            std::fwrite(r.visits.data(), sizeof(int64_t),
-                        static_cast<size_t>(r.num_choices), vf);
+            if (r.plan_root) {
+                int32_t tag = -nc;
+                std::fwrite(&tag, sizeof(int32_t), 1, vf);
+                std::fwrite(r.q.data(), sizeof(double),
+                            static_cast<size_t>(r.num_choices), vf);
+                std::fwrite(r.pi.data(), sizeof(double),
+                            static_cast<size_t>(r.num_choices), vf);
+            } else {
+                std::fwrite(&nc, sizeof(int32_t), 1, vf);
+                std::fwrite(r.visits.data(), sizeof(int64_t),
+                            static_cast<size_t>(r.num_choices), vf);
+            }
         }
         std::fclose(vf);
         std::fprintf(stderr, "az_actor: dumped %zu searched roots to %s\n",

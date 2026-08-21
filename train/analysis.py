@@ -78,7 +78,7 @@ import decode
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import (ANALYSIS_TOOL, append_spec_knob, apply_to_parser,
-                      DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
+                      DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
@@ -4292,8 +4292,8 @@ def _build_search_evaluator(spec):
 
 
 def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed,
-                                    sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
-                                    sb_max_depth=DEFAULT_SB_MAX_DEPTH,
+                                    sb_branches=DEFAULT_SB_BRANCHES,
+                                    sb_worlds=DEFAULT_SB_WORLDS,
                                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS):
     """A SearchController that also RECORDS (priors, visit_dist, net_value,
     root_value, obs) for every searched root, for the search-vs-raw report."""
@@ -4315,8 +4315,9 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             is still a root the net has an opinion about — we want it);
           * tree-following / root reuse across decisions (each root is searched
             fresh, so no root inherits another's visit statistics);
-          * sideboard root persistence (only the sideboard *budget* is honored,
-            below — the boundary dict is play-policy state);
+          * sideboard boundary memo — the plan search has no tree persistence,
+            so each sideboard root is searched fresh (only the sideboard
+            branches/worlds/rollout budget is honored, below);
           * the mirror-engine pool and the ``on_result`` tap (nothing else
             consumes these results; ``self.records`` IS the output).
 
@@ -4327,13 +4328,12 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
         def __init__(self):
             super().__init__(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
                              temperature=0.0, label="search-compare", rng_seed=rng_seed,
-                             sb_sims=sb_sims, sb_worlds=sb_worlds,
-                             sb_max_depth=sb_max_depth,
+                             sb_branches=sb_branches, sb_worlds=sb_worlds,
                              sb_rollout_turns=sb_rollout_turns)
             self.records = []
 
         def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
-            from mcts import run_search
+            from mcts import run_search, run_plan_search
             env = self._env
             searchable = (env is not None
                           and getattr(env, "last_search_safe", None)
@@ -4342,8 +4342,9 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             if not searchable:
                 self.stats["fallback"] += 1
                 return int(np.argmax(priors))
-            # bo3 sideboard root -> deeper/fewer-sim sideboard budget (game-long
-            # horizon); in-game roots keep run_search's default max_depth (60).
+            # bo3 sideboard root -> flat plan search under the sideboard
+            # branches/worlds/rollout budget (game-long horizon); in-game roots
+            # keep run_search's default max_depth (60).
             # merge_dupes=True is run_search's default, but it is spelled out
             # here because the report DEPENDS on it: _report_search_compare
             # folds the raw priors through decode.menu_merge_reps to match the
@@ -4351,11 +4352,11 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             # duplicate edges, that fold would double-count and the reported KL
             # / argmax agreement would be wrong.
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
-                result = run_search(env, self._evaluator, sims=self._sb_sims,
-                                    worlds=self._sb_worlds, c_puct=self._c_puct,
-                                    max_depth=self._sb_max_depth,
-                                    rollout_turns=self._sb_rollout_turns,
-                                    rng=self._rng, merge_dupes=True)
+                result = run_plan_search(env, self._evaluator,
+                                         worlds=self._sb_worlds,
+                                         branches=self._sb_branches,
+                                         rollout_turns=self._sb_rollout_turns,
+                                         rng=self._rng)
                 self.stats["sb_searched"] += 1
             else:
                 result = run_search(env, self._evaluator, sims=self._sims,
@@ -4494,7 +4495,7 @@ def _run_search_compare_batch(payload):
     ``(batch_id, n_games, records, stats, elapsed)``."""
     (batch_id, model_spec, opponent_spec, deck_a, deck_b, n_games, seed,
      sims, worlds, c_puct, binary_path, bo3,
-     sb_sims, sb_worlds, sb_max_depth, sb_rollout_turns) = payload
+     sb_branches, sb_worlds, sb_rollout_turns) = payload
     t0 = time.time()
     try:
         import torch
@@ -4507,7 +4508,7 @@ def _run_search_compare_batch(payload):
     evaluator, _ = _build_search_evaluator(model_spec)
     ctrl_model = _make_search_compare_controller(
         evaluator, sims=sims, worlds=worlds, c_puct=c_puct, rng_seed=seed,
-        sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+        sb_branches=sb_branches, sb_worlds=sb_worlds,
         sb_rollout_turns=sb_rollout_turns)
     ctrl_opp = make_controller(opponent_spec)
     runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
@@ -4556,8 +4557,8 @@ def cmd_search_compare(args):
         evaluator, _ = _build_search_evaluator(args.model)
         ctrl_model = _make_search_compare_controller(
             evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
-            rng_seed=args.seed, sb_sims=args.sb_sims, sb_worlds=args.sb_worlds,
-            sb_max_depth=args.sb_max_depth,
+            rng_seed=args.seed, sb_branches=args.sb_branches,
+            sb_worlds=args.sb_worlds,
             sb_rollout_turns=args.sb_rollout_turns)
         ctrl_opp = make_controller(args.opponent)
 
@@ -4592,7 +4593,7 @@ def cmd_search_compare(args):
     payloads = [
         (i, args.model, args.opponent, deck_a, deck_b, count, args.seed + start,
          args.sims, args.worlds, args.c, args.binary, bo3,
-         args.sb_sims, args.sb_worlds, args.sb_max_depth, args.sb_rollout_turns)
+         args.sb_branches, args.sb_worlds, args.sb_rollout_turns)
         for i, (start, count) in enumerate(batches)
     ]
     print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "

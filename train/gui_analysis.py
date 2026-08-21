@@ -509,6 +509,7 @@ class AnalysisWindow(QMainWindow):
         # AUTOMATIC analysis requests monotonic in history length, so the live
         # stream never makes the engine rewind; an explicit review (F6) may.
         self._run_is_opp = False
+        self._run_is_sb = False      # the current run is a sideboard PLAN search
         self._last_req_len = 0
         # The opponent's most recent analyzable decision, kept so it can be
         # reviewed AFTER they act (F6 rewinds the analysis engine to it), plus
@@ -780,9 +781,10 @@ class AnalysisWindow(QMainWindow):
         self._last_req_len = self._update.history_len
         self._stop_btn.setEnabled(True)
         self._clear_lines()
+        req = AnalysisRequest.from_update(self._update)
+        self._run_is_sb = bool(req.is_sideboard)
         self._set_status("busy", "analyzing…")
-        self._worker.submit_analyze(self._tag,
-                                    AnalysisRequest.from_update(self._update))
+        self._worker.submit_analyze(self._tag, req)
 
     def _start_opp_analysis(self, u) -> None:
         """Analyze an OPPONENT decision from their perspective (reveal mode).
@@ -799,9 +801,11 @@ class AnalysisWindow(QMainWindow):
         self._labels = opp_menu_labels(u.obs, u.num_choices)
         self._stop_btn.setEnabled(True)
         self._clear_lines()
+        req = AnalysisRequest.from_update(u)
+        self._run_is_sb = bool(req.is_sideboard)
         self._set_status("busy",
                          "analyzing OPPONENT decision (values are theirs)…")
-        self._worker.submit_analyze(self._tag, AnalysisRequest.from_update(u))
+        self._worker.submit_analyze(self._tag, req)
 
     def request_opp_last(self) -> None:
         """Review the opponent's most recent real decision (F6).
@@ -824,6 +828,7 @@ class AnalysisWindow(QMainWindow):
         self._running = True
         self._run_is_opp = True
         self._run_is_review = True
+        self._run_is_sb = bool(req.is_sideboard)
         self._chosen_action = self._played_action(req)
         self._last_stats_time = None
         self._last_sims = 0
@@ -876,17 +881,20 @@ class AnalysisWindow(QMainWindow):
         if tag != self._tag:
             return
         now = time.monotonic()
+        # A sideboard run is a plan search — its pacing unit is evaluator
+        # calls over whole plans, not tree sims.
+        unit = "plan evals" if self._run_is_sb else "sims"
         rate = ""
         if self._last_stats_time is not None and now > self._last_stats_time:
             sps = (stats.sims_run - self._last_sims) / (now - self._last_stats_time)
-            rate = f"  ·  {sps:.0f} sims/s"
+            rate = f"  ·  {sps:.0f} {unit}/s"
         self._last_stats_time = now
         self._last_sims = stats.sims_run
         whose = "their " if self._run_is_opp else ""
         self._values.setText(
             f"net {whose}{_win_pct(stats.net_value)}  ·  "
             f"search {whose}{_win_pct(stats.root_value)}  ·  "
-            f"{stats.sims_run} sims{rate}")
+            f"{stats.sims_run} {unit}{rate}")
         self._fill_table(stats.num_choices, stats.visits, stats.priors, stats.q)
         if stats.sims_run > 0:
             self.smoke_ok = True

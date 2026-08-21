@@ -336,7 +336,15 @@ def test_session_lockstep_bo3():
                 if want and session.can_analyze(req) is None:
                     before = env._obs.copy()
                     stats = session.analyze(req)
-                    if stats.sims_run != cfg.max_sims:
+                    if req.is_sideboard:
+                        # Sideboard roots run the PLAN search: a finite
+                        # whole-plan schedule paced in evaluator calls, so
+                        # sims_run is only bounded below (it never sits idle),
+                        # not pinned to max_sims.
+                        if stats.sims_run <= 0:
+                            raise AnalysisTestError(
+                                "sideboard plan analysis ran no evaluations")
+                    elif stats.sims_run != cfg.max_sims:
                         raise AnalysisTestError(
                             f"analyze ran {stats.sims_run} != {cfg.max_sims}")
                     if not np.array_equal(env._obs, before):

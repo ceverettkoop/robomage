@@ -57,13 +57,11 @@ def main() -> int:
                     help="Total gate games, split evenly across seats (default 192)")
     ap.add_argument("--sims", type=int, default=128)
     ap.add_argument("--worlds", type=int, default=4)
-    ap.add_argument("--sb-sims", type=int, default=None,
-                    help="bo3 sideboard-root sims (default: the SearchController "
-                         "sideboard budget, DEFAULT_SB_SIMS)")
+    ap.add_argument("--sb-branches", type=int, default=None,
+                    help="bo3 sideboard-root candidate plans (default: the "
+                         "SearchController sideboard budget, DEFAULT_SB_BRANCHES)")
     ap.add_argument("--sb-worlds", type=int, default=None,
                     help="bo3 sideboard-root determinized worlds (default budget)")
-    ap.add_argument("--sb-max-depth", type=int, default=None,
-                    help="bo3 sideboard-root descent depth cap (default budget)")
     ap.add_argument("--sb-rollout-turns", type=int, default=None,
                     help="bo3 sideboard-root leaf-rollout horizon in player "
                          "turns, 0 = off (default budget)")
@@ -81,8 +79,8 @@ def main() -> int:
 
     spec = (f"mcts:{args.checkpoint}?sims={args.sims}&worlds={args.worlds}"
             f"&c={args.c_puct}&vscale={args.vscale}")
-    for knob, val in (("sb_sims", args.sb_sims), ("sb_worlds", args.sb_worlds),
-                      ("sb_max_depth", args.sb_max_depth),
+    for knob, val in (("sb_branches", args.sb_branches),
+                      ("sb_worlds", args.sb_worlds),
                       ("sb_rollout_turns", args.sb_rollout_turns)):
         if val is not None:
             spec += f"&{knob}={val}"

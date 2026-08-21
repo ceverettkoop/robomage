@@ -493,8 +493,50 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
   `game_idx == k+1` sideboard samples). All obs + MCTS visits stay bit-exact with the
   Python reference.
 
-**New CLI knobs** (on `az-selfplay` where bo3 applies, and `az` / `az-league` /
-`az-eval`, all bo3 by default with `--bo1` to opt out):
+> **Update (2026-08-20): sideboard roots are PLAN-searched — PUCT retired
+> there.** Shard analysis of the exhaustive-selfplay run showed sideboarding
+> as the least-converged decision domain (KL(search‖net) 0.39–0.47 on
+> SB_OUT/SB_IN vs ~0.11 in-game, top-1 48%, top-π ~0.29), and the tree had a
+> structural coverage hole: at `sb_sims=128 / 4 worlds` a single world's tree
+> got 32 sims for a ~33-child delta menu — it could not visit every first
+> pick even once, while spending depth on pick ORDERINGS the rollout memo
+> already knew were interchangeable (its keys were order-insensitive pick
+> multisets). `mcts.run_plan_search` replaces the whole sb tree stack: a
+> COVERAGE pass builds one argmax-greedy completion per legal root action
+> (Done's stand-pat included), `--sb-branches` (default 8) deterministic
+> alternate completions of the best-Q branches follow (variant v takes the
+> SECOND-best prior at the v-th completion decision — no rng, so the C++ twin
+> needs no cross-language rng parity), and every plan is priced on every
+> `--sb-worlds` world by replaying its picks and rolling out to end of
+> player-turn `--sb-rollout-turns` of the next game. Plan value = the
+> cross-world mean (a plan must be chosen before knowing which world is
+> real); Q per first pick = its best plan; **π = softmax(Q / `mcts.SB_PI_TAU`
+> = 0.25)** is the training target (flat coverage gives every first pick the
+> same evaluation count, so counts carry no ranking signal — the target comes
+> from VALUES). Values are memoized per (world seed, pick multiset) in a
+> boundary-shared table (takebacks excluded), which replaces tree-based
+> boundary persistence: later picks of a boundary mostly re-price from cache
+> under seeds pinned to the boundary's first searched root. Root Dirichlet
+> noise is off at sb roots (coverage subsumes it). The knob set shrank to
+> `--sb-branches/--sb-worlds/--sb-rollout-turns` (`--sb-sims`,
+> `--sb-max-depth`, `--sb-persist`, the controller's `sb_sims_cap`, and the
+> `sb_sims=`/`sb_max_depth=`/`sb_persist=` spec knobs are GONE — curriculum
+> plans overriding them fail loudly at load, the az-league sidecar ignores
+> the stale keys). The C++ actor mirrors it as PLAN_GEN / PLAN_REPLAY /
+> PLAN_ROLLOUT phases; `--dump-visits` writes plan roots as a NEGATIVE
+> num_choices tag + float64 q[] + π[], and `test_mcts_parity.py`'s bo3 legs
+> compare q bit-exact (π to 1e-12 — numpy SIMD exp vs libm last-ulp; argmax π
+> ≡ argmax Q, so lockstep is unaffected). New default CI tier `plansearch`
+> (`test_plan_search.py`); `test_mirror_search.py`'s sb leg now pins
+> plan-boundary determinism with/without an armed mirror pool; the analysis
+> window runs `IncrementalPlanSearch` (chunked twin, plan table + plan-pick
+> PV) at sb roots; `browse_session.run_replay_search` plan-searches replayed
+> sb steps. Everything below this line describes the RETIRED tree design and
+> is kept as history.
+
+**Historical CLI knobs** (superseded by the 2026-08-20 plan-search update
+above; on `az-selfplay` where bo3 applies, and `az` / `az-league` / `az-eval`,
+all bo3 by default with `--bo1` to opt out):
 
 ```
 --sb-sims N          PUCT sims at a bo3 sideboard root (default 256; was 32, then 128)

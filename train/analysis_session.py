@@ -45,10 +45,10 @@ from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 
-from cli_spec import DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS
+from cli_spec import DEFAULT_SB_BRANCHES, DEFAULT_SB_ROLLOUT_TURNS
 from env import _IS_SIDEBOARD_IDX
-from mcts import (IncrementalSearch, LiveStats, UniformEvaluator,
-                  _LockedEvaluator, _merge_root_stats)
+from mcts import (IncrementalPlanSearch, IncrementalSearch, LiveStats,
+                  UniformEvaluator, _LockedEvaluator, _merge_root_stats)
 
 
 class AnalysisError(RuntimeError):
@@ -101,8 +101,8 @@ class AnalysisConfig:
     max_sims: int = 800      # total per run; 0 = run until stopped
     c_puct: float = 2.5
     max_depth: int = 60
-    sb_max_depth: int = DEFAULT_SB_MAX_DEPTH  # sideboard roots: descent depth cap
-    sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS  # sideboard roots: leaf-rollout horizon (player turns; 0 = off)
+    sb_branches: int = DEFAULT_SB_BRANCHES  # sideboard roots: extra plans beyond the coverage pass
+    sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS  # sideboard roots: plan-pricing rollout horizon (player turns; 0 = static read)
     seed: int = 0            # search rng seed; 0 = fresh entropy per run
     auto_analyze: bool = True  # UI: start a run at every new analyzable decision
     merge_dupes: bool = True   # merge interchangeable duplicate menu actions
@@ -418,15 +418,28 @@ class AnalysisSession:
             # opened searches reachable for the error path to close.
             self._searches = []
             for i, (lo, hi) in enumerate(self._bounds):
-                self._searches.append(IncrementalSearch(
-                    self._envs[i], ev,
-                    worlds=hi - lo, c_puct=cfg.c_puct,
-                    max_depth=(cfg.sb_max_depth if req.is_sideboard
-                               else cfg.max_depth),
-                    rollout_turns=(cfg.sb_rollout_turns if req.is_sideboard
-                                   else 0),
-                    world_seeds=seeds[lo:hi], merge_dupes=cfg.merge_dupes,
-                    cross_world=cfg.cross_world))
+                if req.is_sideboard:
+                    # Sideboard roots run the chunked plan search. Plans are
+                    # generated identically on every engine (completions
+                    # depend only on the mover's obs, untouched by
+                    # determinize), so each engine prices the SAME plans on
+                    # its own world slice and the merged view is the
+                    # cross-world mean.
+                    self._searches.append(IncrementalPlanSearch(
+                        self._envs[i], ev,
+                        worlds=hi - lo, branches=cfg.sb_branches,
+                        rollout_turns=cfg.sb_rollout_turns,
+                        world_seeds=seeds[lo:hi],
+                        merge_dupes=cfg.merge_dupes,
+                        cross_world=cfg.cross_world))
+                else:
+                    self._searches.append(IncrementalSearch(
+                        self._envs[i], ev,
+                        worlds=hi - lo, c_puct=cfg.c_puct,
+                        max_depth=cfg.max_depth,
+                        world_seeds=seeds[lo:hi],
+                        merge_dupes=cfg.merge_dupes,
+                        cross_world=cfg.cross_world))
             if n_eng > 1:
                 pool = ThreadPoolExecutor(max_workers=n_eng,
                                           thread_name_prefix="analysis")
@@ -434,6 +447,10 @@ class AnalysisSession:
             if on_update is not None:
                 on_update(stats)
             while not (stop is not None and stop.is_set()):
+                # A plan search has a finite schedule (coverage + extras);
+                # once every engine reports done, more chunks are no-ops.
+                if all(getattr(s, "done", False) for s in self._searches):
+                    break
                 done = sum(s.sims_run for s in self._searches)
                 n = int(cfg.chunk_sims)
                 if cfg.max_sims:
@@ -470,9 +487,15 @@ class AnalysisSession:
         if len(searches) == 1:
             searches[0].run_chunk(n)
             return
-        counts = [_slice_target(done + n, lo, hi, worlds)
-                  - _slice_target(done, lo, hi, worlds)
-                  for lo, hi in self._bounds]
+        if isinstance(searches[0], IncrementalPlanSearch):
+            # Plan engines pace themselves in whole plans over their own world
+            # slice — the round-robin sim split below has no meaning there, so
+            # every engine just gets the chunk's eval budget.
+            counts = [n] * len(searches)
+        else:
+            counts = [_slice_target(done + n, lo, hi, worlds)
+                      - _slice_target(done, lo, hi, worlds)
+                      for lo, hi in self._bounds]
         futures = [pool.submit(s.run_chunk, k)
                    for s, k in zip(searches, counts)]
         errors = []
