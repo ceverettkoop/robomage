@@ -40,51 +40,44 @@ INTERACTIVE_BINARY = os.path.join(INTERACTIVE_BUILD_DIR, "robomage")
 
 # AlphaZero sideboard-root search budget (single home; imported by az_selfplay,
 # opponents.SearchController, and the CLI flag defaults below). A bo3 sideboard
-# prompt IS a valid MCTS root, but each rollout there re-crosses init_ecs() + deck
-# load + shuffle on RESTORE and its horizon spans the whole next game, so it gets
-# its own deeper budget rather than the per-in-game-decision one (whose max_depth
-# is mcts.run_search's default of 60 — too shallow for a game-long horizon).
+# root is searched by mcts.run_plan_search — a FLAT search over complete
+# sideboard configurations ("plans"), not a PUCT tree: a coverage pass builds
+# one greedily-completed plan per legal root action (Done stand-pat included),
+# then DEFAULT_SB_BRANCHES deterministic alternate completions of the best
+# branches; every plan is priced by leaf rollout on every determinized world
+# and the training target is pi = softmax(Q / mcts.SB_PI_TAU) over first picks.
+# See the plan-search section of train/mcts.py (mirrored in
+# src/actor/az_mcts.cpp) and docs/alphazero_status.md.
 #
-# sims was 32, chosen when a sideboard decision was the old paired IN->OUT menu.
-# The balanced delta menu offers every sideboard card AND every maindeck card at
-# once — ~33 children on a league deck, up to ~39 — so 32 sims was roughly ONE
-# visit per child: the visit distribution the policy trains on was essentially
-# noise, and could not rank cards at all. 128 gives ~3-4 visits per child (split
-# over DEFAULT_SB_WORLDS trees) — enough for the ordering to be meaningful.
-# 256 was tried and measurably ~TRIPLED az-league match wall-clock (a bo3 pays
-# this budget at every pick of both sideboard boundaries), so the last league run
-# pinned 128 deliberately; these are those pinned values. This affects only the
-# AZ / search paths (az_selfplay, bin/az_actor, az*/eval, the analysis window);
-# PPO training does no search, so its cost is unchanged. NOTE: the az / az-league
-# / az-selfplay CLI args MUST reference this constant, not a literal — argparse
-# always supplies the CLI default, so a drifted literal silently overrides this
-# "one home" (that bug shipped runs at sb_sims=32 while this constant said 128).
-DEFAULT_SB_SIMS = 128
+# Why plans, not a tree (2026-08): at the old sb_sims=128 / 4 worlds a single
+# world's tree got 32 sims for a ~33-child delta menu — it could not even visit
+# every first pick once, and shard analysis showed sideboarding as the
+# least-converged decision domain (KL(search||net) 0.39-0.47 vs ~0.11 in-game).
+# The rollout memo already keyed values on the order-insensitive pick multiset,
+# i.e. on configurations; the plan search makes that the primary object and
+# spends nothing on pick orderings. NOTE: the az / az-league / az-selfplay CLI
+# args MUST reference these constants, not literals — argparse always supplies
+# the CLI default, so a drifted literal silently overrides this "one home"
+# (that bug shipped runs at sb_sims=32 while the constant said 128).
+#
+# Extra plans per root beyond the coverage pass. Coverage alone costs
+# ~menu_size (~33) plans; each extra adds worlds more rollouts. 0 = coverage
+# only.
+DEFAULT_SB_BRANCHES = 8
+# Determinized worlds at a sideboard root (each world seed IS a sampled
+# next-game deal). Every plan is priced on every world (value = mean), so more
+# worlds buys determinization spread at linear cost per plan.
 DEFAULT_SB_WORLDS = 4
-DEFAULT_SB_MAX_DEPTH = 128
-# Leaf-rollout horizon at sideboard roots, in player turns of the sampled next
-# game (6 = 3 full turn cycles). Measured (2026-07): the PUCT tree alone never
-# reaches the game — at sb_sims=128-256 the PV is ~3 decisions deep (the 33-child
-# swap menu spreads visits sideways), and even 4096 sims reach only ~turn 1 —
-# while a rollout covers each turn in ~4-8 decisions, linear cost. Each sim
-# plays the raw policy forward to end-of-turn-N and backs up THAT state's net
-# value, so the swap ranking is informed by concrete simulated futures instead
-# of the net's static read of the decklist features. 12 turns (with sb_sims=256)
-# measurably ~tripled az-league match wall-clock; 6 is the horizon the last
-# league run pinned deliberately, still reaching the turns where a sideboard
-# swap actually shows up. 0 disables (pure in-place leaf evaluation, the
-# pre-rollout behavior). The per-turn step cap lives in
+# Leaf-rollout horizon for pricing a plan, in player turns of the sampled next
+# game (6 = 3 full turn cycles). After a plan's picks are replayed, the raw
+# policy plays the opponent's picks, the mulligans, and the next game to
+# end-of-turn-N; THAT state's net value (or a true terminal +/-1) is the
+# plan's value on that world. 12 turns measurably ~tripled az-league match
+# wall-clock in the old tree search; 6 still reaches the turns where a
+# sideboard swap actually shows up. 0 prices the completed decklist with the
+# net's static read (no playout). The per-turn step cap lives in
 # mcts.ROLLOUT_STEPS_PER_TURN (mirrored in src/actor/az_mcts.cpp).
 DEFAULT_SB_ROLLOUT_TURNS = 6
-# Sideboard-boundary persistence (1 = on): a boundary's ~10-20 pick decisions
-# share one set of per-world trees (seeds pinned to the boundary's first
-# searched root, each pick re-rooted at the played action's child and topped up
-# to sb_sims total visits — reported visit targets are CUMULATIVE) plus a
-# rollout-value memo keyed on the order-insensitive pick multiset (an accepted
-# approximation across permuted orders; takeback paths excluded). Cuts the
-# per-boundary search cost from ~picks×sb_sims fresh sims to roughly one
-# boundary-wide budget. 0 restores per-pick fresh searches.
-DEFAULT_SB_PERSIST = 1
 
 # ── AZ pipeline defaults ────────────────────────────────────────────────────
 # One home for every tunable the AZ subcommands share, same one-home rule as
@@ -622,6 +615,27 @@ def search_budget_args():
     ]
 
 
+def sb_search_args():
+    """The bo3 sideboard plan-search budget flags, shared verbatim by every Sub
+    that runs searches over bo3 matches (az-selfplay / az / az-league / the
+    analysis `search` report). One home — the defaults are the DEFAULT_SB_*
+    constants above; see their comment block for the design."""
+    return [
+        Arg("--sb-branches", "int", default=DEFAULT_SB_BRANCHES,
+            help="Extra sideboard plans per bo3 sideboard root beyond the "
+                 "coverage pass (one plan per legal first pick); each plan is "
+                 "priced on every --sb-worlds world "
+                 f"(default {DEFAULT_SB_BRANCHES})"),
+        Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
+            help="Determinized worlds at a bo3 sideboard root "
+                 f"(default {DEFAULT_SB_WORLDS})"),
+        Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
+            help="Rollout horizon pricing each sideboard plan, in player turns "
+                 "of the next game (0 = static decklist read; default "
+                 f"{DEFAULT_SB_ROLLOUT_TURNS})"),
+    ]
+
+
 def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
@@ -961,20 +975,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--temp-moves", "int", default=DEFAULT_AZ_TEMP_MOVES,
             help="Sample from visit counts for the first N real decisions, then argmax"),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
-        Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
-            help="PUCT sims at a bo3 sideboard root (bo3 only; heavier per step "
-                 f"than an in-game decision; default {DEFAULT_SB_SIMS})"),
-        Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
-            help=f"Determinized worlds at a bo3 sideboard root (default {DEFAULT_SB_WORLDS})"),
-        Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
-            help="Descent depth cap at a bo3 sideboard root "
-                 f"(default {DEFAULT_SB_MAX_DEPTH})"),
-        Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
-            help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
-                 f"of the next game (0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
-        Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
-            help="Persist per-world trees + rollout memo across a bo3 sideboard "
-                 f"boundary's picks (1/0; default {DEFAULT_SB_PERSIST})"),
+        *sb_search_args(),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per game "
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); else a "
@@ -1073,18 +1074,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
-        Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
-            help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
-        Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
-            help=f"Determinized worlds at a bo3 sideboard root (default {DEFAULT_SB_WORLDS})"),
-        Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
-            help=f"Descent depth cap at a bo3 sideboard root (default {DEFAULT_SB_MAX_DEPTH})"),
-        Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
-            help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
-                 f"(0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
-        Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
-            help="Persist trees + rollout memo across a bo3 sideboard boundary "
-                 f"(1/0; default {DEFAULT_SB_PERSIST})"),
+        *sb_search_args(),
         Arg("--workers", "int", default=None),
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
             help=f"Optimizer updates this cycle (default {DEFAULT_AZ_CYCLE_BATCHES}). "
@@ -1203,18 +1193,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
-        Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
-            help=f"PUCT sims at a bo3 sideboard root (bo3 only; default {DEFAULT_SB_SIMS})"),
-        Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
-            help=f"Determinized worlds at a bo3 sideboard root (default {DEFAULT_SB_WORLDS})"),
-        Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
-            help=f"Descent depth cap at a bo3 sideboard root (default {DEFAULT_SB_MAX_DEPTH})"),
-        Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
-            help="Leaf-rollout horizon at a bo3 sideboard root, in player turns "
-                 f"(0 = off; default {DEFAULT_SB_ROLLOUT_TURNS})"),
-        Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
-            help="Persist trees + rollout memo across a bo3 sideboard boundary "
-                 f"(1/0; default {DEFAULT_SB_PERSIST})"),
+        *sb_search_args(),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
@@ -1370,18 +1349,7 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
                 help="Games to drive with the MCTS controller (default: 4)"),
             Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
             Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
-            Arg("--sb-sims", "int", default=DEFAULT_SB_SIMS,
-                help=f"bo3 sideboard-root sims (default: {DEFAULT_SB_SIMS})"),
-            Arg("--sb-worlds", "int", default=DEFAULT_SB_WORLDS,
-                help=f"bo3 sideboard-root determinized worlds (default: {DEFAULT_SB_WORLDS})"),
-            Arg("--sb-max-depth", "int", default=DEFAULT_SB_MAX_DEPTH,
-                help=f"bo3 sideboard-root descent depth cap (default: {DEFAULT_SB_MAX_DEPTH})"),
-            Arg("--sb-rollout-turns", "int", default=DEFAULT_SB_ROLLOUT_TURNS,
-                help="bo3 sideboard-root leaf-rollout horizon in player turns "
-                     f"(0 = off; default: {DEFAULT_SB_ROLLOUT_TURNS})"),
-            Arg("--sb-persist", "int", default=DEFAULT_SB_PERSIST,
-                help="Persist trees + rollout memo across a bo3 sideboard "
-                     f"boundary (1/0; default: {DEFAULT_SB_PERSIST})"),
+            *sb_search_args(),
             Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
             Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
             Arg("--top", "int", default=8,

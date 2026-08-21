@@ -59,37 +59,33 @@ harness, the TUI, and `play.py` — accepts:
 - `"az:<gen-or-path>"` / `"mcts:<ckpt>"` (MCTS search) or `"azraw:<gen-or-path>"`
   (raw AZ policy) — `SearchController`/`AZRawController`. The search specs take a
   `?k=v&…` query: `sims`/`worlds`/`c`/`temp`/`seed` (in-game search) plus
-  `sb_sims`/`sb_worlds`/`sb_max_depth`/`sb_rollout_turns`/`sb_persist` — the
-  **bo3 sideboard-root** budget (defaults `256`/`4`/`200`/`12`/`1`, the
-  `DEFAULT_SB_*` constants in `cli_spec.py`). A sideboard prompt is a valid MCTS root but its
-  horizon spans the whole next game, so `SearchController` switches to the
-  sideboard budget there rather than the in-game one (whose `max_depth` default is
-  60), and **leaf rollouts** are on by default: each sim plays the raw policy
-  (argmax priors, both seats) from the expanded leaf to the end of player-turn
-  `sb_rollout_turns` of the sampled next game and backs up THAT state's net value,
-  so the swap ranking sees concrete simulated futures instead of only the net's
-  static read of the decklist (`sb_rollout_turns=0` restores in-place leaf
-  evaluation). `sb_persist=1` (default) additionally persists the per-world
-  trees **across a sideboard boundary's consecutive picks** — seeds pinned to
-  the boundary's first searched root, each next pick re-rooted at the played
-  action's child and topped up to `sb_sims` cumulative visits — plus a
-  rollout-value memo over the boundary's pick multisets; `sb_persist=0`
-  restores per-pick fresh searches. (Persistence applies at any `procs`:
-  `run_search_parallel` forwards the pinned seeds, the per-world reuse roots
-  sliced by the same contiguous world split, and the shared rollout memo, so a
-  boundary played under the mirror pool is bit-identical to the serial one — see
-  `test_mirror_search.py`'s `parallel_sb_persistence`. The analysis window's
-  one-off searches still stay fresh.) e.g.
-  `az:gen?sims=64&worlds=4&sb_sims=128&sb_rollout_turns=8`.
+  `sb_branches`/`sb_worlds`/`sb_rollout_turns` — the **bo3 sideboard
+  plan-search** budget (defaults `8`/`4`/`6`, the `DEFAULT_SB_*` constants in
+  `cli_spec.py`). A sideboard prompt is not searched with PUCT: the controller
+  runs `mcts.run_plan_search`, a flat search over complete sideboard
+  configurations — one argmax-greedy completion per legal first pick (the
+  coverage pass, Done included) plus `sb_branches` deterministic alternate
+  completions of the best branches — each priced by a raw-policy rollout on
+  every `sb_worlds` world to end of player-turn `sb_rollout_turns` of the
+  sampled next game (`sb_rollout_turns=0` prices the completed decklist with
+  the net's static read). Plan value = the cross-world mean, Q per first pick
+  = its best plan, and the played pick / recorded `pi` come from
+  `softmax(Q / mcts.SB_PI_TAU)`. Plan values are memoized per (world seed,
+  pick multiset) in a boundary-shared table, so a boundary's later picks
+  mostly re-price from cache (the world seeds stay pinned to the boundary's
+  first searched root); see `test_mirror_search.py`'s
+  `parallel_sb_persistence` and `test_plan_search.py`. e.g.
+  `az:gen?sims=64&worlds=4&sb_branches=4&sb_rollout_turns=8`.
   - `time=<seconds>` sets a **wall-clock per-decision budget** instead of a fixed
     sim count: the search interleaves its `worlds` round-robin and runs as many
     simulations as fit in that many seconds, then stops (more time = stronger
-    play). The one budget applies to both in-game and sideboard roots (the
-    `sb_max_depth`/`sb_rollout_turns` split still applies; note the deadline is
-    checked between sims, so a rolled sideboard sim can overshoot it by up to one
-    rollout). It overrides `sims` as the terminator —
-    `sims`/`sb_sims`, when explicitly pinned alongside `time=`, act only as a hard
-    cap. A floor of one sim per world always runs. e.g. `az:gen?time=5&worlds=4`.
+    play). The one budget applies to both in-game and sideboard roots (at a
+    sideboard root the plan search's coverage pass is the floor and the clock
+    truncates the extras; note the deadline is checked between plan
+    evaluations, so it can overshoot by up to one rollout). It overrides
+    `sims` as the terminator — `sims`, when explicitly pinned alongside
+    `time=`, acts only as a hard cap. A floor of one sim per world always
+    runs. e.g. `az:gen?time=5&worlds=4`.
     `play.py --think-time <seconds>` is the CLI front door that appends this knob.
     When `time=` is absent the fixed-`sims` path is byte-for-byte unchanged (the
     actor visit-parity corpus depends on it).

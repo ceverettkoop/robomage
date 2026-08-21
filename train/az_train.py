@@ -39,8 +39,8 @@ from progress_io import write_progress_state, read_progress_state
 # literals here, which silently pinned this module to the old values whenever the
 # arg was absent — import them so a change to the default actually reaches the
 # az / az-league paths.
-from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
-                      DEFAULT_SB_ROLLOUT_TURNS, DEFAULT_SB_PERSIST,
+from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
+                      DEFAULT_SB_ROLLOUT_TURNS,
                       DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
                       DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_LR,
                       DEFAULT_AZ_WEIGHT_DECAY, DEFAULT_AZ_BATCH_SIZE,
@@ -508,8 +508,8 @@ def _gate_actor_cmd(actor_bin: str, *, deck_a: str, deck_b: str, games: int,
                     seed: int, sims: int, worlds: int, c_puct: float,
                     model_a: Optional[str], model_b: Optional[str],
                     server_a: Optional[str], server_b: Optional[str],
-                    bo3: bool, sb_sims: int, sb_worlds: int, sb_max_depth: int,
-                    sb_rollout_turns: int, sb_persist: bool,
+                    bo3: bool, sb_branches: int, sb_worlds: int,
+                    sb_rollout_turns: int,
                     cross_world: bool, device: str) -> list:
     """Build a ``bin/az_actor --search`` argv for one gate leg: seat A's net
     (``model_a`` or central-server socket ``server_a``) piloting ``deck_a`` vs
@@ -529,11 +529,9 @@ def _gate_actor_cmd(actor_bin: str, *, deck_a: str, deck_b: str, games: int,
         cmd += ["--device", device]
     if bo3:
         cmd += ["--bo3",
-                "--sb-sims", str(sb_sims),
+                "--sb-branches", str(sb_branches),
                 "--sb-worlds", str(sb_worlds),
-                "--sb-max-depth", str(sb_max_depth),
-                "--sb-rollout-turns", str(sb_rollout_turns),
-                "--sb-persist", str(int(sb_persist))]
+                "--sb-rollout-turns", str(sb_rollout_turns)]
     return cmd
 
 
@@ -560,9 +558,9 @@ def _parse_gate_output(stdout: str, bo3: bool) -> tuple:
 
 def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
                       cand_ts: str, inc_ts: str, sims: int, worlds: int,
-                      c_puct: float, sb_sims: int, sb_worlds: int,
-                      sb_max_depth: int, sb_rollout_turns: int,
-                      sb_persist: bool, bo3: bool, seed: int, workers: int,
+                      c_puct: float, sb_branches: int, sb_worlds: int,
+                      sb_rollout_turns: int,
+                      bo3: bool, seed: int, workers: int,
                       actor_device: str, eval_server, cross_world: bool,
                       tag_of) -> dict:
     """Play the gate's matchup panel on the C++ actor and return
@@ -627,10 +625,9 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
     for mi, (dx, dy) in enumerate(matchups):
         mseed = seed + mi * 100003
         common = dict(sims=sims, worlds=worlds, c_puct=c_puct, bo3=bo3,
-                      sb_sims=sb_sims, sb_worlds=sb_worlds,
-                      sb_max_depth=sb_max_depth,
+                      sb_branches=sb_branches, sb_worlds=sb_worlds,
                       sb_rollout_turns=sb_rollout_turns,
-                      sb_persist=sb_persist, cross_world=cross_world,
+                      cross_world=cross_world,
                       device=actor_device)
         if per - half:  # candidate (piloting dx) in seat A
             jobs.append((mi, True, _gate_actor_cmd(
@@ -732,10 +729,9 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = DEFAULT_AZ_EVAL_GAMES, sims: int = DEFAULT_AZ_EVAL_SIMS,
             worlds: int = DEFAULT_AZ_EVAL_WORLDS, c_puct: float = 1.5,
-            sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
-            sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
+            sb_branches: int = DEFAULT_SB_BRANCHES,
+            sb_worlds: int = DEFAULT_SB_WORLDS,
             sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
-            sb_persist: int = DEFAULT_SB_PERSIST,
             promote_threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD,
             promote: bool = False,
             roster: Optional[list] = None,
@@ -810,8 +806,8 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
 
     # bo3 gate: sideboard roots get their own (deeper) budget, mirroring self-play.
     knobs = (f"?sims={sims}&worlds={worlds}&c={c_puct}"
-             f"&sb_sims={sb_sims}&sb_worlds={sb_worlds}&sb_max_depth={sb_max_depth}"
-             f"&sb_rollout_turns={sb_rollout_turns}&sb_persist={int(sb_persist)}")
+             f"&sb_branches={sb_branches}&sb_worlds={sb_worlds}"
+             f"&sb_rollout_turns={sb_rollout_turns}")
     cand_spec = f"az:{cand_path}{knobs}"
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
@@ -876,9 +872,9 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
                                               tag="az-eval")
         tallies = _gate_actor_panel(
             matchups, per, actor_bin=_ACTOR_BIN, cand_ts=cand_ts, inc_ts=inc_ts,
-            sims=sims, worlds=worlds, c_puct=c_puct, sb_sims=sb_sims,
-            sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
-            sb_rollout_turns=sb_rollout_turns, sb_persist=bool(sb_persist),
+            sims=sims, worlds=worlds, c_puct=c_puct, sb_branches=sb_branches,
+            sb_worlds=sb_worlds,
+            sb_rollout_turns=sb_rollout_turns,
             bo3=bo3, seed=seed, workers=workers, actor_device=actor_device,
             eval_server=eval_server, cross_world=cross_world, tag_of=_tag)
     elif workers > 1:
@@ -998,10 +994,9 @@ def _resolve_expert_decks(expert_decks) -> Optional[list]:
 
 def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
-             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
-             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
+             sb_branches: int = DEFAULT_SB_BRANCHES,
+             sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
-             sb_persist: int = DEFAULT_SB_PERSIST,
              workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
              td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
@@ -1102,10 +1097,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
           f"{'bo3' if bo3 else 'bo1'}{matrix_txt}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
-                               sb_sims=sb_sims, sb_worlds=sb_worlds,
-                               sb_max_depth=sb_max_depth,
+                               sb_branches=sb_branches, sb_worlds=sb_worlds,
                                sb_rollout_turns=sb_rollout_turns,
-                               sb_persist=bool(sb_persist),
                                workers=workers, seed=seed, use_actor=use_actor,
                                actor_device=actor_device,
                                eval_server=eval_server,
@@ -1151,9 +1144,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     # device, Stage C eval-server tri-state, cross-world), so a GPU-served
     # generation pass gates on the same machinery.
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
-                 worlds=eval_worlds, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                 sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-                 sb_persist=sb_persist,
+                 worlds=eval_worlds, sb_branches=sb_branches, sb_worlds=sb_worlds,
+                 sb_rollout_turns=sb_rollout_turns,
                  promote_threshold=promote_threshold,
                  promote=True, seed=seed, roster=roster, gate_floor=gate_floor,
                  bo3=bo3, workers=workers, use_actor=use_actor,
@@ -1205,10 +1197,9 @@ def _default_az_league_roster() -> list:
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               games: int = DEFAULT_AZ_GAMES, sims: int = DEFAULT_AZ_SIMS,
               worlds: int = DEFAULT_AZ_WORLDS,
-              sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
-              sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
+              sb_branches: int = DEFAULT_SB_BRANCHES,
+              sb_worlds: int = DEFAULT_SB_WORLDS,
               sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
-              sb_persist: int = DEFAULT_SB_PERSIST,
               workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
               batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
               td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
@@ -1305,13 +1296,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         games = int(p.get("games", games))
         sims = int(p.get("sims", sims))
         worlds = int(p.get("worlds", worlds))
-        sb_sims = int(p.get("sb_sims", sb_sims))
+        # p.get defaults keep older sidecars resumable (a pre-plan-search
+        # sidecar carries no sb_branches key; stale keys for the removed PUCT
+        # sideboard knobs are simply ignored).
+        sb_branches = int(p.get("sb_branches", sb_branches))
         sb_worlds = int(p.get("sb_worlds", sb_worlds))
-        sb_max_depth = int(p.get("sb_max_depth", sb_max_depth))
-        # p.get default keeps pre-rollout sidecars resumable (they carry no
-        # sb_rollout_turns key).
         sb_rollout_turns = int(p.get("sb_rollout_turns", sb_rollout_turns))
-        sb_persist = int(p.get("sb_persist", sb_persist))
         workers = p.get("workers", workers)
         batches = int(p.get("batches", batches))
         batch_size = int(p.get("batch_size", batch_size))
@@ -1401,8 +1391,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         "cycles_per_deck": cycles_per_deck,
         "params": {
             "games": games, "sims": sims, "worlds": worlds,
-            "sb_sims": sb_sims, "sb_worlds": sb_worlds, "sb_max_depth": sb_max_depth,
-            "sb_rollout_turns": sb_rollout_turns, "sb_persist": sb_persist,
+            "sb_branches": sb_branches, "sb_worlds": sb_worlds,
+            "sb_rollout_turns": sb_rollout_turns,
             "workers": workers,
             "batches": batches, "batch_size": batch_size, "lr": lr,
             "td_n": td_n, "q_mix": q_mix,
@@ -1445,8 +1435,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                 else str(gate_every))
     window_txt = "auto(2x new shards)" if window == 0 else str(window)
     print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
-          f"sb_sims={sb_sims} sb_worlds={sb_worlds} sb_max_depth={sb_max_depth} "
-          f"sb_rollout_turns={sb_rollout_turns} sb_persist={sb_persist}  "
+          f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
+          f"sb_rollout_turns={sb_rollout_turns}  "
           f"batches={batches} window={window_txt} td_n={td_n} q_mix={q_mix}  "
           f"cross_world={int(cross_world)}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
@@ -1513,8 +1503,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               f"(seed={slot_seed}){gate_note}")
         print(f"{'='*60}")
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
-                       sb_sims=sb_sims, sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
-                       sb_rollout_turns=sb_rollout_turns, sb_persist=sb_persist,
+                       sb_branches=sb_branches, sb_worlds=sb_worlds,
+                       sb_rollout_turns=sb_rollout_turns,
                        workers=workers,
                        batches=batches, batch_size=batch_size, lr=lr,
                        td_n=td_n, q_mix=q_mix, window=window,
@@ -1603,12 +1593,10 @@ def run_eval(args) -> None:
     # az-eval defaults to bo3 matches; --bo1 opts back into single games.
     az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
-            sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+            sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
             sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
-            sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
             sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                      DEFAULT_SB_ROLLOUT_TURNS),
-            sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
             promote_threshold=args.promote_threshold, promote=args.promote,
             gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
             seed=args.seed if args.seed is not None else 1,
@@ -1638,12 +1626,10 @@ def run_cycle(args) -> None:
     roster = _split_decks(getattr(args, "opponents", None))
     # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
-             sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+             sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
-             sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
              sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                       DEFAULT_SB_ROLLOUT_TURNS),
-             sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
@@ -1677,12 +1663,10 @@ def run_league(args) -> None:
     az_league(decks=args.decks, rotations=args.rotations,
               cycles_per_deck=args.cycles_per_deck,
               games=args.games, sims=args.sims, worlds=args.worlds,
-              sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+              sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
               sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
-              sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
               sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                        DEFAULT_SB_ROLLOUT_TURNS),
-              sb_persist=getattr(args, "sb_persist", DEFAULT_SB_PERSIST),
               workers=args.workers, batches=args.batches, batch_size=args.batch_size,
               lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
               q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
@@ -1742,12 +1726,10 @@ if __name__ == "__main__":
     e.add_argument("--games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
     e.add_argument("--sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
     e.add_argument("--worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
-    e.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
-                   help="PUCT sims at a bo3 sideboard root (bo3 only)")
+    e.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
+                   help="Candidate plans at a bo3 sideboard root (bo3 only)")
     e.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
                    help="Determinized worlds at a bo3 sideboard root (bo3 only)")
-    e.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
-                   help="Descent depth cap at a bo3 sideboard root (bo3 only)")
     e.add_argument("--sb-rollout-turns", type=int,
                    default=DEFAULT_SB_ROLLOUT_TURNS,
                    help="Leaf-rollout horizon at a bo3 sideboard root, in "
@@ -1769,12 +1751,10 @@ if __name__ == "__main__":
     c.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                    help="Self-play PUCT sims, TOTAL across --worlds")
     c.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
-    c.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
-                   help="PUCT sims at a bo3 sideboard root (bo3 only)")
+    c.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
+                   help="Candidate plans at a bo3 sideboard root (bo3 only)")
     c.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
                    help="Determinized worlds at a bo3 sideboard root")
-    c.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
-                   help="Descent depth cap at a bo3 sideboard root")
     c.add_argument("--sb-rollout-turns", type=int,
                    default=DEFAULT_SB_ROLLOUT_TURNS,
                    help="Leaf-rollout horizon at a bo3 sideboard root, in "
@@ -1851,12 +1831,10 @@ if __name__ == "__main__":
     lg.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="Self-play PUCT sims, TOTAL across --worlds")
     lg.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
-    lg.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
-                    help="PUCT sims at a bo3 sideboard root (bo3 only)")
+    lg.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
+                    help="Candidate plans at a bo3 sideboard root (bo3 only)")
     lg.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
                     help="Determinized worlds at a bo3 sideboard root")
-    lg.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
-                    help="Descent depth cap at a bo3 sideboard root")
     lg.add_argument("--sb-rollout-turns", type=int,
                     default=DEFAULT_SB_ROLLOUT_TURNS,
                     help="Leaf-rollout horizon at a bo3 sideboard root, in "

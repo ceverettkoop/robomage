@@ -68,6 +68,12 @@ fails, so one invocation reports every finding):
           through the real _play_match, then assert a sideboard sample exists,
           gates the next game, and its z is +/-1 per that game's result
           (train/test_sideboard_selfplay.py). Torch-free; needs bin/robomage.
+  plansearch The sideboard plan search (mcts.run_plan_search + the analysis
+          window's IncrementalPlanSearch): coverage of every first pick, the
+          world-mean/Q/softmax-pi accounting, pinned-seed determinism, the
+          boundary-shared plan-value memo, deterministic extras, and the
+          chunked twin's equivalence (train/test_plan_search.py). Torch-free;
+          needs bin/robomage.
   mirror  World-parallel mirror-pool search for interactive play: a plain
           run_search and a run_search_parallel over primary+mirror (worlds split
           across processes) merge to bit-identical visits; a mirror stays in
@@ -162,8 +168,8 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "concede", "obsinv",
-             "actorobs", "pergame", "snapshot", "sbselfplay", "mirror",
-             "xwsearch", "replay", "smoke", "fuzz"]
+             "actorobs", "pergame", "snapshot", "sbselfplay", "plansearch",
+             "mirror", "xwsearch", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -418,14 +424,29 @@ def tier_sbselfplay(rep):
                                 f"{r.stdout}{r.stderr}")
 
 
+def tier_plansearch(rep):
+    """Sideboard plan-search regression (the flat configuration search).
+
+    Runs train/test_plan_search.py: coverage/accounting/determinism/memo/extras
+    for mcts.run_plan_search plus IncrementalPlanSearch equivalence. Torch-free
+    and quick; needs bin/robomage."""
+    r = subprocess.run([sys.executable, "train/test_plan_search.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("plansearch", "sideboard plan-search violation "
+                                f"(test_plan_search.py exit {r.returncode}):\n"
+                                f"{r.stdout}{r.stderr}")
+
+
 def tier_mirror(rep):
     """World-parallel mirror-pool search regression (interactive play only).
 
     Runs train/test_mirror_search.py: bit-exact single-vs-parallel visit merge,
     lockstep across a bo3, graceful pool-disable on mirror drift, and
-    serial-vs-parallel bit-identity of a PERSISTED bo3 sideboard boundary
-    (pinned seeds + reuse roots + shared rollout memo). Torch-free and quick;
-    needs bin/robomage."""
+    with/without-pool bit-identity of a plan-searched bo3 sideboard boundary
+    (pinned seeds + shared plan-value memo). Torch-free and quick; needs
+    bin/robomage."""
     r = subprocess.run([sys.executable, "train/test_mirror_search.py"],
                        cwd=_REPO_ROOT, capture_output=True, text=True)
     print(r.stdout, end="", flush=True)
@@ -890,12 +911,12 @@ def main(argv=None):
 
     # Game tiers need a built binary and provisioned card scripts.
     game_tiers = {"smoke", "fuzz", "replay", "obsinv", "pergame", "snapshot",
-                  "sbselfplay", "mirror", "analysis"} & set(tiers)
+                  "sbselfplay", "plansearch", "mirror", "analysis"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
     if {"smoke", "fuzz", "vocab", "obsinv", "snapshot", "sbselfplay",
-        "mirror", "analysis"} & set(tiers):
+        "plansearch", "mirror", "analysis"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
             print(f"no card scripts under {cards_dir} — run "
@@ -925,6 +946,8 @@ def main(argv=None):
             tier_pergame(rep)
         elif t == "sbselfplay":
             tier_sbselfplay(rep)
+        elif t == "plansearch":
+            tier_plansearch(rep)
         elif t == "mirror":
             tier_mirror(rep)
         elif t == "replay":

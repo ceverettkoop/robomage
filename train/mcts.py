@@ -1330,6 +1330,332 @@ def _flush_pending(evaluator: Evaluator, pending: list, world_pending,
             world_pending[i] = False
 
 
+# ── Sideboard plan search (flat search over complete configurations) ──────────
+# A bo3 sideboard root is NOT searched with PUCT: the searchable object there is
+# the final deck CONFIGURATION, not a pick ordering (the rollout memo already
+# keyed values on the order-insensitive pick multiset), and at the old budgets a
+# single world's tree could not even visit every first pick once. Instead the
+# root is searched as a flat set of PLANS — complete pick sequences through the
+# mover's Done:
+#
+#   * COVERAGE: one plan per legal root action (the action, then an
+#     argmax-greedy raw-policy completion of the mover's remaining picks).
+#   * EXTRAS (`branches`): deterministic alternate completions of the best-Q
+#     first picks — variant v takes the SECOND-best prior at the v-th
+#     completion decision (no rng, so the C++ twin needs no cross-language rng
+#     parity).
+#
+# Every plan is evaluated on EVERY determinized world: replay its picks, then
+# leaf-rollout (the existing _rollout: opponent's picks, mulligans, the next
+# game to end of player-turn `rollout_turns`). Plan value = mean over worlds —
+# a plan must be chosen before knowing which world is real, so per-plan
+# cross-world averaging is the quantity that ranks plans. The training target
+# is π = softmax(Q_a / SB_PI_TAU) over first picks (Q_a = best plan value
+# starting with a); a flat coverage pass gives every first pick the same
+# evaluation count, so visit counts carry no ranking signal and the target
+# comes from VALUES.
+#
+# Values are memoized per (world seed, pick multiset) in a boundary-shared
+# dict, which both dedups coverage plans that converge to one configuration
+# and makes later picks of the same boundary nearly free (every surviving
+# plan's world values carry over) — this REPLACES tree-based boundary
+# persistence (reuse_roots/walk_reuse_root are not used at sideboard roots).
+#
+# Batching note: within one process the engine is a snapshot/restore-sliced
+# singleton, so plan evaluation is sequential and net evals are row-by-row —
+# the same constraint that kept rollouts out of cross-world batching. Fleet
+# batching happens across PROCESSES via the eval server; the analysis window
+# splits WORLDS across its engine fleet (plans regenerate identically per
+# engine — completions depend only on the mover's obs, which determinize does
+# not touch).
+#
+# MIRRORED in src/actor/az_mcts.cpp — generation order, deviation rule, memo
+# keys, and the float64 softmax must stay bit-identical or sb parity breaks.
+
+# Temperature of the π = softmax(Q/τ) sideboard training target, in tanh value
+# units: ΔQ of SB_PI_TAU is one e-fold of probability. Mirrored as kSbPiTau in
+# src/actor/az_mcts.cpp.
+SB_PI_TAU = 0.25
+
+# Safety bound on one plan's own pick sequence (the engine caps swaps at
+# SIDEBOARD_SWAP_CAP per seat; 4x that plus slack can only be exceeded if the
+# sideboard menu loop is broken — fail loudly rather than spin).
+_PLAN_PICK_CAP = 68
+
+
+@dataclass
+class SbPlan:
+    """One complete sideboard configuration considered by run_plan_search."""
+    first_action: int           # root-menu action the plan starts with
+    pick_actions: list          # full env-index pick sequence (incl. first)
+    picks: tuple                # sb_pick_descriptor tuple (Done contributes none)
+    multiset: tuple             # sorted(base_picks + picks) — the memo identity
+    values: np.ndarray          # (worlds,) value per world, ROOT perspective
+    variant: int = 0            # 0 = coverage / greedy; v>0 = extras deviation
+
+    @property
+    def value(self) -> float:
+        return float(self.values.mean())
+
+
+def _second_best(priors: np.ndarray) -> int:
+    """First-max argmax excluding the first-max argmax (parity: strict-> in
+    C++). Only called with num_choices >= 2."""
+    best = int(np.argmax(priors))
+    p = priors.copy()
+    p[best] = -np.inf
+    return int(np.argmax(p))
+
+
+def _plan_softmax(q: np.ndarray, tau: float = SB_PI_TAU) -> np.ndarray:
+    """Float64 softmax with max-subtraction — the π target arithmetic, mirrored
+    bit-for-bit in the C++ actor."""
+    z = (q - q.max()) / tau
+    e = np.exp(z)
+    return e / e.sum()
+
+
+def _generate_plan(env: SearchRoboMageEnv, evaluator: Evaluator, *,
+                   root_obs: np.ndarray, first_action: int, variant: int,
+                   root_is_a: bool, counters: dict) -> tuple:
+    """Build one plan's pick sequence on the CURRENT (already restored +
+    determinized) world by stepping the env through `first_action` and then a
+    greedy completion of the mover's remaining picks (variant v swaps in the
+    second-best prior at the v-th completion decision). Returns
+    ``(pick_actions, picks, handoff_query)`` where handoff_query is the state
+    where the mover's run ended (opponent's picks / mulligans / next game —
+    the rollout takes it from there). Raises on world-consistency breaks."""
+    picks: list = []
+    pick_actions: list = [int(first_action)]
+    d = sb_pick_descriptor(root_obs, int(first_action))
+    if d is not None:
+        picks.append(d)
+    query: SimQuery = env.sim_step(int(first_action))
+    counters["steps"] += 1
+    dev = 0
+    while (query.terminal is None and query.obs[_IS_SIDEBOARD_IDX] > 0.5
+           and bool(query.obs[_SELF_IS_A_IDX] > 0.5) == root_is_a):
+        if len(pick_actions) > _PLAN_PICK_CAP:
+            raise RuntimeError(
+                "plan-search pick sequence exceeded _PLAN_PICK_CAP — "
+                "sideboard menu loop did not terminate")
+        priors, _ = evaluator.evaluate(query.obs, query.num_choices)
+        counters["evals"] += 1
+        dev += 1
+        if variant > 0 and dev == variant and query.num_choices >= 2:
+            a = _second_best(priors)
+        else:
+            a = int(np.argmax(priors))
+        d = sb_pick_descriptor(query.obs, a)
+        if d is not None:
+            picks.append(d)
+        pick_actions.append(a)
+        query = env.sim_step(a)
+        counters["steps"] += 1
+    return pick_actions, tuple(picks), query
+
+
+def _eval_plan_world(env: SearchRoboMageEnv, evaluator: Evaluator, *,
+                     query: SimQuery, root_is_a: bool, rollout_turns: int,
+                     counters: dict) -> float:
+    """Rollout from a plan's handoff state on the current world; returns the
+    value in ROOT perspective."""
+    if query.terminal is not None:
+        return _terminal_value(query.terminal, root_is_a)
+    priors, value = evaluator.evaluate(query.obs, query.num_choices)
+    counters["evals"] += 1
+    seat = bool(query.obs[_SELF_IS_A_IDX] > 0.5)
+    lv, ls, extra, _term = _rollout(env, evaluator, query, priors, value, seat,
+                                    0, rollout_turns, root_is_a)
+    counters["steps"] += extra
+    counters["evals"] += extra  # one evaluate() per rollout step (see _rollout)
+    return lv if ls == root_is_a else -lv
+
+
+def _replay_plan(env: SearchRoboMageEnv, root_n: int, world: int,
+                 seed: int, snapshot_slot: int, pick_actions,
+                 counters: dict) -> SimQuery:
+    """Restore + determinize `world` and force-replay a plan's picks. The pick
+    menus derive from the mover's own zones (untouched by determinize), so the
+    recorded indices must stay legal — a violation fails loudly."""
+    env.restore(snapshot_slot)
+    q = env.determinize(seed)
+    _check_root_query(q, root_n, world)
+    for a in pick_actions:
+        a = int(a)
+        if q.terminal is not None or a >= q.num_choices:
+            raise RuntimeError(
+                f"plan-search world-consistency violation (world {world}): "
+                f"pick {a} not replayable ({q.num_choices} choices, "
+                f"terminal={q.terminal})")
+        q = env.sim_step(a)
+        counters["steps"] += 1
+    return q
+
+
+def run_plan_search(
+    env: SearchRoboMageEnv,
+    evaluator: Evaluator,
+    *,
+    worlds: int = 4,
+    branches: int = 8,
+    rollout_turns: int = 6,
+    rng: Optional[np.random.Generator] = None,
+    snapshot_slot: int = 0,
+    world_seeds: Optional[Sequence[int]] = None,
+    plan_memo: Optional[dict] = None,
+    memo_picks: tuple = (),
+    time_budget_s: Optional[float] = None,
+    time_budget_min_s: Optional[float] = None,
+    plans_out: Optional[list] = None,
+) -> SearchResult:
+    """Flat plan search of a bo3 sideboard root (see the section comment).
+
+    The env must be parked at a sideboard prompt. ``world_seeds`` pins the
+    boundary's worlds (a sideboard world seed IS the sampled next-game deal);
+    when None, one ``rng.integers(1, 2**31 - 1)`` draw per world, like
+    run_search. ``plan_memo`` is the boundary-shared value cache keyed
+    ``(world_seed, sorted pick multiset)`` with ``memo_picks`` the descriptors
+    of the picks already played this boundary; pass the same dict across the
+    boundary's roots and consistent plans re-price for free. ``time_budget_s``
+    bounds the EXTRAS only — the coverage pass always completes (it is the
+    correctness floor: every first pick evaluated). ``time_budget_min_s`` is
+    accepted for interface parity and unused (there is no stability stop —
+    plans are a fixed population, not a converging tree). ``plans_out``, when
+    given, receives the evaluated :class:`SbPlan` list (analysis consumers).
+
+    Returns a normal :class:`SearchResult`: ``visits = π * evaluations``
+    (float64, so ``best_action``/``policy_target``/``sample_visits`` keep
+    their contracts), ``q[a] = Q_a``, ``root_value`` = π-weighted mean of Q,
+    ``roots`` empty (there are no trees to follow or persist)."""
+    rng = rng if rng is not None else np.random.default_rng()
+    _check_world_seeds(world_seeds, worlds)
+    worlds = max(1, int(worlds))
+
+    root_obs = env._obs.copy()
+    root_n = env._num_choices
+    if not root_obs[_IS_SIDEBOARD_IDX] > 0.5:
+        raise ValueError("run_plan_search: env is not at a sideboard prompt")
+    root_is_a = bool(root_obs[_SELF_IS_A_IDX] > 0.5)
+    root_priors, _ = evaluator.evaluate(root_obs, root_n)
+
+    seeds = [int(world_seeds[w]) if world_seeds is not None
+             else int(rng.integers(1, 2**31 - 1)) for w in range(worlds)]
+    memo = plan_memo if plan_memo is not None else {}
+    base_picks = tuple(memo_picks)
+    counters = {"steps": 0, "evals": 0, "memo_hits": 0}
+
+    env.snapshot(snapshot_slot)
+    deadline = (time.monotonic() + float(time_budget_s)
+                if time_budget_s is not None else None)
+
+    plans: list[SbPlan] = []
+    evaluated: set = set()   # multisets already priced (novelty test for extras)
+
+    def _run_plan(first_action: int, variant: int) -> tuple[SbPlan, bool]:
+        # Generate on world 0 (pick menus are world-independent), then price
+        # every world — memo first, rollout on miss. Returns (plan, novel):
+        # novel is False when the configuration was already fully priced (an
+        # extras variant that collapsed onto a known multiset).
+        env.restore(snapshot_slot)
+        q0 = env.determinize(seeds[0])
+        _check_root_query(q0, root_n, 0)
+        pick_actions, picks, handoff = _generate_plan(
+            env, evaluator, root_obs=root_obs, first_action=first_action,
+            variant=variant, root_is_a=root_is_a, counters=counters)
+        multiset = tuple(sorted(base_picks + picks))
+        memoable = rollout_memo_eligible(multiset)
+        novel = not (memoable and multiset in evaluated)
+        values = np.zeros(worlds, dtype=np.float64)
+        for w in range(worlds):
+            key = (seeds[w], multiset)
+            if memoable:
+                hit = memo.get(key)
+                if hit is not None:
+                    counters["memo_hits"] += 1
+                    values[w] = hit
+                    continue
+            q = handoff if w == 0 else _replay_plan(
+                env, root_n, w, seeds[w], snapshot_slot, pick_actions,
+                counters)
+            values[w] = _eval_plan_world(
+                env, evaluator, query=q, root_is_a=root_is_a,
+                rollout_turns=rollout_turns, counters=counters)
+            if memoable:
+                memo[key] = float(values[w])
+        plan = SbPlan(first_action=int(first_action),
+                      pick_actions=pick_actions, picks=picks,
+                      multiset=multiset, values=values, variant=variant)
+        plans.append(plan)
+        if memoable:
+            evaluated.add(multiset)
+        return plan, novel
+
+    # Coverage pass: every legal root action, ascending — always completes
+    # (converging configurations price for free through the memo).
+    for a in range(root_n):
+        _run_plan(a, 0)
+
+    # Extras deviate the best branches: candidate i re-completes branch
+    # ranked[i % root_n] with variant 1 + i // root_n. Candidates that collapse
+    # onto an already-priced configuration don't consume the extras budget
+    # (their cost is generation only — the memo prices them); a bounded
+    # attempt count keeps a saturated plan space from spinning.
+    cov_q = np.zeros(root_n, dtype=np.float64)
+    for p in plans:
+        if p.variant == 0:
+            cov_q[p.first_action] = p.value
+    ranked = np.argsort(-cov_q, kind="stable")
+
+    novel_extras = 0
+    attempt = 0
+    max_attempts = max(0, int(branches)) * 4
+    while novel_extras < int(branches) and attempt < max_attempts:
+        if deadline is not None and time.monotonic() >= deadline:
+            break
+        branch = int(ranked[attempt % root_n])
+        variant = 1 + attempt // root_n
+        attempt += 1
+        _plan, novel = _run_plan(branch, variant)
+        if novel:
+            novel_extras += 1
+
+    # Q per first pick = best plan value starting with it (coverage guarantees
+    # every first pick has at least one plan).
+    q_arr = np.full(root_n, -np.inf, dtype=np.float64)
+    for p in plans:
+        q_arr[p.first_action] = max(q_arr[p.first_action], p.value)
+
+    pi = _plan_softmax(q_arr)
+    n_evals = len(plans) * worlds
+    visits = pi * float(n_evals)
+    w_sum = q_arr * visits
+    world_values = np.array(
+        [float(np.mean([p.values[w] for p in plans])) for w in range(worlds)],
+        dtype=np.float64)
+
+    env.restore(snapshot_slot)
+    env.release()
+
+    if plans_out is not None:
+        plans_out.extend(plans)
+    return SearchResult(
+        visits=visits,
+        priors=root_priors,
+        root_value=float(pi @ q_arr),
+        num_choices=root_n,
+        sims_run=n_evals,
+        sim_steps=counters["steps"],
+        q=q_arr,
+        w_sum=w_sum,
+        world_values=world_values,
+        roots=[],
+        seeds=seeds,
+        reused_visits=0,
+        memo_hits=counters["memo_hits"],
+    )
+
+
 # ── Incremental (chunked) search for interactive analysis ─────────────────────
 
 @dataclass
@@ -1581,6 +1907,233 @@ class IncrementalSearch:
     def close(self) -> None:
         """Restore the real root state and drop the snapshot. Idempotent. Must
         run before the env's next real step()."""
+        if self._closed:
+            return
+        self._closed = True
+        self._env.restore(self._slot)
+        self._env.release()
+
+
+class IncrementalPlanSearch:
+    """The sideboard plan search split into caller-paced chunks, for the
+    analysis window — the plan-search twin of :class:`IncrementalSearch`.
+
+    Same candidate order as :func:`run_plan_search` (coverage ascending, then
+    the deterministic extras schedule), same value arithmetic, so a finished
+    incremental search prices the same plans as the one-shot function under
+    the same ``world_seeds``. Each :meth:`run_chunk` call processes WHOLE
+    plans (a plan is generated and priced on every world atomically) until
+    roughly ``n_sims`` more evaluator calls have been spent; ``done`` reports
+    when the candidate schedule is exhausted. The root snapshot is held open
+    across chunks so :meth:`pv`/:meth:`walk` can browse afterwards; the owner
+    MUST call :meth:`close` before the env's next real step.
+
+    ``merge_dupes``/``cross_world``/``max_depth``/``c_puct`` are accepted for
+    construction-site symmetry with :class:`IncrementalSearch` and are inert —
+    a plan search has no tree to merge, descend, or defer."""
+
+    def __init__(self, env: SearchRoboMageEnv, evaluator: Evaluator, *,
+                 worlds: int = 4, branches: int = 8, rollout_turns: int = 6,
+                 rng: Optional[np.random.Generator] = None,
+                 snapshot_slot: int = 0,
+                 world_seeds: Optional[Sequence[int]] = None,
+                 c_puct: float = 1.5, max_depth: int = 0,
+                 merge_dupes: bool = True, cross_world: bool = False):
+        _check_world_seeds(world_seeds, worlds)
+        rng = rng if rng is not None else np.random.default_rng()
+        self._env = env
+        self._evaluator = evaluator
+        self._slot = snapshot_slot
+        self._worlds = max(1, int(worlds))
+        self._branches = max(0, int(branches))
+        self._rollout_turns = int(rollout_turns)
+        self.root_obs = env._obs.copy()
+        self.num_choices = env._num_choices
+        if not self.root_obs[_IS_SIDEBOARD_IDX] > 0.5:
+            raise ValueError(
+                "IncrementalPlanSearch: env is not at a sideboard prompt")
+        self.root_is_a = bool(self.root_obs[_SELF_IS_A_IDX] > 0.5)
+        priors, net_value = evaluator.evaluate(self.root_obs, self.num_choices)
+        self.priors = priors
+        self.net_value = float(net_value)
+        self.seeds = [int(world_seeds[w]) if world_seeds is not None
+                      else int(rng.integers(1, 2**31 - 1))
+                      for w in range(self._worlds)]
+        env.snapshot(snapshot_slot)
+        self.plans: list[SbPlan] = []
+        self._memo: dict = {}
+        self._evaluated: set = set()
+        self._counters = {"steps": 0, "evals": 0, "memo_hits": 0}
+        self._cursor = 0            # next coverage action while < num_choices
+        self._ranked: Optional[np.ndarray] = None
+        self._extra_attempt = 0
+        self._novel_extras = 0
+        self.sims_run = 0           # evaluator calls (the pacing unit)
+        self.sim_steps = 0
+        self._closed = False
+
+    # -- schedule ------------------------------------------------------------
+
+    @property
+    def done(self) -> bool:
+        return (self._cursor >= self.num_choices
+                and (self._novel_extras >= self._branches
+                     or self._extra_attempt >= self._branches * 4))
+
+    def _run_one_plan(self, first_action: int, variant: int) -> bool:
+        env = self._env
+        counters = self._counters
+        env.restore(self._slot)
+        q0 = env.determinize(self.seeds[0])
+        _check_root_query(q0, self.num_choices, 0)
+        pick_actions, picks, handoff = _generate_plan(
+            env, self._evaluator, root_obs=self.root_obs,
+            first_action=first_action, variant=variant,
+            root_is_a=self.root_is_a, counters=counters)
+        multiset = tuple(sorted(picks))
+        memoable = rollout_memo_eligible(multiset)
+        novel = not (memoable and multiset in self._evaluated)
+        values = np.zeros(self._worlds, dtype=np.float64)
+        for w in range(self._worlds):
+            key = (self.seeds[w], multiset)
+            if memoable:
+                hit = self._memo.get(key)
+                if hit is not None:
+                    counters["memo_hits"] += 1
+                    values[w] = hit
+                    continue
+            q = handoff if w == 0 else _replay_plan(
+                env, self.num_choices, w, self.seeds[w], self._slot,
+                pick_actions, counters)
+            values[w] = _eval_plan_world(
+                env, self._evaluator, query=q, root_is_a=self.root_is_a,
+                rollout_turns=self._rollout_turns, counters=counters)
+            if memoable:
+                self._memo[key] = float(values[w])
+        self.plans.append(SbPlan(
+            first_action=int(first_action), pick_actions=pick_actions,
+            picks=picks, multiset=multiset, values=values, variant=variant))
+        if memoable:
+            self._evaluated.add(multiset)
+        return novel
+
+    def run_chunk(self, n_sims: int) -> LiveStats:
+        """Process whole plans until ~``n_sims`` more evaluator calls have
+        been spent (or the schedule is exhausted); returns updated stats."""
+        if self._closed:
+            raise RuntimeError("IncrementalPlanSearch already closed")
+        target = self._counters["evals"] + max(0, int(n_sims))
+        while not self.done and self._counters["evals"] < target:
+            if self._cursor < self.num_choices:
+                self._run_one_plan(self._cursor, 0)
+                self._cursor += 1
+                continue
+            if self._ranked is None:
+                cov_q = np.zeros(self.num_choices, dtype=np.float64)
+                for p in self.plans:
+                    if p.variant == 0:
+                        cov_q[p.first_action] = p.value
+                self._ranked = np.argsort(-cov_q, kind="stable")
+            branch = int(self._ranked[self._extra_attempt % self.num_choices])
+            variant = 1 + self._extra_attempt // self.num_choices
+            self._extra_attempt += 1
+            if self._run_one_plan(branch, variant):
+                self._novel_extras += 1
+        self.sims_run = self._counters["evals"]
+        self.sim_steps = self._counters["steps"]
+        return self.stats()
+
+    # -- views ---------------------------------------------------------------
+
+    def stats(self) -> LiveStats:
+        n = self.num_choices
+        best = np.full(n, -np.inf, dtype=np.float64)
+        for p in self.plans:
+            best[p.first_action] = max(best[p.first_action], p.value)
+        covered = np.isfinite(best)
+        q = np.where(covered, best, 0.0)
+        visits = np.zeros(n, dtype=np.float64)
+        if covered.any():
+            # softmax over the covered subset only (mid-coverage chunks);
+            # equals _plan_softmax once coverage completes.
+            z = (q[covered] - q[covered].max()) / SB_PI_TAU
+            e = np.exp(z)
+            n_evals = len(self.plans) * self._worlds
+            visits[covered] = (e / e.sum()) * float(n_evals)
+        pi = visits / visits.sum() if visits.sum() > 0 else visits
+        world_visits = np.zeros((self._worlds, n), dtype=np.int64)
+        world_values = np.zeros(self._worlds, dtype=np.float64)
+        for w in range(self._worlds):
+            if self.plans:
+                world_values[w] = float(
+                    np.mean([p.values[w] for p in self.plans]))
+            for p in self.plans:
+                world_visits[w, p.first_action] += 1
+        return LiveStats(
+            num_choices=n,
+            sims_run=self.sims_run,
+            sim_steps=self.sim_steps,
+            visits=visits,
+            priors=np.array(self.priors, dtype=np.float64, copy=True),
+            q=q,
+            w_sum=q * visits,
+            root_value=float(pi @ q) if visits.sum() > 0 else 0.0,
+            net_value=self.net_value,
+            world_values=world_values,
+            world_visits=world_visits,
+        )
+
+    def result(self) -> SearchResult:
+        s = self.stats()
+        return SearchResult(
+            visits=s.visits, priors=s.priors, root_value=s.root_value,
+            num_choices=s.num_choices, sims_run=s.sims_run,
+            sim_steps=s.sim_steps, q=s.q, w_sum=s.w_sum,
+            world_values=s.world_values, seeds=list(self.seeds))
+
+    def best_plan_for(self, action: int) -> Optional[SbPlan]:
+        """The highest-value plan whose first pick is ``action`` (None until
+        that action's coverage plan has run)."""
+        cand = [p for p in self.plans if p.first_action == int(action)]
+        if not cand:
+            return None
+        return max(cand, key=lambda p: p.value)
+
+    def pv(self, action: int, world: int, max_len: int = 24) -> list:
+        """The 'principal variation' of a first pick: its best plan's pick
+        sequence. Each step carries the PLAN's value on ``world`` (a plan is
+        priced as a whole — there are no per-step statistics)."""
+        plan = self.best_plan_for(action)
+        if plan is None:
+            return []
+        v = float(plan.values[int(world)])
+        return [PVStep(action=int(a), visits=self._worlds, q=v,
+                       seat_is_a=self.root_is_a)
+                for a in plan.pick_actions[:max(0, int(max_len))]]
+
+    def walk(self, world: int, actions: Sequence[int]) -> list:
+        """Identical contract to :meth:`IncrementalSearch.walk`."""
+        if self._closed:
+            raise RuntimeError("IncrementalPlanSearch already closed")
+        env = self._env
+        env.restore(self._slot)
+        env.determinize(self.seeds[world])
+        out: list[WalkNode] = []
+        for a in actions:
+            query: SimQuery = env.sim_step(int(a))
+            if query.terminal is not None:
+                out.append(WalkNode(obs=None, num_choices=0,
+                                    pending_confirm=False,
+                                    terminal=query.terminal))
+                break
+            out.append(WalkNode(obs=query.obs.copy(),
+                                num_choices=query.num_choices,
+                                pending_confirm=query.pending_confirm,
+                                terminal=None))
+        env.restore(self._slot)
+        return out
+
+    def close(self) -> None:
         if self._closed:
             return
         self._closed = True

@@ -26,8 +26,8 @@ from env import (MAX_ACTIONS, STATE_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
 from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
                     CAT_CONFIRM_BLOCKERS)
-from cli_spec import (DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS, DEFAULT_SB_MAX_DEPTH,
-                      DEFAULT_SB_ROLLOUT_TURNS, DEFAULT_SB_PERSIST)
+from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
+                      DEFAULT_SB_ROLLOUT_TURNS)
 from scripted_agent import ScriptedAgent, make_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
@@ -527,14 +527,15 @@ class SearchController:
     hidden information is revealed (``decode.hidden_info_fingerprint``), or
     the opponent takes an action outside the public-menu-safe categories.
 
-    Bo3 SIDEBOARD prompts between games are also loop-safe search roots, but each
-    rollout there is heavier (restore re-crosses init_ecs + deck load + shuffle)
-    and has a game-long horizon; the in-game ``max_depth`` (mcts.run_search's
-    default of 60) can be swallowed entirely by the remaining sideboard/mulligan
-    prompts, landing the leaf value on a masked between-game observation. So at a
-    sideboard root (``obs[_IS_SIDEBOARD_IDX] > 0.5``) the controller switches to
-    the SIDEBOARD budget (``sb_sims``/``sb_worlds``/``sb_max_depth``), mirroring
-    az_selfplay. The sideboard/in-game searched split is tallied separately.
+    Bo3 SIDEBOARD prompts between games are loop-safe search roots too, but they
+    are not searched with PUCT: at a sideboard root
+    (``obs[_IS_SIDEBOARD_IDX] > 0.5``) the controller runs
+    ``mcts.run_plan_search`` — a flat search over complete sideboard
+    configurations (one greedily-completed plan per legal first pick plus
+    ``sb_branches`` alternates, each priced by rollout on every ``sb_worlds``
+    world) — mirroring az_selfplay. A boundary's consecutive picks share the
+    pinned world seeds and the plan-value memo, so later picks mostly re-price
+    from cache. The sideboard/in-game searched split is tallied separately.
 
     ``clock`` (opt-in) arms a match-level chess clock (:class:`MatchClock`):
     one wall-clock bank for the whole match, allocated per decision (harder
@@ -566,12 +567,11 @@ class SearchController:
     def __init__(self, evaluator, *, sims: int = 128, worlds: int = 4,
                  c_puct: float = 1.5, temperature: float = 0.0,
                  label: str = "mcts", rng_seed: int = 0,
-                 sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
-                 sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
+                 sb_branches: int = DEFAULT_SB_BRANCHES,
+                 sb_worlds: int = DEFAULT_SB_WORLDS,
                  sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
-                 sb_persist: bool = bool(DEFAULT_SB_PERSIST),
                  time_budget: float | None = None,
-                 sims_cap: int = 0, sb_sims_cap: int = 0, procs: int = 1,
+                 sims_cap: int = 0, procs: int = 1,
                  clock: float | None = None, clock_t_min: float = 0.5,
                  clock_t_max: float = 60.0, clock_sb_t_max: float = 15.0,
                  paced: bool = False, merge_dupes: bool = True,
@@ -591,17 +591,16 @@ class SearchController:
         self._worlds = worlds
         self._c_puct = c_puct
         self._temperature = temperature
-        self._sb_sims = sb_sims
+        self._sb_branches = sb_branches
         self._sb_worlds = sb_worlds
-        self._sb_max_depth = sb_max_depth
         self._sb_rollout_turns = sb_rollout_turns
-        self._sb_persist = bool(sb_persist)
         # Wall-clock per-decision budget (seconds). When set, the deadline
-        # terminates each search; sims_cap/sb_sims_cap are the OPTIONAL hard caps
+        # terminates each search; sims_cap is the OPTIONAL in-game hard cap
         # (0 => clock is the sole terminator, i.e. run as many sims as fit).
+        # A timed sideboard root needs no cap: the plan search's coverage pass
+        # is its floor and the deadline truncates the extras.
         self._time_budget = time_budget
         self._sims_cap = sims_cap
-        self._sb_sims_cap = sb_sims_cap
         # Duplicate-edge merging (decode.menu_merge_reps). Config-constant for
         # the controller's lifetime — must not flip across a sideboard
         # boundary's persisted trees.
@@ -637,21 +636,17 @@ class SearchController:
         self._followed_trees = None
         self._followed_hist_len = 0
         self._followed_fp = None
-        # Sideboard-boundary persistence (sb_persist): one set of per-world
-        # trees + one rollout memo shared across a boundary's consecutive
-        # picks. key = mcts.sb_root_key identity; seeds = the pinned per-world
-        # determinize seeds (latched from the boundary's first search); roots =
-        # the previous search's SearchResult.roots (walked down the history
-        # delta at the next pick); picks = descriptors of the real picks since
-        # the boundary root (the memo key base). Works at any procs: the
-        # parallel search forwards the same seeds/roots/memo per world (world
-        # order == env order), and the latched per-world state is
-        # engine-agnostic — so if the mirror pool dies mid-boundary (fail-open)
-        # the next pick simply re-partitions the same seeds/roots across the
-        # remaining env count, or runs serially, with nothing lost.
+        # Sideboard-boundary state for the plan search: one plan-value memo
+        # shared across a boundary's consecutive picks. key = mcts.sb_root_key
+        # identity; seeds = the pinned per-world determinize seeds (latched
+        # from the boundary's first search — a sideboard world seed IS the
+        # sampled next-game deal); picks = descriptors of the real picks since
+        # the boundary root (the memo key base); hist_len = the env
+        # action-history length at the previous search (any foreign action in
+        # the delta means the boundary is over). There are no trees to persist
+        # — plans consistent with the picks so far re-price from the memo.
         self._sbp_key = None
         self._sbp_seeds = None
-        self._sbp_roots = None
         self._sbp_hist_len = 0
         self._sbp_memo: dict = {}
         self._sbp_picks: list = []
@@ -664,7 +659,7 @@ class SearchController:
         self.on_result = None
         self.stats = {"searched": 0, "fallback": 0, "trivial": 0, "followed": 0,
                       "sims": 0, "sim_steps": 0, "sb_searched": 0,
-                      "sb_reused_visits": 0, "sb_memo_hits": 0,
+                      "sb_memo_hits": 0,
                       "pool_procs": procs, "early_stops": 0}
         if self._clock is not None:
             self.stats["clock_bank"] = self._clock.bank
@@ -737,7 +732,6 @@ class SearchController:
     def _drop_boundary(self) -> None:
         self._sbp_key = None
         self._sbp_seeds = None
-        self._sbp_roots = None
         self._sbp_hist_len = 0
         self._sbp_memo = {}
         self._sbp_picks = []
@@ -745,10 +739,9 @@ class SearchController:
     def _sbp_latch(self, obs, chosen: int) -> None:
         """Record the chosen action's pick descriptor while a boundary is
         armed (mirrors the C++ actor latching in finalize + its fallback path;
-        the walk itself consumes the env action history, so only the memo's
-        descriptors need choose-time capture — non-pick actions contribute
-        none)."""
-        if self._sbp_roots is None:
+        only the memo's descriptors need choose-time capture — non-pick
+        actions contribute none)."""
+        if self._sbp_seeds is None:
             return
         from mcts import sb_pick_descriptor
         d = sb_pick_descriptor(obs, int(chosen))
@@ -846,15 +839,13 @@ class SearchController:
 
     def _choose_impl(self, obs, num_choices, action_masks=None,
                      decoded_actions=None) -> int:
-        from mcts import run_search, run_search_parallel, sample_visits
+        from mcts import (run_search, run_search_parallel, run_plan_search,
+                          sample_visits, sb_root_key)
         from decode import menu_is_interchangeable
 
         # Sideboard-boundary identity of this decision (None off the sideboard
-        # phase or with persistence disabled).
-        sbp_key = None
-        if self._sb_persist:
-            from mcts import sb_root_key
-            sbp_key = sb_root_key(obs)
+        # phase).
+        sbp_key = sb_root_key(obs)
 
         # An interchangeable menu (four "Play Mountain" from a hand of
         # duplicates, N identical untapped basics to tap) offers the same
@@ -869,9 +860,8 @@ class SearchController:
         # While the game keeps matching the previous search's expected lines,
         # play on from those trees rather than recalculating (spends none of
         # the match clock); the first divergence falls through to a search.
-        # At a PERSISTED sideboard root the follow-only answer is skipped —
-        # the boundary path below re-roots those same trees and tops them up
-        # with fresh sims instead of answering from stale visits.
+        # At a sideboard root the follow-only answer is skipped — the plan
+        # search below re-prices the boundary's plans from its memo instead.
         if sbp_key is None:
             followed = self._try_follow_tree(obs, num_choices)
             if followed is not None:
@@ -908,10 +898,10 @@ class SearchController:
                 return run_search_parallel(envs, self._evaluator, **kw)
             return run_search(env, self._evaluator, **kw)
 
-        # A bo3 sideboard root gets the deeper/fewer-sim sideboard budget (its
-        # horizon is the whole next game). Key ONLY off is_sideboard_phase —
-        # is_post_board / game_number still reflect the just-ended game at a
-        # g1->g2 root. In-game roots keep run_search's default max_depth (60).
+        # A bo3 sideboard root runs the flat plan search instead of PUCT. Key
+        # ONLY off is_sideboard_phase — is_post_board / game_number still
+        # reflect the just-ended game at a g1->g2 root. In-game roots keep
+        # run_search's default max_depth (60).
         tb = self._time_budget
         tmin_s = None
         is_sb = obs[_IS_SIDEBOARD_IDX] > 0.5
@@ -936,54 +926,41 @@ class SearchController:
             tmin_s = min(tmin_s, tb)
         timed = tb is not None
         if is_sb:
-            kw = dict(
-                sims=(self._sb_sims_cap if timed else self._sb_sims),
-                worlds=self._sb_worlds, c_puct=self._c_puct,
-                max_depth=self._sb_max_depth,
+            # Boundary continue: same identity AND every action since the
+            # previous search is our own (the engine runs one seat's picks
+            # contiguously, so any foreign action means the boundary is over).
+            # On continue the pinned world seeds and the plan-value memo carry
+            # over (plans consistent with the picks so far re-price for free);
+            # else a fresh boundary starts (seeds latched from this search).
+            # NOTE the mirror pool is not used here — plan evaluation is
+            # sequential on the primary env (a plan search has no per-world
+            # tree split to fan out).
+            cont = False
+            hist = getattr(env, "_action_history", None)
+            meta = getattr(env, "_action_meta", None)
+            self_is_a = bool(obs[_SELF_IS_A_IDX] > 0.5)
+            if (self._sbp_key == sbp_key and self._sbp_seeds is not None
+                    and hist is not None and meta is not None
+                    and len(meta) == len(hist)
+                    and all(a_is_a == self_is_a for a_is_a, _c in
+                            meta[self._sbp_hist_len:])):
+                cont = True
+            if not cont:
+                self._drop_boundary()
+            result = run_plan_search(
+                env, self._evaluator,
+                worlds=self._sb_worlds, branches=self._sb_branches,
                 rollout_turns=self._sb_rollout_turns,
-                rng=self._rng, time_budget_s=tb,
-                time_budget_min_s=tmin_s,
-                merge_dupes=self._merge_dupes,
-                cross_world=self._cross_world)
-            persist_here = sbp_key is not None
-            if persist_here:
-                # Boundary continue: same identity AND every action since the
-                # previous search is our own (the engine runs one seat's picks
-                # contiguously, so any foreign action means the boundary is
-                # over). On continue the previous trees are walked down the
-                # history delta and topped up under the pinned seeds; else a
-                # fresh boundary starts (seeds latched from this search).
-                from mcts import walk_reuse_root
-                cont = False
-                hist = getattr(env, "_action_history", None)
-                meta = getattr(env, "_action_meta", None)
-                self_is_a = bool(obs[_SELF_IS_A_IDX] > 0.5)
-                if (self._sbp_roots is not None and self._sbp_key == sbp_key
-                        and self._sbp_seeds is not None
-                        and hist is not None and meta is not None
-                        and len(meta) == len(hist)
-                        and all(a_is_a == self_is_a for a_is_a, _c in
-                                meta[self._sbp_hist_len:])):
-                    delta = hist[self._sbp_hist_len:]
-                    kw.update(
-                        world_seeds=self._sbp_seeds,
-                        reuse_roots=[walk_reuse_root(r, delta, num_choices,
-                                                     self_is_a)
-                                     for r in self._sbp_roots])
-                    cont = True
-                if not cont:
-                    self._drop_boundary()
-                kw.update(rollout_memo=self._sbp_memo,
-                          memo_picks=tuple(self._sbp_picks))
-            result = _search(**kw)
+                rng=self._rng,
+                world_seeds=self._sbp_seeds,
+                plan_memo=self._sbp_memo,
+                memo_picks=tuple(self._sbp_picks),
+                time_budget_s=tb, time_budget_min_s=tmin_s)
             self.stats["sb_searched"] += 1
-            if persist_here:
-                self._sbp_key = sbp_key
-                self._sbp_seeds = result.seeds
-                self._sbp_roots = result.roots
-                self._sbp_hist_len = len(getattr(env, "_action_history", []))
-                self.stats["sb_reused_visits"] += result.reused_visits
-                self.stats["sb_memo_hits"] += result.memo_hits
+            self._sbp_key = sbp_key
+            self._sbp_seeds = result.seeds
+            self._sbp_hist_len = len(getattr(env, "_action_history", []))
+            self.stats["sb_memo_hits"] += result.memo_hits
         else:
             self._drop_boundary()
             result = _search(
@@ -1389,22 +1366,23 @@ def _parse_clock_knobs(params: dict, spec: str):
     return clock, tmin, tmax, sb_tmax, paced
 
 
-def _parse_time_budget(params: dict, spec: str, sims: int, sb_sims: int):
+def _parse_time_budget(params: dict, spec: str, sims: int):
     """Parse the optional ``time=<seconds>`` wall-clock budget knob.
 
-    Returns ``(time_budget, sims_cap, sb_sims_cap)``. When ``time`` is absent
-    the budget is ``None`` and the caps are irrelevant (SearchController uses the
-    fixed sims counts). When ``time`` is set the wall clock terminates each
-    search; a sims/sb_sims value is treated as a hard cap ONLY when the user
-    pinned it explicitly in the spec — otherwise the cap is 0 (uncapped) so the
-    clock alone governs and the search runs as many sims as fit in the budget."""
+    Returns ``(time_budget, sims_cap)``. When ``time`` is absent the budget is
+    ``None`` and the cap is irrelevant (SearchController uses the fixed sims
+    count). When ``time`` is set the wall clock terminates each search; a sims
+    value is treated as a hard cap ONLY when the user pinned it explicitly in
+    the spec — otherwise the cap is 0 (uncapped) so the clock alone governs
+    and the search runs as many sims as fit in the budget. (Sideboard roots
+    need no cap — the plan search's coverage pass is its floor and the clock
+    truncates the extras.)"""
     time_budget = _spec_knob(params, "time", None, float, spec)
     if time_budget is not None and time_budget <= 0.0:
         raise ValueError(f"bad controller spec {spec!r}: knob 'time' needs a "
                          f"positive seconds value, got {time_budget!r}")
     sims_cap = sims if "sims" in params else 0
-    sb_sims_cap = sb_sims if "sb_sims" in params else 0
-    return time_budget, sims_cap, sb_sims_cap
+    return time_budget, sims_cap
 
 
 def _effort_label(sims: int, worlds: int, time_budget: float | None,
@@ -1435,14 +1413,11 @@ class _SearchKnobs:
     v_scale: float
     rng_seed: int
     procs: int
-    sb_sims: int
+    sb_branches: int
     sb_worlds: int
-    sb_max_depth: int
     sb_rollout_turns: int
-    sb_persist: int
     time_budget: float | None
     sims_cap: int
-    sb_sims_cap: int
     clock: float | None
     tmin: float
     tmax: float
@@ -1467,13 +1442,12 @@ def _parse_search_knobs(spec: str) -> _SearchKnobs:
     v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
     rng_seed = _spec_knob(params, "seed", 0, int, spec)
     procs = _spec_knob(params, "procs", 1, int, spec)
-    sb_sims = _spec_knob(params, "sb_sims", DEFAULT_SB_SIMS, int, spec)
+    sb_branches = _spec_knob(params, "sb_branches", DEFAULT_SB_BRANCHES, int,
+                             spec)
     sb_worlds = _spec_knob(params, "sb_worlds", DEFAULT_SB_WORLDS, int, spec)
-    sb_max_depth = _spec_knob(params, "sb_max_depth", DEFAULT_SB_MAX_DEPTH, int, spec)
     sb_rollout_turns = _spec_knob(params, "sb_rollout_turns",
                                   DEFAULT_SB_ROLLOUT_TURNS, int, spec)
-    sb_persist = _spec_knob(params, "sb_persist", DEFAULT_SB_PERSIST, int, spec)
-    time_budget, sims_cap, sb_sims_cap = _parse_time_budget(params, spec, sims, sb_sims)
+    time_budget, sims_cap = _parse_time_budget(params, spec, sims)
     clock, tmin, tmax, sb_tmax, paced = _parse_clock_knobs(params, spec)
     # xw: cross-world batched leaf evaluation (mcts.run_search cross_world) —
     # default ON, matching the C++ actor's production default; visits are
@@ -1486,11 +1460,10 @@ def _parse_search_knobs(spec: str) -> _SearchKnobs:
     device = _spec_knob(params, "device", "", str, spec)
     return _SearchKnobs(sims=sims, worlds=worlds, c_puct=c_puct,
                         temperature=temperature, v_scale=v_scale,
-                        rng_seed=rng_seed, procs=procs, sb_sims=sb_sims,
-                        sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                        rng_seed=rng_seed, procs=procs,
+                        sb_branches=sb_branches, sb_worlds=sb_worlds,
                         sb_rollout_turns=sb_rollout_turns,
-                        sb_persist=sb_persist, time_budget=time_budget,
-                        sims_cap=sims_cap, sb_sims_cap=sb_sims_cap,
+                        time_budget=time_budget, sims_cap=sims_cap,
                         clock=clock, tmin=tmin, tmax=tmax, sb_tmax=sb_tmax,
                         paced=paced, cross_world=bool(cross_world),
                         device=device)
@@ -1508,13 +1481,11 @@ def _build_search_controller(evaluator, label: str,
     return SearchController(evaluator, sims=knobs.sims, worlds=knobs.worlds,
                             c_puct=knobs.c_puct, temperature=knobs.temperature,
                             label=label, rng_seed=knobs.rng_seed,
-                            sb_sims=knobs.sb_sims, sb_worlds=knobs.sb_worlds,
-                            sb_max_depth=knobs.sb_max_depth,
+                            sb_branches=knobs.sb_branches,
+                            sb_worlds=knobs.sb_worlds,
                             sb_rollout_turns=knobs.sb_rollout_turns,
-                            sb_persist=bool(knobs.sb_persist),
                             time_budget=knobs.time_budget,
-                            sims_cap=knobs.sims_cap,
-                            sb_sims_cap=knobs.sb_sims_cap, procs=knobs.procs,
+                            sims_cap=knobs.sims_cap, procs=knobs.procs,
                             clock=knobs.clock, clock_t_min=knobs.tmin,
                             clock_t_max=knobs.tmax,
                             clock_sb_t_max=knobs.sb_tmax, paced=knobs.paced,
@@ -1530,10 +1501,10 @@ def _make_search_controller(spec: str, *,
     temp (root temperature), vscale (PPO value tanh scale), seed (search RNG),
     time (wall-clock seconds/decision — runs as many sims as fit, overriding
     sims as the terminator), procs (world-parallel engine processes for
-    interactive search; default 1), the bo3 sideboard-root budget sb_sims /
-    sb_worlds / sb_max_depth / sb_rollout_turns (leaf-rollout horizon in
-    player turns, 0 = off) / sb_persist (persist trees + rollout memo across
-    a boundary's picks, 1/0), and the match-clock knobs clock (whole-match
+    interactive search; default 1), the bo3 sideboard plan-search budget
+    sb_branches (extra plans beyond the coverage pass) / sb_worlds /
+    sb_rollout_turns (plan-pricing rollout horizon in player turns, 0 =
+    static decklist read), and the match-clock knobs clock (whole-match
     wall-clock bank in seconds, allocated per decision) / tmin / tmax /
     sb_tmax / paced (response-timing masking for human play). xw (default 1)
     toggles cross-world batched leaf evaluation; device is parsed for grammar
@@ -1629,7 +1600,7 @@ _load_az_evaluator = load_az_evaluator
 def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
     """Build an ``az:`` (MCTS+AZNet) or ``azraw:`` (raw policy) controller.
 
-    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_sims=&sb_worlds=&sb_max_depth=&sb_rollout_turns=&sb_persist=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
+    Grammar: ``<base>[?sims=&worlds=&c=&temp=&seed=&time=&procs=&sb_branches=&sb_worlds=&sb_rollout_turns=&clock=&tmin=&tmax=&sb_tmax=&paced=]``
     where <base> is an AZ checkpoint path / deck shorthand (falls back to a PPO
     warm-start). ``time=<seconds>`` sets a wall-clock per-decision budget (runs
     as many sims as fit, overriding sims as the terminator). ``procs=<n>`` fans

@@ -55,9 +55,9 @@ import numpy as np
 try:
     from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
     from cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
-                          DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
-                          DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
-                          DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
+                          DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
+                          DEFAULT_SB_ROLLOUT_TURNS,
+                          DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
                           DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N,
                           DEFAULT_AZ_EXHAUSTIVE_REPEATS,
@@ -66,9 +66,9 @@ try:
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
     from train.cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
-                                DEFAULT_SB_SIMS, DEFAULT_SB_WORLDS,
-                                DEFAULT_SB_MAX_DEPTH, DEFAULT_SB_ROLLOUT_TURNS,
-                                DEFAULT_SB_PERSIST, DEFAULT_AZ_GAMES,
+                                DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
+                                DEFAULT_SB_ROLLOUT_TURNS,
+                                DEFAULT_AZ_GAMES,
                                 DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
                                 DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES,
                                 DEFAULT_AZ_TD_N,
@@ -91,9 +91,9 @@ DEFAULT_ROOT_NOISE_ALPHA = 1.0
 # sample-from-visits for the first N real decisions, then argmax; value lives
 # in cli_spec's AZ-defaults block (one home), local alias kept for callers.
 DEFAULT_TEMP_MOVES = DEFAULT_AZ_TEMP_MOVES
-# Sideboard-rooted search budget (DEFAULT_SB_SIMS/WORLDS/MAX_DEPTH) lives in
-# cli_spec — the single home shared with opponents.SearchController and the CLI
-# flag defaults — and is imported above.
+# Sideboard plan-search budget (DEFAULT_SB_BRANCHES/WORLDS/ROLLOUT_TURNS) lives
+# in cli_spec — the single home shared with opponents.SearchController and the
+# CLI flag defaults — and is imported above.
 # P(opponent deck == focus deck) per self-play game; value in cli_spec too.
 DEFAULT_MIRROR_FRAC = DEFAULT_AZ_MIRROR_FRAC
 # n-step TD horizon baked into each shard's td_q column; value in cli_spec too.
@@ -413,7 +413,7 @@ def one_hot_sample(obs, num_choices, action):
 # in-loop block it was extracted from — see its BIT CONTRACT note).
 _MatchKnobs = namedtuple("_MatchKnobs", (
     "sims", "worlds", "temp_moves", "root_noise_eps", "root_noise_alpha",
-    "sb_sims", "sb_worlds", "sb_max_depth", "sb_rollout_turns", "sb_persist",
+    "sb_branches", "sb_worlds", "sb_rollout_turns",
     "merge_dupes"))
 
 
@@ -429,41 +429,27 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
     sampled play stream byte-identical. ``sb_stats`` is mutated in place with
     the boundary-persistence counters; the returned ``sb_boundary`` replaces the
     caller's (None outside a sideboard root)."""
-    from mcts import run_search, sb_root_key, walk_reuse_root
+    from mcts import run_search, run_plan_search, sb_root_key
 
-    # A bo3 sideboard root is more expensive per sim (restore re-crosses
-    # init_ecs + deck load + shuffle) and has a game-long horizon, so it
-    # gets its own budget. Key ONLY off is_sideboard_phase — is_post_board
-    # / game_number still reflect the just-ended game at a g1->g2 root.
+    # A bo3 sideboard root is searched by the flat plan search, not PUCT
+    # (see the plan-search section of train/mcts.py). Key ONLY off
+    # is_sideboard_phase — is_post_board / game_number still reflect the
+    # just-ended game at a g1->g2 root. No root noise there: the coverage
+    # pass already evaluates every first pick.
     if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
-        kw = dict(sims=knobs.sb_sims, worlds=knobs.sb_worlds,
-                  max_depth=knobs.sb_max_depth,
-                  rollout_turns=knobs.sb_rollout_turns,
-                  root_noise_eps=knobs.root_noise_eps,
-                  root_noise_alpha=knobs.root_noise_alpha, rng=rng,
-                  merge_dupes=knobs.merge_dupes)
-        if knobs.sb_persist:
-            key = sb_root_key(env._obs)
-            b = sb_boundary
-            if b is not None and b["key"] == key:
-                walked = [walk_reuse_root(r, b["played"], num_choices,
-                                          priority_is_a)
-                          for r in b["roots"]]
-                kw.update(world_seeds=b["seeds"], reuse_roots=walked)
-            else:
-                b = {"key": key, "seeds": None, "roots": None,
-                     "played": [], "picks": [], "memo": {}}
-                sb_boundary = b
-            kw.update(rollout_memo=b["memo"],
-                      memo_picks=tuple(b["picks"]))
-            result = run_search(env, evaluator, **kw)
-            b["seeds"] = result.seeds
-            b["roots"] = result.roots
-            b["played"] = []
-            sb_stats["sb_reused_visits"] += result.reused_visits
-            sb_stats["sb_memo_hits"] += result.memo_hits
-        else:
-            result = run_search(env, evaluator, **kw)
+        key = sb_root_key(env._obs)
+        b = sb_boundary
+        if b is None or b["key"] != key:
+            b = {"key": key, "seeds": None, "picks": [], "memo": {}}
+            sb_boundary = b
+        result = run_plan_search(
+            env, evaluator, worlds=knobs.sb_worlds,
+            branches=knobs.sb_branches,
+            rollout_turns=knobs.sb_rollout_turns, rng=rng,
+            world_seeds=b["seeds"], plan_memo=b["memo"],
+            memo_picks=tuple(b["picks"]))
+        b["seeds"] = result.seeds
+        sb_stats["sb_memo_hits"] += result.memo_hits
     else:
         sb_boundary = None
         result = run_search(env, evaluator, sims=knobs.sims,
@@ -489,15 +475,14 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
 
 
 def _sb_latch_played(sb_boundary, obs, action):
-    """Latch a stepped action into the live sideboard boundary (no-op when
-    there is none). The walk plays the latched actions through the stored trees
-    at the next pick; only sideboard picks contribute memo descriptors. Takes
-    the PRE-step obs, matching the actor. A scripted seat's actions latch too —
-    the walk must replay the TRUE action sequence, whoever played it."""
+    """Latch a stepped action's pick descriptor into the live sideboard
+    boundary (no-op when there is none) — the memo key base the next pick's
+    plan search extends. Takes the PRE-step obs, matching the actor. A
+    scripted seat's picks latch too — the memo keys must describe the TRUE
+    configuration so far, whoever played it."""
     if sb_boundary is None:
         return
     from mcts import sb_pick_descriptor
-    sb_boundary["played"].append(int(action))
     d = sb_pick_descriptor(obs, int(action))
     if d is not None:
         sb_boundary["picks"].append(d)
@@ -509,14 +494,12 @@ def _sb_latch_played(sb_boundary, obs, action):
 
 def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 root_noise_eps, root_noise_alpha, seed, on_progress=None,
-                sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
-                sb_max_depth=DEFAULT_SB_MAX_DEPTH,
+                sb_branches=DEFAULT_SB_BRANCHES, sb_worlds=DEFAULT_SB_WORLDS,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                sb_persist=bool(DEFAULT_SB_PERSIST),
                 merge_dupes=True, agent=None, net_is_a=None):
     """Play one match (bo1: a single game; bo3: a best-of-three) and return
     (samples, game_winners, searched, fallback, dropped, sb_stats) — sb_stats
-    reports the boundary persistence's reused visits + rollout-memo hits.
+    reports the boundary's plan-memo hits.
 
     ``samples`` is a list of dicts {obs, pi, mask, mover_is_a, game_idx}; each is
     tagged with the 0-based index of the game it was played in. ``game_winners``
@@ -541,14 +524,12 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     step's reward delta (+ -> A won, - -> B won), matching env.py's bo3 reward
     (±BO3_GAME_WIN_REWARD per game).
 
-    Bo3 sideboard prompts BETWEEN games are now loop-safe MCTS roots (Stage 1-3):
+    Bo3 sideboard prompts BETWEEN games are now loop-safe search roots (Stage 1-3):
     when searchable they enter ``samples`` like any other decision. They are keyed
     off the ``is_sideboard_phase`` state flag (``_IS_SIDEBOARD_IDX``) and searched
-    with the SIDEBOARD budget (``sb_sims``/``sb_worlds``/``sb_max_depth``/
-    ``sb_rollout_turns``) — heavier per step (each restore re-crosses init_ecs),
-    deeper (the horizon is the whole next game), and with leaf rollouts on by
-    default (each sim plays the raw policy to end-of-turn-``sb_rollout_turns``
-    of the sampled next game before evaluating). Because ``game_move`` and ``game_idx`` are advanced at the preceding
+    with :func:`mcts.run_plan_search` — one greedily-completed plan per legal
+    first pick plus ``sb_branches`` alternates, each priced by rollout on every
+    ``sb_worlds`` world; ``pi = softmax(Q/SB_PI_TAU)``. Because ``game_move`` and ``game_idx`` are advanced at the preceding
     game's GAME_RESULT boundary, a sideboard sample naturally carries
     ``game_idx == k+1`` (the UPCOMING game) — so ``_backfill_and_pack`` prices it by
     that game's winner — and re-enters the per-game temperature schedule at
@@ -578,17 +559,17 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     dropped = 0
     searched = 0
     fallback = 0
-    # Sideboard-boundary persistence (mirrors the actor's --sb-persist): one
-    # set of per-world trees + one rollout memo per boundary, seeds pinned at
-    # the boundary's first search, every stepped action latched for the walk.
+    # Sideboard-boundary persistence: one plan memo per boundary, world seeds
+    # pinned at the boundary's first search, every stepped pick latched so
+    # later picks' plan searches extend the true configuration so far.
     sb_boundary = None
-    sb_stats = {"sb_reused_visits": 0, "sb_memo_hits": 0}
+    sb_stats = {"sb_memo_hits": 0}
     knobs = _MatchKnobs(sims=sims, worlds=worlds, temp_moves=temp_moves,
                         root_noise_eps=root_noise_eps,
-                        root_noise_alpha=root_noise_alpha, sb_sims=sb_sims,
-                        sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+                        root_noise_alpha=root_noise_alpha,
+                        sb_branches=sb_branches, sb_worlds=sb_worlds,
                         sb_rollout_turns=sb_rollout_turns,
-                        sb_persist=sb_persist, merge_dupes=merge_dupes)
+                        merge_dupes=merge_dupes)
 
     while not done:
         num_choices = env._num_choices
@@ -789,7 +770,7 @@ def _match_winner(game_winners) -> str:
 
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
-            sb_sims, sb_worlds, sb_max_depth, sb_rollout_turns, sb_persist,
+            sb_branches, sb_worlds, sb_rollout_turns,
             scripted_seats=None, td_n=DEFAULT_TD_N, merge_dupes=True):
     """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
     per-MATCH (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
@@ -823,7 +804,7 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
     buf = []
     shard_n = 0
     stats = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0,
-             "games": 0, "dropped": 0, "sb_reused_visits": 0, "sb_memo_hits": 0,
+             "games": 0, "dropped": 0, "sb_memo_hits": 0,
              "scripted_matches": 0, "net_wins_vs_scripted": 0}
     try:
         for m in range(n_matches):
@@ -845,9 +826,8 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                 env, evaluator, rng, sims=sims, worlds=worlds,
                 temp_moves=temp_moves, root_noise_eps=root_noise_eps,
                 root_noise_alpha=root_noise_alpha, seed=seed,
-                on_progress=beat, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-                sb_persist=sb_persist, merge_dupes=merge_dupes,
+                on_progress=beat, sb_branches=sb_branches, sb_worlds=sb_worlds,
+                sb_rollout_turns=sb_rollout_turns, merge_dupes=merge_dupes,
                 agent=(None if net_is_a is None else agent),
                 net_is_a=(None if net_is_a is None else bool(net_is_a)))
             buf.append(_backfill_and_pack(samples, game_winners, td_n=td_n))
@@ -856,7 +836,6 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             stats["fallback"] += fallback
             stats["dropped"] += dropped
             stats["games"] += len(game_winners)
-            stats["sb_reused_visits"] += sb_st["sb_reused_visits"]
             stats["sb_memo_hits"] += sb_st["sb_memo_hits"]
             mwinner = _match_winner(game_winners)
             stats["wins_a"] += int(mwinner == "A")
@@ -939,10 +918,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              roster: Optional[list] = None,
              focus_decks: Optional[list] = None,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
-             sb_sims: int = DEFAULT_SB_SIMS, sb_worlds: int = DEFAULT_SB_WORLDS,
-             sb_max_depth: int = DEFAULT_SB_MAX_DEPTH,
+             sb_branches: int = DEFAULT_SB_BRANCHES,
+             sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
-             sb_persist: bool = bool(DEFAULT_SB_PERSIST),
              merge_dupes: bool = True,
              scripted_opponent_frac: float = 0.0,
              bo3: bool = False, exhaustive: bool = False,
@@ -969,13 +947,14 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     ``bo3`` runs best-of-three matches with a PER-GAME value target (each sample's
     z is the result of the game it belonged to). BOTH backends support bo3 (the
     C++ actor mirrors the Python match loop, including the searched sideboard
-    roots), so ``bo3`` no longer constrains the backend choice. In bo3 the
-    between-game sideboard prompts are searched MCTS roots with their own (heavier,
-    deeper) budget ``sb_sims``/``sb_worlds``/``sb_max_depth``/``sb_rollout_turns``
-    — see :func:`_play_match` for the Python path and the actor's ``--sb-sims``/
-    ``--sb-worlds``/``--sb-max-depth``/``--sb-rollout-turns`` flags for the C++
-    path. These knobs are consumed only in bo3 (they are inert for bo1 on either
-    backend).
+    roots), so ``bo3`` no longer constrains the backend choice. In bo3 a
+    between-game sideboard root runs :func:`mcts.run_plan_search`: one
+    greedily-completed plan per legal first pick plus ``sb_branches`` alternates,
+    each priced by rollout on every ``sb_worlds`` world;
+    ``pi = softmax(Q/SB_PI_TAU)`` — see :func:`_play_match` for the Python path
+    and the actor's ``--sb-branches``/``--sb-worlds``/``--sb-rollout-turns``
+    flags for the C++ path. These knobs are consumed only in bo3 (they are inert
+    for bo1 on either backend).
 
     ``scripted_opponent_frac`` (0..1, default 0 = pure self-play) is the fraction
     of matches whose OPPONENT seat is piloted by the rule-based scripted:hard
@@ -1122,9 +1101,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     print(f"[az-selfplay] focus={focus_lbl} {unit}={games} bo3={bo3} sims={sims} "
           f"worlds={worlds} workers={workers} mirror_frac={mirror_frac}")
     if bo3:
-        print(f"[az-selfplay] sideboard-root budget: sb_sims={sb_sims} "
-              f"sb_worlds={sb_worlds} sb_max_depth={sb_max_depth} "
-              f"sb_rollout_turns={sb_rollout_turns} sb_persist={int(sb_persist)}")
+        print(f"[az-selfplay] sideboard plan-search budget: "
+              f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
+              f"sb_rollout_turns={sb_rollout_turns}")
     print(f"[az-selfplay] net source: mode={source['mode']} path={source['path']}")
     print(f"[az-selfplay] out_dir={out_dir}")
     print(f"[az-selfplay] matchups: {_schedule_summary(schedule)}")
@@ -1150,22 +1129,22 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     if use_actor:
         # The C++ actor mirrors the Python match loop for bo3 (Stage 6), including
         # the searched sideboard roots — pass bo3 + the sb budget through so the
-        # actor argv carries --bo3 and --sb-sims/--sb-worlds/--sb-max-depth. The
-        # sb_* knobs are inert for bo1. Vs-scripted matches ride the same pass:
+        # actor argv carries --bo3 and --sb-branches/--sb-worlds/--sb-rollout-turns.
+        # The sb_* knobs are inert for bo1. Vs-scripted matches ride the same pass:
         # scripted_seats keys the per-group --scripted-seat/--scripted-oracle.
-        return _generate_actor(deck, actor_bin=_ACTOR_BIN, bo3=bo3, sb_sims=sb_sims,
-                               sb_worlds=sb_worlds, sb_max_depth=sb_max_depth,
+        return _generate_actor(deck, actor_bin=_ACTOR_BIN, bo3=bo3,
+                               sb_branches=sb_branches,
+                               sb_worlds=sb_worlds,
                                sb_rollout_turns=sb_rollout_turns,
-                               sb_persist=sb_persist,
                                scripted_seats=scripted_seats,
                                actor_device=actor_device,
                                eval_server=eval_server,
                                cross_world=cross_world,
                                **common)
-    return _generate_python(deck, bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
-                            sb_max_depth=sb_max_depth,
+    return _generate_python(deck, bo3=bo3, sb_branches=sb_branches,
+                            sb_worlds=sb_worlds,
                             sb_rollout_turns=sb_rollout_turns,
-                            sb_persist=sb_persist, scripted_seats=scripted_seats,
+                            scripted_seats=scripted_seats,
                             **common)
 
 
@@ -1175,10 +1154,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
 
 def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                      root_noise_eps, root_noise_alpha, out_dir, seed,
-                     bo3=False, sb_sims=DEFAULT_SB_SIMS, sb_worlds=DEFAULT_SB_WORLDS,
-                     sb_max_depth=DEFAULT_SB_MAX_DEPTH,
+                     bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
+                     sb_worlds=DEFAULT_SB_WORLDS,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                     sb_persist=bool(DEFAULT_SB_PERSIST),
                      merge_dupes=True,
                      scripted_seats=None, td_n=DEFAULT_TD_N) -> dict:
     import multiprocessing as mp
@@ -1206,8 +1184,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
         p = ctx.Process(target=_worker,
                         args=(slices[wi], source, sims, worlds, temp_moves,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
-                              wi, result_q, bo3, sb_sims, sb_worlds, sb_max_depth,
-                              sb_rollout_turns, sb_persist, seat_slices[wi],
+                              wi, result_q, bo3, sb_branches, sb_worlds,
+                              sb_rollout_turns, seat_slices[wi],
                               td_n, merge_dupes))
         p.start()
         procs.append(p)
@@ -1431,11 +1409,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        out_dir, deck_b=None, noise_eps=DEFAULT_ROOT_NOISE_EPS,
                        noise_alpha=DEFAULT_ROOT_NOISE_ALPHA,
                        temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None,
-                       bo3=False, sb_sims=DEFAULT_SB_SIMS,
+                       bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                        sb_worlds=DEFAULT_SB_WORLDS,
-                       sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                       sb_persist=bool(DEFAULT_SB_PERSIST),
                        merge_dupes=True,
                        td_n=DEFAULT_TD_N, batch=1, cross_world=False,
                        device="cpu", eval_server=None,
@@ -1451,8 +1427,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     so one actor process runs one (deck_a, deck_b) matchup batch.
 
     With ``bo3`` each of ``games`` units is a best-of-three MATCH (the actor spaces
-    match seeds by 3 internally), and the ``sb_*`` knobs set the searched
-    sideboard-root budget (``--sb-sims``/``--sb-worlds``/``--sb-max-depth``/
+    match seeds by 3 internally), and the ``sb_*`` knobs set the sideboard
+    plan-search budget (``--sb-branches``/``--sb-worlds``/
     ``--sb-rollout-turns``); they are inert for bo1.
 
     ``batch`` (default 1) is the actor's ``--batch K`` batched-leaf-evaluation
@@ -1499,11 +1475,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
         cmd += ["--device", device]
     if bo3:
         cmd += ["--bo3",
-                "--sb-sims", str(sb_sims),
+                "--sb-branches", str(sb_branches),
                 "--sb-worlds", str(sb_worlds),
-                "--sb-max-depth", str(sb_max_depth),
-                "--sb-rollout-turns", str(sb_rollout_turns),
-                "--sb-persist", str(int(sb_persist))]
+                "--sb-rollout-turns", str(sb_rollout_turns)]
     if deck_b is not None and deck_b != deck:
         cmd += ["--deck-b", deck_b]
     if rng_seed is not None:
@@ -1537,11 +1511,9 @@ def _spawn_oracle():
 
 def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
-                    actor_bin, bo3=False, sb_sims=DEFAULT_SB_SIMS,
+                    actor_bin, bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                     sb_worlds=DEFAULT_SB_WORLDS,
-                    sb_max_depth=DEFAULT_SB_MAX_DEPTH,
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                    sb_persist=bool(DEFAULT_SB_PERSIST),
                     merge_dupes=True,
                     scripted_seats=None,
                     td_n=DEFAULT_TD_N, actor_device="cpu",
@@ -1661,9 +1633,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             sims=sims, worlds=worlds, model=ts_path, out_dir=out_dir,
             noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
             temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
-            bo3=bo3, sb_sims=sb_sims, sb_worlds=sb_worlds,
-            sb_max_depth=sb_max_depth, sb_rollout_turns=sb_rollout_turns,
-            sb_persist=sb_persist, merge_dupes=merge_dupes, td_n=td_n,
+            bo3=bo3, sb_branches=sb_branches, sb_worlds=sb_worlds,
+            sb_rollout_turns=sb_rollout_turns,
+            merge_dupes=merge_dupes, td_n=td_n,
             device=actor_device, eval_server=server_sock,
             cross_world=cross_world, scripted_seat=st,
             scripted_oracle=(oracle_sock if st is not None else None))
@@ -1994,12 +1966,10 @@ def run(args) -> None:
              temp_moves=args.temp_moves, seed=resolve_seed(args),
              out_dir=args.out, use_actor=_resolve_use_actor(args),
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
-             sb_sims=getattr(args, "sb_sims", DEFAULT_SB_SIMS),
+             sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
-             sb_max_depth=getattr(args, "sb_max_depth", DEFAULT_SB_MAX_DEPTH),
              sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                       DEFAULT_SB_ROLLOUT_TURNS),
-             sb_persist=bool(getattr(args, "sb_persist", DEFAULT_SB_PERSIST)),
              merge_dupes=bool(getattr(args, "merge_dupes", 1)),
              td_n=int(getattr(args, "td_n", DEFAULT_TD_N)),
              actor_device=getattr(args, "actor_device", "cpu"),
@@ -2038,23 +2008,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                          "exploratory move and falls back to the game outcome "
                          "when the window reaches the end of the game"
                          % DEFAULT_TD_N)
-    ap.add_argument("--sb-sims", type=int, default=DEFAULT_SB_SIMS,
-                    help="PUCT sims at a bo3 sideboard root (bo3 only; default %d)"
-                         % DEFAULT_SB_SIMS)
+    ap.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
+                    help="Alternate plans per legal first pick at a bo3 "
+                         "sideboard plan-search root (bo3 only; default %d)"
+                         % DEFAULT_SB_BRANCHES)
     ap.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
                     help="Determinized worlds at a bo3 sideboard root (default %d)"
                          % DEFAULT_SB_WORLDS)
-    ap.add_argument("--sb-max-depth", type=int, default=DEFAULT_SB_MAX_DEPTH,
-                    help="Descent depth cap at a bo3 sideboard root (default %d)"
-                         % DEFAULT_SB_MAX_DEPTH)
     ap.add_argument("--sb-rollout-turns", type=int,
                     default=DEFAULT_SB_ROLLOUT_TURNS,
-                    help="Leaf-rollout horizon at a bo3 sideboard root, in "
+                    help="Rollout horizon at a bo3 sideboard root, in "
                          "player turns (0 = off; default %d)"
                          % DEFAULT_SB_ROLLOUT_TURNS)
-    ap.add_argument("--sb-persist", type=int, default=DEFAULT_SB_PERSIST,
-                    help="Persist trees + rollout memo across a bo3 sideboard "
-                         "boundary (1/0; default %d)" % DEFAULT_SB_PERSIST)
     ap.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
                     help="P(opponent deck == focus deck) per game (default %.2f); "
                          "else a uniform league-roster draw" % DEFAULT_MIRROR_FRAC)

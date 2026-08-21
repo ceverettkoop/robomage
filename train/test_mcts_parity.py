@@ -66,17 +66,17 @@ SIMS = 16
 WORLDS = 2
 C_PUCT = 1.5
 SEED_BASE = 42
-# Explicit sideboard-root budget for the sb-budget parity case (the in-game
-# sims/worlds/max_depth stay SIMS/WORLDS/default). Mirrors az_selfplay's separate
-# sb_sims/sb_worlds/sb_max_depth knobs; Stage 5 threads them into MCTSConfig.
-SB_SIMS = 8
+# Explicit sideboard PLAN-search budget for the bo3 parity cases (the in-game
+# sims/worlds/max_depth stay SIMS/WORLDS/default). Mirrors az_selfplay's
+# sb_branches/sb_worlds/sb_rollout_turns knobs.
+SB_BRANCHES = 2
 SB_WORLDS = 2
-SB_MAX_DEPTH = 200
-# Leaf-rollout horizon for the sb-budget case. 3 (not the shipped default 12)
-# keeps the gate fast while still exercising every rollout mechanism path:
-# the turn anchor, the sideboard-prefix gating, rollout terminals, and the
-# cross-language argmax/eval lockstep. The bo1 and inherited-budget bo3 cases
-# stay rollout-free as the unrolled baseline.
+# Plan-pricing rollout horizon for the sb cases. 3 (not the shipped default 6)
+# keeps the gate fast while still exercising every plan mechanism path: the
+# greedy completion + second-best deviation, the turn anchor, replay across
+# worlds, plan terminals, the boundary memo, and the cross-language
+# argmax/eval lockstep. The bo1 and inherited-budget bo3 cases stay
+# rollout-free as the unrolled baseline.
 SB_ROLLOUT_TURNS = 3
 # is_sideboard_phase flag in the state vector (env's _MATCH_CTX layout:
 # game_number, self_wins, opp_wins, sideboard_phase).
@@ -129,8 +129,7 @@ class ParitySearchController:
 
     wants_search_env = True
 
-    def __init__(self, evaluator, sb_budget=False, sb_persist=False,
-                 merge_dupes=True, share_with=None):
+    def __init__(self, evaluator, merge_dupes=True, share_with=None):
         from mcts import run_search  # noqa: F401 — fail fast if unavailable
         self.ev = evaluator
         self.env = None
@@ -139,7 +138,10 @@ class ParitySearchController:
         # global counter — mirroring the actor, whose root_counter (and hence
         # the per-root world-seed formula) runs across BOTH seats' searches.
         self.counter = [0]
-        self.records = []  # list[(root_index, num_choices, np.int64[num_choices])]
+        # Per searched root: (root_index, num_choices, payload) where payload
+        # is the int64 visit vector for a TREE root, or ("plan", q, pi) float64
+        # arrays for a sideboard PLAN root — mirroring the actor's dump.
+        self.records = []
         self.is_sb = []    # parallel to records: was each searched root a sideboard root
         # Duplicate-edge merging (must match the actor's --merge-dupes).
         # rep_records holds each searched root's menu_merge_reps partition so
@@ -148,16 +150,9 @@ class ParitySearchController:
         # merged-away duplicate.
         self.merge_dupes = merge_dupes
         self.rep_records = []
-        # When set, mirror the actor's sideboard budget (SB_SIMS/SB_WORLDS/
-        # SB_MAX_DEPTH/SB_ROLLOUT_TURNS) at is_sideboard_phase roots; in-game
-        # roots stay on the SIMS/WORLDS/default budget. Off => every root uses
-        # the in-game budget (the inherited-budget bo1/bo3 cases).
-        self.sb_budget = sb_budget
-        # When ALSO set, mirror the actor's --sb-persist boundary machinery:
-        # trees + memo persist across a boundary's picks (seeds pinned to the
-        # boundary's first searched root, re-root + top-up per pick, cumulative
-        # visits). The boundary dict holds key/root_r/roots/played/picks/memo.
-        self.sb_persist = sb_persist
+        # Sideboard boundary (mirrors the actor's plan-search boundary): the
+        # plan-value memo + latched pick descriptors carry across a boundary's
+        # picks; world seeds stay pinned to the boundary's first searched root.
         self._boundary = None
         # Gate reference: share the counter and the record streams with the
         # other seat's controller so both seats append into ONE global
@@ -172,19 +167,19 @@ class ParitySearchController:
         self.env = env
 
     def _latch(self, obs, action):
-        """Record an actually-played action while a boundary is live (mirrors
-        the actor latching in finalize + the fallback path)."""
+        """Record an actually-played pick's descriptor while a boundary is live
+        (mirrors the actor latching in finalize_plan_search + the fallback
+        path — the memo-key base)."""
         from mcts import sb_pick_descriptor
         b = self._boundary
         if b is None:
             return
-        b["played"].append(int(action))
         d = sb_pick_descriptor(obs, int(action))
         if d is not None:
             b["picks"].append(d)
 
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
-        from mcts import run_search, sb_root_key, walk_reuse_root
+        from mcts import run_search, run_plan_search, sb_root_key
         env = self.env
         searchable = (env is not None and getattr(env, "last_search_safe", None)
                       and num_choices > 1)
@@ -196,43 +191,30 @@ class ParitySearchController:
         r = self.counter[0]
         self.counter[0] += 1
         is_sb = bool(obs[_IS_SIDEBOARD_IDX] > 0.5)
-        if self.sb_budget and is_sb:
-            kw = dict(sims=SB_SIMS, worlds=SB_WORLDS, max_depth=SB_MAX_DEPTH,
-                      rollout_turns=SB_ROLLOUT_TURNS, c_puct=C_PUCT,
-                      merge_dupes=self.merge_dupes)
-            if self.sb_persist:
-                key = sb_root_key(obs)
-                b = self._boundary
-                if b is not None and b["key"] == key:
-                    seat = bool(obs[_SELF_IS_A_IDX] > 0.5)
-                    walked = [walk_reuse_root(root, b["played"], num_choices,
-                                              seat)
-                              for root in b["roots"]]
-                    result = run_search(env, self.ev,
-                                        world_seeds=_seeds_for(b["root_r"]),
-                                        reuse_roots=walked,
-                                        rollout_memo=b["memo"],
-                                        memo_picks=tuple(b["picks"]), **kw)
-                else:
-                    b = {"key": key, "root_r": r, "memo": {}, "picks": [],
-                         "played": [], "roots": None}
-                    self._boundary = b
-                    result = run_search(env, self.ev,
-                                        world_seeds=_seeds_for(r),
-                                        rollout_memo=b["memo"],
-                                        memo_picks=(), **kw)
-                b["roots"] = result.roots
-                b["played"] = []
-            else:
-                result = run_search(env, self.ev, world_seeds=_seeds_for(r),
-                                    **kw)
+        if is_sb:
+            # Sideboard plan search, mirroring the actor: boundary identity by
+            # sb_root_key; the memo + latched picks carry across the boundary's
+            # picks; the world seeds pin to the boundary's FIRST searched root.
+            key = sb_root_key(obs)
+            b = self._boundary
+            if b is None or b["key"] != key:
+                b = {"key": key, "root_r": r, "memo": {}, "picks": []}
+                self._boundary = b
+            result = run_plan_search(
+                env, self.ev, worlds=SB_WORLDS, branches=SB_BRANCHES,
+                rollout_turns=SB_ROLLOUT_TURNS,
+                world_seeds=_seeds_for(b["root_r"])[:SB_WORLDS],
+                plan_memo=b["memo"], memo_picks=tuple(b["picks"]))
+            self.records.append((r, int(num_choices),
+                                 ("plan", np.array(result.q, copy=True),
+                                  result.policy_target(1.0))))
         else:
             self._boundary = None
             result = run_search(env, self.ev, sims=SIMS, worlds=WORLDS,
                                 c_puct=C_PUCT, world_seeds=_seeds_for(r),
                                 merge_dupes=self.merge_dupes)
-        self.records.append((r, int(num_choices),
-                             result.visits.astype(np.int64)))
+            self.records.append((r, int(num_choices),
+                                 result.visits.astype(np.int64)))
         self.is_sb.append(is_sb)
         from decode import menu_merge_reps
         self.rep_records.append(menu_merge_reps(obs, num_choices))
@@ -243,7 +225,11 @@ class ParitySearchController:
 
 def _read_visits_dump(path):
     """Read --dump-visits: repeated (int32 root_index, int32 num_choices,
-    int64[num_choices]). Returns list[(root_index, num_choices, np.int64[...])]."""
+    record). A TREE root's record is int64[num_choices] visits; a PLAN
+    (sideboard) root writes num_choices NEGATED as a type tag followed by
+    float64 q[num_choices] + pi[num_choices]. Returns
+    list[(root_index, num_choices, payload)] with payload matching
+    ParitySearchController.records."""
     with open(path, "rb") as f:
         data = f.read()
     out = []
@@ -251,15 +237,24 @@ def _read_visits_dump(path):
     while off < len(data):
         ri, nc = struct.unpack_from("<ii", data, off)
         off += 8
-        vals = np.frombuffer(data, dtype="<i8", count=nc, offset=off)
-        off += 8 * nc
-        out.append((ri, nc, np.array(vals, dtype=np.int64, copy=True)))
+        if nc < 0:
+            nc = -nc
+            q = np.frombuffer(data, dtype="<f8", count=nc, offset=off)
+            off += 8 * nc
+            pi = np.frombuffer(data, dtype="<f8", count=nc, offset=off)
+            off += 8 * nc
+            out.append((ri, nc, ("plan", np.array(q, copy=True),
+                                 np.array(pi, copy=True))))
+        else:
+            vals = np.frombuffer(data, dtype="<i8", count=nc, offset=off)
+            off += 8 * nc
+            out.append((ri, nc, np.array(vals, dtype=np.int64, copy=True)))
     if off != len(data):
         raise RuntimeError(f"visits dump {path}: {len(data) - off} trailing bytes")
     return out
 
 
-def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
+def _run_actor(ts_path, dump_path, batch, bo3=False,
                merge_dupes=True, cross_world=False, uniform=False,
                deck_b=None, scripted_sock=None, eval_server=None, model_b=None):
     cmd = [ACTOR_BIN, "--search", "--sims", str(SIMS), "--worlds", str(WORLDS),
@@ -280,11 +275,12 @@ def _run_actor(ts_path, dump_path, batch, bo3=False, sb=None, sb_persist=False,
     if scripted_sock is not None:
         cmd += ["--scripted-seat", "B", "--scripted-oracle", scripted_sock]
     if bo3:
-        cmd.append("--bo3")
-    if sb is not None:
-        cmd += ["--sb-sims", str(sb[0]), "--sb-worlds", str(sb[1]),
-                "--sb-max-depth", str(sb[2]), "--sb-rollout-turns", str(sb[3]),
-                "--sb-persist", str(int(sb_persist))]
+        # A bo3 always crosses sideboard roots, which the actor plan-searches
+        # unconditionally — pin the test's small plan budget so both sides use
+        # SB_BRANCHES/SB_WORLDS/SB_ROLLOUT_TURNS (there is no inherit mode).
+        cmd += ["--bo3", "--sb-branches", str(SB_BRANCHES),
+                "--sb-worlds", str(SB_WORLDS),
+                "--sb-rollout-turns", str(SB_ROLLOUT_TURNS)]
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
     if proc.returncode != 0:
@@ -329,16 +325,14 @@ def _stop_eval_server(proc):
         proc.kill()
 
 
-def _python_reference(ts_path, bo3, sb_budget=False, sb_persist=False,
-                      merge_dupes=True):
+def _python_reference(ts_path, bo3, merge_dupes=True):
     """Drive the SAME game (bo1) or MATCH (bo3) through the Python reference,
-    searching each loop-safe root. When ``sb_budget`` mirrors the actor's separate
-    sideboard budget at is_sideboard_phase roots; ``sb_persist`` additionally
-    mirrors --sb-persist boundary trees + the rollout memo.
+    searching each loop-safe root — run_search at in-game roots,
+    run_plan_search (the sideboard plan search, SB_BRANCHES/SB_WORLDS/
+    SB_ROLLOUT_TURNS, boundary memo + pinned seeds) at sideboard roots.
     Returns (records, is_sb, rep_records)."""
     ev = TSEvaluator(ts_path)
-    ctrl = ParitySearchController(ev, sb_budget=sb_budget, sb_persist=sb_persist,
-                                  merge_dupes=merge_dupes)
+    ctrl = ParitySearchController(ev, merge_dupes=merge_dupes)
     env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
     # The C++ actor plays to the engine's natural end (no decision cap); disable
     # RoboMageEnv's training-only step truncation so both sides run the SAME full
@@ -388,17 +382,15 @@ def _python_reference_scripted(ts_path, deck_b, uniform=False):
     return ctrl.records
 
 
-def _python_reference_gate(ts_a, ts_b, bo3, sb_budget=False, sb_persist=False):
+def _python_reference_gate(ts_a, ts_b, bo3):
     """Two-model gate reference: seat A searches with ``ts_a``'s net, seat B
     with ``ts_b``'s — one ParitySearchController per seat, each owning its
     evaluator, SHARING one root counter and one record stream (the actor's
     single root_counter runs across both seats). This is exactly the shape of
     an az_eval gate match on the Python backend, so exact visit parity here is
     the gate-correctness proof for ``az_actor --model-b``."""
-    ctrl_a = ParitySearchController(TSEvaluator(ts_a), sb_budget=sb_budget,
-                                    sb_persist=sb_persist)
-    ctrl_b = ParitySearchController(TSEvaluator(ts_b), sb_budget=sb_budget,
-                                    sb_persist=sb_persist, share_with=ctrl_a)
+    ctrl_a = ParitySearchController(TSEvaluator(ts_a))
+    ctrl_b = ParitySearchController(TSEvaluator(ts_b), share_with=ctrl_a)
     env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
     env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
     ctrl_a.bind_env(env)
@@ -411,16 +403,36 @@ def _python_reference_gate(ts_a, ts_b, bo3, sb_budget=False, sb_persist=False):
     return ctrl_a.records
 
 
+def _is_plan_payload(payload):
+    return isinstance(payload, tuple) and len(payload) == 3 and payload[0] == "plan"
+
+
+def _payloads_match(a, p):
+    """Exactness rule per root kind: TREE visit vectors are int64 and must be
+    bit-exact; a PLAN root's Q must be bit-exact (pure shared float64
+    arithmetic), while its pi tolerates last-ulp differences (softmax exp —
+    numpy's SIMD exp and libm's std::exp may differ in the final ulp; argmax
+    pi == argmax Q, so play lockstep is unaffected)."""
+    if _is_plan_payload(a) != _is_plan_payload(p):
+        return False
+    if _is_plan_payload(a):
+        return (np.array_equal(a[1], p[1])
+                and np.allclose(a[2], p[2], rtol=0.0, atol=1e-12))
+    return np.array_equal(a, p)
+
+
 def _compare_visits(tag, actor1, py):
-    """Assert exact visit-count parity between the actor (batch=1) and the Python
-    reference over every searched root. Returns (rc, total_sims)."""
+    """Assert exact search parity between the actor (batch=1) and the Python
+    reference over every searched root (see _payloads_match for the per-kind
+    exactness rule). Returns (rc, total_sims) — plan roots contribute no
+    sims to the total."""
     if len(actor1) != len(py):
         print(f"FAIL [{tag}]: searched-root count differs — actor={len(actor1)} "
               f"python={len(py)}", file=sys.stderr)
         n = min(len(actor1), len(py))
         for i in range(n):
             if (actor1[i][1] != py[i][1]
-                    or not np.array_equal(actor1[i][2], py[i][2])):
+                    or not _payloads_match(actor1[i][2], py[i][2])):
                 print(f"  first divergence at searched root {i} "
                       f"(nc actor={actor1[i][1]} python={py[i][1]})",
                       file=sys.stderr)
@@ -433,24 +445,35 @@ def _compare_visits(tag, actor1, py):
             print(f"FAIL [{tag}]: root {i} header differs: actor=({a_ri},{a_nc}) "
                   f"python=({p_ri},{p_nc})", file=sys.stderr)
             return 1, 0
-        if not np.array_equal(a_v, p_v):
-            print(f"FAIL [{tag}]: visits differ at searched root {i} "
+        if not _payloads_match(a_v, p_v):
+            print(f"FAIL [{tag}]: search results differ at searched root {i} "
                   f"(index={a_ri}, num_choices={a_nc})", file=sys.stderr)
-            print(f"  actor : {a_v.tolist()}", file=sys.stderr)
-            print(f"  python: {p_v.tolist()}", file=sys.stderr)
+            if _is_plan_payload(a_v) and _is_plan_payload(p_v):
+                print(f"  actor q : {a_v[1].tolist()}", file=sys.stderr)
+                print(f"  python q: {p_v[1].tolist()}", file=sys.stderr)
+                print(f"  actor pi : {a_v[2].tolist()}", file=sys.stderr)
+                print(f"  python pi: {p_v[2].tolist()}", file=sys.stderr)
+            else:
+                print(f"  actor : {a_v if _is_plan_payload(a_v) else a_v.tolist()}",
+                      file=sys.stderr)
+                print(f"  python: {p_v if _is_plan_payload(p_v) else p_v.tolist()}",
+                      file=sys.stderr)
             return 1, 0
-        total_sims += int(a_v.sum())
+        if not _is_plan_payload(a_v):
+            total_sims += int(a_v.sum())
     return 0, total_sims
 
 
 def _sb_root_summary(records, is_sb):
-    """Summarize the sideboard-phase searched roots: count + each root's total
-    visit count. Without persistence a root's total visits == its sims budget
-    (SIMS inherited, SB_SIMS under the explicit sb budget); WITH persistence
-    the totals are CUMULATIVE (inherited + topped-up), so within a boundary
-    the numbers read out how much mass each re-rooted pick carried forward."""
-    sums = [int(v.sum()) for (_ri, _nc, v), sb in zip(records, is_sb) if sb]
-    return f"{len(sums)} sideboard root(s), visit totals {sums}"
+    """Summarize the sideboard-phase searched roots: count + each plan root's
+    best-Q first pick and its Q (the quantity the plan search ranks by)."""
+    tops = []
+    for (_ri, _nc, payload), sb in zip(records, is_sb):
+        if not sb or not _is_plan_payload(payload):
+            continue
+        q = payload[1]
+        tops.append(f"{int(np.argmax(q))}@{float(np.max(q)):+.3f}")
+    return f"{len(tops)} sideboard plan root(s), best picks [{', '.join(tops)}]"
 
 
 def _server_legs(td, ts_path, actor1):
@@ -558,12 +581,11 @@ def _gate_legs(td, ts_path, actor1):
     ts_b = torchscript_export_path(ckpt_b)
     save_torchscript(net_b, ts_b)
 
-    sb_kw = dict(bo3=True, sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH,
-                               SB_ROLLOUT_TURNS), sb_persist=True)
+    sb_kw = dict(bo3=True)  # bo3 pins the test's sb plan budget in _run_actor
 
     # (a) identity: same net on both seats == single-model, bit-exact.
     for tag, kw, ref in (("gate-id-bo1", {}, actor1),
-                         ("gate-id-bo3-sb-persist", sb_kw, None)):
+                         ("gate-id-bo3-sb", sb_kw, None)):
         if ref is None:
             d_ref = os.path.join(td, f"visits_{tag}_single.bin")
             ref = _run_actor(ts_path, d_ref, batch=1, **kw)
@@ -601,16 +623,14 @@ def _gate_legs(td, ts_path, actor1):
     print(f"PASS [gate-wiring]: --model-b (distinct net) changed the game "
           f"({len(actor_ab)} vs {len(actor1)} searched roots)")
 
-    for tag, akw, pkw in (
-            ("gate-parity-bo1", {}, {}),
-            ("gate-parity-bo3-sb-persist", sb_kw,
-             dict(sb_budget=True, sb_persist=True))):
+    for tag, akw in (
+            ("gate-parity-bo1", {}),
+            ("gate-parity-bo3-sb", sb_kw)):
         d = os.path.join(td, f"visits_{tag}.bin")
         actor_two = _run_actor(ts_path, d, batch=1, model_b=ts_b, **akw)
         if actor_two is None:
             return 1
-        py_two = _python_reference_gate(ts_path, ts_b,
-                                        bo3=bool(akw.get("bo3")), **pkw)
+        py_two = _python_reference_gate(ts_path, ts_b, bo3=bool(akw.get("bo3")))
         rc, total_sims = _compare_visits(tag, actor_two, py_two)
         if rc:
             print(f"FAIL [{tag}]: two-model actor diverged from the "
@@ -685,12 +705,14 @@ def main():
             return _gate_legs(td, ts_path, actor1)
 
         # bo1 game AND a full bo3 match. The bo3 case exercises the between-games
-        # sideboard-phase decisions, which are now SEARCHED MCTS roots on BOTH
-        # sides (Stage 1-3) at the INHERITED in-game budget — so the two games
-        # stay in lockstep across the match and every searched root's visit vector
-        # (including the sideboard roots) must match bit-for-bit.
+        # sideboard prompts, which are PLAN-searched on both sides
+        # (mcts.run_plan_search / the actor's PLAN_* phases, at the test's
+        # SB_BRANCHES/SB_WORLDS/SB_ROLLOUT_TURNS budget with the boundary memo
+        # live) — so the two games stay in lockstep across the match and every
+        # searched root must match: tree roots by bit-exact visit vectors, plan
+        # roots by bit-exact Q (pi to 1e-12; see _payloads_match).
         actor1 = None            # bo1 batch=1 visits, reused by the K=16 report below
-        sb_default_summary = None  # bo3 inherited-budget sideboard-root summary (gate #4)
+        sb_plan_summary = None   # bo3 sideboard plan-root summary
         merged_roots = 0         # searched roots whose menu had duplicate groups
         for bo3 in (False, True):
             tag = "bo3" if bo3 else "bo1"
@@ -702,11 +724,14 @@ def main():
             rc, total_sims = _compare_visits(tag, visits, py)
             if rc:
                 return rc
-            # Merge invariants: visit mass never lands on a merged-away
-            # duplicate, and (asserted after both games) the run actually
-            # contained duplicate-bearing menus — otherwise the merge parity
-            # would be passing vacuously.
+            # Merge invariants (tree roots only — a plan root has no search
+            # edges to merge; the delta menu is per-distinct-card already):
+            # visit mass never lands on a merged-away duplicate, and (asserted
+            # after both games) the run actually contained duplicate-bearing
+            # menus — otherwise the merge parity would be passing vacuously.
             for i, ((_ri, nc, v), rep) in enumerate(zip(py, py_reps)):
+                if _is_plan_payload(v):
+                    continue
                 nonrep = np.arange(nc) != rep[:nc]
                 merged_roots += int(nonrep.any())
                 if np.any(v[:nc][nonrep] != 0):
@@ -714,12 +739,15 @@ def main():
                           f"duplicates (rep={rep.tolist()}, "
                           f"visits={v.tolist()})", file=sys.stderr)
                     return 1
-            print(f"PASS [{tag}]: MCTS visit-count parity exact over {len(visits)} "
+            print(f"PASS [{tag}]: search parity exact over {len(visits)} "
                   f"searched roots ({total_sims} total root visits) "
                   f"[deck={DECK} seed={SEED} sims={SIMS} worlds={WORLDS} "
-                  f"c={C_PUCT} batch=1]")
+                  f"c={C_PUCT} batch=1"
+                  + (f"; sideboard plan budget branches={SB_BRANCHES} "
+                     f"worlds={SB_WORLDS} rollout_turns={SB_ROLLOUT_TURNS}"
+                     if bo3 else "") + "]")
             if bo3:
-                sb_default_summary = _sb_root_summary(visits, is_sb)
+                sb_plan_summary = _sb_root_summary(visits, is_sb)
             else:
                 actor1 = visits
         if merged_roots == 0:
@@ -744,40 +772,8 @@ def main():
               f"over {len(actor_nm)} searched roots ({total_sims} total root "
               f"visits)")
 
-        # Explicit sb-budget cases (bo3): run the actor with a SEPARATE sideboard
-        # budget (--sb-sims/--sb-worlds/--sb-max-depth/--sb-rollout-turns) while
-        # the in-game budget stays SIMS/WORLDS/default, and mirror the same split
-        # in the Python reference (keyed off the is_sideboard_phase state flag).
-        # Run it BOTH ways on the boundary-persistence toggle: persist ON (trees
-        # + rollout memo survive across each boundary's picks — the production
-        # default) and persist OFF (per-pick fresh searches, the pre-persistence
-        # baseline). Every root must be bit-exact in both modes.
-        sb_budget_summary = {}
-        for persist in (True, False):
-            tag = "bo3-sb-persist" if persist else "bo3-sb"
-            dump_sb = os.path.join(td, f"visits_b1_{tag}.bin")
-            actor_sb = _run_actor(ts_path, dump_sb, batch=1, bo3=True,
-                                  sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH,
-                                      SB_ROLLOUT_TURNS), sb_persist=persist)
-            if actor_sb is None:
-                return 1
-            py_sb, is_sb_sb, _ = _python_reference(ts_path, bo3=True,
-                                                   sb_budget=True,
-                                                   sb_persist=persist)
-            rc, total_sims = _compare_visits(tag, actor_sb, py_sb)
-            if rc:
-                return rc
-            sb_budget_summary[tag] = _sb_root_summary(actor_sb, is_sb_sb)
-            print(f"PASS [{tag}]: MCTS visit-count parity exact over "
-                  f"{len(actor_sb)} searched roots ({total_sims} total root "
-                  f"visits) [in-game sims={SIMS} worlds={WORLDS}; sideboard "
-                  f"sims={SB_SIMS} worlds={SB_WORLDS} max_depth={SB_MAX_DEPTH} "
-                  f"rollout_turns={SB_ROLLOUT_TURNS} persist={int(persist)}]")
-        # Prove the budget split (and, under persist, the carried-forward
-        # cumulative visits) took effect at the sideboard roots.
-        print(f"REPORT: sideboard-root budget split — default bo3 (inherited): "
-              f"{sb_default_summary}; sb-budget bo3: {sb_budget_summary['bo3-sb']}; "
-              f"sb-persist bo3: {sb_budget_summary['bo3-sb-persist']}")
+        # Prove the plan search actually engaged at the bo3 sideboard roots.
+        print(f"REPORT: bo3 sideboard plan search — {sb_plan_summary}")
 
         # 5) K=16 batched-leaf sanity check (report only, bo1). The actor plays
         # argmax(visits) at each root, so once a batch=16 root's argmax differs
@@ -811,13 +807,11 @@ def main():
         # priors however leaves are grouped, so the cross-world scheduler must
         # reproduce the sequential (batch=1) visits BIT-EXACT — any difference
         # is a scheduling bug, isolated from batched-GEMM numerics. bo1 covers
-        # the plain in-game case; the bo3 sb-persist case covers the mode split
-        # (sideboard roots keep the sequential rollout path while in-game roots
-        # run cross) plus boundary persistence under the cross scheduler.
+        # the plain in-game case; the bo3-sb case covers the mode split
+        # (sideboard roots run the plan search, untouched by --cross-world,
+        # while in-game roots run cross) with the boundary memo live.
         for tag, kw in (("xw-uniform-bo1", {}),
-                        ("xw-uniform-bo3-sb-persist",
-                         dict(bo3=True, sb=(SB_SIMS, SB_WORLDS, SB_MAX_DEPTH,
-                                            SB_ROLLOUT_TURNS), sb_persist=True))):
+                        ("xw-uniform-bo3-sb", dict(bo3=True))):
             d_seq = os.path.join(td, f"visits_{tag}_seq.bin")
             d_xw = os.path.join(td, f"visits_{tag}_xw.bin")
             a_seq = _run_actor(None, d_seq, batch=1, uniform=True, **kw)

@@ -62,11 +62,10 @@ _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 # Small budgets so the match finishes fast; sideboard roots get their own budget.
 SIMS = 8
 WORLDS = 2
-SB_SIMS = 8
+SB_BRANCHES = 2
 SB_WORLDS = 2
-SB_MAX_DEPTH = 200
 # Pinned small (not the shipped DEFAULT_SB_ROLLOUT_TURNS) to bound the tier's
-# runtime while still exercising the leaf-rollout path at every searched
+# runtime while still exercising the plan-pricing rollout path at every searched
 # sideboard root (uniform-evaluator rollouts argmax to action 0 and are bounded
 # by the 40/turn step cap).
 SB_ROLLOUT_TURNS = 2
@@ -345,9 +344,8 @@ def main() -> int:
         samples, game_winners, searched, fallback, dropped, sb_stats = _play_match(
             env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
             temp_moves=TEMP_MOVES, root_noise_eps=0.0, root_noise_alpha=1.0,
-            seed=SEED, sb_sims=SB_SIMS, sb_worlds=SB_WORLDS,
-            sb_max_depth=SB_MAX_DEPTH, sb_rollout_turns=SB_ROLLOUT_TURNS,
-            sb_persist=True)
+            seed=SEED, sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
+            sb_rollout_turns=SB_ROLLOUT_TURNS)
     finally:
         env.close()
 

@@ -64,50 +64,40 @@ struct MCTSConfig {
     // boundary's trees).
     bool merge_dupes = true;
 
-    // ── bo3 sideboard-root budget (mirrors az_selfplay.py's sb_sims/sb_worlds/
-    // sb_max_depth) ─────────────────────────────────────────────────────────
-    // A between-game sideboard prompt is a valid MCTS root (Stage 1-3), but each
-    // rollout there re-crosses init_ecs() + deck load + shuffle on RESTORE and its
-    // horizon spans the whole next game, so it gets its own (deeper, fewer-sim)
-    // budget. -1 = INHERIT the in-game sims/worlds/max_depth (so the parity paths
-    // and existing callers are unchanged by default). Selected per-search from the
-    // `sideboard_phase` engine global at root setup, then stored per-search so the
-    // whole descent uses the ROOT's budget.
-    int sb_sims = -1;
+    // ── bo3 sideboard PLAN search (mirrors mcts.py::run_plan_search) ────────
+    // A between-game sideboard prompt is NOT searched with PUCT: the root is a
+    // flat set of PLANS — complete pick sequences through the mover's Done. A
+    // coverage pass builds one argmax-greedy completion per legal root action,
+    // then `sb_branches` deterministic alternate completions of the best-Q
+    // first picks (variant v takes the SECOND-best prior at the v-th
+    // completion decision — no rng, no cross-language rng parity needed).
+    // Every plan is priced on every `sb_worlds` determinized world (replay its
+    // picks, then a leaf rollout to end of player-turn `sb_rollout_turns` of
+    // the next game); plan value = mean over worlds, Q per first pick = its
+    // best plan's value, and the training/pi target is softmax(Q / kSbPiTau).
+    // Plan values are memoized per (world seed, sorted pick multiset) in a
+    // boundary-shared table (takeback-containing multisets excluded), which
+    // both dedups converging coverage plans and re-prices consistent plans for
+    // free at the boundary's later picks — this REPLACES tree-based boundary
+    // persistence. -1 = the compiled default (kDefaultSbBranches /
+    // kDefaultSbWorlds / kDefaultSbRolloutTurns in az_mcts.cpp, mirroring
+    // cli_spec's DEFAULT_SB_*; production callers pass the flags explicitly).
+    int sb_branches = -1;
     int sb_worlds = -1;
-    int sb_max_depth = -1;
+    int sb_rollout_turns = -1;
 
-    // ── leaf rollouts (mirrors mcts.py's rollout_turns) ─────────────────────
+    // ── leaf rollouts (mirrors mcts.py's rollout_turns; in-game roots) ──────
     // When the budget in force has rollout_turns > 0, a freshly expanded leaf is
     // not evaluated in place: the raw policy (argmax of the evaluator's priors,
     // both seats, no rng) plays the determinized world forward to the end of
-    // player-turn `anchor + rollout_turns` — anchor is the ROOT's turn for an
-    // in-game root, 0 (of the sampled NEXT game) at a sideboard root — and THAT
+    // player-turn `anchor + rollout_turns` (anchor = the ROOT's turn) and THAT
     // state's net value (or a true terminal ±1) is backed up. Rolled-out states
     // are never added to the tree; the max_depth cap still bounds tree descent
-    // only (a depth-cap leaf does NOT roll out, matching mcts.py). sb_rollout
-    // -1 = inherit rollout_turns, same idiom as the sb_* budget above. NOTE:
-    // when the root's budget has rollouts on, leaf evaluation always takes the
+    // only (a depth-cap leaf does NOT roll out, matching mcts.py). NOTE: when
+    // the root's budget has rollouts on, leaf evaluation always takes the
     // immediate (batch=1) path even under batch>1 — deferred PendingLeaf
     // evaluation cannot drive a playout.
     int rollout_turns = 0;
-    int sb_rollout_turns = -1;
-
-    // ── sideboard-boundary persistence (mirrors mcts.py's reuse_roots /
-    // rollout_memo consumers) ───────────────────────────────────────────────
-    // A bo3 sideboard BOUNDARY is one seat's contiguous run of pick decisions.
-    // When enabled, the per-world trees survive across the boundary's searched
-    // roots (world seeds pinned to the boundary's FIRST searched root, each
-    // next root re-rooted at the played action's child and topped up to the
-    // sims budget; reported visits are CUMULATIVE, sims_run counts new sims),
-    // and rollouts from leaves still inside the sideboard phase are memoized
-    // by (world seed, leaf seat, sorted multiset of picks since the boundary
-    // root) — an ACCEPTED approximation across permuted pick orders; paths
-    // containing a takeback are never memoized. Both behaviors must match
-    // train/mcts.py's boundary consumers bit-exactly (test_mcts_parity).
-    // Default mirrors cli_spec.DEFAULT_SB_PERSIST (production callers pass
-    // --sb-persist explicitly either way).
-    bool sb_tree_persist = true;
 
     // ── self-play (--selfplay) ──────────────────────────────────────────────
     // When `selfplay` is set, each SEARCHED root stores a training sample and the
@@ -149,13 +139,20 @@ struct SelfPlaySample {
 struct SearchRootResult {
     int root_index;                // 0-based counter over searched roots this game
     int num_choices;               // root menu width
-    std::vector<int64_t> visits;   // summed root visit counts across worlds
-    //                                (CUMULATIVE under boundary persistence)
-    double root_value;             // visit-weighted root Q (root mover perspective)
-    int sims_run;                  // NEW sims this search (excludes inherited)
+    std::vector<int64_t> visits;   // summed root visit counts across worlds; at
+    //                                a PLAN root, llround(pi * 1e6) fixed-point
+    double root_value;             // visit-weighted root Q (root mover perspective);
+    //                                pi-weighted mean Q at a plan root
+    int sims_run;                  // NEW sims this search; evaluator calls at a
+    //                                plan root (its pacing unit)
     long sim_steps;                // total engine sim decisions consumed (cost metric)
-    long reused_visits = 0;        // inherited root visits at search entry
-    int memo_hits = 0;             // rollout-memo hits this search
+    int memo_hits = 0;             // plan-value memo hits this search
+    // Plan (sideboard) roots only — empty for in-game tree roots. The float64
+    // per-action Q / pi the parity gate compares bit-exactly against
+    // mcts.run_plan_search.
+    bool plan_root = false;
+    std::vector<double> q;
+    std::vector<double> pi;
 };
 
 class AZMcts {

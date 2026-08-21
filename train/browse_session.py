@@ -34,7 +34,8 @@ import numpy as np
 
 import analysis as an
 import decode
-from env import (STATE_SIZE, _SELF_IS_A_IDX, _STEP_ONEHOT_START,
+from env import (STATE_SIZE, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX,
+                 _STEP_ONEHOT_START,
                  _STEP_ONEHOT_SIZE)
 
 # ── Stdout capture ────────────────────────────────────────────────────────────
@@ -203,20 +204,32 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
                          "(safe=0 prompt) — no search possible here.")
             return "\n".join(lines)
         evaluator, label = load_analysis_evaluator(eval_spec)
-        # Cross-world batching is arithmetically identical to the sequential
-        # search, so the offline review keeps it on unconditionally; the
-        # evaluator's device follows ROBOMAGE_EVAL_DEVICE via the loader.
-        res = mcts.run_search(env, evaluator, sims=int(sims),
-                              worlds=int(worlds),
-                              rng=np.random.default_rng(0),
-                              cross_world=True)
+        is_sb = bool(expected[_IS_SIDEBOARD_IDX] > 0.5)
+        if is_sb:
+            # A replayed sideboard prompt gets the same flat plan search the
+            # live seats use (visits there are pi-proportional, Q per first
+            # pick = its best plan's cross-world mean value).
+            res = mcts.run_plan_search(env, evaluator, worlds=int(worlds),
+                                       rng=np.random.default_rng(0))
+            effort = (f"{res.sims_run} plan evals x {worlds} worlds "
+                      f"(plan search)")
+        else:
+            # Cross-world batching is arithmetically identical to the
+            # sequential search, so the offline review keeps it on
+            # unconditionally; the evaluator's device follows
+            # ROBOMAGE_EVAL_DEVICE via the loader.
+            res = mcts.run_search(env, evaluator, sims=int(sims),
+                                  worlds=int(worlds),
+                                  rng=np.random.default_rng(0),
+                                  cross_world=True)
+            effort = f"{res.sims_run} sims x {worlds} worlds"
         num = int(game["num_choices"][step])
         played = int(game["actions"][step])
         tot = max(float(res.visits.sum()), 1.0)
         q = res.q if res.q is not None else np.zeros(num)
         mover = "A" if bool(expected[_SELF_IS_A_IDX] > 0.5) else "B"
         lines.append(f"MCTS @ step {step} (mover: Player {mover}) — {label}, "
-                     f"{res.sims_run} sims x {worlds} worlds, root value "
+                     f"{effort}, root value "
                      f"{res.root_value:+.3f} "
                      f"(win% {50.0 * (1.0 + res.root_value):.1f})")
         lines.append("")

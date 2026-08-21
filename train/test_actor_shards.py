@@ -41,14 +41,13 @@ SEED = 1
 GAMES = 2
 SIMS = 16
 WORLDS = 2
-# bo3 mini-run: a small in-game + sideboard budget just to exercise the actor's
-# bo3 selfplay path (searched sideboard roots + next-game sample flush).
+# bo3 mini-run: a small in-game + sideboard plan budget just to exercise the
+# actor's bo3 selfplay path (plan-searched sideboard roots + next-game flush).
 BO3_SIMS = 8
 BO3_WORLDS = 2
-BO3_SB_SIMS = 8
+BO3_SB_BRANCHES = 1
 BO3_SB_WORLDS = 2
-BO3_SB_MAX_DEPTH = 200
-BO3_SB_ROLLOUT_TURNS = 2  # small pin: exercises the actor's leaf-rollout path cheaply
+BO3_SB_ROLLOUT_TURNS = 2  # small pin: exercises the plan-pricing rollout cheaply
 # is_sideboard_phase flag in the obs (env's _MATCH_CTX layout: game_number,
 # self_wins, opp_wins, sideboard_phase).
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
@@ -74,8 +73,8 @@ def _run_selfplay_bo3(ts_path, out_dir):
     """Run the actor in bo3 selfplay with a small in-game + sideboard budget."""
     cmd = [ACTOR_BIN, "--selfplay", "--bo3", "--deck", DECK, "--seed", str(SEED),
            "--games", str(GAMES), "--sims", str(BO3_SIMS), "--worlds",
-           str(BO3_WORLDS), "--sb-sims", str(BO3_SB_SIMS), "--sb-worlds",
-           str(BO3_SB_WORLDS), "--sb-max-depth", str(BO3_SB_MAX_DEPTH),
+           str(BO3_WORLDS), "--sb-branches", str(BO3_SB_BRANCHES),
+           "--sb-worlds", str(BO3_SB_WORLDS),
            "--sb-rollout-turns", str(BO3_SB_ROLLOUT_TURNS),
            "--model", ts_path, "--out-dir", out_dir]
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
@@ -177,7 +176,7 @@ def _verify_bo3(stdout, out_dir):
     print(f"PASS [bo3]: {sb_total} sideboard sample(s) across {len(tallies)} game "
           f"segment(s); each is flushed in its NEXT game's segment and its z equals "
           f"that game's winner from the mover's seat (z in {{-1,+1}}) "
-          f"[deck={DECK} sims={BO3_SIMS} sb_sims={BO3_SB_SIMS}]")
+          f"[deck={DECK} sims={BO3_SIMS} sb_branches={BO3_SB_BRANCHES}]")
     return 0
 
 
