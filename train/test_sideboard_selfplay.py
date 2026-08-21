@@ -218,22 +218,25 @@ def _drive_to_sideboard(env, seed, max_decisions=3000):
     raise AssertionError("no sideboard prompt within the decision cap")
 
 
-def check_takeback_only_when_stranded() -> int:
-    """The reverse of an outstanding half-move (the TAKEBACK) is offered ONLY
-    when the balancing direction has no genuine completion.
+def check_forced_out_when_stranded() -> int:
+    """The engine's sideboard menu is IN-FIRST, and its only forced action is the
+    cut that rescues a STRANDED addition.
 
-    Case 1 (genuine completions exist): after opening a swap with a cut, the
-    follow-up menu must offer sideboard-in choices but NOT the cut card itself —
-    an out-X-then-in-X no-op is unexpressible.
+    Case 1 (genuine completions exist): the balanced menu leads with Done and
+    offers no cut at all; after opening a swap with an addition the follow-up menu
+    is all cuts, and never the card just brought in (the one-shot lock), so an
+    in-X-then-out-X no-op is unexpressible.
 
-    Case 2 (stranded, sideboard-less deck): a cut's follow-up menu is exactly the
-    lone takeback, so the deck can still never be stuck off-size."""
+    Case 2 (stranded): a deck with no sideboard gets a balanced menu of exactly
+    [Done]; a deck whose ONE sideboard card shares its name with the whole maindeck
+    strands at +1, and its menu is then exactly the lone forced cut — after which
+    the next menu is exactly [Done], force-ending the phase."""
     failures = 0
 
     def fail(msg):
         nonlocal failures
         failures += 1
-        print(f"FAIL takeback: {msg}")
+        print(f"FAIL forced-out: {msg}")
 
     # ── Case 1: real sideboard, so genuine completions exist ─────────────────
     deck_a, deck_b, paths = _write_decks()
@@ -243,74 +246,87 @@ def check_takeback_only_when_stranded() -> int:
         obs = _drive_to_sideboard(env, seed=SEED)
         num = env._num_choices
         cats, ids = _menu(obs, num)
-        if CAT_SIDEBOARD_DONE not in cats:
-            fail(f"balanced menu missing Done (cats={cats.tolist()})")
-        outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
-        if not outs:
-            fail("balanced menu offers no cut")
+        if cats[0] != CAT_SIDEBOARD_DONE:
+            fail(f"balanced menu does not lead with Done (cats={cats.tolist()})")
+        if any(cats[i] == CAT_SIDEBOARD_OUT for i in range(num)):
+            fail(f"balanced menu offers a cut (cats={cats.tolist()}); a swap must "
+                 f"open with its addition")
+        ins = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+        if not ins:
+            fail("balanced menu offers no addition")
         else:
-            cut_id = ids[outs[0]]
-            obs, _r, _t, _tr, _i = env.step(outs[0])
+            in_id = ids[ins[0]]
+            obs, _r, _t, _tr, _i = env.step(ins[0])
             num = env._num_choices
             cats, ids = _menu(obs, num)
             if obs[_IS_SIDEBOARD_IDX] <= 0.5 or num < 1:
-                fail("no follow-up menu after opening a cut")
-            ins = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
-            if not ins:
-                fail("follow-up menu offers no genuine completion")
-            if any(ids[i] == cut_id for i in ins):
-                fail(f"avoidable takeback offered (cut card id {cut_id} back "
-                     f"in the IN menu alongside {len(ins)} completions)")
-            elif ins:
+                fail("no follow-up menu after opening a swap")
+            outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
+            if len(outs) != num:
+                fail(f"follow-up menu is not all cuts (cats={cats.tolist()})")
+            if any(ids[i] == in_id for i in outs):
+                fail(f"card {in_id} was sided in and is offered straight back out "
+                     f"alongside {len(outs)} cut(s) — the lock must exclude it")
+            elif outs:
                 # Complete the swap; the balanced menu must re-offer Done.
-                obs, _r, _t, _tr, _i = env.step(ins[0])
+                obs, _r, _t, _tr, _i = env.step(outs[0])
                 cats, _ = _menu(obs, env._num_choices)
                 if CAT_SIDEBOARD_DONE not in cats:
                     fail("Done absent after completing the swap")
                 else:
-                    print(f"  ok  avoidable takeback absent ({len(ins)} genuine "
-                          f"completions offered; swap completed, Done back)")
+                    print(f"  ok  in-first pairing ({len(outs)} cut(s) offered, the "
+                          f"sided-in card locked out; swap completed, Done back)")
     finally:
         env.close()
         for p in paths:
             if os.path.exists(p):
                 os.remove(p)
 
-    # ── Case 2: sideboard-less deck — a cut strands, the takeback appears ────
+    # ── Case 2: stranding — no sideboard at all, then a self-naming one ───────
     d = os.path.join(BIN_DIR, "resources", "decks", "temp")
     os.makedirs(d, exist_ok=True)
-    a = os.path.join(d, "az_sb_nosb_a.dk")
-    b = os.path.join(d, "az_sb_nosb_b.dk")
+    a = os.path.join(d, "az_sb_strand_a.dk")
+    b = os.path.join(d, "az_sb_strand_b.dk")
     with open(a, "w") as f:
         f.write("36 Grizzly Bears\n24 Forest\n")
     with open(b, "w") as f:
-        f.write("60 Swamp\n")
-    env = RoboMageEnv(deck_a="temp/az_sb_nosb_a", deck_b="temp/az_sb_nosb_b",
+        f.write("60 Swamp\nSIDEBOARD:\n1 Swamp\n")
+    env = RoboMageEnv(deck_a="temp/az_sb_strand_a", deck_b="temp/az_sb_strand_b",
                       bo3=True, auto_sideboard=False)
     try:
-        obs = _drive_to_sideboard(env, seed=SEED)
+        obs = _drive_to_sideboard(env, seed=SEED)      # seat A boards first
+        num = env._num_choices
+        cats, _ids = _menu(obs, num)
+        if num != 1 or cats[0] != CAT_SIDEBOARD_DONE:
+            fail(f"a deck with no sideboard should get exactly [Done], got "
+                 f"{num} choice(s) cats={cats.tolist()}")
+        obs, _r, _t, _tr, _i = env.step(0)
         num = env._num_choices
         cats, ids = _menu(obs, num)
-        outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
-        if not outs:
-            fail("sideboard-less balanced menu offers no cut")
+        if obs[_IS_SIDEBOARD_IDX] <= 0.5:
+            fail("seat B never got its own sideboard prompt")
+        ins = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+        if not ins:
+            fail(f"seat B's balanced menu offers no addition (cats={cats.tolist()})")
         else:
-            cut_id = ids[outs[0]]
-            obs, _r, _t, _tr, _i = env.step(outs[0])
+            in_id = ids[ins[0]]
+            obs, _r, _t, _tr, _i = env.step(ins[0])
             num = env._num_choices
             cats, ids = _menu(obs, num)
-            if num != 1 or cats[0] != CAT_SIDEBOARD_IN or ids[0] != cut_id:
-                fail(f"stranded menu should be the lone takeback of card "
-                     f"{cut_id}, got cats={cats.tolist()} ids={ids.tolist()}")
+            if num != 1 or cats[0] != CAT_SIDEBOARD_OUT or ids[0] != in_id:
+                fail(f"stranded menu should be the lone forced cut of card "
+                     f"{in_id}, got cats={cats.tolist()} ids={ids.tolist()}")
             else:
-                # Taking it must restore the balanced menu (Done available).
+                # The forced cut completes the pair, then Done is all that is left.
                 obs, _r, _t, _tr, _i = env.step(0)
-                cats, _ = _menu(obs, env._num_choices)
-                if CAT_SIDEBOARD_DONE not in cats:
-                    fail("Done absent after the forced takeback")
+                num = env._num_choices
+                cats, _ = _menu(obs, num)
+                if num != 1 or cats[0] != CAT_SIDEBOARD_DONE:
+                    fail(f"after the forced cut the menu should be exactly [Done], "
+                         f"got {num} choice(s) cats={cats.tolist()}")
                 else:
-                    print("  ok  stranded cut offers exactly the lone takeback; "
-                          "deck restored to balance")
+                    print("  ok  no-sideboard menu is [Done]; a stranded addition "
+                          "gets the lone forced cut, then Done only")
     finally:
         env.close()
         for p in (a, b):
@@ -330,9 +346,9 @@ def main() -> int:
         print(f"binary not found at {BINARY} — run `make` first", file=sys.stderr)
         return 2
 
-    tb_failures = check_takeback_only_when_stranded()
-    if tb_failures:
-        print(f"\ntakeback-only-when-stranded: FAILED ({tb_failures} failure(s))")
+    fo_failures = check_forced_out_when_stranded()
+    if fo_failures:
+        print(f"\nforced-out-when-stranded: FAILED ({fo_failures} failure(s))")
         return 1
 
     deck_a, deck_b, paths = _write_decks()

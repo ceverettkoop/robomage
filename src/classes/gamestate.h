@@ -220,7 +220,8 @@ typedef struct GameState_tag {
     // the current game in-game, the UPCOMING game during a bo3 sideboard phase.
     bool self_plays_first;
     // Sideboard-phase progress: swaps completed so far this phase, and the maindeck
-    // drift from its size at phase start (-1/0/+1). Both 0 outside the phase.
+    // drift from its size at phase start (0 or +1 — the IN-FIRST menu never cuts
+    // first, so the deck is only ever oversized). Both 0 outside the phase.
     int  sideboard_swaps_made;
     int  sideboard_delta;
 

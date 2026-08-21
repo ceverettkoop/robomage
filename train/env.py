@@ -522,7 +522,9 @@ assert _EXTRAS_MC_ONEHOT_START == _EXTRAS_IS_NIGHT + 1, _EXTRAS_MC_ONEHOT_START
 # phase (whose starting player is already fixed before either sideboard stage runs).
 _EXTRAS_PLAYS_FIRST  = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 # Sideboard-phase progress: swaps completed / SIDEBOARD_SWAP_CAP, and the maindeck
-# drift as (d + 1) / 2 so balanced sits at 0.5. Both inert outside the phase.
+# drift as (d + 1) / 2 so balanced sits at 0.5. The menu is IN-FIRST, so the drift
+# is only ever 0 or +1 and this float only ever reads 0.5 or 1.0 (the 0.0 pole of
+# the encoding is unreachable). Both inert outside the phase.
 _EXTRAS_SB_SWAPS     = _EXTRAS_PLAYS_FIRST + 1
 _EXTRAS_SB_DELTA     = _EXTRAS_SB_SWAPS + 1
 _EXTRAS_END          = _EXTRAS_SB_DELTA + 1

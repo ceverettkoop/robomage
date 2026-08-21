@@ -534,6 +534,39 @@ self-play loop that teaches it to play — both backends (pure-Python and the C+
 > sb steps. Everything below this line describes the RETIRED tree design and
 > is kept as history.
 
+> **Update (2026-08-21): the sideboard menu is IN-FIRST, and the plan pick cap
+> is an exact 31.** `run_sideboard_phase` (`src/game_driver.cpp`) no longer
+> offers the balanced DELTA menu (Done + every sideboard card + every maindeck
+> card). A balanced decision is now **Done (index 0) + the INs**; each IN is
+> answered by an **OUT-only** menu, so a swap always opens with its IN half and
+> the maindeck drift is confined to **{0, +1}** (the −1 pole is unreachable and
+> `fatal_error`s if ever seen; the obs encoding `(d+1)/2` at
+> `machine_io.h`'s sideboard-drift float is unchanged, it simply never emits
+> 0.0). Nothing is lost: a reachable configuration is a pair of name-disjoint
+> multisets (I, O) with |I| = |O|, always playable as in₁,out₁,in₂,out₂,…, so
+> the pick ORDER was pure duplication for a search whose object is the
+> configuration (the plan memo already keyed on the order-insensitive
+> multiset). Coverage at a root now costs ~(distinct sideboard names + 1)
+> plans instead of ~(sideboard + maindeck names + 1).
+>
+> The **takeback is gone**, replaced by a forced-out rule: if the OUT menu
+> would be empty at +1 (every maindeck name already locked in), the engine
+> offers exactly ONE action — cutting `main_deck[0]`, ignoring the lock. It is
+> credited as a completed swap (it may put one name in both lock sets — the
+> only way a pick multiset now holds a card in both directions, which
+> `rollout_memo_eligible` / `memo_eligible` still refuse to memoize) and sets
+> the new persistent `SideboardPhaseState::force_done`, so the next balanced
+> menu is **Done-only** and the phase ends on an explicit Done. That kills the
+> old "cut + takeback tail": a Done-avoiding greedy completion could formerly
+> burn ~2× (distinct card names) picks once the pools exhausted, which is what
+> tripped `_PLAN_PICK_CAP = 68` in a training run. The bound is now exact —
+> 15 swaps × 2 + Done = 31, and the stranded path (14 swaps + the stranding IN
+> + its forced OUT + Done) is 31 as well — so `_PLAN_PICK_CAP` (`train/mcts.py`)
+> and `kPlanPickCap` (`src/actor/az_mcts.cpp`) are **31**, still fail-loud.
+> Side effect: a deck with NO sideboard gets a Done-only balanced menu instead
+> of a 60-entry cut menu. Schedule-affecting for bo3 decision streams, but the
+> replay corpus is bo1-only so it does not drift.
+
 **Historical CLI knobs** (superseded by the 2026-08-20 plan-search update
 above; on `az-selfplay` where bo3 applies, and `az` / `az-league` / `az-eval`,
 all bo3 by default with `--bo1` to opt out):

@@ -725,7 +725,7 @@ def main():
             if rc:
                 return rc
             # Merge invariants (tree roots only — a plan root has no search
-            # edges to merge; the delta menu is per-distinct-card already):
+            # edges to merge; the sideboard menu is per-distinct-card already):
             # visit mass never lands on a merged-away duplicate, and (asserted
             # after both games) the run actually contained duplicate-bearing
             # menus — otherwise the merge parity would be passing vacuously.

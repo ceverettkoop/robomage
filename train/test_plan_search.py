@@ -18,7 +18,8 @@ contract every consumer relies on:
       configurations beyond coverage, never re-priced duplicates counted;
   (6) IncrementalPlanSearch (the analysis window's chunked twin) reaches the
       same plans, Q and visits as the one-shot function under the same seeds;
-  (7) rollout_memo_eligible excludes takeback multisets (pure-function check).
+  (7) rollout_memo_eligible excludes multisets holding one card in BOTH pick
+      directions (pure-function check).
 
 Torch-free (a deterministic non-uniform fake evaluator; priors depend only on
 the menu size, values on the observation). Needs bin/robomage built.
@@ -96,12 +97,13 @@ def main() -> int:
             failures += 1
             print(f"FAIL {msg}")
 
-    # (7) pure-function: takeback multisets are never memoizable.
+    # (7) pure-function: a card picked in BOTH directions (the forced OUT of a
+    # stranded IN can cut the name just sided in) is never memoizable.
     good = ((CAT_SIDEBOARD_IN, 5, 1), (CAT_SIDEBOARD_OUT, 9, 1))
-    taken_back = good + ((CAT_SIDEBOARD_OUT, 5, 1),)
+    both_ways = good + ((CAT_SIDEBOARD_OUT, 5, 1),)
     check(rollout_memo_eligible(good)
-          and not rollout_memo_eligible(taken_back),
-          "(7) rollout_memo_eligible admits swaps, excludes takebacks")
+          and not rollout_memo_eligible(both_ways),
+          "(7) rollout_memo_eligible admits swaps, excludes both-direction picks")
 
     env = SearchRoboMageEnv(deck_a=DECK_A, deck_b=DECK_B, bo3=True)
     ev = FakeEvaluator()
@@ -150,8 +152,8 @@ def main() -> int:
               "(3) repeat under the same world seeds is bit-identical")
 
         # (4a) full-memo re-search: every MEMOIZABLE (plan, world) prices from
-        # cache (a takeback-containing extras plan is never memoized — its
-        # greedy completion genuinely depends on pick order).
+        # cache (an extras plan holding one card in both directions is never
+        # memoized — its greedy completion genuinely depends on pick order).
         plans3: list = []
         res3 = run_plan_search(env, ev, worlds=WORLDS, branches=BRANCHES,
                                rollout_turns=ROLLOUT_TURNS,

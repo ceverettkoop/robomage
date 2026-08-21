@@ -1002,11 +1002,12 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
 
     # 0a. Sideboarding: the scripted agent never sideboards, so it takes Done as
     # soon as the deck is balanced (Done is index 0 whenever it is offered). On the
-    # balanced delta menu that is every decision it can reach, since it never opens
-    # a swap. The fallback matters only if it inherits a phase mid-move (Done is
-    # withheld while the deck is off-size): pick the first offered move, which is
-    # necessarily a balancing one, so the phase still terminates instead of falling
-    # through to the combat/casting logic below with a sideboard menu in hand.
+    # IN-FIRST menu that is every decision it can reach, since it never opens a
+    # swap. The fallback matters only if it inherits a phase mid-swap (Done is
+    # withheld while a cut is outstanding): pick the first offered move, which is
+    # necessarily the balancing cut, so the phase still terminates instead of
+    # falling through to the combat/casting logic below with a sideboard menu in
+    # hand.
     if any(c == _CAT_SB_DONE for c in cats):
         return 0
     if any(c in (_CAT_SB_IN, _CAT_SB_OUT) for c in cats):

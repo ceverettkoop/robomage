@@ -655,10 +655,10 @@ _SB_MAX_DECISIONS = 4000
 # The bo3 matchup the sideboard checks drive: both decks carry a real sideboard,
 # and the seed reaches a second game quickly.
 _SB_DECK_A, _SB_DECK_B, _SB_SEED = "league/ur_delver", "league/gw_maverick", 3
-# Seed for the sideboard-less matchup the takeback check drives (see
-# _write_sideboardless_decks): a beatdown deck vs a lands-only one, so game 1
-# ends quickly and the sideboard phase is reached.
-_SB_NOSB_SEED = 7
+# Seed for the stranding matchup the forced-out check drives (see
+# _write_strand_decks): a beatdown deck vs a lands-only one, so game 1 ends
+# quickly and the sideboard phase is reached.
+_SB_STRAND_SEED = 7
 
 
 def _decklist_diff(before, after):
@@ -673,21 +673,19 @@ def _decklist_diff(before, after):
     return "; ".join(parts) or "(no slot differs — length mismatch)"
 
 
-def _sideboard_action(obs, cats, swaps_left):
-    """Pick a move on the balanced delta menu. Returns (action, completed_a_swap),
-    or None when this is not a sideboard menu.
+def _sideboard_action(cats, swaps_left):
+    """Pick a move on the IN-FIRST sideboard menu. Returns
+    (action, completed_a_swap), or None when this is not a sideboard menu.
 
     The scripted agent always answers Done (scripted_agent.py), so the bo3 sideboard
     checks drive the swaps themselves — otherwise nothing would ever mutate a deck
     and their assertions would pass vacuously.
 
-    A Done action means the deck is balanced: open a swap with a "+1" while budget
-    remains, else finish. With a move outstanding, Done is absent and only the
-    balancing direction is offered — complete the pair with any card other than the
-    outstanding one (identified via the pending-decision context) so a swap actually
-    lands. That card is normally absent anyway: the engine offers its takeback only
-    when stranded (check_sideboard_takeback), which is the one case the fallback
-    below covers, and it deliberately does not count as a swap.
+    A Done action means the deck is balanced: open a swap with the first "+1" while
+    budget remains, else finish. With a cut outstanding, Done is absent and only
+    cuts are offered — take the first, which ALWAYS completes the pair (the engine
+    credits even the forced cut of a stranded addition as a swap), so the swap
+    counting in check_opponent_decklist_frozen stays exact.
     """
     done_idx = next((i for i, c in enumerate(cats) if c == CAT_SIDEBOARD_DONE), None)
     moves = [i for i, c in enumerate(cats)
@@ -696,26 +694,12 @@ def _sideboard_action(obs, cats, swaps_left):
         return None
 
     if done_idx is not None:                       # balanced
-        if swaps_left > 0:
-            # Alternate which direction opens the swap so BOTH poles of the drift
-            # (+1 after an add, -1 after a cut) are exercised — the delta menu's
-            # order-freedom is the point, and a driver that always adds first would
-            # leave the cut-first half of the balancing mask untested.
-            want_in = (swaps_left % 2 == 0)
-            first = CAT_SIDEBOARD_IN if want_in else CAT_SIDEBOARD_OUT
-            for wanted in (first, CAT_SIDEBOARD_OUT if want_in else CAT_SIDEBOARD_IN):
-                picks = [i for i in moves if cats[i] == wanted]
-                if picks:
-                    return picks[0], False
+        adds = [i for i in moves if cats[i] == CAT_SIDEBOARD_IN]
+        if swaps_left > 0 and adds:
+            return adds[0], False                  # opening half — always an add
         return done_idx, False
 
-    # Unbalanced: the outstanding card is the pending-decision source.
-    pending_id = _decode_card_id(obs[_PENDING_DECISION_START])
-    ids = decode.action_card_ids(obs)
-    for i in moves:
-        if _decode_card_id(ids[i]) != pending_id:
-            return i, True                         # completes the pair
-    return moves[0], False                         # only the takeback is legal
+    return moves[0], True                          # the cut completes the pair
 
 
 def _drive_bo3_sideboarding(env, seed=_SB_SEED, swaps_per_seat=_SB_SWAPS_PER_PHASE,
@@ -735,7 +719,7 @@ def _drive_bo3_sideboarding(env, seed=_SB_SEED, swaps_per_seat=_SB_SWAPS_PER_PHA
         cats = decode.action_categories(obs, num)
         yield obs, num, cats, seat
 
-        picked = _sideboard_action(obs, cats, swaps_left[seat])
+        picked = _sideboard_action(cats, swaps_left[seat])
         if picked is None:
             action = scripted_action(obs, num)
         else:
@@ -891,20 +875,22 @@ def _decode_sb_swaps(obs):
 
 
 def check_sideboard_delta_menu():
-    """Deck balance must be an ACTION-MASK invariant on the delta menu.
+    """Deck balance must be an ACTION-MASK invariant on the IN-FIRST menu.
 
-    Each sideboard decision offers every distinct sideboard card as a "+1" and
-    every distinct maindeck card as a "-1", plus Done. The engine must never let
-    the model express an off-size deck:
+    A balanced sideboard decision offers Done plus every distinct sideboard card as
+    a "+1"; each of those is answered by a menu of the distinct maindeck cards as
+    the balancing "-1". A swap therefore always opens with its addition, and the
+    engine must never let the model express an off-size deck:
 
-      (i)   the serialized drift is always one of -1 / 0 / +1;
-      (ii)  balanced (drift 0) => Done is offered AND both directions are, so the
-            model can lead with either a cut or an addition;
-      (iii) drift != 0 => Done is WITHHELD and ONLY the balancing direction is
-            offered (at +1 nothing may be added, at -1 nothing may be cut);
+      (i)   the serialized drift is always 0 or +1 (the -1 pole is unreachable —
+            no decision ever offers a leading cut);
+      (ii)  balanced (drift 0) => Done is offered AT INDEX 0 (the "first choice"
+            convention every auto-driver relies on) and NO cut is offered;
+      (iii) drift +1 => Done is WITHHELD, no further addition is offered, and at
+            least one cut is (so the deck can never be stuck off-size);
       (iv)  a phase never exceeds the swap cap;
-      (v)   both an add-first and a cut-first opening actually occur, so the
-            order-freedom the menu exists for is exercised rather than assumed.
+      (v)   at least one unbalanced decision actually occurred, so the balancing
+            mask is exercised rather than assumed.
 
     Returns (decisions_checked, unbalanced_decisions)."""
     env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
@@ -912,7 +898,6 @@ def check_sideboard_delta_menu():
     checked = 0
     unbalanced = 0
     max_swaps_seen = 0
-    openings = set()
     try:
         for obs, _num, cats, seat in _drive_bo3_sideboarding(env):
             if obs[_IS_SIDEBOARD_IDX] <= 0.5:
@@ -924,38 +909,42 @@ def check_sideboard_delta_menu():
             has_cut = any(c == CAT_SIDEBOARD_OUT for c in cats)
 
             # (i)
-            if drift not in (-1, 0, 1):
+            if drift not in (0, 1):
                 raise InvariantError(
-                    f"seat {seat}: sideboard drift {drift} outside {{-1,0,+1}}")
+                    f"seat {seat}: sideboard drift {drift} outside {{0,+1}} — the "
+                    "menu is in-first, so a swap can only ever oversize the deck")
 
             if drift == 0:
-                # (ii) — a balanced menu is the only place Done may appear, and it
-                # must show both lists at once (the point of the delta menu).
+                # (ii) — a balanced menu is the only place Done may appear, it must
+                # lead the menu, and it must never offer a leading cut.
                 if not has_done:
                     raise InvariantError(
                         f"seat {seat}: balanced deck but Done is not offered — the "
                         "phase could never end")
-                if not (has_add and has_cut):
+                if cats[0] != CAT_SIDEBOARD_DONE:
                     raise InvariantError(
-                        f"seat {seat}: balanced menu offers add={has_add} "
-                        f"cut={has_cut}; both directions must be available so the "
-                        "model can lead with either")
+                        f"seat {seat}: balanced menu has category {cats[0]} at index "
+                        "0, not Done — auto-drivers take index 0 and would make an "
+                        "arbitrary swap instead of finishing")
+                if has_cut:
+                    raise InvariantError(
+                        f"seat {seat}: balanced menu offers a cut; a swap must open "
+                        "with its addition, so only additions and Done are legal")
             else:
-                # (iii) — with a move outstanding the mask must force it balanced.
+                # (iii) — with an addition outstanding the mask must force it balanced.
                 unbalanced += 1
                 if has_done:
                     raise InvariantError(
                         f"seat {seat}: Done offered at drift {drift:+d} — the model "
                         "could submit an off-size deck")
-                if drift > 0 and has_add:
+                if has_add:
                     raise InvariantError(
-                        f"seat {seat}: deck is +1 but an add is still offered; only "
-                        "cuts may balance it")
-                if drift < 0 and has_cut:
+                        f"seat {seat}: deck is +1 but an addition is still offered; "
+                        "only cuts may balance it")
+                if not has_cut:
                     raise InvariantError(
-                        f"seat {seat}: deck is -1 but a cut is still offered; only "
-                        "additions may balance it")
-                openings.add("add-first" if drift > 0 else "cut-first")
+                        f"seat {seat}: deck is +1 and nothing is offered to balance "
+                        "it — the stranded case must still offer its forced cut")
 
             # (iv) swaps completed so far, from the serialized counter.
             max_swaps_seen = max(max_swaps_seen, _decode_sb_swaps(obs))
@@ -965,15 +954,10 @@ def check_sideboard_delta_menu():
     if checked == 0:
         raise InvariantError("no sideboard decision occurred — these assertions "
                              "would pass vacuously")
+    # (v)
     if unbalanced == 0:
         raise InvariantError("no unbalanced decision occurred — the balancing mask "
-                             "(the whole point of the delta menu) was never tested")
-    # (v) both poles of the drift must have been reached, or half the balancing
-    # mask is unverified and the claimed order-freedom is untested.
-    if openings != {"add-first", "cut-first"}:
-        raise InvariantError(
-            f"only {sorted(openings)} opening(s) occurred; the delta menu exists so "
-            "a swap can start from EITHER direction, so both must be exercised")
+                             "(the whole point of the in-first menu) was never tested")
     if max_swaps_seen > SIDEBOARD_SWAP_CAP:
         raise InvariantError(
             f"a phase completed {max_swaps_seen} swaps, over the "
@@ -995,15 +979,19 @@ def _drive_to_sideboard(env, seed, max_decisions=_SB_MAX_DECISIONS):
                          "sideboard assertions would pass vacuously")
 
 
-def _write_sideboardless_decks():
-    """Write two temp decks with NO sideboard, so a cut STRANDS the maindeck: no
-    addition exists to balance it, which is the only case in which the engine
-    offers the takeback (see run_sideboard_phase in src/game_driver.cpp). Basics
-    and bears keep both decks in-vocab and game 1 short. Returns the two deck
-    specs (relative to decks/)."""
+def _write_strand_decks():
+    """Write the two temp decks the forced-out check needs.
+
+    Seat A has NO sideboard at all, so its balanced menu must be exactly [Done].
+    Seat B's ONE sideboard card shares its name with its whole maindeck, so siding
+    it in STRANDS the deck at +1: every maindeck name is then locked in and no
+    genuine cut is left, which is the only case in which the engine offers the
+    forced cut (see run_sideboard_phase in src/game_driver.cpp). Basics and bears
+    keep both decks in-vocab and game 1 short. Returns the two deck specs
+    (relative to decks/)."""
     specs = []
-    for stem, lines in (("obsinv_nosb_a", ["36 Grizzly Bears", "24 Forest"]),
-                        ("obsinv_nosb_b", ["60 Swamp"])):
+    for stem, lines in (("obsinv_strand_a", ["36 Grizzly Bears", "24 Forest"]),
+                        ("obsinv_strand_b", ["60 Swamp", "SIDEBOARD:", "1 Swamp"])):
         path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
@@ -1012,30 +1000,30 @@ def _write_sideboardless_decks():
     return specs
 
 
-def check_sideboard_takeback():
-    """An outstanding half-move must never leave the deck stuck off-size, yet the
-    reversal that guarantees that must not be an always-available no-op.
+def check_sideboard_forced_out():
+    """An outstanding addition must never leave the deck stuck off-size, and the
+    action that guarantees that must not be an always-available no-op.
 
-    The delta menu offers the reverse of the outstanding move (the TAKEBACK) ONLY
-    when the balancing direction is empty — the stranded case. Where a genuine
-    completion exists the takeback is withheld, because no information arrives
-    between the two halves of a swap: "don't swap" was expressible as Done one
-    decision earlier, so cut-X-then-put-X-back is an outcome-invariant no-op that
-    outcome-driven training could never learn to avoid. This drives both sides of
-    that rule and asserts:
+    The IN-FIRST menu answers each addition with the distinct maindeck cards, minus
+    the ones already sided in. When that leaves NOTHING (the stranded case) the
+    engine offers exactly ONE forced cut of an arbitrary maindeck card, ignoring the
+    lock: it is credited as a completed swap and force-ends the phase, so the deck
+    can neither stay off-size nor spin. Asserts:
 
-      (i)   with a real sideboard, a cut's follow-up menu offers genuine
-            completions and does NOT offer the cut card back, while the
-            pending-decision source still names it;
-      (ii)  with no sideboard at all the cut strands the deck, and the menu is
-            then exactly the lone takeback of that card (so the deck can never be
-            stuck off-size);
-      (iii) taking it back restores drift 0 WITHOUT crediting a swap;
-      (iv)  the taken-back card is then locked out of being cut again, which is
-            what bounds the phase — otherwise cut/undo could repeat forever.
+      (i)   with a real sideboard, the balanced menu leads with Done and offers no
+            cut; the follow-up to an addition is all cuts, withholds Done, and
+            excludes the card just brought in (the one-shot lock), while the
+            pending-decision source names it; completing it credits one swap and
+            returns a Done-led balanced menu;
+      (ii)  a deck with NO sideboard gets a balanced menu of exactly [Done];
+      (iii) when siding in the only sideboard card strands the deck, the menu is
+            exactly the lone forced cut (the lock notwithstanding);
+      (iv)  taking it restores drift 0, CREDITS a swap, leaves the deck exactly as
+            the phase started, and the next menu is exactly [Done] — which ends the
+            phase.
 
-    Returns the vocab id of the card that was taken back."""
-    # ── (i) genuine completions exist => no takeback ──────────────────────────
+    Returns the vocab id of the card the forced cut removed."""
+    # ── (i) a genuine completion exists => in-first pairing, with the lock ────
     env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
                       auto_sideboard=False)
     try:
@@ -1043,88 +1031,135 @@ def check_sideboard_takeback():
         num = env._num_choices
         cats = decode.action_categories(obs, num)
         ids = decode.action_card_ids(obs)
-        cuts = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
-        if not cuts:
-            raise InvariantError("balanced sideboard menu offered no cut to open "
-                                 "a swap with")
-        cut_id = _decode_card_id(ids[cuts[0]])
-        obs, _r, _term, _trunc, _i = env.step(cuts[0])
+        swaps_before = _decode_sb_swaps(obs)
+        if cats[0] != CAT_SIDEBOARD_DONE:
+            raise InvariantError(
+                f"balanced sideboard menu leads with category {cats[0]}, not Done")
+        if any(cats[i] == CAT_SIDEBOARD_OUT for i in range(num)):
+            raise InvariantError(
+                "balanced sideboard menu offers a cut — a swap must open with its "
+                "addition")
+        adds = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+        if not adds:
+            raise InvariantError("balanced sideboard menu offered no addition to "
+                                 "open a swap with")
+        add_id = _decode_card_id(ids[adds[0]])
+        obs, _r, _term, _trunc, _i = env.step(adds[0])
         num = env._num_choices
         cats = decode.action_categories(obs, num)
         ids = decode.action_card_ids(obs)
-        if _decode_sb_delta(obs) != -1:
+        if _decode_sb_delta(obs) != 1:
             raise InvariantError(
-                f"cutting a card left drift {_decode_sb_delta(obs):+d}, not -1")
+                f"siding a card in left drift {_decode_sb_delta(obs):+d}, not +1")
         pending = _decode_card_id(obs[_PENDING_DECISION_START])
-        if pending != cut_id:
+        if pending != add_id:
             raise InvariantError(
                 f"pending-decision source is card {pending}, not the outstanding "
-                f"card {cut_id} — the observation does not say what to balance")
-        moves = [i for i in range(num)
-                 if cats[i] in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT)]
-        if not moves:
+                f"card {add_id} — the observation does not say what to balance")
+        if any(cats[i] != CAT_SIDEBOARD_OUT for i in range(num)):
             raise InvariantError(
-                f"card {cut_id} was cut but nothing is offered to balance it, "
-                "even though the deck carries a full sideboard")
-        offered_back = [i for i in moves if _decode_card_id(ids[i]) == cut_id]
-        if offered_back:
+                f"the follow-up menu is not all cuts (cats={cats.tolist()}); Done "
+                "and further additions must both be withheld at +1")
+        if any(_decode_card_id(ids[i]) == add_id for i in range(num)):
             raise InvariantError(
-                f"card {cut_id} was cut and is offered straight back alongside "
-                f"{len(moves) - len(offered_back)} genuine completion(s) — an "
-                "outcome-invariant no-op the model can never learn to avoid")
-    finally:
-        env.close()
-
-    # ── (ii)-(iv) stranded => the lone takeback, free and self-limiting ───────
-    deck_a, deck_b = _write_sideboardless_decks()
-    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
-                      auto_sideboard=False)
-    try:
-        obs = _drive_to_sideboard(env, _SB_NOSB_SEED)
-        num = env._num_choices
-        cats = decode.action_categories(obs, num)
-        ids = decode.action_card_ids(obs)
-        swaps_before = _decode_sb_swaps(obs)
-        cuts = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
-        if not cuts:
-            raise InvariantError("sideboard-less balanced menu offered no cut")
-        cut_id = _decode_card_id(ids[cuts[0]])
-        obs, _r, _term, _trunc, _i = env.step(cuts[0])
-        num = env._num_choices
-        cats = decode.action_categories(obs, num)
-        ids = decode.action_card_ids(obs)
-        # (ii)
-        if num != 1 or cats[0] != CAT_SIDEBOARD_IN or \
-                _decode_card_id(ids[0]) != cut_id:
-            raise InvariantError(
-                f"a stranded cut of card {cut_id} must offer exactly its takeback; "
-                f"got {num} choice(s) cats={cats.tolist()} "
-                f"ids={[_decode_card_id(ids[i]) for i in range(num)]}")
+                f"card {add_id} was sided in and is offered straight back out — the "
+                "one-shot lock must exclude it, or in/out could oscillate forever")
         obs, _r, _term, _trunc, _i = env.step(0)
         num = env._num_choices
         cats = decode.action_categories(obs, num)
+        if _decode_sb_delta(obs) != 0 or cats[0] != CAT_SIDEBOARD_DONE:
+            raise InvariantError(
+                f"completing the swap left drift {_decode_sb_delta(obs):+d} with "
+                f"category {cats[0]} at index 0; it must return a Done-led balanced "
+                "menu")
+        if _decode_sb_swaps(obs) != swaps_before + 1:
+            raise InvariantError(
+                f"completing the pair credited {_decode_sb_swaps(obs) - swaps_before} "
+                "swap(s), expected exactly 1")
+    finally:
+        env.close()
+
+    # ── (ii)-(iv) stranded => the lone forced cut, then a Done-only menu ──────
+    deck_a, deck_b = _write_strand_decks()
+    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                      auto_sideboard=False)
+    try:
+        # (ii) seat A boards first and has no sideboard at all.
+        obs = _drive_to_sideboard(env, _SB_STRAND_SEED)
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        if not obs[_SELF_IS_A_IDX] > 0.5:
+            raise InvariantError("the first sideboard prompt is not seat A's — the "
+                                 "stranded fixture assumes A boards first")
+        if num != 1 or cats[0] != CAT_SIDEBOARD_DONE:
+            raise InvariantError(
+                f"a deck with no sideboard must get a balanced menu of exactly "
+                f"[Done]; got {num} choice(s) cats={cats.tolist()}")
+        obs, _r, _term, _trunc, _i = env.step(0)
+
+        # Seat B: one sideboard card, sharing its name with the whole maindeck.
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
         ids = decode.action_card_ids(obs)
-        # (iii)
+        if obs[_IS_SIDEBOARD_IDX] <= 0.5 or obs[_SELF_IS_A_IDX] > 0.5:
+            raise InvariantError("seat B never got its own sideboard prompt")
+        deck_at_start = (
+            tuple(_decode_decklist_block(obs, _SELF_DECK_MAIN_START,
+                                         DECKLIST_MAIN_SLOTS)),
+            tuple(_decode_decklist_block(obs, _SELF_DECK_SIDE_START,
+                                         DECKLIST_SIDE_SLOTS)),
+        )
+        swaps_before = _decode_sb_swaps(obs)
+        adds = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+        if not adds:
+            raise InvariantError("seat B's balanced menu offered no addition")
+        add_id = _decode_card_id(ids[adds[0]])
+        obs, _r, _term, _trunc, _i = env.step(adds[0])
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        ids = decode.action_card_ids(obs)
+        # (iii) every maindeck name is now locked in, so only the forced cut is left
+        # — and it is the locked name itself, which the lock deliberately ignores.
+        if num != 1 or cats[0] != CAT_SIDEBOARD_OUT or \
+                _decode_card_id(ids[0]) != add_id:
+            raise InvariantError(
+                f"a stranded addition of card {add_id} must offer exactly one forced "
+                f"cut of it; got {num} choice(s) cats={cats.tolist()} "
+                f"ids={[_decode_card_id(ids[i]) for i in range(num)]}")
+        forced_id = _decode_card_id(ids[0])
+        obs, _r, _term, _trunc, _i = env.step(0)
+        num = env._num_choices
+        cats = decode.action_categories(obs, num)
+        # (iv)
         drift = _decode_sb_delta(obs)
         if drift != 0:
             raise InvariantError(
-                f"drift is {drift:+d} after the takeback; reversing the "
-                "outstanding move must restore balance")
+                f"drift is {drift:+d} after the forced cut; it must restore balance")
         swaps = _decode_sb_swaps(obs)
-        if swaps != swaps_before:
+        if swaps != swaps_before + 1:
             raise InvariantError(
-                f"takeback credited a swap ({swaps_before} -> {swaps}); "
-                "reversing a move must not consume the swap budget")
-        # (iv)
-        still_cuttable = [i for i in range(num)
-                          if cats[i] == CAT_SIDEBOARD_OUT
-                          and _decode_card_id(ids[i]) == cut_id]
-        if still_cuttable:
+                f"the forced cut credited {swaps - swaps_before} swap(s) "
+                f"({swaps_before} -> {swaps}); it completes the pair, so it must "
+                "count as exactly one")
+        deck_now = (
+            tuple(_decode_decklist_block(obs, _SELF_DECK_MAIN_START,
+                                         DECKLIST_MAIN_SLOTS)),
+            tuple(_decode_decklist_block(obs, _SELF_DECK_SIDE_START,
+                                         DECKLIST_SIDE_SLOTS)),
+        )
+        if deck_now != deck_at_start:
             raise InvariantError(
-                f"card {cut_id} is cuttable again after being taken back — "
-                "cut/undo could then repeat forever and the phase would not be "
-                "guaranteed to terminate")
-        return cut_id
+                "cutting the very card just sided in must leave the 75 exactly as "
+                f"the phase started: {_decklist_diff(deck_at_start[0], deck_now[0])}")
+        if num != 1 or cats[0] != CAT_SIDEBOARD_DONE:
+            raise InvariantError(
+                f"after a forced cut the next menu must be exactly [Done] (the phase "
+                f"force-ends); got {num} choice(s) cats={cats.tolist()}")
+        obs, _r, _term, _trunc, _i = env.step(0)
+        if obs[_IS_SIDEBOARD_IDX] > 0.5:
+            raise InvariantError("taking the forced Done did not end the sideboard "
+                                 "phase")
+        return forced_id
     finally:
         env.close()
 
@@ -1295,12 +1330,12 @@ def main():
           f"unbalanced (mask-forced)", flush=True)
 
     try:
-        tb_id = check_sideboard_takeback()
+        fo_id = check_sideboard_forced_out()
     except InvariantError as e:
-        print(f"FAIL  sideboard takeback\n  {e}", flush=True)
+        print(f"FAIL  sideboard forced out\n  {e}", flush=True)
         return 1
-    print(f"ok    sideboard takeback: withheld where a completion existed; card "
-          f"{tb_id} stranded, reversed free, and locked out", flush=True)
+    print(f"ok    sideboard forced out: in-first pairing with the lock held; card "
+          f"{fo_id} stranded, force-cut as a swap, then Done-only", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

@@ -479,7 +479,8 @@ def run_search(
     ``memo_picks`` are the descriptors (:func:`sb_pick_descriptor`) of the
     REAL picks played since the boundary root. Rollouts from leaves still in
     the sideboard phase are stored/reused keyed on the pinned world seed and
-    the order-insensitive pick multiset (takeback-containing paths excluded).
+    the order-insensitive pick multiset (paths holding one card in BOTH
+    directions excluded — see :func:`rollout_memo_eligible`).
     A hit backs up the stored result with 0 engine steps; ``memo_hits``
     reports the count. ``None`` disables (byte-identical default).
 
@@ -1007,10 +1008,12 @@ def rollout_memo_key(world_seed: int, leaf_seat_is_a: bool, picks) -> tuple:
 
 
 def rollout_memo_eligible(picks) -> bool:
-    """False when any (card, seat) appears in BOTH pick directions — a
-    takeback changes the one-shot direction locks without changing the deck,
-    so the greedy completion (and therefore the rollout) genuinely diverges
-    between orderings; such keys are never memoized."""
+    """False when any (card, seat) appears in BOTH pick directions. Under the
+    IN-FIRST engine menu that arises only via the forced OUT of a stranded IN,
+    which may cut a name that was just sided in: the deck ends unchanged but the
+    one-shot direction locks do not, so the greedy completion (and therefore the
+    rollout) genuinely diverges between orderings. Such keys are never
+    memoized."""
     ins: set = set()
     outs: set = set()
     for cat, cid, seat in picks:
@@ -1336,7 +1339,10 @@ def _flush_pending(evaluator: Evaluator, pending: list, world_pending,
 # keyed values on the order-insensitive pick multiset), and at the old budgets a
 # single world's tree could not even visit every first pick once. Instead the
 # root is searched as a flat set of PLANS — complete pick sequences through the
-# mover's Done:
+# mover's Done. The engine menu is IN-FIRST (Done + the sideboard's INs while
+# balanced; the maindeck's OUTs while a swap is open), so a plan is Done, or an
+# alternating in/out/in/out/.../Done chain, and coverage costs one plan per
+# distinct sideboard name plus one:
 #
 #   * COVERAGE: one plan per legal root action (the action, then an
 #     argmax-greedy raw-policy completion of the mover's remaining picks).
@@ -1377,10 +1383,16 @@ def _flush_pending(evaluator: Evaluator, pending: list, world_pending,
 # src/actor/az_mcts.cpp.
 SB_PI_TAU = 0.25
 
-# Safety bound on one plan's own pick sequence (the engine caps swaps at
-# SIDEBOARD_SWAP_CAP per seat; 4x that plus slack can only be exceeded if the
-# sideboard menu loop is broken — fail loudly rather than spin).
-_PLAN_PICK_CAP = 68
+# Safety bound on one plan's own pick sequence, and an EXACT one: the engine's
+# menu is IN-FIRST, so every decision is either the IN half of a swap, the OUT
+# half that closes it, or Done. SIDEBOARD_SWAP_CAP (15) completed swaps therefore
+# cost at most 15 * 2 + 1 (Done) = 31 decisions, and the stranded path is no
+# longer: 14 swaps + the stranding IN + its forced OUT + the Done-only menu is 31
+# too. The check below is a strict `>` applied BEFORE the pick is appended, so a
+# legal line (whose longest prefix at check time is 30) never trips it and 31 is
+# not off by one. Anything past it is a broken menu loop, not a long deck.
+# Mirrored as kPlanPickCap in src/actor/az_mcts.cpp.
+_PLAN_PICK_CAP = 31
 
 
 @dataclass

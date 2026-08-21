@@ -50,19 +50,22 @@ INTERACTIVE_BINARY = os.path.join(INTERACTIVE_BUILD_DIR, "robomage")
 # src/actor/az_mcts.cpp) and docs/alphazero_status.md.
 #
 # Why plans, not a tree (2026-08): at the old sb_sims=128 / 4 worlds a single
-# world's tree got 32 sims for a ~33-child delta menu — it could not even visit
-# every first pick once, and shard analysis showed sideboarding as the
+# world's tree got 32 sims for the then ~33-child delta menu — it could not even
+# visit every first pick once, and shard analysis showed sideboarding as the
 # least-converged decision domain (KL(search||net) 0.39-0.47 vs ~0.11 in-game).
 # The rollout memo already keyed values on the order-insensitive pick multiset,
 # i.e. on configurations; the plan search makes that the primary object and
-# spends nothing on pick orderings. NOTE: the az / az-league / az-selfplay CLI
-# args MUST reference these constants, not literals — argparse always supplies
-# the CLI default, so a drifted literal silently overrides this "one home"
-# (that bug shipped runs at sb_sims=32 while the constant said 128).
+# spends nothing on pick orderings. (The engine menu has since gone IN-FIRST, so
+# the root menu is Done + the distinct SIDEBOARD names only; the ~33-child figure
+# and the measurements below are history from the old delta menu.) NOTE: the az /
+# az-league / az-selfplay CLI args MUST reference these constants, not literals —
+# argparse always supplies the CLI default, so a drifted literal silently
+# overrides this "one home" (that bug shipped runs at sb_sims=32 while the
+# constant said 128).
 #
-# Extra plans per root beyond the coverage pass. Coverage alone costs
-# ~menu_size (~33) plans; each extra adds worlds more rollouts. 0 = coverage
-# only.
+# Extra plans per root beyond the coverage pass. Coverage alone costs ~menu_size
+# plans — under the IN-FIRST menu that is (distinct sideboard names + 1), ~16 on
+# a 15-card sideboard; each extra adds worlds more rollouts. 0 = coverage only.
 DEFAULT_SB_BRANCHES = 8
 # Determinized worlds at a sideboard root (each world seed IS a sampled
 # next-game deal). Every plan is priced on every world (value = mean), so more

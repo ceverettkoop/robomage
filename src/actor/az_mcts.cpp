@@ -56,8 +56,15 @@ static constexpr double kSbPiTau = 0.25;
 static constexpr int kDefaultSbBranches = 8;
 static constexpr int kDefaultSbWorlds = 4;
 static constexpr int kDefaultSbRolloutTurns = 6;
-// Safety bound on one plan's own pick sequence (mcts._PLAN_PICK_CAP).
-static constexpr int kPlanPickCap = 68;
+// Safety bound on one plan's own pick sequence (mcts._PLAN_PICK_CAP), and an
+// EXACT one: the engine's menu is IN-FIRST, so every decision is either the IN
+// half of a swap, the OUT half that closes it, or Done. SIDEBOARD_SWAP_CAP (15)
+// completed swaps therefore cost at most 15 * 2 + 1 (Done) = 31 decisions, and
+// the stranded path is no longer: 14 swaps + the stranding IN + its forced OUT +
+// the Done-only menu is 31 too. The check is a strict `>` applied BEFORE the pick
+// is appended, so a legal line (whose longest prefix at check time is 30) never
+// trips it and 31 is not off by one. Anything past it is a broken menu loop.
+static constexpr int kPlanPickCap = 31;
 // Bound on extras attempts per root: branches * this (mcts.run_plan_search's
 // max_attempts multiplier).
 static constexpr int kExtrasAttemptFactor = 4;
@@ -612,9 +619,10 @@ struct AZMcts::Impl {
                        static_cast<int16_t>(o[SELF_IS_A_IDX] > 0.5f ? 1 : 0)});
     }
 
-    // mcts.py::rollout_memo_eligible — a takeback ((card, seat) in BOTH
-    // directions) diverges the one-shot direction locks, so such paths are
-    // never memoized.
+    // mcts.py::rollout_memo_eligible — a (card, seat) appearing in BOTH pick
+    // directions (only reachable via the forced OUT of a stranded IN, which may
+    // cut a name that was just sided in) diverges the one-shot direction locks
+    // without changing the deck, so such paths are never memoized.
     static bool memo_eligible(const std::vector<std::array<int16_t, 3>>& picks) {
         for (size_t i = 0; i < picks.size(); i++)
             for (size_t j = 0; j < picks.size(); j++)

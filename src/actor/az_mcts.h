@@ -76,7 +76,8 @@ struct MCTSConfig {
     // the next game); plan value = mean over worlds, Q per first pick = its
     // best plan's value, and the training/pi target is softmax(Q / kSbPiTau).
     // Plan values are memoized per (world seed, sorted pick multiset) in a
-    // boundary-shared table (takeback-containing multisets excluded), which
+    // boundary-shared table (multisets holding one card in both directions
+    // excluded — see memo_eligible in az_mcts.cpp), which
     // both dedups converging coverage plans and re-prices consistent plans for
     // free at the boundary's later picks — this REPLACES tree-based boundary
     // persistence. -1 = the compiled default (kDefaultSbBranches /
