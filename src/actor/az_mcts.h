@@ -107,6 +107,12 @@ struct MCTSConfig {
     // mixed into the base priors per world in begin_world. Defaults keep the
     // parity paths (--search without --selfplay) noise-free (eps=0) and argmax.
     bool selfplay = false;
+    // Record searched-root samples WITHOUT the self-play exploration knobs
+    // (no root noise, always argmax): eval/gate matches (--search --record)
+    // then write trainer-schema shards of what the two nets actually played,
+    // so a gate's decisions are browsable/probeable like self-play data. Implied
+    // by `selfplay`; on its own it never changes a played action.
+    bool record = false;
     double noise_eps = 0.0;         // 0 disables root noise (parity default)
     double noise_alpha = 1.0;       // Dirichlet concentration
     int temp_moves = 20;            // # of leading real moves that sample-from-visits

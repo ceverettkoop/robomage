@@ -88,6 +88,11 @@ struct ActorConfig {
     int merge_dupes = 1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
+    // --record: write trainer-schema shards of the searched decisions WITHOUT
+    // the self-play exploration knobs (no root noise, argmax picks) — the
+    // eval/gate recorder. Allowed with a seat-B evaluator (a two-model gate's
+    // samples are priced per game like self-play: z from the mover's seat).
+    bool record = false;
     double noise_eps = 0.25;
     double noise_alpha = 1.0;
     int temp_moves = 20;
@@ -126,6 +131,9 @@ void print_usage(const char* prog) {
                  "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
                  "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n"
+                 "       [--record [--out-dir <dir>] [--td-n N]] (eval-mode shard "
+                 "recording: searched roots stored, no noise, argmax picks; "
+                 "allowed with --model-b)\n"
                  "       [--scripted-seat A|B --scripted-oracle <socket>] "
                  "(vs-scripted: that seat plays via train/scripted_oracle.py)\n",
                  prog);
@@ -209,6 +217,9 @@ int main(int argc, char const* argv[]) {
         } else if (a == "--selfplay") {
             cfg.selfplay = true;
             cfg.search = true;  // self-play implies MCTS search
+        } else if (a == "--record") {
+            cfg.record = true;
+            cfg.search = true;  // only searched roots carry a sample
         } else if (a == "--noise-eps") {
             cfg.noise_eps = std::stod(need_arg(argc, argv, i, "--noise-eps"));
         } else if (a == "--noise-alpha") {
@@ -369,6 +380,7 @@ int main(int argc, char const* argv[]) {
         mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = compiled default
         mc.merge_dupes = cfg.merge_dupes != 0;
         mc.selfplay = cfg.selfplay;
+        mc.record = cfg.record;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
         mc.noise_alpha = cfg.noise_alpha;
         mc.temp_moves = cfg.temp_moves;
@@ -393,8 +405,9 @@ int main(int argc, char const* argv[]) {
     // Self-play shard accumulator: default out-dir ../train/az_data/<deck> (the
     // binary runs from bin/, so this resolves to the repo's train/az_data/<deck>,
     // matching az_selfplay.py's layout and the trainer's shard_*.npz glob).
+    const bool recording = cfg.selfplay || cfg.record;
     std::unique_ptr<ShardAccumulator> shards;
-    if (cfg.selfplay) {
+    if (recording) {
         std::string dir = cfg.out_dir.empty()
                               ? ("../train/az_data/" + cfg.deck)
                               : cfg.out_dir;
@@ -402,10 +415,12 @@ int main(int argc, char const* argv[]) {
             dir, FLUSH_SAMPLES, static_cast<size_t>(ACTOR_OBS_SIZE),
             static_cast<size_t>(MAX_ACTIONS));
         std::fprintf(stderr,
-                     "az_actor: self-play out_dir=%s sims=%d worlds=%d "
+                     "az_actor: %s out_dir=%s sims=%d worlds=%d "
                      "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d td_n=%d\n",
-                     dir.c_str(), cfg.sims, cfg.worlds, cfg.noise_eps,
-                     cfg.noise_alpha, cfg.temp_moves, cfg.td_n);
+                     cfg.selfplay ? "self-play" : "record (eval-mode)",
+                     dir.c_str(), cfg.sims, cfg.worlds,
+                     cfg.selfplay ? cfg.noise_eps : 0.0, cfg.noise_alpha,
+                     cfg.selfplay ? cfg.temp_moves : 0, cfg.td_n);
     }
 
     InputLogger::instance().set_input_provider(
@@ -441,7 +456,7 @@ int main(int argc, char const* argv[]) {
     // the SELFPLAY lines across all games of the run. Returns the sample count.
     int game_log_idx = 0;
     auto backfill_selfplay = [&](int winner) {
-        if (!cfg.selfplay) return;
+        if (!recording) return;
         bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
                     winner != static_cast<int>(Zone::PLAYER_B);
         bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
@@ -495,7 +510,7 @@ int main(int argc, char const* argv[]) {
         for (int m = 0; m < cfg.games; m++) {
             unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
             std::srand(match_seed);
-            if (cfg.selfplay) mcts->begin_match();
+            if (recording) mcts->begin_match();
             // agent.new_game() at match start + after every completed game —
             // the exact call sites az_selfplay._play_match uses (reset + each
             // GAME_RESULT boundary, before the next game's sideboard prompts).
@@ -516,7 +531,7 @@ int main(int argc, char const* argv[]) {
             std::srand(seed_g);
             match_reset_revealed();
             EcsSystems sys = init_ecs();
-            if (cfg.selfplay) mcts->begin_match();  // reset per-game move counter + samples
+            if (recording) mcts->begin_match();  // reset per-game move counter + samples
             if (oracle) oracle->new_game();
             int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
             bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
@@ -531,7 +546,7 @@ int main(int argc, char const* argv[]) {
         }
     }
 
-    if (cfg.selfplay) {
+    if (recording) {
         shards->flush_final();
         std::printf("SELFPLAY: total_samples=%zu shards=%zu\n",
                     shards->total_samples(), shards->shards_written());

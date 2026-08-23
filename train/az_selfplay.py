@@ -61,7 +61,7 @@ try:
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
                           DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N,
                           DEFAULT_AZ_EXHAUSTIVE_REPEATS,
-                          DEFAULT_AZ_SCRIPTED_CELLS)
+                          DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
@@ -73,7 +73,7 @@ except ImportError:  # pragma: no cover
                                 DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES,
                                 DEFAULT_AZ_TD_N,
                                 DEFAULT_AZ_EXHAUSTIVE_REPEATS,
-                                DEFAULT_AZ_SCRIPTED_CELLS)
+                                DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT)
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
@@ -412,7 +412,7 @@ def one_hot_sample(obs, num_choices, action):
 # :func:`_search_and_sample` (which must stay a pure re-spelling of the
 # in-loop block it was extracted from — see its BIT CONTRACT note).
 _MatchKnobs = namedtuple("_MatchKnobs", (
-    "sims", "worlds", "temp_moves", "root_noise_eps", "root_noise_alpha",
+    "sims", "worlds", "c_puct", "temp_moves", "root_noise_eps", "root_noise_alpha",
     "sb_branches", "sb_worlds", "sb_rollout_turns",
     "merge_dupes"))
 
@@ -453,7 +453,7 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
     else:
         sb_boundary = None
         result = run_search(env, evaluator, sims=knobs.sims,
-                            worlds=knobs.worlds,
+                            worlds=knobs.worlds, c_puct=knobs.c_puct,
                             root_noise_eps=knobs.root_noise_eps,
                             root_noise_alpha=knobs.root_noise_alpha, rng=rng,
                             merge_dupes=knobs.merge_dupes)
@@ -494,6 +494,7 @@ def _sb_latch_played(sb_boundary, obs, action):
 
 def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 root_noise_eps, root_noise_alpha, seed, on_progress=None,
+                c_puct=DEFAULT_AZ_C_PUCT,
                 sb_branches=DEFAULT_SB_BRANCHES, sb_worlds=DEFAULT_SB_WORLDS,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                 merge_dupes=True, agent=None, net_is_a=None):
@@ -564,7 +565,8 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     # later picks' plan searches extend the true configuration so far.
     sb_boundary = None
     sb_stats = {"sb_memo_hits": 0}
-    knobs = _MatchKnobs(sims=sims, worlds=worlds, temp_moves=temp_moves,
+    knobs = _MatchKnobs(sims=sims, worlds=worlds, c_puct=c_puct,
+                        temp_moves=temp_moves,
                         root_noise_eps=root_noise_eps,
                         root_noise_alpha=root_noise_alpha,
                         sb_branches=sb_branches, sb_worlds=sb_worlds,
@@ -771,7 +773,8 @@ def _match_winner(game_winners) -> str:
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
             sb_branches, sb_worlds, sb_rollout_turns,
-            scripted_seats=None, td_n=DEFAULT_TD_N, merge_dupes=True):
+            scripted_seats=None, td_n=DEFAULT_TD_N, merge_dupes=True,
+            c_puct=DEFAULT_AZ_C_PUCT):
     """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
     per-MATCH (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
     swapped per match before its reset respawns the engine. With ``bo3`` each
@@ -823,7 +826,7 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             if net_is_a is not None:
                 agent.set_deck_names(*matchups[m])
             samples, game_winners, searched, fallback, dropped, sb_st = _play_match(
-                env, evaluator, rng, sims=sims, worlds=worlds,
+                env, evaluator, rng, sims=sims, worlds=worlds, c_puct=c_puct,
                 temp_moves=temp_moves, root_noise_eps=root_noise_eps,
                 root_noise_alpha=root_noise_alpha, seed=seed,
                 on_progress=beat, sb_branches=sb_branches, sb_worlds=sb_worlds,
@@ -909,6 +912,7 @@ def _discard_pre_bo3_shards(out_dir: str) -> None:
 
 def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
+             c_puct: float = DEFAULT_AZ_C_PUCT,
              workers: Optional[int] = None, checkpoint: Optional[str] = None,
              temp_moves: int = DEFAULT_TEMP_MOVES,
              root_noise_eps: float = DEFAULT_ROOT_NOISE_EPS,
@@ -1122,7 +1126,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
           f"az_actor {'present' if have_actor else 'absent'}")
 
     common = dict(source=source, schedule=schedule, sims=sims, worlds=worlds,
-                  workers=workers, temp_moves=temp_moves,
+                  c_puct=c_puct, workers=workers, temp_moves=temp_moves,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed, td_n=td_n,
                   merge_dupes=merge_dupes)
@@ -1154,6 +1158,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
 
 def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                      root_noise_eps, root_noise_alpha, out_dir, seed,
+                     c_puct=DEFAULT_AZ_C_PUCT,
                      bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                      sb_worlds=DEFAULT_SB_WORLDS,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
@@ -1186,7 +1191,7 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q, bo3, sb_branches, sb_worlds,
                               sb_rollout_turns, seat_slices[wi],
-                              td_n, merge_dupes))
+                              td_n, merge_dupes, c_puct))
         p.start()
         procs.append(p)
 
@@ -1406,6 +1411,7 @@ def _parse_actor_output(stdout: str, bo3: bool = False):
 
 
 def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
+                       c_puct=1.5,
                        out_dir, deck_b=None, noise_eps=DEFAULT_ROOT_NOISE_EPS,
                        noise_alpha=DEFAULT_ROOT_NOISE_ALPHA,
                        temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None,
@@ -1464,6 +1470,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--temp-moves", str(temp_moves),
            "--td-n", str(td_n),
            "--merge-dupes", str(int(merge_dupes))]
+    if c_puct != 1.5:   # appended only when non-default: default argv unchanged
+        cmd += ["--c", str(c_puct)]
     if batch != 1:
         cmd += ["--batch", str(batch)]
     if cross_world:
@@ -1511,6 +1519,7 @@ def _spawn_oracle():
 
 def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
+                    c_puct=DEFAULT_AZ_C_PUCT,
                     actor_bin, bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                     sb_worlds=DEFAULT_SB_WORLDS,
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
@@ -1630,7 +1639,8 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         base = seed + gi * 100000
         cmd = actor_selfplay_cmd(
             actor_bin, deck=da, deck_b=db, seed=base, games=n,
-            sims=sims, worlds=worlds, model=ts_path, out_dir=out_dir,
+            sims=sims, worlds=worlds, c_puct=c_puct, model=ts_path,
+            out_dir=out_dir,
             noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
             temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
             bo3=bo3, sb_branches=sb_branches, sb_worlds=sb_worlds,
@@ -1962,6 +1972,7 @@ def run(args) -> None:
                         opponent=getattr(args, "expert_opponent", None))
         return
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
+             c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=resolve_seed(args),
              out_dir=args.out, use_actor=_resolve_use_actor(args),
@@ -1986,6 +1997,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="PUCT sims per decision, TOTAL across --worlds")
     ap.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
+    ap.add_argument("--c-puct", type=float, default=DEFAULT_AZ_C_PUCT,
+                    help="PUCT exploration constant (default %g): higher weights "
+                         "search Q over the net prior" % DEFAULT_AZ_C_PUCT)
     ap.add_argument("--workers", type=int, default=None,
                     help="Worker processes (default max(1, cpu-2))")
     ap.add_argument("--checkpoint", default=None,

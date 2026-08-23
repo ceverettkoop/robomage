@@ -952,7 +952,7 @@ struct AZMcts::Impl {
             if (pi[static_cast<size_t>(i)] > pi[static_cast<size_t>(best)]) best = i;
 
         int chosen = best;
-        if (cfg.selfplay) {
+        if (cfg.selfplay || cfg.record) {
             SelfPlaySample s;
             s.obs = root_obs;
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
@@ -965,7 +965,7 @@ struct AZMcts::Impl {
                     static_cast<float>(pi[static_cast<size_t>(i)]);
                 s.mask[static_cast<size_t>(i)] = 1;
             }
-            if (move_counter < cfg.temp_moves) {
+            if (cfg.selfplay && move_counter < cfg.temp_moves) {
                 std::discrete_distribution<int> dist(pi.begin(), pi.end());
                 chosen = dist(rng);
             }
@@ -1322,9 +1322,10 @@ struct AZMcts::Impl {
 
         // Self-play: store the searched sample and pick the real action per the
         // tau schedule (sample-from-visits for the first temp_moves real moves,
-        // argmax after). Parity/eval mode stores nothing and always plays argmax.
+        // argmax after). Parity/eval mode stores nothing and always plays argmax;
+        // --record stores the sample but keeps the eval-mode argmax pick.
         int chosen = best;
-        if (cfg.selfplay) {
+        if (cfg.selfplay || cfg.record) {
             SelfPlaySample s;
             s.obs = root_obs;                                    // clean root obs
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
@@ -1343,7 +1344,7 @@ struct AZMcts::Impl {
                 s.mask[static_cast<size_t>(i)] = 1;
             }
 
-            if (move_counter < cfg.temp_moves && total > 0) {
+            if (cfg.selfplay && move_counter < cfg.temp_moves && total > 0) {
                 std::discrete_distribution<int> dist(
                     visit_totals.begin(), visit_totals.begin() + root_n);
                 chosen = dist(rng);

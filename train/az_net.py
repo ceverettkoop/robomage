@@ -94,18 +94,36 @@ SPARSE_PARAM_PREFIXES = ("value_head.", "trunk.card_emb", "trunk.action_cat_emb"
 _DEAD_COLUMN_TOL = 1e-6
 
 
-def decay_exempt_param_groups(net, weight_decay: float) -> list:
+def decay_exempt_param_groups(net, weight_decay: float,
+                              value_decay: float = None) -> list:
     """Adam param groups that apply ``weight_decay`` to everything EXCEPT the
     per-sample-selected parameters (see SPARSE_PARAM_PREFIXES).
 
     Without this, training one matchup erases every other matchup's critic
     column and every card embedding absent from the window — the parameter is
-    still decayed when its task gradient is exactly zero."""
-    decayed, exempt = [], []
+    still decayed when its task gradient is exactly zero.
+
+    ``value_decay`` (optional) puts the DENSE value-tower parameters
+    (``value_body.*``) in their own group with a heavier decay: the value tower
+    sees so few distinct games per training cycle that it memorizes their
+    outcomes at the shared 1e-4 (train-window MSE 0.14 vs held-out 0.67 on the
+    2026-08 runs). ``value_head.`` stays in the EXEMPT group — its per-bucket
+    columns are per-sample-selected, so plain Adam decay would erase the
+    untouched buckets."""
+    decayed, exempt, value_dense = [], [], []
     for name, p in net.named_parameters():
-        (exempt if name.startswith(SPARSE_PARAM_PREFIXES) else decayed).append(p)
-    return [{"params": decayed, "weight_decay": float(weight_decay)},
-            {"params": exempt, "weight_decay": 0.0}]
+        if name.startswith(SPARSE_PARAM_PREFIXES):
+            exempt.append(p)
+        elif value_decay is not None and name.startswith("value_body."):
+            value_dense.append(p)
+        else:
+            decayed.append(p)
+    groups = [{"params": decayed, "weight_decay": float(weight_decay)},
+              {"params": exempt, "weight_decay": 0.0}]
+    if value_dense:
+        groups.append({"params": value_dense,
+                       "weight_decay": float(value_decay)})
+    return groups
 
 
 def obs_space_from_const() -> gym.Space:

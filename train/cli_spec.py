@@ -91,8 +91,8 @@ DEFAULT_SB_ROLLOUT_TURNS = 6
 
 # Self-play generation.
 DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and standalone az-selfplay)
-DEFAULT_AZ_SIMS = 256        # in-game PUCT sims, TOTAL across worlds
-DEFAULT_AZ_WORLDS = 4        # determinized worlds per search
+DEFAULT_AZ_SIMS = 1028       # in-game PUCT sims, TOTAL across worlds (the 8_20 run budget)
+DEFAULT_AZ_WORLDS = 8        # determinized worlds per search (the 8_20 run budget)
 DEFAULT_AZ_MIRROR_FRAC = 0.25  # P(opponent deck == focus deck) per self-play game
 DEFAULT_AZ_TEMP_MOVES = 20   # sample from visit counts for the first N decisions per game
 # n-step TD value target (GENERATION side — baked into each shard's td_q column).
@@ -111,6 +111,15 @@ DEFAULT_AZ_TD_N = 10
 # thousand minibatches) and let the value head memorize per-game outcomes.
 DEFAULT_AZ_LR = 5e-5
 DEFAULT_AZ_WEIGHT_DECAY = 1e-4
+DEFAULT_AZ_VALUE_DECAY = 1e-3    # extra weight decay on value_body/value_head only:
+                                 # the 64 matchup columns see so few distinct games per
+                                 # cycle that they memorize outcomes without it
+DEFAULT_AZ_EPOCH_FRAC = 0.5      # auto-batches (batches=0) = this fraction of one epoch
+                                 # over the window; a full epoch overfits the small
+                                 # per-cycle game set (v_z 0.45->0.15 within one epoch)
+DEFAULT_AZ_C_PUCT = 2.5          # PUCT exploration constant for the az paths: higher
+                                 # weights search Q over the net prior (1.5 was
+                                 # prior-dominated; analysis/parity tools keep 1.5)
 DEFAULT_AZ_BATCH_SIZE = 256
 DEFAULT_AZ_TRAIN_BATCHES = 1000  # standalone az-train
 # Per az / az-league slot: 0 = AUTO, one epoch over the loaded window
@@ -126,7 +135,9 @@ DEFAULT_AZ_CV = 1.0              # value-loss weight
 # Mixing weight of the shard's n-step TD target against the per-game outcome:
 # v_target = (1 - q_mix) * z + q_mix * td_q. 0 = the classic pure-outcome AZ
 # target, 1 = pure bootstrap. TRAINING side (the shards always carry td_q).
-DEFAULT_AZ_Q_MIX = 0.5
+DEFAULT_AZ_Q_MIX = 0.75      # weight of the n-step TD target over raw z: td_q
+                             # bootstraps off search root values, which are far less
+                             # game-specific than z — the main anti-memorization lever
 
 # Promotion gate (az-eval / the gate step of az / az-league).
 DEFAULT_AZ_EVAL_GAMES = 56
@@ -134,8 +145,10 @@ DEFAULT_AZ_EVAL_GAMES = 56
 # worlds, so gating at 16 sims/world measured a different — and much weaker —
 # player than the one that actually gets deployed, and its promote/keep verdict
 # said little about the served net.
-DEFAULT_AZ_EVAL_SIMS = 128
-DEFAULT_AZ_EVAL_WORLDS = 4
+DEFAULT_AZ_EVAL_SIMS = DEFAULT_AZ_SIMS    # gate at the TRAINING budget: a shallow
+                                          # (prior-dominated) gate measures a different
+                                          # regime than the one the net trains in
+DEFAULT_AZ_EVAL_WORLDS = DEFAULT_AZ_WORLDS
 DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55
 DEFAULT_AZ_GATE_FLOOR = 0.2
 DEFAULT_AZ_GATE_FLOOR_MIN = 4
@@ -557,6 +570,35 @@ def _eval_server():
             "iff it starts (no usable GPU -> local-CPU actors, with a notice)")
 
 
+def _c_puct():
+    """--c-puct (az-selfplay / az / az-league / az-eval): the PUCT constant."""
+    return Arg("--c-puct", "float", default=DEFAULT_AZ_C_PUCT,
+               help=f"PUCT exploration constant (default {DEFAULT_AZ_C_PUCT}): "
+                    "higher weights search Q over the net prior, so the value "
+                    "signal — not the prior — steers the visit distribution. "
+                    "Passed to both the Python search and the C++ actor")
+
+
+def _epoch_frac():
+    """--epoch-frac (az-train / az / az-league): auto-batches epoch fraction."""
+    return Arg("--epoch-frac", "float", default=DEFAULT_AZ_EPOCH_FRAC,
+               help="With batches=0 (AUTO), train this fraction of one epoch "
+                    f"over the loaded window (default {DEFAULT_AZ_EPOCH_FRAC}). "
+                    "A full epoch (1.0) memorizes the window's small set of "
+                    "distinct games; explicit --batches ignores this")
+
+
+def _no_gate_shards():
+    """--no-gate-shards (az / az-league): kill switch for gate-shard pooling."""
+    return Arg("--no-gate-shards", "flag",
+               help="Do NOT record the gate's candidate-vs-incumbent matches "
+                    "into the training pool. Default ON (actor-backend gates "
+                    "record both nets' searched decisions as shards and pool "
+                    "them into az_data/gen): cross-net games are the signal "
+                    "pure self-play cannot provide — each net's mistakes get "
+                    "punished by a DIFFERENT policy")
+
+
 def _no_cross_world():
     """--no-cross-world (az-selfplay / az / az-league): Stage 0 kill switch."""
     return Arg("--no-cross-world", "flag",
@@ -970,6 +1012,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
+        _c_puct(),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
         Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
@@ -1012,6 +1055,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
         Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
             help="Number of most-recent shards to train on"),
+        _epoch_frac(),
+        Arg("--holdout-dir", "str", default=None,
+            help="Directory of shard_*.npz the net never trains on; after "
+                 "training, value MSE is reported on it next to the window "
+                 "MSE and a large train/held-out gap prints a memorization "
+                 "WARNING (default: train/az_data/holdout if it exists)"),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
             help="Warm-start from a PPO checkpoint instead of resuming AZ"),
         Arg("--fresh", "flag", help="Start from random init"),
@@ -1038,6 +1087,23 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "LIKE pairings falls below 2*floor-1 vetoes promotion even "
                  "when the aggregate clears the bar (0 disables; on mirrors "
                  "alone this equals win-rate < floor)"),
+        Arg("--cross-pairs", "int", default=DEFAULT_AZ_GATE_CROSS_PAIRS,
+            help="Seeded cross-deck pairings added to the panel on top of the "
+                 "per-deck mirrors, each played in BOTH directions (default "
+                 f"{DEFAULT_AZ_GATE_CROSS_PAIRS}); raise it for a broader gate"),
+        Arg("--record-dir", "str", default=None,
+            help="Record every gate leg's searched decisions (both nets) as "
+                 "trainer-schema shards under this directory, one subdir per "
+                 "leg (cand_<seat>__<deck_x>__<deck_y>), for az_inspect / the "
+                 "shard browsers. Actor backend only; never the training pool"),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N,
+            help="n-step TD horizon stored in the recorded shards (--record-dir)"),
+        Arg("--no-pool-shards", "flag",
+            help="With --record-dir: do NOT also copy the recorded shards into "
+                 "the az_data/gen training pool after the gate. Default ON "
+                 "(recorded candidate-vs-incumbent games become training data "
+                 "— the cross-net signal pure self-play lacks)"),
+        _c_puct(),
         Arg("--seed", "int", default=1),
         Arg("--bo1", "flag",
             help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
@@ -1076,6 +1142,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
         Arg("--workers", "int", default=None),
@@ -1084,6 +1151,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "0 = AUTO: exactly one epoch over the loaded training window, "
                  "max(1, samples // batch_size) updates, so the epoch count "
                  "cannot drift as the window's data volume changes"),
+        _epoch_frac(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -1135,6 +1203,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  ">=4 gate matches whose win-rate deficit vs the incumbent on "
                  "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
                  "disables; on mirrors alone this equals win-rate < floor)"),
+        _no_gate_shards(),
         Arg("--expert-decks", "str", default=EXPERT_DECKS_ROSTER,
             suggest="league_deck", multi=True,
             help="Comma-separated decks to ALSO write scripted:hard EXPERT "
@@ -1195,6 +1264,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
         Arg("--workers", "int", default=None,
@@ -1204,6 +1274,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "0 = AUTO: exactly one epoch over the loaded training window, "
                  "max(1, samples // batch_size) updates, so the epoch count "
                  "cannot drift as the window's data volume changes"),
+        _epoch_frac(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -1224,6 +1295,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  ">=4 gate matches whose win-rate deficit vs the incumbent on "
                  "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
                  "disables; on mirrors alone this equals win-rate < floor)"),
+        _no_gate_shards(),
         Arg("--gate-every", "int", default=DEFAULT_AZ_GATE_EVERY,
             help="Run the eval/gate every K slots instead of every slot: the "
                  "candidate accumulates K cycles of training (and "
