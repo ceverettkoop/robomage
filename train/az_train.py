@@ -28,6 +28,7 @@ import argparse
 import glob
 import json
 import os
+import re
 import shutil
 import time
 from typing import Optional
@@ -59,10 +60,10 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
 import numpy as np
 
 try:
-    from env import OBS_SIZE, MAX_ACTIONS
+    from env import OBS_SIZE, MAX_ACTIONS, _IS_SIDEBOARD_IDX
     from opponents import GEN_STEM, assert_not_reserved_deck
 except ImportError:  # pragma: no cover
-    from train.env import OBS_SIZE, MAX_ACTIONS
+    from train.env import OBS_SIZE, MAX_ACTIONS, _IS_SIDEBOARD_IDX
     from train.opponents import GEN_STEM, assert_not_reserved_deck
 
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -104,6 +105,16 @@ DEFAULT_GATE_CROSS_PAIRS = DEFAULT_AZ_GATE_CROSS_PAIRS
 # snapshot line) — before paying for an eval. Promotion cadence, not training,
 # is all that changes: candidate snapshots still save every slot.
 DEFAULT_GATE_EVERY = DEFAULT_AZ_GATE_EVERY
+
+# Candidate-line drift brake (the 2026-08 gate-failure diagnosis: a rejected
+# candidate kept generating the next window's self-play, so flat search targets
+# compounded across cycles and 13 candidates in a row lost the gate). After any
+# FAILED az-league gate, self-play generation is pinned back to the incumbent
+# (gen__azfinal) while training still continues the candidate line; after this
+# many CONSECUTIVE failures the line is judged damaged and abandoned — its
+# snapshots (everything newer than the incumbent) are pruned so the next slot
+# warm-starts from the incumbent's weights too. A promotion resets the count.
+GATE_FAILS_BEFORE_RESET = 3
 
 
 # ----------------------------------------------------------------------
@@ -155,29 +166,6 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
             "delete/regenerate the shards (re-run az-selfplay) before training")
     out["n_shards"] = len(shards)
     return out
-
-
-def prune_shards(window: int, data_dir: Optional[str] = None) -> int:
-    """Delete self-play shards that neither the current nor the PREVIOUS
-    training window would read: everything older than the newest ``2*window``
-    shards (by mtime, matching :func:`load_window`'s ordering). Called by
-    :func:`train_az` after each training pass so a long-running az-league
-    (``rotations=0``) doesn't grow ``az_data/gen`` without bound. Returns the
-    number of shards deleted."""
-    keep = 2 * int(window)
-    if keep <= 0:
-        return 0
-    data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
-    shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
-                    key=os.path.getmtime)
-    pruned = 0
-    for s in shards[:-keep]:
-        try:
-            os.remove(s)
-            pruned += 1
-        except OSError as exc:
-            print(f"[az-train] WARNING: could not prune shard {s}: {exc}")
-    return pruned
 
 
 # ----------------------------------------------------------------------
@@ -282,6 +270,12 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             f"sample to its outcome z (regenerate the shards)")
     q_mix = float(q_mix)
     v_target = ((1.0 - q_mix) * z + q_mix * td_q).astype(np.float32)
+    # Sideboard-phase rows are EXCLUDED from the value loss: V(sb-state) is
+    # consumed nowhere (plan search prices sideboard picks by rolling out to
+    # in-game leaves, and td chains never cross the sb boundary), while training
+    # it writes into the same matchup columns that price in-game states. Their
+    # pi rows still train normally — the sb POLICY seeds plan generation.
+    sb_rows = obs[:, _IS_SIDEBOARD_IDX] > 0.5
     # batches <= 0 = AUTO: exactly ONE epoch over the loaded window. A fixed
     # batch count silently drifts in epochs as the window's data volume changes
     # (1000 x 256 over a ~137k-sample window was ~1.9 epochs of re-fitting one
@@ -303,6 +297,8 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_q; "
           f"td_q != z on {int((td_q != z).sum())}/{n} rows "
           f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f})")
+    print(f"[az-train] sideboard-phase rows: {int(sb_rows.sum())}/{n} "
+          f"(excluded from the value loss; pi trains on them normally)")
 
     net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
@@ -322,6 +318,8 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     z_t = torch.as_tensor(z)
     vt_t = torch.as_tensor(v_target)
     mask_t = torch.as_tensor(mask)
+    # 1.0 on in-game rows, 0.0 on sideboard-phase rows (see sb_rows above).
+    vw_t = torch.as_tensor((~sb_rows).astype(np.float32))
 
     log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
     os.makedirs(ckpt_dir, exist_ok=True)
@@ -343,9 +341,13 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             loss_pi = -(tp * logp).sum(dim=1).mean()
             # Optimized against the MIXED target; the pure-outcome MSE is
             # computed alongside (no grad) purely as a comparable diagnostic.
-            loss_v = F.mse_loss(value, tv)
+            # Both are weighted means over the batch's in-game rows only (the
+            # clamp guards the all-sb batch, which then contributes 0).
+            vw = vw_t[bi]
+            vden = vw.sum().clamp(min=1.0)
+            loss_v = (((value - tv) ** 2) * vw).sum() / vden
             with torch.no_grad():
-                loss_vz = F.mse_loss(value, tz)
+                loss_vz = (((value - tz) ** 2) * vw).sum() / vden
             loss = loss_pi + c_v * loss_v
 
             opt.zero_grad()
@@ -380,11 +382,15 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     hd = holdout_dir or os.path.join(_AZ_DATA_DIR, "holdout")
     hold = _sample_shard_rows(hd, cap=8192, seed=seed)
     if hold is not None:
-        wi = rng.choice(n, size=min(8192, n), replace=False)
+        # Both sides of the comparison exclude sb-phase rows, matching the loss.
+        game_pool = np.nonzero(~sb_rows)[0]
+        wi = rng.choice(game_pool, size=min(8192, len(game_pool)), replace=False)
+        hob, hmk, hz = hold
+        hkeep = hob[:, _IS_SIDEBOARD_IDX] <= 0.5
         wmse = _value_mse(net, obs[wi], mask[wi], z[wi])
-        hmse = _value_mse(net, *hold)
-        line = (f"[az-train] value MSE (vs z): train-window {wmse:.3f} | "
-                f"held-out {hmse:.3f} ({hd})")
+        hmse = _value_mse(net, hob[hkeep], hmk[hkeep], hz[hkeep])
+        line = (f"[az-train] value MSE (vs z, sb rows excluded): "
+                f"train-window {wmse:.3f} | held-out {hmse:.3f} ({hd})")
         print(line)
         if hmse > 2.0 * wmse:
             print(f"[az-train] WARNING: held-out value MSE is "
@@ -392,10 +398,6 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
                   f"value head is memorizing this window's games; consider a "
                   f"lower --epoch-frac, higher --q-mix, or more distinct games "
                   f"per matchup")
-    pruned = prune_shards(window, data_dir)
-    if pruned:
-        print(f"[az-train] pruned {pruned} stale shard(s) older than the last "
-              f"2x{window}-shard window")
     return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
             "snapshot": snap, "steps": steps}
 
@@ -625,8 +627,8 @@ def pool_gate_shards(record_dir: str, pool_dir: Optional[str] = None) -> int:
     """Move a finished gate's recorded shards from their per-leg subdirectories
     into the ordinary training pool (default ``az_data/gen``), renamed
     ``shard_gate-<legtag>_<original>`` so their provenance stays readable while
-    the ``shard_*.npz`` glob (load_window / prune_shards / the auto window)
-    treats them exactly like self-play shards. Returns the number moved.
+    the ``shard_*.npz`` glob (load_window / the auto window) treats them
+    exactly like self-play shards. Returns the number moved.
 
     This is the candidate-vs-incumbent data path: each net's mistakes in these
     games were punished by a DIFFERENT policy, which pure self-play cannot
@@ -1133,6 +1135,33 @@ def _promote_to_final(cand_path: str, ckpt_dir: str = _AZ_CKPT_DIR) -> str:
     return final
 
 
+def _prune_candidate_snapshots(ckpt_dir: str = _AZ_CKPT_DIR) -> list:
+    """Abandon the candidate line: delete every ``gen__azv{steps}`` snapshot
+    (with its meta and TorchScript sidecars) whose steps EXCEED the incumbent
+    ``gen__azfinal``'s. Afterwards snapshot resolution (``prefer="snapshot"``,
+    used by both the training warm-start and self-play source) falls back to
+    the newest remaining snapshot — at or below the incumbent — so the next
+    cycle restarts from the incumbent's weights. Also prevents the step-counter
+    rollback from silently resuming an orphan of the dead line. Returns the
+    pruned snapshot stems (empty when there is no incumbent yet)."""
+    final = os.path.join(ckpt_dir, f"{GEN_STEM}__azfinal.pt")
+    if not os.path.exists(final):
+        return []
+    final_steps = _read_steps(final)
+    pruned = []
+    for p in sorted(glob.glob(os.path.join(ckpt_dir, f"{GEN_STEM}__azv*.pt"))):
+        m = re.fullmatch(rf"{GEN_STEM}__azv(\d+)\.pt", os.path.basename(p))
+        if not m or int(m.group(1)) <= final_steps:
+            continue
+        stem = p[:-len(".pt")]
+        for f in (p, stem + ".meta.json", stem + ".ts.pt",
+                  stem + ".ts.meta.json"):
+            if os.path.exists(f):
+                os.remove(f)
+        pruned.append(os.path.basename(stem))
+    return pruned
+
+
 # ----------------------------------------------------------------------
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
@@ -1195,7 +1224,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              exhaustive_selfplay: bool = False,
              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
-             slot: int = 0) -> dict:
+             slot: int = 0,
+             selfplay_checkpoint: Optional[str] = None) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
@@ -1256,7 +1286,12 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     gate, which stays candidate-vs-incumbent.
 
     ``use_actor`` chooses the self-play backend (None=AUTO: the C++ actor iff
-    built, else Python; see :func:`az_selfplay.generate`)."""
+    built, else Python; see :func:`az_selfplay.generate`).
+
+    ``selfplay_checkpoint`` overrides the net that GENERATES self-play (default
+    None = ``az_selfplay.resolve_source``'s candidate-line preference) without
+    touching the training warm-start — az-league passes the incumbent here
+    after a failed gate so a rejected line stops feeding itself."""
     import az_selfplay
 
     if roster is None:
@@ -1273,6 +1308,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
           f"{'bo3' if bo3 else 'bo1'}{matrix_txt}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
                                c_puct=c_puct,
+                               checkpoint=selfplay_checkpoint,
                                sb_branches=sb_branches, sb_worlds=sb_worlds,
                                sb_rollout_turns=sb_rollout_turns,
                                workers=workers, seed=seed, use_actor=use_actor,
@@ -1465,13 +1501,24 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
 
     ``rotations=0`` runs INDEFINITELY: slots keep generating until the process
     is interrupted. The sidecar still advances after every completed slot, so an
-    interrupted indefinite run resumes with ``--resume`` like a finite one, and
-    each training pass prunes shards outside the last two windows (see
-    :func:`prune_shards`) so ``az_data/gen`` stays bounded."""
+    interrupted indefinite run resumes with ``--resume`` like a finite one.
+    Shards are never deleted — ``az_data/gen`` grows with the run (the training
+    window bounds what gets READ, not what is kept).
+
+    Gate-failure handling: after any FAILED gate, subsequent slots' self-play is
+    generated by the INCUMBENT (``gen__azfinal``) instead of the newest candidate
+    snapshot, so a rejected line stops feeding itself flat search targets; the
+    TRAINING warm-start still continues the candidate line. After
+    ``GATE_FAILS_BEFORE_RESET`` CONSECUTIVE failures the candidate line is
+    abandoned: every ``gen__azv*`` snapshot newer than the incumbent is deleted,
+    so the next slot both trains from and generates with the incumbent's
+    weights. A promotion resets the failure count (and the new incumbent is the
+    candidate line anyway). The count persists in the sidecar across --resume."""
     os.makedirs(ckpt_dir, exist_ok=True)
 
     slot_index = 0
     results: list = []
+    gate_failures = 0
     if resume:
         state = _read_az_league_state(ckpt_dir)
         if state is None:
@@ -1534,8 +1581,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
         results = list(state.get("results", []))
+        # Older sidecars predate the failure counter; .get keeps them resumable.
+        gate_failures = int(state.get("gate_failures", 0))
         print(f"[az-league] resuming from {_az_league_state_path(ckpt_dir)}: "
-              f"next slot {slot_index}")
+              f"next slot {slot_index}"
+              + (f" (consecutive gate failures: {gate_failures})"
+                 if gate_failures else ""))
     elif decks:
         roster = ([d.strip() for d in decks.split(",") if d.strip()]
                   if isinstance(decks, str) else [str(d).strip() for d in decks if str(d).strip()])
@@ -1661,6 +1712,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     def save_progress(next_slot: int):
         _write_az_league_state(ckpt_dir, {
             **base_state, "slot_index": int(next_slot), "results": results,
+            "gate_failures": int(gate_failures),
             "updated": time.strftime("%Y-%m-%d %H:%M:%S")})
 
     # Record the starting position so an interruption before the first cycle still
@@ -1694,10 +1746,20 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         gate_note = ("" if do_gate
                      else "  [gating off]" if gate_every == 0
                      else f"  [gate deferred: every {gate_every} slots]")
+        # Drift brake: while the last gate(s) failed, self-play generates from
+        # the INCUMBENT, not the rejected candidate line (training still
+        # continues the candidate — see GATE_FAILS_BEFORE_RESET above).
+        selfplay_ckpt = None
+        if gate_failures > 0:
+            from az_net import resolve_az_checkpoint
+            selfplay_ckpt = resolve_az_checkpoint(GEN_STEM, prefer="final")
         print(f"\n{'='*60}")
         print(f"[az-league slot {slot_txt}] rotation {rot_txt}  "
               f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  "
               f"(seed={slot_seed}){gate_note}")
+        if selfplay_ckpt:
+            print(f"[az-league] {gate_failures} consecutive failed gate(s): "
+                  f"self-play pinned to the incumbent {selfplay_ckpt}")
         print(f"{'='*60}")
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
                        c_puct=c_puct, epoch_frac=epoch_frac,
@@ -1722,9 +1784,25 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        exhaustive=exhaustive,
                        exhaustive_selfplay=exhaustive_selfplay,
                        exhaustive_repeats=exhaustive_repeats,
-                       scripted_cells=scripted_cells, slot=si)
+                       scripted_cells=scripted_cells, slot=si,
+                       selfplay_checkpoint=selfplay_ckpt)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         last_snapshot = tr.get("snapshot")
+        if ev is not None:
+            if ev["promoted"]:
+                gate_failures = 0
+            else:
+                gate_failures += 1
+                if gate_failures >= GATE_FAILS_BEFORE_RESET:
+                    pruned = _prune_candidate_snapshots(ckpt_dir)
+                    print(f"[az-league] {gate_failures} consecutive failed "
+                          f"gates: candidate line abandoned — pruned "
+                          f"{len(pruned)} snapshot(s) newer than the incumbent"
+                          + (f" ({pruned[0]}..{pruned[-1]})" if pruned else "")
+                          + "; next slot trains from and generates with the "
+                            "incumbent's weights")
+                    gate_failures = 0
+                    last_snapshot = None
         if ev is None:
             gate_txt = "gating off" if gate_every == 0 else "gate deferred"
         else:

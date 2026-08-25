@@ -295,7 +295,11 @@ def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
     generator, every gate rejection froze the data distribution, so a stretch
     of kept-incumbent cycles just re-distilled a fixed policy. ``gen__azfinal``
     remains what serving/eval specs (``az:gen``) and the gate opponent resolve
-    to — only the data generator tracks the candidate.
+    to — only the data generator tracks the candidate. The exception is a
+    FAILED az-league gate: the league then passes the incumbent explicitly (the
+    ``checkpoint`` arg) for the following slots, because a rejected line
+    generating its own next window compounds its drift (the 2026-08 failure
+    mode); see ``az_train.GATE_FAILS_BEFORE_RESET``.
 
     ``deck`` (the FOCUS deck) is not used for net resolution — the net is the
     single generalist, and the deck it pilots travels through the matchup

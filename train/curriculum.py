@@ -333,6 +333,28 @@ def _format_value(arg, value, where: str):
     elif arg.kind == "choice" and text not in arg.choices:
         raise PlanError(f"{where}: {arg.name} must be one of "
                         f"{', '.join(arg.choices)} (got {value!r})")
+    elif getattr(arg, "suggest", None) in _CHECKPOINT_SUGGESTS:
+        text = expand_checkpoint(text)
+    return text
+
+
+# Arg.suggest tags whose values the TUI pickers offer as checkpoints/-relative
+# paths ('az/gen__azv123.pt', 'gen__final.zip'). The plain TUI forms expand those
+# at argv time (tui._expand_checkpoint); a plan stores the raw pick, so the
+# curriculum's argv composition has to do the same expansion or the subprocess
+# resolves the path against the repo root and fails to find it.
+_CHECKPOINT_SUGGESTS = frozenset({"checkpoint", "agent", "az_checkpoint"})
+
+
+def expand_checkpoint(text: str, checkpoint_dir: str = None) -> str:
+    """A checkpoints/-relative model path → the repo-relative path every
+    subcommand can load. Anything else (an existing path, 'gen', an az:/azraw:/
+    mcts: spec, 'scripted') is returned unchanged."""
+    checkpoint_dir = checkpoint_dir or CHECKPOINT_DIR
+    if os.path.exists(text):
+        return text
+    if os.path.exists(os.path.join(checkpoint_dir, text)):
+        return os.path.join("train", "checkpoints", text)
     return text
 
 
