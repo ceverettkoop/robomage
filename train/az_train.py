@@ -116,6 +116,17 @@ DEFAULT_GATE_EVERY = DEFAULT_AZ_GATE_EVERY
 # warm-starts from the incumbent's weights too. A promotion resets the count.
 GATE_FAILS_BEFORE_RESET = 3
 
+# td_q value-target calibration (the 2026-08-25 gate diagnosis: with q_mix at
+# 0.75 the bootstrapped td_q labels average |td-z| ~0.55, so decided-game value
+# targets sit at ±~0.5-0.7 and the value head contracts a little every cycle —
+# one training step measurably degraded the next generation's self-play
+# corr(q,z) 0.61->0.55). Before mixing, bootstrapped rows are affine-rescaled
+# to z's scale and sign-gated back to z where the belief still disagrees with
+# the realized outcome — see _calibrate_td_targets.
+TD_CAL_MIN_ROWS = 256    # bootstrapped decided rows required before fitting
+TD_CAL_MAX_GAIN = 4.0    # clamp on the variance-matching stretch a
+TD_CAL_MAX_SHIFT = 0.5   # clamp on the bias shift b
+
 
 # ----------------------------------------------------------------------
 # Shard loading
@@ -222,6 +233,51 @@ def _read_steps(az_path: str) -> int:
 # Training
 # ----------------------------------------------------------------------
 
+def _calibrate_td_targets(z, td_q, sb_rows):
+    """Anti-contraction correction for the td_q value-target component.
+
+    Only the BOOTSTRAPPED rows (``td_q != z`` — the rows where a real root value
+    was substituted for the outcome) are touched, in two steps:
+
+    1. **Scale matching**: rescale to ``a * td_q + b`` with ``a = std(z)/std(td)``
+       and ``b = mean(z) - a * mean(td)`` fitted on the bootstrapped decided
+       (``z != 0``, non-sideboard) rows, clipped to [-1, 1]. This is a marginal
+       scale/bias match, deliberately NOT a least-squares regression of z on
+       td_q: regression pre-shrinks each noisy label toward the mean, and the
+       value head then averages those pre-shrunk labels — double shrinkage,
+       i.e. exactly the generation-over-generation value contraction this
+       exists to stop. Matching the scale keeps the search's per-position
+       ordering while re-anchoring its units to z's every cycle; the fit is
+       self-adjusting (an uncompressed future net fits a ~= 1, and ``a`` never
+       shrinks below 1).
+    2. **Sign gate**: a rescaled belief that still disagrees in sign with the
+       realized outcome (``td * z <= 0`` on decided rows, flat 0 counted as
+       disagreement) reverts to plain ``z`` — the search's blindness must not
+       be trained toward.
+
+    Returns the corrected copy of ``td_q`` (the input itself when the fit
+    population is too small or degenerate to calibrate)."""
+    boot = (td_q != z) & ~sb_rows
+    fit = boot & (z != 0)
+    n_fit = int(fit.sum())
+    if n_fit < TD_CAL_MIN_ROWS or float(td_q[fit].std()) < 1e-6:
+        print(f"[az-train] td calibration SKIPPED: {n_fit} bootstrapped "
+              f"decided rows (< {TD_CAL_MIN_ROWS}, or degenerate spread) — "
+              f"raw td_q used")
+        return td_q
+    a = float(np.clip(z[fit].std() / td_q[fit].std(), 1.0, TD_CAL_MAX_GAIN))
+    b = float(np.clip(z[fit].mean() - a * td_q[fit].mean(),
+                      -TD_CAL_MAX_SHIFT, TD_CAL_MAX_SHIFT))
+    td_cal = td_q.astype(np.float32).copy()
+    td_cal[boot] = np.clip(a * td_q[boot] + b, -1.0, 1.0)
+    gate = boot & (z != 0) & (td_cal * z <= 0.0)
+    td_cal[gate] = z[gate]
+    print(f"[az-train] td calibration: a={a:.3f} b={b:+.3f} "
+          f"(fit on {n_fit} bootstrapped decided rows); sign-gate reverted "
+          f"{int(gate.sum())}/{n_fit} rows to z")
+    return td_cal
+
+
 def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE,
              lr: float = DEFAULT_AZ_LR, c_v: float = DEFAULT_AZ_CV,
@@ -243,12 +299,14 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     az-league cycle default (``DEFAULT_AZ_CYCLE_BATCHES``); the standalone
     az-train default stays a fixed batch count.
 
-    The value target is the MIX ``(1 - q_mix) * z + q_mix * td_q``: the shard's
-    per-game outcome blended with its recorded n-step TD bootstrap (see
-    :func:`az_selfplay.compute_td_targets`). ``q_mix=0`` restores the classic
-    pure-outcome AlphaZero target. The periodic log line reports the value loss
-    against BOTH the mixed target and the plain outcome, so a drift between them
-    is visible while training."""
+    The value target is the MIX ``(1 - q_mix) * z + q_mix * td_cal``: the
+    shard's per-game outcome blended with its recorded n-step TD bootstrap (see
+    :func:`az_selfplay.compute_td_targets`) after the anti-contraction
+    calibration of :func:`_calibrate_td_targets` (scale-matched to z, sign-gated
+    back to z where the belief disagrees with the outcome). ``q_mix=0`` restores
+    the classic pure-outcome AlphaZero target (and skips the calibration). The
+    periodic log line reports the value loss against BOTH the mixed target and
+    the plain outcome, so a drift between them is visible while training."""
     import torch
     import torch.nn.functional as F
     from az_net import az_checkpoint_path, decay_exempt_param_groups
@@ -269,13 +327,24 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             f"non-finite td_q — every writer must resolve an unbootstrappable "
             f"sample to its outcome z (regenerate the shards)")
     q_mix = float(q_mix)
-    v_target = ((1.0 - q_mix) * z + q_mix * td_q).astype(np.float32)
     # Sideboard-phase rows are EXCLUDED from the value loss: V(sb-state) is
     # consumed nowhere (plan search prices sideboard picks by rolling out to
     # in-game leaves, and td chains never cross the sb boundary), while training
     # it writes into the same matchup columns that price in-game states. Their
     # pi rows still train normally — the sb POLICY seeds plan generation.
     sb_rows = obs[:, _IS_SIDEBOARD_IDX] > 0.5
+    td_cal = _calibrate_td_targets(z, td_q, sb_rows) if q_mix > 0 else td_q
+    v_target = ((1.0 - q_mix) * z + q_mix * td_cal).astype(np.float32)
+    # Target-magnitude tripwire: the contraction failure mode shows up here as
+    # this number decaying across cycles (z-only would be 1.0; the uncalibrated
+    # 0.75 mix sat at ~0.55-0.7 when the 2026-08-25 gate failed).
+    decided = (z != 0) & ~sb_rows
+    if decided.any():
+        raw_mix = (1.0 - q_mix) * z + q_mix * td_q
+        print(f"[az-train] value-target magnitude (decided rows): "
+              f"{float(np.abs(v_target[decided]).mean()):.3f} calibrated "
+              f"(uncalibrated mix {float(np.abs(raw_mix[decided]).mean()):.3f}, "
+              f"z-only 1.0)")
     # batches <= 0 = AUTO: exactly ONE epoch over the loaded window. A fixed
     # batch count silently drifts in epochs as the window's data volume changes
     # (1000 x 256 over a ~137k-sample window was ~1.9 epochs of re-fitting one
@@ -294,9 +363,11 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     print(f"[az-train] gen (focus={deck}): {n} samples from {n_shards} shards; "
           f"batches={batches_txt} batch_size={batch_size} lr={lr} c_v={c_v} "
           f"q_mix={q_mix}")
-    print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_q; "
+    print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_cal "
+          f"(scale-matched + sign-gated td_q); "
           f"td_q != z on {int((td_q != z).sum())}/{n} rows "
-          f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f})")
+          f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f}, "
+          f"|td_cal - z| = {float(np.abs(td_cal - z).mean()):.4f})")
     print(f"[az-train] sideboard-phase rows: {int(sb_rows.sum())}/{n} "
           f"(excluded from the value loss; pi trains on them normally)")
 
