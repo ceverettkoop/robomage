@@ -36,9 +36,10 @@ from shard_record import ShardRecorder
 class _FakeResult:
     """Duck-typed mcts.SearchResult: just what the recorder reads."""
 
-    def __init__(self, visits, root_value):
+    def __init__(self, visits, root_value, q=None):
         self.visits = np.asarray(visits, dtype=np.float64)
         self.root_value = float(root_value)
+        self.q = None if q is None else np.asarray(q, dtype=np.float64)
 
     def policy_target(self, temperature):
         return self.visits / self.visits.sum()
@@ -69,16 +70,17 @@ def _onehot(rec, obs, num, action, reward=0.0, game_result=False, done=False):
 
 
 def _assert_searched_row_matches_selfplay(rec, obs, num, visits, root_value,
-                                          chosen):
+                                          chosen, q=None):
     """The recorder's searched row == az_selfplay's own sample builder output,
-    field for field (self-play then finalizes `explored` exactly as the
-    recorder does). Stashes and discards the row; nothing is committed."""
-    from az_selfplay import sample_from_search_result
-    result = _FakeResult(visits, root_value)
+    field for field (self-play finalizes `explored`/`q` through the same
+    :func:`finalize_searched_sample`). Stashes and discards the row; nothing
+    is committed."""
+    from az_selfplay import finalize_searched_sample, sample_from_search_result
+    result = _FakeResult(visits, root_value, q=q)
     rec.on_search_result(obs, num, result, chosen)
     got, rec._pending = rec._pending, None
     want = sample_from_search_result(obs, num, result)
-    want["explored"] = int(int(chosen) != int(result.best_action()))
+    finalize_searched_sample(want, result, chosen)
     assert set(got) == set(want), (sorted(got), sorted(want))
     for k, v in want.items():
         g = got[k]
@@ -86,6 +88,10 @@ def _assert_searched_row_matches_selfplay(rec, obs, num, visits, root_value,
             assert g.dtype == v.dtype and np.array_equal(g, v), k
         else:
             assert type(g) is type(v) and g == v, (k, g, v)
+    if result.q is not None:
+        assert got["q"] == float(result.q[int(chosen)])
+    else:
+        assert got["q"] == float(root_value)
 
 
 def _check_schema(path):
@@ -123,6 +129,11 @@ def main():
         # az_selfplay.sample_from_search_result, and this pins that.
         _assert_searched_row_matches_selfplay(
             rec, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=0)
+        # With per-action Q on the result, the row's q is the PLAYED action's
+        # Q, not the visit-weighted root value.
+        _assert_searched_row_matches_selfplay(
+            rec, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=1,
+            q=[0.4, -0.2, 0.1])
 
         _searched(rec, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=0)
         _onehot(rec, _obs(False, 0, 1), 4, action=2)

@@ -199,6 +199,11 @@ struct AZMcts::Impl {
     // when a returned action index lands outside the engine's current menu.
     std::vector<std::string> root_menu_desc;
     std::vector<int64_t> visit_totals;  // summed root.N across worlds
+    std::vector<double> w_totals;       // summed root.W across worlds (per action;
+    //                                     w_totals[a]/visit_totals[a] = the Q the
+    //                                     self-play sample's q records for the
+    //                                     played action, mirroring mcts.py's
+    //                                     SearchResult.q)
     double value_acc = 0.0;
     int sims_run = 0;
     long sim_steps = 0;
@@ -526,8 +531,10 @@ struct AZMcts::Impl {
     }
 
     void accumulate_world() {
-        for (int i = 0; i < root_n; i++)
+        for (int i = 0; i < root_n; i++) {
             visit_totals[static_cast<size_t>(i)] += cur_root->N[static_cast<size_t>(i)];
+            w_totals[static_cast<size_t>(i)] += cur_root->W[static_cast<size_t>(i)];
+        }
         double wsum = 0.0;
         for (double w : cur_root->W) wsum += w;
         value_acc += wsum;
@@ -986,7 +993,6 @@ struct AZMcts::Impl {
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
             s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
             s.mover_is_a = root_is_a;
-            s.q = static_cast<float>(root_value);
             s.is_sideboard = true;
             for (int i = 0; i < root_n; i++) {
                 s.pi[static_cast<size_t>(i)] =
@@ -997,6 +1003,9 @@ struct AZMcts::Impl {
                 std::discrete_distribution<int> dist(pi.begin(), pi.end());
                 chosen = dist(rng);
             }
+            // TD bootstrap = the played first pick's plan Q (mirrors
+            // az_selfplay.finalize_searched_sample over run_plan_search's q).
+            s.q = static_cast<float>(q[static_cast<size_t>(chosen)]);
             s.explored = chosen != best;
             game_samples.push_back(std::move(s));
             move_counter += 1;
@@ -1127,6 +1136,7 @@ struct AZMcts::Impl {
         cur_rollout_anchor = static_cast<int>(cur_game.turn);
         cur_rollout_cap = kRolloutStepsPerTurn * cur_rollout_turns;
         visit_totals.assign(static_cast<size_t>(nc), 0);
+        w_totals.assign(static_cast<size_t>(nc), 0.0);
         value_acc = 0.0;
         sims_run = 0;
         sim_steps = 0;
@@ -1367,9 +1377,6 @@ struct AZMcts::Impl {
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
             s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
             s.mover_is_a = root_is_a;
-            // n-step TD inputs (mirrors az_selfplay.py): this root's value, and
-            // whether the action actually played leaves the search's own line.
-            s.q = static_cast<float>(results.back().root_value);
             s.is_sideboard = root_is_sb;
             for (int i = 0; i < root_n; i++) {
                 // A playout-cap fast root records NO policy target: pi stays
@@ -1392,6 +1399,17 @@ struct AZMcts::Impl {
                     visit_totals.begin(), visit_totals.begin() + root_n);
                 chosen = dist(rng);
             }
+            // n-step TD inputs (mirrors az_selfplay.finalize_searched_sample):
+            // the search's Q of the action actually PLAYED (the visit-weighted
+            // root_value folds in noise-forced exploratory visits the played
+            // line never follows), and whether that action leaves the
+            // search's own line.
+            s.q = visit_totals[static_cast<size_t>(chosen)] > 0
+                      ? static_cast<float>(
+                            w_totals[static_cast<size_t>(chosen)] /
+                            static_cast<double>(
+                                visit_totals[static_cast<size_t>(chosen)]))
+                      : 0.0f;
             s.explored = chosen != best;
             game_samples.push_back(std::move(s));
             move_counter += 1;

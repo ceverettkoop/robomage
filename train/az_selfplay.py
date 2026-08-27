@@ -378,10 +378,11 @@ def sample_from_search_result(obs, num_choices, result):
 
     ``pi`` is the root visit posterior (``result.policy_target(1.0)``) padded
     into a MAX_ACTIONS row, ``mask`` the legal prefix, ``q`` the search's root
-    value, ``mover_is_a`` the priority seat read straight off the observation
-    (``_SELF_IS_A_IDX`` — identical to the play loops' ``priority_is_a``).
-    ``explored`` starts at 0; the CALLER finalizes it once it knows which
-    action was actually played, and attaches ``game_idx``.
+    value (a placeholder — see :func:`finalize_searched_sample`), ``mover_is_a``
+    the priority seat read straight off the observation (``_SELF_IS_A_IDX`` —
+    identical to the play loops' ``priority_is_a``). ``explored`` starts at 0;
+    the CALLER finalizes it and ``q`` via :func:`finalize_searched_sample` once
+    it knows which action was actually played, and attaches ``game_idx``.
 
     Shared by :func:`_play_match` and ``shard_record.ShardRecorder`` so a
     recorded searched row is bit-identical to a self-play one by construction.
@@ -395,6 +396,27 @@ def sample_from_search_result(obs, num_choices, result):
     return {"obs": np.asarray(obs, dtype=np.float32).copy(), "pi": pi,
             "mask": mask, "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
             "q": float(result.root_value), "explored": 0}
+
+
+def finalize_searched_sample(sample, result, action):
+    """Finalize a searched row once the played ``action`` is known.
+
+    ``explored``: an action other than the visit argmax is an EXPLORATORY
+    move — it truncates every earlier sample's n-step bootstrap window (see
+    :func:`compute_td_targets`), because what follows is no longer the line
+    the search endorsed. ``q`` (the row's TD bootstrap) becomes the search's
+    per-action Q of the action actually played — the visit-weighted
+    ``root_value`` placeholder folds in the value of noise-forced exploratory
+    visits the played line never follows. A result without per-action Q
+    (``result.q`` absent/None) keeps the placeholder. Shared by
+    :func:`_search_and_sample` and ``shard_record.ShardRecorder`` so a
+    recorded searched row stays bit-identical to a self-play one. C++ twin:
+    the ``s.q``/``s.explored`` assignments in src/actor/az_mcts.cpp."""
+    action = int(action)
+    sample["explored"] = int(action != int(result.best_action()))
+    q = getattr(result, "q", None)
+    if q is not None:
+        sample["q"] = float(q[action])
 
 
 def one_hot_sample(obs, num_choices, action):
@@ -526,11 +548,7 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
         action = int(rng.choice(num_choices, p=visits))
     else:
         action = result.best_action()
-    # An action other than the visit argmax is an EXPLORATORY move: it
-    # truncates every earlier sample's n-step bootstrap window (see
-    # compute_td_targets), because what follows is no longer the line the
-    # search endorsed.
-    sample["explored"] = int(action != result.best_action())
+    finalize_searched_sample(sample, result, action)
     return action, sample, sb_boundary
 
 
