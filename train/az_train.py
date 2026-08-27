@@ -144,14 +144,14 @@ DEFAULT_GATE_EVERY = DEFAULT_AZ_GATE_EVERY
 # warm-starts from the incumbent's weights too. A promotion resets the count.
 GATE_FAILS_BEFORE_RESET = 3
 
-# td_q value-target calibration. At q_mix 0.75 the bootstrapped td_q labels
-# average |td-z| ~0.55, so decided-game value targets sit at ±~0.5-0.7 and the
-# value head contracts a little every cycle, degrading the next generation's
-# self-play corr(q,z). Before mixing, bootstrapped rows are affine-rescaled
-# to z's scale and sign-gated back to z where the belief still disagrees with
-# the realized outcome — see _calibrate_td_targets.
+# td_q value-target calibration. Bootstrapped td_q labels sit closer to 0 than
+# the ±1 outcomes (|td-z| averaged ~0.55 on the 2026-08 runs), so an uncorrected
+# mix contracts decided-game value targets a little every cycle, degrading the
+# next generation's self-play corr(q,z). Before mixing, bootstrapped rows are
+# affine-rescaled to z's scale — see _calibrate_td_targets.
 TD_CAL_MIN_ROWS = 256    # bootstrapped decided rows required before fitting
-TD_CAL_MAX_GAIN = 4.0    # clamp on the variance-matching stretch a
+TD_CAL_MAX_GAIN = 4.0    # symmetric clamp on the scale-matching factor a:
+                         # a is clipped to [1/TD_CAL_MAX_GAIN, TD_CAL_MAX_GAIN]
 TD_CAL_MAX_SHIFT = 0.5   # clamp on the bias shift b
 
 
@@ -264,23 +264,18 @@ def _calibrate_td_targets(z, td_q, sb_rows):
     """Anti-contraction correction for the td_q value-target component.
 
     Only the BOOTSTRAPPED rows (``td_q != z`` — the rows where a real root value
-    was substituted for the outcome) are touched, in two steps:
-
-    1. **Scale matching**: rescale to ``a * td_q + b`` with ``a = std(z)/std(td)``
-       and ``b = mean(z) - a * mean(td)`` fitted on the bootstrapped decided
-       (``z != 0``, non-sideboard) rows, clipped to [-1, 1]. This is a marginal
-       scale/bias match, deliberately NOT a least-squares regression of z on
-       td_q: regression pre-shrinks each noisy label toward the mean, and the
-       value head then averages those pre-shrunk labels — double shrinkage,
-       i.e. exactly the generation-over-generation value contraction this
-       exists to stop. Matching the scale keeps the search's per-position
-       ordering while re-anchoring its units to z's every cycle; the fit is
-       self-adjusting (an uncompressed future net fits a ~= 1, and ``a`` never
-       shrinks below 1).
-    2. **Sign gate**: a rescaled belief that still disagrees in sign with the
-       realized outcome (``td * z <= 0`` on decided rows, flat 0 counted as
-       disagreement) reverts to plain ``z`` — the search's blindness must not
-       be trained toward.
+    was substituted for the outcome) are touched: rescale to ``a * td_q + b``
+    with ``a = std(z)/std(td)`` and ``b = mean(z) - a * mean(td)`` fitted on
+    the bootstrapped decided (``z != 0``, non-sideboard) rows, clipped to
+    [-1, 1]. This is a marginal scale/bias match, deliberately NOT a
+    least-squares regression of z on td_q: regression pre-shrinks each noisy
+    label toward the mean, and the value head then averages those pre-shrunk
+    labels — double shrinkage, i.e. exactly the generation-over-generation
+    value contraction this exists to stop. Matching the scale keeps the
+    search's per-position ordering while re-anchoring its units to z's every
+    cycle; the fit is self-adjusting (an uncompressed future net fits a ~= 1)
+    and symmetric — ``a`` shrinks an over-dispersed td_q as readily as it
+    stretches a contracted one, within [1/TD_CAL_MAX_GAIN, TD_CAL_MAX_GAIN].
 
     Returns the corrected copy of ``td_q`` (the input itself when the fit
     population is too small or degenerate to calibrate)."""
@@ -292,16 +287,14 @@ def _calibrate_td_targets(z, td_q, sb_rows):
               f"decided rows (< {TD_CAL_MIN_ROWS}, or degenerate spread) — "
               f"raw td_q used")
         return td_q
-    a = float(np.clip(z[fit].std() / td_q[fit].std(), 1.0, TD_CAL_MAX_GAIN))
+    a = float(np.clip(z[fit].std() / td_q[fit].std(),
+                      1.0 / TD_CAL_MAX_GAIN, TD_CAL_MAX_GAIN))
     b = float(np.clip(z[fit].mean() - a * td_q[fit].mean(),
                       -TD_CAL_MAX_SHIFT, TD_CAL_MAX_SHIFT))
     td_cal = td_q.astype(np.float32).copy()
     td_cal[boot] = np.clip(a * td_q[boot] + b, -1.0, 1.0)
-    gate = boot & (z != 0) & (td_cal * z <= 0.0)
-    td_cal[gate] = z[gate]
     print(f"[az-train] td calibration: a={a:.3f} b={b:+.3f} "
-          f"(fit on {n_fit} bootstrapped decided rows); sign-gate reverted "
-          f"{int(gate.sum())}/{n_fit} rows to z")
+          f"(fit on {n_fit} bootstrapped decided rows)")
     return td_cal
 
 
@@ -329,8 +322,8 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     The value target is the MIX ``(1 - q_mix) * z + q_mix * td_cal``: the
     shard's per-game outcome blended with its recorded n-step TD bootstrap (see
     :func:`az_selfplay.compute_td_targets`) after the anti-contraction
-    calibration of :func:`_calibrate_td_targets` (scale-matched to z, sign-gated
-    back to z where the belief disagrees with the outcome). ``q_mix=0`` restores
+    calibration of :func:`_calibrate_td_targets` (scale-matched to z's units
+    every cycle). ``q_mix=0`` restores
     the classic pure-outcome AlphaZero target (and skips the calibration). The
     periodic log line reports the value loss against BOTH the mixed target and
     the plain outcome, so a drift between them is visible while training."""
@@ -391,7 +384,7 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
           f"batches={batches_txt} batch_size={batch_size} lr={lr} c_v={c_v} "
           f"q_mix={q_mix}")
     print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_cal "
-          f"(scale-matched + sign-gated td_q); "
+          f"(scale-matched td_q); "
           f"td_q != z on {int((td_q != z).sum())}/{n} rows "
           f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f}, "
           f"|td_cal - z| = {float(np.abs(td_cal - z).mean()):.4f})")

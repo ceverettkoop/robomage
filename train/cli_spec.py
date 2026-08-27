@@ -136,9 +136,12 @@ DEFAULT_AZ_CV = 1.0              # value-loss weight
 # Mixing weight of the shard's n-step TD target against the per-game outcome:
 # v_target = (1 - q_mix) * z + q_mix * td_q. 0 = the classic pure-outcome AZ
 # target, 1 = pure bootstrap. TRAINING side (the shards always carry td_q).
-DEFAULT_AZ_Q_MIX = 0.75      # weight of the n-step TD target over raw z: td_q
-                             # bootstraps off search root values, which are far less
-                             # game-specific than z — the main anti-memorization lever
+DEFAULT_AZ_Q_MIX = 0.5       # equal blend of outcome and n-step TD target: td_q
+                             # cuts z's per-game variance, but over-weighting it
+                             # (0.75) contracted decided-game value targets to
+                             # ±~0.5-0.7 — the 2026-08-25 gate failure. Distinct-
+                             # game volume is a generation-side concern (playout-
+                             # cap randomization), not q_mix's
 
 # Promotion gate (az-eval / the gate step of az / az-league).
 #
