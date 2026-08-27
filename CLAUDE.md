@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Don't put new functions in main.cpp
 - Don't edit my comments for spelling or punctuation. Only change them if something substantive changed.
+- Do not include in comments explanations of how things were previously prior to a change. Document only how code currently behaves.
 - Avoid inline logic for anything that will be repeated; write new functions that are reusable
 - Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
 - Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
@@ -56,15 +57,9 @@ this version current if a newer Comprehensive Rules release supersedes it.
 
 ## Build Commands
 
-- **Build the project**: `make clean && make`
+- **Build the project**: `make && make actor`
 - **Clean build artifacts**: `make clean`
-- **Build for release**: `make BUILD=RELEASE`
-
-**The engine build is always headless** — the front ends (Textual TUI, PySide6 GUI) are pure
-Python and drive `bin/robomage` over machine-mode stdio, so there is no front-end build option.
-The deprecated C++ raylib GUI was removed entirely; there is no `GUI=TRUE` build option.
-(`make HEADLESS=TRUE` is still accepted as a redundant no-op for backward compatibility.
-PySide6 is an optional Python extra: `pip install -r train/requirements-gui.txt`.)
+- **Build for release**: `make BUILD=RELEASE && make actor BUILD=RELEASE`
 
 The compiled binary is output to `bin/<config>/robomage` — `bin/debug/robomage` from a plain
 `make`, `bin/release/robomage` from `make BUILD=RELEASE` (separate object/output trees per
@@ -81,10 +76,7 @@ just built** — every `train/` entry point resolves its engine binary through `
 - **Release by default** (`bin/release/robomage`) — the GUI (`gui.sh` / `play.py --gui`), the
   standalone TUI analysis browser (`tui_analysis.py` / `analysis.py`'s `interactive`/`search`/
   `browse` subcommands), and every PPO/AZ training driver (`train.py train/league/exploiter/
-  sweep/fixed-model/alternate/az-selfplay/az-train/az-eval/az/az-league`). These push a lot of
-  decisions through the engine where speed matters more than assertions, so a plain `make`
-  alone isn't enough for them — you also need `make BUILD=RELEASE` before running one, or they
-  fail to find `bin/release/robomage`.
+  sweep/fixed-model/alternate/az-selfplay/az-train/az-eval/az/az-league`).
 
 **Override**: set the `ROBOMAGE_BUILD` environment variable to force every tool (both tiers
 above) onto a specific config — e.g. `ROBOMAGE_BUILD=debug train/.venv/bin/python train/train.py
@@ -107,14 +99,6 @@ cast-cost/property matrices in sync automatically**; there is nothing to commit 
 `pygen` CI tier only guards the two tracked outputs (the untracked three cannot go stale — they
 are rebuilt from the pinned, provisioned scripts on every build and in CI).
 
-**Run build/test commands plainly so they don't trigger a permission prompt.** A single
-command, or a single pipeline whose programs are all allowlisted (`make`, the `train/...`
-python entry points, `grep`/`head`/`tail`/`echo`), auto-approves. Avoid the shell plumbing
-that forces a prompt: chaining statements with `;`/`&&`, and `${PIPESTATUS[0]}` / `$(...)`
-expansions. Prefer bare `make` and `... | grep -i error` over
-`make 2>&1 | grep ... ; echo "EXIT:${PIPESTATUS[0]}"`; read the printed output for status
-instead of `$PIPESTATUS`.
-
 ## Long-running commands (Claude)
 
 When Claude runs a long command (build, training, gate, fuzz, bench) it must run it **in the
@@ -122,8 +106,6 @@ background** and make the live output inspectable by the user:
 
 - Always state the task's output-file path in chat when launching it, so the user can
   `tail -f` it while it runs. (No symlinks or other indirection — just the path.)
-- Foreground runs stream nothing until they exit (for Claude AND the user), so anything
-  expected to take more than ~30 s should be backgrounded rather than run with a long timeout.
 
 ## Testing guidelines
 -**The standard gate is `make check`** (builds + runs `train/ci_check.py`: codegen-sync,
@@ -161,16 +143,6 @@ background** and make the live output inspectable by the user:
  tools (harness, observe, baseline, play.py, fuzz, ci_check, analysis, bench) sit on the
  same `runner.drive_game` loop — do not hand-roll new decision loops; see
  [`docs/game_running.md`](docs/game_running.md).
--**`observe` requires torch.** `train/train.py` imports `stable_baselines3`/`sb3-contrib`
- (hence torch) at module load, so `observe` is unavailable wherever torch isn't installed —
- notably headless cloud containers, whose ephemeral filesystem would re-pay torch's ~0.5–1 GB
- install every session. For a torch-free **regression** that exercises the *same* C++ engine and
- the *same* rule-based `scripted_action`, run scripted full games through the test harness across
- a few seeds instead: `train/.venv/bin/python train/test_harness.py --deck-a <a> --deck-b <b>
- --scripted --seed N` (vary N). `observe`'s unique extra coverage is model-driven play (a trained
- checkpoint) and the gym env/extractor observation pipeline — relevant to RL eval, not to
- verifying a card's rules behavior. Prefer `observe` when torch is present; otherwise fall back to
- harness scripted games.
 
 ### Test harness for card behavior verification
 
@@ -574,175 +546,6 @@ Python venv: `train/.venv/` — activate with `source train/.venv/bin/activate` 
 
 Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO` with action masking).
 
-### Checkpoint naming: the one generalist (`gen`)
-
-There is **one generalist model** that pilots *any* deck against *any* opponent —
-not per-deck, not matchup-specific. It is stored under the fixed stem `gen`:
-`checkpoints/gen__final.zip` (the current generalist) plus periodic
-`gen__v{steps}.zip` snapshots (note the **double** underscore). The model
-filename encodes **no deck** — so the deck a model pilots (and the opponent's
-deck) must always travel as a **separate explicit parameter**. The self-play and
-league pools, the `random-model` opponent-pool token, `play`, and `analysis` all
-resolve the model as `gen` (`gen__final.zip`, else the newest `gen__v*.zip`) and
-take the deck(s) separately. A bare *deck* stem (`delver`) is **no longer**
-accepted as a checkpoint/model spec — the only model specs are `gen`, an explicit
-`.zip`/`.pt` path, or the `az:gen`/`azraw:gen`/`mcts:gen` search wrappers. `gen`
-is a reserved stem: a roster/league deck may not be named `gen`.
-
-There is likewise **one generalist AZ net**, `checkpoints/az/gen__azfinal.pt`
-(the gate-promoted incumbent) plus `gen__azv{steps}.pt` candidate snapshots.
-It is always warm-started from the PPO `gen` checkpoint — AZ has no
-from-scratch path — so build `gen__final.zip` (via `league`) before running
-`az`/`az-train`.
-
-Every training session **continues that one generalist**: each training
-subcommand auto-resumes the existing `gen__final.zip` (or newest snapshot) and
-accumulates the session's steps onto it, regardless of which deck/opponent this
-session trains on. Pass `--fresh` to start the generalist over from scratch, or
-`--load <path>` to resume a specific checkpoint. Because the filename carries no
-deck, the deck must always be given explicitly (e.g. `baseline --deck`,
-analysis's `--deck-a`/`--deck-b`).
-
-### Training commands (run from repo root)
-
-`train.py` uses subcommands (`train -h` for any subcommand's options). The
-`train` subcommand is assumed when none is given, so one-liner training still
-works without typing `train`.
-
-**`league` is the primary way to train the PPO generalist** — it rotates the
-roster and the PFSP snapshot pool for you. The single-matchup `train`/`sweep`
-subcommands below are for scripting one deck-vs-deck session or inspecting a
-checkpoint, not the main training loop.
-
-```bash
-# Training (the 'train' subcommand is implied when omitted)
-train/.venv/bin/python train/train.py --deck delver --opponent mav                 # continue the generalist on delver vs mav
-train/.venv/bin/python train/train.py --deck delver --opponent burn                # same gen__final.zip, now also on delver vs burn
-train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start gen__final.zip from scratch
-train/.venv/bin/python train/train.py train --deck delver --opponent mav --load checkpoints/gen__v500000.zip  # resume a specific snapshot
-train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play vs the generalist's frozen snapshots
-
-# Evaluation / inspection
-# baseline: model vs scripted HARD, mirror decks. --deck is REQUIRED (the model
-# encodes no deck); seats alternate per game, --seed reproducible.
-train/.venv/bin/python train/train.py baseline gen --deck delver                      # win rate vs scripted:hard piloting delver
-train/.venv/bin/python train/train.py baseline --all --games 100                      # round-robin the generalist (gen__final.zip): every roster deck vs every roster deck (scripted:hard), per-matchup + per-deck win rates; appends checkpoints/baseline_report.log (--log to override)
-train/.venv/bin/python train/train.py baseline az:gen --all --games 50                # same NxN round-robin for ANY model spec — az:gen / azraw:gen / mcts:gen / an explicit .zip/.pt (e.g. an exp_* exploiter) — so the AZ net and exploiters get the same per-matchup report as the PPO gen
-# observe: one command for any {scripted|model} vs {scripted|model} matchup
-# (replaced the old diag/watch commands). --games N for a multi-game pass + summary,
-# --verbose for the full per-decision transcript, --seed for reproducibility.
-# observe runs bo3 MATCHES BY DEFAULT; --bo1 for single games.
-train/.venv/bin/python train/train.py observe --player-a gen --player-b scripted --deck delver --opponent mav  # watch one match (per-side controller + deck)
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one bo3 match (compact)
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10               # verify env: 10 matches + W/L/D summary
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --verbose                # full transcript (state + action menu + narrative)
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10 --bo1         # 10 single (bo1) games
-
-# Bulk training (was --train-all / --train-deck)
-train/.venv/bin/python train/train.py sweep                                           # all deck×deck matchups
-train/.venv/bin/python train/train.py sweep --deck delver                             # matchups featuring delver
-
-# PFSP league (rotating learner over a shared snapshot pool)
-train/.venv/bin/python train/train.py league                                          # train the decks/league/ roster
-train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted league run
-
-# Archetype exploiters (AlphaStar-style main exploiters feeding the league pool)
-train/.venv/bin/python train/train.py exploiter --archetype burn                      # pilot the burn decks vs the FROZEN gen; saves exp_burn__*.zip
-train/.venv/bin/python train/train.py exploiter --archetype burn --resume             # resume that archetype's run
-
-# AlphaZero (MCTS-trained net, warm-started from the PPO gen checkpoint — run league first)
-train/.venv/bin/python train/train.py az --deck delver                                # one cycle: self-play -> train -> gate
-train/.venv/bin/python train/train.py az-league                                       # rotate AZ cycles across decks/league/
-train/.venv/bin/python train/train.py az-league --matrix --expert-decks league/wubg_doomsday  # whole-roster focus matrix + scripted:hard expert (BC) shards for the combo deck each slot
-train/.venv/bin/python train/train.py az-league --exhaustive --rotations 2 --gate-every 0 --window 0 --workers 28  # EXACT matchup matrix each slot (one bo3 match vs scripted:hard per ordered deck pair + one self-play match per unordered pair = 155 on the 10-deck roster; with the C++ actor built the WHOLE matrix runs on it — vs-scripted cells ship the scripted seat's decisions to train/scripted_oracle.py — else pure Python), auto 2x shard window (0 = twice this slot's new shards, so the previous pass stays in-window), ungated (--gate-every 0: no gates; final candidate promoted to gen__azfinal unconditionally at completion)
-train/.venv/bin/python train/train.py az-league --exhaustive-selfplay --exhaustive-repeats 2 --gate-every 0 --window 0 --workers 28  # same EXACT matrix narrowed to the PURE SELF-PLAY cells only (one bo3 match per UNORDERED deck pair, mirrors included = 55 on the 10-deck roster; NO vs-scripted cells, so the whole slot runs on the C++ actor with no Python fallback), --exhaustive-repeats N plays every cell N times per slot (2 = every self-play matchup twice). Both flags apply to `train.py az` too, and are persisted in the az-league resume sidecar. Plan file: curricula/az_selfplay_matrix.plan.json
-
-# Curriculum: a multi-phase plan (league -> exploiter -> league -> az-league -> baseline) in one file
-train/.venv/bin/python train/train.py curriculum --plan q3 --dry-run                  # print each phase's composed command
-train/.venv/bin/python train/train.py curriculum --plan q3                            # run it (each phase is a subprocess)
-train/.venv/bin/python train/train.py curriculum --plan q3 --status                   # per-phase state from the progress file
-train/.venv/bin/python train/train.py curriculum --plan q3 --resume                   # continue after an interruption
-```
-
-**Curricula.** A curriculum is an ordered list of phases whose `kind` is a `train.py`
-subcommand (`league`, `exploiter`, `az`, `az-league`, `baseline`), written as
-`train/checkpoints/curricula/<name>.plan.json` (`"version": 1`) and executed by
-`train.py curriculum` — one SUBPROCESS per phase, so PPO and AZ phases stay memory-isolated
-and each phase reuses its own `--resume` machinery. A phase carries a few convenience fields
-(`decks`, `steps`, `archetype`, `rotations`, `games`, `model`, `deck`) plus an `overrides`
-object whose keys are that subcommand's **`cli_spec` arg dests** — the spec IS the schema, so
-an unknown kind/override or a wrong value type fails loudly at load instead of at phase
-launch. Progress lives in `<name>.progress.json` next to the plan; `--resume` skips completed
-phases and relaunches the one that was in flight (with `--resume` of its own for the drivers
-that support it), refusing to run if an already-executed phase was edited while allowing free
-edits to the phases still ahead. The TUI's `curriculum` entry opens a plan builder screen
-(phase list + per-phase form generated from that kind's `cli_spec` Sub) with Save/Load/Run/
-Resume/Status. See `train/curriculum.py`.
-
-**League resume.** A `league` run persists its driver progress (roster, total budget,
-global steps done, current rotation, and every hyperparameter) to
-`train/checkpoints/_league_progress.json`, rewritten every time a snapshot checkpoint is
-saved and at each rotation boundary. If the session is interrupted, restart it with just
-`train.py league --resume` (in the TUI, tick the league form's **--resume** checkbox) — the
-sidecar restores the full run configuration and the loop continues from where it left off,
-re-entering a partially-trained rotation for only its remainder. All other
-flags are ignored when `--resume` is set; the one generalist's weights resume from
-`gen__final.zip` / newest `gen__v*.zip` as usual.
-
-**League opponent sampling (`LeaguePool`, `train/opponents.py`).** Each episode the pool
-makes two coupled choices — which opponent *deck* and which *controller* pilots it — from
-three branches: a small **latest-self** slot (`--self-play-frac`, default **0.2** — the
-anti-collapse "keep up with your own frontier" mirror), a **scripted anchor** floor
-(`--scripted-anchor-frac`, default 0.1, also the cold-start fallback), and, for the
-majority of episodes, a **PFSP-weighted historical snapshot** where each snapshot's weight
-is `(1 - learner_winrate_vs_it)^p` (`--pfsp-p`, default 2). That weighting is what
-concentrates training on the learner's **worst** matchups — a 0%-win opponent gets weight
-~1.0, a ~50% one ~0.25 — so keeping the fixed mirror slot **small** (not the old 0.8) hands
-the bulk of games to the hard matchups rather than drowning them in ~50% mirror games. It is
-self-tuning: as win-rates shift, PFSP reallocates automatically. To bias even harder toward
-losing matchups, lower `--self-play-frac` (e.g. 0.1) or raise `--pfsp-p`.
-
-**Active-pool composition (bounded but fair).** Pool entries are `(opponent_deck,
-gen_snapshot)` pairs — the one generalist piloting each roster deck. The pool is capped to
-`max(1, floor(opponent_ckpt_ratio * n_envs))` unique checkpoints (sharded across env
-processes) to bound memory, but it is **not** a raw recency slice — that starved decks early
-in the roster order. Instead it keeps, per deck, a **guaranteed** anchor (`gen__final` piloting
-that deck, or the newest `gen` snapshot if no `__final` yet) that is never evicted, plus
-**discretionary** `gen__v*` intermediates filled newest-first round-robin across decks. So every
-roster deck is always represented as an opponent — even a perennial-loser deck stays in the pool
-via the generalist's `__final` piloting it.
-
-**Archetype exploiters (`train.py exploiter --archetype <arch>`).** A dedicated run whose
-learner pilots ONE archetype's decks (every deck tagged with that archetype in
-`bin/resources/decks/archetypes.json`) against a **frozen** opponent pool pinned to the
-current `gen__final.zip` piloting the whole league roster — no snapshot rotation, no
-latest-self mirror, so the target never moves. It saves under its own checkpoint stem
-`exp_<archetype>` (`exp_burn__v{steps}.zip` / `exp_burn__final.zip`) and **never writes a
-`gen` file**; `exp_*`, like `gen`, is a reserved stem no deck may be named. Weights
-warm-start from `gen` (fresh step counter) unless `--fresh`; progress goes to
-`checkpoints/_exploiter_<archetype>_progress.json` so `exploiter --archetype <arch> --resume`
-continues an interrupted run. Later `league` runs then pick the exploiters up
-automatically: each archetype's newest exploiter is a never-evicted pool entry piloting that
-archetype's roster decks, older `exp_*__v*` compete for the discretionary budget, and
-`--exploiter-floor` (default 0.1) reserves a minimum share of episodes for them on top of
-their normal PFSP weight — so the generalist gets inoculated against burn/combo/control
-styles without having to discover them itself.
-
-**Snapshot promotion gate (`--promote-margin`, default 0.05).** The periodic
-`gen__v{steps}.zip` snapshots are only saved when the learner's *recent-window* win-rate
-clears `0.5 + margin` (first snapshot per deck exempt; `0` disables the gate; a negative
-margin gates below 50%). This keeps the pool from filling with near-duplicate weak
-intermediates. It gates **only** `gen__v*` snapshots — `gen__final` is always saved
-unconditionally at rotation end (and always kept in the pool per the composition rule above),
-so raising the margin never removes a deck from the field; it only thins the version history.
-
-### Best-of-three mode
-
-`--bo3` flag (C++ and Python) runs a best-of-three match in a single process:
-- Player A goes first in game 1; loser goes first in subsequent games
-- Each player keeps their own deck and seat across all games of the match
-- Between games both players can sideboard (swap cards between main deck and sideboard)
-- Match ends when either player reaches 2 wins
 
 **C++ output protocol (machine mode):**
 - `GAME_RESULT: N Player A wins` / `GAME_RESULT: N Player B wins` — after each game
