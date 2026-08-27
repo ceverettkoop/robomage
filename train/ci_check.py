@@ -26,6 +26,13 @@ fails, so one invocation reports every finding):
   curriculum The curriculum plan schema and the argv each phase kind composes
           for its train.py subcommand, the resume argv forms, and the plan-hash
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
+  gatesprt The AZ promotion gate's sequential test (train/gate_sprt.py): the
+          hypotheses are symmetric about 0.5, draws score half/half, the
+          verdict is monotone and mirror-symmetric, the round cap's tie-break
+          is the unbiased score > 0.5, and simulated gates accept a stronger
+          candidate (in fewer matches than the fixed panel it replaced), reject
+          a weaker one, and coin-flip an EQUAL one instead of favoring the
+          incumbent (train/test_gate_sprt.py). Stdlib-only, instant.
   shardrec The play-session shard recorder (train/shard_record.py behind the
           GUI's "Record shards" / play.py --record-shards): a synthetic bo3
           match's searched + one-hot rows write trainer-schema shards, a
@@ -167,7 +174,7 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "concede", "obsinv",
+ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "concede", "obsinv",
              "actorobs", "pergame", "snapshot", "sbselfplay", "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
 
@@ -338,6 +345,24 @@ def tier_curriculum(rep):
         rep.error("curriculum", "curriculum plan/argv violation "
                                 f"(test_curriculum.py exit {r.returncode}):\n"
                                 f"{r.stdout}{r.stderr}")
+
+
+def tier_gatesprt(rep):
+    """AZ promotion-gate sequential-test regression (train/gate_sprt.py).
+
+    The gate's promote/keep verdict is decided by an SPRT on the aggregate
+    match score, so a silent change to that math changes which nets get
+    promoted with no other symptom. Asserts the symmetry, draw handling,
+    monotonicity, Wald bounds, unbiased cap tie-break, and end-to-end
+    simulated-gate behavior (see train/test_gate_sprt.py). Stdlib-only,
+    torch-free, engine-free."""
+    r = subprocess.run([sys.executable, "train/test_gate_sprt.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("gatesprt", "gate sequential-test violation "
+                              f"(test_gate_sprt.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
 
 
 def tier_shardrec(rep):
@@ -932,6 +957,8 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "curriculum":
             tier_curriculum(rep)
+        elif t == "gatesprt":
+            tier_gatesprt(rep)
         elif t == "shardrec":
             tier_shardrec(rep)
         elif t == "concede":

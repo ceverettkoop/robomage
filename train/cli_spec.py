@@ -13,6 +13,7 @@ import os
 from dataclasses import dataclass, field, replace
 
 from archetypes import ARCHETYPES
+from gate_sprt import DEFAULT_GATE_ALPHA as _GATE_ALPHA
 
 # ── Canonical CLI constants (single home; imported by env.py / train.py) ──────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -140,23 +141,44 @@ DEFAULT_AZ_Q_MIX = 0.75      # weight of the n-step TD target over raw z: td_q
                              # game-specific than z — the main anti-memorization lever
 
 # Promotion gate (az-eval / the gate step of az / az-league).
-DEFAULT_AZ_EVAL_GAMES = 56
-# Gate at SERVING strength: the `az:gen` serving spec defaults to 128 sims over 4
-# worlds, so gating at 16 sims/world measured a different — and much weaker —
-# player than the one that actually gets deployed, and its promote/keep verdict
-# said little about the served net.
-DEFAULT_AZ_EVAL_SIMS = DEFAULT_AZ_SIMS    # gate at the TRAINING budget: a shallow
-                                          # (prior-dominated) gate measures a different
-                                          # regime than the one the net trains in
+#
+# The gate is a SEQUENTIAL test (train/gate_sprt.py): the matchup panel is played
+# in balanced ROUNDS of DEFAULT_AZ_EVAL_GAMES matches and an SPRT on the
+# accumulated aggregate decides after each round — promote, keep, or buy another
+# round — up to DEFAULT_AZ_GATE_MAX_ROUNDS. A decisive candidate stops in one or
+# two rounds; a marginal one keeps playing rather than taking a verdict from an
+# underpowered sample. Hypotheses are symmetric about 0.5
+# (H1 p=DEFAULT_AZ_PROMOTE_THRESHOLD vs H0 p=1-threshold), so a genuinely equal
+# candidate is a coin flip rather than a near-certain rejection.
+DEFAULT_AZ_EVAL_GAMES = 28        # matches per ROUND (>= 2 per panel matchup so
+                                  # seats alternate within every round)
+# Gate at SERVING strength, which is also the TRAINING budget: the `az:gen`
+# serving spec searches 128 sims over 4 worlds, so anything shallower gates a
+# different — and much weaker, prior-dominated — player than the one actually
+# deployed, and its promote/keep verdict says little about the served net. The
+# lever for gate COST is more matches per verdict (--gate-max-rounds), never
+# fewer sims per match.
+DEFAULT_AZ_EVAL_SIMS = DEFAULT_AZ_SIMS
 DEFAULT_AZ_EVAL_WORLDS = DEFAULT_AZ_WORLDS
-DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55
+DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55   # SPRT's H1; H0 is its mirror, 0.45
+DEFAULT_AZ_GATE_MAX_ROUNDS = 8    # hard cap: 8 x 28 = 224 matches. At the cap
+                                  # the undecided test falls back to the
+                                  # UNBIASED tie-break (promote iff score > 50%)
+DEFAULT_AZ_GATE_ALPHA = _GATE_ALPHA   # symmetric SPRT error rates (alpha=beta)
 DEFAULT_AZ_GATE_FLOOR = 0.2
-DEFAULT_AZ_GATE_FLOOR_MIN = 4
+# Minimum candidate matches on a piloted deck before the per-deck floor veto can
+# fire. Sized so an equal candidate is not plausibly wiped on a deck by chance:
+# at 8 matches a 0-for-8 is a ~0.4% shot per deck, small enough across a ~10-deck
+# roster to leave the aggregate test in charge of the verdict, while the veto
+# still catches a candidate that genuinely forgot how to pilot a deck. A veto
+# overrides the aggregate, so a false positive here is a silent bias toward the
+# incumbent.
+DEFAULT_AZ_GATE_FLOOR_MIN = 8
 DEFAULT_AZ_GATE_CROSS_PAIRS = 2
-# Gate every K az-league slots. 2 amortizes the (now 4x heavier, see the eval
-# budget above) gate: at DEFAULT_AZ_LR a single slot's weight delta rarely clears
-# the 0.55 promote bar anyway, so paying the gate every slot mostly bought
-# "kept-incumbent" lines.
+# Gate every K az-league slots. 2 amortizes the gate's cost (it searches at the
+# full eval budget above, over at least one panel round): at DEFAULT_AZ_LR a
+# single slot's weight delta rarely carries the sequential test to a verdict, so
+# gating every slot mostly buys "kept-incumbent" lines.
 DEFAULT_AZ_GATE_EVERY = 2
 
 # Expert (behavior-cloning) shard generation. --expert-decks defaults to the
@@ -586,6 +608,38 @@ def _epoch_frac():
                     f"over the loaded window (default {DEFAULT_AZ_EPOCH_FRAC}). "
                     "A full epoch (1.0) memorizes the window's small set of "
                     "distinct games; explicit --batches ignores this")
+
+
+def _gate_max_rounds():
+    """--gate-max-rounds (az-eval / az / az-league): the sequential gate's cap."""
+    return Arg("--gate-max-rounds", "int", default=DEFAULT_AZ_GATE_MAX_ROUNDS,
+               help="Hard cap on the sequential gate's panel ROUNDS (default "
+                    f"{DEFAULT_AZ_GATE_MAX_ROUNDS}; 1 = a single fixed "
+                    "panel). Each round plays --games matches over the panel "
+                    "and the SPRT then promotes, keeps, or buys another round; "
+                    "at the cap the undecided test promotes iff the aggregate "
+                    "score is above 50%%")
+
+
+def _gate_alpha():
+    """--gate-alpha (az-eval / az / az-league): the SPRT's error rates."""
+    return Arg("--gate-alpha", "float", default=DEFAULT_AZ_GATE_ALPHA,
+               help="Symmetric SPRT error rates (alpha=beta, default "
+                    f"{DEFAULT_AZ_GATE_ALPHA}): the chance of promoting a "
+                    "candidate that is really at H0 and of keeping one that is "
+                    "really at H1. Lower = stricter and slower (roughly doubles "
+                    "the matches per verdict per halving)")
+
+
+def _gate_floor_min():
+    """--gate-floor-min (az-eval / az / az-league): floor-veto sample floor."""
+    return Arg("--gate-floor-min", "int", default=DEFAULT_AZ_GATE_FLOOR_MIN,
+               help="Minimum candidate matches on a piloted deck before the "
+                    f"per-deck floor veto may fire (default "
+                    f"{DEFAULT_AZ_GATE_FLOOR_MIN}). Rounds accumulate, so a "
+                    "long sequential gate powers the veto up as it goes; set 0 "
+                    "with --gate-floor 0 to drop the veto entirely and let the "
+                    "aggregate test carry the verdict alone")
 
 
 def _no_gate_shards():
@@ -1068,25 +1122,35 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Also save an intermediate gen__azv{steps}.pt every N batches (0=off)"),
         Arg("--seed", "int", default=0),
     ]),
-    Sub("az-eval", "Gate a candidate AZNet vs the incumbent (MCTS, low sims)", items=[
+    Sub("az-eval", "Gate a candidate AZNet vs the incumbent (sequential test, "
+                   "MCTS at the training sim budget)", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
         Arg("--candidate", "str", required=True, suggest="az_checkpoint",
             help="Candidate AZ .pt ('gen' or a path)"),
         Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
             help="Incumbent AZ .pt (default: gen__azfinal.pt; scripted if none yet)"),
         Arg("--games", "int", default=DEFAULT_AZ_EVAL_GAMES,
-            help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs)"),
+            help="Gate matches per ROUND, split over the roster-wide panel (a "
+                 "mirror per roster deck + direction-balanced cross pairs). The "
+                 "gate plays rounds until the SPRT decides or --gate-max-rounds "
+                 f"is reached (default {DEFAULT_AZ_EVAL_GAMES} = 2 matches per "
+                 "panel matchup, the smallest seat-balanced round)"),
+        _gate_max_rounds(),
+        _gate_alpha(),
         Arg("--sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
         Arg("--worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
-        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD,
+            help="The sequential test's H1 win-rate; H0 is its mirror "
+                 "(1-threshold), so the test is symmetric about 50%% and does "
+                 "not favor the incumbent"),
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
         Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
-                 "LIKE pairings falls below 2*floor-1 vetoes promotion even "
-                 "when the aggregate clears the bar (0 disables; on mirrors "
-                 "alone this equals win-rate < floor)"),
+                 ">=--gate-floor-min gate matches whose win-rate deficit vs the "
+                 "incumbent on LIKE pairings falls below 2*floor-1 vetoes "
+                 "promotion even when the aggregate test accepts (0 disables; "
+                 "on mirrors alone this equals win-rate < floor)"),
+        _gate_floor_min(),
         Arg("--cross-pairs", "int", default=DEFAULT_AZ_GATE_CROSS_PAIRS,
             help="Seeded cross-deck pairings added to the panel on top of the "
                  "per-deck mirrors, each played in BOTH directions (default "
@@ -1094,15 +1158,19 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--record-dir", "str", default=None,
             help="Record every gate leg's searched decisions (both nets) as "
                  "trainer-schema shards under this directory, one subdir per "
-                 "leg (cand_<seat>__<deck_x>__<deck_y>), for az_inspect / the "
-                 "shard browsers. Actor backend only; never the training pool"),
+                 "leg (cand_<seat>__r<round>__<deck_x>__<deck_y>), for "
+                 "az_inspect / the shard browsers. Actor backend only. Default: "
+                 "a fresh dir under az_data/gate (the shards are pooled into "
+                 "training unless --no-pool-shards)"),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N,
             help="n-step TD horizon stored in the recorded shards (--record-dir)"),
         Arg("--no-pool-shards", "flag",
-            help="With --record-dir: do NOT also copy the recorded shards into "
-                 "the az_data/gen training pool after the gate. Default ON "
-                 "(recorded candidate-vs-incumbent games become training data "
-                 "— the cross-net signal pure self-play lacks)"),
+            help="Do NOT move the gate's recorded shards into the az_data/gen "
+                 "training pool afterwards. Default ON, and the gate records by "
+                 "default (bo3 + actor backend), so the sequential gate's "
+                 "compute is never wasted: however many rounds a verdict costs, "
+                 "every one of those candidate-vs-incumbent games becomes "
+                 "training data — the cross-net signal pure self-play lacks"),
         _c_puct(),
         Arg("--seed", "int", default=1),
         Arg("--bo1", "flag",
@@ -1192,17 +1260,26 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "them via the scripted oracle alongside the self-play cells. "
                  "Ignored (with a note) under full --exhaustive."),
         Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
-            help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs; default "
-                 f"{DEFAULT_AZ_EVAL_GAMES} = 4 per matchup on a 10-deck roster)"),
+            help="Gate matches per ROUND, split over the roster-wide panel (a "
+                 "mirror per roster deck + direction-balanced cross pairs; "
+                 f"default {DEFAULT_AZ_EVAL_GAMES} = 2 per matchup on a 10-deck "
+                 "roster, the smallest seat-balanced round). The gate plays "
+                 "rounds until its SPRT decides or --gate-max-rounds is hit"),
+        _gate_max_rounds(),
+        _gate_alpha(),
         Arg("--eval-sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
         Arg("--eval-worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
-        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD,
+            help="The sequential test's H1 win-rate; H0 is its mirror "
+                 "(1-threshold), so the test is symmetric about 50%% and does "
+                 "not favor the incumbent"),
         Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
-                 "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
-                 "disables; on mirrors alone this equals win-rate < floor)"),
+                 ">=--gate-floor-min gate matches whose win-rate deficit vs the "
+                 "incumbent on LIKE pairings falls below 2*floor-1 vetoes "
+                 "promotion (0 disables; on mirrors alone this equals win-rate "
+                 "< floor)"),
+        _gate_floor_min(),
         _no_gate_shards(),
         Arg("--expert-decks", "str", default=EXPERT_DECKS_ROSTER,
             suggest="league_deck", multi=True,
@@ -1284,17 +1361,26 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "the shards each slot's generation writes, so every training "
                  "pass covers exactly that pass plus the previous one"),
         Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
-            help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs; default "
-                 f"{DEFAULT_AZ_EVAL_GAMES} = 4 per matchup on a 10-deck roster)"),
+            help="Gate matches per ROUND, split over the roster-wide panel (a "
+                 "mirror per roster deck + direction-balanced cross pairs; "
+                 f"default {DEFAULT_AZ_EVAL_GAMES} = 2 per matchup on a 10-deck "
+                 "roster, the smallest seat-balanced round). The gate plays "
+                 "rounds until its SPRT decides or --gate-max-rounds is hit"),
+        _gate_max_rounds(),
+        _gate_alpha(),
         Arg("--eval-sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
         Arg("--eval-worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
-        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD,
+            help="The sequential test's H1 win-rate; H0 is its mirror "
+                 "(1-threshold), so the test is symmetric about 50%% and does "
+                 "not favor the incumbent"),
         Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
-                 "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
-                 "disables; on mirrors alone this equals win-rate < floor)"),
+                 ">=--gate-floor-min gate matches whose win-rate deficit vs the "
+                 "incumbent on LIKE pairings falls below 2*floor-1 vetoes "
+                 "promotion (0 disables; on mirrors alone this equals win-rate "
+                 "< floor)"),
+        _gate_floor_min(),
         _no_gate_shards(),
         Arg("--gate-every", "int", default=DEFAULT_AZ_GATE_EVERY,
             help="Run the eval/gate every K slots instead of every slot: the "
