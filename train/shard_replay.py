@@ -195,7 +195,11 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
         for rows in games:
             for i in rows:
                 n = int(mask[i].sum())
-                best = int(np.argmax(pi[i]))
+                # A playout-cap fast-search row carries no policy target
+                # (all-zero pi): there is no recorded action to point at, so
+                # mark it -1 (renders as "no row chosen") instead of letting
+                # argmax silently claim action 0.
+                best = int(np.argmax(pi[i])) if float(pi[i].sum()) > 0.0 else -1
                 if bool(obs[i, _SELF_IS_A_IDX] > 0.5) == viewpoint_is_a:
                     steps.append(np.array(obs[i]))
                     mover_z = float(z[i])
@@ -210,7 +214,9 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
                         interp.append(interp_fn(obs[i]))
                 else:
                     acts = decode.decode_actions_from_obs(obs[i], n)
-                    desc = acts[best]["description"] if best < n else f"#{best}"
+                    desc = (acts[best]["description"] if 0 <= best < n
+                            else "(fast search — no recorded action)"
+                            if best < 0 else f"#{best}")
                     opp.append({"desc": desc, "before_model_step": len(steps),
                                 "clock": None})
         if not steps:

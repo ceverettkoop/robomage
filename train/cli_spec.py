@@ -94,6 +94,21 @@ DEFAULT_SB_ROLLOUT_TURNS = 6
 DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and standalone az-selfplay)
 DEFAULT_AZ_SIMS = 1028       # in-game PUCT sims, TOTAL across worlds (the 8_20 run budget)
 DEFAULT_AZ_WORLDS = 8        # determinized worlds per search (the 8_20 run budget)
+# Playout-cap randomization (KataGo-style), the anti-memorization lever: each
+# searched in-game root gets the FULL --sims budget with probability
+# --full-search-frac (pi is recorded from those rows only), else a fast
+# --fast-sims search that picks the move but records NO policy target — the
+# shard row keeps its real root value q (and so td_q/z) with an all-zero pi
+# the trainer's policy loss skips. At the same engine budget this multiplies
+# distinct games per slot by ~ sims / (frac*sims + (1-frac)*fast_sims)
+# (~3x at the defaults): more distinct outcomes for the value head instead of
+# more sims per position. Sideboard plan-search roots are exempt (their own
+# sb_* budget; always full policy rows). frac >= 1 restores the classic
+# every-root-full behavior. GENERATION side, honored by both backends; the
+# full-vs-fast coin is a deterministic hash (az_selfplay.playout_cap_full),
+# never a play-rng draw.
+DEFAULT_AZ_FULL_SEARCH_FRAC = 0.25
+DEFAULT_AZ_FAST_SIMS = 128   # the fast budget; also the az:gen serving sims
 DEFAULT_AZ_MIRROR_FRAC = 0.25  # P(opponent deck == focus deck) per self-play game
 DEFAULT_AZ_TEMP_MOVES = 20   # sample from visit counts for the first N decisions per game
 # n-step TD value target (GENERATION side — baked into each shard's td_q column).
@@ -613,6 +628,28 @@ def _epoch_frac():
                     "distinct games; explicit --batches ignores this")
 
 
+def _full_search_frac():
+    """--full-search-frac (az-selfplay / az / az-league): playout-cap coin."""
+    return Arg("--full-search-frac", "float",
+               default=DEFAULT_AZ_FULL_SEARCH_FRAC,
+               help="Playout-cap randomization: fraction of searched in-game "
+                    "roots that get the FULL --sims budget and record a pi "
+                    f"policy target (default {DEFAULT_AZ_FULL_SEARCH_FRAC}); "
+                    "the rest run a fast --fast-sims search that picks the "
+                    "move but records no pi (value targets record from every "
+                    "row). Multiplies distinct games per engine budget; 1.0 "
+                    "restores every-root-full. Sideboard roots are exempt")
+
+
+def _fast_sims():
+    """--fast-sims (az-selfplay / az / az-league): playout-cap fast budget."""
+    return Arg("--fast-sims", "int", default=DEFAULT_AZ_FAST_SIMS,
+               help="PUCT sims (TOTAL across --worlds) for the fast searches "
+                    "of the playout cap — the in-game roots the "
+                    "--full-search-frac coin does not pick "
+                    f"(default {DEFAULT_AZ_FAST_SIMS})")
+
+
 def _gate_max_rounds():
     """--gate-max-rounds (az-eval / az / az-league): the sequential gate's cap."""
     return Arg("--gate-max-rounds", "int", default=DEFAULT_AZ_GATE_MAX_ROUNDS,
@@ -1069,6 +1106,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
+        _full_search_frac(),
+        _fast_sims(),
         _c_puct(),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
@@ -1213,6 +1252,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        _full_search_frac(),
+        _fast_sims(),
         _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
@@ -1344,6 +1385,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        _full_search_frac(),
+        _fast_sims(),
         _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),

@@ -59,6 +59,7 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_EXPERT_GAMES, DEFAULT_AZ_EXHAUSTIVE_REPEATS,
                       DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
                       DEFAULT_AZ_VALUE_DECAY, DEFAULT_AZ_EPOCH_FRAC,
+                      DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
 from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, sprt_cap_verdict,
                        sprt_plan_line, sprt_verdict)
@@ -390,6 +391,10 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
           f"|td_cal - z| = {float(np.abs(td_cal - z).mean()):.4f})")
     print(f"[az-train] sideboard-phase rows: {int(sb_rows.sum())}/{n} "
           f"(excluded from the value loss; pi trains on them normally)")
+    n_pi = int((pi.sum(axis=1) > 0).sum())
+    print(f"[az-train] policy rows: {n_pi}/{n} "
+          f"(full-search + one-hot; the playout cap's {n - n_pi} fast-search "
+          f"rows train the value head only)")
 
     net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
@@ -411,6 +416,10 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     mask_t = torch.as_tensor(mask)
     # 1.0 on in-game rows, 0.0 on sideboard-phase rows (see sb_rows above).
     vw_t = torch.as_tensor((~sb_rows).astype(np.float32))
+    # 1.0 on rows carrying a policy target, 0.0 on the playout cap's
+    # fast-search rows (all-zero pi — value/TD only). Full-search, sideboard,
+    # and expert one-hot rows all have pi mass and train the policy.
+    pw_t = torch.as_tensor((pi.sum(axis=1) > 0).astype(np.float32))
 
     log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
     os.makedirs(ckpt_dir, exist_ok=True)
@@ -429,7 +438,13 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             logits, value = net(ob, mk)
             logp = F.log_softmax(logits, dim=-1)
             logp = torch.where(mk, logp, torch.zeros_like(logp))   # kill -inf*0 nan
-            loss_pi = -(tp * logp).sum(dim=1).mean()
+            # Weighted mean over the batch's policy-target rows only: a
+            # fast-search (zero-pi) row contributes 0 to the numerator but
+            # must not inflate the denominator either (the clamp guards an
+            # all-fast batch, which then contributes 0).
+            pw = pw_t[bi]
+            pden = pw.sum().clamp(min=1.0)
+            loss_pi = (-(tp * logp).sum(dim=1) * pw).sum() / pden
             # Optimized against the MIXED target; the pure-outcome MSE is
             # computed alongside (no grad) purely as a comparable diagnostic.
             # Both are weighted means over the batch's in-game rows only (the
@@ -486,9 +501,10 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
         if hmse > 2.0 * wmse:
             print(f"[az-train] WARNING: held-out value MSE is "
                   f"{hmse / max(wmse, 1e-9):.1f}x the train-window MSE — the "
-                  f"value head is memorizing this window's games; consider a "
-                  f"lower --epoch-frac, higher --q-mix, or more distinct games "
-                  f"per matchup")
+                  f"value head is memorizing this window's games; buy more "
+                  f"distinct games per slot first (a lower --full-search-frac "
+                  f"/ --fast-sims trades sims per position for games at the "
+                  f"same engine budget), else consider a lower --epoch-frac")
     return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
             "snapshot": snap, "steps": steps}
 
@@ -1421,6 +1437,8 @@ def _resolve_expert_decks(expert_decks) -> Optional[list]:
 
 def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
+             full_search_frac: float = DEFAULT_AZ_FULL_SEARCH_FRAC,
+             fast_sims: int = DEFAULT_AZ_FAST_SIMS,
              c_puct: float = DEFAULT_AZ_C_PUCT,
              epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
              gate_shards: bool = True,
@@ -1536,6 +1554,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
           f"{'bo3' if bo3 else 'bo1'}{matrix_txt}) ===")
     gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
+                               full_search_frac=full_search_frac,
+                               fast_sims=fast_sims,
                                c_puct=c_puct,
                                checkpoint=selfplay_checkpoint,
                                sb_branches=sb_branches, sb_worlds=sb_worlds,
@@ -1651,6 +1671,8 @@ def _default_az_league_roster() -> list:
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               games: int = DEFAULT_AZ_GAMES, sims: int = DEFAULT_AZ_SIMS,
               worlds: int = DEFAULT_AZ_WORLDS,
+              full_search_frac: float = DEFAULT_AZ_FULL_SEARCH_FRAC,
+              fast_sims: int = DEFAULT_AZ_FAST_SIMS,
               c_puct: float = DEFAULT_AZ_C_PUCT,
               epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
               gate_shards: bool = True,
@@ -1767,6 +1789,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         games = int(p.get("games", games))
         sims = int(p.get("sims", sims))
         worlds = int(p.get("worlds", worlds))
+        # .get defaults keep sidecars written before the playout cap resumable.
+        full_search_frac = float(p.get("full_search_frac", full_search_frac))
+        fast_sims = int(p.get("fast_sims", fast_sims))
         c_puct = float(p.get("c_puct", c_puct))
         epoch_frac = float(p.get("epoch_frac", epoch_frac))
         gate_shards = bool(p.get("gate_shards", gate_shards))
@@ -1872,6 +1897,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         "cycles_per_deck": cycles_per_deck,
         "params": {
             "games": games, "sims": sims, "worlds": worlds,
+            "full_search_frac": full_search_frac, "fast_sims": fast_sims,
             "c_puct": c_puct, "epoch_frac": epoch_frac,
             "gate_shards": gate_shards,
             "sb_branches": sb_branches, "sb_worlds": sb_worlds,
@@ -1919,7 +1945,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     gate_txt = ("OFF (ungated promotion at run completion)" if gate_every == 0
                 else str(gate_every))
     window_txt = "auto(2x new shards)" if window == 0 else str(window)
-    print(f"  games={games} sims={sims} worlds={worlds} c_puct={c_puct} "
+    print(f"  games={games} sims={sims} worlds={worlds} "
+          f"full_search_frac={full_search_frac} fast_sims={fast_sims} "
+          f"c_puct={c_puct} "
           f"epoch_frac={epoch_frac} gate_shards={int(gate_shards)} "
           f"mirror_frac={mirror_frac}  "
           f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
@@ -2003,6 +2031,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                   f"self-play pinned to the incumbent {selfplay_ckpt}")
         print(f"{'='*60}")
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
+                       full_search_frac=full_search_frac, fast_sims=fast_sims,
                        c_puct=c_puct, epoch_frac=epoch_frac,
                        gate_shards=gate_shards,
                        sb_branches=sb_branches, sb_worlds=sb_worlds,
@@ -2165,6 +2194,9 @@ def run_cycle(args) -> None:
     roster = _split_decks(getattr(args, "opponents", None))
     # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
+             full_search_frac=float(getattr(args, "full_search_frac",
+                                            DEFAULT_AZ_FULL_SEARCH_FRAC)),
+             fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
              c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
              epoch_frac=float(getattr(args, "epoch_frac",
                                       DEFAULT_AZ_EPOCH_FRAC)),
@@ -2211,6 +2243,9 @@ def run_league(args) -> None:
     az_league(decks=args.decks, rotations=args.rotations,
               cycles_per_deck=args.cycles_per_deck,
               games=args.games, sims=args.sims, worlds=args.worlds,
+              full_search_frac=float(getattr(args, "full_search_frac",
+                                             DEFAULT_AZ_FULL_SEARCH_FRAC)),
+              fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
               c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
               epoch_frac=float(getattr(args, "epoch_frac",
                                        DEFAULT_AZ_EPOCH_FRAC)),
@@ -2308,6 +2343,15 @@ if __name__ == "__main__":
     c.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                    help="Self-play PUCT sims, TOTAL across --worlds")
     c.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
+    c.add_argument("--full-search-frac", type=float,
+                   default=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                   help="Playout cap: fraction of searched in-game roots that "
+                        "get the FULL --sims budget and record pi; the rest "
+                        "run --fast-sims with no policy target (1.0 = every "
+                        "root full)")
+    c.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
+                   help="PUCT sims (TOTAL across --worlds) for the playout "
+                        "cap's fast searches")
     c.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
                    help="Candidate plans at a bo3 sideboard root (bo3 only)")
     c.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
@@ -2388,6 +2432,15 @@ if __name__ == "__main__":
     lg.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="Self-play PUCT sims, TOTAL across --worlds")
     lg.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
+    lg.add_argument("--full-search-frac", type=float,
+                    default=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                    help="Playout cap: fraction of searched in-game roots that "
+                         "get the FULL --sims budget and record pi; the rest "
+                         "run --fast-sims with no policy target (1.0 = every "
+                         "root full)")
+    lg.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
+                    help="PUCT sims (TOTAL across --worlds) for the playout "
+                         "cap's fast searches")
     lg.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
                     help="Candidate plans at a bo3 sideboard root (bo3 only)")
     lg.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,

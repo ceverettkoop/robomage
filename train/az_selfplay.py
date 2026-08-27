@@ -61,7 +61,8 @@ try:
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
                           DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N,
                           DEFAULT_AZ_EXHAUSTIVE_REPEATS,
-                          DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT)
+                          DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
+                          DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
@@ -73,7 +74,9 @@ except ImportError:  # pragma: no cover
                                 DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES,
                                 DEFAULT_AZ_TD_N,
                                 DEFAULT_AZ_EXHAUSTIVE_REPEATS,
-                                DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT)
+                                DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
+                                DEFAULT_AZ_FULL_SEARCH_FRAC,
+                                DEFAULT_AZ_FAST_SIMS)
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
@@ -412,13 +415,40 @@ def one_hot_sample(obs, num_choices, action):
             "q": float("nan"), "explored": 0}
 
 
+def playout_cap_full(cap_seed: int, root_idx: int,
+                     full_search_frac: float) -> bool:
+    """Playout-cap coin: does the ``root_idx``-th searched in-game root of this
+    match get the FULL sims budget (pi recorded) or the fast one (play-only)?
+
+    A deterministic uint32 hash (murmur3 finalizer) of ``(cap_seed,
+    root_idx)`` — deliberately NOT a play-rng draw, so :func:`_play_match`'s
+    rng-DRAW-ORDER contract is untouched and the coin is reproducible
+    independent of worker count. ``cap_seed`` is the match's engine seed;
+    ``root_idx`` counts searched non-sideboard roots within the match.
+    ``frac >= 1`` short-circuits to always-full (the hash is never consulted,
+    so the legacy every-root-full path is bit-identical).
+
+    C++ twin: ``playout_cap_full`` in src/actor/az_mcts.cpp — the two MUST
+    stay in exact lockstep (same finalizer, same 24-bit threshold), so the
+    knob means the same coin on either backend."""
+    if full_search_frac >= 1.0:
+        return True
+    if full_search_frac <= 0.0:
+        return False
+    x = (int(cap_seed) ^ ((0x9E3779B9 * int(root_idx)) & 0xFFFFFFFF)) & 0xFFFFFFFF
+    x = ((x ^ (x >> 16)) * 0x85EBCA6B) & 0xFFFFFFFF
+    x = ((x ^ (x >> 13)) * 0xC2B2AE35) & 0xFFFFFFFF
+    x ^= x >> 16
+    return (x >> 8) < int(full_search_frac * float(1 << 24))
+
+
 # Per-match search knobs, built once per match and passed to
 # :func:`_search_and_sample` (which must stay a pure re-spelling of the
 # in-loop block it was extracted from — see its BIT CONTRACT note).
 _MatchKnobs = namedtuple("_MatchKnobs", (
     "sims", "worlds", "c_puct", "temp_moves", "root_noise_eps", "root_noise_alpha",
     "sb_branches", "sb_worlds", "sb_rollout_turns",
-    "merge_dupes"))
+    "merge_dupes", "full_search_frac", "fast_sims", "cap_seed"))
 
 
 def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
@@ -431,8 +461,20 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
     :func:`_play_match` (statement order around ``rng`` draws unchanged — the
     single draw is the temperature ``rng.choice``), so extracting it leaves the
     sampled play stream byte-identical. ``sb_stats`` is mutated in place with
-    the boundary-persistence counters; the returned ``sb_boundary`` replaces the
-    caller's (None outside a sideboard root)."""
+    the boundary-persistence and playout-cap counters; the returned
+    ``sb_boundary`` replaces the caller's (None outside a sideboard root).
+
+    Playout-cap randomization: an in-game root searches the full
+    ``knobs.sims`` budget only when :func:`playout_cap_full` picks it (a
+    counter-hash coin — no rng draw, so the CONTRACT above holds); the rest
+    run ``knobs.fast_sims`` with no root noise and their sample's ``pi`` is
+    zeroed (no policy target; ``q``/``explored`` stay real so the value/TD
+    side records from every row). Fast searches DO change the rng stream
+    relative to a frac=1 run — they skip the Dirichlet draws inside
+    ``run_search`` — which is the one deliberate stream break of the scheme;
+    within a run everything stays deterministic per seed. ``frac >= 1``
+    never consults the coin, so that configuration replays the legacy
+    stream bit-identically."""
     from mcts import run_search, run_plan_search, sb_root_key
 
     # A bo3 sideboard root is searched by the flat plan search, not PUCT
@@ -440,6 +482,7 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
     # is_sideboard_phase — is_post_board / game_number still reflect the
     # just-ended game at a g1->g2 root. No root noise there: the coverage
     # pass already evaluates every first pick.
+    full = True
     if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
         key = sb_root_key(env._obs)
         b = sb_boundary
@@ -456,13 +499,26 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
         sb_stats["sb_memo_hits"] += result.memo_hits
     else:
         sb_boundary = None
-        result = run_search(env, evaluator, sims=knobs.sims,
+        root_idx = sb_stats["cap_root_idx"]
+        sb_stats["cap_root_idx"] += 1
+        full = playout_cap_full(knobs.cap_seed, root_idx,
+                                knobs.full_search_frac)
+        result = run_search(env, evaluator,
+                            sims=knobs.sims if full else knobs.fast_sims,
                             worlds=knobs.worlds, c_puct=knobs.c_puct,
-                            root_noise_eps=knobs.root_noise_eps,
+                            root_noise_eps=(knobs.root_noise_eps if full
+                                            else 0.0),
                             root_noise_alpha=knobs.root_noise_alpha, rng=rng,
                             merge_dupes=knobs.merge_dupes)
+        if not full:
+            sb_stats["fast_searched"] += 1
     visits = result.policy_target(1.0)              # normalized visit counts
     sample = sample_from_search_result(env._obs, num_choices, result)
+    if not full:
+        # Fast-search row: value/TD targets only — no policy target. The
+        # all-zero pi is the schema's "no pi" marker (the trainer's policy
+        # loss and every pi consumer key off pi.sum() > 0).
+        sample["pi"] = np.zeros_like(sample["pi"])
     sample["game_idx"] = game_idx
     # Temperature schedule is per-game: the first temp_moves decisions of
     # EACH game sample from the visit counts, then switch to argmax.
@@ -501,7 +557,9 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 c_puct=DEFAULT_AZ_C_PUCT,
                 sb_branches=DEFAULT_SB_BRANCHES, sb_worlds=DEFAULT_SB_WORLDS,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
-                merge_dupes=True, agent=None, net_is_a=None):
+                merge_dupes=True, agent=None, net_is_a=None,
+                full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                fast_sims=DEFAULT_AZ_FAST_SIMS):
     """Play one match (bo1: a single game; bo3: a best-of-three) and return
     (samples, game_winners, searched, fallback, dropped, sb_stats) — sb_stats
     reports the boundary's plan-memo hits.
@@ -551,7 +609,11 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     compares the resulting shards' schema/trainability against the C++ actor's).
     The hard constraint is therefore rng-DRAW-ORDER preservation: any edit must
     keep the statement order around ``rng`` draws intact so the sampled play
-    stream is unchanged. Adding branches that consume no rng is fine."""
+    stream is unchanged. Adding branches that consume no rng is fine. (The
+    playout cap's full-vs-fast coin is a counter hash, not an rng draw; but a
+    fast search skips the root-noise Dirichlet draws, so any
+    ``full_search_frac < 1`` is a deliberately different stream than a
+    frac-1 run — see :func:`_search_and_sample`.)"""
     obs, _ = env.reset(seed=seed)
     if agent is not None:
         agent.new_game()
@@ -568,14 +630,18 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     # pinned at the boundary's first search, every stepped pick latched so
     # later picks' plan searches extend the true configuration so far.
     sb_boundary = None
-    sb_stats = {"sb_memo_hits": 0}
+    # cap_root_idx / fast_searched: the playout cap's per-match searched-root
+    # counter and fast-search tally (see playout_cap_full).
+    sb_stats = {"sb_memo_hits": 0, "cap_root_idx": 0, "fast_searched": 0}
     knobs = _MatchKnobs(sims=sims, worlds=worlds, c_puct=c_puct,
                         temp_moves=temp_moves,
                         root_noise_eps=root_noise_eps,
                         root_noise_alpha=root_noise_alpha,
                         sb_branches=sb_branches, sb_worlds=sb_worlds,
                         sb_rollout_turns=sb_rollout_turns,
-                        merge_dupes=merge_dupes)
+                        merge_dupes=merge_dupes,
+                        full_search_frac=float(full_search_frac),
+                        fast_sims=int(fast_sims), cap_seed=int(seed))
 
     while not done:
         num_choices = env._num_choices
@@ -778,7 +844,9 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
             sb_branches, sb_worlds, sb_rollout_turns,
             scripted_seats=None, td_n=DEFAULT_TD_N, merge_dupes=True,
-            c_puct=DEFAULT_AZ_C_PUCT):
+            c_puct=DEFAULT_AZ_C_PUCT,
+            full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
+            fast_sims=DEFAULT_AZ_FAST_SIMS):
     """Play this worker's slice of the matchup schedule. ``matchups`` is a list of
     per-MATCH (deck_a, deck_b) pairs (mirror or cross-deck); the env's decks are
     swapped per match before its reset respawns the engine. With ``bo3`` each
@@ -810,7 +878,8 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
     shards = []
     buf = []
     shard_n = 0
-    stats = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0,
+    stats = {"searched": 0, "fallback": 0, "fast_searched": 0,
+             "wins_a": 0, "wins_b": 0, "draws": 0,
              "games": 0, "dropped": 0, "sb_memo_hits": 0,
              "scripted_matches": 0, "net_wins_vs_scripted": 0}
     try:
@@ -836,11 +905,13 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                 on_progress=beat, sb_branches=sb_branches, sb_worlds=sb_worlds,
                 sb_rollout_turns=sb_rollout_turns, merge_dupes=merge_dupes,
                 agent=(None if net_is_a is None else agent),
-                net_is_a=(None if net_is_a is None else bool(net_is_a)))
+                net_is_a=(None if net_is_a is None else bool(net_is_a)),
+                full_search_frac=full_search_frac, fast_sims=fast_sims)
             buf.append(_backfill_and_pack(samples, game_winners, td_n=td_n))
             total_samples += len(samples)
             stats["searched"] += searched
             stats["fallback"] += fallback
+            stats["fast_searched"] += sb_st["fast_searched"]
             stats["dropped"] += dropped
             stats["games"] += len(game_winners)
             stats["sb_memo_hits"] += sb_st["sb_memo_hits"]
@@ -916,6 +987,8 @@ def _discard_pre_bo3_shards(out_dir: str) -> None:
 
 def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
+             full_search_frac: float = DEFAULT_AZ_FULL_SEARCH_FRAC,
+             fast_sims: int = DEFAULT_AZ_FAST_SIMS,
              c_puct: float = DEFAULT_AZ_C_PUCT,
              workers: Optional[int] = None, checkpoint: Optional[str] = None,
              temp_moves: int = DEFAULT_TEMP_MOVES,
@@ -1108,6 +1181,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     unit = "matches" if bo3 else "games"
     print(f"[az-selfplay] focus={focus_lbl} {unit}={games} bo3={bo3} sims={sims} "
           f"worlds={worlds} workers={workers} mirror_frac={mirror_frac}")
+    if full_search_frac < 1.0:
+        print(f"[az-selfplay] playout cap: full_search_frac={full_search_frac} "
+              f"(pi from full {sims}-sim roots only) fast_sims={fast_sims} "
+              f"(value/TD from every row)")
     if bo3:
         print(f"[az-selfplay] sideboard plan-search budget: "
               f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
@@ -1130,6 +1207,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
           f"az_actor {'present' if have_actor else 'absent'}")
 
     common = dict(source=source, schedule=schedule, sims=sims, worlds=worlds,
+                  full_search_frac=full_search_frac, fast_sims=fast_sims,
                   c_puct=c_puct, workers=workers, temp_moves=temp_moves,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed, td_n=td_n,
@@ -1163,6 +1241,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
 def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                      root_noise_eps, root_noise_alpha, out_dir, seed,
                      c_puct=DEFAULT_AZ_C_PUCT,
+                     full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                     fast_sims=DEFAULT_AZ_FAST_SIMS,
                      bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                      sb_worlds=DEFAULT_SB_WORLDS,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
@@ -1195,7 +1275,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q, bo3, sb_branches, sb_worlds,
                               sb_rollout_turns, seat_slices[wi],
-                              td_n, merge_dupes, c_puct))
+                              td_n, merge_dupes, c_puct,
+                              full_search_frac, fast_sims))
         p.start()
         procs.append(p)
 
@@ -1252,7 +1333,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
 
     total_samples = sum(r["samples"] for r in results)
     all_shards = [s for r in results for s in r["shards"]]
-    agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0,
+    agg = {"searched": 0, "fallback": 0, "fast_searched": 0,
+           "wins_a": 0, "wins_b": 0, "draws": 0,
            "games": 0, "dropped": 0, "scripted_matches": 0,
            "net_wins_vs_scripted": 0}
     for r in results:
@@ -1263,7 +1345,10 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
     if agg["dropped"]:
         print(f"[az-selfplay] dropped {agg['dropped']} sample(s) from "
               f"truncated in-progress games (no game result)")
-    print(f"[az-selfplay] decisions searched={agg['searched']} "
+    cap_note = (f" ({agg['fast_searched']} fast, "
+                f"{agg['searched'] - agg['fast_searched']} full)"
+                if agg["fast_searched"] else "")
+    print(f"[az-selfplay] decisions searched={agg['searched']}{cap_note} "
           f"fallback={agg['fallback']}; match results A={agg['wins_a']} "
           f"B={agg['wins_b']} draws={agg['draws']}")
     if agg["scripted_matches"]:
@@ -1524,6 +1609,8 @@ def _spawn_oracle():
 def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
                     c_puct=DEFAULT_AZ_C_PUCT,
+                    full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                    fast_sims=DEFAULT_AZ_FAST_SIMS,
                     actor_bin, bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                     sb_worlds=DEFAULT_SB_WORLDS,
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
@@ -1976,6 +2063,9 @@ def run(args) -> None:
                         opponent=getattr(args, "expert_opponent", None))
         return
     generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
+             full_search_frac=float(getattr(args, "full_search_frac",
+                                            DEFAULT_AZ_FULL_SEARCH_FRAC)),
+             fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
              c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=resolve_seed(args),
@@ -2001,6 +2091,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="PUCT sims per decision, TOTAL across --worlds")
     ap.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
+    ap.add_argument("--full-search-frac", type=float,
+                    default=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                    help="Playout cap: fraction of searched in-game roots that "
+                         "get the FULL --sims budget and record pi (default "
+                         "%g); the rest run --fast-sims with no policy target. "
+                         "1.0 = every root full" % DEFAULT_AZ_FULL_SEARCH_FRAC)
+    ap.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
+                    help="PUCT sims (TOTAL across --worlds) for the playout "
+                         "cap's fast searches (default %d)"
+                         % DEFAULT_AZ_FAST_SIMS)
     ap.add_argument("--c-puct", type=float, default=DEFAULT_AZ_C_PUCT,
                     help="PUCT exploration constant (default %g): higher weights "
                          "search Q over the net prior" % DEFAULT_AZ_C_PUCT)
