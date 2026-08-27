@@ -88,6 +88,11 @@ struct ActorConfig {
     int merge_dupes = 1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
+    // Playout-cap randomization (self-play only; see az_mcts.h). Compiled
+    // defaults mirror cli_spec's DEFAULT_AZ_FULL_SEARCH_FRAC /
+    // DEFAULT_AZ_FAST_SIMS; az_selfplay always passes both flags explicitly.
+    double full_search_frac = 0.25;
+    int fast_sims = 128;
     // --record: write trainer-schema shards of the searched decisions WITHOUT
     // the self-play exploration knobs (no root noise, argmax picks) — the
     // eval/gate recorder. Allowed with a seat-B evaluator (a two-model gate's
@@ -130,7 +135,11 @@ void print_usage(const char* prog) {
                  "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
                  "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
-                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n"
+                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N] "
+                 "[--full-search-frac F] [--fast-sims N]]\n"
+                 "       (playout cap, self-play only: P(full --sims search, "
+                 "pi recorded) per in-game root; the rest run --fast-sims "
+                 "with no pi. 1.0 = every root full)\n"
                  "       [--record [--out-dir <dir>] [--td-n N]] (eval-mode shard "
                  "recording: searched roots stored, no noise, argmax picks; "
                  "allowed with --model-b)\n"
@@ -220,6 +229,11 @@ int main(int argc, char const* argv[]) {
         } else if (a == "--record") {
             cfg.record = true;
             cfg.search = true;  // only searched roots carry a sample
+        } else if (a == "--full-search-frac") {
+            cfg.full_search_frac =
+                std::stod(need_arg(argc, argv, i, "--full-search-frac"));
+        } else if (a == "--fast-sims") {
+            cfg.fast_sims = std::stoi(need_arg(argc, argv, i, "--fast-sims"));
         } else if (a == "--noise-eps") {
             cfg.noise_eps = std::stod(need_arg(argc, argv, i, "--noise-eps"));
         } else if (a == "--noise-alpha") {
@@ -382,6 +396,9 @@ int main(int argc, char const* argv[]) {
         mc.selfplay = cfg.selfplay;
         mc.record = cfg.record;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
+        // Like noise_eps: the playout cap never leaks into parity/record runs.
+        mc.full_search_frac = cfg.selfplay ? cfg.full_search_frac : 1.0;
+        mc.fast_sims = cfg.fast_sims;
         mc.noise_alpha = cfg.noise_alpha;
         mc.temp_moves = cfg.temp_moves;
         mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
@@ -416,11 +433,14 @@ int main(int argc, char const* argv[]) {
             static_cast<size_t>(MAX_ACTIONS));
         std::fprintf(stderr,
                      "az_actor: %s out_dir=%s sims=%d worlds=%d "
-                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d td_n=%d\n",
+                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d td_n=%d "
+                     "full_search_frac=%.3f fast_sims=%d\n",
                      cfg.selfplay ? "self-play" : "record (eval-mode)",
                      dir.c_str(), cfg.sims, cfg.worlds,
                      cfg.selfplay ? cfg.noise_eps : 0.0, cfg.noise_alpha,
-                     cfg.selfplay ? cfg.temp_moves : 0, cfg.td_n);
+                     cfg.selfplay ? cfg.temp_moves : 0, cfg.td_n,
+                     cfg.selfplay ? cfg.full_search_frac : 1.0,
+                     cfg.fast_sims);
     }
 
     InputLogger::instance().set_input_provider(
@@ -510,7 +530,7 @@ int main(int argc, char const* argv[]) {
         for (int m = 0; m < cfg.games; m++) {
             unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
             std::srand(match_seed);
-            if (recording) mcts->begin_match();
+            if (recording) mcts->begin_match(match_seed);
             // agent.new_game() at match start + after every completed game —
             // the exact call sites az_selfplay._play_match uses (reset + each
             // GAME_RESULT boundary, before the next game's sideboard prompts).
@@ -531,7 +551,9 @@ int main(int argc, char const* argv[]) {
             std::srand(seed_g);
             match_reset_revealed();
             EcsSystems sys = init_ecs();
-            if (recording) mcts->begin_match();  // reset per-game move counter + samples
+            // Reset per-game move counter + samples; seed_g keys the cap coin
+            // (a bo1 match is one game, matching the Python per-match seed).
+            if (recording) mcts->begin_match(seed_g);
             if (oracle) oracle->new_game();
             int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
             bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&

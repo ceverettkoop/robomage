@@ -69,6 +69,22 @@ static constexpr int kPlanPickCap = 31;
 // max_attempts multiplier).
 static constexpr int kExtrasAttemptFactor = 4;
 
+// Playout-cap coin — the C++ twin of az_selfplay.playout_cap_full. The two
+// MUST stay in exact lockstep (same murmur3 finalizer, same 24-bit
+// threshold): --full-search-frac has to mean the same coin on either backend.
+// frac >= 1 short-circuits to always-full without consulting the hash.
+static bool playout_cap_full(uint32_t cap_seed, uint32_t root_idx,
+                             double full_search_frac) {
+    if (full_search_frac >= 1.0) return true;
+    if (full_search_frac <= 0.0) return false;
+    uint32_t x = cap_seed ^ (0x9E3779B9u * root_idx);
+    x = (x ^ (x >> 16)) * 0x85EBCA6Bu;
+    x = (x ^ (x >> 13)) * 0xC2B2AE35u;
+    x ^= x >> 16;
+    return (x >> 8) < static_cast<uint32_t>(full_search_frac *
+                                            static_cast<double>(1u << 24));
+}
+
 namespace {
 
 struct PathEntry {
@@ -269,13 +285,23 @@ struct AZMcts::Impl {
     long move_counter = 0;                   // per-game real-decision counter
     std::vector<float> root_obs;             // clean root obs (captured before determinize)
     std::vector<SelfPlaySample> game_samples; // samples stored this game
+    // ── playout cap (cfg.full_search_frac; see az_mcts.h) ──────────────────
+    // cap_seed_ = the match's engine seed; cap_root_counter counts searched
+    // in-game roots WITHIN the match (never reset at a game boundary,
+    // mirroring the Python per-match counter); cur_full is the coin's verdict
+    // for the search in flight (latched at root setup like cur_sims).
+    uint32_t cap_seed_ = 0;
+    long cap_root_counter = 0;
+    bool cur_full = true;
 
     explicit Impl(const MCTSConfig& c, AZEvaluator* e, AZEvaluator* eb)
         : cfg(c), eval(e), eval_a(e), eval_b(eb), rng(c.selfplay_rng_seed) {}
 
-    void begin_match() {
+    void begin_match(uint32_t cap_seed) {
         move_counter = 0;
         game_samples.clear();
+        cap_seed_ = cap_seed;
+        cap_root_counter = 0;
     }
 
     void end_game() {
@@ -425,8 +451,10 @@ struct AZMcts::Impl {
         // mcts.py: priors = (1-eps)*root_priors + eps*dirichlet(alpha*[1]*nc).
         // eps=0 (parity default) reuses the base priors verbatim. A standard
         // Dirichlet is gamma(alpha) per component normalized by the sum, drawn
-        // from the per-run RNG (no cross-language parity required).
-        if (cfg.noise_eps > 0.0) {
+        // from the per-run RNG (no cross-language parity required). A playout-
+        // cap FAST root mixes no noise (it plays the game; its pi is never a
+        // policy target), mirroring the Python fast branch's eps=0.
+        if (cfg.noise_eps > 0.0 && cur_full) {
             std::gamma_distribution<double> gamma(cfg.noise_alpha, 1.0);
             std::vector<double> noise(static_cast<size_t>(root_n));
             double sum = 0.0;
@@ -1055,6 +1083,7 @@ struct AZMcts::Impl {
                 sb_game = game;
                 sb_seed_root = this_root;
             }
+            cur_full = true;   // sb plan roots are exempt from the playout cap
             cur_worlds = cfg.sb_worlds >= 0 ? cfg.sb_worlds : kDefaultSbWorlds;
             cur_worlds = std::max(1, cur_worlds);
             cur_rollout_turns = cfg.sb_rollout_turns >= 0 ? cfg.sb_rollout_turns
@@ -1084,7 +1113,14 @@ struct AZMcts::Impl {
         plan_active = false;
         plan_memo.clear();
         sb_picks.clear();
-        cur_sims = cfg.sims;
+        // Playout-cap coin (self-play only — the driver forces frac=1.0 for
+        // every other mode): a fast root searches cfg.fast_sims, mixes no
+        // root noise, and its sample carries an all-zero pi (see finalize).
+        cur_full = !cfg.selfplay ||
+                   playout_cap_full(cap_seed_,
+                                    static_cast<uint32_t>(cap_root_counter++),
+                                    cfg.full_search_frac);
+        cur_sims = cur_full ? cfg.sims : cfg.fast_sims;
         cur_worlds = cfg.worlds;
         cur_max_depth = cfg.max_depth;
         cur_rollout_turns = cfg.rollout_turns;
@@ -1336,11 +1372,18 @@ struct AZMcts::Impl {
             s.q = static_cast<float>(results.back().root_value);
             s.is_sideboard = root_is_sb;
             for (int i = 0; i < root_n; i++) {
-                s.pi[static_cast<size_t>(i)] =
-                    total > 0 ? static_cast<float>(
-                                    static_cast<double>(visit_totals[static_cast<size_t>(i)]) /
-                                    static_cast<double>(total))
-                              : 0.0f;
+                // A playout-cap fast root records NO policy target: pi stays
+                // all-zero (the schema's "no pi" marker — trainer and every
+                // pi consumer key off pi.sum() > 0); q/explored stay real so
+                // the value/TD side records from this row too.
+                if (cur_full)
+                    s.pi[static_cast<size_t>(i)] =
+                        total > 0
+                            ? static_cast<float>(
+                                  static_cast<double>(
+                                      visit_totals[static_cast<size_t>(i)]) /
+                                  static_cast<double>(total))
+                            : 0.0f;
                 s.mask[static_cast<size_t>(i)] = 1;
             }
 
@@ -1547,7 +1590,7 @@ void AZMcts::set_scripted_provider(std::function<int(const float*, int)> fn) {
     impl_->scripted_provider = std::move(fn);
 }
 const std::vector<SearchRootResult>& AZMcts::results() const { return impl_->results; }
-void AZMcts::begin_match() { impl_->begin_match(); }
+void AZMcts::begin_match(uint32_t cap_seed) { impl_->begin_match(cap_seed); }
 void AZMcts::end_game() { impl_->end_game(); }
 const std::vector<SelfPlaySample>& AZMcts::game_samples() const {
     return impl_->game_samples;

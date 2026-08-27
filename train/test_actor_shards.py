@@ -131,7 +131,7 @@ def _verify_bo3(stdout, out_dir):
     if pooled is None:
         print(f"FAIL [bo3]: no shard_*.npz written to {out_dir}", file=sys.stderr)
         return 1
-    obs, _pi, z, _mask = pooled
+    obs, pi_pool, z, _mask = pooled
     n_total = obs.shape[0]
     tally_total = sum(k for k, _ in tallies)
     if n_total != tally_total:
@@ -150,6 +150,7 @@ def _verify_bo3(stdout, out_dir):
     for gi, (k, winner) in enumerate(tallies):
         seg_obs = obs[off:off + k]
         seg_z = z[off:off + k]
+        seg_pi = pi_pool[off:off + k]
         off += k
         if winner == "DRAW":
             # A draw shouldn't happen; if it did, its samples carry z=0 — skip the
@@ -164,6 +165,12 @@ def _verify_bo3(stdout, out_dir):
                 print(f"FAIL [bo3]: game {gi} sideboard sample row {ri}: z="
                       f"{float(seg_z[ri])} but next-game winner={winner} with "
                       f"mover_is_a={mover_is_a} expects {expect}", file=sys.stderr)
+                return 1
+            # sb plan roots are exempt from the playout cap: always a policy row.
+            if not np.isclose(float(seg_pi[ri].sum()), 1.0, atol=1e-5):
+                print(f"FAIL [bo3]: game {gi} sideboard sample row {ri} has "
+                      f"pi sum {float(seg_pi[ri].sum())} — sb roots must "
+                      f"always record a policy target", file=sys.stderr)
                 return 1
         sb_total += len(sb_rows)
 
@@ -222,6 +229,8 @@ def main():
         n_total = 0
         n_boot = 0        # rows whose n-step TD target left the plain outcome
         n_explored = 0
+        n_pi_rows = 0     # policy-target rows (pi sums to 1)
+        n_fast_rows = 0   # playout-cap fast rows (all-zero pi)
         for sp in shard_paths:
             d = np.load(sp)
             keys = set(d.files)
@@ -267,8 +276,11 @@ def main():
                       f"{bad[:8]}", file=sys.stderr)
                 return 1
 
-            # Per-row: mask width in [2,64]; pi sums to ~1 within mask and 0
-            # beyond; pi is nonzero only where mask is True.
+            # Per-row: mask width in [2,64]; pi sums to ~1 within mask (a
+            # policy-target row) or is exactly all-zero (a playout-cap
+            # fast-search row — the compiled default frac is < 1); pi is
+            # nonzero only where mask is True. Fast rows must still carry a
+            # finite q (they feed the value/TD side).
             widths = mask.sum(axis=1)
             if not np.all((widths >= 2) & (widths <= MAX_ACTIONS)):
                 print(f"FAIL: shard {sp}: mask widths outside [2,64]: "
@@ -277,16 +289,32 @@ def main():
                 return 1
             in_mask = pi.copy(); in_mask[~mask] = 0.0
             beyond = pi.copy(); beyond[mask] = 0.0
-            if not np.allclose(in_mask.sum(axis=1), 1.0, atol=1e-5):
-                bad = np.flatnonzero(~np.isclose(in_mask.sum(axis=1), 1.0, atol=1e-5))
-                print(f"FAIL: shard {sp}: {bad.size} pi rows don't sum to 1 "
-                      f"within mask (e.g. row {bad[0]} sum="
+            sums = in_mask.sum(axis=1)
+            is_pi = np.isclose(sums, 1.0, atol=1e-5)
+            is_fast = sums == 0.0
+            if not np.all(is_pi | is_fast):
+                bad = np.flatnonzero(~(is_pi | is_fast))
+                print(f"FAIL: shard {sp}: {bad.size} pi rows neither sum to 1 "
+                      f"within mask nor are all-zero (e.g. row {bad[0]} sum="
                       f"{in_mask[bad[0]].sum()})", file=sys.stderr)
                 return 1
             if np.any(beyond != 0.0):
                 print(f"FAIL: shard {sp}: pi nonzero beyond the mask",
                       file=sys.stderr)
                 return 1
+            sb = d["obs"][:, _IS_SIDEBOARD_IDX] > 0.5
+            if np.any(is_fast & sb):
+                print(f"FAIL: shard {sp}: a sideboard row has zero pi — sb "
+                      f"plan roots are exempt from the playout cap",
+                      file=sys.stderr)
+                return 1
+            if not np.all(np.isfinite(q[is_fast])):
+                print(f"FAIL: shard {sp}: a fast-search row has a non-finite "
+                      f"q — fast rows must keep their real root value",
+                      file=sys.stderr)
+                return 1
+            n_pi_rows += int(is_pi.sum())
+            n_fast_rows += int(is_fast.sum())
             n_boot += int((td_q != z).sum())
             n_explored += int(explored.sum())
 
@@ -300,6 +328,18 @@ def main():
             return 1
         print(f"[shards] n-step TD: {n_boot}/{n_total} rows bootstrapped, "
               f"{n_explored} exploratory move(s)")
+
+        # The playout cap must actually fire: at the compiled default frac
+        # (0.25) a run this size produces both kinds of row with certainty for
+        # practical purposes (P(miss) < 1e-6 above ~50 searched roots).
+        if n_pi_rows == 0 or n_fast_rows == 0:
+            print(f"FAIL: playout-cap row mix degenerate — {n_pi_rows} "
+                  f"policy rows / {n_fast_rows} fast rows over {n_total}; "
+                  f"the compiled default full_search_frac should yield both",
+                  file=sys.stderr)
+            return 1
+        print(f"[shards] playout cap: {n_pi_rows} policy row(s), "
+              f"{n_fast_rows} fast row(s)")
 
         if n_total != tally_total:
             print(f"FAIL: shard rows {n_total} != summed tallies {tally_total}",

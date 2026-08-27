@@ -107,6 +107,19 @@ struct MCTSConfig {
     // mixed into the base priors per world in begin_world. Defaults keep the
     // parity paths (--search without --selfplay) noise-free (eps=0) and argmax.
     bool selfplay = false;
+    // ── playout-cap randomization (mirrors az_selfplay's playout cap) ───────
+    // Self-play only: each searched IN-GAME root gets the full `sims` budget
+    // with probability full_search_frac (its sample records pi), else a
+    // fast_sims search — no root noise, and its sample keeps a real q/explored
+    // but an ALL-ZERO pi (no policy target; the trainer keys off pi.sum()>0).
+    // The coin is a deterministic hash of (the match's engine seed, a
+    // per-match searched-root counter) — playout_cap_full in az_mcts.cpp, the
+    // bit-lockstep twin of az_selfplay.playout_cap_full — never an rng draw.
+    // >= 1 disables (every root full); the driver forces 1.0 outside
+    // --selfplay so parity/record paths never consult the coin. Sideboard
+    // plan roots are exempt (own budget, always full policy rows).
+    double full_search_frac = 1.0;
+    int fast_sims = 128;
     // Record searched-root samples WITHOUT the self-play exploration knobs
     // (no root noise, always argmax): eval/gate matches (--search --record)
     // then write trainer-schema shards of what the two nets actually played,
@@ -197,9 +210,12 @@ public:
 
     // ── self-play ───────────────────────────────────────────────────────────
     // Full reset of per-match sample-buffer state (real-move counter + stored
-    // samples). Call ONCE before a bo3 match (the RNG streams across games), and
-    // per-game in the bo1 loop.
-    void begin_match();
+    // samples + the playout cap's searched-root counter). Call ONCE before a
+    // bo3 match (the RNG streams across games), and per-game in the bo1 loop.
+    // `cap_seed` is the match's engine seed — the playout-cap coin's per-match
+    // key (mirrors the Python side keying playout_cap_full off _play_match's
+    // seed).
+    void begin_match(uint32_t cap_seed = 0);
     // End-of-game reset: clears the buffered samples and resets the tau/move
     // counter. Call AFTER a game's samples have been priced+flushed (from the
     // actor's backfill hook), so any sideboard samples recorded before the NEXT

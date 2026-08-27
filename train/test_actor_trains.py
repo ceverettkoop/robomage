@@ -147,8 +147,12 @@ def _value_stats_ok(tag, obs, pi, z, mask):
         print(f"FAIL[{tag}]: z outside {{-1,0,1}}", file=sys.stderr); ok = False
     in_mask = pi.copy(); in_mask[~mask] = 0.0
     beyond = pi.copy(); beyond[mask] = 0.0
-    if not np.allclose(in_mask.sum(axis=1), 1.0, atol=1e-5):
-        print(f"FAIL[{tag}]: pi rows don't sum to 1 within mask", file=sys.stderr); ok = False
+    sums = in_mask.sum(axis=1)
+    # A row either carries a policy target (pi sums to 1) or is a playout-cap
+    # fast-search row (all-zero pi) — the default full_search_frac is < 1.
+    if not np.all(np.isclose(sums, 1.0, atol=1e-5) | (sums == 0.0)):
+        print(f"FAIL[{tag}]: pi rows neither sum to 1 within mask nor are "
+              f"all-zero", file=sys.stderr); ok = False
     if np.any(beyond != 0.0):
         print(f"FAIL[{tag}]: pi nonzero beyond mask", file=sys.stderr); ok = False
     widths = mask.sum(axis=1)
