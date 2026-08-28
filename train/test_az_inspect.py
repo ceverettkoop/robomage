@@ -561,7 +561,8 @@ def test_weight_views(net, tmp):
     with torch.no_grad():
         ref = net.trunk.entity_encoder(
             torch.cat([net.trunk.card_emb.weight[ids],
-                       net.trunk.card_props[ids]], dim=1)).numpy()
+                       net.trunk.card_props[ids],
+                       torch.zeros(ids.shape[0], 1)], dim=1)).numpy()
     check(acts.shape == ref.shape and np.allclose(acts, ref, atol=1e-5),
           "entity_unit_activations matches the real torch entity_encoder")
     sel = azi.card_selectivity(sd)

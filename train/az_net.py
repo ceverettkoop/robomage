@@ -168,6 +168,8 @@ class ScriptTrunk(nn.Module):
         "DECKLIST_COUNT_OFF", "MAX_ACTIONS", "BUCKET_IDX",
         "ARCH_ONEHOT_START", "ARCH_ONEHOT_END",
         "N_ENTITY_REF_SLOTS", "EMBED_DIM", "PER_ACTION_DIM",
+        "OFF_POWER", "OFF_TOUGHNESS", "OFF_IS_TAPPED", "OFF_IS_ATTACKING",
+        "OFF_IS_BLOCKING", "OFF_IS_CREATURE", "OFF_ATTACHED_TO", "PERM_N_REFS",
         "features_dim", "per_action_offset", "per_action_slots", "per_action_dim",
     ]
 
@@ -187,6 +189,9 @@ class ScriptTrunk(nn.Module):
         self.entity_encoder = fe.entity_encoder
         self.decklist_encoder = fe.decklist_encoder
         self.revealed_encoder = fe.revealed_encoder
+        self.ref_combiner = fe.ref_combiner
+        self.stk_combiner = fe.stk_combiner
+        self.entity_attn = fe.entity_attn
         self.action_cat_emb = fe.action_cat_emb
         self.zone_emb = fe.zone_emb
         self.action_encoder = fe.action_encoder
@@ -268,6 +273,16 @@ class ScriptTrunk(nn.Module):
         self.N_ENTITY_REF_SLOTS = int(_ex.N_ENTITY_REF_SLOTS)
         self.EMBED_DIM = int(fe._embed_dim)
         self.PER_ACTION_DIM = int(fe.per_action_dim)
+        # Per-slot status-float offsets (env.py's _OFF_* family, re-exported by
+        # the extractor) consumed by the board counts and the ref gathers.
+        self.OFF_POWER = int(_ex._OFF_POWER)
+        self.OFF_TOUGHNESS = int(_ex._OFF_TOUGHNESS)
+        self.OFF_IS_TAPPED = int(_ex._OFF_IS_TAPPED)
+        self.OFF_IS_ATTACKING = int(_ex._OFF_IS_ATTACKING)
+        self.OFF_IS_BLOCKING = int(_ex._OFF_IS_BLOCKING)
+        self.OFF_IS_CREATURE = int(_ex._OFF_IS_CREATURE)
+        self.OFF_ATTACHED_TO = int(_ex._OFF_ATTACHED_TO)
+        self.PERM_N_REFS = int(_ex._PERM_N_REFS)
 
         self.features_dim = int(fe.features_dim)
         self.per_action_offset = int(fe.per_action_offset)
@@ -302,10 +317,10 @@ class ScriptTrunk(nn.Module):
         extras = obs[:, self.EXTRAS_START:self.EXTRAS_END]
         mana_dev = obs[:, self.MANA_DEV_START:self.MANA_DEV_END]
         log_vitals = obs[:, self.LOG_VITALS_START:self.LOG_VITALS_END]
-        # Mirror the extractor: the action/cost block stops BEFORE the matchup
-        # tail's raw bucket float (stripped from the trunk input), and the two
-        # archetype one-hots enter the base cat right after it.
-        action_extras = obs[:, self.STATE_END:self.BUCKET_IDX]
+        # Mirror the extractor: the trunk is always per_action_head=True here, so
+        # the raw action metadata never enters base (it feeds the per-action
+        # encoder below); the tail's raw bucket float is stripped and only the
+        # two archetype one-hots enter the base cat.
         arch_onehot = obs[:, self.ARCH_ONEHOT_START:self.ARCH_ONEHOT_END]
 
         hist_entries = hist_ctx.reshape(-1, self.HIST_ENTRIES, self.HIST_ENTRY_SIZE)
@@ -358,14 +373,33 @@ class ScriptTrunk(nn.Module):
         stk_modes = stack[:, :, self.STACK_MODE_OFF:self.STACK_TGT_OFF]
         stk_tgt_scalars = stk_tgts[:, :, :, :self.STACK_TGT_FIELDS - 1].reshape(
             -1, self.STACK_SLOTS, self.STACK_TGT_SLOTS * (self.STACK_TGT_FIELDS - 1))
+        stk_pos = (torch.arange(self.STACK_SLOTS, dtype=stack.dtype,
+                                device=stack.device)
+                   / self.STACK_SLOTS).view(1, self.STACK_SLOTS, 1).expand(
+                       stack.shape[0], -1, -1)
         stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_xquals, stk_modes,
-                            stk_tgt_scalars, stk_card_emb, stk_tgt_agg], dim=-1)
+                            stk_tgt_scalars, stk_pos, stk_card_emb, stk_tgt_agg], dim=-1)
 
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
         ex_emb_in, ex_present = self._embed_ids(exile[:, :, 0])
-        hand_emb_in, hand_present = self._embed_ids(hand[:, :, 0])
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
-        top_lib_emb_in, _ = self._embed_ids(top_lib[:, :, 0])
+        # Combined hand + known-top-library block with the draw-distance column
+        # (0.0 in hand / every other entity_encoder zone; (i+1)/5 for top slot i).
+        hl_emb, hl_present = self._embed_ids(
+            torch.cat([hand[:, :, 0], top_lib[:, :, 0]], dim=1))
+        hl_dist = hl_emb.new_zeros(hl_emb.shape[0],
+                                   self.HAND_SLOTS + self.KNOWN_TOP_LIB_SLOTS, 1)
+        hl_dist[:, self.HAND_SLOTS:, 0] = (
+            torch.arange(1, self.KNOWN_TOP_LIB_SLOTS + 1, dtype=hl_emb.dtype,
+                         device=hl_emb.device) / self.KNOWN_TOP_LIB_SLOTS)
+        hl_in = torch.cat([hl_emb, hl_dist], dim=-1)
+        next_draw_feat = hl_emb[:, self.HAND_SLOTS]
+        zero_dist = hl_emb.new_zeros(hl_emb.shape[0], 1, 1)
+        gy_in = torch.cat([gy_emb_in, zero_dist.expand(-1, self.GY_SLOTS, -1)], dim=-1)
+        ex_in = torch.cat([ex_emb_in, zero_dist.expand(-1, self.EXILE_SLOTS, -1)], dim=-1)
+        opp_hand_in = torch.cat(
+            [opp_hand_emb_in,
+             zero_dist.expand(-1, self.OPP_KNOWN_HAND_SLOTS, -1)], dim=-1)
 
         self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, self.DECKLIST_CARD_OFF])
         self_main_emb, self_main_present = self._embed_ids(self_main[:, :, self.DECKLIST_CARD_OFF])
@@ -385,24 +419,88 @@ class ScriptTrunk(nn.Module):
 
         perm_emb = self.perm_encoder(perm_in)
         stk_emb = self.stack_encoder(stk_in)
-        gy_emb = self.entity_encoder(gy_emb_in)
-        ex_emb = self.entity_encoder(ex_emb_in)
-        hand_emb = self.entity_encoder(hand_emb_in)
-        opp_hand_emb = self.entity_encoder(opp_hand_emb_in)
-        top_lib_emb = self.entity_encoder(top_lib_emb_in)
+        gy_emb = self.entity_encoder(gy_in)
+        ex_emb = self.entity_encoder(ex_in)
+        hand_lib_emb = self.entity_encoder(hl_in)
+        opp_hand_emb = self.entity_encoder(opp_hand_in)
         self_lib_enc = self.decklist_encoder(self_lib_in)
         self_main_enc = self.decklist_encoder(self_main_in)
         self_side_enc = self.decklist_encoder(self_side_in)
         opp_main_enc = self.decklist_encoder(opp_main_in)
         opp_side_enc = self.decklist_encoder(opp_side_in)
 
-        perm_agg = self._mean_max(perm_emb, perm_present)
-        stk_agg = self._mean_max(stk_emb, stk_present)
+        # Per-side board counts (mirror the extractor exactly).
+        B = perm_emb.shape[0]
+        E = self.EMBED_DIM
+        m = perm_present.to(perm_emb.dtype)
+        is_cre = perms[:, :, self.OFF_IS_CREATURE] * m
+        untapped_cre = is_cre * (1.0 - perms[:, :, self.OFF_IS_TAPPED])
+        attacking = perms[:, :, self.OFF_IS_ATTACKING] * m
+        blocking = perms[:, :, self.OFF_IS_BLOCKING] * m
+        power = perms[:, :, self.OFF_POWER] * is_cre
+        tough = perms[:, :, self.OFF_TOUGHNESS] * is_cre
+        sc = self.PERM_SLOTS // 2
+        board_counts = torch.stack([
+            m[:, :sc].sum(1) / 10.0, is_cre[:, :sc].sum(1) / 10.0,
+            untapped_cre[:, :sc].sum(1) / 10.0, attacking[:, :sc].sum(1) / 10.0,
+            blocking[:, :sc].sum(1) / 10.0,
+            power[:, :sc].sum(1), tough[:, :sc].sum(1),
+            m[:, sc:].sum(1) / 10.0, is_cre[:, sc:].sum(1) / 10.0,
+            untapped_cre[:, sc:].sum(1) / 10.0, attacking[:, sc:].sum(1) / 10.0,
+            blocking[:, sc:].sum(1) / 10.0,
+            power[:, sc:].sum(1), tough[:, sc:].sum(1),
+        ], dim=-1)
+
+        # One-hop ref resolution over T1 = [perm v1 | padded stack v1 | zeros].
+        stk_v1_pad = torch.cat(
+            [stk_emb, stk_emb.new_zeros(B, self.STACK_SLOTS,
+                                        E - stk_emb.shape[-1])], dim=-1)
+        t1 = torch.cat([perm_emb, stk_v1_pad], dim=1)
+        t1 = torch.cat([t1, t1.new_zeros(B, 1, E)], dim=1)
+
+        perm_refs = perms[:, :, self.OFF_ATTACHED_TO:
+                          self.OFF_ATTACHED_TO + self.PERM_N_REFS]
+        pref_idx = torch.round(perm_refs * self.N_ENTITY_REF_SLOTS).long() - 1
+        pref_idx = torch.where(pref_idx < 0,
+                               torch.full_like(pref_idx, self.N_ENTITY_REF_SLOTS),
+                               pref_idx).clamp(0, self.N_ENTITY_REF_SLOTS)
+        pref_e = torch.gather(
+            t1, 1, pref_idx.reshape(B, -1).unsqueeze(-1).expand(-1, -1, E)
+        ).reshape(B, self.PERM_SLOTS, self.PERM_N_REFS * E)
+        perm_emb2 = self.ref_combiner(torch.cat([perm_emb, pref_e], dim=-1))
+
+        sref = stk_tgts[:, :, :, self.STACK_TGT_FIELDS - 2]
+        sref_idx = torch.round(sref * self.N_ENTITY_REF_SLOTS).long() - 1
+        sref_idx = torch.where(sref_idx < 0,
+                               torch.full_like(sref_idx, self.N_ENTITY_REF_SLOTS),
+                               sref_idx).clamp(0, self.N_ENTITY_REF_SLOTS)
+        sref_e = torch.gather(
+            t1, 1, sref_idx.reshape(B, -1).unsqueeze(-1).expand(-1, -1, E)
+        ).reshape(B, self.STACK_SLOTS, self.STACK_TGT_SLOTS, E)
+        sref_agg = (sref_e * stk_tgt_mask).sum(2) / stk_tgt_mask.sum(2).clamp(min=1.0)
+        stk_emb2 = self.stk_combiner(torch.cat([stk_emb, sref_agg], dim=-1))
+
+        # One self-attention pass (residual; absent rows key-masked + re-zeroed).
+        stk_v2_pad = torch.cat(
+            [stk_emb2, stk_emb2.new_zeros(B, self.STACK_SLOTS,
+                                          E - stk_emb2.shape[-1])], dim=-1)
+        ent0 = torch.cat([perm_emb2, stk_v2_pad], dim=1)
+        present108 = torch.cat([perm_present, stk_present], dim=1)
+        attn_out = self.entity_attn(ent0, ent0, ent0,
+                                    key_padding_mask=~present108,
+                                    need_weights=False)[0]
+        ent = torch.where(present108.unsqueeze(-1), ent0 + attn_out,
+                          torch.zeros_like(ent0))
+        perm_att = ent[:, :self.PERM_SLOTS]
+        stk_att = ent[:, self.PERM_SLOTS:]
+
+        perm_agg = self._mean_max(perm_att, perm_present)
+        stk_agg = self._mean_max(stk_att, stk_present)
+        top_stack_feat = stk_att[:, 0]
         gy_agg = self._mean_max(gy_emb, gy_present)
         ex_agg = self._mean_max(ex_emb, ex_present)
-        hand_agg = self._mean_max(hand_emb, hand_present)
+        hand_lib_agg = self._mean_max(hand_lib_emb, hl_present)
         opp_hand_agg = self._mean_max(opp_hand_emb, opp_hand_present)
-        top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)
         self_lib_agg = self._mean_max(self_lib_enc, self_lib_present)
         self_main_agg = self._mean_max(self_main_enc, self_main_present)
@@ -410,11 +508,11 @@ class ScriptTrunk(nn.Module):
         opp_main_agg = self._mean_max(opp_main_enc, opp_main_present)
         opp_side_agg = self._mean_max(opp_side_enc, opp_side_present)
 
-        base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
+        base = torch.cat([global_ctx, hist_recent, meta_ctx, board_counts,
                           revealed_agg, pending_feat, extras, mana_dev, log_vitals,
-                          action_extras,
                           arch_onehot,
-                          perm_agg, stk_agg, gy_agg, ex_agg, hand_agg, opp_hand_agg,
+                          perm_agg, stk_agg, top_stack_feat, gy_agg, ex_agg,
+                          hand_lib_agg, next_draw_feat, opp_hand_agg,
                           self_lib_agg, self_main_agg, self_side_agg,
                           opp_main_agg, opp_side_agg], dim=-1)
 
@@ -432,13 +530,8 @@ class ScriptTrunk(nn.Module):
         zone_idx = torch.round(zone * self.REF_ZONE_MAX).long().clamp(0, self.REF_ZONE_MAX)
         zone_e = self.zone_emb(zone_idx)
 
-        E = self.EMBED_DIM
-        stk_emb_pad = torch.cat(
-            [stk_emb, stk_emb.new_zeros(stk_emb.shape[0], self.STACK_SLOTS,
-                                        E - stk_emb.shape[-1])], dim=-1)
-        ent_table = torch.cat([perm_emb, stk_emb_pad], dim=1)
-        ent_table = torch.cat(
-            [ent_table, ent_table.new_zeros(ent_table.shape[0], 1, E)], dim=1)
+        # Per-action gather reads the ATTENDED entity table (+ zeros "none" row).
+        ent_table = torch.cat([ent, ent.new_zeros(B, 1, E)], dim=1)
         ref_idx = torch.round(refs * self.N_ENTITY_REF_SLOTS).long() - 1
         ref_idx = torch.where(ref_idx < 0,
                               torch.full_like(ref_idx, self.N_ENTITY_REF_SLOTS),

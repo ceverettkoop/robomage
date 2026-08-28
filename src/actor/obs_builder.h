@@ -20,10 +20,6 @@
 #include "gen/archetypes_gen.h" // ARCH_N (matchup-tail width)
 #include "machine_io.h"         // STATE_SIZE, N_CARD_TYPES, N_ENTITY_REF_SLOTS
 
-// Cost-feature width (W,U,B,R,G,C,generic) — mirrors card_costs.py::_N_COST_FEATS
-// and src/gen/card_costs_gen.h::N_COST_FEATS.
-constexpr int ACTOR_N_COST_FEATS = 7;
-
 // State-vector header (machine_io.h floats [0-35]): self player block | opp
 // player block | step one-hot | is_active | self_is_a | stack_size. The widths
 // come from machine_io.h (PLAYER_BLOCK_SIZE / STEP_ONEHOT_SIZE / HEADER_FLAGS,
@@ -55,20 +51,18 @@ static_assert(ACTOR_REF_ZONE_MAX == 11, "REF_ZONE_MAX documented as 11");
 // train/archetypes.py automatically.
 constexpr int ACTOR_MATCHUP_TAIL_FEATS = 1 + 2 * ARCH_N;
 
-// obs = state | cats | ids | ctrl | zone | refs | ords | hand_costs |
-//       bf_ability_costs | matchup_tail.
-// Must equal train/env.py::OBS_SIZE (7161). Derived from the engine layout
+// obs = state | cats | ids | ctrl | zone | refs | ords | matchup_tail.
+// Must equal train/env.py::OBS_SIZE (6755). Derived from the engine layout
 // constants so a layout change is caught by the static_assert, never a literal.
 // The per-action metadata blocks (N_ACTION_OBS_BLOCKS: cats | ids | ctrl | zone_ref
 // | slot_ref | option_ordinal; pub stays a side-channel, not in the obs) are counted
 // from the shared machine_io.h constant that env.py also imports, so the block count
-// has one source of truth across the C++/Python boundary.
+// has one source of truth across the C++/Python boundary. (Per-card cost facts are
+// not in the obs — they ride in the frozen card_props block inside the network.)
 constexpr int ACTOR_OBS_SIZE =
     STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS +
-    MAX_HAND_SLOTS * ACTOR_N_COST_FEATS +
-    MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS +
     ACTOR_MATCHUP_TAIL_FEATS;
-static_assert(ACTOR_OBS_SIZE == 7161, "actor obs size must match env.py OBS_SIZE");
+static_assert(ACTOR_OBS_SIZE == 6755, "actor obs size must match env.py OBS_SIZE");
 
 struct ActorObs {
     std::vector<float> obs;  // ACTOR_OBS_SIZE floats

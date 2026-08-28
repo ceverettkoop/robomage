@@ -557,8 +557,9 @@ BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
   hand-counted `STATE_SIZE + k * MAX_ACTIONS`.
 - **`ActionCategory` values** — the enum in `src/classes/action.h` (mirrored to `train/_enums.py`;
   `ACTION_CATEGORY_MAX` generated from it).
-- **`OBS_SIZE` and obs composition** (`STATE_SIZE + N_ACTION_OBS_BLOCKS*MAX_ACTIONS` + cost
-  features + matchup tail) — `train/env.py`. `N_ACTION_OBS_BLOCKS` (`src/machine_io.h`) is the sole
+- **`OBS_SIZE` and obs composition** (`STATE_SIZE + N_ACTION_OBS_BLOCKS*MAX_ACTIONS` +
+  matchup tail; per-card cost facts ride in the network's frozen `card_props` block, not
+  the obs) — `train/env.py`. `N_ACTION_OBS_BLOCKS` (`src/machine_io.h`) is the sole
   source for how many per-action arrays fold in; `pub` is a side-channel, not counted.
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
@@ -701,8 +702,9 @@ pooled KL(search‖net), value calibration. Regression `train/test_shard_record.
   (opt-in ci tier `azinspect`; needs torch, no engine binary)
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
 - `train/gen_card_props.py` — regenerates `train/card_props.py`, the FROZEN printed-property block
-  (96 fixed columns: pips/CMC/X, colors, types, land subtypes, P/T, keywords, ability-category
-  heads, tribal subtypes). The extractor consumes `[card_emb | card_props]` per card id — the
+  (103 fixed columns: pips/CMC/X, colors, types, land subtypes, P/T, keywords, ability-category
+  heads, tribal subtypes, activated-ability cost pips). The extractor consumes
+  `[card_emb | card_props]` per card id — the
   trainable 32-dim embedding carries only the behavioral residual. DFC-face aware and token-band
   aware (token rows parse `bin/resources/tokenscripts/`).
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)

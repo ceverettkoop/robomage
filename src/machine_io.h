@@ -48,7 +48,7 @@
 //
 // The Python env pads the per-action arrays to MAX_ACTIONS slots; cats, ids,
 // ctrl, zone, refs, and ords go into the observation (STATE_SIZE +
-// N_ACTION_OBS_BLOCKS*MAX_ACTIONS floats plus cost features); pub stays a
+// N_ACTION_OBS_BLOCKS*MAX_ACTIONS floats plus the matchup tail); pub stays a
 // side-channel for observers.
 //
 // State is always serialized from the PRIORITY PLAYER'S perspective ("self").

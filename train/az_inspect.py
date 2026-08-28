@@ -730,12 +730,6 @@ def obs_blocks():
         ("action zones", e.ACT_ZONE_START, e.ACT_ZONE_START + e.MAX_ACTIONS),
         ("action refs", e.ACT_REFS_START, e.ACT_REFS_START + e.MAX_ACTIONS),
         ("action ordinals", e.ACT_ORDS_START, e.ACT_ORDS_START + e.MAX_ACTIONS),
-        # Named for what they actually hold: the hand block is CAST costs
-        # (_CARD_COST_MATRIX), the battlefield block is ACTIVATED-ABILITY costs
-        # (_CARD_ABILITY_COST_MATRIX) — not the permanents' mana values, which
-        # the observation does not carry at all.
-        ("hand cast costs", e.ACT_BLOCKS_END, e._BF_COST_START),
-        ("battlefield ability costs", e._BF_COST_START, e.MATCHUP_TAIL_START),
         # The tail's two halves are separated on purpose: permuting the bucket
         # index re-routes the SAME latent through a different critic read-out
         # (the index is stripped before the trunk), while permuting the one-hots
@@ -1357,16 +1351,36 @@ def _encoder_specs(sd):
                      + _STACK_QUAL_NAMES
                      + [f"mode_{i}" for i in range(MAX_STACK_MODES)]
                      + [f"tgt{t} {f}" for t in range(MAX_STACK_TGTS)
-                        for f in ("present", "is_player", "ctrl", "slot_ref")])
+                        for f in ("present", "is_player", "ctrl", "slot_ref")]
+                     + ["stack_pos"])
     stack = [("scalars", len(stack_scalars), stack_scalars)]
     stack += _card_feat_cols("object", card_dim)
     stack += _card_feat_cols("tgts-mean", card_dim)
     specs.append(("stack_encoder", stack))
 
-    specs.append(("entity_encoder", _card_feat_cols("card", card_dim)))
+    specs.append(("entity_encoder",
+                  _card_feat_cols("card", card_dim)
+                  + [("draw distance", 1, ["draw_dist"])]))
     specs.append(("decklist_encoder",
                   _card_feat_cols("card", card_dim)
                   + [("copies count", 1, ["count"])]))
+
+    # The second-pass reference combiners: every group is an ENCODED entity
+    # embedding (no per-column names — the columns are latent dims).
+    if "trunk.ref_combiner.0.weight" in sd:
+        e_dim = int(sd["trunk.ref_combiner.0.weight"].shape[0])
+        specs.append(("ref_combiner",
+                      [("own encoding", e_dim, None),
+                       ("attached_to enc", e_dim, None),
+                       ("attached_by enc", e_dim, None),
+                       ("attack_tgt enc", e_dim, None),
+                       ("block_tgt enc", e_dim, None)]))
+    if "trunk.stk_combiner.0.weight" in sd:
+        e_dim = int(sd["trunk.ref_combiner.0.weight"].shape[0])
+        half = int(sd["trunk.stk_combiner.0.weight"].shape[1]) - e_dim
+        specs.append(("stk_combiner",
+                      [("own encoding", half, None),
+                       ("targets-mean enc", e_dim, None)]))
     # The revealed multi-hot's columns ARE vocab cards: its per-column weight
     # norm names which opponent reveals the net reacts to.
     specs.append(("revealed_encoder",
@@ -1440,28 +1454,30 @@ def _body_segments(sd):
     import env
     from extractor import _HIST_RECENT_K
     E = int(sd["trunk.perm_encoder.0.weight"].shape[0])
-    half = int(sd["trunk.stack_encoder.2.weight"].shape[0])
     card_feat = (int(sd["trunk.card_emb.weight"].shape[1])
                  + int(sd["trunk.card_props"].shape[1]))
     cat_dim = int(sd["trunk.action_cat_emb.weight"].shape[1])
+    from extractor import _BOARD_COUNT_FEATS
     segments = [
         ("global ctx",         env._GLOBAL_SIZE),
-        ("history raw",        env._MATCH_CTX_START - env._HIST_START),
         ("history recent-K",   _HIST_RECENT_K * (cat_dim + card_feat + 2)),
         ("match/lib/turn ctx", env._KNOWN_TOP_LIB_START - env._MATCH_CTX_START),
-        ("known-top-lib agg",  E),
+        ("board counts",       _BOARD_COUNT_FEATS),
         ("revealed agg",       E),
         ("pending decision",   card_feat + 1),
         ("global extras",      env._EXTRAS_END - env._EXTRAS_START),
         ("mana development",   env._MANA_DEV_END - env._MANA_DEV_START),
         ("log vitals",         env._LOG_VITALS_END - env._LOG_VITALS_START),
-        ("action extras raw",  env.BUCKET_IDX - env.STATE_SIZE),
+        # (the raw action-metadata passthrough exists only on the stock
+        # per_action_head=False path, which AZNet never uses)
         ("arch one-hots",      env.ARCH_ONEHOT_END - env.ARCH_ONEHOT_START),
         ("perm agg",           2 * E),
-        ("stack agg",          2 * half),
+        ("stack agg",          2 * E),
+        ("top-of-stack",       E),
         ("graveyard agg",      2 * E),
         ("exile agg",          2 * E),
-        ("hand agg",           2 * E),
+        ("hand+top-lib agg",   2 * E),
+        ("next-draw embed",    card_feat),
         ("opp-hand agg",       2 * E),
         ("self live-lib agg",  2 * E),
         ("self main agg",      2 * E),
@@ -1731,11 +1747,14 @@ def zone_embedding(sd):
 def entity_unit_activations(sd):
     """Every vocab card pushed through the entity encoder alone: the
     ``(N_CARD_TYPES, embed_dim)`` unit-activation matrix. A pure numpy mirror
-    of ``trunk.entity_encoder`` on ``[card_emb | card_props]`` rows (row i =
-    vocab card i; the padding row is dropped) — no game state involved, since
-    that encoder consumes card identity and nothing else."""
-    x = np.concatenate([_t2np(sd["trunk.card_emb.weight"])[1:],
-                        _t2np(sd["trunk.card_props"])[1:]], axis=1)
+    of ``trunk.entity_encoder`` on ``[card_emb | card_props | draw_dist=0]``
+    rows (row i = vocab card i; the padding row is dropped; distance 0 = the
+    "in hand" reading, the value every zone except the known top-of-library
+    feeds) — no game state involved, since that encoder consumes card identity
+    plus that one scalar and nothing else."""
+    ident = _t2np(sd["trunk.card_emb.weight"])[1:]
+    x = np.concatenate([ident, _t2np(sd["trunk.card_props"])[1:],
+                        np.zeros((ident.shape[0], 1), dtype=ident.dtype)], axis=1)
     h = np.maximum(x @ _t2np(sd["trunk.entity_encoder.0.weight"]).T
                    + _t2np(sd["trunk.entity_encoder.0.bias"]), 0.0)
     return np.maximum(h @ _t2np(sd["trunk.entity_encoder.2.weight"]).T

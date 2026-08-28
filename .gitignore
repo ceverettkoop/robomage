@@ -64,3 +64,4 @@ bin/resources/card_images/
 train/az/*
 bin/az_actor
 bin/robomage
+archive/*
