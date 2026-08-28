@@ -18,20 +18,13 @@
     },
     {
       "kind": "az-league",
-      "rotations": 2,
-      "games": 50,
-      "overrides": {
-        "workers": 28,
-        "exhaustive_selfplay": true,
-        "actor": true
-      }
-    },
-    {
-      "kind": "baseline",
+      "rotations": 6,
       "games": 100,
       "overrides": {
-        "all": true,
-        "workers": 28
+        "workers": 72,
+        "window": 0,
+        "exhaustive_selfplay": true,
+        "expert_games": 0
       }
     }
   ]

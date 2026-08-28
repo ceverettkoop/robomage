@@ -2450,6 +2450,14 @@ if __name__ == "__main__":
         argv = ["train"] + argv
     args = parser.parse_args(argv)
 
+    # Any subcommand may run a cuda forward in this process (sb3 defaults to
+    # the GPU when available), so the ROCm RDNA2 env defaults must be in place
+    # before the first cuda touch initializes the HIP runtime — same contract
+    # as the GUI evaluator and the actor fleet's per-subprocess exports.
+    # Harmless on CUDA/NVIDIA builds and CPU-only boxes.
+    from az_net import ensure_rocm_env
+    ensure_rocm_env()
+
     if args.command in ("train", "sweep", "fixed-model", "alternate", "league",
                         "exploiter"):
         env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
