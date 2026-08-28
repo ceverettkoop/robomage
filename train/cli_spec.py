@@ -309,7 +309,7 @@ def shaping_scale_for_timesteps(num_timesteps: int) -> float:
 # re-assertion both see the override.
 PPO_KWARGS = dict(
     learning_rate=LR_PEAK,
-    n_steps=4096,       # steps per env per update
+    n_steps=1548,       # steps per env per update
     batch_size=1024,
     n_epochs=N_EPOCHS,
     gamma=0.9975,     # 1/(1-γ) = 400-step horizon; episodes run 100-400 decisions with mostly terminal reward

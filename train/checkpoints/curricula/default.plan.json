@@ -10,8 +10,7 @@
         "scripted_anchor_frac": 0.2,
         "exploiter_floor": 0.0,
         "promote_margin": 0.0,
-        "fresh": true,
-        "n_envs": 24,
+        "n_envs": 64,
         "popart": true,
         "bo3": true
       }

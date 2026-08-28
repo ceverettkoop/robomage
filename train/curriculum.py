@@ -666,11 +666,37 @@ def run_curriculum(plan_ref: str, resume: bool = False, status: bool = False,
             row["kind"] = phase["kind"]
         state["phases"] = rows
     elif any(r.get("status") != "pending" for r in state.get("phases", [])):
-        print(f"[{_LABEL}] {progress_path(path)} already records progress "
-              f"(phase {state.get('phase_index', 0) + 1}/{len(phases)}). Pass "
-              f"--resume to continue it, --status to inspect it, or delete the "
-              f"file to run the curriculum from the start.", file=sys.stderr)
-        return 2
+        prog_path = progress_path(path)
+        msg = (f"[{_LABEL}] {prog_path} already records progress "
+               f"(phase {state.get('phase_index', 0) + 1}/{len(phases)}).")
+        if not sys.stdin.isatty():
+            print(msg + " Pass --resume to continue it, --status to inspect "
+                  f"it, or delete the file to run the curriculum from the "
+                  f"start.", file=sys.stderr)
+            return 2
+        print(msg, file=sys.stderr)
+        choice = None
+        while choice not in ("1", "2", "3"):
+            choice = input("  1) resume  2) delete progress and restart  "
+                            "3) exit\n> ").strip()
+        if choice == "3":
+            return 130
+        if choice == "1":
+            resume = True
+            check_plan_unchanged(plan, state)
+            state["phase_hashes"] = [phase_hash(p) for p in phases]
+            state["plan_hash"] = plan_hash(plan)
+            rows = state.get("phases", [])
+            rows = rows[:len(phases)] + [{"kind": p["kind"], "status": "pending",
+                                          "started": None, "finished": None,
+                                          "exit_code": None, "summary": None}
+                                         for p in phases[len(rows):]]
+            for row, phase in zip(rows, phases):
+                row["kind"] = phase["kind"]
+            state["phases"] = rows
+        else:
+            os.remove(prog_path)
+            state = new_progress(plan, path)
 
     print(f"[{_LABEL}] '{plan.get('name')}': {len(phases)} phase(s) from "
           f"{os.path.relpath(path, REPO_ROOT)}")
