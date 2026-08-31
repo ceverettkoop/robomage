@@ -140,6 +140,19 @@ struct MCTSConfig {
     // boundary. Search simulations never consult the provider: tree play is
     // net-both-seats, exactly like the Python reference.
     int scripted_seat = 0;
+
+    // ── opponent-pool learner seat (mirrors _play_match's opp_evaluator/
+    // net_is_a) ──────────────────────────────────────────────────────────────
+    // 0 = none (both seats are the learner, classic self-play); 1 = Player A,
+    // 2 = Player B is the LEARNER. Requires a two-evaluator setup (the other
+    // seat's net is an older checkpoint, wired through the ctor's evaluator_b
+    // slot by seat). Under --selfplay, only the learner seat's searched roots
+    // record samples, mix root noise, and sample-from-visits under the tau
+    // schedule; the opponent's roots search noise-free and play argmax, but
+    // still advance the per-game move counter and the SHARED playout-cap root
+    // counter (so an opponent-pool match costs the mirror-match budget and
+    // the coin stream matches the Python twin's one-counter rule).
+    int net_seat = 0;
 };
 
 // One stored self-play training sample (z + td_q are backfilled at real game end).

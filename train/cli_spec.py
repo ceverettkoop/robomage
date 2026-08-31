@@ -110,6 +110,17 @@ DEFAULT_AZ_WORLDS = 8        # determinized worlds per search (the 8_20 run budg
 DEFAULT_AZ_FULL_SEARCH_FRAC = 0.25
 DEFAULT_AZ_FAST_SIMS = 128   # the fast budget; also the az:gen serving sims
 DEFAULT_AZ_MIRROR_FRAC = 0.25  # P(opponent deck == focus deck) per self-play game
+# Opponent-pool self-play: that fraction of the schedule's pure-self-play
+# matches puts an OLDER checkpoint on the opponent seat — the incumbent
+# (gen__azfinal) plus the newest candidate snapshots distinct from both it and
+# the generator, up to DEFAULT_AZ_OPP_POOL_SIZE nets — instead of mirroring the
+# learner. Only the learner seat's decisions are recorded (the opponent is
+# environment, like a vs-scripted cell); the opponent searches noise-free
+# argmax under the shared playout-cap coin. External pressure against
+# self-play drift at unchanged engine budget; 0 disables (pure mirror
+# self-play). GENERATION side, honored by both backends.
+DEFAULT_AZ_OPP_POOL_FRAC = 0.25
+DEFAULT_AZ_OPP_POOL_SIZE = 3
 DEFAULT_AZ_TEMP_MOVES = 20   # sample from visit counts for the first N decisions per game
 # n-step TD value target (GENERATION side — baked into each shard's td_q column).
 # Each recorded sample's value target bootstraps off the search root value q of
@@ -127,12 +138,17 @@ DEFAULT_AZ_TD_N = 10
 # thousand minibatches) and let the value head memorize per-game outcomes.
 DEFAULT_AZ_LR = 5e-5
 DEFAULT_AZ_WEIGHT_DECAY = 1e-4
-DEFAULT_AZ_VALUE_DECAY = 1e-3    # extra weight decay on value_body/value_head only:
-                                 # the 64 matchup columns see so few distinct games per
-                                 # cycle that they memorize outcomes without it
-DEFAULT_AZ_EPOCH_FRAC = 0.5      # auto-batches (batches=0) = this fraction of one epoch
-                                 # over the window; a full epoch overfits the small
-                                 # per-cycle game set (v_z 0.45->0.15 within one epoch)
+DEFAULT_AZ_VALUE_DECAY = 1e-4    # weight decay on the dense value_body.* params
+                                 # (value_head columns stay decay-exempt). Matches the
+                                 # shared decay: playout-cap randomization is the
+                                 # anti-memorization lever now, and heavier decay here
+                                 # shrinks leaf values (td-calibration gain a stuck
+                                 # ~1.5-1.8), starving PUCT of value signal
+DEFAULT_AZ_EPOCH_FRAC = 1.0      # auto-batches (batches=0) = this fraction of one epoch
+                                 # over the window; safe at a full epoch now that
+                                 # playout-cap randomization supplies ~3x distinct games
+                                 # per slot — the holdout tripwire polices window
+                                 # memorization (warns at a 2x train/holdout MSE gap)
 DEFAULT_AZ_C_PUCT = 2.5          # PUCT exploration constant for the az paths: higher
                                  # weights search Q over the net prior (1.5 was
                                  # prior-dominated; analysis/parity tools keep 1.5)
@@ -650,6 +666,20 @@ def _fast_sims():
                     f"(default {DEFAULT_AZ_FAST_SIMS})")
 
 
+def _opp_pool_frac():
+    """--opp-pool-frac (az-selfplay / az / az-league): opponent-pool mixing."""
+    return Arg("--opp-pool-frac", "float", default=DEFAULT_AZ_OPP_POOL_FRAC,
+               help="Fraction of the pure-self-play matches whose OPPONENT "
+                    "seat is piloted by an older checkpoint (the incumbent "
+                    "plus the newest snapshots distinct from it and the "
+                    f"generator, up to {DEFAULT_AZ_OPP_POOL_SIZE} nets) "
+                    "instead of the learner itself; only the learner seat's "
+                    "decisions are recorded "
+                    f"(default {DEFAULT_AZ_OPP_POOL_FRAC}; 0 = pure mirror "
+                    "self-play, also the silent fallback when no distinct "
+                    "older checkpoint exists yet)")
+
+
 def _gate_max_rounds():
     """--gate-max-rounds (az-eval / az / az-league): the sequential gate's cap."""
     return Arg("--gate-max-rounds", "int", default=DEFAULT_AZ_GATE_MAX_ROUNDS,
@@ -1108,6 +1138,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
         _full_search_frac(),
         _fast_sims(),
+        _opp_pool_frac(),
         _c_puct(),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
@@ -1254,6 +1285,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
         _full_search_frac(),
         _fast_sims(),
+        _opp_pool_frac(),
         _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
@@ -1387,6 +1419,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
         _full_search_frac(),
         _fast_sims(),
+        _opp_pool_frac(),
         _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),

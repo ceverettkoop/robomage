@@ -62,7 +62,8 @@ try:
                           DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N,
                           DEFAULT_AZ_EXHAUSTIVE_REPEATS,
                           DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
-                          DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS)
+                          DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
+                          DEFAULT_AZ_OPP_POOL_SIZE)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
     from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
@@ -76,7 +77,8 @@ except ImportError:  # pragma: no cover
                                 DEFAULT_AZ_EXHAUSTIVE_REPEATS,
                                 DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
                                 DEFAULT_AZ_FULL_SEARCH_FRAC,
-                                DEFAULT_AZ_FAST_SIMS)
+                                DEFAULT_AZ_FAST_SIMS,
+                                DEFAULT_AZ_OPP_POOL_SIZE)
     from train.opponents import GEN_STEM
 
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
@@ -334,6 +336,61 @@ def resolve_source(deck: str, checkpoint: Optional[str]) -> dict:
     return {"mode": "random", "path": None}
 
 
+def resolve_opponent_pool(source: dict,
+                          k: int = DEFAULT_AZ_OPP_POOL_SIZE) -> list:
+    """The opponent-pool checkpoints for ``opp_pool_frac`` matches: up to ``k``
+    AZ checkpoint paths DISTINCT from the generator (``source``) — the
+    incumbent ``gen__azfinal`` first, then the newest candidate snapshots
+    (``gen__azv*``, descending steps) distinct from both. Distinctness is by
+    the checkpoint's ``steps`` metadata (``gen__azfinal`` is a byte-copy of
+    the snapshot it was promoted from, so a path compare would let the
+    "incumbent" secretly be the generator itself; realpath is the fallback
+    when a meta sidecar is missing). A fresh line whose only checkpoint IS
+    the generator yields an empty pool (the caller then falls back to pure
+    mirror self-play). Only mode-'az' sources exclude their own identity — a
+    PPO/random generator is never in the AZ checkpoint dir."""
+    from az_net import az_checkpoint_path
+
+    def _ident(p):
+        meta = os.path.splitext(p)[0] + ".meta.json"
+        try:
+            import json as _json
+            with open(meta) as f:
+                s = _json.load(f).get("steps")
+            if s is not None:
+                return ("steps", int(s))
+        except (OSError, ValueError):
+            pass
+        return ("path", os.path.realpath(p))
+
+    own = (_ident(source["path"])
+           if source.get("mode") == "az" and source.get("path")
+           and os.path.exists(source["path"]) else None)
+    pool = []
+    seen = {own} if own else set()
+
+    def _add(p):
+        if p and os.path.exists(p) and _ident(p) not in seen:
+            pool.append(p)
+            seen.add(_ident(p))
+    _add(az_checkpoint_path(None))          # the incumbent, gen__azfinal.pt
+    import glob as _glob
+    ckpt_dir = os.path.dirname(az_checkpoint_path(None))
+    snaps = _glob.glob(os.path.join(ckpt_dir, f"{GEN_STEM}__azv*.pt"))
+
+    def _steps(p):
+        try:
+            return int(os.path.basename(p).split("__azv")[1].split(".pt")[0])
+        except (IndexError, ValueError):
+            return -1
+    for p in sorted((p for p in snaps if _steps(p) >= 0),
+                    key=_steps, reverse=True):
+        if len(pool) >= k:
+            break
+        _add(p)
+    return pool[:k]
+
+
 def _build_net(source: dict):
     # The worker-side half of resolve_source's dict; see that docstring for why
     # this stays separate from opponents.load_az_evaluator (candidate line,
@@ -552,6 +609,58 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
     return action, sample, sb_boundary
 
 
+def _opp_net_action(env, opp_evaluator, rng, knobs, *, num_choices,
+                    sb_boundary, sb_stats):
+    """Pick the OPPONENT-POOL seat's action (an older checkpoint's net) and
+    return ``(action, sb_boundary)`` — no sample is recorded (the opponent is
+    environment, like a vs-scripted seat, so its search posteriors never enter
+    the training data).
+
+    Play discipline: search-safe in-game roots run the ordinary PUCT search
+    with the opponent's evaluator, NOISE-FREE and always argmax (an opponent
+    plays its best; exploration belongs to the learner's seat), under the
+    SHARED playout-cap coin — ``sb_stats['cap_root_idx']`` advances for every
+    searched in-game root whichever seat moves, so an opponent-pool match
+    costs the same engine budget as a mirror match and the C++ twin can
+    reproduce the coin stream from the one counter. Bo3 sideboard roots run
+    the same plan search as the learner's (an opponent that sideboards
+    badly would distort z); unsafe multi-choice prompts fall back to the raw
+    policy argmax; trivial prompts take action 0."""
+    from mcts import run_search, run_plan_search, sb_root_key
+    if num_choices <= 1:
+        return 0, sb_boundary
+    if not bool(env.last_search_safe):
+        priors, _ = opp_evaluator.evaluate(env._obs, num_choices)
+        return int(np.argmax(priors)), sb_boundary
+    if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
+        key = sb_root_key(env._obs)
+        b = sb_boundary
+        if b is None or b["key"] != key:
+            b = {"key": key, "seeds": None, "picks": [], "memo": {}}
+            sb_boundary = b
+        result = run_plan_search(
+            env, opp_evaluator, worlds=knobs.sb_worlds,
+            branches=knobs.sb_branches,
+            rollout_turns=knobs.sb_rollout_turns, rng=rng,
+            world_seeds=b["seeds"], plan_memo=b["memo"],
+            memo_picks=tuple(b["picks"]))
+        b["seeds"] = result.seeds
+        sb_stats["sb_memo_hits"] += result.memo_hits
+    else:
+        sb_boundary = None
+        root_idx = sb_stats["cap_root_idx"]
+        sb_stats["cap_root_idx"] += 1
+        full = playout_cap_full(knobs.cap_seed, root_idx,
+                                knobs.full_search_frac)
+        result = run_search(env, opp_evaluator,
+                            sims=knobs.sims if full else knobs.fast_sims,
+                            worlds=knobs.worlds, c_puct=knobs.c_puct,
+                            root_noise_eps=0.0,
+                            root_noise_alpha=knobs.root_noise_alpha, rng=rng,
+                            merge_dupes=knobs.merge_dupes)
+    return result.best_action(), sb_boundary
+
+
 def _sb_latch_played(sb_boundary, obs, action):
     """Latch a stepped action's pick descriptor into the live sideboard
     boundary (no-op when there is none) — the memo key base the next pick's
@@ -576,6 +685,7 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 sb_branches=DEFAULT_SB_BRANCHES, sb_worlds=DEFAULT_SB_WORLDS,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                 merge_dupes=True, agent=None, net_is_a=None,
+                opp_evaluator=None,
                 full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
                 fast_sims=DEFAULT_AZ_FAST_SIMS):
     """Play one match (bo1: a single game; bo3: a best-of-three) and return
@@ -599,6 +709,13 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     stream needs no special handling. The ``agent`` branches consume no ``rng``
     and ``net_to_move`` is constant True when ``net_is_a is None``, so pure
     self-play draws exactly as it did before the two loops were merged.
+
+    ``opp_evaluator`` (with ``net_is_a``, mutually exclusive with ``agent``)
+    puts an OLDER checkpoint's net on the non-learner seat instead — the
+    opponent-pool mode (see :func:`_opp_net_action` for its play discipline;
+    only the learner seat's decisions are recorded, and the opponent's
+    searched roots share the match's playout-cap counter and the play
+    ``rng``, so this match kind has its own — still fully seeded — stream).
 
     Game boundaries are detected from ``info['game_result']`` (the engine emitted a
     GAME_RESULT line on that step's read); the game's winner is the sign of that
@@ -681,6 +798,12 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
             priors, _ = evaluator.evaluate(env._obs, num_choices)
             action = int(np.argmax(priors))
             fallback += 1
+        elif opp_evaluator is not None:
+            # Opponent-pool seat: an older checkpoint searches (noise-free,
+            # argmax, shared cap counter) but records no sample.
+            action, sb_boundary = _opp_net_action(
+                env, opp_evaluator, rng, knobs, num_choices=num_choices,
+                sb_boundary=sb_boundary, sb_stats=sb_stats)
         else:
             # Scripted seat: no search, no sample, no counters. The hard-tier
             # agent answers every prompt kind, including the bo3 sideboard
@@ -861,7 +984,8 @@ def _match_winner(game_winners) -> str:
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
             sb_branches, sb_worlds, sb_rollout_turns,
-            scripted_seats=None, td_n=DEFAULT_TD_N, merge_dupes=True,
+            scripted_seats=None, opp_assign=None,
+            td_n=DEFAULT_TD_N, merge_dupes=True,
             c_puct=DEFAULT_AZ_C_PUCT,
             full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
             fast_sims=DEFAULT_AZ_FAST_SIMS):
@@ -874,11 +998,17 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
     ``scripted_seats`` (when given) is a parallel list of per-match
     Optional[bool]: ``None`` = pure self-play (the net pilots both seats), else
     the value is ``net_is_a`` for a match whose OTHER seat is piloted by
-    scripted:hard (:func:`_play_match`'s ``agent``/``net_is_a`` arguments)."""
+    scripted:hard (:func:`_play_match`'s ``agent``/``net_is_a`` arguments).
+
+    ``opp_assign`` (when given) is a parallel list of per-match
+    Optional[(net_is_a, checkpoint_path)]: the opponent-pool assignment — an
+    OLDER checkpoint pilots the non-learner seat (never combined with a
+    scripted seat on the same match). Opponent nets are loaded lazily, once
+    per distinct path per worker."""
     import torch
     torch.set_num_threads(1)   # avoid oversubscription across worker processes
     from search_env import SearchRoboMageEnv
-    from az_net import AZEvaluator
+    from az_net import AZEvaluator, load_az
 
     net = _build_net(source)
     evaluator = AZEvaluator(net)
@@ -887,6 +1017,12 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
     if scripted_seats is not None and any(s is not None for s in scripted_seats):
         from scripted_agent import make_agent
         agent = make_agent("scripted:hard")
+    opp_cache = {}
+
+    def _opp_eval(path):
+        if path not in opp_cache:
+            opp_cache[path] = AZEvaluator(load_az(path))
+        return opp_cache[path]
 
     n_matches = len(matchups)
     da0, db0 = matchups[0] if matchups else (None, None)
@@ -899,14 +1035,17 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
     stats = {"searched": 0, "fallback": 0, "fast_searched": 0,
              "wins_a": 0, "wins_b": 0, "draws": 0,
              "games": 0, "dropped": 0, "sb_memo_hits": 0,
-             "scripted_matches": 0, "net_wins_vs_scripted": 0}
+             "scripted_matches": 0, "net_wins_vs_scripted": 0,
+             "opp_matches": 0, "net_wins_vs_opp": 0}
     try:
         for m in range(n_matches):
             seed = base_seed + worker_idx * 100000 + m
             # Swap decks for this match; reset() (inside _play_match) respawns the
             # engine reading the current _deck_a/_deck_b.
             env._deck_a, env._deck_b = matchups[m]
-            net_is_a = None if scripted_seats is None else scripted_seats[m]
+            scr_seat = None if scripted_seats is None else scripted_seats[m]
+            opp = None if opp_assign is None else opp_assign[m]
+            net_is_a = scr_seat if opp is None else opp[0]
 
             def beat(move, searched_ct, fallback_ct, _m=m):
                 result_q.put({"kind": "beat", "worker": worker_idx,
@@ -914,7 +1053,7 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                               "searched": searched_ct, "fallback": fallback_ct})
 
             t0 = time.time()
-            if net_is_a is not None:
+            if scr_seat is not None:
                 agent.set_deck_names(*matchups[m])
             samples, game_winners, searched, fallback, dropped, sb_st = _play_match(
                 env, evaluator, rng, sims=sims, worlds=worlds, c_puct=c_puct,
@@ -922,7 +1061,8 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                 root_noise_alpha=root_noise_alpha, seed=seed,
                 on_progress=beat, sb_branches=sb_branches, sb_worlds=sb_worlds,
                 sb_rollout_turns=sb_rollout_turns, merge_dupes=merge_dupes,
-                agent=(None if net_is_a is None else agent),
+                agent=(None if scr_seat is None else agent),
+                opp_evaluator=(None if opp is None else _opp_eval(opp[1])),
                 net_is_a=(None if net_is_a is None else bool(net_is_a)),
                 full_search_frac=full_search_frac, fast_sims=fast_sims)
             buf.append(_backfill_and_pack(samples, game_winners, td_n=td_n))
@@ -937,9 +1077,13 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             stats["wins_a"] += int(mwinner == "A")
             stats["wins_b"] += int(mwinner == "B")
             stats["draws"] += int(mwinner == "DRAW")
-            if net_is_a is not None:
+            if scr_seat is not None:
                 stats["scripted_matches"] += 1
                 stats["net_wins_vs_scripted"] += int(
+                    mwinner == ("A" if net_is_a else "B"))
+            if opp is not None:
+                stats["opp_matches"] += 1
+                stats["net_wins_vs_opp"] += int(
                     mwinner == ("A" if net_is_a else "B"))
             result_q.put({"kind": "match", "worker": worker_idx, "match": m + 1,
                           "n_matches": n_matches, "winner": mwinner,
@@ -948,7 +1092,9 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                           "games": len(game_winners), "samples": len(samples),
                           "dropped": dropped, "searched": searched,
                           "fallback": fallback, "secs": time.time() - t0,
-                          "scripted": (None if net_is_a is None
+                          "opp_pool": (None if opp is None
+                                       else os.path.basename(opp[1])),
+                          "scripted": (None if scr_seat is None
                                        else ("B" if net_is_a else "A"))})
             if _buffered(buf) >= FLUSH_SAMPLES:
                 shards.append(_write_shard(out_dir, _concat(buf), shard_n))
@@ -1027,6 +1173,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
              slot: int = 0,
+             opp_pool_frac: float = 0.0,
              td_n: int = DEFAULT_TD_N,
              actor_device: str = "cpu",
              eval_server: Optional[bool] = None,
@@ -1088,6 +1235,18 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     plays them via the scripted oracle alongside the self-play cells with no
     special-casing. ``k=0`` disables; it is IGNORED (with a printed note) under
     full ``exhaustive``, which already plays every ordered pair.
+
+    ``opp_pool_frac`` (0..1, default 0 = classic mirror self-play) marks that
+    fraction of the PURE self-play matches (never the vs-scripted cells) to
+    face an OLDER checkpoint on the opponent seat — the pool from
+    :func:`resolve_opponent_pool` (the incumbent plus the newest snapshots
+    distinct from it and the generator, up to ``DEFAULT_AZ_OPP_POOL_SIZE``).
+    The learner keeps the schedule's focus seat and only ITS decisions are
+    recorded; the opponent searches noise-free argmax under the shared
+    playout-cap coin (:func:`_opp_net_action`). Both backends play these
+    matches (the actor via ``--net-seat``/``--opp-model``; the opponent net
+    loads locally while any central eval server keeps serving the learner).
+    Silently inert when no distinct older checkpoint exists yet.
 
     ``td_n`` is the n-step TD horizon baked into every written sample's ``td_q``
     column (see :func:`compute_td_targets`) — a GENERATION-side knob, honoured
@@ -1195,6 +1354,37 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
 
     workers = max(1, min(workers, games))
     source = resolve_source(deck, checkpoint)
+
+    # Opponent-pool assignment: a dedicated rng stream (never the schedule's)
+    # marks a fraction of the PURE self-play matches to face an older
+    # checkpoint on the opponent seat; the learner keeps the schedule's focus
+    # seat. Vs-scripted cells are never reassigned. Inert (with a note) when
+    # no distinct older checkpoint exists yet.
+    opp_assign = None
+    if opp_pool_frac > 0.0:
+        opp_pool = resolve_opponent_pool(source)
+        if not opp_pool:
+            print(f"[az-selfplay] opponent pool (frac={opp_pool_frac}): no "
+                  f"distinct older checkpoint — all matches stay mirror "
+                  f"self-play")
+        else:
+            orng = np.random.default_rng([seed, 0xA110])
+            opp_assign = []
+            for i, (_a, _b, focus_is_a) in enumerate(sched_ex):
+                take = orng.random() < opp_pool_frac
+                if take and not (scripted_seats is not None
+                                 and scripted_seats[i] is not None):
+                    pick = opp_pool[int(orng.integers(len(opp_pool)))]
+                    opp_assign.append((bool(focus_is_a), pick))
+                else:
+                    opp_assign.append(None)
+            n_opp = sum(1 for o in opp_assign if o is not None)
+            if n_opp == 0:
+                opp_assign = None
+            print(f"[az-selfplay] opponent-pool matches: "
+                  f"{n_opp}/{len(sched_ex)} (frac={opp_pool_frac}; pool="
+                  f"{[os.path.basename(p) for p in opp_pool]}; learner "
+                  f"samples only)")
     focus_lbl = focus[0] if len(focus) == 1 else f"{len(focus)} decks [{','.join(focus)}]"
     unit = "matches" if bo3 else "games"
     print(f"[az-selfplay] focus={focus_lbl} {unit}={games} bo3={bo3} sims={sims} "
@@ -1241,6 +1431,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
                                sb_worlds=sb_worlds,
                                sb_rollout_turns=sb_rollout_turns,
                                scripted_seats=scripted_seats,
+                               opp_assign=opp_assign,
                                actor_device=actor_device,
                                eval_server=eval_server,
                                cross_world=cross_world,
@@ -1249,6 +1440,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
                             sb_worlds=sb_worlds,
                             sb_rollout_turns=sb_rollout_turns,
                             scripted_seats=scripted_seats,
+                            opp_assign=opp_assign,
                             **common)
 
 
@@ -1265,7 +1457,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                      sb_worlds=DEFAULT_SB_WORLDS,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                      merge_dupes=True,
-                     scripted_seats=None, td_n=DEFAULT_TD_N) -> dict:
+                     scripted_seats=None, opp_assign=None,
+                     td_n=DEFAULT_TD_N) -> dict:
     import multiprocessing as mp
 
     matches = len(schedule)
@@ -1275,11 +1468,14 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
         per[i] += 1
     slices = []
     seat_slices = []
+    opp_slices = []
     off = 0
     for n in per:
         slices.append(schedule[off:off + n])
         seat_slices.append(None if scripted_seats is None
                            else scripted_seats[off:off + n])
+        opp_slices.append(None if opp_assign is None
+                          else opp_assign[off:off + n])
         off += n
 
     ctx = mp.get_context("spawn")
@@ -1292,7 +1488,7 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                         args=(slices[wi], source, sims, worlds, temp_moves,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q, bo3, sb_branches, sb_worlds,
-                              sb_rollout_turns, seat_slices[wi],
+                              sb_rollout_turns, seat_slices[wi], opp_slices[wi],
                               td_n, merge_dupes, c_puct,
                               full_search_frac, fast_sims))
         p.start()
@@ -1334,6 +1530,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
             drop_note = (f" dropped={msg['dropped']}" if msg.get("dropped") else "")
             scr_note = (f" [scripted:hard={msg['scripted']}]"
                         if msg.get("scripted") else "")
+            if msg.get("opp_pool"):
+                scr_note += f" [opp={msg['opp_pool']}]"
             print(f"[az-selfplay] w{msg['worker']} m{msg['match']}/{msg['n_matches']}: "
                   f"match={msg['winner']}{scr_note} (games A-B {msg['game_score']}) "
                   f"samples={msg['samples']}{drop_note} "
@@ -1354,7 +1552,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
     agg = {"searched": 0, "fallback": 0, "fast_searched": 0,
            "wins_a": 0, "wins_b": 0, "draws": 0,
            "games": 0, "dropped": 0, "scripted_matches": 0,
-           "net_wins_vs_scripted": 0}
+           "net_wins_vs_scripted": 0,
+           "opp_matches": 0, "net_wins_vs_opp": 0}
     for r in results:
         for k in agg:
             agg[k] += r["stats"].get(k, 0)
@@ -1373,6 +1572,11 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
         w = agg["net_wins_vs_scripted"]
         n = agg["scripted_matches"]
         print(f"[az-selfplay] net vs scripted:hard: {w}W/{n - w}L over {n} "
+              f"matches ({w / n:.3f})")
+    if agg["opp_matches"]:
+        w = agg["net_wins_vs_opp"]
+        n = agg["opp_matches"]
+        print(f"[az-selfplay] learner vs opponent pool: {w}W/{n - w}L over {n} "
               f"matches ({w / n:.3f})")
     return {"samples": total_samples, "shards": all_shards, "stats": agg,
             "out_dir": out_dir, "source": source}
@@ -1530,7 +1734,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        merge_dupes=True,
                        td_n=DEFAULT_TD_N, batch=1, cross_world=False,
                        device="cpu", eval_server=None,
-                       scripted_seat=None, scripted_oracle=None) -> list:
+                       scripted_seat=None, scripted_oracle=None,
+                       net_seat=None, opp_model=None) -> list:
     """Build a ``bin/az_actor --selfplay`` argv.
 
     The single source of the actor CLI contract on the Python side — used by
@@ -1565,9 +1770,20 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     ``scripted_seat`` ('A'/'B', with ``scripted_oracle`` = the oracle's Unix
     socket path) puts scripted:hard on that seat via train/scripted_oracle.py —
     the actor ships that seat's real decisions to the oracle and searches only
-    the other (net) seat, mirroring _play_match's agent/net_is_a mode."""
+    the other (net) seat, mirroring _play_match's agent/net_is_a mode.
+
+    ``net_seat`` ('A'/'B', with ``opp_model`` = an older checkpoint's
+    TorchScript path) is the opponent-pool mode: the primary evaluator
+    (``model``/``eval_server``) pilots and RECORDS the ``net_seat`` seat while
+    ``opp_model`` pilots the other noise-free/argmax, mirroring
+    _play_match's ``opp_evaluator``/``net_is_a`` mode."""
     if (scripted_seat is None) != (scripted_oracle is None):
         raise ValueError("scripted_seat and scripted_oracle go together")
+    if (net_seat is None) != (opp_model is None):
+        raise ValueError("net_seat and opp_model go together")
+    if net_seat is not None and scripted_seat is not None:
+        raise ValueError("a match has one opponent: scripted_seat and "
+                         "net_seat/opp_model are mutually exclusive")
     model_args = (["--eval-server", eval_server] if eval_server
                   else ["--model", model])
     cmd = [actor_bin, "--selfplay", "--deck", deck,
@@ -1590,6 +1806,8 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     if scripted_seat is not None:
         cmd += ["--scripted-seat", str(scripted_seat),
                 "--scripted-oracle", str(scripted_oracle)]
+    if net_seat is not None:
+        cmd += ["--net-seat", str(net_seat), "--opp-model", str(opp_model)]
     if device != "cpu" and not eval_server:
         cmd += ["--device", device]
     if bo3:
@@ -1637,13 +1855,19 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     sb_worlds=DEFAULT_SB_WORLDS,
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
                     merge_dupes=True,
-                    scripted_seats=None,
+                    scripted_seats=None, opp_assign=None,
                     td_n=DEFAULT_TD_N, actor_device="cpu",
                     eval_server=None, cross_world=True) -> dict:
     """``scripted_seats`` (optional) is a per-match parallel list of
     Optional[bool] net_is_a values, same shape :func:`_generate_python` takes:
     ``None`` = pure self-play, else scripted:hard pilots the OTHER seat via the
     scripted oracle (one oracle process serves every group of the pass).
+
+    ``opp_assign`` (optional) is the opponent-pool parallel list of
+    Optional[(net_is_a, checkpoint_path)] — those matches run with
+    ``--net-seat``/``--opp-model`` (the opponent checkpoint's TorchScript
+    sibling is exported once per distinct path and loaded locally by each
+    group's actor; the central eval server keeps serving the learner).
 
     ``eval_server`` is tri-state: True forces the Stage C central server
     (fatal if it cannot start), False disables it, and None — the default —
@@ -1670,20 +1894,36 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
     games = len(schedule)
     unit = "matches" if bo3 else "games"
 
-    # Group the schedule into per-(deck_a, deck_b, scripted-seat) actor
-    # invocations so each actor process runs one matchup batch (mirror or
-    # cross-deck, self-play or vs-scripted) with a DISJOINT seed range. Groups
-    # are run with bounded concurrency (<= workers at a time). The seat letter
-    # is the SCRIPTED seat ('A'/'B', from the schedule's net_is_a: net on A ->
-    # scripted B), None for pure self-play.
+    # Group the schedule into per-(deck_a, deck_b, scripted-seat, opp-pool)
+    # actor invocations so each actor process runs one matchup batch (mirror or
+    # cross-deck; self-play, vs-scripted, or vs an opponent-pool checkpoint)
+    # with a DISJOINT seed range. Groups are run with bounded concurrency
+    # (<= workers at a time). The seat letter is the SCRIPTED seat ('A'/'B',
+    # from the schedule's net_is_a: net on A -> scripted B), None for pure
+    # self-play; the opp entry is (learner-seat letter, opp TorchScript path),
+    # None outside opponent-pool matches.
     if scripted_seats is None:
         seats = [None] * len(schedule)
     else:
         seats = [None if s is None else ("B" if s else "A")
                  for s in scripted_seats]
-    keyed = list(zip(schedule, seats))
+    # One TorchScript export per distinct opponent checkpoint (sibling .ts.pt,
+    # refreshed on staleness like the learner's own export).
+    opp_ts = {}
+    if opp_assign is not None:
+        for o in opp_assign:
+            if o is not None and o[1] not in opp_ts:
+                opp_ts[o[1]], _ = _ensure_actor_torchscript(
+                    {"mode": "az", "path": o[1]}, tag="az-selfplay opp")
+    if opp_assign is None:
+        opps = [None] * len(schedule)
+    else:
+        opps = [None if o is None else ("A" if o[0] else "B", opp_ts[o[1]])
+                for o in opp_assign]
+    keyed = list(zip(schedule, seats, opps))
     groups = sorted(Counter(keyed).items(),
-                    key=lambda kv: (kv[0][0], kv[0][1] or ""))
+                    key=lambda kv: (kv[0][0], kv[0][1] or "",
+                                    kv[0][2] or ("", "")))
     total_groups = len(groups)
 
     # One shared oracle process for every vs-scripted group of this pass.
@@ -1748,7 +1988,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         stream.close()
 
     def _launch(gi):
-        ((da, db), st), n = groups[gi]
+        ((da, db), st, op), n = groups[gi]
         base = seed + gi * 100000
         cmd = actor_selfplay_cmd(
             actor_bin, deck=da, deck_b=db, seed=base, games=n,
@@ -1762,7 +2002,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             merge_dupes=merge_dupes, td_n=td_n,
             device=actor_device, eval_server=server_sock,
             cross_world=cross_world, scripted_seat=st,
-            scripted_oracle=(oracle_sock if st is not None else None))
+            scripted_oracle=(oracle_sock if st is not None else None),
+            net_seat=(None if op is None else op[0]),
+            opp_model=(None if op is None else op[1]))
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1, env=actor_env,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1775,8 +2017,8 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         ]
         for t in threads:
             t.start()
-        return {"gi": gi, "da": da, "db": db, "st": st, "n": n, "p": p,
-                "cmd": cmd, "threads": threads, "out": out_lines,
+        return {"gi": gi, "da": da, "db": db, "st": st, "op": op, "n": n,
+                "p": p, "cmd": cmd, "threads": threads, "out": out_lines,
                 "err": err_lines}
 
     failed = []
@@ -1796,6 +2038,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
         agg["wins_b"] += wb
         agg["draws"] += dr
         lbl = "" if rec["st"] is None else f" (scripted {rec['st']})"
+        if rec["op"] is not None:
+            lbl += (f" (learner {rec['op'][0]} vs "
+                    f"{os.path.basename(rec['op'][1])})")
         print(f"[az-selfplay] matchup {rec['da']}|{rec['db']}{lbl}: "
               f"{unit}={rec['n']} samples={s} A={wa} B={wb} draws={dr}")
 
@@ -2089,6 +2334,7 @@ def run(args) -> None:
              full_search_frac=float(getattr(args, "full_search_frac",
                                             DEFAULT_AZ_FULL_SEARCH_FRAC)),
              fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
+             opp_pool_frac=float(getattr(args, "opp_pool_frac", 0.0)),
              c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
              workers=args.workers, checkpoint=args.checkpoint,
              temp_moves=args.temp_moves, seed=resolve_seed(args),
@@ -2120,6 +2366,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                          "get the FULL --sims budget and record pi (default "
                          "%g); the rest run --fast-sims with no policy target. "
                          "1.0 = every root full" % DEFAULT_AZ_FULL_SEARCH_FRAC)
+    ap.add_argument("--opp-pool-frac", type=float, default=0.0,
+                    help="Fraction of pure-self-play matches whose opponent "
+                         "seat is an OLDER checkpoint (incumbent + newest "
+                         "distinct snapshots); learner samples only "
+                         "(default 0 = pure mirror self-play)")
     ap.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
                     help="PUCT sims (TOTAL across --worlds) for the playout "
                          "cap's fast searches (default %d)"

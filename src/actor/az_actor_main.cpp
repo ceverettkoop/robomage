@@ -112,6 +112,15 @@ struct ActorConfig {
     // (train/scripted_oracle.py); the OTHER seat searches as usual. 0 = none.
     int scripted_seat = 0;             // 0 none, 1 = Player A, 2 = Player B
     std::string scripted_oracle;       // Unix socket path
+    // Opponent-pool self-play (--net-seat A|B + --opp-model <path.ts.pt>):
+    // the primary evaluator (--model/--eval-server) pilots and RECORDS the
+    // net seat while --opp-model (an OLDER checkpoint's TorchScript, loaded
+    // locally) pilots the other noise-free/argmax — the C++ twin of
+    // az_selfplay._play_match's opp_evaluator/net_is_a mode. Requires
+    // --selfplay; mutually exclusive with --scripted-seat and --model-b/
+    // --eval-server-b. 0 = none.
+    int net_seat = 0;                  // 0 none, 1 = Player A, 2 = Player B
+    std::string opp_model;             // opponent checkpoint TorchScript path
 };
 
 // Shard flush threshold — mirrors az_selfplay.py::FLUSH_SAMPLES.
@@ -144,7 +153,11 @@ void print_usage(const char* prog) {
                  "recording: searched roots stored, no noise, argmax picks; "
                  "allowed with --model-b)\n"
                  "       [--scripted-seat A|B --scripted-oracle <socket>] "
-                 "(vs-scripted: that seat plays via train/scripted_oracle.py)\n",
+                 "(vs-scripted: that seat plays via train/scripted_oracle.py)\n"
+                 "       [--net-seat A|B --opp-model <path.ts.pt>] "
+                 "(opponent-pool self-play: --model/--eval-server pilots and "
+                 "records the net seat, --opp-model pilots the other "
+                 "noise-free/argmax; requires --selfplay)\n",
                  prog);
 }
 
@@ -248,6 +261,18 @@ int main(int argc, char const* argv[]) {
             cfg.rng_seed = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--rng-seed")));
             cfg.rng_seed_set = true;
+        } else if (a == "--net-seat") {
+            std::string s = need_arg(argc, argv, i, "--net-seat");
+            if (s == "A" || s == "a") {
+                cfg.net_seat = 1;
+            } else if (s == "B" || s == "b") {
+                cfg.net_seat = 2;
+            } else {
+                std::fprintf(stderr, "error: --net-seat takes A or B\n");
+                return 2;
+            }
+        } else if (a == "--opp-model") {
+            cfg.opp_model = need_arg(argc, argv, i, "--opp-model");
         } else if (a == "--scripted-seat") {
             std::string s = need_arg(argc, argv, i, "--scripted-seat");
             if (s == "A" || s == "a") {
@@ -318,6 +343,37 @@ int main(int argc, char const* argv[]) {
         return 2;
     }
 
+    if ((cfg.net_seat != 0) != !cfg.opp_model.empty()) {
+        std::fprintf(stderr, "error: --net-seat and --opp-model must be given "
+                             "together\n");
+        return 2;
+    }
+    if (cfg.net_seat != 0) {
+        if (!cfg.selfplay) {
+            std::fprintf(stderr, "error: --net-seat/--opp-model is the "
+                                 "opponent-pool SELF-PLAY mode (requires "
+                                 "--selfplay)\n");
+            return 2;
+        }
+        if (cfg.scripted_seat != 0) {
+            std::fprintf(stderr, "error: a match has one opponent — "
+                                 "--net-seat/--opp-model and --scripted-seat "
+                                 "are mutually exclusive\n");
+            return 2;
+        }
+        if (have_b) {
+            std::fprintf(stderr, "error: --opp-model and --model-b/"
+                                 "--eval-server-b are mutually exclusive (the "
+                                 "opponent-pool net is wired by --net-seat)\n");
+            return 2;
+        }
+        if (cfg.uniform) {
+            std::fprintf(stderr, "error: --net-seat requires a real net source "
+                                 "(--model or --eval-server), not --uniform\n");
+            return 2;
+        }
+    }
+
     // RESOURCE_DIR mirrors robomage's convention: getcwd()/resources (the binary
     // is run from bin/), overridable with --resources.
     if (!cfg.resources.empty()) {
@@ -358,6 +414,7 @@ int main(int argc, char const* argv[]) {
     // its own server connection; null pointer = single-model (both seats on
     // `evaluator`).
     AZEvaluator evaluator_b;
+    AZEvaluator* eval_a_ptr = cfg.uniform ? nullptr : &evaluator;
     AZEvaluator* eval_b_ptr = nullptr;
     if (!cfg.eval_server_b.empty()) {
         evaluator_b.connect_server(cfg.eval_server_b);
@@ -365,6 +422,19 @@ int main(int argc, char const* argv[]) {
     } else if (!cfg.model_b.empty()) {
         evaluator_b.load(cfg.model_b, cfg.device);
         eval_b_ptr = &evaluator_b;
+    } else if (!cfg.opp_model.empty()) {
+        // Opponent-pool self-play: the older checkpoint always loads locally
+        // (the central eval server, when any, serves the learner). Wire the
+        // two evaluators BY SEAT so az_mcts's per-decision seat selection
+        // (eval_a = Player A, eval_b = Player B) needs no special case: the
+        // learner takes its --net-seat seat, the opponent the other.
+        evaluator_b.load(cfg.opp_model, "cpu");
+        if (cfg.net_seat == 1) {
+            eval_b_ptr = &evaluator_b;
+        } else {
+            eval_b_ptr = eval_a_ptr;
+            eval_a_ptr = &evaluator_b;
+        }
     }
 
     // Optional binary obs dump: per decision, int32 num_choices then
@@ -403,8 +473,8 @@ int main(int argc, char const* argv[]) {
         mc.temp_moves = cfg.temp_moves;
         mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
         mc.scripted_seat = cfg.scripted_seat;
-        mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator,
-                                        eval_b_ptr);
+        mc.net_seat = cfg.net_seat;
+        mcts = std::make_unique<AZMcts>(mc, eval_a_ptr, eval_b_ptr);
         search_set_game_end_hook([&](int winner) { return mcts->on_game_end(winner); });
     }
 

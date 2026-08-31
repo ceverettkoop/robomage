@@ -99,6 +99,64 @@ def _expected_z(winner, mover_is_a) -> float:
     return 1.0 if ((winner == "A") == mover_is_a) else -1.0
 
 
+def check_opp_pool_match() -> int:
+    """Opponent-pool mode of :func:`az_selfplay._play_match`: an older net
+    (here a second uniform evaluator) pilots the non-learner seat. Asserts the
+    learner-seat-only sample contract on a real engine bo3 match: every sample's
+    mover is the learner's seat, the searched counter equals the sample count
+    (opponent roots search but record nothing), and the shared playout-cap
+    counter advanced past the learner's own searched in-game roots (the
+    opponent's roots consume coins too). Returns a failure count."""
+    deck_a, deck_b, paths = _write_decks()
+    env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                            auto_sideboard=False)
+    rng = np.random.default_rng(SEED)
+    failures = 0
+    try:
+        samples, game_winners, searched, fallback, dropped, sb_stats = _play_match(
+            env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
+            temp_moves=TEMP_MOVES, root_noise_eps=0.0, root_noise_alpha=1.0,
+            seed=SEED, sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
+            sb_rollout_turns=SB_ROLLOUT_TURNS,
+            opp_evaluator=UniformEvaluator(), net_is_a=True,
+            full_search_frac=0.5, fast_sims=4)
+    finally:
+        env.close()
+        for p in paths:
+            if os.path.exists(p):
+                os.remove(p)
+    print(f"opp-pool match: games={len(game_winners)} winners={game_winners} "
+          f"samples={len(samples)} searched={searched} "
+          f"cap_roots={sb_stats['cap_root_idx']}")
+    if len(game_winners) < 1 or not samples:
+        print("FAIL opp-pool: match produced no completed game / no samples")
+        return 1
+    wrong_seat = [i for i, s in enumerate(samples) if not s["mover_is_a"]]
+    if wrong_seat:
+        failures += 1
+        print(f"FAIL opp-pool: {len(wrong_seat)} sample(s) from the OPPONENT "
+              f"seat (positions {wrong_seat[:8]}) — learner-only contract broken")
+    if searched != len(samples):
+        failures += 1
+        print(f"FAIL opp-pool: searched={searched} != samples={len(samples)} "
+              f"(opponent roots must not count as learner searches)")
+    n_ingame = sum(1 for s in samples if not _is_sideboard(s))
+    if sb_stats["cap_root_idx"] < n_ingame:
+        failures += 1
+        print(f"FAIL opp-pool: cap_root_idx={sb_stats['cap_root_idx']} < "
+              f"learner in-game searched roots {n_ingame}")
+    elif sb_stats["cap_root_idx"] == n_ingame:
+        # Both seats draw from the one counter; a full bo3 where the opponent
+        # never got a searchable root would be surprising but not impossible —
+        # report, don't fail.
+        print("note opp-pool: cap counter == learner roots (opponent seat "
+              "never hit a searchable in-game root this match)")
+    if not failures:
+        print("ok  opp-pool: learner-seat-only samples, opponent searches "
+              "uncounted, shared cap counter")
+    return failures
+
+
 def check_scripted_cell_rotation() -> int:
     """The rotating vs-scripted slice of an --exhaustive-selfplay schedule.
 
@@ -349,6 +407,11 @@ def main() -> int:
     fo_failures = check_forced_out_when_stranded()
     if fo_failures:
         print(f"\nforced-out-when-stranded: FAILED ({fo_failures} failure(s))")
+        return 1
+
+    op_failures = check_opp_pool_match()
+    if op_failures:
+        print(f"\nopp-pool match: FAILED ({op_failures} failure(s))")
         return 1
 
     deck_a, deck_b, paths = _write_decks()

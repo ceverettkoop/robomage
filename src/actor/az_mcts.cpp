@@ -447,6 +447,13 @@ struct AZMcts::Impl {
     }
 
     // ── world / sim lifecycle (in-game tree search) ────────────────────────
+    // Is the current searched ROOT the learner's seat? Always true outside
+    // the opponent-pool mode (cfg.net_seat == 0); an opponent root searches
+    // noise-free, plays argmax, and records no sample.
+    bool learner_root() const {
+        return cfg.net_seat == 0 || (root_is_a == (cfg.net_seat == 1));
+    }
+
     void begin_world(int w) {
         cur_world_seed =
             cfg.world_seed_base +
@@ -458,8 +465,9 @@ struct AZMcts::Impl {
         // Dirichlet is gamma(alpha) per component normalized by the sum, drawn
         // from the per-run RNG (no cross-language parity required). A playout-
         // cap FAST root mixes no noise (it plays the game; its pi is never a
-        // policy target), mirroring the Python fast branch's eps=0.
-        if (cfg.noise_eps > 0.0 && cur_full) {
+        // policy target), mirroring the Python fast branch's eps=0. An
+        // opponent-pool root mixes none either (_opp_net_action's eps=0).
+        if (cfg.noise_eps > 0.0 && cur_full && learner_root()) {
             std::gamma_distribution<double> gamma(cfg.noise_alpha, 1.0);
             std::vector<double> noise(static_cast<size_t>(root_n));
             double sum = 0.0;
@@ -987,7 +995,12 @@ struct AZMcts::Impl {
             if (pi[static_cast<size_t>(i)] > pi[static_cast<size_t>(best)]) best = i;
 
         int chosen = best;
-        if (cfg.selfplay || cfg.record) {
+        // Opponent-pool sb plan root: no sample, no tau — argmax pick only
+        // (mirrors _opp_net_action's plan-search branch); the move counter
+        // still advances.
+        if ((cfg.selfplay || cfg.record) && !learner_root()) {
+            move_counter += 1;
+        } else if (cfg.selfplay || cfg.record) {
             SelfPlaySample s;
             s.obs = root_obs;
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
@@ -1370,8 +1383,13 @@ struct AZMcts::Impl {
         // tau schedule (sample-from-visits for the first temp_moves real moves,
         // argmax after). Parity/eval mode stores nothing and always plays argmax;
         // --record stores the sample but keeps the eval-mode argmax pick.
+        // An opponent-pool root (selfplay with net_seat set, opponent to move)
+        // stores nothing and plays argmax, but still advances the per-game
+        // move counter below (Python's game_move counts every decision).
         int chosen = best;
-        if (cfg.selfplay || cfg.record) {
+        if ((cfg.selfplay || cfg.record) && !learner_root()) {
+            move_counter += 1;
+        } else if (cfg.selfplay || cfg.record) {
             SelfPlaySample s;
             s.obs = root_obs;                                    // clean root obs
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);

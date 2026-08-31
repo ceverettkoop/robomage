@@ -60,6 +60,7 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
                       DEFAULT_AZ_VALUE_DECAY, DEFAULT_AZ_EPOCH_FRAC,
                       DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
+                      DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
 from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, sprt_cap_verdict,
                        sprt_plan_line, sprt_verdict)
@@ -1151,7 +1152,12 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     if workers is None:
         workers = max(1, (os.cpu_count() or 2) - 1)
     workers_req = max(1, int(workers))
-    workers = min(workers_req, len(matchups))
+    # Cap at the round's independent JOB count: on the actor backend every
+    # matchup is TWO legs (candidate in seat A / seat B — see
+    # _gate_actor_panel), so a panel-size cap left half the round waiting in
+    # a second wave. The Python path's pool holds one whole matchup per job;
+    # extra workers there just idle, so the higher cap is harmless.
+    workers = min(workers_req, 2 * len(matchups))
 
     # Backend: the C++ actor plays candidate-vs-incumbent two-model matches
     # (--model-b); the vs-scripted fallback (no incumbent yet) has no actor
@@ -1472,6 +1478,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
              slot: int = 0,
+             opp_pool_frac: float = DEFAULT_AZ_OPP_POOL_FRAC,
              selfplay_checkpoint: Optional[str] = None) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
@@ -1571,6 +1578,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                exhaustive_selfplay=exhaustive_selfplay,
                                exhaustive_repeats=exhaustive_repeats,
                                scripted_cells=scripted_cells, slot=slot,
+                               opp_pool_frac=opp_pool_frac,
                                td_n=td_n)
     experts = _resolve_expert_decks(expert_decks)
     if experts:
@@ -1673,6 +1681,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               worlds: int = DEFAULT_AZ_WORLDS,
               full_search_frac: float = DEFAULT_AZ_FULL_SEARCH_FRAC,
               fast_sims: int = DEFAULT_AZ_FAST_SIMS,
+              opp_pool_frac: float = DEFAULT_AZ_OPP_POOL_FRAC,
               c_puct: float = DEFAULT_AZ_C_PUCT,
               epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
               gate_shards: bool = True,
@@ -1792,6 +1801,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         # .get defaults keep sidecars written before the playout cap resumable.
         full_search_frac = float(p.get("full_search_frac", full_search_frac))
         fast_sims = int(p.get("fast_sims", fast_sims))
+        opp_pool_frac = float(p.get("opp_pool_frac", opp_pool_frac))
         c_puct = float(p.get("c_puct", c_puct))
         epoch_frac = float(p.get("epoch_frac", epoch_frac))
         gate_shards = bool(p.get("gate_shards", gate_shards))
@@ -1898,6 +1908,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         "params": {
             "games": games, "sims": sims, "worlds": worlds,
             "full_search_frac": full_search_frac, "fast_sims": fast_sims,
+            "opp_pool_frac": opp_pool_frac,
             "c_puct": c_puct, "epoch_frac": epoch_frac,
             "gate_shards": gate_shards,
             "sb_branches": sb_branches, "sb_worlds": sb_worlds,
@@ -1947,6 +1958,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     window_txt = "auto(2x new shards)" if window == 0 else str(window)
     print(f"  games={games} sims={sims} worlds={worlds} "
           f"full_search_frac={full_search_frac} fast_sims={fast_sims} "
+          f"opp_pool_frac={opp_pool_frac} "
           f"c_puct={c_puct} "
           f"epoch_frac={epoch_frac} gate_shards={int(gate_shards)} "
           f"mirror_frac={mirror_frac}  "
@@ -2057,6 +2069,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        exhaustive_selfplay=exhaustive_selfplay,
                        exhaustive_repeats=exhaustive_repeats,
                        scripted_cells=scripted_cells, slot=si,
+                       opp_pool_frac=opp_pool_frac,
                        selfplay_checkpoint=selfplay_ckpt)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         last_snapshot = tr.get("snapshot")
@@ -2197,6 +2210,8 @@ def run_cycle(args) -> None:
              full_search_frac=float(getattr(args, "full_search_frac",
                                             DEFAULT_AZ_FULL_SEARCH_FRAC)),
              fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
+             opp_pool_frac=float(getattr(args, "opp_pool_frac",
+                                         DEFAULT_AZ_OPP_POOL_FRAC)),
              c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
              epoch_frac=float(getattr(args, "epoch_frac",
                                       DEFAULT_AZ_EPOCH_FRAC)),
@@ -2246,6 +2261,8 @@ def run_league(args) -> None:
               full_search_frac=float(getattr(args, "full_search_frac",
                                              DEFAULT_AZ_FULL_SEARCH_FRAC)),
               fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
+              opp_pool_frac=float(getattr(args, "opp_pool_frac",
+                                          DEFAULT_AZ_OPP_POOL_FRAC)),
               c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
               epoch_frac=float(getattr(args, "epoch_frac",
                                        DEFAULT_AZ_EPOCH_FRAC)),
