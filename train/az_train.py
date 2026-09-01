@@ -45,6 +45,9 @@ from progress_io import write_progress_state, read_progress_state
 # actually reaches the az / az-league paths when the arg is absent.
 from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS,
+                      DEFAULT_SB_SELFPLAY_MODE, DEFAULT_SB_EXPLORE_TEMP,
+                      DEFAULT_SB_EXPLORE_EPS,
+                      DEFAULT_SB_BATCH_FRAC, DEFAULT_SB_LOSS_COEF,
                       DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
                       DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_LR,
                       DEFAULT_AZ_WEIGHT_DECAY, DEFAULT_AZ_BATCH_SIZE,
@@ -308,7 +311,8 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              weight_decay: float = DEFAULT_AZ_WEIGHT_DECAY,
              value_decay: float = DEFAULT_AZ_VALUE_DECAY,
              epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
-             holdout_dir: Optional[str] = None,
+             sb_batch_frac: float = DEFAULT_SB_BATCH_FRAC,
+             sb_loss_coef: float = DEFAULT_SB_LOSS_COEF,
              from_ppo: Optional[str] = None,
              fresh: bool = False, log_every: int = 50,
              snapshot_every: int = 0, data_dir: Optional[str] = None,
@@ -349,12 +353,17 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             f"non-finite td_q — every writer must resolve an unbootstrappable "
             f"sample to its outcome z (regenerate the shards)")
     q_mix = float(q_mix)
-    # Sideboard-phase rows are EXCLUDED from the value loss: V(sb-state) is
-    # consumed nowhere (plan search prices sideboard picks by rolling out to
-    # in-game leaves, and td chains never cross the sb boundary), while training
-    # it writes into the same matchup columns that price in-game states. Their
-    # pi rows still train normally — the sb POLICY seeds plan generation.
+    # Sideboard-phase rows now TRAIN the value head: their sb-isolated TD
+    # chain pins td_q == z, so their value target is exactly the realized
+    # next-game z at any q_mix — and that trained V(sb-state) is the
+    # REINFORCE baseline for the sb policy term below. (This writes into the
+    # same matchup columns that price in-game states; watch az_inspect's
+    # `exposure` view after changing sb volume.)
     sb_rows = obs[:, _IS_SIDEBOARD_IDX] > 0.5
+    # Prior-mode sb rows are ONE-HOT behavior samples (pi = one-hot(chosen),
+    # az_selfplay._sb_prior_sample); legacy plan-search sb rows carry a soft
+    # softmax(Q/tau) pi and keep the plain CE treatment during the transition.
+    sb_onehot = sb_rows & (pi.max(axis=1) >= 1.0 - 1e-6)
     td_cal = _calibrate_td_targets(z, td_q, sb_rows) if q_mix > 0 else td_q
     v_target = ((1.0 - q_mix) * z + q_mix * td_cal).astype(np.float32)
     # Target-magnitude tripwire: the contraction failure mode shows up here as
@@ -391,14 +400,26 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
           f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f}, "
           f"|td_cal - z| = {float(np.abs(td_cal - z).mean()):.4f})")
     print(f"[az-train] sideboard-phase rows: {int(sb_rows.sum())}/{n} "
-          f"(excluded from the value loss; pi trains on them normally)")
-    n_pi = int((pi.sum(axis=1) > 0).sum())
-    print(f"[az-train] policy rows: {n_pi}/{n} "
-          f"(full-search + one-hot; the playout cap's {n - n_pi} fast-search "
-          f"rows train the value head only)")
+          f"({int(sb_onehot.sum())} one-hot behavior rows -> REINFORCE vs "
+          f"next-game z, coef {float(sb_loss_coef):g}, batch share "
+          f"{float(sb_batch_frac):g}; value trains on all sb rows toward z)")
+    n_pi = int(((pi.sum(axis=1) > 0) & ~sb_onehot).sum())
+    print(f"[az-train] policy CE rows: {n_pi}/{n} "
+          f"(sb one-hot rows train via REINFORCE; the playout cap's "
+          f"{n - n_pi - int(sb_onehot.sum())} fast-search rows train the "
+          f"value head only)")
 
     net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
+    # Memorization tripwire baseline: value MSE (vs z, sb rows excluded) on a
+    # fixed sample of this window BEFORE any of this cycle's updates — the
+    # net's generalization to games it has not fitted this cycle. (The window's
+    # older half was partly trained last cycle, so this UNDERSTATES true
+    # fresh-game error; the warning below is therefore conservative.)
+    game_pool = np.nonzero(~sb_rows)[0]
+    tw_idx = rng.choice(game_pool, size=min(8192, len(game_pool)),
+                        replace=False)
+    pre_mse = _value_mse(net, obs[tw_idx], mask[tw_idx], z[tw_idx])
     net.train()
     # Weight decay applies to everything EXCEPT the per-sample-selected
     # parameters (the critic's archetype-bucket columns, the embedding tables).
@@ -415,12 +436,22 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     z_t = torch.as_tensor(z)
     vt_t = torch.as_tensor(v_target)
     mask_t = torch.as_tensor(mask)
-    # 1.0 on in-game rows, 0.0 on sideboard-phase rows (see sb_rows above).
-    vw_t = torch.as_tensor((~sb_rows).astype(np.float32))
-    # 1.0 on rows carrying a policy target, 0.0 on the playout cap's
-    # fast-search rows (all-zero pi — value/TD only). Full-search, sideboard,
-    # and expert one-hot rows all have pi mass and train the policy.
-    pw_t = torch.as_tensor((pi.sum(axis=1) > 0).astype(np.float32))
+    # Value trains on EVERY row now (sb rows included — their target is z; see
+    # the sb_rows comment above). The weight mechanism is kept for the loss
+    # denominators and easy reverts.
+    vw_t = torch.ones(n, dtype=torch.float32)
+    # 1.0 on rows carrying a CE policy target, 0.0 on the playout cap's
+    # fast-search rows (all-zero pi — value/TD only) AND on sb one-hot
+    # behavior rows, which train through the REINFORCE term instead.
+    pw_t = torch.as_tensor(
+        ((pi.sum(axis=1) > 0) & ~sb_onehot).astype(np.float32))
+    # sb one-hot machinery: row weight, chosen action (the one-hot argmax),
+    # and the oversampling pool (--sb-batch-frac of each batch).
+    sbw_t = torch.as_tensor(sb_onehot.astype(np.float32))
+    chosen_t = torch.as_tensor(pi.argmax(axis=1).astype(np.int64))
+    sb_pool = np.nonzero(sb_onehot)[0]
+    n_sb_draw = (int(round(bs * float(sb_batch_frac)))
+                 if len(sb_pool) else 0)
 
     log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
     os.makedirs(ckpt_dir, exist_ok=True)
@@ -432,6 +463,11 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
                    f"samples={n} batches={batches} bs={bs} lr={lr}\n")
         for b in range(batches):
             idx = rng.integers(0, n, size=bs)
+            if n_sb_draw:
+                # Oversample sb one-hot rows: they are ~0.3% of a window, far
+                # too rare for the sparse REINFORCE signal at a uniform draw.
+                idx[:n_sb_draw] = rng.choice(sb_pool, size=n_sb_draw,
+                                             replace=True)
             bi = torch.as_tensor(idx)
             ob = obs_t[bi]; tp = pi_t[bi]; tz = z_t[bi]; mk = mask_t[bi]
             tv = vt_t[bi]
@@ -455,7 +491,15 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             loss_v = (((value - tv) ** 2) * vw).sum() / vden
             with torch.no_grad():
                 loss_vz = (((value - tz) ** 2) * vw).sum() / vden
-            loss = loss_pi + c_v * loss_v
+            # Sideboard REINFORCE term (sb one-hot behavior rows only):
+            # advantage = realized next-game z minus the net's own (detached)
+            # value at the sb state — push the chosen boarding pick's log-prob
+            # up when it beat expectation, down when it fell short.
+            sbw = sbw_t[bi]
+            adv = (tz - value.detach()) * sbw
+            logp_chosen = logp.gather(1, chosen_t[bi].unsqueeze(1)).squeeze(1)
+            loss_sb = -(adv * logp_chosen).sum() / sbw.sum().clamp(min=1.0)
+            loss = loss_pi + c_v * loss_v + float(sb_loss_coef) * loss_sb
 
             opt.zero_grad()
             loss.backward()
@@ -468,7 +512,7 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             if b == 0 or (b + 1) % log_every == 0 or b == batches - 1:
                 line = (f"[az-train] batch {b+1}/{batches} loss={fl:.4f} "
                         f"(pi={loss_pi.item():.4f} v_mix={loss_v.item():.4f} "
-                        f"v_z={loss_vz.item():.4f})")
+                        f"v_z={loss_vz.item():.4f} sb={loss_sb.item():.4f})")
                 print(line)
                 logf.write(line + "\n"); logf.flush()
             if snapshot_every and (b + 1) % snapshot_every == 0:
@@ -482,53 +526,23 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     snap = net.save(az_checkpoint_path(steps, ckpt_dir), steps)
     print(f"[az-train] saved candidate snapshot {snap}")
     print(f"[az-train] loss {first_loss:.4f} -> {last_loss:.4f} over {batches} batches")
-    # Memorization tripwire: value MSE on the training window vs a held-out
-    # shard dir the net never trains on. A large gap means the value head is
-    # memorizing this window's games (which flattens the search posteriors the
+    # Memorization tripwire: the same sampled rows' value MSE after this
+    # cycle's updates vs the pre-train baseline above. Fitting far below what
+    # the net scored on the window before touching it means the value head
+    # memorized this window's games (which flattens the search posteriors the
     # policy then distills) — the 2026-08 gate-failure signature.
-    hd = holdout_dir or os.path.join(_AZ_DATA_DIR, "holdout")
-    hold = _sample_shard_rows(hd, cap=8192, seed=seed)
-    if hold is not None:
-        # Both sides of the comparison exclude sb-phase rows, matching the loss.
-        game_pool = np.nonzero(~sb_rows)[0]
-        wi = rng.choice(game_pool, size=min(8192, len(game_pool)), replace=False)
-        hob, hmk, hz = hold
-        hkeep = hob[:, _IS_SIDEBOARD_IDX] <= 0.5
-        wmse = _value_mse(net, obs[wi], mask[wi], z[wi])
-        hmse = _value_mse(net, hob[hkeep], hmk[hkeep], hz[hkeep])
-        line = (f"[az-train] value MSE (vs z, sb rows excluded): "
-                f"train-window {wmse:.3f} | held-out {hmse:.3f} ({hd})")
-        print(line)
-        if hmse > 2.0 * wmse:
-            print(f"[az-train] WARNING: held-out value MSE is "
-                  f"{hmse / max(wmse, 1e-9):.1f}x the train-window MSE — the "
-                  f"value head is memorizing this window's games; buy more "
-                  f"distinct games per slot first (a lower --full-search-frac "
-                  f"/ --fast-sims trades sims per position for games at the "
-                  f"same engine budget), else consider a lower --epoch-frac")
+    wmse = _value_mse(net, obs[tw_idx], mask[tw_idx], z[tw_idx])
+    print(f"[az-train] value MSE (vs z, sb rows excluded): "
+          f"window pre-train {pre_mse:.3f} | post-train {wmse:.3f}")
+    if pre_mse > 2.0 * wmse:
+        print(f"[az-train] WARNING: pre-train window value MSE is "
+              f"{pre_mse / max(wmse, 1e-9):.1f}x the post-train MSE — the "
+              f"value head is memorizing this window's games; buy more "
+              f"distinct games per slot first (a lower --full-search-frac "
+              f"/ --fast-sims trades sims per position for games at the "
+              f"same engine budget), else consider a lower --epoch-frac")
     return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
             "snapshot": snap, "steps": steps}
-
-
-def _sample_shard_rows(shard_dir: str, cap: int = 8192, seed: int = 0):
-    """Up to ``cap`` (obs, mask, z) rows sampled evenly over the ``shard_*.npz``
-    files in ``shard_dir`` (None when the dir is absent/empty). Held-out
-    evaluation only — never feeds the optimizer."""
-    import glob as _glob
-    if not shard_dir or not os.path.isdir(shard_dir):
-        return None
-    files = sorted(_glob.glob(os.path.join(shard_dir, "shard_*.npz")))
-    if not files:
-        return None
-    rng = np.random.default_rng(seed)
-    per = max(1, cap // len(files))
-    ob, mk, zz = [], [], []
-    for f in files:
-        d = np.load(f)
-        m = d["z"].shape[0]
-        idx = np.sort(rng.choice(m, size=min(per, m), replace=False))
-        ob.append(d["obs"][idx]); mk.append(d["mask"][idx]); zz.append(d["z"][idx])
-    return (np.concatenate(ob), np.concatenate(mk), np.concatenate(zz))
 
 
 def _value_mse(net, obs, mask, z, batch: int = 256) -> float:
@@ -1451,6 +1465,11 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              sb_branches: int = DEFAULT_SB_BRANCHES,
              sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+             sb_mode: str = DEFAULT_SB_SELFPLAY_MODE,
+             sb_explore_temp: float = DEFAULT_SB_EXPLORE_TEMP,
+             sb_explore_eps: float = DEFAULT_SB_EXPLORE_EPS,
+             sb_batch_frac: float = DEFAULT_SB_BATCH_FRAC,
+             sb_loss_coef: float = DEFAULT_SB_LOSS_COEF,
              workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
              td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
@@ -1567,6 +1586,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                checkpoint=selfplay_checkpoint,
                                sb_branches=sb_branches, sb_worlds=sb_worlds,
                                sb_rollout_turns=sb_rollout_turns,
+                               sb_mode=sb_mode,
+                               sb_explore_temp=sb_explore_temp,
+                               sb_explore_eps=sb_explore_eps,
                                workers=workers, seed=seed, use_actor=use_actor,
                                actor_device=actor_device,
                                eval_server=eval_server,
@@ -1604,7 +1626,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
               f"window={window} (2x, covers this pass + the previous one)")
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
-                  q_mix=q_mix, window=window, epoch_frac=epoch_frac, seed=seed)
+                  q_mix=q_mix, window=window, epoch_frac=epoch_frac, seed=seed,
+                  sb_batch_frac=sb_batch_frac, sb_loss_coef=sb_loss_coef)
     if not gate:
         print("=== az cycle: eval/gate skipped (gated every K slots) ===")
         return {"generate": gen, "train": tr, "eval": None}
@@ -1688,6 +1711,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               sb_branches: int = DEFAULT_SB_BRANCHES,
               sb_worlds: int = DEFAULT_SB_WORLDS,
               sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+              sb_mode: str = DEFAULT_SB_SELFPLAY_MODE,
+              sb_explore_temp: float = DEFAULT_SB_EXPLORE_TEMP,
+              sb_explore_eps: float = DEFAULT_SB_EXPLORE_EPS,
+              sb_batch_frac: float = DEFAULT_SB_BATCH_FRAC,
+              sb_loss_coef: float = DEFAULT_SB_LOSS_COEF,
               workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
               batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
               td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
@@ -1811,6 +1839,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         sb_branches = int(p.get("sb_branches", sb_branches))
         sb_worlds = int(p.get("sb_worlds", sb_worlds))
         sb_rollout_turns = int(p.get("sb_rollout_turns", sb_rollout_turns))
+        sb_mode = str(p.get("sb_mode", sb_mode))
+        sb_explore_temp = float(p.get("sb_explore_temp", sb_explore_temp))
+        sb_explore_eps = float(p.get("sb_explore_eps", sb_explore_eps))
+        sb_batch_frac = float(p.get("sb_batch_frac", sb_batch_frac))
+        sb_loss_coef = float(p.get("sb_loss_coef", sb_loss_coef))
         workers = p.get("workers", workers)
         batches = int(p.get("batches", batches))
         batch_size = int(p.get("batch_size", batch_size))
@@ -1913,6 +1946,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "gate_shards": gate_shards,
             "sb_branches": sb_branches, "sb_worlds": sb_worlds,
             "sb_rollout_turns": sb_rollout_turns,
+            "sb_mode": sb_mode,
+            "sb_explore_temp": sb_explore_temp,
+            "sb_explore_eps": sb_explore_eps,
+            "sb_batch_frac": sb_batch_frac,
+            "sb_loss_coef": sb_loss_coef,
             "workers": workers,
             "batches": batches, "batch_size": batch_size, "lr": lr,
             "td_n": td_n, "q_mix": q_mix,
@@ -1963,7 +2001,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
           f"epoch_frac={epoch_frac} gate_shards={int(gate_shards)} "
           f"mirror_frac={mirror_frac}  "
           f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
-          f"sb_rollout_turns={sb_rollout_turns}  "
+          f"sb_rollout_turns={sb_rollout_turns} sb_mode={sb_mode} "
+          f"sb_explore_temp={sb_explore_temp} sb_explore_eps={sb_explore_eps} "
+          f"sb_batch_frac={sb_batch_frac} sb_loss_coef={sb_loss_coef}  "
           f"batches={batches} window={window_txt} td_n={td_n} q_mix={q_mix}  "
           f"cross_world={int(cross_world)}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
@@ -2048,6 +2088,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        gate_shards=gate_shards,
                        sb_branches=sb_branches, sb_worlds=sb_worlds,
                        sb_rollout_turns=sb_rollout_turns,
+                       sb_mode=sb_mode,
+                       sb_explore_temp=sb_explore_temp,
+                       sb_explore_eps=sb_explore_eps,
+                       sb_batch_frac=sb_batch_frac,
+                       sb_loss_coef=sb_loss_coef,
                        workers=workers,
                        batches=batches, batch_size=batch_size, lr=lr,
                        td_n=td_n, q_mix=q_mix, window=window,
@@ -2153,9 +2198,10 @@ def run_train(args) -> None:
              lr=args.lr, c_v=args.c_v,
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX), window=args.window,
              epoch_frac=getattr(args, "epoch_frac", DEFAULT_AZ_EPOCH_FRAC),
-             holdout_dir=getattr(args, "holdout_dir", None),
              from_ppo=args.from_ppo, fresh=args.fresh,
              snapshot_every=args.snapshot_every,
+             sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
+             sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
              seed=args.seed if args.seed is not None else 0)
 
 
@@ -2220,6 +2266,13 @@ def run_cycle(args) -> None:
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
              sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                       DEFAULT_SB_ROLLOUT_TURNS),
+             sb_mode=getattr(args, "sb_selfplay_mode", DEFAULT_SB_SELFPLAY_MODE),
+             sb_explore_temp=getattr(args, "sb_explore_temp",
+                                     DEFAULT_SB_EXPLORE_TEMP),
+             sb_explore_eps=getattr(args, "sb_explore_eps",
+                                    DEFAULT_SB_EXPLORE_EPS),
+             sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
+             sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
@@ -2271,6 +2324,13 @@ def run_league(args) -> None:
               sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
               sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                        DEFAULT_SB_ROLLOUT_TURNS),
+              sb_mode=getattr(args, "sb_selfplay_mode", DEFAULT_SB_SELFPLAY_MODE),
+              sb_explore_temp=getattr(args, "sb_explore_temp",
+                                      DEFAULT_SB_EXPLORE_TEMP),
+              sb_explore_eps=getattr(args, "sb_explore_eps",
+                                     DEFAULT_SB_EXPLORE_EPS),
+              sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
+              sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
               workers=args.workers, batches=args.batches, batch_size=args.batch_size,
               lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
               q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),

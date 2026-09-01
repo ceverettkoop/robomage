@@ -75,6 +75,9 @@ fails, so one invocation reports every finding):
           through the real _play_match, then assert a sideboard sample exists,
           gates the next game, and its z is +/-1 per that game's result
           (train/test_sideboard_selfplay.py). Torch-free; needs bin/robomage.
+  sbrules The dead-sideboard-card rules table (train/sb_dead_rules.json ->
+          generated sb_rules.py) and mcts.sb_dead_mask semantics on synthetic
+          observations (train/test_sb_rules.py). Engine- and torch-free.
   plansearch The sideboard plan search (mcts.run_plan_search + the analysis
           window's IncrementalPlanSearch): coverage of every first pick, the
           world-mean/Q/softmax-pi accounting, pinned-seed determinism, the
@@ -175,7 +178,8 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "concede", "obsinv",
-             "actorobs", "pergame", "snapshot", "sbselfplay", "plansearch",
+             "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
+             "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
@@ -283,7 +287,8 @@ def tier_pygen(rep):
     half-regenerated (the developer runs `make pygen` to actually update them)."""
     tracked = ["train/_enums.py", "src/gen/archetypes_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
-                "train/gen_card_props.py", "train/gen_archetypes.py"):
+                "train/gen_card_props.py", "train/gen_archetypes.py",
+                "train/gen_sb_rules.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
         if r.returncode != 0:
@@ -447,6 +452,22 @@ def tier_sbselfplay(rep):
         rep.error("sbselfplay", "sideboard self-play data-path violation "
                                 f"(test_sideboard_selfplay.py exit {r.returncode}):\n"
                                 f"{r.stdout}{r.stderr}")
+
+
+def tier_sbrules(rep):
+    """Dead-sideboard-card rules table + mask (train/sb_dead_rules.json).
+
+    Runs train/test_sb_rules.py: generated-table integrity and the
+    mcts.sb_dead_mask semantics on synthetic observations. Engine-free,
+    torch-free, fast. The C++ twin (src/actor/sb_rules.h) is covered by the
+    opt-in `actor` tier's parity legs."""
+    r = subprocess.run([sys.executable, "train/test_sb_rules.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("sbrules", "dead-sideboard-card rules violation "
+                             f"(test_sb_rules.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
 
 
 def tier_plansearch(rep):
@@ -973,6 +994,8 @@ def main(argv=None):
             tier_pergame(rep)
         elif t == "sbselfplay":
             tier_sbselfplay(rep)
+        elif t == "sbrules":
+            tier_sbrules(rep)
         elif t == "plansearch":
             tier_plansearch(rep)
         elif t == "mirror":

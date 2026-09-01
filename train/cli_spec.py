@@ -83,6 +83,29 @@ DEFAULT_SB_WORLDS = 4
 # mcts.ROLLOUT_STEPS_PER_TURN (mirrored in src/actor/az_mcts.cpp).
 DEFAULT_SB_ROLLOUT_TURNS = 6
 
+# ── Sideboard prior-rollout self-play ───────────────────────────────────────
+# GENERATION side: training self-play does NOT plan-search sideboard roots by
+# default. Picks are sampled from the net prior with exploration and the row is
+# recorded as a ONE-HOT behavior sample; the trainer learns it REINFORCE-style
+# against the realized next-game z ("the real next game is the rollout").
+# 'plan' restores the multi-world plan search at generation time; gates, eval,
+# analysis, and play always use the plan search regardless of this mode.
+# Dead-card rules (train/sb_dead_rules.json) prune table-dead INs in both
+# modes and on both backends.
+DEFAULT_SB_SELFPLAY_MODE = "prior"
+# Behavior policy at a prior-mode sb root:
+#   b = (1-eps) * softmax(log(prior)/temp) + eps * uniform(live actions).
+# The eps floor keeps every live pick collecting outcome evidence even after
+# the prior sharpens (no self-reinforcing collapse).
+DEFAULT_SB_EXPLORE_TEMP = 1.0
+DEFAULT_SB_EXPLORE_EPS = 0.10
+# TRAINING side (az-train): sb one-hot rows train the policy with an
+# advantage-weighted (z - V_detached) log-prob term, weighted DEFAULT_SB_LOSS_COEF,
+# and each batch draws DEFAULT_SB_BATCH_FRAC of its rows from the sb-row pool
+# (sb rows are ~0.3% of a window; uniform draws would starve the signal).
+DEFAULT_SB_BATCH_FRAC = 0.05
+DEFAULT_SB_LOSS_COEF = 1.0
+
 # ── AZ pipeline defaults ────────────────────────────────────────────────────
 # One home for every tunable the AZ subcommands share, same one-home rule as
 # the sb_* knobs above: the az-selfplay / az-train / az-eval / az / az-league
@@ -147,8 +170,8 @@ DEFAULT_AZ_VALUE_DECAY = 1e-4    # weight decay on the dense value_body.* params
 DEFAULT_AZ_EPOCH_FRAC = 1.0      # auto-batches (batches=0) = this fraction of one epoch
                                  # over the window; safe at a full epoch now that
                                  # playout-cap randomization supplies ~3x distinct games
-                                 # per slot — the holdout tripwire polices window
-                                 # memorization (warns at a 2x train/holdout MSE gap)
+                                 # per slot — the pre-vs-post-train window MSE tripwire
+                                 # polices memorization (warns at a 2x gap)
 DEFAULT_AZ_C_PUCT = 2.5          # PUCT exploration constant for the az paths: higher
                                  # weights search Q over the net prior (1.5 was
                                  # prior-dominated; analysis/parity tools keep 1.5)
@@ -805,6 +828,40 @@ def sb_search_args():
     ]
 
 
+def sb_selfplay_args():
+    """The prior-rollout sideboard self-play flags (GENERATION side), shared
+    by az-selfplay / az / az-league. One home — defaults are the
+    DEFAULT_SB_SELFPLAY_* / DEFAULT_SB_EXPLORE_* constants above."""
+    return [
+        Arg("--sb-selfplay-mode", "choice", choices=("prior", "plan"),
+            default=DEFAULT_SB_SELFPLAY_MODE,
+            help="Sideboard roots during self-play GENERATION: 'prior' = "
+                 "sample boarding picks from the net prior with exploration "
+                 "and record one-hot behavior rows (trained on next-game z); "
+                 "'plan' = the multi-world plan search (always used by "
+                 f"gates/eval/play; default {DEFAULT_SB_SELFPLAY_MODE})"),
+        Arg("--sb-explore-temp", "float", default=DEFAULT_SB_EXPLORE_TEMP,
+            help="prior^(1/temp) sampling temperature at prior-mode sideboard "
+                 f"roots (default {DEFAULT_SB_EXPLORE_TEMP})"),
+        Arg("--sb-explore-eps", "float", default=DEFAULT_SB_EXPLORE_EPS,
+            help="Uniform-mix exploration floor over live actions at "
+                 f"prior-mode sideboard roots (default {DEFAULT_SB_EXPLORE_EPS})"),
+    ]
+
+
+def sb_train_args():
+    """The sideboard-row trainer flags (az-train / az / az-league). One home —
+    defaults are DEFAULT_SB_BATCH_FRAC / DEFAULT_SB_LOSS_COEF above."""
+    return [
+        Arg("--sb-batch-frac", "float", default=DEFAULT_SB_BATCH_FRAC,
+            help="Share of each az-train batch drawn from sideboard-phase "
+                 f"rows when any exist (default {DEFAULT_SB_BATCH_FRAC})"),
+        Arg("--sb-loss-coef", "float", default=DEFAULT_SB_LOSS_COEF,
+            help="Weight of the sideboard REINFORCE policy term "
+                 f"(default {DEFAULT_SB_LOSS_COEF})"),
+    ]
+
+
 def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
@@ -1149,6 +1206,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Sample from visit counts for the first N real decisions, then argmax"),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
+        *sb_selfplay_args(),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per game "
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); else a "
@@ -1183,17 +1241,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
             help="Number of most-recent shards to train on"),
         _epoch_frac(),
-        Arg("--holdout-dir", "str", default=None,
-            help="Directory of shard_*.npz the net never trains on; after "
-                 "training, value MSE is reported on it next to the window "
-                 "MSE and a large train/held-out gap prints a memorization "
-                 "WARNING (default: train/az_data/holdout if it exists)"),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
             help="Warm-start from a PPO checkpoint instead of resuming AZ"),
         Arg("--fresh", "flag", help="Start from random init"),
         Arg("--snapshot-every", "int", default=0,
             help="Also save an intermediate gen__azv{steps}.pt every N batches (0=off)"),
         Arg("--seed", "int", default=0),
+        *sb_train_args(),
     ]),
     Sub("az-eval", "Gate a candidate AZNet vs the incumbent (sequential test, "
                    "MCTS at the training sim budget)", items=[
@@ -1289,6 +1343,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
+        *sb_selfplay_args(),
+        *sb_train_args(),
         Arg("--workers", "int", default=None),
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
             help=f"Optimizer updates this cycle (default {DEFAULT_AZ_CYCLE_BATCHES}). "
@@ -1423,6 +1479,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
+        *sb_selfplay_args(),
+        *sb_train_args(),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,

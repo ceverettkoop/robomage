@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "actor/sb_rules.h"   // sb_dead_mask (dead-sideboard-card pruning)
 #include "az_evaluator.h"
 #include "classes/action.h"   // LegalAction::description (divergence diagnostic)
 #include "classes/game.h"     // cur_game.turn (rollout horizon check)
@@ -275,6 +276,8 @@ struct AZMcts::Impl {
     int plan_dev = 0;                  // completion-decision counter (variant)
     int coverage_cursor = 0;           // next coverage first pick
     std::vector<int> plan_ranked;      // extras ranking (set after coverage)
+    std::vector<bool> plan_dead;       // root dead-IN mask (sb_rules.h)
+    std::vector<bool> gen_dead;        // per-completion-step scratch mask
     int extra_attempt = 0;
     int novel_extras = 0;
     int memo_hits = 0;
@@ -791,8 +794,19 @@ struct AZMcts::Impl {
                             "terminate");
             AZEvalResultD r = eval_one(o, nc);
             plan_dev += 1;
+            // Dead-card rules: a completion never sides in a table-dead card
+            // (Done/OUT are never masked, so an argmax target remains).
+            // MIRRORED in mcts.py _generate_plan.
+            sb_dead_mask(o, nc, gen_dead);
+            int n_live = nc;
+            for (int i = 0; i < nc; i++)
+                if (gen_dead[static_cast<size_t>(i)]) {
+                    r.priors[static_cast<size_t>(i)] = 0.0;
+                    n_live -= 1;
+                }
             int a;
-            if (cur_plan.variant > 0 && plan_dev == cur_plan.variant && nc >= 2)
+            if (cur_plan.variant > 0 && plan_dev == cur_plan.variant &&
+                nc >= 2 && n_live >= 2)
                 a = second_best(r.priors, nc);
             else
                 a = argmax_priors(r.priors, nc);
@@ -917,13 +931,15 @@ struct AZMcts::Impl {
     // run_plan_search's candidate order). Returns the next plan's first
     // action, or the finalized real action.
     int next_plan_or_finalize() {
-        if (coverage_cursor < root_n) {
+        // Rule-dead first picks are skipped: they keep q = -inf, so the
+        // softmax gives them exactly zero policy mass (mirrors mcts.py).
+        while (coverage_cursor < root_n) {
             int a = coverage_cursor++;
-            return begin_plan(a, 0);
+            if (!plan_dead[static_cast<size_t>(a)]) return begin_plan(a, 0);
         }
         if (plan_ranked.empty()) {
-            // Rank first picks by coverage Q, descending, stable (numpy
-            // argsort(-q, kind="stable") == stable sort by q descending).
+            // Rank the LIVE first picks by coverage Q, descending, stable
+            // (numpy argsort(-q[live], kind="stable") over live indices).
             std::vector<double> cov_q(static_cast<size_t>(root_n), 0.0);
             for (const Plan& p : plans)
                 if (p.variant == 0) {
@@ -932,8 +948,9 @@ struct AZMcts::Impl {
                     cov_q[static_cast<size_t>(p.first_action)] =
                         v / static_cast<double>(cur_worlds);
                 }
-            plan_ranked.resize(static_cast<size_t>(root_n));
-            for (int i = 0; i < root_n; i++) plan_ranked[static_cast<size_t>(i)] = i;
+            for (int i = 0; i < root_n; i++)
+                if (!plan_dead[static_cast<size_t>(i)])
+                    plan_ranked.push_back(i);
             std::stable_sort(plan_ranked.begin(), plan_ranked.end(),
                              [&](int a, int b) {
                                  return cov_q[static_cast<size_t>(a)] >
@@ -943,13 +960,138 @@ struct AZMcts::Impl {
         const int branches = cfg.sb_branches >= 0 ? cfg.sb_branches
                                                   : kDefaultSbBranches;
         const int max_attempts = std::max(0, branches) * kExtrasAttemptFactor;
+        // Extras cycle the live actions only; branch/variant arithmetic is
+        // over n_live (n_live >= 1: Done is never dead). MIRRORED in mcts.py.
+        const int n_live = static_cast<int>(plan_ranked.size());
         if (novel_extras < branches && extra_attempt < max_attempts) {
-            int branch = plan_ranked[static_cast<size_t>(extra_attempt % root_n)];
-            int variant = 1 + extra_attempt / root_n;
+            int branch = plan_ranked[static_cast<size_t>(extra_attempt % n_live)];
+            int variant = 1 + extra_attempt / n_live;
             extra_attempt += 1;
             return begin_plan(branch, variant);
         }
         return finalize_plan_search();
+    }
+
+    // Prior-rollout sideboard decision (cfg.sb_prior_mode): no plan search —
+    // one net eval, the dead-card mask, the behavior policy
+    //   b = (1-eps) * softmax(log p / temp) + eps * uniform(live),
+    // a sampled pick (argmax on the opponent seat / without --selfplay), and
+    // a ONE-HOT training row priced by the realized next-game z. The p/b
+    // arithmetic MIRRORS az_selfplay.sb_prior_policy in float64 (only the
+    // sample draw is backend-native). The dump payload is (q=p, pi=b), both
+    // deterministic, via the ordinary plan_root path.
+    int sb_prior_pick(const float* o, int nc) {
+        sim_steps = 0;
+        memo_hits = 0;
+        AZEvalResultD r = eval_one(o, nc);
+        sb_dead_mask(o, nc, gen_dead);
+        std::vector<double> p(static_cast<size_t>(nc), 0.0);
+        double total = 0.0;
+        int n_live = 0;
+        for (int i = 0; i < nc; i++) {
+            if (!gen_dead[static_cast<size_t>(i)]) {
+                p[static_cast<size_t>(i)] = r.priors[static_cast<size_t>(i)];
+                total += p[static_cast<size_t>(i)];
+                n_live += 1;
+            }
+        }
+        if (total <= 0.0) {
+            // Degenerate masked prior (all mass on dead actions): uniform live.
+            total = 0.0;
+            for (int i = 0; i < nc; i++) {
+                p[static_cast<size_t>(i)] =
+                    gen_dead[static_cast<size_t>(i)] ? 0.0 : 1.0;
+                total += p[static_cast<size_t>(i)];
+            }
+        }
+        for (double& v : p) v /= total;
+        const double t = std::max(cfg.sb_explore_temp, 1e-3);
+        double zmax = -std::numeric_limits<double>::infinity();
+        std::vector<double> zv(static_cast<size_t>(nc),
+                               -std::numeric_limits<double>::infinity());
+        for (int i = 0; i < nc; i++)
+            if (p[static_cast<size_t>(i)] > 0.0) {
+                zv[static_cast<size_t>(i)] =
+                    std::log(p[static_cast<size_t>(i)]) / t;
+                zmax = std::max(zmax, zv[static_cast<size_t>(i)]);
+            }
+        std::vector<double> b(static_cast<size_t>(nc), 0.0);
+        double bsum = 0.0;
+        for (int i = 0; i < nc; i++)
+            if (std::isfinite(zv[static_cast<size_t>(i)])) {
+                b[static_cast<size_t>(i)] =
+                    std::exp(zv[static_cast<size_t>(i)] - zmax);
+                bsum += b[static_cast<size_t>(i)];
+            }
+        for (double& v : b) v /= bsum;
+        const double eps =
+            std::min(std::max(cfg.sb_explore_eps, 0.0), 1.0);
+        if (eps > 0.0) {
+            bsum = 0.0;
+            for (int i = 0; i < nc; i++) {
+                const double u = gen_dead[static_cast<size_t>(i)]
+                                     ? 0.0
+                                     : 1.0 / static_cast<double>(n_live);
+                b[static_cast<size_t>(i)] =
+                    (1.0 - eps) * b[static_cast<size_t>(i)] + eps * u;
+                bsum += b[static_cast<size_t>(i)];
+            }
+            for (double& v : b) v /= bsum;
+        }
+        // greedy = masked-prior first-max argmax (np.where(live, p, -1.0)).
+        int greedy = 0;
+        double bestp = -2.0;
+        for (int i = 0; i < nc; i++) {
+            const double v =
+                gen_dead[static_cast<size_t>(i)] ? -1.0 : p[static_cast<size_t>(i)];
+            if (v > bestp) {
+                bestp = v;
+                greedy = i;
+            }
+        }
+
+        SearchRootResult sr;
+        sr.root_index = this_root;
+        sr.num_choices = nc;
+        sr.plan_root = true;
+        sr.q = p;
+        sr.pi = b;
+        sr.visits.resize(static_cast<size_t>(nc));
+        for (int i = 0; i < nc; i++)
+            sr.visits[static_cast<size_t>(i)] =
+                std::llround(b[static_cast<size_t>(i)] * 1e6);
+        sr.root_value = r.value;
+        sr.sims_run = 1;
+        sr.sim_steps = 0;
+        sr.memo_hits = 0;
+        results.push_back(std::move(sr));
+
+        int chosen = greedy;
+        if ((cfg.selfplay || cfg.record) && !learner_root()) {
+            // Opponent-pool seat: argmax masked prior, no sample.
+            move_counter += 1;
+        } else if (cfg.selfplay || cfg.record) {
+            if (cfg.selfplay) {
+                // Prior mode samples at EVERY learner sb root (mirrors
+                // _sb_prior_sample's unconditional rng.choice).
+                std::discrete_distribution<int> dist(b.begin(), b.end());
+                chosen = dist(rng);
+            }
+            SelfPlaySample s;
+            s.obs = root_obs;
+            s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
+            s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
+            s.mover_is_a = root_is_a;
+            s.is_sideboard = true;
+            s.pi[static_cast<size_t>(chosen)] = 1.0f;
+            for (int i = 0; i < nc; i++) s.mask[static_cast<size_t>(i)] = 1;
+            s.q = static_cast<float>(r.value);
+            s.explored = chosen != greedy;
+            game_samples.push_back(std::move(s));
+            move_counter += 1;
+        }
+        phase = IDLE;
+        return chosen;
     }
 
     // Mirrors run_plan_search's tail: Q per first pick, pi = softmax(Q/tau),
@@ -967,6 +1109,10 @@ struct AZMcts::Impl {
             q[fa] = std::max(q[fa], v);
         }
         std::vector<double> pi = plan_softmax(q);
+        // Rule-dead (uncovered) first picks: pi is exactly 0; sanitize their
+        // -inf q so root_value / the sample's q stay finite (mirrors mcts.py).
+        for (double& v : q)
+            if (!std::isfinite(v)) v = 0.0;
         const int n_evals = static_cast<int>(plans.size()) * cur_worlds;
         double root_value = 0.0;
         for (int i = 0; i < root_n; i++)
@@ -1091,6 +1237,13 @@ struct AZMcts::Impl {
         root_is_sb = sb;
 
         if (sb) {
+            // Prior-rollout mode (generation only): no plan search, no
+            // boundary state — the REAL next game is the rollout.
+            if (cfg.sb_prior_mode) {
+                cur_full = true;
+                plan_active = false;
+                return sb_prior_pick(o, nc);
+            }
             // ── sideboard PLAN search (mirrors mcts.run_plan_search) ────────
             // Boundary continue / start (mcts.py sb_root_key identity: seat +
             // upcoming game number). On continue the plan memo and the latched
@@ -1125,6 +1278,14 @@ struct AZMcts::Impl {
             pool.clear();
             pending.clear();
             path.clear();
+            // Dead-card rules mask for this root (sb_rules.h; mirrors
+            // mcts.py's sb_dead_mask at the top of run_plan_search). Dead
+            // first picks are skipped by coverage; Done is never dead, so at
+            // least one live first pick always exists.
+            sb_dead_mask(o, nc, plan_dead);
+            while (coverage_cursor < root_n &&
+                   plan_dead[static_cast<size_t>(coverage_cursor)])
+                coverage_cursor++;
             int first = coverage_cursor++;
             return begin_plan(first, 0);
         }

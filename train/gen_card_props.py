@@ -178,13 +178,14 @@ def parse_face(lines, row):
         row[COL["abil_w"] + i] = acost[i] / 10.0
 
 
-def main():
-    vocab = parse_vocab(VOCAB_H)
+def build_matrix(vocab):
+    """The [N_TYPES][N_PROPS] property matrix for a parsed vocab dict.
+
+    Shared with train/gen_sb_rules.py so the dead-sideboard-card fact bits are
+    derived by exactly the same script parsing as the network's property block.
+    """
     token_base = parse_token_vocab_base(VOCAB_H)
     token_stems = parse_vocab_with_stems(VOCAB_H)
-    print(f"Building {N_PROPS}-column property matrix "
-          f"for {len(vocab)} vocab cards")
-
     matrix = [[0.0] * N_PROPS for _ in range(N_TYPES)]
     for name, idx in vocab.items():
         if idx >= token_base:
@@ -211,6 +212,14 @@ def main():
                 pips = parse_mana_cost(field(front_lines, "ManaCost") or
                                        "no cost")
                 matrix[idx][COL["cmc"]] = (sum(pips[:6]) + pips[6]) / 10.0
+    return matrix
+
+
+def main():
+    vocab = parse_vocab(VOCAB_H)
+    print(f"Building {N_PROPS}-column property matrix "
+          f"for {len(vocab)} vocab cards")
+    matrix = build_matrix(vocab)
 
     for label, ignored in (("keywords", _ignored_keywords),
                            ("ability categories", _ignored_cats),

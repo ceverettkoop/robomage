@@ -81,6 +81,12 @@ struct ActorConfig {
     int sb_branches = -1;
     int sb_worlds = -1;
     int sb_rollout_turns = -1;
+    // Prior-rollout sideboard self-play (see az_mcts.h). Default OFF ('plan')
+    // so gate/eval/parity callers keep the plan search unless az_selfplay
+    // explicitly passes --sb-selfplay-mode prior for generation.
+    bool sb_prior_mode = false;
+    double sb_explore_temp = 1.0;
+    double sb_explore_eps = 0.10;
     // In-game leaf-rollout horizon in player turns (see az_mcts.h). 0 = off.
     int rollout_turns = 0;
     // Duplicate-edge merging (see az_mcts.h / menu_merge.h; must match the
@@ -139,6 +145,9 @@ void print_usage(const char* prog) {
                  "[--resources <dir>]\n"
                  "       [--sb-branches N] [--sb-worlds N] [--sb-rollout-turns N] "
                  "(bo3 sideboard plan-search budget; -1=compiled defaults)\n"
+                 "       [--sb-selfplay-mode prior|plan] [--sb-explore-temp F] "
+                 "[--sb-explore-eps F] (prior-rollout sideboard self-play; "
+                 "default plan)\n"
                  "       [--rollout-turns N] "
                  "(in-game leaf-rollout horizon in player turns; 0=off)\n"
                  "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
@@ -234,6 +243,20 @@ int main(int argc, char const* argv[]) {
             cfg.rollout_turns = std::stoi(need_arg(argc, argv, i, "--rollout-turns"));
         } else if (a == "--sb-rollout-turns") {
             cfg.sb_rollout_turns = std::stoi(need_arg(argc, argv, i, "--sb-rollout-turns"));
+        } else if (a == "--sb-selfplay-mode") {
+            const std::string m = need_arg(argc, argv, i, "--sb-selfplay-mode");
+            if (m != "prior" && m != "plan") {
+                std::fprintf(stderr,
+                             "error: --sb-selfplay-mode takes prior or plan\n");
+                std::exit(2);
+            }
+            cfg.sb_prior_mode = (m == "prior");
+        } else if (a == "--sb-explore-temp") {
+            cfg.sb_explore_temp =
+                std::stod(need_arg(argc, argv, i, "--sb-explore-temp"));
+        } else if (a == "--sb-explore-eps") {
+            cfg.sb_explore_eps =
+                std::stod(need_arg(argc, argv, i, "--sb-explore-eps"));
         } else if (a == "--merge-dupes") {
             cfg.merge_dupes = std::stoi(need_arg(argc, argv, i, "--merge-dupes"));
         } else if (a == "--selfplay") {
@@ -462,6 +485,9 @@ int main(int argc, char const* argv[]) {
         mc.sb_worlds = cfg.sb_worlds;          // -1 = compiled default
         mc.rollout_turns = cfg.rollout_turns;
         mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = compiled default
+        mc.sb_prior_mode = cfg.sb_prior_mode;
+        mc.sb_explore_temp = cfg.sb_explore_temp;
+        mc.sb_explore_eps = cfg.sb_explore_eps;
         mc.merge_dupes = cfg.merge_dupes != 0;
         mc.selfplay = cfg.selfplay;
         mc.record = cfg.record;

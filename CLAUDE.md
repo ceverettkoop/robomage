@@ -685,7 +685,15 @@ pooled KL(search‖net), value calibration. Regression `train/test_shard_record.
   merging ON by default** (`merge_dupes=True`): interchangeable menu actions (same-owner hand /
   library-search / GY-exile picks, see `decode.menu_merge_reps`) collapse to one edge, mirrored by
   the C++ twin `src/actor/menu_merge.h` — the two predicates MUST change in lockstep (parity gate
-  asserts bit-identical visits). See docs/alphazero_status.md.
+  asserts bit-identical visits). Likewise **dead-sideboard-card pruning**: `mcts.sb_dead_mask`
+  (data from the hand-edited `train/sb_dead_rules.json`, compiled by `train/gen_sb_rules.py` into
+  the untracked `train/sb_rules.py` + `src/gen/sb_rules_gen.h`) is hand-mirrored by
+  `src/actor/sb_rules.h`; it prunes provably-dead SIDEBOARD_IN actions everywhere (plan search
+  AND the prior-rollout self-play mode). Training self-play defaults to
+  `--sb-selfplay-mode prior`: sideboard picks are sampled from the net prior with exploration
+  (`--sb-explore-temp/--sb-explore-eps`), recorded as ONE-HOT behavior rows, and trained
+  REINFORCE-style against the realized next-game z (`az-train --sb-batch-frac/--sb-loss-coef`);
+  gates/eval/analysis/play always use the multi-world plan search. See docs/alphazero_status.md.
 - `train/test_analysis_session.py` — analysis-core regression (opt-in ci tier `analysis`)
 - `train/az_inspect.py` — **static** inspection of an AZ checkpoint (never a played game).
   Weights-only views: card-embedding neighbours / purity / clusters / PCA (rows align with

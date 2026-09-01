@@ -112,8 +112,8 @@ all: pygen program
 # card script zeroing a cost row) are surfaced instead of muted, the rest of the
 # verbose output is kept quiet, and a failure dumps the generator's full log.
 pygen:
-	@echo "[pygen] regenerating codegen (enums, card costs, card props, archetypes)"
-	@for g in gen_enums gen_card_costs gen_card_props gen_archetypes; do \
+	@echo "[pygen] regenerating codegen (enums, card costs, card props, archetypes, sb rules)"
+	@for g in gen_enums gen_card_costs gen_card_props gen_archetypes gen_sb_rules; do \
 	  log=$$(mktemp); \
 	  if $(PYTHON) train/$$g.py >$$log 2>&1; then \
 	    grep -i "warning" $$log | sed "s/^[[:space:]]*/[pygen] $$g: /"; \

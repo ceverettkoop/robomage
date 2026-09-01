@@ -57,6 +57,8 @@ try:
     from cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
                           DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                           DEFAULT_SB_ROLLOUT_TURNS,
+                          DEFAULT_SB_SELFPLAY_MODE, DEFAULT_SB_EXPLORE_TEMP,
+                          DEFAULT_SB_EXPLORE_EPS,
                           DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
                           DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N,
@@ -70,6 +72,9 @@ except ImportError:  # pragma: no cover
     from train.cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
                                 DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                                 DEFAULT_SB_ROLLOUT_TURNS,
+                                DEFAULT_SB_SELFPLAY_MODE,
+                                DEFAULT_SB_EXPLORE_TEMP,
+                                DEFAULT_SB_EXPLORE_EPS,
                                 DEFAULT_AZ_GAMES,
                                 DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
                                 DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES,
@@ -527,7 +532,65 @@ def playout_cap_full(cap_seed: int, root_idx: int,
 _MatchKnobs = namedtuple("_MatchKnobs", (
     "sims", "worlds", "c_puct", "temp_moves", "root_noise_eps", "root_noise_alpha",
     "sb_branches", "sb_worlds", "sb_rollout_turns",
+    "sb_mode", "sb_explore_temp", "sb_explore_eps",
     "merge_dupes", "full_search_frac", "fast_sims", "cap_seed"))
+
+
+def sb_prior_policy(obs, priors, num_choices, *, explore_temp, explore_eps):
+    """Behavior policy over a sideboard menu in prior mode:
+    ``b = (1-eps) * softmax(log p / temp) + eps * uniform(live)``, where the
+    dead-card rules mask (mcts.sb_dead_mask) zeroes table-dead INs first.
+    Returns ``(b, masked_prior_argmax)`` — the argmax defines the row's
+    ``explored`` flag. Float64 throughout; MIRRORED in the C++ actor's
+    sb prior branch (az_mcts.cpp), which must reproduce this arithmetic
+    bit-identically (only the final sample draw is backend-native)."""
+    from mcts import sb_dead_mask
+    dead = sb_dead_mask(obs, num_choices)
+    live = ~dead
+    p = np.where(dead, 0.0, np.asarray(priors[:num_choices], dtype=np.float64))
+    total = p.sum()
+    if total <= 0.0:
+        # Degenerate masked prior (all mass was on dead actions): uniform live.
+        p = live.astype(np.float64)
+        total = p.sum()
+    p /= total
+    t = max(float(explore_temp), 1e-3)
+    with np.errstate(divide="ignore"):
+        z = np.where(p > 0.0, np.log(p), -np.inf) / t
+    z -= z.max()
+    b = np.exp(z)
+    b /= b.sum()
+    eps = min(max(float(explore_eps), 0.0), 1.0)
+    if eps > 0.0:
+        b = (1.0 - eps) * b + eps * (live.astype(np.float64) / live.sum())
+        b /= b.sum()
+    return b, int(np.argmax(np.where(live, p, -1.0)))
+
+
+def _sb_prior_sample(env, evaluator, rng, knobs, *, num_choices):
+    """Prior-rollout sideboard decision (``--sb-selfplay-mode prior``): no
+    plan search — one net eval, the :func:`sb_prior_policy` behavior draw, and
+    a ONE-HOT behavior row (``pi`` = one-hot(action), ``q`` = the net's value,
+    ``explored`` = action != masked-prior argmax). The trainer learns these
+    rows REINFORCE-style against the realized next-game z ("the real next
+    game is the rollout"); ``pi.max() == 1`` is the row's marker vs legacy
+    soft-π sb rows. Prior mode draws once from ``rng`` per sb decision — a
+    deliberate stream break vs plan mode (playout-cap precedent). C++ twin:
+    the sb prior branch in az_mcts.cpp."""
+    obs = env._obs
+    priors, value = evaluator.evaluate(obs, num_choices)
+    b, greedy = sb_prior_policy(obs, priors, num_choices,
+                                explore_temp=knobs.sb_explore_temp,
+                                explore_eps=knobs.sb_explore_eps)
+    action = int(rng.choice(num_choices, p=b))
+    pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
+    pi[action] = 1.0
+    mask = np.zeros(MAX_ACTIONS, dtype=bool)
+    mask[:num_choices] = True
+    sample = {"obs": np.asarray(obs, dtype=np.float32).copy(), "pi": pi,
+              "mask": mask, "mover_is_a": bool(obs[_SELF_IS_A_IDX] > 0.5),
+              "q": float(value), "explored": int(action != greedy)}
+    return action, sample
 
 
 def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
@@ -563,6 +626,14 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
     # pass already evaluates every first pick.
     full = True
     if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
+        if knobs.sb_mode == "prior":
+            # Prior-rollout mode (the default): no plan search — the REAL
+            # next game is the rollout. One-hot behavior row, next-game z as
+            # the training signal, no boundary state (no seeds/memo to carry).
+            action, sample = _sb_prior_sample(env, evaluator, rng, knobs,
+                                              num_choices=num_choices)
+            sample["game_idx"] = game_idx
+            return action, sample, None
         key = sb_root_key(env._obs)
         b = sb_boundary
         if b is None or b["key"] != key:
@@ -633,6 +704,15 @@ def _opp_net_action(env, opp_evaluator, rng, knobs, *, num_choices,
         priors, _ = opp_evaluator.evaluate(env._obs, num_choices)
         return int(np.argmax(priors)), sb_boundary
     if bool(env._obs[_IS_SIDEBOARD_IDX] > 0.5):
+        if knobs.sb_mode == "prior":
+            # Prior mode: the opponent seat boards by masked-prior argmax
+            # (no search, no exploration — an opponent plays its best line).
+            from mcts import sb_dead_mask
+            priors, _ = opp_evaluator.evaluate(env._obs, num_choices)
+            dead = sb_dead_mask(env._obs, num_choices)
+            p = np.where(dead, -1.0,
+                         np.asarray(priors[:num_choices], dtype=np.float64))
+            return int(np.argmax(p)), None
         key = sb_root_key(env._obs)
         b = sb_boundary
         if b is None or b["key"] != key:
@@ -684,6 +764,9 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                 c_puct=DEFAULT_AZ_C_PUCT,
                 sb_branches=DEFAULT_SB_BRANCHES, sb_worlds=DEFAULT_SB_WORLDS,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
+                sb_mode=DEFAULT_SB_SELFPLAY_MODE,
+                sb_explore_temp=DEFAULT_SB_EXPLORE_TEMP,
+                sb_explore_eps=DEFAULT_SB_EXPLORE_EPS,
                 merge_dupes=True, agent=None, net_is_a=None,
                 opp_evaluator=None,
                 full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
@@ -774,6 +857,9 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
                         root_noise_alpha=root_noise_alpha,
                         sb_branches=sb_branches, sb_worlds=sb_worlds,
                         sb_rollout_turns=sb_rollout_turns,
+                        sb_mode=str(sb_mode),
+                        sb_explore_temp=float(sb_explore_temp),
+                        sb_explore_eps=float(sb_explore_eps),
                         merge_dupes=merge_dupes,
                         full_search_frac=float(full_search_frac),
                         fast_sims=int(fast_sims), cap_seed=int(seed))
@@ -984,6 +1070,7 @@ def _match_winner(game_winners) -> str:
 def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
             sb_branches, sb_worlds, sb_rollout_turns,
+            sb_mode, sb_explore_temp, sb_explore_eps,
             scripted_seats=None, opp_assign=None,
             td_n=DEFAULT_TD_N, merge_dupes=True,
             c_puct=DEFAULT_AZ_C_PUCT,
@@ -1060,7 +1147,9 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                 temp_moves=temp_moves, root_noise_eps=root_noise_eps,
                 root_noise_alpha=root_noise_alpha, seed=seed,
                 on_progress=beat, sb_branches=sb_branches, sb_worlds=sb_worlds,
-                sb_rollout_turns=sb_rollout_turns, merge_dupes=merge_dupes,
+                sb_rollout_turns=sb_rollout_turns, sb_mode=sb_mode,
+                sb_explore_temp=sb_explore_temp, sb_explore_eps=sb_explore_eps,
+                merge_dupes=merge_dupes,
                 agent=(None if scr_seat is None else agent),
                 opp_evaluator=(None if opp is None else _opp_eval(opp[1])),
                 net_is_a=(None if net_is_a is None else bool(net_is_a)),
@@ -1166,6 +1255,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              sb_branches: int = DEFAULT_SB_BRANCHES,
              sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+             sb_mode: str = DEFAULT_SB_SELFPLAY_MODE,
+             sb_explore_temp: float = DEFAULT_SB_EXPLORE_TEMP,
+             sb_explore_eps: float = DEFAULT_SB_EXPLORE_EPS,
              merge_dupes: bool = True,
              scripted_opponent_frac: float = 0.0,
              bo3: bool = False, exhaustive: bool = False,
@@ -1396,7 +1488,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     if bo3:
         print(f"[az-selfplay] sideboard plan-search budget: "
               f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
-              f"sb_rollout_turns={sb_rollout_turns}")
+              f"sb_rollout_turns={sb_rollout_turns} sb_mode={sb_mode} "
+              f"sb_explore_temp={sb_explore_temp} sb_explore_eps={sb_explore_eps}")
     print(f"[az-selfplay] net source: mode={source['mode']} path={source['path']}")
     print(f"[az-selfplay] out_dir={out_dir}")
     print(f"[az-selfplay] matchups: {_schedule_summary(schedule)}")
@@ -1430,6 +1523,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
                                sb_branches=sb_branches,
                                sb_worlds=sb_worlds,
                                sb_rollout_turns=sb_rollout_turns,
+                               sb_mode=sb_mode,
+                               sb_explore_temp=sb_explore_temp,
+                               sb_explore_eps=sb_explore_eps,
                                scripted_seats=scripted_seats,
                                opp_assign=opp_assign,
                                actor_device=actor_device,
@@ -1439,6 +1535,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     return _generate_python(deck, bo3=bo3, sb_branches=sb_branches,
                             sb_worlds=sb_worlds,
                             sb_rollout_turns=sb_rollout_turns,
+                            sb_mode=sb_mode,
+                            sb_explore_temp=sb_explore_temp,
+                            sb_explore_eps=sb_explore_eps,
                             scripted_seats=scripted_seats,
                             opp_assign=opp_assign,
                             **common)
@@ -1456,6 +1555,9 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                      bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                      sb_worlds=DEFAULT_SB_WORLDS,
                      sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
+                     sb_mode=DEFAULT_SB_SELFPLAY_MODE,
+                     sb_explore_temp=DEFAULT_SB_EXPLORE_TEMP,
+                     sb_explore_eps=DEFAULT_SB_EXPLORE_EPS,
                      merge_dupes=True,
                      scripted_seats=None, opp_assign=None,
                      td_n=DEFAULT_TD_N) -> dict:
@@ -1488,7 +1590,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
                         args=(slices[wi], source, sims, worlds, temp_moves,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q, bo3, sb_branches, sb_worlds,
-                              sb_rollout_turns, seat_slices[wi], opp_slices[wi],
+                              sb_rollout_turns, sb_mode, sb_explore_temp,
+                              sb_explore_eps, seat_slices[wi], opp_slices[wi],
                               td_n, merge_dupes, c_puct,
                               full_search_frac, fast_sims))
         p.start()
@@ -1731,6 +1834,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                        sb_worlds=DEFAULT_SB_WORLDS,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
+                       sb_mode=DEFAULT_SB_SELFPLAY_MODE,
+                       sb_explore_temp=DEFAULT_SB_EXPLORE_TEMP,
+                       sb_explore_eps=DEFAULT_SB_EXPLORE_EPS,
                        merge_dupes=True,
                        td_n=DEFAULT_TD_N, batch=1, cross_world=False,
                        device="cpu", eval_server=None,
@@ -1814,7 +1920,10 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
         cmd += ["--bo3",
                 "--sb-branches", str(sb_branches),
                 "--sb-worlds", str(sb_worlds),
-                "--sb-rollout-turns", str(sb_rollout_turns)]
+                "--sb-rollout-turns", str(sb_rollout_turns),
+                "--sb-selfplay-mode", str(sb_mode),
+                "--sb-explore-temp", str(sb_explore_temp),
+                "--sb-explore-eps", str(sb_explore_eps)]
     if deck_b is not None and deck_b != deck:
         cmd += ["--deck-b", deck_b]
     if rng_seed is not None:
@@ -1854,6 +1963,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
                     actor_bin, bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                     sb_worlds=DEFAULT_SB_WORLDS,
                     sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
+                    sb_mode=DEFAULT_SB_SELFPLAY_MODE,
+                    sb_explore_temp=DEFAULT_SB_EXPLORE_TEMP,
+                    sb_explore_eps=DEFAULT_SB_EXPLORE_EPS,
                     merge_dupes=True,
                     scripted_seats=None, opp_assign=None,
                     td_n=DEFAULT_TD_N, actor_device="cpu",
@@ -1999,6 +2111,8 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
             bo3=bo3, sb_branches=sb_branches, sb_worlds=sb_worlds,
             sb_rollout_turns=sb_rollout_turns,
+            sb_mode=sb_mode, sb_explore_temp=sb_explore_temp,
+            sb_explore_eps=sb_explore_eps,
             merge_dupes=merge_dupes, td_n=td_n,
             device=actor_device, eval_server=server_sock,
             cross_world=cross_world, scripted_seat=st,
@@ -2344,6 +2458,11 @@ def run(args) -> None:
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
              sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                       DEFAULT_SB_ROLLOUT_TURNS),
+             sb_mode=getattr(args, "sb_selfplay_mode", DEFAULT_SB_SELFPLAY_MODE),
+             sb_explore_temp=getattr(args, "sb_explore_temp",
+                                     DEFAULT_SB_EXPLORE_TEMP),
+             sb_explore_eps=getattr(args, "sb_explore_eps",
+                                    DEFAULT_SB_EXPLORE_EPS),
              merge_dupes=bool(getattr(args, "merge_dupes", 1)),
              td_n=int(getattr(args, "td_n", DEFAULT_TD_N)),
              actor_device=getattr(args, "actor_device", "cpu"),

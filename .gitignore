@@ -14,6 +14,8 @@ bin/resources/cardsfolder/.DS_Store
 train/card_costs.py
 train/card_props.py
 src/gen/card_costs_gen.h
+train/sb_rules.py
+src/gen/sb_rules_gen.h
 bin/resources/logs/**
 src/classes/game.cpp
 logs/**

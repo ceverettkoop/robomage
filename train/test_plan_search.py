@@ -6,7 +6,9 @@ configurations ("plans") — see the plan-search section of train/mcts.py. This
 test drives a real bo3 match to its first sideboard prompt and pins the
 contract every consumer relies on:
 
-  (1) coverage — every legal root action (Done included) gets a variant-0 plan;
+  (1) coverage — every LIVE legal root action (Done included) gets a variant-0
+      plan; dead-card-rule INs (train/sb_dead_rules.json) are skipped with
+      exactly zero policy mass;
   (2) accounting — each plan is priced on EVERY world, plan value = the world
       mean, Q per first pick = its best plan's value, pi = softmax(Q/SB_PI_TAU),
       visits = pi * evaluations, best_action == argmax Q, root_value = pi @ Q;
@@ -41,7 +43,8 @@ from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT  # noqa: E402
 from cli_spec import BINARY  # noqa: E402
 from search_env import SearchRoboMageEnv  # noqa: E402
 from mcts import (SB_PI_TAU, IncrementalPlanSearch, _plan_softmax,  # noqa: E402
-                  rollout_memo_eligible, run_plan_search, sb_pick_descriptor)
+                  rollout_memo_eligible, run_plan_search, sb_dead_mask,
+                  sb_pick_descriptor)
 
 DECK_A = "league/ur_delver"
 DECK_B = "league/burn"
@@ -118,10 +121,18 @@ def main() -> int:
                               rng=np.random.default_rng(1), plan_memo=memo,
                               plans_out=plans)
 
-        # (1) coverage
+        # (1) coverage — every LIVE root action; dead-card-rule INs (Choke vs
+        # no Islands etc., see train/sb_dead_rules.json) are skipped and get
+        # exactly zero policy mass. Delver-vs-burn makes REB/Meltdown dead.
+        dead = sb_dead_mask(root_obs, n)
+        live_set = {a for a in range(n) if not dead[a]}
         covered = {p.first_action for p in plans if p.variant == 0}
-        check(covered == set(range(n)),
-              f"(1) coverage: every root action has a variant-0 plan ({n})")
+        check(covered == live_set,
+              f"(1) coverage: every live root action has a variant-0 plan "
+              f"({len(live_set)}/{n} live)")
+        check(all(not dead[p.first_action] for p in plans),
+              f"(1b) no plan starts with a rule-dead action "
+              f"({int(dead.sum())} dead at this root)")
 
         # (2) accounting
         ok_vals = all(p.values.shape == (WORLDS,)
@@ -130,15 +141,20 @@ def main() -> int:
         for p in plans:
             q_re[p.first_action] = max(q_re[p.first_action], p.value)
         pi = _plan_softmax(q_re, SB_PI_TAU)
+        q_re = np.where(np.isfinite(q_re), q_re, 0.0)
         n_evals = len(plans) * WORLDS
         check(ok_vals and np.array_equal(res.q, q_re),
-              "(2a) plan value = world mean; Q = best plan per first pick")
+              "(2a) plan value = world mean; Q = best plan per first pick "
+              "(dead entries sanitized to 0)")
         check(np.array_equal(res.visits, pi * float(n_evals))
               and res.sims_run == n_evals,
               "(2b) visits = softmax(Q/tau) * evaluations; sims_run = evals")
-        check(res.best_action() == int(np.argmax(res.q))
+        check(res.best_action() == int(np.argmax(np.where(dead, -np.inf,
+                                                          res.q)))
               and res.root_value == float(pi @ q_re),
-              "(2c) best_action = argmax Q; root_value = pi @ Q")
+              "(2c) best_action = argmax live Q; root_value = pi @ Q")
+        check(not dead.any() or float(pi[dead].sum()) == 0.0,
+              "(2e) rule-dead actions carry exactly zero policy mass")
         check(float(np.ptp(res.q)) > 0.0,
               "(2d) the fake evaluator actually separates first-pick Q values")
 

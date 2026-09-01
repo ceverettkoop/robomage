@@ -87,6 +87,21 @@ struct MCTSConfig {
     int sb_worlds = -1;
     int sb_rollout_turns = -1;
 
+    // ── prior-rollout sideboard self-play (mirrors az_selfplay's sb prior
+    // mode) ────────────────────────────────────────────────────────────────
+    // When `sb_prior_mode` is set (generation only — az_selfplay passes
+    // --sb-selfplay-mode prior; gate/eval/parity callers leave it off), a
+    // sideboard root skips the plan search entirely: one net eval, the
+    // dead-card rules mask (sb_rules.h), the behavior policy
+    //   b = (1-eps) * softmax(log p / temp) + eps * uniform(live),
+    // one sampled pick (argmax without --selfplay), and a ONE-HOT training
+    // row priced by the realized next-game z. Arithmetic MIRRORS
+    // az_selfplay.sb_prior_policy in float64; only the final sample draw is
+    // backend-native.
+    bool sb_prior_mode = false;
+    double sb_explore_temp = 1.0;   // cli_spec DEFAULT_SB_EXPLORE_TEMP
+    double sb_explore_eps = 0.10;   // cli_spec DEFAULT_SB_EXPLORE_EPS
+
     // ── leaf rollouts (mirrors mcts.py's rollout_turns; in-game roots) ──────
     // When the budget in force has rollout_turns > 0, a freshly expanded leaf is
     // not evaluated in place: the raw policy (argmax of the evaluator's priors,

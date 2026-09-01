@@ -530,6 +530,64 @@ def main() -> int:
         print(f"ok  (v): every sideboard sample's td_q == z; td_q finite in "
               f"[-1,1] ({int((td_q != z).sum())}/{len(z)} rows bootstrapped)")
 
+    # (vi) prior mode (the default): every sideboard sample is a ONE-HOT
+    # behavior row on a legal, non-rule-dead action, with a finite net-value q
+    # (the trainer's REINFORCE marker/contract; az_selfplay._sb_prior_sample).
+    from mcts import sb_dead_mask
+    for i in sb_idx:
+        s = samples[i]
+        pi_row = s["pi"]
+        nz = np.nonzero(pi_row)[0]
+        if len(nz) != 1 or pi_row[nz[0]] != 1.0:
+            failures += 1
+            print(f"FAIL (vi): sideboard sample pos {i} pi is not one-hot "
+                  f"({len(nz)} nonzero entries) — prior mode must record "
+                  f"one-hot behavior rows")
+            break
+        a = int(nz[0])
+        nc = int(s["mask"].sum())
+        dead = sb_dead_mask(s["obs"], nc)
+        if a >= nc or dead[a]:
+            failures += 1
+            print(f"FAIL (vi): sideboard sample pos {i} chose action {a} "
+                  f"(nc={nc}, dead={bool(dead[a]) if a < nc else 'oob'}) — "
+                  f"a rule-dead/illegal pick must never be sampled")
+            break
+        if not np.isfinite(s["q"]) or abs(s["q"]) > 1.0 + 1e-6:
+            failures += 1
+            print(f"FAIL (vi): sideboard sample pos {i} q={s['q']} — prior "
+                  f"mode records the net's value in [-1,1]")
+            break
+    else:
+        print(f"ok  (vi): prior-mode sideboard rows are one-hot on live "
+              f"actions with finite net-value q")
+
+    # (vii) plan mode still works end-to-end behind --sb-selfplay-mode plan:
+    # a fresh match records sideboard rows with the soft softmax(Q/tau) pi.
+    env2 = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                             auto_sideboard=False)
+    try:
+        samples2, winners2, _se2, _f2, _d2, _st2 = _play_match(
+            env2, UniformEvaluator(), np.random.default_rng(SEED),
+            sims=SIMS, worlds=WORLDS, temp_moves=TEMP_MOVES,
+            root_noise_eps=0.0, root_noise_alpha=1.0, seed=SEED,
+            sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
+            sb_rollout_turns=SB_ROLLOUT_TURNS, sb_mode="plan")
+    finally:
+        env2.close()
+    sb2 = [s for s in samples2 if _is_sideboard(s)]
+    soft = [s for s in sb2 if int((s["pi"] > 0).sum()) >= 2]
+    if not sb2:
+        failures += 1
+        print("FAIL (vii): plan mode collected no sideboard samples")
+    elif not soft:
+        failures += 1
+        print(f"FAIL (vii): none of the {len(sb2)} plan-mode sideboard rows "
+              f"carries a soft multi-action pi")
+    else:
+        print(f"ok  (vii): plan mode records soft-pi sideboard rows "
+              f"({len(soft)}/{len(sb2)})")
+
     # Housekeeping: remove the temp decks we created.
     for p in paths:
         try:
