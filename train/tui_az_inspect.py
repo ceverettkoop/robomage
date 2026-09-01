@@ -67,6 +67,7 @@ _EMB_VIEWS = [
     ("clusters", "Clusters (k-means)"),
     ("project", "PCA scatter"),
     ("exposure", "Training exposure"),
+    ("drift", "Drift since origin (per-dim)"),
     ("occur", "Occurrences in self-play"),
     ("catemb", "Action-category embedding"),
 ]
@@ -105,8 +106,8 @@ _NEEDS_SHARDS = {"occur", "calib", "divergence"} | {k for k, _ in _PROBE_VIEWS}
 
 # Views that need a loaded AZNet (not just the normalized state dict). In the
 # PPO-fallback session these render an explanation instead of computing.
-_NEEDS_NET = ({"overview", "buckets", "exposure"} | _NEEDS_SHARDS) - {"occur",
-                                                                      "state"}
+_NEEDS_NET = ({"overview", "buckets", "exposure", "drift"}
+              | _NEEDS_SHARDS) - {"occur", "state"}
 
 
 def available_views(views, with_shards):
@@ -198,6 +199,7 @@ class InspectApp(App):
         self._count_states = 0      # states actually decoded for those counts
         self._exposure = None       # weights-only per-card training movement
         self._exp = None            # the full card_exposure() result (or None)
+        self._drift = None          # cached embedding_drift() result (lazy)
         self._card = None           # current card index for the neighbours view
         self._history = []          # drill-down stack of card indices
         self._row = 0               # current recorded decision (probe views)
@@ -582,6 +584,15 @@ class InspectApp(App):
                          "earlier gen__azv* snapshot, or the PPO gen checkpoint "
                          "this net warm-started from."], None)
             return azi.render_exposure(self._exp, top_n=a.top), None
+        if key == "drift":
+            # Lazy — it torch.loads a second checkpoint, so it only pays that
+            # cost when the view is opened, then stays cached.
+            if self._drift is None:
+                try:
+                    self._drift = azi.embedding_drift(self._path)
+                except (FileNotFoundError, KeyError, RuntimeError) as e:
+                    return [f"embedding drift unavailable ({e})"], None
+            return azi.render_drift(self._drift, top_n=0), None
         if key == "occur":
             emb, rev, n = azi.card_occurrence_split(
                 self._sample["obs"], limit=a.count_rows, seed=a.seed)

@@ -490,6 +490,48 @@ def test_exposure(net, tmp):
           "the exposure view reports the trained-row count")
 
 
+def test_drift(net, tmp):
+    """Drift keeps the SIGNED per-dimension delta and ranks cards by its L1."""
+    import torch
+    ckpt_dir = os.path.join(tmp, "drift")
+    os.makedirs(ckpt_dir, exist_ok=True)
+    base = os.path.join(ckpt_dir, "gen__azv10.pt")
+    later = os.path.join(ckpt_dir, "gen__azv20.pt")
+    net.save(base, 10)
+    net.save(later, 20)
+
+    bolt = azi.resolve_card(_PLANTED)
+    mountain = azi.resolve_card("Mountain")
+    sd = torch.load(later, map_location="cpu")
+    sd["trunk.card_emb.weight"][bolt + 1, 0] += 0.25   # one dim up
+    sd["trunk.card_emb.weight"][bolt + 1, 1] -= 0.75   # one dim down, bigger
+    sd["trunk.card_emb.weight"][mountain + 1, 2] += 0.1
+    torch.save(sd, later)
+
+    drift = azi.embedding_drift(later, baseline=base, checkpoint_dir=ckpt_dir)
+    d = drift["delta"]
+    check(abs(d[bolt, 0] - 0.25) < 1e-6 and abs(d[bolt, 1] + 0.75) < 1e-6,
+          "the signed per-dimension delta round-trips exactly")
+    check((d[azi.resolve_card("Island")] == 0).all(),
+          "an untouched row's delta is exactly zero in every dimension")
+    l1 = np.abs(d).sum(axis=1)
+    check(l1.argmax() == bolt and abs(l1[bolt] - 1.0) < 1e-6,
+          "L1 total movement sums |shift| over dimensions")
+
+    lines = azi.render_drift(drift)
+    hdr = next(i for i, ln in enumerate(lines) if ln.startswith("cards by"))
+    first = lines[hdr + 2]                     # header is two lines long
+    check(azi.card_name(bolt) in first,
+          "the card ranking lists the most-moved card first")
+    strip = first.split()[-1]
+    check("-" in strip and "+" in strip,
+          "the direction strip shows both signs for the perturbed card")
+
+    origin, kind = azi.resolve_origin(later, checkpoint_dir=ckpt_dir)
+    check(kind == "ppo" or os.path.basename(str(origin)) == "gen__azv10.pt",
+          "resolve_origin prefers the warm-start, else the OLDEST snapshot")
+
+
 def test_weight_views(net, tmp):
     """Weight-space views: family key normalization, first-layer column
     layout, spectra, PopArt, value geometry, zone embedding, selectivity."""
@@ -852,6 +894,8 @@ def main():
         test_diff(net, tmp)
         print("\n[exposure]")
         test_exposure(net, tmp)
+        print("\n[drift]")
+        test_drift(net, tmp)
         print("\n[weight views]")
         test_weight_views(net, tmp)
         print("\n[renders]")

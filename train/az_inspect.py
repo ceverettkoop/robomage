@@ -1175,6 +1175,78 @@ def exposure_counts_or_none(path):
     return None if exp is None else exposure_counts(exp)
 
 
+def resolve_origin(path, checkpoint_dir=None):
+    """The checkpoint closest to this net's INITIAL state, for drift.
+
+    The from-scratch random init is never saved, so "initial" means the PPO
+    checkpoint AZ warm-started from when it exists (the embedding's state at
+    the start of AZ training), else the OLDEST ``gen__azv*`` snapshot strictly
+    older than ``path``. Returns ``(spec, kind)`` like
+    :func:`resolve_baseline` (which prefers the NEWEST older snapshot — the
+    last training interval rather than the whole run)."""
+    from opponents import resolve_checkpoint
+    ppo = resolve_checkpoint("gen")
+    if ppo and os.path.isfile(ppo):
+        return ppo, "ppo"
+    checkpoint_dir = checkpoint_dir or os.path.dirname(os.path.abspath(path))
+    steps = _snapshot_steps(path)
+    snaps = [(s, p) for p in glob.glob(os.path.join(checkpoint_dir,
+                                                    "gen__azv*.pt"))
+             for s in (_snapshot_steps(p),)
+             if s >= 0 and (steps < 0 or s < steps)]
+    if snaps:
+        return min(snaps)[1], "snapshot"
+    return None, None
+
+
+def _fresh_init_card_emb():
+    """The card-embedding table of a freshly constructed, untrained AZNet,
+    seeded for reproducibility."""
+    import torch
+    from az_net import AZNet
+    torch.manual_seed(0)
+    return AZNet().state_dict()["trunk.card_emb.weight"].float()
+
+
+def embedding_drift(path, baseline=None, checkpoint_dir=None):
+    """Signed per-dimension movement of every card's identity vector.
+
+    Where :func:`card_exposure` reduces movement to one distance per row (and
+    measures the last training interval), this keeps the full signed
+    (card x dim) delta and measures against the net's ORIGIN
+    (:func:`resolve_origin` — the PPO warm-start by default), answering "how
+    far, and in which directions, has training pushed each card's learned
+    vector since the start". ``baseline='init'`` compares against a freshly
+    constructed seed-0 net instead — note per-dimension SIGN against a random
+    init is mostly noise; only the magnitudes stay meaningful there."""
+    if baseline == "init":
+        emb_a, kind = _fresh_init_card_emb(), "init"
+        base_label = "fresh untrained net (seed 0)"
+    else:
+        if baseline is None:
+            baseline, kind = resolve_origin(path, checkpoint_dir)
+        else:
+            baseline = resolve_spec(
+                baseline, checkpoint_dir
+                or os.path.dirname(os.path.abspath(path))) or baseline
+            kind = "ppo" if str(baseline).endswith(".zip") else "snapshot"
+        if baseline is None:
+            raise FileNotFoundError(
+                "no origin checkpoint to measure drift against — drift needs "
+                "the PPO gen warm-start, an older gen__azv* snapshot, or "
+                "--baseline init")
+        emb_a, _ = _card_emb_and_value(baseline)
+        base_label = os.path.basename(str(baseline))
+    emb_b, _ = _card_emb_and_value(path)
+    if emb_a.shape != emb_b.shape:
+        raise RuntimeError(
+            f"embedding shapes differ ({tuple(emb_a.shape)} vs "
+            f"{tuple(emb_b.shape)}) — the baseline predates a layout change")
+    # Row i+1 is vocab card i (row 0 is the padding row).
+    delta = (emb_b - emb_a).numpy()[1:]
+    return {"path": path, "baseline": base_label, "kind": kind, "delta": delta}
+
+
 def checkpoint_diff(path_a, path_b, top_n=15):
     """Per-tensor, per-card and per-bucket movement between two checkpoints —
     "what did the last training rotation actually change".
@@ -2030,6 +2102,41 @@ def render_exposure(exp, top_n=20):
     return lines
 
 
+def render_drift(drift, top_n=0):
+    """Per-dimension embedding movement + every card ranked by total |shift|."""
+    ids = named_card_ids()
+    d = drift["delta"][ids]                                    # (cards, dim)
+    src = {"ppo": "the PPO checkpoint AZ warm-started from",
+           "snapshot": "the oldest AZ snapshot on disk",
+           "init": "a fresh untrained net — per-dim SIGNS vs a random init "
+                   "are mostly noise; trust the magnitudes only"}[drift["kind"]]
+    lines = [f"embedding drift — {os.path.basename(drift['path'])} vs "
+             f"{drift['baseline']}",
+             f"  ({src})", ""]
+    mag = np.abs(d).mean(axis=0)
+    net_shift = d.mean(axis=0)
+    hi = mag.max() if mag.max() > 0 else 1.0
+    lines.append(f"per-dimension movement over {len(ids)} cards, largest "
+                 "first (mean |shift| / mean signed shift / % pushed +):")
+    for k in np.argsort(-mag):
+        pos = float((d[:, k] > 0).mean() * 100)
+        lines.append(f"  dim {k:2d}  {mag[k]:8.4f}  {net_shift[k]:+8.4f}  "
+                     f"{pos:5.1f}%+  {_bar(mag[k] / hi)}")
+    l1 = np.abs(d).sum(axis=1)
+    order = np.argsort(-l1)
+    if top_n:
+        order = order[:top_n]
+    lines += ["", f"cards by total movement (L1 over all {d.shape[1]} dims; "
+                  "strip = per-dim direction,",
+              "  '·' = |shift| under 25% of that card's largest dim):"]
+    for j in order:
+        row = d[j]
+        t = np.abs(row).max() * 0.25
+        strip = "".join("+" if v > t else "-" if v < -t else "·" for v in row)
+        lines.append(f"  {l1[j]:8.4f}  {card_name(ids[j])[:32]:<32} {strip}")
+    return lines
+
+
 def render_category_embedding(net, top_k=4):
     mat = category_embedding(net)
     u = _unit(mat)
@@ -2525,6 +2632,16 @@ def build_parser():
                         "gen__azv* snapshot, else the PPO gen warm-start)")
     p.add_argument("--top", type=int, default=20)
 
+    p = sub.add_parser("drift",
+                       help="signed per-dimension embedding movement since "
+                            "the origin; all cards ranked by total |shift|")
+    p.add_argument("--baseline", default=None,
+                   help="checkpoint to measure against (default: the PPO gen "
+                        "warm-start, else the oldest gen__azv* snapshot; "
+                        "'init' = a fresh untrained seed-0 net)")
+    p.add_argument("--top", type=int, default=0,
+                   help="cards listed (default: 0 = all)")
+
     sub.add_parser("catemb", help="action-category embedding neighbours")
 
     p = sub.add_parser("buckets", help="per-matchup critic column map")
@@ -2726,6 +2843,14 @@ def main(argv=None):
             raise SystemExit(f"could not resolve checkpoint {args.model!r}")
         print("\n".join(render_exposure(card_exposure(path, args.baseline),
                                         top_n=args.top)))
+        return 0
+
+    if cmd == "drift":
+        path = resolve_spec(args.model)
+        if path is None:
+            raise SystemExit(f"could not resolve checkpoint {args.model!r}")
+        print("\n".join(render_drift(embedding_drift(path, args.baseline),
+                                     top_n=args.top)))
         return 0
 
     net, path = load_net(args.model)
