@@ -46,7 +46,7 @@ from env import (
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
     _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE, _CUR_TURN_IDX,
     _GY_START, _GY_SLOT_SIZE, MAX_GY_SLOTS,
-    _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE,
+    _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE, _OFF_POWER,
     _OFF_IS_LAND, _OFF_IS_PHASED_OUT, _OFF_OTHER_COUNTERS,
     # per-action entity-reference slots (KEEP_LEGEND duplicate disambiguation)
     ACT_REFS_START, N_ENTITY_REF_SLOTS,
@@ -291,12 +291,35 @@ def _action_card_id(card_ids: np.ndarray, i: int) -> int:
 
 
 def _is_doomsday_deck(obs: np.ndarray) -> bool:
-    """Heuristic: check if any hand card is a doomsday-deck-only card."""
+    """Heuristic: a doomsday-deck-only card is in hand, on our battlefield
+    (Cavern of Souls, Lotus Petal, Lion's Eye Diamond), or in a graveyard —
+    post-Doomsday the hand is often cantrips and counters only, while the
+    resolved Doomsday and the Dark Ritual that paid for it sit in the
+    graveyard, and that is exactly when the post-pile rules must fire."""
     for slot in range(MAX_HAND_SLOTS):
         idx = _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE)
         if idx in _DOOMSDAY_DECK_IDS:
             return True
-    return False
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if _slot_card_idx(obs, base + _BF_CARD_OFF) in _DD_EXCLUSIVE_IDS:
+            return True
+    return _gy_has_any(obs, _DD_EXCLUSIVE_IDS)
+
+
+# Cards only the Doomsday deck runs — the battlefield / graveyard half of
+# _is_doomsday_deck scans for these alone. The wider _DOOMSDAY_DECK_IDS hand
+# set includes Dark Ritual and Lotus Petal, which reanimator also runs: a
+# Ritual in reanimator's graveyard must not flip it onto the Doomsday rules
+# for the rest of the game.
+_DD_EXCLUSIVE_IDS = frozenset({
+    53,   # Doomsday
+    57,   # Lion's Eye Diamond
+    58,   # Thassa's Oracle
+    59,   # Personal Tutor
+    60,   # Street Wraith
+    61,   # Edge of Autumn
+})
 
 
 def _phased(obs: np.ndarray, base: int) -> bool:
@@ -627,7 +650,10 @@ def _led_crack_choice(obs: np.ndarray, cats, card_ids) -> int | None:
         return None
     if _slot_card_idx(obs, _KNOWN_TOP_LIB_START) != _THASSAS_ORACLE_VOCAB_IDX:
         return None
-    if _self_library_count(obs) > _ORACLE_WIN_LIBRARY:
+    # The pending draw takes Oracle off the top, so the library is one card
+    # above the win size while it sits on the stack (standard pile with LED
+    # already in play: the Street Wraith draw fires at three cards).
+    if _self_library_count(obs) > _ORACLE_WIN_LIBRARY + 1:
         return None
     for i, c in enumerate(cats):
         if c == _CAT_MANA_U and _action_card_id(card_ids, i) == _LED_VOCAB_IDX:
@@ -724,6 +750,72 @@ def _hand_free_draw_count(obs: np.ndarray) -> int:
     return count
 
 
+# Blue sources a hand can put onto the battlefield WITHOUT a library search:
+# the direct-play half of _DD_HAND_U_SOURCE_IDS. Fetch lands are excluded on
+# purpose — after Doomsday lays the pile a fetch can't be cracked (the search
+# shuffles the pile away), so a fetch in hand covers nothing for Oracle.
+_DD_HAND_U_DIRECT_IDS = frozenset({19, 15, 4, 63, 64, 67, 300, 56})
+
+
+def _hand_direct_blue_sources(obs: np.ndarray) -> int:
+    """Blue sources in the priority player's hand that a land drop / a free
+    Lotus Petal cast puts into play before the kill turn."""
+    count = 0
+    for slot in range(MAX_HAND_SLOTS):
+        if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) in _DD_HAND_U_DIRECT_IDS:
+            count += 1
+    return count
+
+
+def _petals_spent_on_black(obs: np.ndarray) -> int:
+    """How many Lotus Petals on the battlefield Doomsday's BBB (or the Dark
+    Ritual starting it) will consume. A Petal is in both the blue and the
+    black source sets, but it is one mana once: the agent once cracked its
+    only Petal for Dark Ritual, then held Doomsday because that same Petal
+    had been counted as Oracle's second blue source."""
+    petals = _count_controlled(obs, _LOTUS_PETAL_VOCAB_IDX)
+    if petals == 0:
+        return 0
+    black_lands = _count_black_sources(obs) - petals
+    black_needed = 1 if _hand_has_card(obs, _DARK_RITUAL_VOCAB_IDX) else 3
+    return max(0, min(petals, black_needed - black_lands))
+
+
+def _dd_blue_for_oracle(obs: np.ndarray) -> bool:
+    """Will Thassa's Oracle's UU exist by kill time? Two blue sources on the
+    battlefield (Petals the BBB will eat excluded), or an LED that pays for
+    Oracle by itself, or one blue source in play plus a directly playable one
+    in hand: the kill lands on the next turn's draw step at the earliest, and
+    the post-pile Edge / Wraith chain waits for that land drop
+    (_dd_edge_cycle_safe) before drawing Oracle. Waiting for the second blue
+    land BEFORE casting Doomsday was the main reason the pilot went off on
+    turn 7-13 instead of turn 3-5."""
+    on_board = _count_blue_sources(obs) - _petals_spent_on_black(obs)
+    if on_board >= _BLUE_SOURCES_NEEDED or _led_covers_oracle(obs):
+        return True
+    if on_board < 1:
+        return False
+    # One real source is enough when the second can come off the top of the
+    # pile: the basic Island is still in the library, and the pile plan
+    # (_dd_pile_wants_land) puts it there, drawn before the chain reaches
+    # Oracle. Waiting for a second blue land drop instead cost a turn. Not
+    # from a one-land board, though: a Wasteland on that land leaves no mana
+    # at all for the kill.
+    return (on_board + _hand_direct_blue_sources(obs) >= _BLUE_SOURCES_NEEDED
+            or (_dd_pile_land_available(obs) and _count_lands(obs) >= 2))
+
+
+def _dd_pile_land_available(obs: np.ndarray) -> bool:
+    """Is the basic Island (the pile's blue land) still in the library? It is
+    a single copy, so: not on our battlefield, not in hand, not in a
+    graveyard. (Exile is not checked — pre-Doomsday nothing of ours is
+    exiled, and post-Doomsday the question no longer arises.)"""
+    island = _DD_PILE_LAND_IDS[0]
+    return (not _controls_card(obs, island)
+            and not _hand_has_card(obs, island)
+            and not _gy_has_any(obs, frozenset({island})))
+
+
 def _led_covers_oracle(obs: np.ndarray) -> bool:
     """Lion's Eye Diamond pays Thassa's Oracle's UU on its own: cracked in the
     kill window (_led_crack_choice) it floats three blue that outlive the final
@@ -734,10 +826,296 @@ def _led_covers_oracle(obs: np.ndarray) -> bool:
             or _controls_card(obs, _LED_VOCAB_IDX))
 
 
-def _classify_top_library(cats, card_ids):
+# Black-mana producers a Doomsday deck can control (Doomsday costs BBB; Dark
+# Ritual needs one B to start). Lotus Petal makes any colour.
+_DD_BLACK_SOURCE_IDS = frozenset({
+    62,   # Swamp
+    63,   # Undercity Sewers (U/B)
+    64,   # Underground Sea (U/B)
+    153,  # Scrubland (W/B)
+    56,   # Lotus Petal
+})
+# Cards a pre-pile surveil must keep on top rather than mill: the kill itself,
+# the mana that casts it, and the pile's free draws.
+_DD_COMBO_PIECE_IDS = frozenset({
+    _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
+    _LED_VOCAB_IDX, _LOTUS_PETAL_VOCAB_IDX, _STREET_WRAITH_VOCAB_IDX,
+    _EDGE_OF_AUTUMN_VOCAB_IDX,
+    59,   # Personal Tutor
+})
+# Fetch-land / land-search preference while piloting Doomsday: a dual serving
+# BOTH combo colours first (Underground Sea untapped ahead of the enters-tapped
+# Sewers), then whichever single colour the board is missing.
+_DD_FETCH_BOTH_COLOURS = (64, 63)
+_DD_FETCH_BLACK = (153, 62)
+_DD_FETCH_BLUE = (19, 15, 300)
+# Smallest library each cantrip may be cast into: Brainstorm draws three,
+# Ponder draws one, Consider may surveil its one card away and then draw.
+# Drawing from an empty library loses the game.
+_DD_CANTRIP_MIN_LIBRARY = {_BRAINSTORM_VOCAB_IDX: 3, _PONDER_VOCAB_IDX: 1,
+                           _CONSIDER_VOCAB_IDX: 2}
+
+
+def _count_lands(obs: np.ndarray) -> int:
+    """Unphased lands self controls, tapped or not."""
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if not _phased(obs, base) and obs[base + _OFF_IS_LAND] > 0.5:
+            count += 1
+    return count
+
+
+def _count_controlled(obs: np.ndarray, cid: int) -> int:
+    """How many unphased permanents with this vocab id self controls."""
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if not _phased(obs, base) and _slot_card_idx(obs, base + _BF_CARD_OFF) == cid:
+            count += 1
+    return count
+
+
+# Our own spells on the stack that countermagic in hand must protect against
+# an opponent's response: the kill, Doomsday, and the Ritual paying for it.
+_DD_PROTECT_ON_STACK_IDS = (_THASSAS_ORACLE_VOCAB_IDX, _DOOMSDAY_VOCAB_IDX,
+                            _DARK_RITUAL_VOCAB_IDX)
+# Spells a Doomsday deck may still cast off Petal mana while Doomsday waits in
+# hand: the combo and its protection. Anything else (Tamiyo, Teferi, Quantum
+# Riddler) must be paid by lands alone — three Petals once went to Ponder,
+# Tamiyo and Teferi with Doomsday in hand and the black lands eight turns away.
+_DD_PETAL_WORTHY_IDS = frozenset({
+    _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
+    _LOTUS_PETAL_VOCAB_IDX, _LED_VOCAB_IDX,
+    _PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX, _CONSIDER_VOCAB_IDX,
+    283,  # Veil of Summer (protection for the kill turn)
+}) | _COUNTER_SPELL_VOCAB_IDS
+# Payment / pitch preference: mana sources and pitch fodder ranked worst-first.
+# Cracking Petal / LED to pay for a cantrip wastes the combo's mana; pitching
+# Oracle to Force of Will ends the game.
+_DD_PAY_LAST_IDS = frozenset({_LOTUS_PETAL_VOCAB_IDX, _LED_VOCAB_IDX})
+
+
+def _count_black_sources(obs: np.ndarray) -> int:
+    """Black-mana producers self controls, tapped or not (the black-side twin
+    of _count_blue_sources)."""
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base):
+            continue
+        idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
+        if idx >= 0 and idx in _DD_BLACK_SOURCE_IDS:
+            count += 1
+    return count
+
+
+def _dd_bbb_reachable(obs: np.ndarray) -> bool:
+    """Can Doomsday's BBB be paid this turn or next? Black sources on the
+    board plus the Lotus Petals in hand (free to cast), and a Dark Ritual in
+    hand turns one of those into three."""
+    black = _count_black_sources(obs)
+    for slot in range(MAX_HAND_SLOTS):
+        if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) == _LOTUS_PETAL_VOCAB_IDX:
+            black += 1
+    if black >= 1 and _hand_has_card(obs, _DARK_RITUAL_VOCAB_IDX):
+        black += 2
+    return black >= 3
+
+
+def _dd_combo_ready(obs: np.ndarray) -> bool:
+    """Doomsday is castable this turn or next: BBB reachable and Oracle's UU
+    covered. Gates the pre-Doomsday Brainstorm hold — while the mana isn't
+    there the agent must dig with Brainstorm for the Ritual / Petal / black
+    land, not sit on it for a kill it can't start (it once held Brainstorm
+    for eight turns with three Doomsdays and Oracle in hand on two black
+    sources and no Ritual)."""
+    return _dd_bbb_reachable(obs) and _dd_blue_for_oracle(obs)
+
+
+def _opponent_board_power(obs: np.ndarray) -> int:
+    """Total power of the opponent's unphased creatures (opp perm slots 48-95),
+    summoning-sick ones included — all of them attack on the opponent's next
+    turn."""
+    total = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_CREATURE] > 0.5 and not _phased(obs, base):
+            total += int(round(float(obs[base + _OFF_POWER]) * 10))
+    return total
+
+
+def _dd_clock_allows_doomsday(obs: np.ndarray) -> bool:
+    """Doomsday costs half our life (rounded up), and the kill lands on the NEXT
+    draw step at the earliest unless a free-draw cycler plus Brainstorm are
+    already in hand (the same-turn pile line). Hold it when the opponent's
+    board would kill us in between — we survive their next attack at full life
+    but not at half — since firing it then is a guaranteed loss. If the board
+    kills us either way, go off: the combo is the only out."""
+    power = _opponent_board_power(obs)
+    if power == 0:
+        return True
+    if (_hand_free_draw_count(obs) >= 1
+            and _hand_has_card(obs, _BRAINSTORM_VOCAB_IDX)):
+        return True
+    life = _self_life(obs)
+    if life // 2 > power:
+        return True
+    return life <= power
+
+
+def _dd_fetch_pick(obs: np.ndarray, cats, card_ids) -> int | None:
+    """Land-search pick for a Doomsday deck: Underground Sea / Undercity Sewers
+    (both colours) first, then the colour the board lacks — black when nothing
+    makes B yet (Dark Ritual and Doomsday both stall without it), else blue
+    until Oracle's UU is covered. Returns None when no preferred land is
+    offered (a non-land search, or a menu of lands outside the table)."""
+    offered: dict[int, int] = {}
+    for i, c in enumerate(cats):
+        if c == _CAT_SEARCH:
+            cid = _action_card_id(card_ids, i)
+            if cid >= 0 and cid not in offered:
+                offered[cid] = i
+    if not offered:
+        return None
+    # Doomsday costs BBB: three black sources from lands alone, one plus a
+    # Dark Ritual in hand. Blue is covered at Oracle's UU.
+    black_needed = 1 if _hand_has_card(obs, _DARK_RITUAL_VOCAB_IDX) else 3
+    order = list(_DD_FETCH_BOTH_COLOURS)
+    if _count_black_sources(obs) < black_needed:
+        order += _DD_FETCH_BLACK + _DD_FETCH_BLUE
+    else:
+        order += _DD_FETCH_BLUE + _DD_FETCH_BLACK
+    for cid in order:
+        if cid in offered:
+            return offered[cid]
+    return None
+
+
+def _dd_land_sac_key(obs: np.ndarray, cid: int, tapped: bool):
+    """Sort key for sacrificing one of our lands while piloting Doomsday —
+    lower is better. In order: would it drop the UNTAPPED blue sources below
+    Oracle's UU (the kill may be this very turn); would it drop the total blue
+    sources below UU (next turn's kill); would it remove our only black source
+    (pre-Doomsday, Dark Ritual and Doomsday still need it); then plain
+    blue / black membership as tie-breaks so a colourless or off-colour land
+    goes first."""
+    is_blue = cid in _BLUE_SOURCE_IDS
+    is_black = cid in _DD_BLACK_SOURCE_IDS
+    untapped_blue = _count_untapped_sources(obs, _BLUE_SOURCE_IDS)
+    blue = _count_blue_sources(obs)
+    black = _count_black_sources(obs)
+    return (is_blue and not tapped and untapped_blue - 1 < _BLUE_SOURCES_NEEDED,
+            is_blue and blue - 1 < _BLUE_SOURCES_NEEDED,
+            is_black and black - 1 < 1,
+            is_blue, is_black)
+
+
+def _dd_edge_cycle_safe(obs: np.ndarray) -> bool:
+    """Can Edge of Autumn's cycle eat one of our lands and still leave Thassa's
+    Oracle's UU available — two untapped blue sources behind the sacrifice (or
+    an LED covering the cast)? Post-Doomsday the alternative — waiting for the
+    natural draw step to reach the next pile card — costs a turn, while
+    drawing the pile down onto a board that can't cast Oracle strands it in
+    hand until the deck-out. With no UU on the board at all the cycle is
+    never worth it: the pile holds no lands, so only a drawn Petal or the
+    turn's land drop can fix the mana, and every pile card should wait."""
+    if _led_covers_oracle(obs):
+        return True
+    untapped_blue = _count_untapped_sources(obs, _BLUE_SOURCE_IDS)
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base) or obs[base + _OFF_IS_LAND] < 0.5:
+            continue
+        cid = _slot_card_idx(obs, base + _BF_CARD_OFF)
+        if cid < 0 or cid in _SAC_LAST_LAND_IDS:
+            continue
+        untapped_blue_land = (cid in _BLUE_SOURCE_IDS
+                              and obs[base + _OFF_IS_TAPPED] < 0.5)
+        if untapped_blue - (1 if untapped_blue_land else 0) >= _BLUE_SOURCES_NEEDED:
+            return True
+    return False
+
+
+def _dd_sacrifice_pick(obs: np.ndarray, cats, card_ids) -> int | None:
+    """Sacrifice-cost pick for a Doomsday deck (Edge of Autumn's cycle): the
+    land with the lowest _dd_land_sac_key — keep Thassa's Oracle's UU on the
+    board above all (sacrificing the Island that was one of two blue sources
+    leaves Oracle uncastable with the pile already drawn), then the only
+    black source, then prefer an off-colour land. The menu doesn't say which
+    offered land is tapped, so a land is treated as tapped only when EVERY
+    copy we control is (the untapped-UU term is then moot for it). Protected
+    utility lands are never offered up."""
+    untapped_ids: set[int] = set()
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if _phased(obs, base) or obs[base + _OFF_IS_TAPPED] > 0.5:
+            continue
+        untapped_ids.add(_slot_card_idx(obs, base + _BF_CARD_OFF))
+    best, best_key = None, None
+    for i, c in enumerate(cats):
+        if c != _CAT_SACRIFICE:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if cid in _SAC_LAST_LAND_IDS:
+            continue
+        key = _dd_land_sac_key(obs, cid, cid not in untapped_ids)
+        if best_key is None or key < best_key:
+            best, best_key = i, key
+    return best
+
+
+def _dd_oracle_mana_choice(obs: np.ndarray, cats, card_ids, own_main: bool) -> int | None:
+    """Thassa's Oracle kill window with the UU not yet available: Lotus Petal
+    is a sacrifice mana ability the engine offers only as an explicit MANA_U
+    action at priority (lands auto-pay). When Oracle is in hand, the library
+    is at the win size, it's our main phase on an empty stack and the engine
+    is NOT offering the cast, crack a Petal for blue so the next query offers
+    it. Lion's Eye Diamond's MANA_U is excluded — its cost discards the hand,
+    Oracle included (its own draw-on-stack window is _led_crack_choice)."""
+    if not own_main or not _stack_is_empty(obs):
+        return None
+    if not _hand_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX):
+        return None
+    if _self_library_count(obs) > _ORACLE_WIN_LIBRARY:
+        return None
+    for i, c in enumerate(cats):
+        if c == _CAT_CAST and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
+            return None
+    for i, c in enumerate(cats):
+        if c == _CAT_MANA_U and _action_card_id(card_ids, i) == _LOTUS_PETAL_VOCAB_IDX:
+            return i
+    return None
+
+
+# The blue land the Doomsday pile carries on top when the board is short of
+# blue sources (_dd_pile_wants_land): the basic Island ONLY — Wasteland-proof
+# and a single copy, so the selection phase can never pick a second land. A
+# Tundra fallback once got picked alongside it, and the extra land pushed the
+# cyclers below Oracle.
+_DD_PILE_LAND_IDS = (19,)
+
+
+def _dd_pile_wants_land(obs: np.ndarray) -> bool:
+    """Should the pile carry a blue land on top? With only two blue sources
+    Edge of Autumn can never be cycled safely (its sacrifice breaks Oracle's
+    UU), so the chain stalls on natural draws — a turn slower, and one
+    Wasteland on a dual ends the game. A third source drawn off the top of
+    the pile makes Edge cyclable and survives the Wasteland. Not needed when
+    a blue land is already in hand (the land drop is coming anyway) or LED
+    pays for Oracle by itself."""
+    return (not _led_covers_oracle(obs)
+            and _count_blue_sources(obs) < 3
+            and _hand_direct_blue_sources(obs) == 0)
+
+
+def _classify_top_library(cats, card_ids, want_land: bool = False):
     """Bucket the offered TOP_LIBRARY choices into
-    (oracle_idx, led_idx, free_draw_idxs, cantrip_idxs, filler_idxs)."""
+    (oracle_idx, led_idx, land_idx, free_draw_idxs, cantrip_idxs, filler_idxs).
+    ``land_idx`` is the pile's blue land (see _DD_PILE_LAND_IDS) when
+    ``want_land``; otherwise lands are filler."""
     oracle_i, led_i, draw_is, cantrip_is, filler_is = None, None, [], [], []
+    land_by_id: dict[int, int] = {}
     for i, c in enumerate(cats):
         if c != _CAT_TOP_LIBRARY:
             continue
@@ -748,13 +1126,20 @@ def _classify_top_library(cats, card_ids):
         elif cid == _LED_VOCAB_IDX:
             if led_i is None:
                 led_i = i
+        elif want_land and cid in _DD_PILE_LAND_IDS and cid not in land_by_id:
+            land_by_id[cid] = i
         elif cid in _DD_FREE_DRAW_IDS:
             draw_is.append(i)
         elif cid in _DD_CANTRIP_IDS:
             cantrip_is.append(i)
         else:
             filler_is.append(i)
-    return oracle_i, led_i, draw_is, cantrip_is, filler_is
+    land_i = None
+    for cid in _DD_PILE_LAND_IDS:
+        if cid in land_by_id:
+            land_i = land_by_id[cid]
+            break
+    return oracle_i, led_i, land_i, draw_is, cantrip_is, filler_is
 
 
 def _dd_return_pick(obs: np.ndarray, cats, card_ids, cat) -> int:
@@ -819,6 +1204,10 @@ def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
     The kill: each drawn enabler is immediately cycled (the post-Doomsday
     cycling rules), chaining down to Oracle; natural draw steps and any cantrip
     filler drain the remainder until the library hits the Oracle-win size.
+    When the board is short of blue sources (_dd_pile_wants_land) a blue land
+    sits on the very top: [land, free draws..., Thassa's Oracle, rest...] —
+    the first draw delivers it, the next land drop makes Edge of Autumn
+    cyclable and the kill Wasteland-proof.
 
     BRAINSTORM SAME-TURN (bs_line: Brainstorm in hand, LED offered, and a
     free-draw cycler already in hand), top -> bottom:
@@ -834,8 +1223,12 @@ def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
     if _slot_card_idx(obs, _PENDING_DECISION_START) == _BRAINSTORM_VOCAB_IDX:
         return _dd_return_pick(obs, cats, card_ids, _CAT_TOP_LIBRARY)
 
-    oracle_i, led_i, draw_is, cantrip_is, filler_is = \
-        _classify_top_library(cats, card_ids)
+    # The land plan applies only while Doomsday itself is resolving (its
+    # selection and rearrange menus); a Ponder rearrange keeps lands as filler.
+    want_land = (_slot_card_idx(obs, _PENDING_DECISION_START) == _DOOMSDAY_VOCAB_IDX
+                 and _dd_pile_wants_land(obs))
+    oracle_i, led_i, land_i, draw_is, cantrip_is, filler_is = \
+        _classify_top_library(cats, card_ids, want_land)
     bs_line = (led_i is not None
                and _hand_has_card(obs, _BRAINSTORM_VOCAB_IDX)
                and _hand_free_draw_count(obs) >= 1)
@@ -845,12 +1238,15 @@ def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
         led_i = None
     n_choices = sum(1 for c in cats if c == _CAT_TOP_LIBRARY)
 
-    # (a) SELECTION: Oracle, LED (bs_line only), free draws, cantrips, filler.
+    # (a) SELECTION: Oracle, LED (bs_line only), the blue land, free draws,
+    # cantrips, filler.
     if n_choices > _DD_PILE_SIZE:
         if oracle_i is not None:
             return oracle_i
         if led_i is not None:
             return led_i
+        if land_i is not None:
+            return land_i
         if draw_is:
             return draw_is[0]
         if cantrip_is:
@@ -858,17 +1254,19 @@ def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
         return 0
 
     # Small rearrange with no combo pieces (Ponder / Brainstorm): legacy behaviour.
-    if oracle_i is None and not draw_is and led_i is None:
+    if oracle_i is None and not draw_is and led_i is None and land_i is None:
         return 0
 
     # (b) REARRANGE, bottom-first: position-from-top == remaining choice count.
-    # Oracle goes right under the (remaining) free-draw enablers — with LED
-    # slotted between them on the bs_line — positions above get the enablers,
-    # positions below get filler-then-cantrips (cantrips shallower than dead
-    # filler, since a drawn one digs further).
+    # The blue land (if any) is the top card; Oracle goes right under the
+    # (remaining) free-draw enablers — with LED slotted between them on the
+    # bs_line — positions above get the enablers, positions below get
+    # filler-then-cantrips (cantrips shallower than dead filler, since a drawn
+    # one digs further).
     pos = n_choices
-    led_pos = (len(draw_is) + 1) if led_i is not None else 0
-    oracle_slot = len(draw_is) + (2 if led_i is not None else 1)
+    land_off = 1 if land_i is not None else 0
+    led_pos = (land_off + len(draw_is) + 1) if led_i is not None else 0
+    oracle_slot = land_off + len(draw_is) + (2 if led_i is not None else 1)
     oracle_pos = oracle_slot if oracle_i is not None else 0
     # Deepest combo-piece position: below it the pile is bury-order. With
     # neither Oracle nor LED among the remaining picks it is 0, i.e. every
@@ -879,6 +1277,8 @@ def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
         combo_floor = led_pos
     else:
         combo_floor = 0
+    if pos == 1 and land_i is not None:
+        return land_i
     if pos == led_pos and led_i is not None:
         return led_i
     if pos == oracle_pos and oracle_i is not None:
@@ -890,7 +1290,9 @@ def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
             return cantrip_is[0]
         if draw_is:
             return draw_is[0]
-        return oracle_i if oracle_i is not None else 0
+        if oracle_i is not None:
+            return oracle_i
+        return land_i if land_i is not None else 0
     # Above Oracle/LED: the free-draw chain.
     if draw_is:
         return draw_is[0]
@@ -898,7 +1300,7 @@ def _doomsday_pile_pick(obs: np.ndarray, cats, card_ids) -> int:
         return cantrip_is[0]
     if oracle_i is not None:
         return oracle_i
-    return 0
+    return land_i if land_i is not None else 0
 
 
 # ── Reanimation / lands-combo helpers (card-id gated, deck-agnostic) ────────
@@ -974,7 +1376,8 @@ _FRUITLESS_ACTIVATION_LIMIT = 3
 def _greedy_action(obs: np.ndarray, num_choices: int,
                    fruitless: set[int] | None = None,
                    hold_casts: frozenset | set | None = None,
-                   hold_activations: frozenset | set | None = None) -> int:
+                   hold_activations: frozenset | set | None = None,
+                   doomsday: bool | None = None) -> int:
     """
     Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
     Works correctly for either Player A or Player B because the observation
@@ -999,6 +1402,24 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     ctrl_arr = obs[ACT_CTRL_START : ACT_CTRL_START + MAX_ACTIONS]
 
     in_main_phase = obs[_STEP_FIRST_MAIN_IDX] > 0.5 or obs[_STEP_SECOND_MAIN_IDX] > 0.5
+    own_main = in_main_phase and obs[_IS_ACTIVE_IDX] > 0.5
+    # Are we piloting Doomsday? The caller's deck-name identification when it
+    # has one (``doomsday``); the hand-content heuristic only for unnamed
+    # decks — that heuristic also fires on Thoughtseize / Dark Ritual / Lotus
+    # Petal hands (reanimator, bug, wrb_energy), which must NOT inherit the
+    # Doomsday fetch and pile rules.
+    dd_deck = _is_doomsday_deck(obs) if doomsday is None else doomsday
+    # Doomsday state shared by the rules below. Once the five-card pile is laid
+    # every library touch is part of the kill: the whole chain (cycles, the
+    # LED crack, post-pile cantrips) runs in OUR MAIN PHASE only — Oracle is a
+    # creature, so mana floated at the draw step is gone before it can be
+    # cast — and the generic library-touching rules (surveil, activations,
+    # fetches) stand down. With Oracle already in hand at the win size every
+    # further draw is pointless and one closer to decking, so digging stops
+    # and the main-phase cast rule wins.
+    dd_pile_laid = _self_library_count(obs) <= _DD_PILE_SIZE and dd_deck
+    oracle_kill_ready = (_hand_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX)
+                         and _self_library_count(obs) <= _ORACLE_WIN_LIBRARY)
 
     # 0a. Sideboarding: the scripted agent never sideboards, so it takes Done as
     # soon as the deck is balanced (Done is index 0 whenever it is offered). On the
@@ -1068,11 +1489,34 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
         for i, c in enumerate(cats):
             if c == _CAT_SEARCH and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
                 return i
+        # Doomsday deck land search: fetch the colours the combo needs
+        # (see _dd_fetch_pick) instead of the first land offered.
+        if dd_deck:
+            pick = _dd_fetch_pick(obs, cats, card_ids)
+            if pick is not None:
+                return pick
         return 1 if num_choices > 1 else 0
 
-    # 5b. Paying costs (tapping lands for mana during spell/ability payment).
-    #     Pick the first available option — this taps a source to pay the cost.
+    # 5b. Paying costs (tapping lands for mana during spell/ability payment,
+    #     or the pitch pick of an alternative cost such as Force of Will's
+    #     "exile a blue card"). First available option, except that a
+    #     Doomsday deck pays with lands before Petal / LED and pitches its
+    #     combo pieces last (Thassa's Oracle never while anything else is
+    #     offered).
     if any(c == _CAT_PAYING for c in cats):
+        if dd_deck:
+            best, best_key = 0, None
+            for i, c in enumerate(cats):
+                if c != _CAT_PAYING:
+                    continue
+                cid = _action_card_id(card_ids, i)
+                key = (cid == _THASSAS_ORACLE_VOCAB_IDX,
+                       cid in _DD_COMBO_PIECE_IDS,
+                       cid in _DD_PAY_LAST_IDS,
+                       cid in _DD_CANTRIP_IDS)
+                if best_key is None or key < best_key:
+                    best, best_key = i, key
+            return best
         return 0
 
     # 5c. Delve exile count (a CHOOSE_X menu whose actions carry the delve spell's card
@@ -1092,6 +1536,17 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     #     (the first pick may eat a card a smarter agent would keep, or skip an
     #     instant/sorcery Murktide would count — kept simple at this tier).
     if any(c == _CAT_CHOOSE_CARD for c in cats):
+        # A surveil menu (keep on top / put in graveyard) while piloting
+        # Doomsday keeps a combo piece — Consider and Undercity Sewers
+        # surveils binned two Doomsdays and a Dark Ritual in one 30-game
+        # sample — and keeps EVERY card once the pile is laid (a Sewers
+        # surveil once binned Thassa's Oracle off the top of the pile).
+        if dd_deck and num_choices == 2 and any(c == _CAT_TOP_LIBRARY for c in cats):
+            seen = {_action_card_id(card_ids, i) for i in range(num_choices)}
+            if dd_pile_laid or seen & _DD_COMBO_PIECE_IDS:
+                for i, c in enumerate(cats):
+                    if c == _CAT_TOP_LIBRARY:
+                        return i
         for i, c in enumerate(cats):
             if c == _CAT_CHOOSE_CARD and _action_card_id(card_ids, i) >= 0:
                 return i
@@ -1124,30 +1579,40 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     # Oracle is the known top card, and library <= 2 — to float UUU for the Thassa's
     # Oracle win. LED is offered as instant-speed MANA_* actions at priority (unlike
     # ordinary mana sources, which stay hidden and auto-pay), so it is picked here.
-    led = _led_crack_choice(obs, cats, card_ids)
-    if led is not None:
-        return led
+    if own_main:
+        led = _led_crack_choice(obs, cats, card_ids)
+        if led is not None:
+            return led
 
     # --- Doomsday deck rules ---
     has_doomsday_in_hand = _hand_has_card(obs, _DOOMSDAY_VOCAB_IDX)
 
     # Win the game: cast Thassa's Oracle as soon as the library is small enough
     # that its devotion-to-blue (>= 2 from its own UU) meets/exceeds the library
-    # size. "Mana is there" == the engine is offering Oracle as a legal cast.
+    # size. "Mana is there" == the engine is offering Oracle as a legal cast;
+    # when it isn't, a Lotus Petal cracked for blue can make it so.
     if _self_library_count(obs) <= _ORACLE_WIN_LIBRARY:
         for i, c in enumerate(cats):
             if c == _CAT_CAST and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
                 return i
+        petal = _dd_oracle_mana_choice(obs, cats, card_ids, own_main)
+        if petal is not None:
+            return petal
 
-    # Cast Doomsday once we control enough blue sources to follow it up with
-    # Thassa's Oracle (UU) — or an LED covers Oracle's mana by itself.
-    # Firing it earlier just empties our library into a deck-out, so we hold
-    # it until the mana to win is on the board.
-    has_blue_for_oracle = (_count_blue_sources(obs) >= _BLUE_SOURCES_NEEDED
-                           or _led_covers_oracle(obs))
+    # Cast Doomsday once Thassa's Oracle's UU will exist by kill time
+    # (_dd_blue_for_oracle) and the opponent's board can't kill us at half
+    # life before the kill lands (_dd_clock_allows_doomsday). Firing it
+    # earlier just empties our library into a deck-out or halves us into
+    # lethal, so we hold it until the mana to win is reachable and the clock
+    # allows.
+    # Never a SECOND Doomsday once the pile is laid: it re-piles the same
+    # five cards for another half of our life (one game went 6 -> 2 -> 1
+    # with Oracle in hand and the kill one cycle away).
+    dd_ready = (_dd_blue_for_oracle(obs) and _dd_clock_allows_doomsday(obs)
+                and not dd_pile_laid)
     for i, c in enumerate(cats):
         if c == _CAT_CAST and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
-            if has_blue_for_oracle:
+            if dd_ready:
                 return i
             # else hold Doomsday until the blue mana to cast Oracle is in play
 
@@ -1156,10 +1621,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     # own turn only: the mana pool empties at step boundaries, so a ritual cast
     # at upkeep (its first legal window — it's an instant) strands the BBB
     # before the sorcery-speed Doomsday can ever be cast with it.
-    own_main = in_main_phase and obs[_IS_ACTIVE_IDX] > 0.5
     for i, c in enumerate(cats):
         if c == _CAT_CAST and _action_card_id(card_ids, i) == _DARK_RITUAL_VOCAB_IDX:
-            if has_doomsday_in_hand and has_blue_for_oracle and own_main:
+            if has_doomsday_in_hand and dd_ready and own_main:
                 return i
             # else skip it
 
@@ -1177,22 +1641,51 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                 continue  # handled above (held until blue mana for Oracle is online)
             if cid == _THASSAS_ORACLE_VOCAB_IDX:
                 continue  # only cast Oracle as the wincon (handled above)
+            if cid in _DD_FREE_DRAW_IDS and dd_pile_laid:
+                continue  # post-pile the cyclers are draws, never casts: a
+                          # hard-cast Edge of Autumn searches the library and
+                          # shuffles the pile away (the cycle rules below)
+            if (dd_deck and has_doomsday_in_hand
+                    and cid not in _DD_PETAL_WORTHY_IDS
+                    and _count_controlled(obs, _LOTUS_PETAL_VOCAB_IDX) > 0
+                    and _count_untapped_mana_sources(obs) < _card_mana_value(cid)):
+                continue  # keep the Petals for Doomsday: a spell the lands
+                          # alone can't pay would crack one
             if cid == _BRAINSTORM_VOCAB_IDX and (
-                    has_doomsday_in_hand
-                    or _self_stack_has_card(obs, _DOOMSDAY_VOCAB_IDX)):
+                    _self_stack_has_card(obs, _DOOMSDAY_VOCAB_IDX)
+                    or (has_doomsday_in_hand
+                        and _self_library_count(obs) > _DD_PILE_SIZE
+                        and _dd_combo_ready(obs))):
                 continue  # hold Brainstorm: post-Doomsday it lifts the top of
                           # the pile (the same-turn kill's draw engine). The
                           # stack check matters — casting it in response to our
                           # own Doomsday resolves it FIRST, drawing from the
-                          # un-piled library.
+                          # un-piled library. The hold applies only while the
+                          # combo is actually startable (black + UU on board,
+                          # pile not yet laid): a mana-screwed hand digs with
+                          # Brainstorm instead of sitting on it, and a spare
+                          # Doomsday in hand after the pile is laid must not
+                          # freeze the draw engine.
             if cid in _DD_CANTRIP_IDS and (
-                    _self_library_count(obs) < 3
+                    _self_library_count(obs) < (_DD_CANTRIP_MIN_LIBRARY[cid]
+                                                if dd_deck else 3)
                     or _controls_card(obs, _THASSAS_ORACLE_VOCAB_IDX)):
                 continue  # never deck ourselves with a cantrip: drawing from
                           # an empty library is a loss, and with Oracle already
                           # on our battlefield its win trigger is pending — a
                           # greedy Brainstorm here resolves FIRST and kills us
                           # in response to our own winning trigger
+            if (cid in _DD_CANTRIP_IDS and dd_pile_laid
+                    and (not own_main or oracle_kill_ready
+                         or (_count_untapped_sources(obs, _BLUE_SOURCE_IDS) - 1
+                             < _BLUE_SOURCES_NEEDED))):
+                continue  # post-Doomsday a cantrip is a kill-chain step: our
+                          # main phase only, never once Oracle is in hand at
+                          # the win size (a draw-step Consider once milled the
+                          # last card with Oracle already in hand), and never
+                          # tapping the UU that casts Oracle this turn (two
+                          # upkeep Brainstorms off both Underground Seas once
+                          # left Oracle in hand with no blue mana)
             if (cid == _GREEN_SUNS_ZENITH_VOCAB_IDX
                     and _count_untapped_mana_sources(obs) < _GSZ_MIN_MANA_SOURCES):
                 continue  # hold GSZ until it can pay X>=1 (avoids the X=0 Dryad Arbor cast)
@@ -1221,16 +1714,23 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     # before the final cycle's draw opens its crack window.
     if (1 <= _self_library_count(obs) <= _DD_PILE_SIZE
             and _self_life(obs) >= _STREET_WRAITH_MIN_LIFE
-            and _stack_is_empty(obs)):
+            and _stack_is_empty(obs)
+            and own_main and not oracle_kill_ready):
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _STREET_WRAITH_VOCAB_IDX:
                 return i
 
-    # Always cycle Edge of Autumn (sac a land, draw a card) — only offered when
-    # legal, and like Street Wraith only on an empty stack (its draw is the
-    # LED crack window on the same-turn line, so LED must have resolved) and
-    # never off an empty library (that draw would be the game loss).
-    if _self_library_count(obs) >= 1:
+    # Cycle Edge of Autumn (sac a land, draw a card) only once we're going off,
+    # like Street Wraith: pre-Doomsday every land is needed for BBB + UU. Only
+    # on an empty stack (its draw is the LED crack window on the same-turn
+    # line, so LED must have resolved) and never off an empty library (that
+    # draw would be the game loss). Only when some land can go without
+    # breaking Oracle's UU (_dd_edge_cycle_safe; _dd_sacrifice_pick then
+    # chooses it) — otherwise the natural draw step reaches the next pile
+    # card a turn later with the kill mana intact.
+    if (1 <= _self_library_count(obs) <= _DD_PILE_SIZE
+            and own_main and not oracle_kill_ready
+            and _dd_edge_cycle_safe(obs)):
         for i, c in enumerate(cats):
             if (c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _EDGE_OF_AUTUMN_VOCAB_IDX
                     and _stack_is_empty(obs)):
@@ -1239,14 +1739,26 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     # Always activate The One Ring's {T} draw ability whenever able — each use draws
     # a card per burden counter (pure card advantage), and it only taps once per turn.
     # Ungated by phase so it still fires on turns the agent has nothing else to do.
-    for i, c in enumerate(cats):
-        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _THE_ONE_RING_VOCAB_IDX:
-            return i
+    # Never off an empty library: that draw is the game loss (with Thassa's
+    # Oracle in hand the win at library 0 is handled above — just don't draw).
+    library_empty = _self_library_count(obs) == 0
+    if not library_empty:
+        for i, c in enumerate(cats):
+            if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _THE_ONE_RING_VOCAB_IDX:
+                return i
 
     if in_main_phase:
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE:
                 cid = _action_card_id(card_ids, i)
+                if (library_empty or dd_pile_laid) and cid != _WASTELAND_VOCAB_IDX:
+                    continue  # a draw-shaped activation (Clue, planeswalker
+                              # card advantage) off an empty library loses on
+                              # the spot; after Doomsday has laid the pile a
+                              # fetch would shuffle it away and a Clue crack
+                              # once tapped both blue lands the turn Oracle
+                              # was due — the kill chain above is the only
+                              # thing that touches the library or the mana
                 if cid == _WASTELAND_VOCAB_IDX and not _opponent_has_nonbasic_land(obs):
                     continue  # no opponent nonbasic land to target — skip
                 if cid == _STREET_WRAITH_VOCAB_IDX:
@@ -1543,10 +2055,13 @@ class ScriptedAgent:
         return self._deck_names[not bool(obs[_SELF_IS_A_IDX] > 0.5)]
 
     def _deck_is_doomsday(self, obs: np.ndarray) -> bool:
-        """Unified doomsday identification: deck name first, hand contents fallback."""
+        """Unified doomsday identification: a known deck name is authoritative
+        either way; only an unnamed deck (sculpted harness decks) falls back to
+        the content heuristic, which also fires on the Thoughtseize / Dark
+        Ritual / Lotus Petal hands of reanimator, bug and wrb_energy."""
         deck = self._seat_deck(obs)
-        if deck is not None and _deck_named(deck, "doomsday"):
-            return True
+        if deck is not None:
+            return _deck_named(deck, "doomsday")
         return _is_doomsday_deck(obs)
 
     def _deck_is_tron(self, obs: np.ndarray) -> bool:
@@ -1618,7 +2133,8 @@ class ScriptedAgent:
                          if n >= _FRUITLESS_ACTIVATION_LIMIT or t == turn}
         if self.config.skill is Skill.HEURISTIC:
             return self._heuristic_action(obs, num_choices, fruitless)
-        return _greedy_action(obs, num_choices, fruitless)
+        return _greedy_action(obs, num_choices, fruitless,
+                              doomsday=self._deck_is_doomsday(obs))
 
     # ------------------------------------------------------------------
     # HEURISTIC decision points (everything else falls back to GREEDY).
@@ -1794,17 +2310,14 @@ class ScriptedAgent:
         # Sacrifice-cost pick: never eat a combo piece or irreplaceable
         # utility land while any other option exists (Crop Rotation sacking
         # the Dark Depths it plays around defeats itself). A Doomsday deck
-        # additionally keeps its black-capable lands (Edge of Autumn's cycle
-        # sacking the Underground Sea that pays for Dark Ritual defeats the
-        # combo). First non-protected option, else the generic first pick.
+        # keeps Thassa's Oracle's UU and its black source on the board
+        # (_dd_sacrifice_pick). First non-protected option, else the generic
+        # first pick.
         if any(c == _CAT_SACRIFICE for c in cats):
             if self._deck_is_doomsday(obs):
-                for i, c in enumerate(cats):
-                    cid = _action_card_id(card_ids, i)
-                    if (c == _CAT_SACRIFICE
-                            and cid not in _SAC_LAST_LAND_IDS
-                            and cid not in _DD_HAND_B_SOURCE_IDS):
-                        return i
+                pick = _dd_sacrifice_pick(obs, cats, card_ids)
+                if pick is not None:
+                    return pick
             for i, c in enumerate(cats):
                 if (c == _CAT_SACRIFICE
                         and _action_card_id(card_ids, i) not in _SAC_LAST_LAND_IDS):
@@ -1882,8 +2395,23 @@ class ScriptedAgent:
         # counter for their threat.
         if cast_ids & _COUNTER_SPELL_VOCAB_IDS:
             if self._deck_is_doomsday(obs):
-                if not (_self_stack_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX)
-                        and _opponent_has_spell_on_stack(obs)):
+                # ...and likewise fight for Doomsday itself and the Dark
+                # Ritual paying for it — four Doomsdays were countered in one
+                # 30-game sample while Force of Wills sat in hand — but only
+                # while a SECOND counter stays back for Oracle: a countered
+                # Doomsday costs a card, a countered Oracle with the pile
+                # drawn costs the game (two wins turned into deck-outs when
+                # the last counter went to Doomsday).
+                n_counters = sum(
+                    1 for slot in range(MAX_HAND_SLOTS)
+                    if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE)
+                    in _COUNTER_SPELL_VOCAB_IDS)
+                fight = _opponent_has_spell_on_stack(obs) and (
+                    _self_stack_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX)
+                    or (n_counters >= 2
+                        and any(_self_stack_has_card(obs, cid)
+                                for cid in _DD_PROTECT_ON_STACK_IDS)))
+                if not fight:
                     hold_casts |= _COUNTER_SPELL_VOCAB_IDS
             elif not _opponent_threat_on_stack(obs):
                 hold_casts |= _COUNTER_SPELL_VOCAB_IDS
@@ -2019,7 +2547,8 @@ class ScriptedAgent:
         # reanimation/Stage holds computed above threaded through its scans).
         return _greedy_action(obs, num_choices, fruitless,
                               hold_casts=hold_casts,
-                              hold_activations=hold_activations)
+                              hold_activations=hold_activations,
+                              doomsday=self._deck_is_doomsday(obs))
 
     @staticmethod
     def _confirm(cats, confirm_cat: int) -> int:
