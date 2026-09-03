@@ -199,14 +199,17 @@ DEFAULT_AZ_Q_MIX = 0.5       # equal blend of outcome and n-step TD target: td_q
 
 # Promotion gate (az-eval / the gate step of az / az-league).
 #
-# The gate is a SEQUENTIAL test (train/gate_sprt.py): the matchup panel is played
-# in balanced ROUNDS of DEFAULT_AZ_EVAL_GAMES matches and an SPRT on the
-# accumulated aggregate decides after each round — promote, keep, or buy another
-# round — up to DEFAULT_AZ_GATE_MAX_ROUNDS. A decisive candidate stops in one or
-# two rounds; a marginal one keeps playing rather than taking a verdict from an
-# underpowered sample. Hypotheses are symmetric about 0.5
+# The gate is a SEQUENTIAL test (train/gate_sprt.py): the matchup panel is
+# scheduled in balanced ROUNDS of DEFAULT_AZ_EVAL_GAMES matches, up to
+# DEFAULT_AZ_GATE_MAX_ROUNDS, and an SPRT on the accumulated aggregate is
+# re-asked after EVERY completed match — promote, keep, or keep playing. A
+# decisive candidate stops as soon as the evidence is in (the actor legs still
+# in flight are terminated); a marginal one keeps playing rather than taking a
+# verdict from an underpowered sample. Hypotheses are symmetric about 0.5
 # (H1 p=DEFAULT_AZ_PROMOTE_THRESHOLD vs H0 p=1-threshold), so a genuinely equal
-# candidate is a coin flip rather than a near-certain rejection.
+# candidate is a coin flip rather than a near-certain rejection. The per-deck
+# floor veto is checked as results land too, and stops the gate once it is
+# beyond rescue under the cap.
 DEFAULT_AZ_EVAL_GAMES = 28        # matches per ROUND (>= 2 per panel matchup so
                                   # seats alternate within every round)
 # Gate at SERVING strength, which is also the TRAINING budget: the `az:gen`
@@ -219,8 +222,10 @@ DEFAULT_AZ_EVAL_SIMS = DEFAULT_AZ_SIMS
 DEFAULT_AZ_EVAL_WORLDS = DEFAULT_AZ_WORLDS
 DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55   # SPRT's H1; H0 is its mirror, 0.45
 DEFAULT_AZ_GATE_MAX_ROUNDS = 8    # hard cap: 8 x 28 = 224 matches. At the cap
-                                  # the undecided test falls back to the
-                                  # UNBIASED tie-break (promote iff score > 50%)
+                                  # the incumbent keeps the seat unless the
+                                  # score reached the promote bar; a score
+                                  # inside the indifference region is
+                                  # UNDECIDED (kept, not a failed gate)
 DEFAULT_AZ_GATE_ALPHA = _GATE_ALPHA   # symmetric SPRT error rates (alpha=beta)
 DEFAULT_AZ_GATE_FLOOR = 0.2
 # Minimum candidate matches on a piloted deck before the per-deck floor veto can
@@ -708,10 +713,13 @@ def _gate_max_rounds():
     return Arg("--gate-max-rounds", "int", default=DEFAULT_AZ_GATE_MAX_ROUNDS,
                help="Hard cap on the sequential gate's panel ROUNDS (default "
                     f"{DEFAULT_AZ_GATE_MAX_ROUNDS}; 1 = a single fixed "
-                    "panel). Each round plays --games matches over the panel "
-                    "and the SPRT then promotes, keeps, or buys another round; "
-                    "at the cap the undecided test promotes iff the aggregate "
-                    "score is above 50%%")
+                    "panel). Rounds of --games matches are scheduled over the "
+                    "panel and the SPRT is re-asked after every completed "
+                    "match, stopping (and cutting the legs still in flight) "
+                    "the moment it decides; at the cap the incumbent keeps the "
+                    "seat unless the score reached the promote bar, and a "
+                    "score inside the indifference region is UNDECIDED (kept, "
+                    "not a failed gate)")
 
 
 def _gate_alpha():
@@ -1429,7 +1437,17 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "(e.g. scripted:random / scripted:easy). scripted:hard keeps "
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
-                 "wins. Default: hard both seats, both recorded"),
+                 "wins. A comma-separated list plays --expert-games per deck "
+                 "against EACH listed opponent (an explicit scripted:hard "
+                 "there records the focus seat only). Default: hard both "
+                 "seats, both recorded"),
+        Arg("--selfplay-exclude", "str", default=None,
+            suggest="league_deck", multi=True,
+            help="Comma-separated decks to leave OUT of self-play (the "
+                 "matrix, the scripted cells, the opponent pool) while the "
+                 "gate panel and --expert-decks still cover them — for a deck "
+                 "the net cannot pilot yet, whose self-play seat only writes "
+                 "z=-1 rows"),
         Arg("--seed", "int", default=None,
             help="Base RNG seed (default: randomly drawn at launch and printed)"),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
@@ -1585,8 +1603,17 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "(e.g. scripted:random / scripted:easy). scripted:hard keeps "
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
-                 "wins. Persisted in the resume sidecar. Default: hard both "
-                 "seats, both recorded"),
+                 "wins. A comma-separated list plays --expert-games per deck "
+                 "against EACH listed opponent (an explicit scripted:hard "
+                 "there records the focus seat only). Persisted in the resume "
+                 "sidecar. Default: hard both seats, both recorded"),
+        Arg("--selfplay-exclude", "str", default=None,
+            suggest="league_deck", multi=True,
+            help="Comma-separated decks to leave OUT of every slot's self-play "
+                 "(the matrix, the scripted cells, the opponent pool) while "
+                 "the gate panel and --expert-decks still cover them — for a "
+                 "deck the net cannot pilot yet, whose self-play seat only "
+                 "writes z=-1 rows. Persisted in the resume sidecar"),
         Arg("--seed", "int", default=None,
             help="Base RNG seed (slot i uses seed+i; default: randomly drawn "
                  "at launch and printed — a --resume run restores the "

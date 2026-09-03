@@ -25,8 +25,14 @@ bounds for error rates (alpha, beta) are
     upper = ln((1 - beta) / alpha)       llr >= upper  -> ACCEPT (promote)
     lower = ln(beta / (1 - alpha))       llr <= lower  -> REJECT (keep)
 
-At the cap the test is undecided by construction, so the tie-break is the
-unbiased one: promote iff llr > 0, i.e. iff the candidate's score is above 50%.
+At the cap the test is undecided by construction. The tie-break keeps the
+incumbent unless the candidate's score has reached the promote bar: a score
+inside the indifference region (between H0 and H1) is reported as UNDECIDED —
+kept, but not counted as a failed gate by the league — while a score at or
+below H0 is a plain rejection.
+
+The verdict is checked after every completed match, not only at round
+boundaries, so a decisive candidate stops as soon as the evidence is in.
 
 Stdlib-only (no numpy/torch/engine) so it can be imported and unit-tested
 anywhere. Regression: train/test_gate_sprt.py (ci_check tier `gatesprt`).
@@ -39,12 +45,16 @@ VERDICT_ACCEPT = "accept"       # promote the candidate
 VERDICT_REJECT = "reject"       # keep the incumbent
 VERDICT_CONTINUE = "continue"   # undecided — play another round
 
-# Symmetric error rates. 0.1 is the practical operating point for a gate whose
-# cap is a few hundred matches: tightening to 0.05 roughly doubles the expected
-# sample size for the same indifference region, which the gate cannot afford at
-# the training-budget sim count (see cli_spec's DEFAULT_AZ_EVAL_SIMS note — the
-# fix for gate cost is more matches per verdict, never fewer sims per match).
-DEFAULT_GATE_ALPHA = 0.1
+# Symmetric error rates. 0.15 is the operating point for a gate whose cap is a
+# few hundred matches: against 0.1 it cuts the expected sample by about a
+# fifth at every candidate strength (simulated: an equal candidate ~150 -> ~100
+# matches with per-match checking), promoting a true-0.45 candidate 8% instead
+# of 7% of the time and detecting a true-0.55 one 82% instead of 90%.
+# Tightening to 0.05 roughly doubles the expected sample size for the same
+# indifference region, which the gate cannot afford at the training-budget
+# sim count (see cli_spec's DEFAULT_AZ_EVAL_SIMS note — the fix for gate cost
+# is more matches per verdict, never fewer sims per match).
+DEFAULT_GATE_ALPHA = 0.15
 
 
 def sprt_hypotheses(threshold: float) -> tuple:
@@ -104,20 +114,54 @@ def sprt_cap_verdict(wins: int, losses: int, draws: int, *,
                      threshold: float, alpha: float = DEFAULT_GATE_ALPHA,
                      beta: float = None) -> dict:
     """The verdict to use once the round cap is reached: the test is undecided,
-    so fall back to the UNBIASED tie-break — accept iff the draw-adjusted score
-    exceeds 50%. The bar plays no part here: at the cap the evidence was not
-    strong enough to separate H0 from H1, and anything above an even record is
-    the only defensible reason to swap the incumbent out. The returned dict is
-    :func:`sprt_verdict`'s with ``verdict`` overwritten and ``capped`` set."""
+    so the incumbent keeps the seat unless the candidate's draw-adjusted score
+    has reached the promote bar (H1). A score strictly inside the indifference
+    region — above H0, below H1 — is a REJECT flagged ``undecided``: the
+    candidate is not demonstrably worse, only not demonstrably better, and the
+    league does not count it as a failed gate. A score at or below H0 is a
+    plain rejection. The returned dict is :func:`sprt_verdict`'s with
+    ``verdict`` overwritten and ``capped`` / ``undecided`` set."""
     r = sprt_verdict(wins, losses, draws, threshold=threshold, alpha=alpha,
                      beta=beta)
-    # Strictly above 50% (with a float-noise guard): an exactly even record is
-    # zero evidence, and zero evidence is not a reason to swap the incumbent
-    # out.
-    r["verdict"] = (VERDICT_ACCEPT if r["score"] > 0.5 + 1e-12
-                    else VERDICT_REJECT)
+    p0, p1 = sprt_hypotheses(threshold)
+    score = r["score"]
+    if score >= p1 - 1e-12:
+        r["verdict"] = VERDICT_ACCEPT
+        r["undecided"] = False
+    else:
+        r["verdict"] = VERDICT_REJECT
+        r["undecided"] = score > p0 + 1e-12
     r["capped"] = True
     return r
+
+
+def floor_locked(cand_wins: int, cand_n: int, inc_wins: int, inc_n: int,
+                 cand_left: int, inc_left: int, gate_floor: float) -> bool:
+    """Is a per-deck floor veto already beyond rescue? The veto compares the
+    candidate's win-rate piloting a deck against the incumbent's on like
+    pairings and fires on a deficit below ``2*gate_floor - 1``. It is LOCKED
+    when it fires now and would still fire in the candidate's best case — the
+    candidate winning every one of its ``cand_left`` remaining matches on the
+    deck and the incumbent losing every one of its ``inc_left`` — so playing
+    the remaining rounds cannot change the outcome. The gate stops there
+    instead of buying rounds a veto will overturn. ``cand_n``/``inc_n`` of
+    zero, or ``gate_floor`` of zero, never lock."""
+    if gate_floor <= 0 or cand_n <= 0 or inc_n <= 0:
+        return False
+    bar = 2.0 * gate_floor - 1.0
+    now = cand_wins / cand_n - inc_wins / inc_n
+    if not now < bar:
+        return False
+    best_cand = (cand_wins + max(0, cand_left)) / (cand_n + max(0, cand_left))
+    worst_inc = inc_wins / (inc_n + max(0, inc_left))
+    return best_cand - worst_inc < bar
+
+
+def sprt_cap_line(threshold: float) -> str:
+    """One line describing the cap tie-break for the gate's header."""
+    p0, p1 = sprt_hypotheses(threshold)
+    return (f"at the round cap: promote iff score >= {p1:.3f}, undecided "
+            f"(kept, not a failed gate) if score in ({p0:.3f}, {p1:.3f})")
 
 
 def sprt_expected_matches(p: float, *, threshold: float,

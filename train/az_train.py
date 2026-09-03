@@ -65,7 +65,8 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
                       DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
-from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, sprt_cap_verdict,
+from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, VERDICT_REJECT,
+                       floor_locked, sprt_cap_line, sprt_cap_verdict,
                        sprt_plan_line, sprt_verdict)
 
 import numpy as np
@@ -619,7 +620,9 @@ def _like_pairing_floor(per_matchup: dict, gate_floor: float,
     pairing's reverse direction — which _gate_matchups always schedules — has
     the incumbent piloting this deck (flip that). A cross pairing whose reverse
     is missing is skipped rather than read one-sided. Returns
-    (vetoes, deck_floor) with deck_floor[deck] = (cand_wr, inc_wr, n_cand)."""
+    (vetoes, deck_floor) with deck_floor[deck] = (cand_wr, inc_wr, n_cand,
+    cand_wins, inc_wins, n_inc) — the raw counts feed the lock check
+    (:func:`gate_sprt.floor_locked`) that lets the gate stop early."""
     vetoes: list = []
     deck_floor: dict = {}
     decks = {dx for (dx, _dy) in per_matchup}
@@ -644,7 +647,7 @@ def _like_pairing_floor(per_matchup: dict, gate_floor: float,
         if cn == 0 or inn == 0:
             continue
         cand_wr, inc_wr = cw / cn, iw / inn
-        deck_floor[pd] = (cand_wr, inc_wr, cn)
+        deck_floor[pd] = (cand_wr, inc_wr, cn, cw, iw, inn)
         if gate_floor > 0 and cn >= floor_min_matches and \
                 cand_wr - inc_wr < 2 * gate_floor - 1:
             vetoes.append(pd)
@@ -877,19 +880,26 @@ def _gate_round_servers(backend: str, cand_path: str, inc_path: str, *,
                "inc_sock": inc_sock, "actor_env": actor_env}
 
 
-def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
-                      cand_ts: str, inc_ts: str, sims: int, worlds: int,
-                      c_puct: float, sb_branches: int, sb_worlds: int,
-                      sb_rollout_turns: int,
-                      bo3: bool, seed: int, workers: int,
-                      actor_device: str, cross_world: bool,
-                      tag_of, cand_sock, inc_sock, actor_env,
-                      record_dir: Optional[str] = None,
-                      td_n: int = DEFAULT_AZ_TD_N,
-                      round_idx: int = 1) -> dict:
-    """Play ONE round of the gate's matchup panel on the C++ actor and return
-    ``{mi: (mw, ml, md)}`` from the CANDIDATE's view. The eval-server sockets
-    and actor env come from :func:`_gate_eval_servers`, which wraps every round.
+def _gate_actor_stream(matchups: list, per: int, *, actor_bin: str,
+                       cand_ts: str, inc_ts: str, sims: int, worlds: int,
+                       c_puct: float, sb_branches: int, sb_worlds: int,
+                       sb_rollout_turns: int,
+                       bo3: bool, seed: int, seed_stride: int, max_rounds: int,
+                       workers: int,
+                       actor_device: str, cross_world: bool,
+                       tag_of, cand_sock, inc_sock, actor_env, on_leg,
+                       record_dir: Optional[str] = None,
+                       td_n: int = DEFAULT_AZ_TD_N) -> dict:
+    """STREAM the gate's matchup panel on the C++ actor: round after round, up
+    to ``max_rounds``, keeping ``workers`` legs in flight and launching the
+    next leg the moment one exits — no waiting for a round's stragglers. Every
+    completed leg is reported to ``on_leg(round_idx, mi, mw, ml, md)`` (the
+    CANDIDATE's view); when that returns True the verdict is in: nothing more
+    is launched, the legs still in flight are TERMINATED and their partial
+    shard recordings deleted (a half-played match must not reach the training
+    pool), and the stream returns ``{"rounds_started", "legs_played",
+    "legs_terminated"}``. The eval-server sockets and actor env come from
+    :func:`_gate_eval_servers`, which wraps the whole stream.
 
     ``record_dir`` records every leg's searched decisions as shards under
     :func:`gate_leg_record_dir` (one subdirectory per leg per ROUND).
@@ -898,10 +908,11 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
     like the Python path's two ``run_match`` calls: candidate-piloting-``dx``
     in seat A for ``per - per//2`` matches, then in seat B (nets and decks both
     swapped) for ``per//2``, the B leg's tally flipped to the candidate's view.
-    Per-leg seeds derive only from the matchup index and this round's seed
-    (``seed + mi*100003``, B leg offset ``+ per``) — the same derivation as
-    :func:`_gate_matchup_worker` — so results are independent of scheduling
-    order and worker count.
+    Per-leg seeds derive only from the matchup index and the round's seed
+    (``seed + (round-1)*seed_stride + mi*100003``, B leg offset ``+ per``) —
+    the same derivation as :func:`_gate_matchup_worker` — so a leg's result is
+    independent of scheduling order and worker count; only WHICH legs get
+    played before the verdict lands depends on completion order.
 
     Cross-world leaf batching (Stage 0) is on by default — visits are
     arithmetically identical to the sequential search, so it never changes a
@@ -911,42 +922,42 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
     import threading
     from cli_spec import BIN_DIR
 
-    # Two legs per matchup; a leg's tally is flipped to the candidate's view
-    # when the candidate sat in seat B.
-    jobs = []   # (mi, cand_is_a, argv)
     half = per // 2
-    for mi, (dx, dy) in enumerate(matchups):
-        mseed = seed + mi * 100003
-        common = dict(sims=sims, worlds=worlds, c_puct=c_puct, bo3=bo3,
-                      sb_branches=sb_branches, sb_worlds=sb_worlds,
-                      sb_rollout_turns=sb_rollout_turns,
-                      cross_world=cross_world,
-                      device=actor_device)
-        if per - half:  # candidate (piloting dx) in seat A
-            jobs.append((mi, True, _gate_actor_cmd(
-                actor_bin, deck_a=dx, deck_b=dy, games=per - half, seed=mseed,
-                model_a=cand_ts, model_b=inc_ts, server_a=cand_sock,
-                server_b=inc_sock,
-                record_dir=(gate_leg_record_dir(record_dir, dx, dy, True,
-                                                round_idx)
-                            if record_dir else None),
-                td_n=td_n, **common)))
-        if half:        # candidate (piloting dx) in seat B
-            jobs.append((mi, False, _gate_actor_cmd(
-                actor_bin, deck_a=dy, deck_b=dx, games=half, seed=mseed + per,
-                model_a=inc_ts, model_b=cand_ts, server_a=inc_sock,
-                server_b=cand_sock,
-                record_dir=(gate_leg_record_dir(record_dir, dx, dy, False,
-                                                round_idx)
-                            if record_dir else None),
-                td_n=td_n, **common)))
+    common = dict(sims=sims, worlds=worlds, c_puct=c_puct, bo3=bo3,
+                  sb_branches=sb_branches, sb_worlds=sb_worlds,
+                  sb_rollout_turns=sb_rollout_turns,
+                  cross_world=cross_world,
+                  device=actor_device)
 
-    tallies = {mi: [0, 0, 0] for mi in range(len(matchups))}
-    legs_left = {mi: 0 for mi in range(len(matchups))}
-    for mi, _cia, _cmd in jobs:
-        legs_left[mi] += 1
-    done_matchups = 0
+    def _jobs():
+        """(round_idx, mi, cand_is_a, leg_record_dir, argv), lazily, in
+        panel order round by round."""
+        for round_idx in range(1, max_rounds + 1):
+            rseed = seed + (round_idx - 1) * seed_stride
+            for mi, (dx, dy) in enumerate(matchups):
+                mseed = rseed + mi * 100003
+                if per - half:  # candidate (piloting dx) in seat A
+                    rd = (gate_leg_record_dir(record_dir, dx, dy, True, round_idx)
+                          if record_dir else None)
+                    yield (round_idx, mi, True, rd, _gate_actor_cmd(
+                        actor_bin, deck_a=dx, deck_b=dy, games=per - half,
+                        seed=mseed, model_a=cand_ts, model_b=inc_ts,
+                        server_a=cand_sock, server_b=inc_sock,
+                        record_dir=rd, td_n=td_n, **common))
+                if half:        # candidate (piloting dx) in seat B
+                    rd = (gate_leg_record_dir(record_dir, dx, dy, False, round_idx)
+                          if record_dir else None)
+                    yield (round_idx, mi, False, rd, _gate_actor_cmd(
+                        actor_bin, deck_a=dy, deck_b=dx, games=half,
+                        seed=mseed + per, model_a=inc_ts, model_b=cand_ts,
+                        server_a=inc_sock, server_b=cand_sock,
+                        record_dir=rd, td_n=td_n, **common))
+
+    legs_per_matchup = (1 if per - half else 0) + (1 if half else 0)
+    tallies: dict = {}      # (round_idx, mi) -> [w, l, d]
+    legs_left: dict = {}    # (round_idx, mi) -> legs not yet reaped
     failed = []
+    stats = {"rounds_started": 0, "legs_played": 0, "legs_terminated": 0}
 
     def _pump(stream, sink):
         for line in stream:
@@ -954,7 +965,7 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
         stream.close()
 
     def _launch(job):
-        mi, cand_is_a, cmd = job
+        round_idx, mi, cand_is_a, rd, cmd = job
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              env=actor_env, stdout=subprocess.PIPE,
@@ -966,46 +977,80 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
                                     daemon=True)]
         for t in threads:
             t.start()
-        return {"mi": mi, "cand_is_a": cand_is_a, "p": p, "cmd": cmd,
-                "threads": threads, "out": out_lines, "err": err_lines}
+        key = (round_idx, mi)
+        tallies.setdefault(key, [0, 0, 0])
+        legs_left[key] = legs_left.get(key, 0) + 1
+        stats["rounds_started"] = max(stats["rounds_started"], round_idx)
+        return {"round": round_idx, "mi": mi, "cand_is_a": cand_is_a,
+                "record_dir": rd, "p": p, "cmd": cmd, "threads": threads,
+                "out": out_lines, "err": err_lines}
 
-    def _reap(rec):
-        nonlocal done_matchups
+    def _reap(rec) -> bool:
+        """Tally one finished leg and report it; True when the verdict is in."""
         rec["p"].wait()
         for t in rec["threads"]:
             t.join()
-        mi = rec["mi"]
+        round_idx, mi = rec["round"], rec["mi"]
+        key = (round_idx, mi)
         if rec["p"].returncode != 0:
             failed.append((mi, rec["p"].returncode, rec["cmd"],
                            "".join(rec["err"])))
-            return
+            return False
         wa, wb, dr = _parse_gate_output("".join(rec["out"]), bo3)
         mw, ml = (wa, wb) if rec["cand_is_a"] else (wb, wa)
-        t = tallies[mi]
+        t = tallies[key]
         t[0] += mw; t[1] += ml; t[2] += dr
-        legs_left[mi] -= 1
-        if legs_left[mi] == 0:
-            done_matchups += 1
+        legs_left[key] -= 1
+        stats["legs_played"] += 1
+        if legs_left[key] == 0 and legs_per_matchup > 1:
             dx, dy = matchups[mi]
-            print(f"[az-eval]   {tag_of(dx, dy)}: {t[0]}W-{t[1]}L-{t[2]}D "
-                  f"({done_matchups}/{len(matchups)})", flush=True)
+            print(f"[az-eval]   r{round_idx} {tag_of(dx, dy)}: "
+                  f"{t[0]}W-{t[1]}L-{t[2]}D", flush=True)
+        return bool(on_leg(round_idx, mi, mw, ml, dr))
+
+    def _terminate(rec):
+        if rec["p"].poll() is None:
+            rec["p"].terminate()
+        try:
+            rec["p"].wait(timeout=30)
+        except subprocess.TimeoutExpired:
+            rec["p"].kill()
+            rec["p"].wait()
+        for t in rec["threads"]:
+            t.join()
+        if rec["record_dir"]:
+            shutil.rmtree(rec["record_dir"], ignore_errors=True)
 
     active = []
+    stop = False
+    jobs = _jobs()
+    next_job = next(jobs, None)
     try:
         # Sliding pool (same shape as az_selfplay._generate_actor): keep up to
-        # `workers` actor legs in flight, launching the next as any one exits.
-        next_j = 0
-        while next_j < len(jobs) or active:
-            while next_j < len(jobs) and len(active) < workers:
-                active.append(_launch(jobs[next_j]))
-                next_j += 1
+        # `workers` actor legs in flight, launching the next as any one exits,
+        # straight across round boundaries.
+        while (next_job is not None and not stop) or active:
+            while next_job is not None and not stop and len(active) < workers:
+                active.append(_launch(next_job))
+                next_job = next(jobs, None)
             done = [rec for rec in active if rec["p"].poll() is not None]
             if not done:
                 time.sleep(0.2)
                 continue
             for rec in done:
-                _reap(rec)
                 active.remove(rec)
+                if _reap(rec):
+                    stop = True
+            if stop and active:
+                # The verdict is in: the legs still running would only add
+                # matches the verdict no longer depends on.
+                stats["legs_terminated"] = len(active)
+                print(f"[az-eval] verdict reached: stopping {len(active)} "
+                      f"leg(s) still in flight (their partial recordings are "
+                      f"discarded)", flush=True)
+                for rec in active:
+                    _terminate(rec)
+                active = []
         if failed:
             for mi, rc, cmd, err in failed:
                 tail = "\n".join(err.strip().splitlines()[-40:])
@@ -1020,9 +1065,8 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
                 f"block(s) above for the repro command and stderr tail")
     finally:
         for rec in active:
-            if rec["p"].poll() is None:
-                rec["p"].terminate()
-    return {mi: tuple(t) for mi, t in tallies.items()}
+            _terminate(rec)
+    return stats
 
 
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
@@ -1054,14 +1098,20 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     cross pairings (see :func:`_gate_matchups`) — seats alternating. With
     ``bo3`` (default) each contest is a best-of-three MATCH.
 
-    The panel is played in ROUNDS of ``games`` matches (>= 2 per matchup, so
-    every round is seat-balanced), and after each round an SPRT on the
-    ACCUMULATED aggregate score decides whether to promote, keep, or buy another
-    round — up to ``max_rounds`` (see :mod:`gate_sprt`). Hypotheses are
-    symmetric about 0.5 — H1 ``p = promote_threshold`` vs H0
-    ``p = 1 - promote_threshold`` — with error rates ``alpha`` (= beta). At the
-    cap the undecided test falls back to the unbiased tie-break: promote iff the
-    draw-adjusted aggregate score exceeds 50%.
+    The panel is scheduled in ROUNDS of ``games`` matches (>= 2 per matchup,
+    so every round is seat-balanced) up to ``max_rounds``, but the SPRT on
+    the ACCUMULATED aggregate score is re-asked after EVERY completed match
+    (see :mod:`gate_sprt`): the gate stops the moment the evidence is
+    decisive, and on the actor backend the legs still in flight are
+    terminated rather than played out. Hypotheses are symmetric about 0.5 —
+    H1 ``p = promote_threshold`` vs H0 ``p = 1 - promote_threshold`` — with
+    error rates ``alpha`` (= beta). At the cap the undecided test keeps the
+    incumbent unless the draw-adjusted score reached the bar; a score inside
+    the indifference region is reported ``undecided`` (kept, but not a failed
+    gate for the league's consecutive-failure reset). The per-deck floor veto
+    below is also checked as results land: once a deck's veto is locked —
+    it would fire even if the candidate won every remaining match on that
+    deck under the cap — the gate stops early.
 
     Buying more MATCHES is the way to sharpen a verdict — never fewer sims per
     match, which would measure a weaker player than the one being deployed (see
@@ -1212,7 +1262,9 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
           f"candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
-    print(f"[az-eval] {sprt_plan_line(promote_threshold, alpha)}")
+    print(f"[az-eval] {sprt_plan_line(promote_threshold, alpha)}; verdict "
+          f"re-asked after every completed {'match' if bo3 else 'game'}; "
+          f"{sprt_cap_line(promote_threshold)}")
     print(f"[az-eval] backend={backend.upper()} ({chosen}); "
           f"az_actor {'present' if have_actor else 'absent'}")
     # Gate-shard recording pays for the sequential test: however many rounds a
@@ -1239,85 +1291,149 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     def _tag(dx: str, dy: str) -> str:
         return f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
 
-    # One ROUND of the panel: each matchup's result depends only on its index mi
-    # and this round's seed (and the specs — fresh controllers per matchup), so
-    # the parallel fan-out is result-identical to the serial loop for any worker
-    # count.
-    def _play_round(round_idx: int, round_seed: int, servers) -> dict:
-        tallies: dict = {}   # mi -> (mw, ml, md), candidate's view
+    # Like-pairing matches each piloted deck gets per ROUND, candidate's side
+    # and incumbent's (the tallies _like_pairing_floor pools): the floor's
+    # lock check needs how many are still to come under the round cap.
+    pairs = set(matchups)
+    cand_per_round: dict = {}
+    inc_per_round: dict = {}
+    for dx, dy in matchups:
+        cand_per_round[dx] = cand_per_round.get(dx, 0) + per
+        if dx == dy or (dy, dx) in pairs:
+            inc_per_round[dx] = inc_per_round.get(dx, 0) + per
+
+    # Sequential test, STREAMED: every completed match lands in ONE set of
+    # tallies and the SPRT is asked for a verdict right there — not at round
+    # boundaries — so a decisive candidate stops as soon as the evidence is
+    # in. The per-deck floor veto is checked alongside: once a deck's veto is
+    # locked (it fires now and would still fire if the candidate won every
+    # remaining match on that deck under the cap), the rounds left could only
+    # be overturned by it, so the gate stops there too. At the cap the
+    # undecided test keeps the incumbent unless the score reached the bar.
+    per_matchup: dict = {}   # (dx, dy) -> [w, l, d], candidate piloting dx
+    tally = {"w": 0, "l": 0, "d": 0, "matches": 0, "printed_rounds": 0}
+    state = {"test": sprt_verdict(0, 0, 0, threshold=promote_threshold,
+                                  alpha=alpha),
+             "decided": False, "early_veto": [], "rounds": 0}
+    round_size = max(1, per * len(matchups))
+
+    def _absorb(round_idx: int, mi: int, mw: int, ml: int, md: int) -> bool:
+        """Fold one completed leg/matchup into the tallies and re-ask the
+        test; True once the verdict is in (further results are still
+        tallied but never change it)."""
+        dx, dy = matchups[mi]
+        tally["w"] += mw; tally["l"] += ml; tally["d"] += md
+        tally["matches"] += mw + ml + md
+        t = per_matchup.setdefault((dx, dy), [0, 0, 0])
+        t[0] += mw; t[1] += ml; t[2] += md
+        state["rounds"] = max(state["rounds"], round_idx)
+        if state["decided"]:
+            return True
+        w, l, d = tally["w"], tally["l"], tally["d"]
+        test = sprt_verdict(w, l, d, threshold=promote_threshold, alpha=alpha)
+        state["test"] = test
+        done_rounds = tally["matches"] // round_size
+        if done_rounds > tally["printed_rounds"] or \
+                test["verdict"] != VERDICT_CONTINUE:
+            tally["printed_rounds"] = done_rounds
+            print(f"[az-eval] after {tally['matches']} {unit}: candidate "
+                  f"{w}W-{l}L-{d}D (score={test['score']:.3f}) "
+                  f"llr={test['llr']:+.2f} in [{test['lower']:+.2f}, "
+                  f"{test['upper']:+.2f}] -> {test['verdict'].upper()}",
+                  flush=True)
+        if test["verdict"] != VERDICT_CONTINUE:
+            state["decided"] = True
+            return True
+        vetoes, deck_floor = _like_pairing_floor(per_matchup, gate_floor,
+                                                 floor_min_matches)
+        locked = []
+        for pd in vetoes:
+            _cw_r, _iw_r, cn, cw, iw, inn = deck_floor[pd]
+            cand_left = cand_per_round.get(pd, 0) * max_rounds - cn
+            inc_left = inc_per_round.get(pd, 0) * max_rounds - inn
+            if floor_locked(cw, cn, iw, inn, cand_left, inc_left, gate_floor):
+                locked.append(pd)
+        if locked:
+            state["decided"] = True
+            state["early_veto"] = locked
+            print(f"[az-eval] per-deck floor veto locked in for "
+                  f"{', '.join(locked)} after {tally['matches']} {unit} — "
+                  f"no remaining round can lift it; stopping", flush=True)
+            return True
+        return False
+
+    with _gate_round_servers(backend, cand_path, inc_path,
+                             eval_server=eval_server,
+                             actor_device=actor_device,
+                             cross_world=cross_world) as servers:
         if backend == "actor":
-            return _gate_actor_panel(
+            stream = _gate_actor_stream(
                 matchups, per, actor_bin=_ACTOR_BIN,
                 cand_ts=servers["cand_ts"], inc_ts=servers["inc_ts"],
                 sims=sims, worlds=worlds, c_puct=c_puct,
                 sb_branches=sb_branches, sb_worlds=sb_worlds,
                 sb_rollout_turns=sb_rollout_turns,
-                bo3=bo3, seed=round_seed, workers=workers,
+                bo3=bo3, seed=seed, seed_stride=_GATE_ROUND_SEED_STRIDE,
+                max_rounds=max_rounds, workers=workers,
                 actor_device=actor_device, cross_world=cross_world, tag_of=_tag,
                 cand_sock=servers["cand_sock"], inc_sock=servers["inc_sock"],
-                actor_env=servers["actor_env"],
-                record_dir=record_dir, td_n=td_n, round_idx=round_idx)
-        if workers > 1:
-            import multiprocessing as mp
-            from concurrent.futures import ProcessPoolExecutor, as_completed
-            ctx = mp.get_context("spawn")
-            with ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
-                                     initializer=_gate_worker_init) as ex:
-                futs = [ex.submit(_gate_matchup_worker, mi, dx, dy, per,
-                                  cand_spec, opp_spec, bo3, round_seed)
-                        for mi, (dx, dy) in enumerate(matchups)]
-                for fut in as_completed(futs):
-                    mi, mw, ml, md = fut.result()
-                    tallies[mi] = (mw, ml, md)
-                    dx, dy = matchups[mi]
-                    print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D "
-                          f"({len(tallies)}/{len(matchups)})", flush=True)
+                actor_env=servers["actor_env"], on_leg=_absorb,
+                record_dir=record_dir, td_n=td_n)
+            rounds = stream["rounds_started"]
+            legs_terminated = stream["legs_terminated"]
         else:
-            for mi, (dx, dy) in enumerate(matchups):
-                _, mw, ml, md = _gate_matchup_worker(mi, dx, dy, per, cand_spec,
-                                                     opp_spec, bo3, round_seed)
-                tallies[mi] = (mw, ml, md)
-                print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D")
-        return tallies
+            # Python path: one whole matchup per pool job, the verdict re-asked
+            # as each completes; once it is in, the round's not-yet-started
+            # jobs are cancelled (in-flight ones finish and are tallied).
+            legs_terminated = 0
+            rounds = 0
+            while rounds < max_rounds and not state["decided"]:
+                rounds += 1
+                round_seed = seed + (rounds - 1) * _GATE_ROUND_SEED_STRIDE
+                if max_rounds > 1:
+                    print(f"[az-eval] --- round {rounds}/{max_rounds} "
+                          f"(seed={round_seed}) ---", flush=True)
+                if workers > 1:
+                    import multiprocessing as mp
+                    from concurrent.futures import (ProcessPoolExecutor,
+                                                    as_completed)
+                    ctx = mp.get_context("spawn")
+                    with ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
+                                             initializer=_gate_worker_init) as ex:
+                        futs = [ex.submit(_gate_matchup_worker, mi, dx, dy, per,
+                                          cand_spec, opp_spec, bo3, round_seed)
+                                for mi, (dx, dy) in enumerate(matchups)]
+                        for fut in as_completed(futs):
+                            if fut.cancelled():
+                                continue
+                            mi, mw, ml, md = fut.result()
+                            dx, dy = matchups[mi]
+                            print(f"[az-eval]   r{rounds} {_tag(dx, dy)}: "
+                                  f"{mw}W-{ml}L-{md}D", flush=True)
+                            if _absorb(rounds, mi, mw, ml, md):
+                                for f in futs:
+                                    f.cancel()
+                else:
+                    for mi, (dx, dy) in enumerate(matchups):
+                        _, mw, ml, md = _gate_matchup_worker(
+                            mi, dx, dy, per, cand_spec, opp_spec, bo3, round_seed)
+                        print(f"[az-eval]   r{rounds} {_tag(dx, dy)}: "
+                              f"{mw}W-{ml}L-{md}D")
+                        if _absorb(rounds, mi, mw, ml, md):
+                            break
 
-    # Sequential test: play rounds, accumulating into ONE set of tallies, and
-    # ask the SPRT for a verdict after each. Stop as soon as the evidence is
-    # decisive either way; at the cap fall back to the unbiased tie-break.
-    per_matchup: dict = {}   # (dx, dy) -> [w, l, d], candidate piloting dx
-    w = l = d = 0
-    rounds = 0
-    test = sprt_verdict(0, 0, 0, threshold=promote_threshold, alpha=alpha)
-    with _gate_round_servers(backend, cand_path, inc_path,
-                             eval_server=eval_server,
-                             actor_device=actor_device,
-                             cross_world=cross_world) as servers:
-        while rounds < max_rounds:
-            rounds += 1
-            round_seed = seed + (rounds - 1) * _GATE_ROUND_SEED_STRIDE
-            if max_rounds > 1:
-                print(f"[az-eval] --- round {rounds}/{max_rounds} "
-                      f"(seed={round_seed}) ---", flush=True)
-            tallies = _play_round(rounds, round_seed, servers)
-            for mi, (dx, dy) in enumerate(matchups):
-                mw, ml, md = tallies[mi]
-                w += mw; l += ml; d += md
-                t = per_matchup.setdefault((dx, dy), [0, 0, 0])
-                t[0] += mw; t[1] += ml; t[2] += md
-            test = sprt_verdict(w, l, d, threshold=promote_threshold,
+    w, l, d = tally["w"], tally["l"], tally["d"]
+    test = state["test"]
+    if not state["decided"]:
+        test = sprt_cap_verdict(w, l, d, threshold=promote_threshold,
                                 alpha=alpha)
-            print(f"[az-eval] after round {rounds}: candidate {w}W-{l}L-{d}D "
-                  f"(score={test['score']:.3f}) llr={test['llr']:+.2f} in "
-                  f"[{test['lower']:+.2f}, {test['upper']:+.2f}] -> "
-                  f"{test['verdict'].upper()}", flush=True)
-            if test["verdict"] != VERDICT_CONTINUE:
-                break
-        else:
-            test = sprt_cap_verdict(w, l, d, threshold=promote_threshold,
-                                    alpha=alpha)
-            print(f"[az-eval] round cap reached ({max_rounds}) with the test "
-                  f"undecided: tie-break on the aggregate score "
-                  f"({test['score']:.3f} vs 0.500) -> "
-                  f"{test['verdict'].upper()}", flush=True)
+        print(f"[az-eval] round cap reached ({max_rounds}) with the test "
+              f"undecided: score {test['score']:.3f} vs the "
+              f"{test['p1']:.3f} bar -> {test['verdict'].upper()}"
+              + (" (undecided: kept, not a failed gate)"
+                 if test.get("undecided") else ""), flush=True)
+    elif state["early_veto"]:
+        test = dict(test, verdict=VERDICT_REJECT)
 
     if record_dir and backend == "actor" and pool_shards:
         if bo3:
@@ -1347,11 +1463,13 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     for pd, (pw, pl, pdr) in per_deck.items():
         n = max(1, pw + pl + pdr)
         flag = "  FLOOR-VETO" if pd in vetoes else ""
-        cand_wr, inc_wr, cn = deck_floor.get(pd, (pw / n, float("nan"), 0))
+        cand_wr, inc_wr, cn = deck_floor.get(
+            pd, (pw / n, float("nan"), 0, 0, 0, 0))[:3]
         print(f"[az-eval]   {pd}: {pw}W-{pl}L-{pdr}D ({pw / n:.2f})  "
               f"like-pairing cand {cand_wr:.2f} vs inc {inc_wr:.2f}{flag}")
 
     accepted = test["verdict"] == VERDICT_ACCEPT
+    undecided = bool(test.get("undecided")) and not vetoes
     promoted = False
     if promote and accepted and not vetoes:
         final = _promote_to_final(cand_path, ckpt_dir)
@@ -1361,20 +1479,30 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
               + (" at the round cap" if test.get("capped") else "") + ")")
     elif promote and vetoes:
         print(f"[az-eval] not promoted (per-deck floor {gate_floor:.2f} veto: "
-              f"{', '.join(vetoes)}; sequential test "
-              f"{test['verdict'].upper()}, score {test['score']:.3f})")
+              f"{', '.join(vetoes)}"
+              + (" — locked in early" if state["early_veto"] else "")
+              + f"; sequential test {test['verdict'].upper()}, score "
+              f"{test['score']:.3f})")
+    elif promote and undecided:
+        print(f"[az-eval] not promoted (UNDECIDED at the round cap: score "
+              f"{test['score']:.3f} is inside the indifference region; the "
+              f"incumbent keeps the seat and the league does not count this "
+              f"as a failed gate)")
     elif promote:
-        print(f"[az-eval] not promoted (sequential test REJECT after {rounds} "
-              f"round(s): llr={test['llr']:+.2f}, score {test['score']:.3f}"
+        print(f"[az-eval] not promoted (sequential test REJECT after "
+              f"{w + l + d} {unit}: llr={test['llr']:+.2f}, score "
+              f"{test['score']:.3f}"
               + (" at the round cap" if test.get("capped") else "") + ")")
     return {"wins": w, "losses": l, "draws": d, "win_rate": wr,
             "rounds": rounds, "matches": w + l + d,
+            "legs_terminated": int(legs_terminated),
             "verdict": test["verdict"], "llr": test["llr"],
             "score": test["score"], "capped": bool(test.get("capped")),
+            "undecided": undecided,
             "accepted": accepted,
             "promoted": promoted, "breakdown": breakdown,
             "per_deck": {k: list(v) for k, v in per_deck.items()},
-            "vetoes": vetoes}
+            "vetoes": vetoes, "early_veto": list(state["early_veto"])}
 
 
 def _meta_of(path: str) -> str:
@@ -1427,6 +1555,24 @@ def _prune_candidate_snapshots(ckpt_dir: str = _AZ_CKPT_DIR) -> list:
 # ----------------------------------------------------------------------
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
+
+# Seed offset between the expert passes of a comma-separated --expert-opponent
+# list, so each opponent gets its own matchup schedule.
+_EXPERT_OPPONENT_SEED_STRIDE = 7919
+
+
+def _split_expert_opponents(expert_opponent) -> list:
+    """The expert games' opponent specs, one pass each: ``None`` (the default,
+    hard both seats and both recorded) stays a single ``[None]`` pass; a
+    string is split on commas; a list is taken as is."""
+    if expert_opponent is None:
+        return [None]
+    if isinstance(expert_opponent, str):
+        opps = [s.strip() for s in expert_opponent.split(",") if s.strip()]
+    else:
+        opps = [str(s).strip() for s in expert_opponent if str(s).strip()]
+    return opps or [None]
+
 
 def _resolve_expert_decks(expert_decks) -> Optional[list]:
     """Resolve an ``--expert-decks`` value to a deck list (or None = no experts).
@@ -1498,7 +1644,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
              slot: int = 0,
              opp_pool_frac: float = DEFAULT_AZ_OPP_POOL_FRAC,
-             selfplay_checkpoint: Optional[str] = None) -> dict:
+             selfplay_checkpoint: Optional[str] = None,
+             selfplay_exclude: Optional[list] = None) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
@@ -1544,7 +1691,16 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     the expert games' opponent seat and records only the focus seat — for a
     combo deck that loses its hard-vs-hard matchups, this is what makes the
     demonstrations come from games the combo actually wins (see
-    :func:`az_selfplay.generate_expert`).
+    :func:`az_selfplay.generate_expert`). A comma-separated list
+    (``"scripted:random,scripted:hard"``) writes ``expert_games`` matches per
+    deck against EACH opponent, each pass on its own seed offset; an explicit
+    ``scripted:hard`` there records the focus seat only, unlike the default.
+
+    ``selfplay_exclude`` removes decks from the SELF-PLAY roster and focus
+    (the matrix, the scripted cells, the opponent pool) without touching the
+    gate panel or the expert list — a deck the net cannot yet pilot (every
+    self-play game a z=-1 row for its seat) trains from demonstrations alone
+    while the gate keeps measuring it.
 
     ``deck`` is the FOCUS pool — a str (single focus), a list of stems (a
     deck×opponent matrix), or None (default: the whole decks/league/ roster). Each
@@ -1571,6 +1727,13 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
         roster = _default_az_league_roster()
     focus = _normalize_focus(deck, _default_az_league_roster())
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
+    excluded = [d for d in (selfplay_exclude or []) if d]
+    sp_roster = [d for d in roster if d not in excluded] or list(roster)
+    sp_focus = [d for d in focus if d not in excluded] or list(focus)
+    if excluded:
+        print(f"[az cycle] self-play excludes {', '.join(excluded)}: "
+              f"{len(sp_focus)} focus / {len(sp_roster)} roster deck(s) play; "
+              f"the gate panel and expert list are unaffected")
 
     exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
     matrix_txt = ("" if not exhaustive else
@@ -1579,7 +1742,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                   + (f" x{exhaustive_repeats}" if exhaustive_repeats > 1 else ""))
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
           f"{'bo3' if bo3 else 'bo1'}{matrix_txt}) ===")
-    gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
+    gen = az_selfplay.generate(sp_focus[0], games=games, sims=sims, worlds=worlds,
                                full_search_frac=full_search_frac,
                                fast_sims=fast_sims,
                                c_puct=c_puct,
@@ -1593,7 +1756,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                                actor_device=actor_device,
                                eval_server=eval_server,
                                cross_world=cross_world,
-                               roster=roster, focus_decks=focus,
+                               roster=sp_roster, focus_decks=sp_focus,
                                mirror_frac=mirror_frac,
                                scripted_opponent_frac=scripted_opponent_frac,
                                bo3=bo3, exhaustive=exhaustive,
@@ -1606,14 +1769,22 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     if experts:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
-        print("=== az cycle: expert demonstrations (scripted:hard"
-              + (f" vs {expert_opponent}" if expert_opponent else "") + ") ===")
-        print(f"[az cycle] expert decks: {expert_decks} -> {len(experts)} deck(s) "
-              f"[{', '.join(experts)}] x {expert_games} matches each")
-        gen["expert"] = az_selfplay.generate_expert(
-            experts, games=expert_games * len(experts),
-            roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed,
-            opponent=expert_opponent)
+        # One pass per listed opponent, each on its own seed offset so the
+        # schedules differ.
+        merged = {"samples": 0, "shards": [], "stats": []}
+        for k, opp in enumerate(_split_expert_opponents(expert_opponent)):
+            print("=== az cycle: expert demonstrations (scripted:hard"
+                  + (f" vs {opp}" if opp else "") + ") ===")
+            print(f"[az cycle] expert decks: {expert_decks} -> {len(experts)} "
+                  f"deck(s) [{', '.join(experts)}] x {expert_games} matches each")
+            r = az_selfplay.generate_expert(
+                experts, games=expert_games * len(experts),
+                roster=roster, mirror_frac=mirror_frac, bo3=bo3,
+                seed=seed + _EXPERT_OPPONENT_SEED_STRIDE * k, opponent=opp)
+            merged["samples"] += int(r.get("samples", 0))
+            merged["shards"] += list(r.get("shards", []))
+            merged["stats"].append(r.get("stats"))
+        gen["expert"] = merged
     else:
         print(f"[az cycle] expert decks: {expert_decks!r} -> none "
               f"(no expert shards this cycle)")
@@ -1742,8 +1913,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               eval_server: Optional[bool] = None,
               cross_world: bool = True,
               resume: bool = False,
-              bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
-    """Rotate ``az_cycle`` over the league roster.
+              bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR,
+              selfplay_exclude: Optional[list] = None) -> dict:
+    """Rotate ``az_cycle`` over the league roster. ``selfplay_exclude`` (a
+    deck list, persisted in the sidecar) drops decks from every slot's
+    self-play matrix while the gate panel still covers them — see
+    :func:`az_cycle`.
 
     The unit of work is one deck cycle; slot ``i`` maps to (rotation, deck,
     cycle) by index arithmetic and the sidecar persists the index of the NEXT
@@ -1879,6 +2054,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         expert_decks = p.get("expert_decks", None)
         expert_games = int(p.get("expert_games", expert_games))
         expert_opponent = p.get("expert_opponent", expert_opponent)
+        selfplay_exclude = p.get("selfplay_exclude", selfplay_exclude)
         use_actor = p.get("use_actor", use_actor)
         actor_device = p.get("actor_device", actor_device)
         eval_server = p.get("eval_server", eval_server)
@@ -1968,6 +2144,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "expert_decks": expert_decks,
             "expert_games": expert_games,
             "expert_opponent": expert_opponent, "use_actor": use_actor,
+            "selfplay_exclude": list(selfplay_exclude or []),
             "actor_device": actor_device,
             "eval_server": eval_server,
             "cross_world": cross_world,
@@ -2115,12 +2292,21 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        exhaustive_repeats=exhaustive_repeats,
                        scripted_cells=scripted_cells, slot=si,
                        opp_pool_frac=opp_pool_frac,
-                       selfplay_checkpoint=selfplay_ckpt)
+                       selfplay_checkpoint=selfplay_ckpt,
+                       selfplay_exclude=selfplay_exclude)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         last_snapshot = tr.get("snapshot")
         if ev is not None:
             if ev["promoted"]:
                 gate_failures = 0
+            elif ev.get("undecided"):
+                # The round cap ran out with the score inside the indifference
+                # region: not demonstrably better, not demonstrably worse. The
+                # incumbent keeps the seat, but this is no evidence of a sick
+                # line, so it neither resets nor advances the failure count.
+                print(f"[az-league] gate undecided at the round cap (score "
+                      f"{ev['score']:.3f}): incumbent kept, consecutive gate "
+                      f"failures stay at {gate_failures}")
             else:
                 gate_failures += 1
                 if gate_failures >= GATE_FAILS_BEFORE_RESET:
@@ -2139,9 +2325,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
                         if ev.get("vetoes") else "")
             gate_txt = (f"gate {ev['wins']}W-{ev['losses']}L-{ev['draws']}D "
-                        f"wr={ev['win_rate']:.3f} over {ev.get('rounds', 1)} "
-                        f"round(s) [{str(ev.get('verdict', '')).upper()}"
-                        + ("/cap" if ev.get("capped") else "") + "] "
+                        f"wr={ev['win_rate']:.3f} over {ev.get('matches', 0)} "
+                        f"matches / {ev.get('rounds', 1)} round(s) "
+                        f"[{str(ev.get('verdict', '')).upper()}"
+                        + ("/cap" if ev.get("capped") else "")
+                        + ("/undecided" if ev.get("undecided") else "") + "] "
                         f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent' + veto_txt}")
         print(f"[az-league] slot {slot_txt} deck={deck_label}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
@@ -2293,6 +2481,8 @@ def run_cycle(args) -> None:
                                                EXPERT_DECKS_ROSTER)),
              expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
              expert_opponent=getattr(args, "expert_opponent", None),
+             selfplay_exclude=_split_decks(getattr(args, "selfplay_exclude",
+                                                   None)),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
              actor_device=getattr(args, "actor_device", "cpu"),
@@ -2359,6 +2549,8 @@ def run_league(args) -> None:
                                                 EXPERT_DECKS_ROSTER)),
               expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
               expert_opponent=getattr(args, "expert_opponent", None),
+              selfplay_exclude=_split_decks(getattr(args, "selfplay_exclude",
+                                                    None)),
               use_actor=_resolve_use_actor(args),
               actor_device=getattr(args, "actor_device", "cpu"),
               eval_server=az_selfplay.resolve_eval_server(args),
