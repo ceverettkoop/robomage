@@ -730,12 +730,6 @@ def obs_blocks():
         ("action zones", e.ACT_ZONE_START, e.ACT_ZONE_START + e.MAX_ACTIONS),
         ("action refs", e.ACT_REFS_START, e.ACT_REFS_START + e.MAX_ACTIONS),
         ("action ordinals", e.ACT_ORDS_START, e.ACT_ORDS_START + e.MAX_ACTIONS),
-        # Named for what they actually hold: the hand block is CAST costs
-        # (_CARD_COST_MATRIX), the battlefield block is ACTIVATED-ABILITY costs
-        # (_CARD_ABILITY_COST_MATRIX) — not the permanents' mana values, which
-        # the observation does not carry at all.
-        ("hand cast costs", e.ACT_BLOCKS_END, e._BF_COST_START),
-        ("battlefield ability costs", e._BF_COST_START, e.MATCHUP_TAIL_START),
         # The tail's two halves are separated on purpose: permuting the bucket
         # index re-routes the SAME latent through a different critic read-out
         # (the index is stripped before the trunk), while permuting the one-hots
@@ -1181,6 +1175,78 @@ def exposure_counts_or_none(path):
     return None if exp is None else exposure_counts(exp)
 
 
+def resolve_origin(path, checkpoint_dir=None):
+    """The checkpoint closest to this net's INITIAL state, for drift.
+
+    The from-scratch random init is never saved, so "initial" means the PPO
+    checkpoint AZ warm-started from when it exists (the embedding's state at
+    the start of AZ training), else the OLDEST ``gen__azv*`` snapshot strictly
+    older than ``path``. Returns ``(spec, kind)`` like
+    :func:`resolve_baseline` (which prefers the NEWEST older snapshot — the
+    last training interval rather than the whole run)."""
+    from opponents import resolve_checkpoint
+    ppo = resolve_checkpoint("gen")
+    if ppo and os.path.isfile(ppo):
+        return ppo, "ppo"
+    checkpoint_dir = checkpoint_dir or os.path.dirname(os.path.abspath(path))
+    steps = _snapshot_steps(path)
+    snaps = [(s, p) for p in glob.glob(os.path.join(checkpoint_dir,
+                                                    "gen__azv*.pt"))
+             for s in (_snapshot_steps(p),)
+             if s >= 0 and (steps < 0 or s < steps)]
+    if snaps:
+        return min(snaps)[1], "snapshot"
+    return None, None
+
+
+def _fresh_init_card_emb():
+    """The card-embedding table of a freshly constructed, untrained AZNet,
+    seeded for reproducibility."""
+    import torch
+    from az_net import AZNet
+    torch.manual_seed(0)
+    return AZNet().state_dict()["trunk.card_emb.weight"].float()
+
+
+def embedding_drift(path, baseline=None, checkpoint_dir=None):
+    """Signed per-dimension movement of every card's identity vector.
+
+    Where :func:`card_exposure` reduces movement to one distance per row (and
+    measures the last training interval), this keeps the full signed
+    (card x dim) delta and measures against the net's ORIGIN
+    (:func:`resolve_origin` — the PPO warm-start by default), answering "how
+    far, and in which directions, has training pushed each card's learned
+    vector since the start". ``baseline='init'`` compares against a freshly
+    constructed seed-0 net instead — note per-dimension SIGN against a random
+    init is mostly noise; only the magnitudes stay meaningful there."""
+    if baseline == "init":
+        emb_a, kind = _fresh_init_card_emb(), "init"
+        base_label = "fresh untrained net (seed 0)"
+    else:
+        if baseline is None:
+            baseline, kind = resolve_origin(path, checkpoint_dir)
+        else:
+            baseline = resolve_spec(
+                baseline, checkpoint_dir
+                or os.path.dirname(os.path.abspath(path))) or baseline
+            kind = "ppo" if str(baseline).endswith(".zip") else "snapshot"
+        if baseline is None:
+            raise FileNotFoundError(
+                "no origin checkpoint to measure drift against — drift needs "
+                "the PPO gen warm-start, an older gen__azv* snapshot, or "
+                "--baseline init")
+        emb_a, _ = _card_emb_and_value(baseline)
+        base_label = os.path.basename(str(baseline))
+    emb_b, _ = _card_emb_and_value(path)
+    if emb_a.shape != emb_b.shape:
+        raise RuntimeError(
+            f"embedding shapes differ ({tuple(emb_a.shape)} vs "
+            f"{tuple(emb_b.shape)}) — the baseline predates a layout change")
+    # Row i+1 is vocab card i (row 0 is the padding row).
+    delta = (emb_b - emb_a).numpy()[1:]
+    return {"path": path, "baseline": base_label, "kind": kind, "delta": delta}
+
+
 def checkpoint_diff(path_a, path_b, top_n=15):
     """Per-tensor, per-card and per-bucket movement between two checkpoints —
     "what did the last training rotation actually change".
@@ -1357,16 +1423,36 @@ def _encoder_specs(sd):
                      + _STACK_QUAL_NAMES
                      + [f"mode_{i}" for i in range(MAX_STACK_MODES)]
                      + [f"tgt{t} {f}" for t in range(MAX_STACK_TGTS)
-                        for f in ("present", "is_player", "ctrl", "slot_ref")])
+                        for f in ("present", "is_player", "ctrl", "slot_ref")]
+                     + ["stack_pos"])
     stack = [("scalars", len(stack_scalars), stack_scalars)]
     stack += _card_feat_cols("object", card_dim)
     stack += _card_feat_cols("tgts-mean", card_dim)
     specs.append(("stack_encoder", stack))
 
-    specs.append(("entity_encoder", _card_feat_cols("card", card_dim)))
+    specs.append(("entity_encoder",
+                  _card_feat_cols("card", card_dim)
+                  + [("draw distance", 1, ["draw_dist"])]))
     specs.append(("decklist_encoder",
                   _card_feat_cols("card", card_dim)
                   + [("copies count", 1, ["count"])]))
+
+    # The second-pass reference combiners: every group is an ENCODED entity
+    # embedding (no per-column names — the columns are latent dims).
+    if "trunk.ref_combiner.0.weight" in sd:
+        e_dim = int(sd["trunk.ref_combiner.0.weight"].shape[0])
+        specs.append(("ref_combiner",
+                      [("own encoding", e_dim, None),
+                       ("attached_to enc", e_dim, None),
+                       ("attached_by enc", e_dim, None),
+                       ("attack_tgt enc", e_dim, None),
+                       ("block_tgt enc", e_dim, None)]))
+    if "trunk.stk_combiner.0.weight" in sd:
+        e_dim = int(sd["trunk.ref_combiner.0.weight"].shape[0])
+        half = int(sd["trunk.stk_combiner.0.weight"].shape[1]) - e_dim
+        specs.append(("stk_combiner",
+                      [("own encoding", half, None),
+                       ("targets-mean enc", e_dim, None)]))
     # The revealed multi-hot's columns ARE vocab cards: its per-column weight
     # norm names which opponent reveals the net reacts to.
     specs.append(("revealed_encoder",
@@ -1440,28 +1526,30 @@ def _body_segments(sd):
     import env
     from extractor import _HIST_RECENT_K
     E = int(sd["trunk.perm_encoder.0.weight"].shape[0])
-    half = int(sd["trunk.stack_encoder.2.weight"].shape[0])
     card_feat = (int(sd["trunk.card_emb.weight"].shape[1])
                  + int(sd["trunk.card_props"].shape[1]))
     cat_dim = int(sd["trunk.action_cat_emb.weight"].shape[1])
+    from extractor import _BOARD_COUNT_FEATS
     segments = [
         ("global ctx",         env._GLOBAL_SIZE),
-        ("history raw",        env._MATCH_CTX_START - env._HIST_START),
         ("history recent-K",   _HIST_RECENT_K * (cat_dim + card_feat + 2)),
         ("match/lib/turn ctx", env._KNOWN_TOP_LIB_START - env._MATCH_CTX_START),
-        ("known-top-lib agg",  E),
+        ("board counts",       _BOARD_COUNT_FEATS),
         ("revealed agg",       E),
         ("pending decision",   card_feat + 1),
         ("global extras",      env._EXTRAS_END - env._EXTRAS_START),
         ("mana development",   env._MANA_DEV_END - env._MANA_DEV_START),
         ("log vitals",         env._LOG_VITALS_END - env._LOG_VITALS_START),
-        ("action extras raw",  env.BUCKET_IDX - env.STATE_SIZE),
+        # (the raw action-metadata passthrough exists only on the stock
+        # per_action_head=False path, which AZNet never uses)
         ("arch one-hots",      env.ARCH_ONEHOT_END - env.ARCH_ONEHOT_START),
         ("perm agg",           2 * E),
-        ("stack agg",          2 * half),
+        ("stack agg",          2 * E),
+        ("top-of-stack",       E),
         ("graveyard agg",      2 * E),
         ("exile agg",          2 * E),
-        ("hand agg",           2 * E),
+        ("hand+top-lib agg",   2 * E),
+        ("next-draw embed",    card_feat),
         ("opp-hand agg",       2 * E),
         ("self live-lib agg",  2 * E),
         ("self main agg",      2 * E),
@@ -1731,11 +1819,14 @@ def zone_embedding(sd):
 def entity_unit_activations(sd):
     """Every vocab card pushed through the entity encoder alone: the
     ``(N_CARD_TYPES, embed_dim)`` unit-activation matrix. A pure numpy mirror
-    of ``trunk.entity_encoder`` on ``[card_emb | card_props]`` rows (row i =
-    vocab card i; the padding row is dropped) — no game state involved, since
-    that encoder consumes card identity and nothing else."""
-    x = np.concatenate([_t2np(sd["trunk.card_emb.weight"])[1:],
-                        _t2np(sd["trunk.card_props"])[1:]], axis=1)
+    of ``trunk.entity_encoder`` on ``[card_emb | card_props | draw_dist=0]``
+    rows (row i = vocab card i; the padding row is dropped; distance 0 = the
+    "in hand" reading, the value every zone except the known top-of-library
+    feeds) — no game state involved, since that encoder consumes card identity
+    plus that one scalar and nothing else."""
+    ident = _t2np(sd["trunk.card_emb.weight"])[1:]
+    x = np.concatenate([ident, _t2np(sd["trunk.card_props"])[1:],
+                        np.zeros((ident.shape[0], 1), dtype=ident.dtype)], axis=1)
     h = np.maximum(x @ _t2np(sd["trunk.entity_encoder.0.weight"]).T
                    + _t2np(sd["trunk.entity_encoder.0.bias"]), 0.0)
     return np.maximum(h @ _t2np(sd["trunk.entity_encoder.2.weight"]).T
@@ -2008,6 +2099,41 @@ def render_exposure(exp, top_n=20):
     if cold:
         lines.append(f"  untrained matchups ({len(cold)}): "
                      + ", ".join(cold[:12]) + (" …" if len(cold) > 12 else ""))
+    return lines
+
+
+def render_drift(drift, top_n=0):
+    """Per-dimension embedding movement + every card ranked by total |shift|."""
+    ids = named_card_ids()
+    d = drift["delta"][ids]                                    # (cards, dim)
+    src = {"ppo": "the PPO checkpoint AZ warm-started from",
+           "snapshot": "the oldest AZ snapshot on disk",
+           "init": "a fresh untrained net — per-dim SIGNS vs a random init "
+                   "are mostly noise; trust the magnitudes only"}[drift["kind"]]
+    lines = [f"embedding drift — {os.path.basename(drift['path'])} vs "
+             f"{drift['baseline']}",
+             f"  ({src})", ""]
+    mag = np.abs(d).mean(axis=0)
+    net_shift = d.mean(axis=0)
+    hi = mag.max() if mag.max() > 0 else 1.0
+    lines.append(f"per-dimension movement over {len(ids)} cards, largest "
+                 "first (mean |shift| / mean signed shift / % pushed +):")
+    for k in np.argsort(-mag):
+        pos = float((d[:, k] > 0).mean() * 100)
+        lines.append(f"  dim {k:2d}  {mag[k]:8.4f}  {net_shift[k]:+8.4f}  "
+                     f"{pos:5.1f}%+  {_bar(mag[k] / hi)}")
+    l1 = np.abs(d).sum(axis=1)
+    order = np.argsort(-l1)
+    if top_n:
+        order = order[:top_n]
+    lines += ["", f"cards by total movement (L1 over all {d.shape[1]} dims; "
+                  "strip = per-dim direction,",
+              "  '·' = |shift| under 25% of that card's largest dim):"]
+    for j in order:
+        row = d[j]
+        t = np.abs(row).max() * 0.25
+        strip = "".join("+" if v > t else "-" if v < -t else "·" for v in row)
+        lines.append(f"  {l1[j]:8.4f}  {card_name(ids[j])[:32]:<32} {strip}")
     return lines
 
 
@@ -2506,6 +2632,16 @@ def build_parser():
                         "gen__azv* snapshot, else the PPO gen warm-start)")
     p.add_argument("--top", type=int, default=20)
 
+    p = sub.add_parser("drift",
+                       help="signed per-dimension embedding movement since "
+                            "the origin; all cards ranked by total |shift|")
+    p.add_argument("--baseline", default=None,
+                   help="checkpoint to measure against (default: the PPO gen "
+                        "warm-start, else the oldest gen__azv* snapshot; "
+                        "'init' = a fresh untrained seed-0 net)")
+    p.add_argument("--top", type=int, default=0,
+                   help="cards listed (default: 0 = all)")
+
     sub.add_parser("catemb", help="action-category embedding neighbours")
 
     p = sub.add_parser("buckets", help="per-matchup critic column map")
@@ -2707,6 +2843,14 @@ def main(argv=None):
             raise SystemExit(f"could not resolve checkpoint {args.model!r}")
         print("\n".join(render_exposure(card_exposure(path, args.baseline),
                                         top_n=args.top)))
+        return 0
+
+    if cmd == "drift":
+        path = resolve_spec(args.model)
+        if path is None:
+            raise SystemExit(f"could not resolve checkpoint {args.model!r}")
+        print("\n".join(render_drift(embedding_drift(path, args.baseline),
+                                     top_n=args.top)))
         return 0
 
     net, path = load_net(args.model)

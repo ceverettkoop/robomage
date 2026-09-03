@@ -16,7 +16,6 @@
 #include "menu_merge.h"
 #include "game_driver.h"  // sideboard_phase / sideboard_phase_player + deck names
 #include "gen/archetypes_gen.h"  // ARCH_DECK_TAGS, ARCH_UNKNOWN, ARCH_N
-#include "gen/card_costs_gen.h"  // CARD_COST_MATRIX, CARD_ABILITY_COST_MATRIX, N_COST_FEATS
 
 // ── State-vector offsets ────────────────────────────────────────────────────
 // The actor no longer keeps its own copy of the offset chain. Every absolute
@@ -57,15 +56,11 @@ static constexpr int OPP_DECK_MAIN_END = OPP_DECK_SIDE_START;
 
 // Per-action block starts + ACTOR_REF_ZONE_MAX now live in obs_builder.h
 // (shared with menu_merge.h).
-static constexpr int HAND_COST_START = ACT_ORDS_START + MAX_ACTIONS;
-static constexpr int BF_COST_START = HAND_COST_START + MAX_HAND_SLOTS * ACTOR_N_COST_FEATS;
 // Matchup tail: raw bucket float, then one-hot(self arch), then one-hot(opp arch).
-static constexpr int MATCHUP_TAIL_START = BF_COST_START + MAX_BATTLEFIELD_SLOTS * ACTOR_N_COST_FEATS;
+static constexpr int MATCHUP_TAIL_START = ACT_ORDS_START + MAX_ACTIONS;
 static constexpr int ARCH_ONEHOT_START = MATCHUP_TAIL_START + 1;
 static_assert(ARCH_ONEHOT_START + 2 * ARCH_N == ACTOR_OBS_SIZE,
               "matchup tail must end exactly at ACTOR_OBS_SIZE");
-
-static_assert(N_COST_FEATS == ACTOR_N_COST_FEATS, "cost matrix width mismatch");
 
 // ── Deck -> archetype index ─────────────────────────────────────────────────
 // Mirror of train/archetypes.py::normalize_deck: a deck spec becomes its
@@ -209,26 +204,6 @@ static void apply_sideboard_mask(float* o) {
         if (!m.keep[static_cast<size_t>(i)]) o[i] = m.fill[static_cast<size_t>(i)];
 }
 
-// Decode a normalized card-id float back to a vocab index. env.py uses np.rint
-// (round-half-even); ids are exact multiples of 1/N_CARD_TYPES so llrintf (which
-// also rounds half-to-even under the default mode) reproduces it exactly.
-static int decode_card_id(float f) {
-    return static_cast<int>(std::llrintf(f * static_cast<float>(N_CARD_TYPES)));
-}
-
-// Write one cost row (N_COST_FEATS floats) from `matrix` for vocab `id`; a
-// negative id (empty slot) writes a zero row — exactly _gather_costs in env.py.
-static void write_cost_row(float* dst, const float matrix[][N_COST_FEATS], int id) {
-    if (id < 0) {
-        for (int k = 0; k < N_COST_FEATS; k++) dst[k] = 0.0f;
-        return;
-    }
-    int safe = id;
-    if (safe < 0) safe = 0;
-    if (safe > N_CARD_TYPES - 1) safe = N_CARD_TYPES - 1;
-    for (int k = 0; k < N_COST_FEATS; k++) dst[k] = matrix[safe][k];
-}
-
 ActorObs build_obs(const std::vector<LegalAction>& actions) {
     // Mirror the machine-branch order in input_logger.cpp: populate the game
     // state (which also rebuilds the entity->slot map that populate_query and
@@ -251,9 +226,7 @@ ActorObs build_obs(const std::vector<LegalAction>& actions) {
 
     // During the bo3 between-games sideboard phase the state vector describes the
     // stale terminal board; mask it down to the sideboard-relevant blocks exactly
-    // like env.py (applied to [0, STATE_SIZE) BEFORE the cost gathers below so the
-    // derived hand/bf cost rows zero out from the sentinel-filled ids, matching the
-    // env). is_sideboard_phase is MATCH_CTX_START + 3.
+    // like env.py. is_sideboard_phase is MATCH_CTX_START + 3.
     if (o[MATCH_CTX_START + 3] > 0.5f) apply_sideboard_mask(o);
 
     // Per-action metadata. Reproduce EXACTLY the padded arrays cli_output.cpp
@@ -299,19 +272,6 @@ ActorObs build_obs(const std::vector<LegalAction>& actions) {
             static_cast<float>(static_cast<double>(refval + 1) / static_cast<double>(N_ENTITY_REF_SLOTS));
         o[ACT_ORDS_START + i] =
             static_cast<float>(static_cast<double>(ordval + 1) / static_cast<double>(OPTION_ORDINAL_MAX + 1));
-    }
-
-    // Hand cast-cost rows: gather by each self-hand slot's card id.
-    for (int i = 0; i < MAX_HAND_SLOTS; i++) {
-        int id = decode_card_id(o[HAND_START + i]);
-        write_cost_row(o + HAND_COST_START + i * N_COST_FEATS, CARD_COST_MATRIX, id);
-    }
-
-    // Battlefield activated-ability cost rows: gather by each of the 48 self
-    // permanent slots' card ids (the card id is LAST within each perm slot).
-    for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-        int id = decode_card_id(o[SELF_PERM_START + i * PERM_SLOT_SIZE + PERM_CARD_OFF]);
-        write_cost_row(o + BF_COST_START + i * N_COST_FEATS, CARD_ABILITY_COST_MATRIX, id);
     }
 
     // Matchup tail (value bucket + archetype one-hots), from the state's own

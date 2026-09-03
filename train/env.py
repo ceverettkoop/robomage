@@ -43,10 +43,11 @@ network maps ids through a learned nn.Embedding. The opponent revealed-cards
 block is the only vocab-width block (N_CARD_TYPES multi-hot).
 State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 64 action zone_ref floats
-+ 64 action entity-slot-ref floats
-+ 70 hand cost floats + 336 battlefield ability cost floats
++ 64 action entity-slot-ref floats + 64 action option-ordinal floats
 + the matchup tail (1 value-bucket index + one-hot(self archetype, N_ARCH)
-+ one-hot(opp archetype, N_ARCH)) = OBS_SIZE total.
++ one-hot(opp archetype, N_ARCH)) = OBS_SIZE total. (Per-card COST facts are
+not in the obs — they ride in the frozen card_props block inside the network's
+card embedding.)
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (CLI) and is never sent to the ML model.
 NOTE: Both exile zones (self + opp, 64 recency-ordered card-id slots each) are
@@ -73,9 +74,9 @@ except ImportError:
     from gym import spaces
 
 try:
-    from card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+    from card_costs import N_CARD_TYPES
 except ImportError:
-    from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+    from train.card_costs import N_CARD_TYPES
 
 # Deck -> strategic-archetype metadata (stdlib-only module). The matchup's
 # (self archetype x opp archetype) VALUE BUCKET rides in the observation tail so
@@ -290,9 +291,6 @@ assert SHAPING_EPISODE_CAP < 1.0, SHAPING_EPISODE_CAP
 assert SHAPING_EPISODE_CAP_DOOMSDAY < 1.0, SHAPING_EPISODE_CAP_DOOMSDAY
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
-# MAX_HAND_SLOTS imported from _enums (src/classes/gamestate.h).
-_HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS         # 10 * 7 = 70
-_BF_ABILITY_FEATS = MAX_BATTLEFIELD_SLOTS * _N_COST_FEATS  # 48 * 7 = 336
 # Action metadata in the obs: cats | ids | ctrl | zone_ref | slot_ref | ordinal
 # (N_ACTION_OBS_BLOCKS blocks of MAX_ACTIONS). pub stays a side-channel
 # (self._action_public), not in the obs. N_ACTION_OBS_BLOCKS is single-sourced from
@@ -312,7 +310,7 @@ _BUCKET_FEATS       = 1
 _ARCH_ONEHOT_FEATS  = 2 * N_ARCH            # one-hot(self) + one-hot(opp): 8 + 8
 _MATCHUP_TAIL_FEATS = _BUCKET_FEATS + _ARCH_ONEHOT_FEATS
 OBS_SIZE = (STATE_SIZE + N_ACTION_OBS_BLOCKS * MAX_ACTIONS
-            + _HAND_COST_FEATS + _BF_ABILITY_FEATS + _MATCHUP_TAIL_FEATS)
+            + _MATCHUP_TAIL_FEATS)
 # Absolute start of each per-action metadata block, in emission order. THE names
 # every reader uses (decode.py, test_obs_invariants.py, the search/analysis
 # paths) — previously each spelled its block's position as a bare multiplier
@@ -522,7 +520,9 @@ assert _EXTRAS_MC_ONEHOT_START == _EXTRAS_IS_NIGHT + 1, _EXTRAS_MC_ONEHOT_START
 # phase (whose starting player is already fixed before either sideboard stage runs).
 _EXTRAS_PLAYS_FIRST  = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 # Sideboard-phase progress: swaps completed / SIDEBOARD_SWAP_CAP, and the maindeck
-# drift as (d + 1) / 2 so balanced sits at 0.5. Both inert outside the phase.
+# drift as (d + 1) / 2 so balanced sits at 0.5. The menu is IN-FIRST, so the drift
+# is only ever 0 or +1 and this float only ever reads 0.5 or 1.0 (the 0.0 pole of
+# the encoding is unreachable). Both inert outside the phase.
 _EXTRAS_SB_SWAPS     = _EXTRAS_PLAYS_FIRST + 1
 _EXTRAS_SB_DELTA     = _EXTRAS_SB_SWAPS + 1
 _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
@@ -1210,19 +1210,9 @@ class RoboMageEnv(gym.Env):
 
         # Sideboard decisions observe the stale terminal board of the
         # previous game — mask it down to the sideboard-relevant blocks
-        # (see _build_sideboard_mask). Applied before the cost gathers so
-        # derived hand/bf cost features zero out consistently.
+        # (see _build_sideboard_mask).
         if state_arr[_MATCH_CTX_START + 3] > 0.5:
             np.copyto(state_arr, _SB_MASK_FILL, where=~_SB_MASK_KEEP)
-
-        # Hand cast costs: gather cost rows by hand-slot card id
-        hand_ids = np.rint(
-            state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS] * N_CARD_TYPES).astype(np.intp)
-        hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
-
-        # Battlefield activated ability costs (48 self permanent slots)
-        bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
-        bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
 
         # Write sections into preallocated obs buffer (avoids concatenate allocation)
         o = self._obs
@@ -1242,11 +1232,6 @@ class RoboMageEnv(gym.Env):
         # lands on 0.0: (ord + 1) / (OPTION_ORDINAL_MAX + 1).
         o[ACT_ORDS_START:ACT_ORDS_START + MAX_ACTIONS] = (
             (ords_int + 1) / (OPTION_ORDINAL_MAX + 1))
-        # Hand costs begin right after all N_ACTION_OBS_BLOCKS per-action blocks.
-        _hc_start = ACT_BLOCKS_END
-        o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
-        _bf_start = _hc_start + _HAND_COST_FEATS
-        o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
         # Matchup tail, PERSPECTIVE-RELATIVE like everything above it: the state
         # vector is serialized from the priority player's view ("self"), and
         # state[_SELF_IS_A_IDX] says which seat that is (during a bo3 sideboard
@@ -1372,24 +1357,6 @@ _BF_START         = _SELF_PERM_START           # 36
 _BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 36
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
-# Precomputed indices for gathering the 48 self-permanent card-id floats from the state array
-_BF_ID_IDX        = _BF_START + np.arange(_PERM_A_SLOTS) * _BF_SLOT_SIZE + _BF_CARD_OFF
-
-
-def _gather_costs(matrix, ids):
-    """Gather per-slot cost rows by vocab id; empty slots (id < 0) get a zero row.
-
-    matrix : (N_CARD_TYPES, _N_COST_FEATS) cost table
-    ids    : (S,) int vocab ids (decoded via round(id_float * N_CARD_TYPES))
-    returns: (S, _N_COST_FEATS) float32
-    """
-    safe = np.clip(ids, 0, N_CARD_TYPES - 1)
-    rows = matrix[safe]
-    return np.where((ids >= 0)[:, None], rows, 0.0).astype(np.float32)
-# Start of bf_ability_costs block in the full obs vector, after the
-# N_ACTION_OBS_BLOCKS per-action metadata blocks (cats | ids | ctrl | zone_ref |
-# slot_ref | option_ordinal) and the hand-cost block.
-_BF_COST_START    = ACT_BLOCKS_END + _HAND_COST_FEATS
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
 _AETHER_VIAL_VOCAB_IDX   = 121

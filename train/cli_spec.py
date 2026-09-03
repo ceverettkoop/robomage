@@ -13,6 +13,7 @@ import os
 from dataclasses import dataclass, field, replace
 
 from archetypes import ARCHETYPES
+from gate_sprt import DEFAULT_GATE_ALPHA as _GATE_ALPHA
 
 # ── Canonical CLI constants (single home; imported by env.py / train.py) ──────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,19 +51,22 @@ INTERACTIVE_BINARY = os.path.join(INTERACTIVE_BUILD_DIR, "robomage")
 # src/actor/az_mcts.cpp) and docs/alphazero_status.md.
 #
 # Why plans, not a tree (2026-08): at the old sb_sims=128 / 4 worlds a single
-# world's tree got 32 sims for a ~33-child delta menu — it could not even visit
-# every first pick once, and shard analysis showed sideboarding as the
+# world's tree got 32 sims for the then ~33-child delta menu — it could not even
+# visit every first pick once, and shard analysis showed sideboarding as the
 # least-converged decision domain (KL(search||net) 0.39-0.47 vs ~0.11 in-game).
 # The rollout memo already keyed values on the order-insensitive pick multiset,
 # i.e. on configurations; the plan search makes that the primary object and
-# spends nothing on pick orderings. NOTE: the az / az-league / az-selfplay CLI
-# args MUST reference these constants, not literals — argparse always supplies
-# the CLI default, so a drifted literal silently overrides this "one home"
-# (that bug shipped runs at sb_sims=32 while the constant said 128).
+# spends nothing on pick orderings. (The engine menu has since gone IN-FIRST, so
+# the root menu is Done + the distinct SIDEBOARD names only; the ~33-child figure
+# and the measurements below are history from the old delta menu.) NOTE: the az /
+# az-league / az-selfplay CLI args MUST reference these constants, not literals —
+# argparse always supplies the CLI default, so a drifted literal silently
+# overrides this "one home" (that bug shipped runs at sb_sims=32 while the
+# constant said 128).
 #
-# Extra plans per root beyond the coverage pass. Coverage alone costs
-# ~menu_size (~33) plans; each extra adds worlds more rollouts. 0 = coverage
-# only.
+# Extra plans per root beyond the coverage pass. Coverage alone costs ~menu_size
+# plans — under the IN-FIRST menu that is (distinct sideboard names + 1), ~16 on
+# a 15-card sideboard; each extra adds worlds more rollouts. 0 = coverage only.
 DEFAULT_SB_BRANCHES = 8
 # Determinized worlds at a sideboard root (each world seed IS a sampled
 # next-game deal). Every plan is priced on every world (value = mean), so more
@@ -79,6 +83,29 @@ DEFAULT_SB_WORLDS = 4
 # mcts.ROLLOUT_STEPS_PER_TURN (mirrored in src/actor/az_mcts.cpp).
 DEFAULT_SB_ROLLOUT_TURNS = 6
 
+# ── Sideboard prior-rollout self-play ───────────────────────────────────────
+# GENERATION side: training self-play does NOT plan-search sideboard roots by
+# default. Picks are sampled from the net prior with exploration and the row is
+# recorded as a ONE-HOT behavior sample; the trainer learns it REINFORCE-style
+# against the realized next-game z ("the real next game is the rollout").
+# 'plan' restores the multi-world plan search at generation time; gates, eval,
+# analysis, and play always use the plan search regardless of this mode.
+# Dead-card rules (train/sb_dead_rules.json) prune table-dead INs in both
+# modes and on both backends.
+DEFAULT_SB_SELFPLAY_MODE = "prior"
+# Behavior policy at a prior-mode sb root:
+#   b = (1-eps) * softmax(log(prior)/temp) + eps * uniform(live actions).
+# The eps floor keeps every live pick collecting outcome evidence even after
+# the prior sharpens (no self-reinforcing collapse).
+DEFAULT_SB_EXPLORE_TEMP = 1.0
+DEFAULT_SB_EXPLORE_EPS = 0.10
+# TRAINING side (az-train): sb one-hot rows train the policy with an
+# advantage-weighted (z - V_detached) log-prob term, weighted DEFAULT_SB_LOSS_COEF,
+# and each batch draws DEFAULT_SB_BATCH_FRAC of its rows from the sb-row pool
+# (sb rows are ~0.3% of a window; uniform draws would starve the signal).
+DEFAULT_SB_BATCH_FRAC = 0.05
+DEFAULT_SB_LOSS_COEF = 1.0
+
 # ── AZ pipeline defaults ────────────────────────────────────────────────────
 # One home for every tunable the AZ subcommands share, same one-home rule as
 # the sb_* knobs above: the az-selfplay / az-train / az-eval / az / az-league
@@ -88,9 +115,35 @@ DEFAULT_SB_ROLLOUT_TURNS = 6
 
 # Self-play generation.
 DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and standalone az-selfplay)
-DEFAULT_AZ_SIMS = 256        # in-game PUCT sims, TOTAL across worlds
-DEFAULT_AZ_WORLDS = 4        # determinized worlds per search
+DEFAULT_AZ_SIMS = 1028       # in-game PUCT sims, TOTAL across worlds (the 8_20 run budget)
+DEFAULT_AZ_WORLDS = 8        # determinized worlds per search (the 8_20 run budget)
+# Playout-cap randomization (KataGo-style), the anti-memorization lever: each
+# searched in-game root gets the FULL --sims budget with probability
+# --full-search-frac (pi is recorded from those rows only), else a fast
+# --fast-sims search that picks the move but records NO policy target — the
+# shard row keeps its real root value q (and so td_q/z) with an all-zero pi
+# the trainer's policy loss skips. At the same engine budget this multiplies
+# distinct games per slot by ~ sims / (frac*sims + (1-frac)*fast_sims)
+# (~3x at the defaults): more distinct outcomes for the value head instead of
+# more sims per position. Sideboard plan-search roots are exempt (their own
+# sb_* budget; always full policy rows). frac >= 1 restores the classic
+# every-root-full behavior. GENERATION side, honored by both backends; the
+# full-vs-fast coin is a deterministic hash (az_selfplay.playout_cap_full),
+# never a play-rng draw.
+DEFAULT_AZ_FULL_SEARCH_FRAC = 0.25
+DEFAULT_AZ_FAST_SIMS = 128   # the fast budget; also the az:gen serving sims
 DEFAULT_AZ_MIRROR_FRAC = 0.25  # P(opponent deck == focus deck) per self-play game
+# Opponent-pool self-play: that fraction of the schedule's pure-self-play
+# matches puts an OLDER checkpoint on the opponent seat — the incumbent
+# (gen__azfinal) plus the newest candidate snapshots distinct from both it and
+# the generator, up to DEFAULT_AZ_OPP_POOL_SIZE nets — instead of mirroring the
+# learner. Only the learner seat's decisions are recorded (the opponent is
+# environment, like a vs-scripted cell); the opponent searches noise-free
+# argmax under the shared playout-cap coin. External pressure against
+# self-play drift at unchanged engine budget; 0 disables (pure mirror
+# self-play). GENERATION side, honored by both backends.
+DEFAULT_AZ_OPP_POOL_FRAC = 0.25
+DEFAULT_AZ_OPP_POOL_SIZE = 3
 DEFAULT_AZ_TEMP_MOVES = 20   # sample from visit counts for the first N decisions per game
 # n-step TD value target (GENERATION side — baked into each shard's td_q column).
 # Each recorded sample's value target bootstraps off the search root value q of
@@ -108,6 +161,30 @@ DEFAULT_AZ_TD_N = 10
 # thousand minibatches) and let the value head memorize per-game outcomes.
 DEFAULT_AZ_LR = 5e-5
 DEFAULT_AZ_WEIGHT_DECAY = 1e-4
+DEFAULT_AZ_VALUE_DECAY = 1e-4    # weight decay on the dense value_body.* params
+                                 # (value_head columns stay decay-exempt). Matches the
+                                 # shared decay: playout-cap randomization is the
+                                 # anti-memorization lever now, and heavier decay here
+                                 # shrinks leaf values (td-calibration gain a stuck
+                                 # ~1.5-1.8), starving PUCT of value signal
+DEFAULT_AZ_EPOCH_FRAC = 1.0      # auto-batches (batches=0) = this fraction of one epoch
+                                 # — only with --rows-per-game 0 (row-uniform sampling)
+# Game-uniform training sampler: each cycle draws at most this many rows from
+# every GAME in the window (uniformly within the game, without replacement),
+# shuffles the pool and trains one pass over it. Row-uniform sampling let a
+# 230-row game push its outcome label six times harder than a 40-row game —
+# the value head's cheapest fit is then a per-game fingerprint (the 2x
+# pre/post-train MSE tripwire). The cap equalizes every game's weight and
+# bounds how often any one label is seen; the pool size (~games x cap) sets
+# the batch count, so --epoch-frac is inert unless this is 0.
+DEFAULT_AZ_ROWS_PER_GAME = 32
+                                 # over the window; safe at a full epoch now that
+                                 # playout-cap randomization supplies ~3x distinct games
+                                 # per slot — the pre-vs-post-train window MSE tripwire
+                                 # polices memorization (warns at a 2x gap)
+DEFAULT_AZ_C_PUCT = 2.5          # PUCT exploration constant for the az paths: higher
+                                 # weights search Q over the net prior (1.5 was
+                                 # prior-dominated; analysis/parity tools keep 1.5)
 DEFAULT_AZ_BATCH_SIZE = 256
 DEFAULT_AZ_TRAIN_BATCHES = 1000  # standalone az-train
 # Per az / az-league slot: 0 = AUTO, one epoch over the loaded window
@@ -123,24 +200,57 @@ DEFAULT_AZ_CV = 1.0              # value-loss weight
 # Mixing weight of the shard's n-step TD target against the per-game outcome:
 # v_target = (1 - q_mix) * z + q_mix * td_q. 0 = the classic pure-outcome AZ
 # target, 1 = pure bootstrap. TRAINING side (the shards always carry td_q).
-DEFAULT_AZ_Q_MIX = 0.5
+DEFAULT_AZ_Q_MIX = 0.5       # equal blend of outcome and n-step TD target: td_q
+                             # cuts z's per-game variance, but over-weighting it
+                             # (0.75) contracted decided-game value targets to
+                             # ±~0.5-0.7 — the 2026-08-25 gate failure. Distinct-
+                             # game volume is a generation-side concern (playout-
+                             # cap randomization), not q_mix's
 
 # Promotion gate (az-eval / the gate step of az / az-league).
-DEFAULT_AZ_EVAL_GAMES = 56
-# Gate at SERVING strength: the `az:gen` serving spec defaults to 128 sims over 4
-# worlds, so gating at 16 sims/world measured a different — and much weaker —
-# player than the one that actually gets deployed, and its promote/keep verdict
-# said little about the served net.
-DEFAULT_AZ_EVAL_SIMS = 128
-DEFAULT_AZ_EVAL_WORLDS = 4
-DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55
+#
+# The gate is a SEQUENTIAL test (train/gate_sprt.py): the matchup panel is
+# scheduled in balanced ROUNDS of DEFAULT_AZ_EVAL_GAMES matches, up to
+# DEFAULT_AZ_GATE_MAX_ROUNDS, and an SPRT on the accumulated aggregate is
+# re-asked after EVERY completed match — promote, keep, or keep playing. A
+# decisive candidate stops as soon as the evidence is in (the actor legs still
+# in flight are terminated); a marginal one keeps playing rather than taking a
+# verdict from an underpowered sample. Hypotheses are symmetric about 0.5
+# (H1 p=DEFAULT_AZ_PROMOTE_THRESHOLD vs H0 p=1-threshold), so a genuinely equal
+# candidate is a coin flip rather than a near-certain rejection. The per-deck
+# floor veto is checked as results land too, and stops the gate once it is
+# beyond rescue under the cap.
+DEFAULT_AZ_EVAL_GAMES = 28        # matches per ROUND (>= 2 per panel matchup so
+                                  # seats alternate within every round)
+# Gate at SERVING strength, which is also the TRAINING budget: the `az:gen`
+# serving spec searches 128 sims over 4 worlds, so anything shallower gates a
+# different — and much weaker, prior-dominated — player than the one actually
+# deployed, and its promote/keep verdict says little about the served net. The
+# lever for gate COST is more matches per verdict (--gate-max-rounds), never
+# fewer sims per match.
+DEFAULT_AZ_EVAL_SIMS = DEFAULT_AZ_SIMS
+DEFAULT_AZ_EVAL_WORLDS = DEFAULT_AZ_WORLDS
+DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55   # SPRT's H1; H0 is its mirror, 0.45
+DEFAULT_AZ_GATE_MAX_ROUNDS = 8    # hard cap: 8 x 28 = 224 matches. At the cap
+                                  # the incumbent keeps the seat unless the
+                                  # score reached the promote bar; a score
+                                  # inside the indifference region is
+                                  # UNDECIDED (kept, not a failed gate)
+DEFAULT_AZ_GATE_ALPHA = _GATE_ALPHA   # symmetric SPRT error rates (alpha=beta)
 DEFAULT_AZ_GATE_FLOOR = 0.2
-DEFAULT_AZ_GATE_FLOOR_MIN = 4
+# Minimum candidate matches on a piloted deck before the per-deck floor veto can
+# fire. Sized so an equal candidate is not plausibly wiped on a deck by chance:
+# at 8 matches a 0-for-8 is a ~0.4% shot per deck, small enough across a ~10-deck
+# roster to leave the aggregate test in charge of the verdict, while the veto
+# still catches a candidate that genuinely forgot how to pilot a deck. A veto
+# overrides the aggregate, so a false positive here is a silent bias toward the
+# incumbent.
+DEFAULT_AZ_GATE_FLOOR_MIN = 8
 DEFAULT_AZ_GATE_CROSS_PAIRS = 2
-# Gate every K az-league slots. 2 amortizes the (now 4x heavier, see the eval
-# budget above) gate: at DEFAULT_AZ_LR a single slot's weight delta rarely clears
-# the 0.55 promote bar anyway, so paying the gate every slot mostly bought
-# "kept-incumbent" lines.
+# Gate every K az-league slots. 2 amortizes the gate's cost (it searches at the
+# full eval budget above, over at least one panel round): at DEFAULT_AZ_LR a
+# single slot's weight delta rarely carries the sequential test to a verdict, so
+# gating every slot mostly buys "kept-incumbent" lines.
 DEFAULT_AZ_GATE_EVERY = 2
 
 # Expert (behavior-cloning) shard generation. --expert-decks defaults to the
@@ -253,7 +363,7 @@ def shaping_scale_for_timesteps(num_timesteps: int) -> float:
 # re-assertion both see the override.
 PPO_KWARGS = dict(
     learning_rate=LR_PEAK,
-    n_steps=4096,       # steps per env per update
+    n_steps=1548,       # steps per env per update
     batch_size=1024,
     n_epochs=N_EPOCHS,
     gamma=0.9975,     # 1/(1-γ) = 400-step horizon; episodes run 100-400 decisions with mostly terminal reward
@@ -554,6 +664,122 @@ def _eval_server():
             "iff it starts (no usable GPU -> local-CPU actors, with a notice)")
 
 
+def _c_puct():
+    """--c-puct (az-selfplay / az / az-league / az-eval): the PUCT constant."""
+    return Arg("--c-puct", "float", default=DEFAULT_AZ_C_PUCT,
+               help=f"PUCT exploration constant (default {DEFAULT_AZ_C_PUCT}): "
+                    "higher weights search Q over the net prior, so the value "
+                    "signal — not the prior — steers the visit distribution. "
+                    "Passed to both the Python search and the C++ actor")
+
+
+def _epoch_frac():
+    """--epoch-frac (az-train / az / az-league): auto-batches epoch fraction."""
+    return Arg("--epoch-frac", "float", default=DEFAULT_AZ_EPOCH_FRAC,
+               help="ROW-UNIFORM sampling only (--rows-per-game 0): with "
+                    "batches=0 (AUTO), train this fraction of one epoch over "
+                    f"the loaded window (default {DEFAULT_AZ_EPOCH_FRAC}). "
+                    "A full epoch (1.0) memorizes the window's small set of "
+                    "distinct games; explicit --batches ignores this. Inert "
+                    "under the default game-uniform sampler, whose batch count "
+                    "comes from --rows-per-game")
+
+
+def _rows_per_game():
+    """--rows-per-game (az-train / az / az-league): game-uniform sampler cap."""
+    return Arg("--rows-per-game", "int", default=DEFAULT_AZ_ROWS_PER_GAME,
+               help="Game-uniform training sampler: each cycle takes at most "
+                    "this many rows from every game in the window (uniform "
+                    "within the game, no replacement), shuffles the pool and "
+                    "trains one pass over it, so every game's outcome label "
+                    "carries the same weight whatever its length (default "
+                    f"{DEFAULT_AZ_ROWS_PER_GAME}); the pool size sets the "
+                    "AUTO batch count. 0 = the old row-uniform draw governed "
+                    "by --epoch-frac")
+
+
+def _full_search_frac():
+    """--full-search-frac (az-selfplay / az / az-league): playout-cap coin."""
+    return Arg("--full-search-frac", "float",
+               default=DEFAULT_AZ_FULL_SEARCH_FRAC,
+               help="Playout-cap randomization: fraction of searched in-game "
+                    "roots that get the FULL --sims budget and record a pi "
+                    f"policy target (default {DEFAULT_AZ_FULL_SEARCH_FRAC}); "
+                    "the rest run a fast --fast-sims search that picks the "
+                    "move but records no pi (value targets record from every "
+                    "row). Multiplies distinct games per engine budget; 1.0 "
+                    "restores every-root-full. Sideboard roots are exempt")
+
+
+def _fast_sims():
+    """--fast-sims (az-selfplay / az / az-league): playout-cap fast budget."""
+    return Arg("--fast-sims", "int", default=DEFAULT_AZ_FAST_SIMS,
+               help="PUCT sims (TOTAL across --worlds) for the fast searches "
+                    "of the playout cap — the in-game roots the "
+                    "--full-search-frac coin does not pick "
+                    f"(default {DEFAULT_AZ_FAST_SIMS})")
+
+
+def _opp_pool_frac():
+    """--opp-pool-frac (az-selfplay / az / az-league): opponent-pool mixing."""
+    return Arg("--opp-pool-frac", "float", default=DEFAULT_AZ_OPP_POOL_FRAC,
+               help="Fraction of the pure-self-play matches whose OPPONENT "
+                    "seat is piloted by an older checkpoint (the incumbent "
+                    "plus the newest snapshots distinct from it and the "
+                    f"generator, up to {DEFAULT_AZ_OPP_POOL_SIZE} nets) "
+                    "instead of the learner itself; only the learner seat's "
+                    "decisions are recorded "
+                    f"(default {DEFAULT_AZ_OPP_POOL_FRAC}; 0 = pure mirror "
+                    "self-play, also the silent fallback when no distinct "
+                    "older checkpoint exists yet)")
+
+
+def _gate_max_rounds():
+    """--gate-max-rounds (az-eval / az / az-league): the sequential gate's cap."""
+    return Arg("--gate-max-rounds", "int", default=DEFAULT_AZ_GATE_MAX_ROUNDS,
+               help="Hard cap on the sequential gate's panel ROUNDS (default "
+                    f"{DEFAULT_AZ_GATE_MAX_ROUNDS}; 1 = a single fixed "
+                    "panel). Rounds of --games matches are scheduled over the "
+                    "panel and the SPRT is re-asked after every completed "
+                    "match, stopping (and cutting the legs still in flight) "
+                    "the moment it decides; at the cap the incumbent keeps the "
+                    "seat unless the score reached the promote bar, and a "
+                    "score inside the indifference region is UNDECIDED (kept, "
+                    "not a failed gate)")
+
+
+def _gate_alpha():
+    """--gate-alpha (az-eval / az / az-league): the SPRT's error rates."""
+    return Arg("--gate-alpha", "float", default=DEFAULT_AZ_GATE_ALPHA,
+               help="Symmetric SPRT error rates (alpha=beta, default "
+                    f"{DEFAULT_AZ_GATE_ALPHA}): the chance of promoting a "
+                    "candidate that is really at H0 and of keeping one that is "
+                    "really at H1. Lower = stricter and slower (roughly doubles "
+                    "the matches per verdict per halving)")
+
+
+def _gate_floor_min():
+    """--gate-floor-min (az-eval / az / az-league): floor-veto sample floor."""
+    return Arg("--gate-floor-min", "int", default=DEFAULT_AZ_GATE_FLOOR_MIN,
+               help="Minimum candidate matches on a piloted deck before the "
+                    f"per-deck floor veto may fire (default "
+                    f"{DEFAULT_AZ_GATE_FLOOR_MIN}). Rounds accumulate, so a "
+                    "long sequential gate powers the veto up as it goes; set 0 "
+                    "with --gate-floor 0 to drop the veto entirely and let the "
+                    "aggregate test carry the verdict alone")
+
+
+def _no_gate_shards():
+    """--no-gate-shards (az / az-league): kill switch for gate-shard pooling."""
+    return Arg("--no-gate-shards", "flag",
+               help="Do NOT record the gate's candidate-vs-incumbent matches "
+                    "into the training pool. Default ON (actor-backend gates "
+                    "record both nets' searched decisions as shards and pool "
+                    "them into az_data/gen): cross-net games are the signal "
+                    "pure self-play cannot provide — each net's mistakes get "
+                    "punished by a DIFFERENT policy")
+
+
 def _no_cross_world():
     """--no-cross-world (az-selfplay / az / az-league): Stage 0 kill switch."""
     return Arg("--no-cross-world", "flag",
@@ -633,6 +859,40 @@ def sb_search_args():
             help="Rollout horizon pricing each sideboard plan, in player turns "
                  "of the next game (0 = static decklist read; default "
                  f"{DEFAULT_SB_ROLLOUT_TURNS})"),
+    ]
+
+
+def sb_selfplay_args():
+    """The prior-rollout sideboard self-play flags (GENERATION side), shared
+    by az-selfplay / az / az-league. One home — defaults are the
+    DEFAULT_SB_SELFPLAY_* / DEFAULT_SB_EXPLORE_* constants above."""
+    return [
+        Arg("--sb-selfplay-mode", "choice", choices=("prior", "plan"),
+            default=DEFAULT_SB_SELFPLAY_MODE,
+            help="Sideboard roots during self-play GENERATION: 'prior' = "
+                 "sample boarding picks from the net prior with exploration "
+                 "and record one-hot behavior rows (trained on next-game z); "
+                 "'plan' = the multi-world plan search (always used by "
+                 f"gates/eval/play; default {DEFAULT_SB_SELFPLAY_MODE})"),
+        Arg("--sb-explore-temp", "float", default=DEFAULT_SB_EXPLORE_TEMP,
+            help="prior^(1/temp) sampling temperature at prior-mode sideboard "
+                 f"roots (default {DEFAULT_SB_EXPLORE_TEMP})"),
+        Arg("--sb-explore-eps", "float", default=DEFAULT_SB_EXPLORE_EPS,
+            help="Uniform-mix exploration floor over live actions at "
+                 f"prior-mode sideboard roots (default {DEFAULT_SB_EXPLORE_EPS})"),
+    ]
+
+
+def sb_train_args():
+    """The sideboard-row trainer flags (az-train / az / az-league). One home —
+    defaults are DEFAULT_SB_BATCH_FRAC / DEFAULT_SB_LOSS_COEF above."""
+    return [
+        Arg("--sb-batch-frac", "float", default=DEFAULT_SB_BATCH_FRAC,
+            help="Share of each az-train batch drawn from sideboard-phase "
+                 f"rows when any exist (default {DEFAULT_SB_BATCH_FRAC})"),
+        Arg("--sb-loss-coef", "float", default=DEFAULT_SB_LOSS_COEF,
+            help="Weight of the sideboard REINFORCE policy term "
+                 f"(default {DEFAULT_SB_LOSS_COEF})"),
     ]
 
 
@@ -967,6 +1227,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
+        _full_search_frac(),
+        _fast_sims(),
+        _opp_pool_frac(),
+        _c_puct(),
         Arg("--workers", "int", default=None,
             help="Worker processes (default max(1, cpu-2))"),
         Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
@@ -976,6 +1240,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Sample from visit counts for the first N real decisions, then argmax"),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
+        *sb_selfplay_args(),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
             help="P(opponent deck == focus deck) per game "
                  f"(default {DEFAULT_AZ_MIRROR_FRAC}); else a "
@@ -1009,32 +1274,66 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
         Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
             help="Number of most-recent shards to train on"),
+        _epoch_frac(),
+        _rows_per_game(),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
             help="Warm-start from a PPO checkpoint instead of resuming AZ"),
         Arg("--fresh", "flag", help="Start from random init"),
         Arg("--snapshot-every", "int", default=0,
             help="Also save an intermediate gen__azv{steps}.pt every N batches (0=off)"),
         Arg("--seed", "int", default=0),
+        *sb_train_args(),
     ]),
-    Sub("az-eval", "Gate a candidate AZNet vs the incumbent (MCTS, low sims)", items=[
+    Sub("az-eval", "Gate a candidate AZNet vs the incumbent (sequential test, "
+                   "MCTS at the training sim budget)", items=[
         Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
         Arg("--candidate", "str", required=True, suggest="az_checkpoint",
             help="Candidate AZ .pt ('gen' or a path)"),
         Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
             help="Incumbent AZ .pt (default: gen__azfinal.pt; scripted if none yet)"),
         Arg("--games", "int", default=DEFAULT_AZ_EVAL_GAMES,
-            help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs)"),
+            help="Gate matches per ROUND, split over the roster-wide panel (a "
+                 "mirror per roster deck + direction-balanced cross pairs). The "
+                 "gate plays rounds until the SPRT decides or --gate-max-rounds "
+                 f"is reached (default {DEFAULT_AZ_EVAL_GAMES} = 2 matches per "
+                 "panel matchup, the smallest seat-balanced round)"),
+        _gate_max_rounds(),
+        _gate_alpha(),
         Arg("--sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
         Arg("--worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
-        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD,
+            help="The sequential test's H1 win-rate; H0 is its mirror "
+                 "(1-threshold), so the test is symmetric about 50%% and does "
+                 "not favor the incumbent"),
         Arg("--promote", "flag", help="Copy candidate to gen__azfinal.pt if it clears the bar"),
         Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
-                 "LIKE pairings falls below 2*floor-1 vetoes promotion even "
-                 "when the aggregate clears the bar (0 disables; on mirrors "
-                 "alone this equals win-rate < floor)"),
+                 ">=--gate-floor-min gate matches whose win-rate deficit vs the "
+                 "incumbent on LIKE pairings falls below 2*floor-1 vetoes "
+                 "promotion even when the aggregate test accepts (0 disables; "
+                 "on mirrors alone this equals win-rate < floor)"),
+        _gate_floor_min(),
+        Arg("--cross-pairs", "int", default=DEFAULT_AZ_GATE_CROSS_PAIRS,
+            help="Seeded cross-deck pairings added to the panel on top of the "
+                 "per-deck mirrors, each played in BOTH directions (default "
+                 f"{DEFAULT_AZ_GATE_CROSS_PAIRS}); raise it for a broader gate"),
+        Arg("--record-dir", "str", default=None,
+            help="Record every gate leg's searched decisions (both nets) as "
+                 "trainer-schema shards under this directory, one subdir per "
+                 "leg (cand_<seat>__r<round>__<deck_x>__<deck_y>), for "
+                 "az_inspect / the shard browsers. Actor backend only. Default: "
+                 "a fresh dir under az_data/gate (the shards are pooled into "
+                 "training unless --no-pool-shards)"),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N,
+            help="n-step TD horizon stored in the recorded shards (--record-dir)"),
+        Arg("--no-pool-shards", "flag",
+            help="Do NOT move the gate's recorded shards into the az_data/gen "
+                 "training pool afterwards. Default ON, and the gate records by "
+                 "default (bo3 + actor backend), so the sequential gate's "
+                 "compute is never wasted: however many rounds a verdict costs, "
+                 "every one of those candidate-vs-incumbent games becomes "
+                 "training data — the cross-net signal pure self-play lacks"),
+        _c_puct(),
         Arg("--seed", "int", default=1),
         Arg("--bo1", "flag",
             help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
@@ -1073,14 +1372,22 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        _full_search_frac(),
+        _fast_sims(),
+        _opp_pool_frac(),
+        _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
+        *sb_selfplay_args(),
+        *sb_train_args(),
         Arg("--workers", "int", default=None),
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
             help=f"Optimizer updates this cycle (default {DEFAULT_AZ_CYCLE_BATCHES}). "
                  "0 = AUTO: exactly one epoch over the loaded training window, "
                  "max(1, samples // batch_size) updates, so the epoch count "
                  "cannot drift as the window's data volume changes"),
+        _epoch_frac(),
+        _rows_per_game(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -1121,17 +1428,27 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "them via the scripted oracle alongside the self-play cells. "
                  "Ignored (with a note) under full --exhaustive."),
         Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
-            help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs; default "
-                 f"{DEFAULT_AZ_EVAL_GAMES} = 4 per matchup on a 10-deck roster)"),
+            help="Gate matches per ROUND, split over the roster-wide panel (a "
+                 "mirror per roster deck + direction-balanced cross pairs; "
+                 f"default {DEFAULT_AZ_EVAL_GAMES} = 2 per matchup on a 10-deck "
+                 "roster, the smallest seat-balanced round). The gate plays "
+                 "rounds until its SPRT decides or --gate-max-rounds is hit"),
+        _gate_max_rounds(),
+        _gate_alpha(),
         Arg("--eval-sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
         Arg("--eval-worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
-        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD,
+            help="The sequential test's H1 win-rate; H0 is its mirror "
+                 "(1-threshold), so the test is symmetric about 50%% and does "
+                 "not favor the incumbent"),
         Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
-                 "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
-                 "disables; on mirrors alone this equals win-rate < floor)"),
+                 ">=--gate-floor-min gate matches whose win-rate deficit vs the "
+                 "incumbent on LIKE pairings falls below 2*floor-1 vetoes "
+                 "promotion (0 disables; on mirrors alone this equals win-rate "
+                 "< floor)"),
+        _gate_floor_min(),
+        _no_gate_shards(),
         Arg("--expert-decks", "str", default=EXPERT_DECKS_ROSTER,
             suggest="league_deck", multi=True,
             help="Comma-separated decks to ALSO write scripted:hard EXPERT "
@@ -1148,7 +1465,17 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "(e.g. scripted:random / scripted:easy). scripted:hard keeps "
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
-                 "wins. Default: hard both seats, both recorded"),
+                 "wins. A comma-separated list plays --expert-games per deck "
+                 "against EACH listed opponent (an explicit scripted:hard "
+                 "there records the focus seat only). Default: hard both "
+                 "seats, both recorded"),
+        Arg("--selfplay-exclude", "str", default=None,
+            suggest="league_deck", multi=True,
+            help="Comma-separated decks to leave OUT of self-play (the "
+                 "matrix, the scripted cells, the opponent pool) while the "
+                 "gate panel and --expert-decks still cover them — for a deck "
+                 "the net cannot pilot yet, whose self-play seat only writes "
+                 "z=-1 rows"),
         Arg("--seed", "int", default=None,
             help="Base RNG seed (default: randomly drawn at launch and printed)"),
         Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
@@ -1192,8 +1519,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
                  f"{DEFAULT_AZ_SIMS // DEFAULT_AZ_WORLDS} per determinized world tree)"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS),
+        _full_search_frac(),
+        _fast_sims(),
+        _opp_pool_frac(),
+        _c_puct(),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
+        *sb_selfplay_args(),
+        *sb_train_args(),
         Arg("--workers", "int", default=None,
             help="Self-play worker processes (default max(1, cpu-2))"),
         Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
@@ -1201,6 +1534,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "0 = AUTO: exactly one epoch over the loaded training window, "
                  "max(1, samples // batch_size) updates, so the epoch count "
                  "cannot drift as the window's data volume changes"),
+        _epoch_frac(),
+        _rows_per_game(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -1210,17 +1545,27 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "the shards each slot's generation writes, so every training "
                  "pass covers exactly that pass plus the previous one"),
         Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
-            help="Total gate matches, split over the roster-wide panel (a mirror "
-                 "per roster deck + direction-balanced cross pairs; default "
-                 f"{DEFAULT_AZ_EVAL_GAMES} = 4 per matchup on a 10-deck roster)"),
+            help="Gate matches per ROUND, split over the roster-wide panel (a "
+                 "mirror per roster deck + direction-balanced cross pairs; "
+                 f"default {DEFAULT_AZ_EVAL_GAMES} = 2 per matchup on a 10-deck "
+                 "roster, the smallest seat-balanced round). The gate plays "
+                 "rounds until its SPRT decides or --gate-max-rounds is hit"),
+        _gate_max_rounds(),
+        _gate_alpha(),
         Arg("--eval-sims", "int", default=DEFAULT_AZ_EVAL_SIMS),
         Arg("--eval-worlds", "int", default=DEFAULT_AZ_EVAL_WORLDS),
-        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD),
+        Arg("--promote-threshold", "float", default=DEFAULT_AZ_PROMOTE_THRESHOLD,
+            help="The sequential test's H1 win-rate; H0 is its mirror "
+                 "(1-threshold), so the test is symmetric about 50%% and does "
+                 "not favor the incumbent"),
         Arg("--gate-floor", "float", default=DEFAULT_AZ_GATE_FLOOR,
             help="Per-piloted-deck gate floor: a deck the candidate piloted in "
-                 ">=4 gate matches whose win-rate deficit vs the incumbent on "
-                 "LIKE pairings falls below 2*floor-1 vetoes promotion (0 "
-                 "disables; on mirrors alone this equals win-rate < floor)"),
+                 ">=--gate-floor-min gate matches whose win-rate deficit vs the "
+                 "incumbent on LIKE pairings falls below 2*floor-1 vetoes "
+                 "promotion (0 disables; on mirrors alone this equals win-rate "
+                 "< floor)"),
+        _gate_floor_min(),
+        _no_gate_shards(),
         Arg("--gate-every", "int", default=DEFAULT_AZ_GATE_EVERY,
             help="Run the eval/gate every K slots instead of every slot: the "
                  "candidate accumulates K cycles of training (and "
@@ -1287,8 +1632,17 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "(e.g. scripted:random / scripted:easy). scripted:hard keeps "
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
-                 "wins. Persisted in the resume sidecar. Default: hard both "
-                 "seats, both recorded"),
+                 "wins. A comma-separated list plays --expert-games per deck "
+                 "against EACH listed opponent (an explicit scripted:hard "
+                 "there records the focus seat only). Persisted in the resume "
+                 "sidecar. Default: hard both seats, both recorded"),
+        Arg("--selfplay-exclude", "str", default=None,
+            suggest="league_deck", multi=True,
+            help="Comma-separated decks to leave OUT of every slot's self-play "
+                 "(the matrix, the scripted cells, the opponent pool) while "
+                 "the gate panel and --expert-decks still cover them — for a "
+                 "deck the net cannot pilot yet, whose self-play seat only "
+                 "writes z=-1 rows. Persisted in the resume sidecar"),
         Arg("--seed", "int", default=None,
             help="Base RNG seed (slot i uses seed+i; default: randomly drawn "
                  "at launch and printed — a --resume run restores the "

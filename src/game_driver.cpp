@@ -1010,22 +1010,33 @@ static void deck_move_one_copy(std::vector<std::pair<size_t, std::string>> &from
         from.erase(from.begin() + static_cast<long>(from_idx));
 }
 
-// Present sideboard choices as a single balanced DELTA menu: each decision offers
-// every distinct sideboard card as a "+1", every distinct maindeck card as a "-1",
-// and Done. Both lists are therefore visible at every balanced decision (the old
-// paired IN->OUT menus showed only one at a time), and the player may lead with
-// either a cut or an addition.
+// Present sideboard choices IN-FIRST: at a balanced deck the menu is Done plus
+// every distinct sideboard card as a "+1", and each such choice is answered by a
+// menu of every distinct maindeck card as the balancing "-1". A swap therefore
+// always opens with its IN half. Only the final CONFIGURATION matters, and any
+// reachable configuration is a pair of name-disjoint multisets of equal size,
+// playable as in1,out1,in2,out2,... — so offering the order as a choice bought no
+// expressiveness and only multiplied the decisions a search over configurations
+// has to burn.
 //
 // Balance is enforced by the action mask, not by validating at the end: `st.delta`
-// is the maindeck's drift from its size at phase start, and while it is nonzero
-// only the balancing direction is offered and Done is withheld. So an off-size
-// deck cannot be expressed at all — which for a learned policy is strictly better
-// than rejecting it after the fact, since no sample is wasted on an illegal line.
+// is the maindeck's drift from its size at phase start, is only ever 0 or +1, and
+// while it is +1 only cuts are offered and Done is withheld. So an off-size deck
+// cannot be expressed at all — which for a learned policy is strictly better than
+// rejecting it after the fact, since no sample is wasted on an illegal line.
 //
-// All persistent state (swap count, the one-shot direction locks, the drift and
-// the outstanding card) lives in `st`, and the menu is a pure function of it plus
-// `deck` — so a MATCH-scoped restore re-derives the identical menu, which is what
-// keeps a sideboard prompt a loop-safe MCTS search root.
+// STRANDED +1 (every maindeck name is already locked in, so no genuine completion
+// exists): exactly one forced cut of an arbitrary maindeck card is offered, so the
+// deck can never be stuck off-size. It is credited as a completed swap — even when
+// it cuts the very name just brought in — and sets `st.force_done`, so the next
+// balanced menu is Done-only and the phase ends on an explicit Done. A deck with
+// no (usable) sideboard therefore gets a Done-only balanced menu rather than a
+// 60-entry cut menu it can do nothing useful with.
+//
+// All persistent state (swap count, the one-shot direction locks, the drift, the
+// outstanding card and force_done) lives in `st`, and the menu is a pure function
+// of it plus `deck` — so a MATCH-scoped restore re-derives the identical menu,
+// which is what keeps a sideboard prompt a loop-safe MCTS search root.
 void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     Zone::Ownership player = st.player;
     sideboard_phase = true;
@@ -1069,16 +1080,19 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // the restore and re-enters this phase from the restored state.
         if (search_match_restore_pending()) return;
 
-        // ── Build the one balanced delta menu ────────────────────────────────
-        // Every distinct sideboard card is a "+1" and every distinct maindeck card
-        // a "-1", so both lists are visible at every balanced decision and the
-        // player may lead with either. Balance is an ACTION-MASK invariant rather
-        // than a post-hoc validation: with a move outstanding (delta != 0) only the
-        // balancing direction is offered and Done is withheld, so an off-size deck
-        // is not merely rejected — it cannot be expressed.
+        // ── Build this decision's menu ───────────────────────────────────────
+        // Balanced: Done plus every distinct sideboard card as a "+1". At +1: every
+        // distinct maindeck card as the balancing "-1", or the lone forced cut when
+        // none is left. Balance is an ACTION-MASK invariant rather than a post-hoc
+        // validation: with a cut outstanding Done is withheld and nothing may be
+        // added, so an off-size deck is not merely rejected — it cannot be expressed.
         std::vector<LegalAction> actions;
         action_deck_idx.clear();
         action_is_in.clear();
+        // True when this pass offers ONLY the forced cut of a stranded +1. Purely
+        // per-iteration (recomputed every pass); the apply block reads it to latch
+        // the persistent st.force_done.
+        bool forced_this_menu = false;
         // Keep the three parallel vectors aligned; every menu entry goes through here.
         auto add_choice = [&](const char *verb, size_t deck_idx, size_t copies,
                               const std::string &name, bool is_in) {
@@ -1102,45 +1116,42 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             actions.back().category = ActionCategory::SIDEBOARD_DONE;
             action_deck_idx.push_back(0);
             action_is_in.push_back(false);
-        }
-        if (st.delta <= 0) {  // room to bring a card in
-            for (size_t i = 0; i < deck.sideboard.size(); i++) {
-                const std::string &name = deck.sideboard[i].second;
-                if (sided_out_names.count(name)) continue;
-                add_choice("Sideboard in: ", i, deck.sideboard[i].first, name, true);
+            // A swap always opens with its IN half. After a forced cut only Done
+            // remains, so the phase ends on the very next decision.
+            if (!st.force_done) {
+                for (size_t i = 0; i < deck.sideboard.size(); i++) {
+                    const std::string &name = deck.sideboard[i].second;
+                    if (sided_out_names.count(name)) continue;
+                    add_choice("Sideboard in: ", i, deck.sideboard[i].first, name, true);
+                }
             }
-        }
-        if (st.delta >= 0) {  // room to cut a card
+        } else {
+            // The -1 pole is unreachable: nothing but an IN is ever offered while
+            // balanced, so an outstanding move can only leave the deck oversized.
+            if (st.delta != 1)
+                fatal_error("sideboard drift is " + std::to_string(st.delta) +
+                            ", outside {0, +1} — every swap opens with its IN half");
             for (size_t i = 0; i < deck.main_deck.size(); i++) {
                 const std::string &name = deck.main_deck[i].second;
                 if (sided_in_names.count(name)) continue;
                 add_choice("Sideboard out: ", i, deck.main_deck[i].first, name, false);
             }
-        }
-        // The TAKEBACK (reversing the outstanding half-move) is offered ONLY when
-        // the balancing direction has no genuine completion — the STRANDED case
-        // (pool empty, or every name direction-locked). No information arrives
-        // between the two halves of a swap, so a takeback where an alternative
-        // completion exists adds no expressiveness ("don't swap" was expressible
-        // as Done on the balanced menu one decision earlier) — it only lets an
-        // agent burn two decisions on a net no-op, which outcome-driven training
-        // can never learn to avoid (the deck ends bit-identical, so the outcome
-        // gradient against it is exactly zero). With a move outstanding no Done
-        // is present, so `actions` is empty here iff no completion exists.
-        if (st.delta != 0 && actions.empty()) {
-            const bool tb_in = (st.delta < 0);  // a cut is outstanding -> bring it back in
-            const auto &pool = tb_in ? deck.sideboard : deck.main_deck;
-            for (size_t i = 0; i < pool.size(); i++) {
-                if (pool[i].second == st.unpaired_name) {
-                    add_choice(tb_in ? "Sideboard in: " : "Sideboard out: ",
-                               i, pool[i].first, st.unpaired_name, tb_in);
-                    break;
-                }
+            // STRANDED: every maindeck name is locked in, so no genuine completion
+            // exists. Offer ONE forced cut (of an arbitrary maindeck card, ignoring
+            // the lock) so the deck can never be stuck off-size; it completes the
+            // pair and force-ends the phase — see the header comment.
+            if (actions.empty()) {
+                if (deck.main_deck.empty())
+                    fatal_error("sideboard: maindeck is empty at drift +1 — the "
+                                "outstanding IN half must have put a card there");
+                forced_this_menu = true;
+                add_choice("Sideboard out: ", 0, deck.main_deck[0].first,
+                           deck.main_deck[0].second, false);
             }
         }
 
-        // The one-shot locks bound the menu to (distinct maindeck) + (distinct
-        // sideboard) + Done — or the lone takeback in the stranded case —
+        // The one-shot locks bound the menu to Done + (distinct sideboard) while
+        // balanced, and to (distinct maindeck) — or the lone forced cut — at +1,
         // comfortably inside MAX_ACTIONS for any real deck. Fail loudly rather
         // than relying on populate_query's silent truncation, which would make
         // legal choices unreachable to the model.
@@ -1149,17 +1160,13 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
                         " entries, exceeds MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
                         " — choices beyond that would be unreachable");
 
-        // Nothing legal at all (empty sideboard AND nothing cuttable): end the
-        // phase. Only reachable while balanced — a stranded outstanding move gets
-        // its takeback appended above, so the deck can never be stuck off-size.
-        if (actions.empty()) {
-            game_log("No sideboard moves available — ending sideboard phase.\n");
-            break;
-        }
         // Cap completed swaps in machine mode so a runaway agent cannot spin here
         // (schedule-affecting, so a replayed machine log must apply the same cap).
         // Checked only while balanced: interrupting mid-move would strand the deck
-        // off-size.
+        // off-size. It can also pre-empt the Done-only menu a forced cut sets up —
+        // if the stranding swap was the SIDEBOARD_SWAP_CAP'th one this fires first.
+        // The deck is balanced on either path, so the worst-case decision count is
+        // unchanged (Done is simply replaced by the auto-finish).
         if (balanced && InputLogger::instance().is_machine_schedule() &&
             st.sb_swaps >= SIDEBOARD_SWAP_CAP) {
             game_log("%s hit sideboard swap limit (%d), auto-finishing.\n",
@@ -1171,9 +1178,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             game_log("\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
                      player_name, deck.sideboard.size(), st.sb_swaps);
         else
-            game_log("\n%s must balance %s (%+d): choose a card to %s.\n", player_name,
-                     st.unpaired_name.c_str(), st.delta,
-                     st.delta > 0 ? "cut" : "bring in");
+            game_log("\n%s must balance %s (%+d): choose a card to cut.\n", player_name,
+                     st.unpaired_name.c_str(), st.delta);
 
         // With a move outstanding, expose the unpaired card as the pending-decision
         // source so the observation shows WHICH card the balancing move is for.
@@ -1185,8 +1191,9 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         // below mutates the deck, so unwinding through one would corrupt it.
         if (search_match_restore_pending()) return;
         // Loop-safe: the menu above is a pure function of (deck, the one-shot name
-        // sets, delta, unpaired_name), all of which live in `st` and are restored
-        // wholesale, so re-entry after a rollback re-derives this exact menu.
+        // sets, delta, unpaired_name, force_done), all of which live in `st` and are
+        // restored wholesale, so re-entry after a rollback re-derives this exact
+        // menu — the forced cut of a stranded +1 included.
         search_set_loop_safe(true);
         int choice = InputLogger::instance().get_input(actions);
         search_set_loop_safe(false);
@@ -1214,46 +1221,33 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         const size_t deck_idx = action_deck_idx[pick];
         const std::string moved = is_in ? deck.sideboard[deck_idx].second
                                         : deck.main_deck[deck_idx].second;
-        // A takeback reverses the outstanding move instead of pairing with it.
-        const bool is_takeback = (!balanced && moved == st.unpaired_name);
 
         if (is_in)
             deck_move_one_copy(deck.sideboard, deck.main_deck, deck_idx);
         else
             deck_move_one_copy(deck.main_deck, deck.sideboard, deck_idx);
 
-        if (is_takeback) {
-            // Undo: restore balance without crediting a swap. Lock the card out of
-            // the direction it just came from, so a +/- cycle cannot repeat — each
-            // takeback permanently shrinks one pool, which is what guarantees the
-            // phase terminates even though moves are individually reversible.
-            if (is_in)
-                sided_in_names.insert(moved);
-            else
-                sided_out_names.insert(moved);
-            game_log("Took back %s.\n", moved.c_str());
+        if (is_in)
+            sided_in_names.insert(moved);
+        else
+            sided_out_names.insert(moved);
+        if (balanced) {
+            // Opening half of a swap — always the IN. The deck is now oversized and
+            // the next decision offers only cuts.
+            st.delta = 1;
+            st.unpaired_name = moved;
+            game_log("Bringing in %s.\n", moved.c_str());
+        } else {
+            // Closing half: the pair is complete, so this counts as a swap. The
+            // forced cut of a stranded +1 counts too, INCLUDING when it cuts the
+            // very name just brought in — that leaves the deck exactly as it
+            // started, which is a legal (if pointless) configuration, and the
+            // phase force-ends on the next decision either way.
+            game_log("Swapped %s for %s.\n", moved.c_str(), st.unpaired_name.c_str());
             st.delta = 0;
             st.unpaired_name.clear();
-        } else {
-            if (is_in)
-                sided_in_names.insert(moved);
-            else
-                sided_out_names.insert(moved);
-            if (balanced) {
-                // Opening half of a swap: the deck is now off-size and the next
-                // decision offers only the balancing direction.
-                st.delta = is_in ? 1 : -1;
-                st.unpaired_name = moved;
-                game_log("%s %s.\n", is_in ? "Bringing in" : "Cutting", moved.c_str());
-            } else {
-                // Closing half: the pair is complete, so this counts as a swap.
-                game_log("Swapped %s for %s.\n",
-                         is_in ? st.unpaired_name.c_str() : moved.c_str(),
-                         is_in ? moved.c_str() : st.unpaired_name.c_str());
-                st.delta = 0;
-                st.unpaired_name.clear();
-                st.sb_swaps++;
-            }
+            st.sb_swaps++;
+            if (forced_this_menu) st.force_done = true;
         }
 
         // The move mutated `deck`, so the sideboarding player's own-view store must
@@ -1263,9 +1257,10 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
         deck_state_set_live(player, deck);
     }
 
-    // Every exit path leaves the deck balanced: Done is only offered at delta 0,
-    // the swap cap is only checked there, and the no-moves-available break is
-    // unreachable while a move is outstanding (its takeback is always legal).
+    // Every exit path leaves the deck balanced: Done is only offered at delta 0 and
+    // the swap cap is only checked there, and an outstanding +1 always has a cut to
+    // balance it (the forced one when every maindeck name is locked), so the loop
+    // can never be left mid-swap.
     sideboard_phase = false;
     sideboard_phase_player = Zone::UNKNOWN;
     sideboard_phase_state = nullptr;

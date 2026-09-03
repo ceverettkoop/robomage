@@ -26,14 +26,14 @@ from gen_card_costs import (REPO_ROOT, VOCAB_H, CARDS_DIR, N_TYPES, TOKENS_DIR,
                             DFC_SEPARATOR, parse_vocab, parse_token_vocab_base,
                             parse_mana_cost, find_card_file,
                             parse_vocab_with_stems, find_back_face_file,
-                            split_faces, face_lines_for)
+                            split_faces, face_lines_for, get_ability_cost)
 from _enums import _OBS_KEYWORDS
 from gen_util import write_if_changed
 
 OUT_FILE = os.path.join(REPO_ROOT, "train/card_props.py")
 
 # ---------------------------------------------------------------------------
-# Fixed column layout (P = 96). Order is load-bearing: consumers address slices
+# Fixed column layout (P = 103). Order is load-bearing: consumers address slices
 # by these names via card_props._PROP_NAMES. Widening past the reserved columns
 # is a deliberate network-shape break (every checkpoint invalidated).
 # ---------------------------------------------------------------------------
@@ -70,6 +70,8 @@ PROP_NAMES = (
     + ["kw_" + re.sub(r"[^a-z]", "_", k.lower()).strip("_") for k in KEYWORDS]
     + ["cat_" + c.lower() for c in ABILITY_CATS]
     + ["sub_" + s.lower() for s in SUBTYPES]
+    + ["abil_w", "abil_u", "abil_b", "abil_r", "abil_g", "abil_c",
+       "abil_generic"]
     + [f"reserved_{i}" for i in range(N_RESERVED)]
 )
 N_PROPS = len(PROP_NAMES)
@@ -169,15 +171,21 @@ def parse_face(lines, row):
             row[COL["cat_" + cat.lower()]] = 1.0
         else:
             _ignored_cats.add(cat)
+    # Cheapest battlefield-activated-ability mana cost — the same selection rule
+    # (and the same /10.0 scale) as _CARD_ABILITY_COST_MATRIX in card_costs.py.
+    acost, _label = get_ability_cost(lines)
+    for i in range(7):
+        row[COL["abil_w"] + i] = acost[i] / 10.0
 
 
-def main():
-    vocab = parse_vocab(VOCAB_H)
+def build_matrix(vocab):
+    """The [N_TYPES][N_PROPS] property matrix for a parsed vocab dict.
+
+    Shared with train/gen_sb_rules.py so the dead-sideboard-card fact bits are
+    derived by exactly the same script parsing as the network's property block.
+    """
     token_base = parse_token_vocab_base(VOCAB_H)
     token_stems = parse_vocab_with_stems(VOCAB_H)
-    print(f"Building {N_PROPS}-column property matrix "
-          f"for {len(vocab)} vocab cards")
-
     matrix = [[0.0] * N_PROPS for _ in range(N_TYPES)]
     for name, idx in vocab.items():
         if idx >= token_base:
@@ -204,6 +212,14 @@ def main():
                 pips = parse_mana_cost(field(front_lines, "ManaCost") or
                                        "no cost")
                 matrix[idx][COL["cmc"]] = (sum(pips[:6]) + pips[6]) / 10.0
+    return matrix
+
+
+def main():
+    vocab = parse_vocab(VOCAB_H)
+    print(f"Building {N_PROPS}-column property matrix "
+          f"for {len(vocab)} vocab cards")
+    matrix = build_matrix(vocab)
 
     for label, ignored in (("keywords", _ignored_keywords),
                            ("ability categories", _ignored_cats),

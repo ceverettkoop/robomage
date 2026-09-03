@@ -99,6 +99,64 @@ def _expected_z(winner, mover_is_a) -> float:
     return 1.0 if ((winner == "A") == mover_is_a) else -1.0
 
 
+def check_opp_pool_match() -> int:
+    """Opponent-pool mode of :func:`az_selfplay._play_match`: an older net
+    (here a second uniform evaluator) pilots the non-learner seat. Asserts the
+    learner-seat-only sample contract on a real engine bo3 match: every sample's
+    mover is the learner's seat, the searched counter equals the sample count
+    (opponent roots search but record nothing), and the shared playout-cap
+    counter advanced past the learner's own searched in-game roots (the
+    opponent's roots consume coins too). Returns a failure count."""
+    deck_a, deck_b, paths = _write_decks()
+    env = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                            auto_sideboard=False)
+    rng = np.random.default_rng(SEED)
+    failures = 0
+    try:
+        samples, game_winners, searched, fallback, dropped, sb_stats = _play_match(
+            env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
+            temp_moves=TEMP_MOVES, root_noise_eps=0.0, root_noise_alpha=1.0,
+            seed=SEED, sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
+            sb_rollout_turns=SB_ROLLOUT_TURNS,
+            opp_evaluator=UniformEvaluator(), net_is_a=True,
+            full_search_frac=0.5, fast_sims=4)
+    finally:
+        env.close()
+        for p in paths:
+            if os.path.exists(p):
+                os.remove(p)
+    print(f"opp-pool match: games={len(game_winners)} winners={game_winners} "
+          f"samples={len(samples)} searched={searched} "
+          f"cap_roots={sb_stats['cap_root_idx']}")
+    if len(game_winners) < 1 or not samples:
+        print("FAIL opp-pool: match produced no completed game / no samples")
+        return 1
+    wrong_seat = [i for i, s in enumerate(samples) if not s["mover_is_a"]]
+    if wrong_seat:
+        failures += 1
+        print(f"FAIL opp-pool: {len(wrong_seat)} sample(s) from the OPPONENT "
+              f"seat (positions {wrong_seat[:8]}) — learner-only contract broken")
+    if searched != len(samples):
+        failures += 1
+        print(f"FAIL opp-pool: searched={searched} != samples={len(samples)} "
+              f"(opponent roots must not count as learner searches)")
+    n_ingame = sum(1 for s in samples if not _is_sideboard(s))
+    if sb_stats["cap_root_idx"] < n_ingame:
+        failures += 1
+        print(f"FAIL opp-pool: cap_root_idx={sb_stats['cap_root_idx']} < "
+              f"learner in-game searched roots {n_ingame}")
+    elif sb_stats["cap_root_idx"] == n_ingame:
+        # Both seats draw from the one counter; a full bo3 where the opponent
+        # never got a searchable root would be surprising but not impossible —
+        # report, don't fail.
+        print("note opp-pool: cap counter == learner roots (opponent seat "
+              "never hit a searchable in-game root this match)")
+    if not failures:
+        print("ok  opp-pool: learner-seat-only samples, opponent searches "
+              "uncounted, shared cap counter")
+    return failures
+
+
 def check_scripted_cell_rotation() -> int:
     """The rotating vs-scripted slice of an --exhaustive-selfplay schedule.
 
@@ -218,22 +276,25 @@ def _drive_to_sideboard(env, seed, max_decisions=3000):
     raise AssertionError("no sideboard prompt within the decision cap")
 
 
-def check_takeback_only_when_stranded() -> int:
-    """The reverse of an outstanding half-move (the TAKEBACK) is offered ONLY
-    when the balancing direction has no genuine completion.
+def check_forced_out_when_stranded() -> int:
+    """The engine's sideboard menu is IN-FIRST, and its only forced action is the
+    cut that rescues a STRANDED addition.
 
-    Case 1 (genuine completions exist): after opening a swap with a cut, the
-    follow-up menu must offer sideboard-in choices but NOT the cut card itself —
-    an out-X-then-in-X no-op is unexpressible.
+    Case 1 (genuine completions exist): the balanced menu leads with Done and
+    offers no cut at all; after opening a swap with an addition the follow-up menu
+    is all cuts, and never the card just brought in (the one-shot lock), so an
+    in-X-then-out-X no-op is unexpressible.
 
-    Case 2 (stranded, sideboard-less deck): a cut's follow-up menu is exactly the
-    lone takeback, so the deck can still never be stuck off-size."""
+    Case 2 (stranded): a deck with no sideboard gets a balanced menu of exactly
+    [Done]; a deck whose ONE sideboard card shares its name with the whole maindeck
+    strands at +1, and its menu is then exactly the lone forced cut — after which
+    the next menu is exactly [Done], force-ending the phase."""
     failures = 0
 
     def fail(msg):
         nonlocal failures
         failures += 1
-        print(f"FAIL takeback: {msg}")
+        print(f"FAIL forced-out: {msg}")
 
     # ── Case 1: real sideboard, so genuine completions exist ─────────────────
     deck_a, deck_b, paths = _write_decks()
@@ -243,74 +304,87 @@ def check_takeback_only_when_stranded() -> int:
         obs = _drive_to_sideboard(env, seed=SEED)
         num = env._num_choices
         cats, ids = _menu(obs, num)
-        if CAT_SIDEBOARD_DONE not in cats:
-            fail(f"balanced menu missing Done (cats={cats.tolist()})")
-        outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
-        if not outs:
-            fail("balanced menu offers no cut")
+        if cats[0] != CAT_SIDEBOARD_DONE:
+            fail(f"balanced menu does not lead with Done (cats={cats.tolist()})")
+        if any(cats[i] == CAT_SIDEBOARD_OUT for i in range(num)):
+            fail(f"balanced menu offers a cut (cats={cats.tolist()}); a swap must "
+                 f"open with its addition")
+        ins = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+        if not ins:
+            fail("balanced menu offers no addition")
         else:
-            cut_id = ids[outs[0]]
-            obs, _r, _t, _tr, _i = env.step(outs[0])
+            in_id = ids[ins[0]]
+            obs, _r, _t, _tr, _i = env.step(ins[0])
             num = env._num_choices
             cats, ids = _menu(obs, num)
             if obs[_IS_SIDEBOARD_IDX] <= 0.5 or num < 1:
-                fail("no follow-up menu after opening a cut")
-            ins = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
-            if not ins:
-                fail("follow-up menu offers no genuine completion")
-            if any(ids[i] == cut_id for i in ins):
-                fail(f"avoidable takeback offered (cut card id {cut_id} back "
-                     f"in the IN menu alongside {len(ins)} completions)")
-            elif ins:
+                fail("no follow-up menu after opening a swap")
+            outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
+            if len(outs) != num:
+                fail(f"follow-up menu is not all cuts (cats={cats.tolist()})")
+            if any(ids[i] == in_id for i in outs):
+                fail(f"card {in_id} was sided in and is offered straight back out "
+                     f"alongside {len(outs)} cut(s) — the lock must exclude it")
+            elif outs:
                 # Complete the swap; the balanced menu must re-offer Done.
-                obs, _r, _t, _tr, _i = env.step(ins[0])
+                obs, _r, _t, _tr, _i = env.step(outs[0])
                 cats, _ = _menu(obs, env._num_choices)
                 if CAT_SIDEBOARD_DONE not in cats:
                     fail("Done absent after completing the swap")
                 else:
-                    print(f"  ok  avoidable takeback absent ({len(ins)} genuine "
-                          f"completions offered; swap completed, Done back)")
+                    print(f"  ok  in-first pairing ({len(outs)} cut(s) offered, the "
+                          f"sided-in card locked out; swap completed, Done back)")
     finally:
         env.close()
         for p in paths:
             if os.path.exists(p):
                 os.remove(p)
 
-    # ── Case 2: sideboard-less deck — a cut strands, the takeback appears ────
+    # ── Case 2: stranding — no sideboard at all, then a self-naming one ───────
     d = os.path.join(BIN_DIR, "resources", "decks", "temp")
     os.makedirs(d, exist_ok=True)
-    a = os.path.join(d, "az_sb_nosb_a.dk")
-    b = os.path.join(d, "az_sb_nosb_b.dk")
+    a = os.path.join(d, "az_sb_strand_a.dk")
+    b = os.path.join(d, "az_sb_strand_b.dk")
     with open(a, "w") as f:
         f.write("36 Grizzly Bears\n24 Forest\n")
     with open(b, "w") as f:
-        f.write("60 Swamp\n")
-    env = RoboMageEnv(deck_a="temp/az_sb_nosb_a", deck_b="temp/az_sb_nosb_b",
+        f.write("60 Swamp\nSIDEBOARD:\n1 Swamp\n")
+    env = RoboMageEnv(deck_a="temp/az_sb_strand_a", deck_b="temp/az_sb_strand_b",
                       bo3=True, auto_sideboard=False)
     try:
-        obs = _drive_to_sideboard(env, seed=SEED)
+        obs = _drive_to_sideboard(env, seed=SEED)      # seat A boards first
+        num = env._num_choices
+        cats, _ids = _menu(obs, num)
+        if num != 1 or cats[0] != CAT_SIDEBOARD_DONE:
+            fail(f"a deck with no sideboard should get exactly [Done], got "
+                 f"{num} choice(s) cats={cats.tolist()}")
+        obs, _r, _t, _tr, _i = env.step(0)
         num = env._num_choices
         cats, ids = _menu(obs, num)
-        outs = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_OUT]
-        if not outs:
-            fail("sideboard-less balanced menu offers no cut")
+        if obs[_IS_SIDEBOARD_IDX] <= 0.5:
+            fail("seat B never got its own sideboard prompt")
+        ins = [i for i in range(num) if cats[i] == CAT_SIDEBOARD_IN]
+        if not ins:
+            fail(f"seat B's balanced menu offers no addition (cats={cats.tolist()})")
         else:
-            cut_id = ids[outs[0]]
-            obs, _r, _t, _tr, _i = env.step(outs[0])
+            in_id = ids[ins[0]]
+            obs, _r, _t, _tr, _i = env.step(ins[0])
             num = env._num_choices
             cats, ids = _menu(obs, num)
-            if num != 1 or cats[0] != CAT_SIDEBOARD_IN or ids[0] != cut_id:
-                fail(f"stranded menu should be the lone takeback of card "
-                     f"{cut_id}, got cats={cats.tolist()} ids={ids.tolist()}")
+            if num != 1 or cats[0] != CAT_SIDEBOARD_OUT or ids[0] != in_id:
+                fail(f"stranded menu should be the lone forced cut of card "
+                     f"{in_id}, got cats={cats.tolist()} ids={ids.tolist()}")
             else:
-                # Taking it must restore the balanced menu (Done available).
+                # The forced cut completes the pair, then Done is all that is left.
                 obs, _r, _t, _tr, _i = env.step(0)
-                cats, _ = _menu(obs, env._num_choices)
-                if CAT_SIDEBOARD_DONE not in cats:
-                    fail("Done absent after the forced takeback")
+                num = env._num_choices
+                cats, _ = _menu(obs, num)
+                if num != 1 or cats[0] != CAT_SIDEBOARD_DONE:
+                    fail(f"after the forced cut the menu should be exactly [Done], "
+                         f"got {num} choice(s) cats={cats.tolist()}")
                 else:
-                    print("  ok  stranded cut offers exactly the lone takeback; "
-                          "deck restored to balance")
+                    print("  ok  no-sideboard menu is [Done]; a stranded addition "
+                          "gets the lone forced cut, then Done only")
     finally:
         env.close()
         for p in (a, b):
@@ -330,9 +404,14 @@ def main() -> int:
         print(f"binary not found at {BINARY} — run `make` first", file=sys.stderr)
         return 2
 
-    tb_failures = check_takeback_only_when_stranded()
-    if tb_failures:
-        print(f"\ntakeback-only-when-stranded: FAILED ({tb_failures} failure(s))")
+    fo_failures = check_forced_out_when_stranded()
+    if fo_failures:
+        print(f"\nforced-out-when-stranded: FAILED ({fo_failures} failure(s))")
+        return 1
+
+    op_failures = check_opp_pool_match()
+    if op_failures:
+        print(f"\nopp-pool match: FAILED ({op_failures} failure(s))")
         return 1
 
     deck_a, deck_b, paths = _write_decks()
@@ -450,6 +529,64 @@ def main() -> int:
     else:
         print(f"ok  (v): every sideboard sample's td_q == z; td_q finite in "
               f"[-1,1] ({int((td_q != z).sum())}/{len(z)} rows bootstrapped)")
+
+    # (vi) prior mode (the default): every sideboard sample is a ONE-HOT
+    # behavior row on a legal, non-rule-dead action, with a finite net-value q
+    # (the trainer's REINFORCE marker/contract; az_selfplay._sb_prior_sample).
+    from mcts import sb_dead_mask
+    for i in sb_idx:
+        s = samples[i]
+        pi_row = s["pi"]
+        nz = np.nonzero(pi_row)[0]
+        if len(nz) != 1 or pi_row[nz[0]] != 1.0:
+            failures += 1
+            print(f"FAIL (vi): sideboard sample pos {i} pi is not one-hot "
+                  f"({len(nz)} nonzero entries) — prior mode must record "
+                  f"one-hot behavior rows")
+            break
+        a = int(nz[0])
+        nc = int(s["mask"].sum())
+        dead = sb_dead_mask(s["obs"], nc)
+        if a >= nc or dead[a]:
+            failures += 1
+            print(f"FAIL (vi): sideboard sample pos {i} chose action {a} "
+                  f"(nc={nc}, dead={bool(dead[a]) if a < nc else 'oob'}) — "
+                  f"a rule-dead/illegal pick must never be sampled")
+            break
+        if not np.isfinite(s["q"]) or abs(s["q"]) > 1.0 + 1e-6:
+            failures += 1
+            print(f"FAIL (vi): sideboard sample pos {i} q={s['q']} — prior "
+                  f"mode records the net's value in [-1,1]")
+            break
+    else:
+        print(f"ok  (vi): prior-mode sideboard rows are one-hot on live "
+              f"actions with finite net-value q")
+
+    # (vii) plan mode still works end-to-end behind --sb-selfplay-mode plan:
+    # a fresh match records sideboard rows with the soft softmax(Q/tau) pi.
+    env2 = SearchRoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=True,
+                             auto_sideboard=False)
+    try:
+        samples2, winners2, _se2, _f2, _d2, _st2 = _play_match(
+            env2, UniformEvaluator(), np.random.default_rng(SEED),
+            sims=SIMS, worlds=WORLDS, temp_moves=TEMP_MOVES,
+            root_noise_eps=0.0, root_noise_alpha=1.0, seed=SEED,
+            sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
+            sb_rollout_turns=SB_ROLLOUT_TURNS, sb_mode="plan")
+    finally:
+        env2.close()
+    sb2 = [s for s in samples2 if _is_sideboard(s)]
+    soft = [s for s in sb2 if int((s["pi"] > 0).sum()) >= 2]
+    if not sb2:
+        failures += 1
+        print("FAIL (vii): plan mode collected no sideboard samples")
+    elif not soft:
+        failures += 1
+        print(f"FAIL (vii): none of the {len(sb2)} plan-mode sideboard rows "
+              f"carries a soft multi-action pi")
+    else:
+        print(f"ok  (vii): plan mode records soft-pi sideboard rows "
+              f"({len(soft)}/{len(sb2)})")
 
     # Housekeeping: remove the temp decks we created.
     for p in paths:

@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "actor/sb_rules.h"   // sb_dead_mask (dead-sideboard-card pruning)
 #include "az_evaluator.h"
 #include "classes/action.h"   // LegalAction::description (divergence diagnostic)
 #include "classes/game.h"     // cur_game.turn (rollout horizon check)
@@ -56,11 +57,34 @@ static constexpr double kSbPiTau = 0.25;
 static constexpr int kDefaultSbBranches = 8;
 static constexpr int kDefaultSbWorlds = 4;
 static constexpr int kDefaultSbRolloutTurns = 6;
-// Safety bound on one plan's own pick sequence (mcts._PLAN_PICK_CAP).
-static constexpr int kPlanPickCap = 68;
+// Safety bound on one plan's own pick sequence (mcts._PLAN_PICK_CAP), and an
+// EXACT one: the engine's menu is IN-FIRST, so every decision is either the IN
+// half of a swap, the OUT half that closes it, or Done. SIDEBOARD_SWAP_CAP (15)
+// completed swaps therefore cost at most 15 * 2 + 1 (Done) = 31 decisions, and
+// the stranded path is no longer: 14 swaps + the stranding IN + its forced OUT +
+// the Done-only menu is 31 too. The check is a strict `>` applied BEFORE the pick
+// is appended, so a legal line (whose longest prefix at check time is 30) never
+// trips it and 31 is not off by one. Anything past it is a broken menu loop.
+static constexpr int kPlanPickCap = 31;
 // Bound on extras attempts per root: branches * this (mcts.run_plan_search's
 // max_attempts multiplier).
 static constexpr int kExtrasAttemptFactor = 4;
+
+// Playout-cap coin — the C++ twin of az_selfplay.playout_cap_full. The two
+// MUST stay in exact lockstep (same murmur3 finalizer, same 24-bit
+// threshold): --full-search-frac has to mean the same coin on either backend.
+// frac >= 1 short-circuits to always-full without consulting the hash.
+static bool playout_cap_full(uint32_t cap_seed, uint32_t root_idx,
+                             double full_search_frac) {
+    if (full_search_frac >= 1.0) return true;
+    if (full_search_frac <= 0.0) return false;
+    uint32_t x = cap_seed ^ (0x9E3779B9u * root_idx);
+    x = (x ^ (x >> 16)) * 0x85EBCA6Bu;
+    x = (x ^ (x >> 13)) * 0xC2B2AE35u;
+    x ^= x >> 16;
+    return (x >> 8) < static_cast<uint32_t>(full_search_frac *
+                                            static_cast<double>(1u << 24));
+}
 
 namespace {
 
@@ -176,6 +200,11 @@ struct AZMcts::Impl {
     // when a returned action index lands outside the engine's current menu.
     std::vector<std::string> root_menu_desc;
     std::vector<int64_t> visit_totals;  // summed root.N across worlds
+    std::vector<double> w_totals;       // summed root.W across worlds (per action;
+    //                                     w_totals[a]/visit_totals[a] = the Q the
+    //                                     self-play sample's q records for the
+    //                                     played action, mirroring mcts.py's
+    //                                     SearchResult.q)
     double value_acc = 0.0;
     int sims_run = 0;
     long sim_steps = 0;
@@ -247,6 +276,8 @@ struct AZMcts::Impl {
     int plan_dev = 0;                  // completion-decision counter (variant)
     int coverage_cursor = 0;           // next coverage first pick
     std::vector<int> plan_ranked;      // extras ranking (set after coverage)
+    std::vector<bool> plan_dead;       // root dead-IN mask (sb_rules.h)
+    std::vector<bool> gen_dead;        // per-completion-step scratch mask
     int extra_attempt = 0;
     int novel_extras = 0;
     int memo_hits = 0;
@@ -262,13 +293,23 @@ struct AZMcts::Impl {
     long move_counter = 0;                   // per-game real-decision counter
     std::vector<float> root_obs;             // clean root obs (captured before determinize)
     std::vector<SelfPlaySample> game_samples; // samples stored this game
+    // ── playout cap (cfg.full_search_frac; see az_mcts.h) ──────────────────
+    // cap_seed_ = the match's engine seed; cap_root_counter counts searched
+    // in-game roots WITHIN the match (never reset at a game boundary,
+    // mirroring the Python per-match counter); cur_full is the coin's verdict
+    // for the search in flight (latched at root setup like cur_sims).
+    uint32_t cap_seed_ = 0;
+    long cap_root_counter = 0;
+    bool cur_full = true;
 
     explicit Impl(const MCTSConfig& c, AZEvaluator* e, AZEvaluator* eb)
         : cfg(c), eval(e), eval_a(e), eval_b(eb), rng(c.selfplay_rng_seed) {}
 
-    void begin_match() {
+    void begin_match(uint32_t cap_seed) {
         move_counter = 0;
         game_samples.clear();
+        cap_seed_ = cap_seed;
+        cap_root_counter = 0;
     }
 
     void end_game() {
@@ -409,6 +450,13 @@ struct AZMcts::Impl {
     }
 
     // ── world / sim lifecycle (in-game tree search) ────────────────────────
+    // Is the current searched ROOT the learner's seat? Always true outside
+    // the opponent-pool mode (cfg.net_seat == 0); an opponent root searches
+    // noise-free, plays argmax, and records no sample.
+    bool learner_root() const {
+        return cfg.net_seat == 0 || (root_is_a == (cfg.net_seat == 1));
+    }
+
     void begin_world(int w) {
         cur_world_seed =
             cfg.world_seed_base +
@@ -418,8 +466,11 @@ struct AZMcts::Impl {
         // mcts.py: priors = (1-eps)*root_priors + eps*dirichlet(alpha*[1]*nc).
         // eps=0 (parity default) reuses the base priors verbatim. A standard
         // Dirichlet is gamma(alpha) per component normalized by the sum, drawn
-        // from the per-run RNG (no cross-language parity required).
-        if (cfg.noise_eps > 0.0) {
+        // from the per-run RNG (no cross-language parity required). A playout-
+        // cap FAST root mixes no noise (it plays the game; its pi is never a
+        // policy target), mirroring the Python fast branch's eps=0. An
+        // opponent-pool root mixes none either (_opp_net_action's eps=0).
+        if (cfg.noise_eps > 0.0 && cur_full && learner_root()) {
             std::gamma_distribution<double> gamma(cfg.noise_alpha, 1.0);
             std::vector<double> noise(static_cast<size_t>(root_n));
             double sum = 0.0;
@@ -491,8 +542,10 @@ struct AZMcts::Impl {
     }
 
     void accumulate_world() {
-        for (int i = 0; i < root_n; i++)
+        for (int i = 0; i < root_n; i++) {
             visit_totals[static_cast<size_t>(i)] += cur_root->N[static_cast<size_t>(i)];
+            w_totals[static_cast<size_t>(i)] += cur_root->W[static_cast<size_t>(i)];
+        }
         double wsum = 0.0;
         for (double w : cur_root->W) wsum += w;
         value_acc += wsum;
@@ -612,9 +665,10 @@ struct AZMcts::Impl {
                        static_cast<int16_t>(o[SELF_IS_A_IDX] > 0.5f ? 1 : 0)});
     }
 
-    // mcts.py::rollout_memo_eligible — a takeback ((card, seat) in BOTH
-    // directions) diverges the one-shot direction locks, so such paths are
-    // never memoized.
+    // mcts.py::rollout_memo_eligible — a (card, seat) appearing in BOTH pick
+    // directions (only reachable via the forced OUT of a stranded IN, which may
+    // cut a name that was just sided in) diverges the one-shot direction locks
+    // without changing the deck, so such paths are never memoized.
     static bool memo_eligible(const std::vector<std::array<int16_t, 3>>& picks) {
         for (size_t i = 0; i < picks.size(); i++)
             for (size_t j = 0; j < picks.size(); j++)
@@ -740,8 +794,19 @@ struct AZMcts::Impl {
                             "terminate");
             AZEvalResultD r = eval_one(o, nc);
             plan_dev += 1;
+            // Dead-card rules: a completion never sides in a table-dead card
+            // (Done/OUT are never masked, so an argmax target remains).
+            // MIRRORED in mcts.py _generate_plan.
+            sb_dead_mask(o, nc, gen_dead);
+            int n_live = nc;
+            for (int i = 0; i < nc; i++)
+                if (gen_dead[static_cast<size_t>(i)]) {
+                    r.priors[static_cast<size_t>(i)] = 0.0;
+                    n_live -= 1;
+                }
             int a;
-            if (cur_plan.variant > 0 && plan_dev == cur_plan.variant && nc >= 2)
+            if (cur_plan.variant > 0 && plan_dev == cur_plan.variant &&
+                nc >= 2 && n_live >= 2)
                 a = second_best(r.priors, nc);
             else
                 a = argmax_priors(r.priors, nc);
@@ -866,13 +931,15 @@ struct AZMcts::Impl {
     // run_plan_search's candidate order). Returns the next plan's first
     // action, or the finalized real action.
     int next_plan_or_finalize() {
-        if (coverage_cursor < root_n) {
+        // Rule-dead first picks are skipped: they keep q = -inf, so the
+        // softmax gives them exactly zero policy mass (mirrors mcts.py).
+        while (coverage_cursor < root_n) {
             int a = coverage_cursor++;
-            return begin_plan(a, 0);
+            if (!plan_dead[static_cast<size_t>(a)]) return begin_plan(a, 0);
         }
         if (plan_ranked.empty()) {
-            // Rank first picks by coverage Q, descending, stable (numpy
-            // argsort(-q, kind="stable") == stable sort by q descending).
+            // Rank the LIVE first picks by coverage Q, descending, stable
+            // (numpy argsort(-q[live], kind="stable") over live indices).
             std::vector<double> cov_q(static_cast<size_t>(root_n), 0.0);
             for (const Plan& p : plans)
                 if (p.variant == 0) {
@@ -881,8 +948,9 @@ struct AZMcts::Impl {
                     cov_q[static_cast<size_t>(p.first_action)] =
                         v / static_cast<double>(cur_worlds);
                 }
-            plan_ranked.resize(static_cast<size_t>(root_n));
-            for (int i = 0; i < root_n; i++) plan_ranked[static_cast<size_t>(i)] = i;
+            for (int i = 0; i < root_n; i++)
+                if (!plan_dead[static_cast<size_t>(i)])
+                    plan_ranked.push_back(i);
             std::stable_sort(plan_ranked.begin(), plan_ranked.end(),
                              [&](int a, int b) {
                                  return cov_q[static_cast<size_t>(a)] >
@@ -892,13 +960,138 @@ struct AZMcts::Impl {
         const int branches = cfg.sb_branches >= 0 ? cfg.sb_branches
                                                   : kDefaultSbBranches;
         const int max_attempts = std::max(0, branches) * kExtrasAttemptFactor;
+        // Extras cycle the live actions only; branch/variant arithmetic is
+        // over n_live (n_live >= 1: Done is never dead). MIRRORED in mcts.py.
+        const int n_live = static_cast<int>(plan_ranked.size());
         if (novel_extras < branches && extra_attempt < max_attempts) {
-            int branch = plan_ranked[static_cast<size_t>(extra_attempt % root_n)];
-            int variant = 1 + extra_attempt / root_n;
+            int branch = plan_ranked[static_cast<size_t>(extra_attempt % n_live)];
+            int variant = 1 + extra_attempt / n_live;
             extra_attempt += 1;
             return begin_plan(branch, variant);
         }
         return finalize_plan_search();
+    }
+
+    // Prior-rollout sideboard decision (cfg.sb_prior_mode): no plan search —
+    // one net eval, the dead-card mask, the behavior policy
+    //   b = (1-eps) * softmax(log p / temp) + eps * uniform(live),
+    // a sampled pick (argmax on the opponent seat / without --selfplay), and
+    // a ONE-HOT training row priced by the realized next-game z. The p/b
+    // arithmetic MIRRORS az_selfplay.sb_prior_policy in float64 (only the
+    // sample draw is backend-native). The dump payload is (q=p, pi=b), both
+    // deterministic, via the ordinary plan_root path.
+    int sb_prior_pick(const float* o, int nc) {
+        sim_steps = 0;
+        memo_hits = 0;
+        AZEvalResultD r = eval_one(o, nc);
+        sb_dead_mask(o, nc, gen_dead);
+        std::vector<double> p(static_cast<size_t>(nc), 0.0);
+        double total = 0.0;
+        int n_live = 0;
+        for (int i = 0; i < nc; i++) {
+            if (!gen_dead[static_cast<size_t>(i)]) {
+                p[static_cast<size_t>(i)] = r.priors[static_cast<size_t>(i)];
+                total += p[static_cast<size_t>(i)];
+                n_live += 1;
+            }
+        }
+        if (total <= 0.0) {
+            // Degenerate masked prior (all mass on dead actions): uniform live.
+            total = 0.0;
+            for (int i = 0; i < nc; i++) {
+                p[static_cast<size_t>(i)] =
+                    gen_dead[static_cast<size_t>(i)] ? 0.0 : 1.0;
+                total += p[static_cast<size_t>(i)];
+            }
+        }
+        for (double& v : p) v /= total;
+        const double t = std::max(cfg.sb_explore_temp, 1e-3);
+        double zmax = -std::numeric_limits<double>::infinity();
+        std::vector<double> zv(static_cast<size_t>(nc),
+                               -std::numeric_limits<double>::infinity());
+        for (int i = 0; i < nc; i++)
+            if (p[static_cast<size_t>(i)] > 0.0) {
+                zv[static_cast<size_t>(i)] =
+                    std::log(p[static_cast<size_t>(i)]) / t;
+                zmax = std::max(zmax, zv[static_cast<size_t>(i)]);
+            }
+        std::vector<double> b(static_cast<size_t>(nc), 0.0);
+        double bsum = 0.0;
+        for (int i = 0; i < nc; i++)
+            if (std::isfinite(zv[static_cast<size_t>(i)])) {
+                b[static_cast<size_t>(i)] =
+                    std::exp(zv[static_cast<size_t>(i)] - zmax);
+                bsum += b[static_cast<size_t>(i)];
+            }
+        for (double& v : b) v /= bsum;
+        const double eps =
+            std::min(std::max(cfg.sb_explore_eps, 0.0), 1.0);
+        if (eps > 0.0) {
+            bsum = 0.0;
+            for (int i = 0; i < nc; i++) {
+                const double u = gen_dead[static_cast<size_t>(i)]
+                                     ? 0.0
+                                     : 1.0 / static_cast<double>(n_live);
+                b[static_cast<size_t>(i)] =
+                    (1.0 - eps) * b[static_cast<size_t>(i)] + eps * u;
+                bsum += b[static_cast<size_t>(i)];
+            }
+            for (double& v : b) v /= bsum;
+        }
+        // greedy = masked-prior first-max argmax (np.where(live, p, -1.0)).
+        int greedy = 0;
+        double bestp = -2.0;
+        for (int i = 0; i < nc; i++) {
+            const double v =
+                gen_dead[static_cast<size_t>(i)] ? -1.0 : p[static_cast<size_t>(i)];
+            if (v > bestp) {
+                bestp = v;
+                greedy = i;
+            }
+        }
+
+        SearchRootResult sr;
+        sr.root_index = this_root;
+        sr.num_choices = nc;
+        sr.plan_root = true;
+        sr.q = p;
+        sr.pi = b;
+        sr.visits.resize(static_cast<size_t>(nc));
+        for (int i = 0; i < nc; i++)
+            sr.visits[static_cast<size_t>(i)] =
+                std::llround(b[static_cast<size_t>(i)] * 1e6);
+        sr.root_value = r.value;
+        sr.sims_run = 1;
+        sr.sim_steps = 0;
+        sr.memo_hits = 0;
+        results.push_back(std::move(sr));
+
+        int chosen = greedy;
+        if ((cfg.selfplay || cfg.record) && !learner_root()) {
+            // Opponent-pool seat: argmax masked prior, no sample.
+            move_counter += 1;
+        } else if (cfg.selfplay || cfg.record) {
+            if (cfg.selfplay) {
+                // Prior mode samples at EVERY learner sb root (mirrors
+                // _sb_prior_sample's unconditional rng.choice).
+                std::discrete_distribution<int> dist(b.begin(), b.end());
+                chosen = dist(rng);
+            }
+            SelfPlaySample s;
+            s.obs = root_obs;
+            s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
+            s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
+            s.mover_is_a = root_is_a;
+            s.is_sideboard = true;
+            s.pi[static_cast<size_t>(chosen)] = 1.0f;
+            for (int i = 0; i < nc; i++) s.mask[static_cast<size_t>(i)] = 1;
+            s.q = static_cast<float>(r.value);
+            s.explored = chosen != greedy;
+            game_samples.push_back(std::move(s));
+            move_counter += 1;
+        }
+        phase = IDLE;
+        return chosen;
     }
 
     // Mirrors run_plan_search's tail: Q per first pick, pi = softmax(Q/tau),
@@ -916,6 +1109,10 @@ struct AZMcts::Impl {
             q[fa] = std::max(q[fa], v);
         }
         std::vector<double> pi = plan_softmax(q);
+        // Rule-dead (uncovered) first picks: pi is exactly 0; sanitize their
+        // -inf q so root_value / the sample's q stay finite (mirrors mcts.py).
+        for (double& v : q)
+            if (!std::isfinite(v)) v = 0.0;
         const int n_evals = static_cast<int>(plans.size()) * cur_worlds;
         double root_value = 0.0;
         for (int i = 0; i < root_n; i++)
@@ -944,23 +1141,30 @@ struct AZMcts::Impl {
             if (pi[static_cast<size_t>(i)] > pi[static_cast<size_t>(best)]) best = i;
 
         int chosen = best;
-        if (cfg.selfplay) {
+        // Opponent-pool sb plan root: no sample, no tau — argmax pick only
+        // (mirrors _opp_net_action's plan-search branch); the move counter
+        // still advances.
+        if ((cfg.selfplay || cfg.record) && !learner_root()) {
+            move_counter += 1;
+        } else if (cfg.selfplay || cfg.record) {
             SelfPlaySample s;
             s.obs = root_obs;
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
             s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
             s.mover_is_a = root_is_a;
-            s.q = static_cast<float>(root_value);
             s.is_sideboard = true;
             for (int i = 0; i < root_n; i++) {
                 s.pi[static_cast<size_t>(i)] =
                     static_cast<float>(pi[static_cast<size_t>(i)]);
                 s.mask[static_cast<size_t>(i)] = 1;
             }
-            if (move_counter < cfg.temp_moves) {
+            if (cfg.selfplay && move_counter < cfg.temp_moves) {
                 std::discrete_distribution<int> dist(pi.begin(), pi.end());
                 chosen = dist(rng);
             }
+            // TD bootstrap = the played first pick's plan Q (mirrors
+            // az_selfplay.finalize_searched_sample over run_plan_search's q).
+            s.q = static_cast<float>(q[static_cast<size_t>(chosen)]);
             s.explored = chosen != best;
             game_samples.push_back(std::move(s));
             move_counter += 1;
@@ -1033,6 +1237,13 @@ struct AZMcts::Impl {
         root_is_sb = sb;
 
         if (sb) {
+            // Prior-rollout mode (generation only): no plan search, no
+            // boundary state — the REAL next game is the rollout.
+            if (cfg.sb_prior_mode) {
+                cur_full = true;
+                plan_active = false;
+                return sb_prior_pick(o, nc);
+            }
             // ── sideboard PLAN search (mirrors mcts.run_plan_search) ────────
             // Boundary continue / start (mcts.py sb_root_key identity: seat +
             // upcoming game number). On continue the plan memo and the latched
@@ -1047,6 +1258,7 @@ struct AZMcts::Impl {
                 sb_game = game;
                 sb_seed_root = this_root;
             }
+            cur_full = true;   // sb plan roots are exempt from the playout cap
             cur_worlds = cfg.sb_worlds >= 0 ? cfg.sb_worlds : kDefaultSbWorlds;
             cur_worlds = std::max(1, cur_worlds);
             cur_rollout_turns = cfg.sb_rollout_turns >= 0 ? cfg.sb_rollout_turns
@@ -1066,6 +1278,14 @@ struct AZMcts::Impl {
             pool.clear();
             pending.clear();
             path.clear();
+            // Dead-card rules mask for this root (sb_rules.h; mirrors
+            // mcts.py's sb_dead_mask at the top of run_plan_search). Dead
+            // first picks are skipped by coverage; Done is never dead, so at
+            // least one live first pick always exists.
+            sb_dead_mask(o, nc, plan_dead);
+            while (coverage_cursor < root_n &&
+                   plan_dead[static_cast<size_t>(coverage_cursor)])
+                coverage_cursor++;
             int first = coverage_cursor++;
             return begin_plan(first, 0);
         }
@@ -1076,13 +1296,21 @@ struct AZMcts::Impl {
         plan_active = false;
         plan_memo.clear();
         sb_picks.clear();
-        cur_sims = cfg.sims;
+        // Playout-cap coin (self-play only — the driver forces frac=1.0 for
+        // every other mode): a fast root searches cfg.fast_sims, mixes no
+        // root noise, and its sample carries an all-zero pi (see finalize).
+        cur_full = !cfg.selfplay ||
+                   playout_cap_full(cap_seed_,
+                                    static_cast<uint32_t>(cap_root_counter++),
+                                    cfg.full_search_frac);
+        cur_sims = cur_full ? cfg.sims : cfg.fast_sims;
         cur_worlds = cfg.worlds;
         cur_max_depth = cfg.max_depth;
         cur_rollout_turns = cfg.rollout_turns;
         cur_rollout_anchor = static_cast<int>(cur_game.turn);
         cur_rollout_cap = kRolloutStepsPerTurn * cur_rollout_turns;
         visit_totals.assign(static_cast<size_t>(nc), 0);
+        w_totals.assign(static_cast<size_t>(nc), 0.0);
         value_acc = 0.0;
         sims_run = 0;
         sim_steps = 0;
@@ -1314,32 +1542,53 @@ struct AZMcts::Impl {
 
         // Self-play: store the searched sample and pick the real action per the
         // tau schedule (sample-from-visits for the first temp_moves real moves,
-        // argmax after). Parity/eval mode stores nothing and always plays argmax.
+        // argmax after). Parity/eval mode stores nothing and always plays argmax;
+        // --record stores the sample but keeps the eval-mode argmax pick.
+        // An opponent-pool root (selfplay with net_seat set, opponent to move)
+        // stores nothing and plays argmax, but still advances the per-game
+        // move counter below (Python's game_move counts every decision).
         int chosen = best;
-        if (cfg.selfplay) {
+        if ((cfg.selfplay || cfg.record) && !learner_root()) {
+            move_counter += 1;
+        } else if (cfg.selfplay || cfg.record) {
             SelfPlaySample s;
             s.obs = root_obs;                                    // clean root obs
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
             s.mask.assign(static_cast<size_t>(MAX_ACTIONS), 0);
             s.mover_is_a = root_is_a;
-            // n-step TD inputs (mirrors az_selfplay.py): this root's value, and
-            // whether the action actually played leaves the search's own line.
-            s.q = static_cast<float>(results.back().root_value);
             s.is_sideboard = root_is_sb;
             for (int i = 0; i < root_n; i++) {
-                s.pi[static_cast<size_t>(i)] =
-                    total > 0 ? static_cast<float>(
-                                    static_cast<double>(visit_totals[static_cast<size_t>(i)]) /
-                                    static_cast<double>(total))
-                              : 0.0f;
+                // A playout-cap fast root records NO policy target: pi stays
+                // all-zero (the schema's "no pi" marker — trainer and every
+                // pi consumer key off pi.sum() > 0); q/explored stay real so
+                // the value/TD side records from this row too.
+                if (cur_full)
+                    s.pi[static_cast<size_t>(i)] =
+                        total > 0
+                            ? static_cast<float>(
+                                  static_cast<double>(
+                                      visit_totals[static_cast<size_t>(i)]) /
+                                  static_cast<double>(total))
+                            : 0.0f;
                 s.mask[static_cast<size_t>(i)] = 1;
             }
 
-            if (move_counter < cfg.temp_moves && total > 0) {
+            if (cfg.selfplay && move_counter < cfg.temp_moves && total > 0) {
                 std::discrete_distribution<int> dist(
                     visit_totals.begin(), visit_totals.begin() + root_n);
                 chosen = dist(rng);
             }
+            // n-step TD inputs (mirrors az_selfplay.finalize_searched_sample):
+            // the search's Q of the action actually PLAYED (the visit-weighted
+            // root_value folds in noise-forced exploratory visits the played
+            // line never follows), and whether that action leaves the
+            // search's own line.
+            s.q = visit_totals[static_cast<size_t>(chosen)] > 0
+                      ? static_cast<float>(
+                            w_totals[static_cast<size_t>(chosen)] /
+                            static_cast<double>(
+                                visit_totals[static_cast<size_t>(chosen)]))
+                      : 0.0f;
             s.explored = chosen != best;
             game_samples.push_back(std::move(s));
             move_counter += 1;
@@ -1538,7 +1787,7 @@ void AZMcts::set_scripted_provider(std::function<int(const float*, int)> fn) {
     impl_->scripted_provider = std::move(fn);
 }
 const std::vector<SearchRootResult>& AZMcts::results() const { return impl_->results; }
-void AZMcts::begin_match() { impl_->begin_match(); }
+void AZMcts::begin_match(uint32_t cap_seed) { impl_->begin_match(cap_seed); }
 void AZMcts::end_game() { impl_->end_game(); }
 const std::vector<SelfPlaySample>& AZMcts::game_samples() const {
     return impl_->game_samples;

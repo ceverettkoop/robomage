@@ -3298,10 +3298,10 @@ PROMPT_SITE_WHITELIST = {
     #
     # (a) loop-top / loop-safe emitters:
     #   game_driver.cpp: pending-query emitter, priority decision, pregame_ask,
-    #     the sideboard delta menu (4). The sideboard phase used to hold TWO
-    #     prompts — pick a card to bring in, then pick one to cut — which the
-    #     balanced delta menu merged into a single per-move prompt; both halves of
-    #     a swap now come through that one loop-safe site.
+    #     the sideboard menu (4). The sideboard phase used to hold TWO separate
+    #     prompt sites — pick a card to bring in, then pick one to cut — which
+    #     were merged into a single per-move prompt; both halves of a swap now
+    #     come through that one loop-safe site.
     #   action_processor.cpp: declare-attackers select, declare-blockers
     #     select, cleanup discard, miracle reveal, miracle cast (5 of its 8) —
     #     the miracle reveal and the miracle cast/do-not-cast decision (CR 702.94)

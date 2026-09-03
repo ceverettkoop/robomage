@@ -6,13 +6,16 @@
   z)``, snapshot the CANDIDATE to ``gen__azv{steps}.pt``. ``gen__azfinal.pt`` (the
   incumbent) is written ONLY by the ``az_eval`` promotion gate — training never
   touches it.
-- ``az_eval`` : candidate-vs-incumbent gating at low sims over a ROSTER-WIDE
-  panel (a mirror for every roster deck, so every deck the net must pilot is
-  measured, plus direction-balanced cross pairings), seats alternating (half
-  the games each way); promote the candidate to ``gen__azfinal.pt`` on
-  aggregate win-rate, subject to a per-deck floor veto (a candidate that
-  collapsed at piloting any one deck is rejected even when its aggregate
-  clears the bar), printing a per-matchup and per-piloted-deck breakdown.
+- ``az_eval`` : candidate-vs-incumbent gating at the TRAINING sim budget over a
+  ROSTER-WIDE panel (a mirror for every roster deck, so every deck the net must
+  pilot is measured, plus direction-balanced cross pairings), seats alternating
+  (half the games each way). The panel is played in ROUNDS and a SEQUENTIAL
+  test (SPRT, see :mod:`gate_sprt`) on the accumulated aggregate decides after
+  each one — promote to ``gen__azfinal.pt``, keep the incumbent, or buy another
+  round — subject to a per-deck floor veto (a candidate that collapsed at
+  piloting any one deck is rejected even when the aggregate test accepts).
+  Per-matchup and per-piloted-deck breakdowns are printed; their tallies
+  accumulate across the gate's rounds.
   The panel plays on the C++ actor by default (two-model ``az_actor
   --model-b`` matches with cross-world leaf batching and the optional Stage C
   GPU eval-server — one server per net); the no-incumbent-yet fallback (vs
@@ -25,9 +28,11 @@ Exposed to ``train.py`` as the ``az-train`` / ``az-eval`` / ``az`` subcommands.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import glob
 import json
 import os
+import re
 import shutil
 import time
 from typing import Optional
@@ -35,12 +40,14 @@ from typing import Optional
 # Shared crash-safe sidecar IO (write-to-temp + os.replace), same writer the PPO
 # league / exploiter / curriculum drivers use.
 from progress_io import write_progress_state, read_progress_state
-# The bo3 sideboard-root budget has ONE home (cli_spec). These were hardcoded
-# literals here, which silently pinned this module to the old values whenever the
-# arg was absent — import them so a change to the default actually reaches the
-# az / az-league paths.
+# The bo3 sideboard-root budget has ONE home (cli_spec). Import the defaults
+# rather than re-spelling them as literals here, so a change to a default
+# actually reaches the az / az-league paths when the arg is absent.
 from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS,
+                      DEFAULT_SB_SELFPLAY_MODE, DEFAULT_SB_EXPLORE_TEMP,
+                      DEFAULT_SB_EXPLORE_EPS,
+                      DEFAULT_SB_BATCH_FRAC, DEFAULT_SB_LOSS_COEF,
                       DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
                       DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_LR,
                       DEFAULT_AZ_WEIGHT_DECAY, DEFAULT_AZ_BATCH_SIZE,
@@ -51,17 +58,26 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_EVAL_WORLDS, DEFAULT_AZ_PROMOTE_THRESHOLD,
                       DEFAULT_AZ_GATE_FLOOR, DEFAULT_AZ_GATE_FLOOR_MIN,
                       DEFAULT_AZ_GATE_CROSS_PAIRS, DEFAULT_AZ_GATE_EVERY,
+                      DEFAULT_AZ_GATE_MAX_ROUNDS, DEFAULT_AZ_GATE_ALPHA,
                       DEFAULT_AZ_EXPERT_GAMES, DEFAULT_AZ_EXHAUSTIVE_REPEATS,
-                      DEFAULT_AZ_SCRIPTED_CELLS,
+                      DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
+                      DEFAULT_AZ_VALUE_DECAY, DEFAULT_AZ_EPOCH_FRAC,
+                      DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
+                      DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
+from cli_spec import DEFAULT_AZ_ROWS_PER_GAME
+from env import _MATCH_CTX_START as _GAME_NUMBER_IDX
+from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, VERDICT_REJECT,
+                       floor_locked, sprt_cap_line, sprt_cap_verdict,
+                       sprt_plan_line, sprt_verdict)
 
 import numpy as np
 
 try:
-    from env import OBS_SIZE, MAX_ACTIONS
+    from env import OBS_SIZE, MAX_ACTIONS, _IS_SIDEBOARD_IDX
     from opponents import GEN_STEM, assert_not_reserved_deck
 except ImportError:  # pragma: no cover
-    from train.env import OBS_SIZE, MAX_ACTIONS
+    from train.env import OBS_SIZE, MAX_ACTIONS, _IS_SIDEBOARD_IDX
     from train.opponents import GEN_STEM, assert_not_reserved_deck
 
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -77,32 +93,74 @@ _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 DEFAULT_MIRROR_FRAC = DEFAULT_AZ_MIRROR_FRAC
 
 # Promotion-gate defaults. The gate panel is ROSTER-WIDE: a candidate-vs-incumbent
-# mirror for every roster deck (so a piloting regression on ANY deck shows up in
-# the aggregate — the old focus-only gate could not see one), plus
-# DEFAULT_GATE_CROSS_PAIRS cross pairings each played in BOTH directions so a
-# lopsided deck matchup cancels out of the aggregate. The per-deck floor veto is
-# a LIKE-PAIRING comparison (see az_eval): a piloted deck with >=
-# DEFAULT_GATE_FLOOR_MIN candidate matches is vetoed when the candidate's pooled
-# win-rate sits more than (1 - 2*DEFAULT_GATE_FLOOR) below the INCUMBENT's
-# win-rate piloting the same deck on the same pairings — on mirrors alone that
-# is exactly "candidate mirror win-rate < DEFAULT_GATE_FLOOR", so the intended
-# trigger stays a 0-for-4 wipeout; a lopsided cross matchup the incumbent also
-# loses no longer counts against the deck. Deliberate: per-deck samples are
-# tiny, so the floor is a catastrophic-collapse tripwire, not a fine measure.
+# mirror for every roster deck, so a piloting regression on ANY deck shows up in
+# the aggregate, plus DEFAULT_GATE_CROSS_PAIRS cross pairings each played in BOTH
+# directions so a lopsided deck matchup cancels out of the aggregate.
+#
+# The panel is played SEQUENTIALLY, in balanced rounds of `games` matches, with
+# an SPRT on the accumulated aggregate deciding after each round — promote, keep,
+# or buy another round, up to DEFAULT_GATE_MAX_ROUNDS (see train/gate_sprt.py and
+# az_eval). Its hypotheses are symmetric about 0.5, so an equal candidate is a
+# coin flip, a better one is promoted on the evidence it actually produces, and
+# only a marginal one pays for extra rounds.
+#
+# The per-deck floor veto is a catastrophic-collapse tripwire on top of that
+# aggregate, and is deliberately HARD to trip by accident — it is the one part of
+# the gate that can override the aggregate test, so a false positive there is a
+# silent bias toward the incumbent. It is a LIKE-PAIRING comparison (see
+# az_eval): a piloted deck with >= DEFAULT_GATE_FLOOR_MIN candidate matches is
+# vetoed when the candidate's pooled win-rate sits more than
+# (1 - 2*DEFAULT_GATE_FLOOR) below the INCUMBENT's win-rate piloting the same
+# deck on the same pairings, so a lopsided cross matchup the incumbent also loses
+# cancels out. DEFAULT_GATE_FLOOR_MIN is sized so an equal candidate is not
+# plausibly wiped by chance on a deck: at 8 matches that is a ~0.4% shot per
+# deck, small enough across a ~10-deck roster to leave the aggregate test in
+# charge. Rounds accumulate into the same per-matchup tallies, so a long gate
+# powers the veto up as it goes.
 # Values live in cli_spec's AZ-defaults block (one home); local aliases kept
 # for the existing internal references.
 DEFAULT_GATE_FLOOR = DEFAULT_AZ_GATE_FLOOR
 DEFAULT_GATE_FLOOR_MIN = DEFAULT_AZ_GATE_FLOOR_MIN
 DEFAULT_GATE_CROSS_PAIRS = DEFAULT_AZ_GATE_CROSS_PAIRS
+DEFAULT_GATE_MAX_ROUNDS = DEFAULT_AZ_GATE_MAX_ROUNDS
+DEFAULT_GATE_ALPHA = DEFAULT_AZ_GATE_ALPHA
+
+# Seed stride between sequential gate ROUNDS. Every matchup's seeds derive from
+# `round_seed + mi * 100003` (see _gate_matchup_worker), so the round stride must
+# be a multiple of that matchup stride large enough that no round can land on
+# another round's matchup seeds — 1000 matchups of headroom, against panels of
+# ~14.
+_GATE_ROUND_SEED_STRIDE = 100003 * 1000
 
 # az-league gates (az_eval + promotion) run every DEFAULT_GATE_EVERY slots. One
-# slot of training between gates is a small weight delta against a >=55%
-# aggregate bar, and each gate costs real wall-clock (56 searched matches), so
-# gating every K>1 slots lets the candidate accumulate K cycles of training —
+# slot of training between gates is a small weight delta against the sequential
+# test's H1, and a gate costs real wall-clock — one round of searched matches at
+# minimum, up to DEFAULT_GATE_MAX_ROUNDS of them when the candidate is marginal —
+# so gating every K>1 slots lets the candidate accumulate K cycles of training,
 # and K slots of CANDIDATE-generated self-play (resolve_source prefers the
-# snapshot line) — before paying for an eval. Promotion cadence, not training,
+# snapshot line), before paying for an eval. Promotion cadence, not training,
 # is all that changes: candidate snapshots still save every slot.
 DEFAULT_GATE_EVERY = DEFAULT_AZ_GATE_EVERY
+
+# Candidate-line drift brake: a rejected candidate that keeps generating the next
+# window's self-play compounds flat search targets across cycles, so the line
+# drifts further from the incumbent with every failed gate. After any
+# FAILED az-league gate, self-play generation is pinned back to the incumbent
+# (gen__azfinal) while training still continues the candidate line; after this
+# many CONSECUTIVE failures the line is judged damaged and abandoned — its
+# snapshots (everything newer than the incumbent) are pruned so the next slot
+# warm-starts from the incumbent's weights too. A promotion resets the count.
+GATE_FAILS_BEFORE_RESET = 3
+
+# td_q value-target calibration. Bootstrapped td_q labels sit closer to 0 than
+# the ±1 outcomes (|td-z| averaged ~0.55 on the 2026-08 runs), so an uncorrected
+# mix contracts decided-game value targets a little every cycle, degrading the
+# next generation's self-play corr(q,z). Before mixing, bootstrapped rows are
+# affine-rescaled to z's scale — see _calibrate_td_targets.
+TD_CAL_MIN_ROWS = 256    # bootstrapped decided rows required before fitting
+TD_CAL_MAX_GAIN = 4.0    # symmetric clamp on the scale-matching factor a:
+                         # a is clipped to [1/TD_CAL_MAX_GAIN, TD_CAL_MAX_GAIN]
+TD_CAL_MAX_SHIFT = 0.5   # clamp on the bias shift b
 
 
 # ----------------------------------------------------------------------
@@ -118,9 +176,12 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
     (tests point it at a temp dir).
 
     Returns a dict of the :data:`az_selfplay.SHARD_KEYS` arrays plus
-    ``n_shards``. Every key is REQUIRED: a shard predating the n-step TD schema
-    (no ``td_q`` column) is a hard error, because silently training such a shard
-    would mix two different value targets in one window."""
+    ``n_shards`` and ``game_id`` — a dense 0-based id per row identifying the
+    GAME it came from (a shard is one match; games inside it are told apart by
+    the obs match-context game number, sideboard rows included with the game
+    they precede). Every key is REQUIRED: a shard predating the n-step TD
+    schema (no ``td_q`` column) is a hard error, because silently training
+    such a shard would mix two different value targets in one window."""
     from az_selfplay import SHARD_KEYS
     data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
@@ -130,6 +191,8 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
             f"no self-play shards in {data_dir} — run az-selfplay first")
     shards = shards[-window:]
     parts = {k: [] for k in SHARD_KEYS}
+    game_ids = []
+    next_gid = 0
     for s in shards:
         d = np.load(s)
         missing = [k for k in SHARD_KEYS if k not in d.files]
@@ -141,7 +204,12 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
                 f"re-run az-selfplay / the az cycle.")
         for k in SHARD_KEYS:
             parts[k].append(d[k])
+        gnum = np.round(d["obs"][:, _GAME_NUMBER_IDX].astype(np.float64), 4)
+        _uniq, local = np.unique(gnum, return_inverse=True)
+        game_ids.append(local.astype(np.int64) + next_gid)
+        next_gid += len(_uniq)
     out = {k: np.concatenate(v, axis=0) for k, v in parts.items()}
+    out["game_id"] = np.concatenate(game_ids, axis=0)
     # Shards are raw observation rows, so an obs-layout change (e.g. a new tail
     # block) makes older shards unusable. Say so instead of letting the net's
     # first slice fail with a bare shape error deep in the forward pass.
@@ -154,29 +222,6 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
             "delete/regenerate the shards (re-run az-selfplay) before training")
     out["n_shards"] = len(shards)
     return out
-
-
-def prune_shards(window: int, data_dir: Optional[str] = None) -> int:
-    """Delete self-play shards that neither the current nor the PREVIOUS
-    training window would read: everything older than the newest ``2*window``
-    shards (by mtime, matching :func:`load_window`'s ordering). Called by
-    :func:`train_az` after each training pass so a long-running az-league
-    (``rotations=0``) doesn't grow ``az_data/gen`` without bound. Returns the
-    number of shards deleted."""
-    keep = 2 * int(window)
-    if keep <= 0:
-        return 0
-    data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
-    shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
-                    key=os.path.getmtime)
-    pruned = 0
-    for s in shards[:-keep]:
-        try:
-            os.remove(s)
-            pruned += 1
-        except OSError as exc:
-            print(f"[az-train] WARNING: could not prune shard {s}: {exc}")
-    return pruned
 
 
 # ----------------------------------------------------------------------
@@ -233,30 +278,102 @@ def _read_steps(az_path: str) -> int:
 # Training
 # ----------------------------------------------------------------------
 
+def _calibrate_td_targets(z, td_q, sb_rows):
+    """Anti-contraction correction for the td_q value-target component.
+
+    Only the BOOTSTRAPPED rows (``td_q != z`` — the rows where a real root value
+    was substituted for the outcome) are touched: rescale to ``a * td_q + b``
+    with ``a = std(z)/std(td)`` and ``b = mean(z) - a * mean(td)`` fitted on
+    the bootstrapped decided (``z != 0``, non-sideboard) rows, clipped to
+    [-1, 1]. This is a marginal scale/bias match, deliberately NOT a
+    least-squares regression of z on td_q: regression pre-shrinks each noisy
+    label toward the mean, and the value head then averages those pre-shrunk
+    labels — double shrinkage, i.e. exactly the generation-over-generation
+    value contraction this exists to stop. Matching the scale keeps the
+    search's per-position ordering while re-anchoring its units to z's every
+    cycle; the fit is self-adjusting (an uncompressed future net fits a ~= 1)
+    and symmetric — ``a`` shrinks an over-dispersed td_q as readily as it
+    stretches a contracted one, within [1/TD_CAL_MAX_GAIN, TD_CAL_MAX_GAIN].
+
+    Returns the corrected copy of ``td_q`` (the input itself when the fit
+    population is too small or degenerate to calibrate)."""
+    boot = (td_q != z) & ~sb_rows
+    fit = boot & (z != 0)
+    n_fit = int(fit.sum())
+    if n_fit < TD_CAL_MIN_ROWS or float(td_q[fit].std()) < 1e-6:
+        print(f"[az-train] td calibration SKIPPED: {n_fit} bootstrapped "
+              f"decided rows (< {TD_CAL_MIN_ROWS}, or degenerate spread) — "
+              f"raw td_q used")
+        return td_q
+    a = float(np.clip(z[fit].std() / td_q[fit].std(),
+                      1.0 / TD_CAL_MAX_GAIN, TD_CAL_MAX_GAIN))
+    b = float(np.clip(z[fit].mean() - a * td_q[fit].mean(),
+                      -TD_CAL_MAX_SHIFT, TD_CAL_MAX_SHIFT))
+    td_cal = td_q.astype(np.float32).copy()
+    td_cal[boot] = np.clip(a * td_q[boot] + b, -1.0, 1.0)
+    print(f"[az-train] td calibration: a={a:.3f} b={b:+.3f} "
+          f"(fit on {n_fit} bootstrapped decided rows)")
+    return td_cal
+
+
+def _capped_game_pool(game_id: np.ndarray, cap: int, rng) -> np.ndarray:
+    """Row indices for one game-uniform pass: at most ``cap`` rows from every
+    game (uniform within the game, without replacement — a shorter game
+    contributes all of its rows), shuffled. Returns the index array and, via
+    the caller's print, the per-game row-count spread."""
+    order = np.argsort(game_id, kind="stable")
+    sorted_ids = game_id[order]
+    bounds = np.flatnonzero(np.diff(sorted_ids)) + 1
+    starts = np.concatenate(([0], bounds))
+    ends = np.concatenate((bounds, [len(order)]))
+    picks = []
+    for s, e in zip(starts, ends):
+        rows = order[s:e]
+        if len(rows) > cap:
+            rows = rng.choice(rows, size=cap, replace=False)
+        picks.append(rows)
+    pool = np.concatenate(picks) if picks else np.zeros(0, dtype=np.int64)
+    rng.shuffle(pool)
+    return pool
+
+
 def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE,
              lr: float = DEFAULT_AZ_LR, c_v: float = DEFAULT_AZ_CV,
              q_mix: float = DEFAULT_AZ_Q_MIX,
              window: int = DEFAULT_AZ_WINDOW,
              weight_decay: float = DEFAULT_AZ_WEIGHT_DECAY,
+             value_decay: float = DEFAULT_AZ_VALUE_DECAY,
+             epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
+             rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
+             sb_batch_frac: float = DEFAULT_SB_BATCH_FRAC,
+             sb_loss_coef: float = DEFAULT_SB_LOSS_COEF,
              from_ppo: Optional[str] = None,
              fresh: bool = False, log_every: int = 50,
              snapshot_every: int = 0, data_dir: Optional[str] = None,
              ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 0) -> dict:
     """Optimize the gen AZNet on the newest ``window`` shards.
 
-    ``batches <= 0`` resolves to AUTO — ``max(1, n_samples // batch_size)``
-    optimizer updates, i.e. exactly one epoch over the loaded window — and the
-    resolution is printed (``batches=auto(one-epoch)->534``). That is the az /
-    az-league cycle default (``DEFAULT_AZ_CYCLE_BATCHES``); the standalone
-    az-train default stays a fixed batch count.
+    Sampling is GAME-UNIFORM by default (``rows_per_game`` > 0): each cycle
+    draws at most ``rows_per_game`` rows from every game in the window
+    (uniform within the game, without replacement), shuffles that pool and
+    trains one pass over it, so a 230-row game and a 40-row game push their
+    outcome labels equally hard and no label is seen more than ``rows_per_game``
+    times. ``batches <= 0`` (AUTO, the az / az-league cycle default) then
+    resolves to one pass over the pool — ``pool_rows // batch_size`` updates,
+    printed as ``batches=auto(32/game)->213``; an explicit batch count keeps
+    drawing from the pool, reshuffling it per pass. ``rows_per_game=0`` is the
+    old row-uniform draw, where AUTO means ``epoch_frac`` of one epoch over the
+    window's rows. The standalone az-train default stays a fixed batch count.
 
-    The value target is the MIX ``(1 - q_mix) * z + q_mix * td_q``: the shard's
-    per-game outcome blended with its recorded n-step TD bootstrap (see
-    :func:`az_selfplay.compute_td_targets`). ``q_mix=0`` restores the classic
-    pure-outcome AlphaZero target. The periodic log line reports the value loss
-    against BOTH the mixed target and the plain outcome, so a drift between them
-    is visible while training."""
+    The value target is the MIX ``(1 - q_mix) * z + q_mix * td_cal``: the
+    shard's per-game outcome blended with its recorded n-step TD bootstrap (see
+    :func:`az_selfplay.compute_td_targets`) after the anti-contraction
+    calibration of :func:`_calibrate_td_targets` (scale-matched to z's units
+    every cycle). ``q_mix=0`` restores
+    the classic pure-outcome AlphaZero target (and skips the calibration). The
+    periodic log line reports the value loss against BOTH the mixed target and
+    the plain outcome, so a drift between them is visible while training."""
     import torch
     import torch.nn.functional as F
     from az_net import az_checkpoint_path, decay_exempt_param_groups
@@ -277,7 +394,29 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             f"non-finite td_q — every writer must resolve an unbootstrappable "
             f"sample to its outcome z (regenerate the shards)")
     q_mix = float(q_mix)
-    v_target = ((1.0 - q_mix) * z + q_mix * td_q).astype(np.float32)
+    # Sideboard-phase rows now TRAIN the value head: their sb-isolated TD
+    # chain pins td_q == z, so their value target is exactly the realized
+    # next-game z at any q_mix — and that trained V(sb-state) is the
+    # REINFORCE baseline for the sb policy term below. (This writes into the
+    # same matchup columns that price in-game states; watch az_inspect's
+    # `exposure` view after changing sb volume.)
+    sb_rows = obs[:, _IS_SIDEBOARD_IDX] > 0.5
+    # Prior-mode sb rows are ONE-HOT behavior samples (pi = one-hot(chosen),
+    # az_selfplay._sb_prior_sample); legacy plan-search sb rows carry a soft
+    # softmax(Q/tau) pi and keep the plain CE treatment during the transition.
+    sb_onehot = sb_rows & (pi.max(axis=1) >= 1.0 - 1e-6)
+    td_cal = _calibrate_td_targets(z, td_q, sb_rows) if q_mix > 0 else td_q
+    v_target = ((1.0 - q_mix) * z + q_mix * td_cal).astype(np.float32)
+    # Target-magnitude tripwire: the contraction failure mode shows up here as
+    # this number decaying across cycles (z-only would be 1.0; the uncalibrated
+    # 0.75 mix sat at ~0.55-0.7 when the 2026-08-25 gate failed).
+    decided = (z != 0) & ~sb_rows
+    if decided.any():
+        raw_mix = (1.0 - q_mix) * z + q_mix * td_q
+        print(f"[az-train] value-target magnitude (decided rows): "
+              f"{float(np.abs(v_target[decided]).mean()):.3f} calibrated "
+              f"(uncalibrated mix {float(np.abs(raw_mix[decided]).mean()):.3f}, "
+              f"z-only 1.0)")
     # batches <= 0 = AUTO: exactly ONE epoch over the loaded window. A fixed
     # batch count silently drifts in epochs as the window's data volume changes
     # (1000 x 256 over a ~137k-sample window was ~1.9 epochs of re-fitting one
@@ -285,18 +424,61 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     # the volume.
     bs = min(batch_size, n)
     batches_txt = str(batches)
-    if batches <= 0:
-        batches = max(1, n // bs)
-        batches_txt = f"auto(one-epoch)->{batches}"
+    game_id = w["game_id"]
+    pool = None
+    if int(rows_per_game) > 0:
+        # Game-uniform sampler: every game weighs the same and no outcome
+        # label is seen more than rows_per_game times per cycle (see
+        # cli_spec.DEFAULT_AZ_ROWS_PER_GAME).
+        pool = _capped_game_pool(game_id, int(rows_per_game), rng)
+        bs = min(bs, len(pool))
+        counts = np.bincount(game_id)
+        counts = counts[counts > 0]
+        if batches <= 0:
+            batches = max(1, len(pool) // bs)
+            batches_txt = f"auto({int(rows_per_game)}/game)->{batches}"
+        print(f"[az-train] game-uniform sampling: {len(counts)} games in the "
+              f"window, rows/game min/median/max {int(counts.min())}/"
+              f"{int(np.median(counts))}/{int(counts.max())}, cap "
+              f"{int(rows_per_game)} -> pool {len(pool)} rows "
+              f"({100.0 * len(pool) / max(1, n):.0f}% of the window)")
+    elif batches <= 0:
+        # Row-uniform draw: epoch_frac < 1 trains a FRACTION of one epoch: a
+        # full pass over the window's small set of distinct games is already
+        # enough to memorize their outcomes (v_z fell 0.45->0.15 within one
+        # epoch on the 2026-08 runs), and the 2x window means every game still
+        # gets ~2*epoch_frac epochs of total exposure across consecutive cycles.
+        batches = max(1, int((n // bs) * float(epoch_frac)))
+        batches_txt = f"auto({float(epoch_frac):g}-epoch)->{batches}"
     print(f"[az-train] gen (focus={deck}): {n} samples from {n_shards} shards; "
           f"batches={batches_txt} batch_size={batch_size} lr={lr} c_v={c_v} "
           f"q_mix={q_mix}")
-    print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_q; "
+    print(f"[az-train] value target: (1-q_mix)*z + q_mix*td_cal "
+          f"(scale-matched td_q); "
           f"td_q != z on {int((td_q != z).sum())}/{n} rows "
-          f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f})")
+          f"(mean |td_q - z| = {float(np.abs(td_q - z).mean()):.4f}, "
+          f"|td_cal - z| = {float(np.abs(td_cal - z).mean()):.4f})")
+    print(f"[az-train] sideboard-phase rows: {int(sb_rows.sum())}/{n} "
+          f"({int(sb_onehot.sum())} one-hot behavior rows -> REINFORCE vs "
+          f"next-game z, coef {float(sb_loss_coef):g}, batch share "
+          f"{float(sb_batch_frac):g}; value trains on all sb rows toward z)")
+    n_pi = int(((pi.sum(axis=1) > 0) & ~sb_onehot).sum())
+    print(f"[az-train] policy CE rows: {n_pi}/{n} "
+          f"(sb one-hot rows train via REINFORCE; the playout cap's "
+          f"{n - n_pi - int(sb_onehot.sum())} fast-search rows train the "
+          f"value head only)")
 
     net, prior_steps, prov = _init_net(from_ppo, fresh)
     print(f"[az-train] net: {prov}")
+    # Memorization tripwire baseline: value MSE (vs z, sb rows excluded) on a
+    # fixed sample of this window BEFORE any of this cycle's updates — the
+    # net's generalization to games it has not fitted this cycle. (The window's
+    # older half was partly trained last cycle, so this UNDERSTATES true
+    # fresh-game error; the warning below is therefore conservative.)
+    game_pool = np.nonzero(~sb_rows)[0]
+    tw_idx = rng.choice(game_pool, size=min(8192, len(game_pool)),
+                        replace=False)
+    pre_mse = _value_mse(net, obs[tw_idx], mask[tw_idx], z[tw_idx])
     net.train()
     # Weight decay applies to everything EXCEPT the per-sample-selected
     # parameters (the critic's archetype-bucket columns, the embedding tables).
@@ -304,13 +486,31 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     # Adam's normalization turns decay-without-gradient into a ~lr/step march to
     # zero — so a single-matchup cycle would erase every other matchup's critic
     # column (and every card absent from the window) in ~100 batches.
-    opt = torch.optim.Adam(decay_exempt_param_groups(net, weight_decay), lr=lr)
+    opt = torch.optim.Adam(
+        decay_exempt_param_groups(net, weight_decay, value_decay=value_decay),
+        lr=lr)
 
     obs_t = torch.as_tensor(obs)
     pi_t = torch.as_tensor(pi)
     z_t = torch.as_tensor(z)
     vt_t = torch.as_tensor(v_target)
     mask_t = torch.as_tensor(mask)
+    # Value trains on EVERY row now (sb rows included — their target is z; see
+    # the sb_rows comment above). The weight mechanism is kept for the loss
+    # denominators and easy reverts.
+    vw_t = torch.ones(n, dtype=torch.float32)
+    # 1.0 on rows carrying a CE policy target, 0.0 on the playout cap's
+    # fast-search rows (all-zero pi — value/TD only) AND on sb one-hot
+    # behavior rows, which train through the REINFORCE term instead.
+    pw_t = torch.as_tensor(
+        ((pi.sum(axis=1) > 0) & ~sb_onehot).astype(np.float32))
+    # sb one-hot machinery: row weight, chosen action (the one-hot argmax),
+    # and the oversampling pool (--sb-batch-frac of each batch).
+    sbw_t = torch.as_tensor(sb_onehot.astype(np.float32))
+    chosen_t = torch.as_tensor(pi.argmax(axis=1).astype(np.int64))
+    sb_pool = np.nonzero(sb_onehot)[0]
+    n_sb_draw = (int(round(bs * float(sb_batch_frac)))
+                 if len(sb_pool) else 0)
 
     log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
     os.makedirs(ckpt_dir, exist_ok=True)
@@ -320,8 +520,23 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     with open(log_path, "a") as logf:
         logf.write(f"# az-train {time.strftime('%Y-%m-%d %H:%M:%S')} deck={deck} "
                    f"samples={n} batches={batches} bs={bs} lr={lr}\n")
+        pool_pos = 0
         for b in range(batches):
-            idx = rng.integers(0, n, size=bs)
+            if pool is not None:
+                # Sequential slices of the shuffled pool: one pass sees every
+                # pooled row exactly once; a longer explicit run reshuffles.
+                if pool_pos + bs > len(pool):
+                    rng.shuffle(pool)
+                    pool_pos = 0
+                idx = pool[pool_pos:pool_pos + bs].copy()
+                pool_pos += bs
+            else:
+                idx = rng.integers(0, n, size=bs)
+            if n_sb_draw:
+                # Oversample sb one-hot rows: they are ~0.3% of a window, far
+                # too rare for the sparse REINFORCE signal at a uniform draw.
+                idx[:n_sb_draw] = rng.choice(sb_pool, size=n_sb_draw,
+                                             replace=True)
             bi = torch.as_tensor(idx)
             ob = obs_t[bi]; tp = pi_t[bi]; tz = z_t[bi]; mk = mask_t[bi]
             tv = vt_t[bi]
@@ -329,13 +544,31 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             logits, value = net(ob, mk)
             logp = F.log_softmax(logits, dim=-1)
             logp = torch.where(mk, logp, torch.zeros_like(logp))   # kill -inf*0 nan
-            loss_pi = -(tp * logp).sum(dim=1).mean()
+            # Weighted mean over the batch's policy-target rows only: a
+            # fast-search (zero-pi) row contributes 0 to the numerator but
+            # must not inflate the denominator either (the clamp guards an
+            # all-fast batch, which then contributes 0).
+            pw = pw_t[bi]
+            pden = pw.sum().clamp(min=1.0)
+            loss_pi = (-(tp * logp).sum(dim=1) * pw).sum() / pden
             # Optimized against the MIXED target; the pure-outcome MSE is
             # computed alongside (no grad) purely as a comparable diagnostic.
-            loss_v = F.mse_loss(value, tv)
+            # Both are weighted means over the batch's in-game rows only (the
+            # clamp guards the all-sb batch, which then contributes 0).
+            vw = vw_t[bi]
+            vden = vw.sum().clamp(min=1.0)
+            loss_v = (((value - tv) ** 2) * vw).sum() / vden
             with torch.no_grad():
-                loss_vz = F.mse_loss(value, tz)
-            loss = loss_pi + c_v * loss_v
+                loss_vz = (((value - tz) ** 2) * vw).sum() / vden
+            # Sideboard REINFORCE term (sb one-hot behavior rows only):
+            # advantage = realized next-game z minus the net's own (detached)
+            # value at the sb state — push the chosen boarding pick's log-prob
+            # up when it beat expectation, down when it fell short.
+            sbw = sbw_t[bi]
+            adv = (tz - value.detach()) * sbw
+            logp_chosen = logp.gather(1, chosen_t[bi].unsqueeze(1)).squeeze(1)
+            loss_sb = -(adv * logp_chosen).sum() / sbw.sum().clamp(min=1.0)
+            loss = loss_pi + c_v * loss_v + float(sb_loss_coef) * loss_sb
 
             opt.zero_grad()
             loss.backward()
@@ -348,7 +581,7 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             if b == 0 or (b + 1) % log_every == 0 or b == batches - 1:
                 line = (f"[az-train] batch {b+1}/{batches} loss={fl:.4f} "
                         f"(pi={loss_pi.item():.4f} v_mix={loss_v.item():.4f} "
-                        f"v_z={loss_vz.item():.4f})")
+                        f"v_z={loss_vz.item():.4f} sb={loss_sb.item():.4f})")
                 print(line)
                 logf.write(line + "\n"); logf.flush()
             if snapshot_every and (b + 1) % snapshot_every == 0:
@@ -362,12 +595,39 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     snap = net.save(az_checkpoint_path(steps, ckpt_dir), steps)
     print(f"[az-train] saved candidate snapshot {snap}")
     print(f"[az-train] loss {first_loss:.4f} -> {last_loss:.4f} over {batches} batches")
-    pruned = prune_shards(window, data_dir)
-    if pruned:
-        print(f"[az-train] pruned {pruned} stale shard(s) older than the last "
-              f"2x{window}-shard window")
+    # Memorization tripwire: the same sampled rows' value MSE after this
+    # cycle's updates vs the pre-train baseline above. Fitting far below what
+    # the net scored on the window before touching it means the value head
+    # memorized this window's games (which flattens the search posteriors the
+    # policy then distills) — the 2026-08 gate-failure signature.
+    wmse = _value_mse(net, obs[tw_idx], mask[tw_idx], z[tw_idx])
+    print(f"[az-train] value MSE (vs z, sb rows excluded): "
+          f"window pre-train {pre_mse:.3f} | post-train {wmse:.3f}")
+    if pre_mse > 2.0 * wmse:
+        print(f"[az-train] WARNING: pre-train window value MSE is "
+              f"{pre_mse / max(wmse, 1e-9):.1f}x the post-train MSE — the "
+              f"value head is memorizing this window's games; buy more "
+              f"distinct games per slot first (a lower --full-search-frac "
+              f"/ --fast-sims trades sims per position for games at the "
+              f"same engine budget), else consider a lower --epoch-frac")
     return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
             "snapshot": snap, "steps": steps}
+
+
+def _value_mse(net, obs, mask, z, batch: int = 256) -> float:
+    """Mean squared error of the net's value vs realized z, batched, no grad."""
+    import torch
+    net.eval()
+    tot = 0.0
+    with torch.no_grad():
+        for st in range(0, obs.shape[0], batch):
+            en = min(st + batch, obs.shape[0])
+            ob = torch.as_tensor(np.ascontiguousarray(obs[st:en]))
+            mk = torch.as_tensor(np.ascontiguousarray(mask[st:en]))
+            _, v = net(ob, mk)
+            tot += float(((v.cpu().numpy() - z[st:en]) ** 2).sum())
+    net.train()
+    return tot / max(1, obs.shape[0])
 
 
 # ----------------------------------------------------------------------
@@ -388,8 +648,8 @@ def _normalize_focus(deck, default_roster) -> list:
 def _gate_matchups(focus_decks, roster, cross_pairs: int, seed: int) -> list:
     """The ROSTER-WIDE matchup panel the gate plays: a candidate-vs-incumbent
     MIRROR for every deck in focus + roster (de-duplicated, order-preserving), so
-    every deck the one gen net must pilot is measured every gate — a regression
-    on a non-focus deck is visible, which the old focus-only sample was blind to.
+    every deck the one gen net must pilot is measured every gate, including a
+    regression on a deck that is not this slot's focus.
     Plus ``cross_pairs`` seeded cross pairings, each added in BOTH directions
     ((x, y) AND (y, x)): the candidate always pilots deck_x, so an unpaired cross
     matchup would credit/penalize the candidate for raw deck strength (a 90-10
@@ -428,7 +688,9 @@ def _like_pairing_floor(per_matchup: dict, gate_floor: float,
     pairing's reverse direction — which _gate_matchups always schedules — has
     the incumbent piloting this deck (flip that). A cross pairing whose reverse
     is missing is skipped rather than read one-sided. Returns
-    (vetoes, deck_floor) with deck_floor[deck] = (cand_wr, inc_wr, n_cand)."""
+    (vetoes, deck_floor) with deck_floor[deck] = (cand_wr, inc_wr, n_cand,
+    cand_wins, inc_wins, n_inc) — the raw counts feed the lock check
+    (:func:`gate_sprt.floor_locked`) that lets the gate stop early."""
     vetoes: list = []
     deck_floor: dict = {}
     decks = {dx for (dx, _dy) in per_matchup}
@@ -453,7 +715,7 @@ def _like_pairing_floor(per_matchup: dict, gate_floor: float,
         if cn == 0 or inn == 0:
             continue
         cand_wr, inc_wr = cw / cn, iw / inn
-        deck_floor[pd] = (cand_wr, inc_wr, cn)
+        deck_floor[pd] = (cand_wr, inc_wr, cn, cw, iw, inn)
         if gate_floor > 0 and cn >= floor_min_matches and \
                 cand_wr - inc_wr < 2 * gate_floor - 1:
             vetoes.append(pd)
@@ -510,13 +772,17 @@ def _gate_actor_cmd(actor_bin: str, *, deck_a: str, deck_b: str, games: int,
                     server_a: Optional[str], server_b: Optional[str],
                     bo3: bool, sb_branches: int, sb_worlds: int,
                     sb_rollout_turns: int,
-                    cross_world: bool, device: str) -> list:
+                    cross_world: bool, device: str,
+                    record_dir: Optional[str] = None,
+                    td_n: int = DEFAULT_AZ_TD_N) -> list:
     """Build a ``bin/az_actor --search`` argv for one gate leg: seat A's net
     (``model_a`` or central-server socket ``server_a``) piloting ``deck_a`` vs
     seat B's net piloting ``deck_b``. ``--search`` WITHOUT ``--selfplay`` is
     the actor's eval mode — no root Dirichlet noise, argmax(visits) at every
     searched root, raw-policy argmax at unsafe/trivial decisions — matching
-    the Python gate's ``az:`` controllers (temperature 0)."""
+    the Python gate's ``az:`` controllers (temperature 0). ``record_dir``
+    adds ``--record --out-dir``: the leg's searched decisions (BOTH seats)
+    are written there as trainer-schema shards, played actions unchanged."""
     cmd = [actor_bin, "--search", "--deck", deck_a, "--deck-b", deck_b,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(sims), "--worlds", str(worlds), "--c", str(c_puct),
@@ -532,7 +798,59 @@ def _gate_actor_cmd(actor_bin: str, *, deck_a: str, deck_b: str, games: int,
                 "--sb-branches", str(sb_branches),
                 "--sb-worlds", str(sb_worlds),
                 "--sb-rollout-turns", str(sb_rollout_turns)]
+    if record_dir:
+        cmd += ["--record", "--out-dir", record_dir, "--td-n", str(td_n)]
     return cmd
+
+
+def gate_leg_record_dir(record_dir: str, deck_x: str, deck_y: str,
+                        cand_is_a: bool, round_idx: int = 1) -> str:
+    """Per-leg shard directory under a gate's ``record_dir``. The leaf name
+    encodes the sequential gate ROUND, the pairing, AND which seat the candidate
+    sat in (``cand_A__r<n>__<dx>__<dy>`` / ``cand_B__r<n>__<dx>__<dy>``; ``/``
+    in a deck stem becomes ``-``), so a recorded row's net is recoverable from
+    its directory plus the obs ``self_is_a`` flag — the shards themselves carry
+    no net label. The candidate pilots ``deck_x`` in both legs. The round is in
+    the name (and the layout stays FLAT — one directory level, which is all
+    :func:`pool_gate_shards` walks) so successive rounds of the same matchup
+    cannot collide on a shard filename."""
+    tag = (f"cand_{'A' if cand_is_a else 'B'}__r{int(round_idx)}__"
+           f"{deck_x.replace('/', '-')}__{deck_y.replace('/', '-')}")
+    return os.path.join(record_dir, tag)
+
+
+def pool_gate_shards(record_dir: str, pool_dir: Optional[str] = None) -> int:
+    """Move a finished gate's recorded shards from their per-leg subdirectories
+    into the ordinary training pool (default ``az_data/gen``), renamed
+    ``shard_gate-<legtag>_<original>`` so their provenance stays readable while
+    the ``shard_*.npz`` glob (load_window / the auto window) treats them
+    exactly like self-play shards. Returns the number moved.
+
+    This is the candidate-vs-incumbent data path: each net's mistakes in these
+    games were punished by a DIFFERENT policy, which pure self-play cannot
+    provide. Empty leg dirs (and the record dir itself) are removed."""
+    import shutil
+    if pool_dir is None:
+        pool_dir = os.path.join(_AZ_DATA_DIR, "gen")
+    os.makedirs(pool_dir, exist_ok=True)
+    moved = 0
+    if not os.path.isdir(record_dir):
+        return 0
+    for leg in sorted(os.listdir(record_dir)):
+        leg_dir = os.path.join(record_dir, leg)
+        if not os.path.isdir(leg_dir):
+            continue
+        for f in sorted(os.listdir(leg_dir)):
+            if f.startswith("shard_") and f.endswith(".npz"):
+                dst = os.path.join(pool_dir,
+                                   f"shard_gate-{leg}_{f[len('shard_'):]}")
+                shutil.move(os.path.join(leg_dir, f), dst)
+                moved += 1
+        if not os.listdir(leg_dir):
+            os.rmdir(leg_dir)
+    if os.path.isdir(record_dir) and not os.listdir(record_dir):
+        os.rmdir(record_dir)
+    return moved
 
 
 def _parse_gate_output(stdout: str, bo3: bool) -> tuple:
@@ -556,39 +874,21 @@ def _parse_gate_output(stdout: str, bo3: bool) -> tuple:
     return wa, wb, dr
 
 
-def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
-                      cand_ts: str, inc_ts: str, sims: int, worlds: int,
-                      c_puct: float, sb_branches: int, sb_worlds: int,
-                      sb_rollout_turns: int,
-                      bo3: bool, seed: int, workers: int,
-                      actor_device: str, eval_server, cross_world: bool,
-                      tag_of) -> dict:
-    """Play the gate's matchup panel on the C++ actor and return
-    ``{mi: (mw, ml, md)}`` from the CANDIDATE's view.
-
-    Each matchup ``(dx, dy)`` becomes TWO actor legs so seats alternate exactly
-    like the Python path's two ``run_match`` calls: candidate-piloting-``dx``
-    in seat A for ``per - per//2`` matches, then in seat B (nets and decks both
-    swapped) for ``per//2``, the B leg's tally flipped to the candidate's view.
-    Per-leg seeds derive only from the matchup index (``seed + mi*100003``,
-    B leg offset ``+ per``) — the same derivation as
-    :func:`_gate_matchup_worker` — so results are independent of scheduling
-    order and worker count.
+@contextlib.contextmanager
+def _gate_eval_servers(cand_ts: str, inc_ts: str, *, eval_server,
+                       actor_device: str, cross_world: bool):
+    """Stage C eval servers for an actor gate, held open for the WHOLE
+    sequential gate (every round) rather than per panel pass — starting and
+    stopping two GPU server processes once per round would cost more than the
+    rounds save. Yields ``(cand_sock, inc_sock, actor_env)``.
 
     ``eval_server`` is the tri-state Stage C knob (None AUTO / True forced /
     False off). The gate needs TWO nets, so it starts one
     ``train/az_eval_server.py`` PER NET (candidate + incumbent) on the one GPU
     — each actor leg connects its ``--eval-server``/``--eval-server-b`` to the
-    socket matching its seat orientation. AUTO falls back to local forwards
-    (on ``actor_device``) with a notice when the servers cannot start.
-    Cross-world leaf batching (Stage 0) is on by default — visits are
-    arithmetically identical to the sequential search, so it never changes a
-    gate verdict, only its wall-clock."""
-    import shlex
-    import subprocess
-    import threading
-    from az_selfplay import (actor_gpu_env, start_eval_server, stop_eval_server)
-    from cli_spec import BIN_DIR
+    socket matching its seat orientation. AUTO falls back to local forwards (on
+    ``actor_device``) with a notice when the servers cannot start."""
+    from az_selfplay import actor_gpu_env, start_eval_server, stop_eval_server
 
     # One eval server per net (candidate + incumbent) — the wire protocol
     # serves ONE module per socket, and two tiny-net servers share the GPU
@@ -617,35 +917,115 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
           f", cross-world={'on' if cross_world else 'off'}", flush=True)
     actor_env = (actor_gpu_env()
                  if (actor_device != "cpu" and cand_sock is None) else None)
+    try:
+        yield cand_sock, inc_sock, actor_env
+    finally:
+        stop_eval_server(cand_srv[0], cand_srv[2])
+        stop_eval_server(inc_srv[0], inc_srv[2])
 
-    # Two legs per matchup; a leg's tally is flipped to the candidate's view
-    # when the candidate sat in seat B.
-    jobs = []   # (mi, cand_is_a, argv)
+
+@contextlib.contextmanager
+def _gate_round_servers(backend: str, cand_path: str, inc_path: str, *,
+                        eval_server, actor_device: str, cross_world: bool):
+    """Everything an actor-backend gate needs to set up ONCE and reuse across
+    every round of the sequential test: the two nets' TorchScript exports and
+    the Stage C eval servers. Yields the dict :func:`az_eval`'s ``_play_round``
+    passes to :func:`_gate_actor_panel`, or ``None`` on the Python backend
+    (which builds its controllers fresh per matchup and needs no setup)."""
+    if backend != "actor":
+        yield None
+        return
+    from az_selfplay import _ensure_actor_torchscript
+    cand_ts, _ = _ensure_actor_torchscript({"mode": "az", "path": cand_path},
+                                           tag="az-eval")
+    inc_ts, _ = _ensure_actor_torchscript({"mode": "az", "path": inc_path},
+                                          tag="az-eval")
+    with _gate_eval_servers(cand_ts, inc_ts, eval_server=eval_server,
+                            actor_device=actor_device,
+                            cross_world=cross_world) as (cand_sock, inc_sock,
+                                                         actor_env):
+        yield {"cand_ts": cand_ts, "inc_ts": inc_ts, "cand_sock": cand_sock,
+               "inc_sock": inc_sock, "actor_env": actor_env}
+
+
+def _gate_actor_stream(matchups: list, per: int, *, actor_bin: str,
+                       cand_ts: str, inc_ts: str, sims: int, worlds: int,
+                       c_puct: float, sb_branches: int, sb_worlds: int,
+                       sb_rollout_turns: int,
+                       bo3: bool, seed: int, seed_stride: int, max_rounds: int,
+                       workers: int,
+                       actor_device: str, cross_world: bool,
+                       tag_of, cand_sock, inc_sock, actor_env, on_leg,
+                       record_dir: Optional[str] = None,
+                       td_n: int = DEFAULT_AZ_TD_N) -> dict:
+    """STREAM the gate's matchup panel on the C++ actor: round after round, up
+    to ``max_rounds``, keeping ``workers`` legs in flight and launching the
+    next leg the moment one exits — no waiting for a round's stragglers. Every
+    completed leg is reported to ``on_leg(round_idx, mi, mw, ml, md)`` (the
+    CANDIDATE's view); when that returns True the verdict is in: nothing more
+    is launched, the legs still in flight are TERMINATED and their partial
+    shard recordings deleted (a half-played match must not reach the training
+    pool), and the stream returns ``{"rounds_started", "legs_played",
+    "legs_terminated"}``. The eval-server sockets and actor env come from
+    :func:`_gate_eval_servers`, which wraps the whole stream.
+
+    ``record_dir`` records every leg's searched decisions as shards under
+    :func:`gate_leg_record_dir` (one subdirectory per leg per ROUND).
+
+    Each matchup ``(dx, dy)`` becomes TWO actor legs so seats alternate exactly
+    like the Python path's two ``run_match`` calls: candidate-piloting-``dx``
+    in seat A for ``per - per//2`` matches, then in seat B (nets and decks both
+    swapped) for ``per//2``, the B leg's tally flipped to the candidate's view.
+    Per-leg seeds derive only from the matchup index and the round's seed
+    (``seed + (round-1)*seed_stride + mi*100003``, B leg offset ``+ per``) —
+    the same derivation as :func:`_gate_matchup_worker` — so a leg's result is
+    independent of scheduling order and worker count; only WHICH legs get
+    played before the verdict lands depends on completion order.
+
+    Cross-world leaf batching (Stage 0) is on by default — visits are
+    arithmetically identical to the sequential search, so it never changes a
+    gate verdict, only its wall-clock."""
+    import shlex
+    import subprocess
+    import threading
+    from cli_spec import BIN_DIR
+
     half = per // 2
-    for mi, (dx, dy) in enumerate(matchups):
-        mseed = seed + mi * 100003
-        common = dict(sims=sims, worlds=worlds, c_puct=c_puct, bo3=bo3,
-                      sb_branches=sb_branches, sb_worlds=sb_worlds,
-                      sb_rollout_turns=sb_rollout_turns,
-                      cross_world=cross_world,
-                      device=actor_device)
-        if per - half:  # candidate (piloting dx) in seat A
-            jobs.append((mi, True, _gate_actor_cmd(
-                actor_bin, deck_a=dx, deck_b=dy, games=per - half, seed=mseed,
-                model_a=cand_ts, model_b=inc_ts, server_a=cand_sock,
-                server_b=inc_sock, **common)))
-        if half:        # candidate (piloting dx) in seat B
-            jobs.append((mi, False, _gate_actor_cmd(
-                actor_bin, deck_a=dy, deck_b=dx, games=half, seed=mseed + per,
-                model_a=inc_ts, model_b=cand_ts, server_a=inc_sock,
-                server_b=cand_sock, **common)))
+    common = dict(sims=sims, worlds=worlds, c_puct=c_puct, bo3=bo3,
+                  sb_branches=sb_branches, sb_worlds=sb_worlds,
+                  sb_rollout_turns=sb_rollout_turns,
+                  cross_world=cross_world,
+                  device=actor_device)
 
-    tallies = {mi: [0, 0, 0] for mi in range(len(matchups))}
-    legs_left = {mi: 0 for mi in range(len(matchups))}
-    for mi, _cia, _cmd in jobs:
-        legs_left[mi] += 1
-    done_matchups = 0
+    def _jobs():
+        """(round_idx, mi, cand_is_a, leg_record_dir, argv), lazily, in
+        panel order round by round."""
+        for round_idx in range(1, max_rounds + 1):
+            rseed = seed + (round_idx - 1) * seed_stride
+            for mi, (dx, dy) in enumerate(matchups):
+                mseed = rseed + mi * 100003
+                if per - half:  # candidate (piloting dx) in seat A
+                    rd = (gate_leg_record_dir(record_dir, dx, dy, True, round_idx)
+                          if record_dir else None)
+                    yield (round_idx, mi, True, rd, _gate_actor_cmd(
+                        actor_bin, deck_a=dx, deck_b=dy, games=per - half,
+                        seed=mseed, model_a=cand_ts, model_b=inc_ts,
+                        server_a=cand_sock, server_b=inc_sock,
+                        record_dir=rd, td_n=td_n, **common))
+                if half:        # candidate (piloting dx) in seat B
+                    rd = (gate_leg_record_dir(record_dir, dx, dy, False, round_idx)
+                          if record_dir else None)
+                    yield (round_idx, mi, False, rd, _gate_actor_cmd(
+                        actor_bin, deck_a=dy, deck_b=dx, games=half,
+                        seed=mseed + per, model_a=inc_ts, model_b=cand_ts,
+                        server_a=inc_sock, server_b=cand_sock,
+                        record_dir=rd, td_n=td_n, **common))
+
+    legs_per_matchup = (1 if per - half else 0) + (1 if half else 0)
+    tallies: dict = {}      # (round_idx, mi) -> [w, l, d]
+    legs_left: dict = {}    # (round_idx, mi) -> legs not yet reaped
     failed = []
+    stats = {"rounds_started": 0, "legs_played": 0, "legs_terminated": 0}
 
     def _pump(stream, sink):
         for line in stream:
@@ -653,7 +1033,7 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
         stream.close()
 
     def _launch(job):
-        mi, cand_is_a, cmd = job
+        round_idx, mi, cand_is_a, rd, cmd = job
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              env=actor_env, stdout=subprocess.PIPE,
@@ -665,46 +1045,80 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
                                     daemon=True)]
         for t in threads:
             t.start()
-        return {"mi": mi, "cand_is_a": cand_is_a, "p": p, "cmd": cmd,
-                "threads": threads, "out": out_lines, "err": err_lines}
+        key = (round_idx, mi)
+        tallies.setdefault(key, [0, 0, 0])
+        legs_left[key] = legs_left.get(key, 0) + 1
+        stats["rounds_started"] = max(stats["rounds_started"], round_idx)
+        return {"round": round_idx, "mi": mi, "cand_is_a": cand_is_a,
+                "record_dir": rd, "p": p, "cmd": cmd, "threads": threads,
+                "out": out_lines, "err": err_lines}
 
-    def _reap(rec):
-        nonlocal done_matchups
+    def _reap(rec) -> bool:
+        """Tally one finished leg and report it; True when the verdict is in."""
         rec["p"].wait()
         for t in rec["threads"]:
             t.join()
-        mi = rec["mi"]
+        round_idx, mi = rec["round"], rec["mi"]
+        key = (round_idx, mi)
         if rec["p"].returncode != 0:
             failed.append((mi, rec["p"].returncode, rec["cmd"],
                            "".join(rec["err"])))
-            return
+            return False
         wa, wb, dr = _parse_gate_output("".join(rec["out"]), bo3)
         mw, ml = (wa, wb) if rec["cand_is_a"] else (wb, wa)
-        t = tallies[mi]
+        t = tallies[key]
         t[0] += mw; t[1] += ml; t[2] += dr
-        legs_left[mi] -= 1
-        if legs_left[mi] == 0:
-            done_matchups += 1
+        legs_left[key] -= 1
+        stats["legs_played"] += 1
+        if legs_left[key] == 0 and legs_per_matchup > 1:
             dx, dy = matchups[mi]
-            print(f"[az-eval]   {tag_of(dx, dy)}: {t[0]}W-{t[1]}L-{t[2]}D "
-                  f"({done_matchups}/{len(matchups)})", flush=True)
+            print(f"[az-eval]   r{round_idx} {tag_of(dx, dy)}: "
+                  f"{t[0]}W-{t[1]}L-{t[2]}D", flush=True)
+        return bool(on_leg(round_idx, mi, mw, ml, dr))
+
+    def _terminate(rec):
+        if rec["p"].poll() is None:
+            rec["p"].terminate()
+        try:
+            rec["p"].wait(timeout=30)
+        except subprocess.TimeoutExpired:
+            rec["p"].kill()
+            rec["p"].wait()
+        for t in rec["threads"]:
+            t.join()
+        if rec["record_dir"]:
+            shutil.rmtree(rec["record_dir"], ignore_errors=True)
 
     active = []
+    stop = False
+    jobs = _jobs()
+    next_job = next(jobs, None)
     try:
         # Sliding pool (same shape as az_selfplay._generate_actor): keep up to
-        # `workers` actor legs in flight, launching the next as any one exits.
-        next_j = 0
-        while next_j < len(jobs) or active:
-            while next_j < len(jobs) and len(active) < workers:
-                active.append(_launch(jobs[next_j]))
-                next_j += 1
+        # `workers` actor legs in flight, launching the next as any one exits,
+        # straight across round boundaries.
+        while (next_job is not None and not stop) or active:
+            while next_job is not None and not stop and len(active) < workers:
+                active.append(_launch(next_job))
+                next_job = next(jobs, None)
             done = [rec for rec in active if rec["p"].poll() is not None]
             if not done:
                 time.sleep(0.2)
                 continue
             for rec in done:
-                _reap(rec)
                 active.remove(rec)
+                if _reap(rec):
+                    stop = True
+            if stop and active:
+                # The verdict is in: the legs still running would only add
+                # matches the verdict no longer depends on.
+                stats["legs_terminated"] = len(active)
+                print(f"[az-eval] verdict reached: stopping {len(active)} "
+                      f"leg(s) still in flight (their partial recordings are "
+                      f"discarded)", flush=True)
+                for rec in active:
+                    _terminate(rec)
+                active = []
         if failed:
             for mi, rc, cmd, err in failed:
                 tail = "\n".join(err.strip().splitlines()[-40:])
@@ -719,16 +1133,14 @@ def _gate_actor_panel(matchups: list, per: int, *, actor_bin: str,
                 f"block(s) above for the repro command and stderr tail")
     finally:
         for rec in active:
-            if rec["p"].poll() is None:
-                rec["p"].terminate()
-        stop_eval_server(cand_srv[0], cand_srv[2])
-        stop_eval_server(inc_srv[0], inc_srv[2])
-    return {mi: tuple(t) for mi, t in tallies.items()}
+            _terminate(rec)
+    return stats
 
 
 def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             games: int = DEFAULT_AZ_EVAL_GAMES, sims: int = DEFAULT_AZ_EVAL_SIMS,
-            worlds: int = DEFAULT_AZ_EVAL_WORLDS, c_puct: float = 1.5,
+            worlds: int = DEFAULT_AZ_EVAL_WORLDS,
+            c_puct: float = DEFAULT_AZ_C_PUCT,
             sb_branches: int = DEFAULT_SB_BRANCHES,
             sb_worlds: int = DEFAULT_SB_WORLDS,
             sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
@@ -742,15 +1154,42 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
             workers: Optional[int] = None,
             use_actor: Optional[bool] = None, actor_device: str = "cpu",
             eval_server: Optional[bool] = None,
-            cross_world: bool = True) -> dict:
-    """ROSTER-WIDE gate: play ``candidate`` vs ``incumbent`` over a panel of
-    matchups covering EVERY deck in ``roster`` (default: the whole decks/league/
-    roster) as pilot — a mirror per deck plus direction-balanced cross pairings
-    (see :func:`_gate_matchups`) — seats alternating. With ``bo3`` (default) each
-    contest is a best-of-three MATCH and the gate is decided on the aggregate
-    MATCH win-rate. Promote the candidate to ``gen__azfinal.pt`` when
-    ``promote``, the AGGREGATE win-rate across all matchups >=
-    ``promote_threshold``, AND no per-deck floor veto fires.
+            cross_world: bool = True,
+            record_dir: Optional[str] = None,
+            pool_shards: bool = True,
+            max_rounds: int = DEFAULT_GATE_MAX_ROUNDS,
+            alpha: float = DEFAULT_GATE_ALPHA,
+            td_n: int = DEFAULT_AZ_TD_N) -> dict:
+    """ROSTER-WIDE SEQUENTIAL gate: play ``candidate`` vs ``incumbent`` over a
+    panel of matchups covering EVERY deck in ``roster`` (default: the whole
+    decks/league/ roster) as pilot — a mirror per deck plus direction-balanced
+    cross pairings (see :func:`_gate_matchups`) — seats alternating. With
+    ``bo3`` (default) each contest is a best-of-three MATCH.
+
+    The panel is scheduled in ROUNDS of ``games`` matches (>= 2 per matchup,
+    so every round is seat-balanced) up to ``max_rounds``, but the SPRT on
+    the ACCUMULATED aggregate score is re-asked after EVERY completed match
+    (see :mod:`gate_sprt`): the gate stops the moment the evidence is
+    decisive, and on the actor backend the legs still in flight are
+    terminated rather than played out. Hypotheses are symmetric about 0.5 —
+    H1 ``p = promote_threshold`` vs H0 ``p = 1 - promote_threshold`` — with
+    error rates ``alpha`` (= beta). At the cap the undecided test keeps the
+    incumbent unless the draw-adjusted score reached the bar; a score inside
+    the indifference region is reported ``undecided`` (kept, but not a failed
+    gate for the league's consecutive-failure reset). The per-deck floor veto
+    below is also checked as results land: once a deck's veto is locked —
+    it would fire even if the candidate won every remaining match on that
+    deck under the cap — the gate stops early.
+
+    Buying more MATCHES is the way to sharpen a verdict — never fewer sims per
+    match, which would measure a weaker player than the one being deployed (see
+    cli_spec's ``DEFAULT_AZ_EVAL_SIMS`` note). The sequential test spends those
+    matches only where they change the answer: a decisive candidate is typically
+    settled inside a round or two, while a marginal one keeps playing until it
+    has the sample it actually needs.
+
+    The candidate is promoted to ``gen__azfinal.pt`` when ``promote``, the
+    sequential test accepts, AND no per-deck floor veto fires.
 
     The floor veto is a LIKE-PAIRING comparison: for each piloted deck the
     candidate's win-rate is measured against the INCUMBENT's win-rate piloting
@@ -759,26 +1198,31 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     the flip of the reverse pairing (y, x), which the panel always plays). A
     deck with >= ``floor_min_matches`` candidate matches whose pooled win-rate
     deficit vs the incumbent falls below ``2*gate_floor - 1`` blocks promotion
-    (``gate_floor=0`` disables the veto). On mirrors alone this reduces to the
-    old absolute rule (candidate mirror win-rate < ``gate_floor``); the
-    difference is that a LOPSIDED deck matchup — where the incumbent piloting
-    the same deck loses just as badly — now cancels out of the deck's tally
-    instead of counting as candidate collapse (the old absolute floor read one
-    side of a 90-10 matchup as a regression). A veto only delays promotion by a
-    gate — training continues from snapshots either way — so a rare unlucky
-    veto is much cheaper than promoting a net that forgot how to pilot a deck.
+    (``gate_floor=0`` disables the veto). On mirrors alone this is exactly
+    "candidate mirror win-rate < ``gate_floor``"; measuring it against the
+    incumbent's LIKE pairings is what keeps a lopsided deck matchup — one the
+    incumbent piloting the same deck loses just as badly — from reading as
+    candidate collapse. Rounds accumulate into the same per-matchup tallies, so
+    a longer sequential gate powers the veto up as it goes;
+    ``floor_min_matches`` keeps it from firing on a sample small enough for an
+    equal candidate to be wiped by chance, since a false veto here overrides the
+    aggregate test. Set both ``gate_floor`` and ``floor_min_matches`` to 0 to
+    drop the veto entirely and let the sequential aggregate carry the verdict
+    alone.
     Prints per-matchup and per-piloted-deck breakdowns. The no-incumbent-yet
     fallback (vs scripted) is preserved (the like-pairing baseline is then the
     scripted opponent piloting the same deck).
 
-    ``workers`` fans the matchup panel out over a process pool (default
-    ``max(1, cpu-1)``, capped at the panel size; 1 = the old serial loop). A
-    gate match is one driver process ping-ponging with one engine subprocess —
-    ~one busy core — so the serial panel left the machine idle. Matchups are
+    ``workers`` fans each round's matchup panel out over a process pool (default
+    ``max(1, cpu-1)``, capped at the panel size; 1 = serial). A gate match is one
+    driver process ping-ponging with one engine subprocess — ~one busy core — so
+    a serial panel leaves the machine idle. Matchups are
     independent and every matchup's seeds derive only from its panel index
     (and its controllers are built fresh per matchup — see
     :func:`_gate_matchup_worker`), so the aggregate/breakdown/veto results are
-    identical for ANY worker count; only per-matchup print order varies.
+    identical for ANY worker count; only per-matchup print order varies. Each
+    round derives its own seed (``seed + (round-1) * _GATE_ROUND_SEED_STRIDE``),
+    so rounds play genuinely different games rather than replaying round 1.
 
     ``use_actor`` picks the gate BACKEND (mirroring
     :func:`az_selfplay.generate`): None (AUTO, default) plays the panel on the
@@ -791,11 +1235,27 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     — visits arithmetically identical to the sequential search) and the
     Stage C GPU eval-server per the tri-state ``eval_server`` knob (None
     AUTO / True forced / False off; TWO servers, one per net — see
-    :func:`_gate_actor_panel`); ``actor_device`` is the local-forward device
-    when no server runs. Both backends decide the gate from the same panel,
+    :func:`_gate_eval_servers`, which holds them open across every round rather
+    than restarting them per round); ``actor_device`` is the local-forward
+    device when no server runs. Both backends decide the gate from the same panel,
     seat split and per-matchup seed derivation, but play different engine
     game seeds internally, so their per-match RESULTS are not bit-comparable
-    — each backend is deterministic for a given seed."""
+    — each backend is deterministic for a given seed.
+
+    ``record_dir`` (actor backend only) records every gate leg's searched
+    decisions — both nets' — as trainer-schema shards under one subdirectory
+    per leg per round (:func:`gate_leg_record_dir`), so a gate verdict comes
+    with the games behind it for ``az_inspect``/the shard browsers; ``td_n`` is
+    the recorded n-step TD horizon. With ``pool_shards`` (DEFAULT ON) the
+    recorded shards are additionally MOVED into the ``az_data/gen`` training
+    pool once the verdict is in (:func:`pool_gate_shards`) — candidate-vs-
+    incumbent games as training data, the cross-net signal pure self-play lacks
+    (bo3 gates only: the pool window is bo3 and bo1 shards would mix silently).
+    Pooling on by default is what makes the sequential gate's variable cost
+    safe: a verdict that needed six rounds spent six rounds' worth of compute,
+    and every match of it comes back as training data instead of being thrown
+    away. When ``pool_shards`` is on and no ``record_dir`` is given, one is
+    created under ``az_data/gate`` automatically."""
     from az_net import az_checkpoint_path, resolve_az_checkpoint
 
     cand_path = resolve_az_checkpoint(candidate, prefer="snapshot") or candidate
@@ -803,6 +1263,11 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
         incumbent = az_checkpoint_path(None, ckpt_dir)
     inc_path = incumbent if os.path.exists(incumbent) else \
         (resolve_az_checkpoint(incumbent) or incumbent)
+    # The actor legs run from bin/ (engine RESOURCE_DIR convention), so a
+    # relative checkpoint path must be absolutized before it reaches them.
+    cand_path = os.path.abspath(cand_path)
+    if os.path.exists(inc_path):
+        inc_path = os.path.abspath(inc_path)
 
     # bo3 gate: sideboard roots get their own (deeper) budget, mirroring self-play.
     knobs = (f"?sims={sims}&worlds={worlds}&c={c_puct}"
@@ -818,7 +1283,13 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     per = max(2, games // len(matchups))   # matches per matchup (>=2 so seats alternate)
     if workers is None:
         workers = max(1, (os.cpu_count() or 2) - 1)
-    workers = max(1, min(int(workers), len(matchups)))
+    workers_req = max(1, int(workers))
+    # Cap at the round's independent JOB count: on the actor backend every
+    # matchup is TWO legs (candidate in seat A / seat B — see
+    # _gate_actor_panel), so a panel-size cap left half the round waiting in
+    # a second wave. The Python path's pool holds one whole matchup per job;
+    # extra workers there just idle, so the higher cap is harmless.
+    workers = min(workers_req, 2 * len(matchups))
 
     # Backend: the C++ actor plays candidate-vs-incumbent two-model matches
     # (--model-b); the vs-scripted fallback (no incumbent yet) has no actor
@@ -847,72 +1318,211 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     else:
         backend = "actor"
         chosen = "forced" if use_actor else "AUTO"
+        # The actor panel is TWO legs per matchup (one per candidate seat), each
+        # its own process, so it can keep twice the matchup count in flight.
+        workers = min(workers_req, 2 * len(matchups))
 
+    max_rounds = max(1, int(max_rounds))
     unit = "matches" if bo3 else "games"
-    print(f"[az-eval] {len(matchups)} matchup(s) x {per} {unit} "
+    print(f"[az-eval] {len(matchups)} matchup(s) x {per} {unit}/round "
+          f"= {per * len(matchups)} {unit} per round, <= {max_rounds} round(s) "
           f"({'bo3' if bo3 else 'bo1'}, seats alternating, {workers} worker(s)): "
           f"candidate={cand_path} vs "
           f"{'incumbent ' + inc_path if have_inc else 'scripted (no incumbent yet)'} "
           f"@ sims={sims} worlds={worlds}")
+    print(f"[az-eval] {sprt_plan_line(promote_threshold, alpha)}; verdict "
+          f"re-asked after every completed {'match' if bo3 else 'game'}; "
+          f"{sprt_cap_line(promote_threshold)}")
     print(f"[az-eval] backend={backend.upper()} ({chosen}); "
           f"az_actor {'present' if have_actor else 'absent'}")
+    # Gate-shard recording pays for the sequential test: however many rounds a
+    # verdict costs, those candidate-vs-incumbent games come back as training
+    # data. So with pooling on (the default) the gate records even when the
+    # caller named no directory.
+    if record_dir is None and pool_shards and bo3 and backend == "actor":
+        record_dir = os.path.join(_AZ_DATA_DIR, "gate",
+                                  time.strftime("gate_%Y%m%d_%H%M%S"))
+    if record_dir:
+        record_dir = os.path.abspath(record_dir)   # actor legs run from bin/
+        if backend == "actor":
+            os.makedirs(record_dir, exist_ok=True)
+            print(f"[az-eval] recording gate shards under {record_dir} (one "
+                  f"subdir per leg per round: "
+                  f"cand_<seat>__r<round>__<deck_x>__<deck_y>)"
+                  + ("; pooled into az_data/gen when the gate ends"
+                     if pool_shards and bo3 else ""))
+        else:
+            record_dir = None
+            print("[az-eval] shard recording skipped: it needs the C++ actor "
+                  "backend (two-model legs)")
 
     def _tag(dx: str, dy: str) -> str:
         return f"{dx}(mirror)" if dx == dy else f"{dx} vs {dy}"
 
-    # Run the panel: each matchup's result depends only on its index mi (seeds)
-    # and the specs (fresh controllers per matchup), so the parallel fan-out is
-    # result-identical to the serial loop for any worker count.
-    tallies: dict = {}       # mi -> (mw, ml, md), candidate's view
-    if backend == "actor":
-        from az_selfplay import _ensure_actor_torchscript
-        cand_ts, _ = _ensure_actor_torchscript({"mode": "az", "path": cand_path},
-                                               tag="az-eval")
-        inc_ts, _ = _ensure_actor_torchscript({"mode": "az", "path": inc_path},
-                                              tag="az-eval")
-        tallies = _gate_actor_panel(
-            matchups, per, actor_bin=_ACTOR_BIN, cand_ts=cand_ts, inc_ts=inc_ts,
-            sims=sims, worlds=worlds, c_puct=c_puct, sb_branches=sb_branches,
-            sb_worlds=sb_worlds,
-            sb_rollout_turns=sb_rollout_turns,
-            bo3=bo3, seed=seed, workers=workers, actor_device=actor_device,
-            eval_server=eval_server, cross_world=cross_world, tag_of=_tag)
-    elif workers > 1:
-        import multiprocessing as mp
-        from concurrent.futures import ProcessPoolExecutor, as_completed
-        ctx = mp.get_context("spawn")
-        with ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
-                                 initializer=_gate_worker_init) as ex:
-            futs = [ex.submit(_gate_matchup_worker, mi, dx, dy, per, cand_spec,
-                              opp_spec, bo3, seed)
-                    for mi, (dx, dy) in enumerate(matchups)]
-            for fut in as_completed(futs):
-                mi, mw, ml, md = fut.result()
-                tallies[mi] = (mw, ml, md)
-                dx, dy = matchups[mi]
-                print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D "
-                      f"({len(tallies)}/{len(matchups)})", flush=True)
-    else:
-        for mi, (dx, dy) in enumerate(matchups):
-            _, mw, ml, md = _gate_matchup_worker(mi, dx, dy, per, cand_spec,
-                                                 opp_spec, bo3, seed)
-            tallies[mi] = (mw, ml, md)
-            print(f"[az-eval]   {_tag(dx, dy)}: {mw}W-{ml}L-{md}D")
+    # Like-pairing matches each piloted deck gets per ROUND, candidate's side
+    # and incumbent's (the tallies _like_pairing_floor pools): the floor's
+    # lock check needs how many are still to come under the round cap.
+    pairs = set(matchups)
+    cand_per_round: dict = {}
+    inc_per_round: dict = {}
+    for dx, dy in matchups:
+        cand_per_round[dx] = cand_per_round.get(dx, 0) + per
+        if dx == dy or (dy, dx) in pairs:
+            inc_per_round[dx] = inc_per_round.get(dx, 0) + per
 
-    w = l = d = 0
+    # Sequential test, STREAMED: every completed match lands in ONE set of
+    # tallies and the SPRT is asked for a verdict right there — not at round
+    # boundaries — so a decisive candidate stops as soon as the evidence is
+    # in. The per-deck floor veto is checked alongside: once a deck's veto is
+    # locked (it fires now and would still fire if the candidate won every
+    # remaining match on that deck under the cap), the rounds left could only
+    # be overturned by it, so the gate stops there too. At the cap the
+    # undecided test keeps the incumbent unless the score reached the bar.
+    per_matchup: dict = {}   # (dx, dy) -> [w, l, d], candidate piloting dx
+    tally = {"w": 0, "l": 0, "d": 0, "matches": 0, "printed_rounds": 0}
+    state = {"test": sprt_verdict(0, 0, 0, threshold=promote_threshold,
+                                  alpha=alpha),
+             "decided": False, "early_veto": [], "rounds": 0}
+    round_size = max(1, per * len(matchups))
+
+    def _absorb(round_idx: int, mi: int, mw: int, ml: int, md: int) -> bool:
+        """Fold one completed leg/matchup into the tallies and re-ask the
+        test; True once the verdict is in (further results are still
+        tallied but never change it)."""
+        dx, dy = matchups[mi]
+        tally["w"] += mw; tally["l"] += ml; tally["d"] += md
+        tally["matches"] += mw + ml + md
+        t = per_matchup.setdefault((dx, dy), [0, 0, 0])
+        t[0] += mw; t[1] += ml; t[2] += md
+        state["rounds"] = max(state["rounds"], round_idx)
+        if state["decided"]:
+            return True
+        w, l, d = tally["w"], tally["l"], tally["d"]
+        test = sprt_verdict(w, l, d, threshold=promote_threshold, alpha=alpha)
+        state["test"] = test
+        done_rounds = tally["matches"] // round_size
+        if done_rounds > tally["printed_rounds"] or \
+                test["verdict"] != VERDICT_CONTINUE:
+            tally["printed_rounds"] = done_rounds
+            print(f"[az-eval] after {tally['matches']} {unit}: candidate "
+                  f"{w}W-{l}L-{d}D (score={test['score']:.3f}) "
+                  f"llr={test['llr']:+.2f} in [{test['lower']:+.2f}, "
+                  f"{test['upper']:+.2f}] -> {test['verdict'].upper()}",
+                  flush=True)
+        if test["verdict"] != VERDICT_CONTINUE:
+            state["decided"] = True
+            return True
+        vetoes, deck_floor = _like_pairing_floor(per_matchup, gate_floor,
+                                                 floor_min_matches)
+        locked = []
+        for pd in vetoes:
+            _cw_r, _iw_r, cn, cw, iw, inn = deck_floor[pd]
+            cand_left = cand_per_round.get(pd, 0) * max_rounds - cn
+            inc_left = inc_per_round.get(pd, 0) * max_rounds - inn
+            if floor_locked(cw, cn, iw, inn, cand_left, inc_left, gate_floor):
+                locked.append(pd)
+        if locked:
+            state["decided"] = True
+            state["early_veto"] = locked
+            print(f"[az-eval] per-deck floor veto locked in for "
+                  f"{', '.join(locked)} after {tally['matches']} {unit} — "
+                  f"no remaining round can lift it; stopping", flush=True)
+            return True
+        return False
+
+    with _gate_round_servers(backend, cand_path, inc_path,
+                             eval_server=eval_server,
+                             actor_device=actor_device,
+                             cross_world=cross_world) as servers:
+        if backend == "actor":
+            stream = _gate_actor_stream(
+                matchups, per, actor_bin=_ACTOR_BIN,
+                cand_ts=servers["cand_ts"], inc_ts=servers["inc_ts"],
+                sims=sims, worlds=worlds, c_puct=c_puct,
+                sb_branches=sb_branches, sb_worlds=sb_worlds,
+                sb_rollout_turns=sb_rollout_turns,
+                bo3=bo3, seed=seed, seed_stride=_GATE_ROUND_SEED_STRIDE,
+                max_rounds=max_rounds, workers=workers,
+                actor_device=actor_device, cross_world=cross_world, tag_of=_tag,
+                cand_sock=servers["cand_sock"], inc_sock=servers["inc_sock"],
+                actor_env=servers["actor_env"], on_leg=_absorb,
+                record_dir=record_dir, td_n=td_n)
+            rounds = stream["rounds_started"]
+            legs_terminated = stream["legs_terminated"]
+        else:
+            # Python path: one whole matchup per pool job, the verdict re-asked
+            # as each completes; once it is in, the round's not-yet-started
+            # jobs are cancelled (in-flight ones finish and are tallied).
+            legs_terminated = 0
+            rounds = 0
+            while rounds < max_rounds and not state["decided"]:
+                rounds += 1
+                round_seed = seed + (rounds - 1) * _GATE_ROUND_SEED_STRIDE
+                if max_rounds > 1:
+                    print(f"[az-eval] --- round {rounds}/{max_rounds} "
+                          f"(seed={round_seed}) ---", flush=True)
+                if workers > 1:
+                    import multiprocessing as mp
+                    from concurrent.futures import (ProcessPoolExecutor,
+                                                    as_completed)
+                    ctx = mp.get_context("spawn")
+                    with ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
+                                             initializer=_gate_worker_init) as ex:
+                        futs = [ex.submit(_gate_matchup_worker, mi, dx, dy, per,
+                                          cand_spec, opp_spec, bo3, round_seed)
+                                for mi, (dx, dy) in enumerate(matchups)]
+                        for fut in as_completed(futs):
+                            if fut.cancelled():
+                                continue
+                            mi, mw, ml, md = fut.result()
+                            dx, dy = matchups[mi]
+                            print(f"[az-eval]   r{rounds} {_tag(dx, dy)}: "
+                                  f"{mw}W-{ml}L-{md}D", flush=True)
+                            if _absorb(rounds, mi, mw, ml, md):
+                                for f in futs:
+                                    f.cancel()
+                else:
+                    for mi, (dx, dy) in enumerate(matchups):
+                        _, mw, ml, md = _gate_matchup_worker(
+                            mi, dx, dy, per, cand_spec, opp_spec, bo3, round_seed)
+                        print(f"[az-eval]   r{rounds} {_tag(dx, dy)}: "
+                              f"{mw}W-{ml}L-{md}D")
+                        if _absorb(rounds, mi, mw, ml, md):
+                            break
+
+    w, l, d = tally["w"], tally["l"], tally["d"]
+    test = state["test"]
+    if not state["decided"]:
+        test = sprt_cap_verdict(w, l, d, threshold=promote_threshold,
+                                alpha=alpha)
+        print(f"[az-eval] round cap reached ({max_rounds}) with the test "
+              f"undecided: score {test['score']:.3f} vs the "
+              f"{test['p1']:.3f} bar -> {test['verdict'].upper()}"
+              + (" (undecided: kept, not a failed gate)"
+                 if test.get("undecided") else ""), flush=True)
+    elif state["early_veto"]:
+        test = dict(test, verdict=VERDICT_REJECT)
+
+    if record_dir and backend == "actor" and pool_shards:
+        if bo3:
+            moved = pool_gate_shards(record_dir)
+            print(f"[az-eval] pooled {moved} recorded gate shard(s) from "
+                  f"{rounds} round(s) into the training pool (az_data/gen) as "
+                  f"shard_gate-* files")
+        else:
+            print("[az-eval] NOT pooling recorded gate shards: bo1 gate "
+                  "(the training pool is bo3-only)")
+
     breakdown = []
     per_deck: dict = {}      # piloted deck -> [w, l, d] from the candidate's view
-    per_matchup: dict = {}   # (dx, dy) -> [w, l, d], candidate piloting dx
-    for mi, (dx, dy) in enumerate(matchups):
-        mw, ml, md = tallies[mi]
-        w += mw; l += ml; d += md
+    for (dx, dy), (mw, ml, md) in per_matchup.items():
         t = per_deck.setdefault(dx, [0, 0, 0])
         t[0] += mw; t[1] += ml; t[2] += md
-        per_matchup[(dx, dy)] = [mw, ml, md]
         breakdown.append((_tag(dx, dy), mw, ml, md))
 
     wr = w / max(1, w + l + d)
-    print(f"[az-eval] AGGREGATE candidate {w}W-{l}L-{d}D (win_rate={wr:.3f})")
+    print(f"[az-eval] AGGREGATE candidate {w}W-{l}L-{d}D (win_rate={wr:.3f}) "
+          f"over {rounds} round(s) / {w + l + d} {unit}")
 
     vetoes, deck_floor = _like_pairing_floor(per_matchup, gate_floor,
                                              floor_min_matches)
@@ -921,24 +1531,46 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     for pd, (pw, pl, pdr) in per_deck.items():
         n = max(1, pw + pl + pdr)
         flag = "  FLOOR-VETO" if pd in vetoes else ""
-        cand_wr, inc_wr, cn = deck_floor.get(pd, (pw / n, float("nan"), 0))
+        cand_wr, inc_wr, cn = deck_floor.get(
+            pd, (pw / n, float("nan"), 0, 0, 0, 0))[:3]
         print(f"[az-eval]   {pd}: {pw}W-{pl}L-{pdr}D ({pw / n:.2f})  "
               f"like-pairing cand {cand_wr:.2f} vs inc {inc_wr:.2f}{flag}")
 
+    accepted = test["verdict"] == VERDICT_ACCEPT
+    undecided = bool(test.get("undecided")) and not vetoes
     promoted = False
-    if promote and wr >= promote_threshold and not vetoes:
+    if promote and accepted and not vetoes:
         final = _promote_to_final(cand_path, ckpt_dir)
         promoted = True
-        print(f"[az-eval] PROMOTED candidate -> {final} (>= {promote_threshold:.2f})")
+        print(f"[az-eval] PROMOTED candidate -> {final} (sequential test "
+              f"ACCEPT, llr={test['llr']:+.2f}"
+              + (" at the round cap" if test.get("capped") else "") + ")")
     elif promote and vetoes:
         print(f"[az-eval] not promoted (per-deck floor {gate_floor:.2f} veto: "
-              f"{', '.join(vetoes)}; aggregate {wr:.3f})")
+              f"{', '.join(vetoes)}"
+              + (" — locked in early" if state["early_veto"] else "")
+              + f"; sequential test {test['verdict'].upper()}, score "
+              f"{test['score']:.3f})")
+    elif promote and undecided:
+        print(f"[az-eval] not promoted (UNDECIDED at the round cap: score "
+              f"{test['score']:.3f} is inside the indifference region; the "
+              f"incumbent keeps the seat and the league does not count this "
+              f"as a failed gate)")
     elif promote:
-        print(f"[az-eval] not promoted (win_rate {wr:.3f} < {promote_threshold:.2f})")
+        print(f"[az-eval] not promoted (sequential test REJECT after "
+              f"{w + l + d} {unit}: llr={test['llr']:+.2f}, score "
+              f"{test['score']:.3f}"
+              + (" at the round cap" if test.get("capped") else "") + ")")
     return {"wins": w, "losses": l, "draws": d, "win_rate": wr,
+            "rounds": rounds, "matches": w + l + d,
+            "legs_terminated": int(legs_terminated),
+            "verdict": test["verdict"], "llr": test["llr"],
+            "score": test["score"], "capped": bool(test.get("capped")),
+            "undecided": undecided,
+            "accepted": accepted,
             "promoted": promoted, "breakdown": breakdown,
             "per_deck": {k: list(v) for k, v in per_deck.items()},
-            "vetoes": vetoes}
+            "vetoes": vetoes, "early_veto": list(state["early_veto"])}
 
 
 def _meta_of(path: str) -> str:
@@ -961,9 +1593,54 @@ def _promote_to_final(cand_path: str, ckpt_dir: str = _AZ_CKPT_DIR) -> str:
     return final
 
 
+def _prune_candidate_snapshots(ckpt_dir: str = _AZ_CKPT_DIR) -> list:
+    """Abandon the candidate line: delete every ``gen__azv{steps}`` snapshot
+    (with its meta and TorchScript sidecars) whose steps EXCEED the incumbent
+    ``gen__azfinal``'s. Afterwards snapshot resolution (``prefer="snapshot"``,
+    used by both the training warm-start and self-play source) falls back to
+    the newest remaining snapshot — at or below the incumbent — so the next
+    cycle restarts from the incumbent's weights. Also prevents the step-counter
+    rollback from silently resuming an orphan of the dead line. Returns the
+    pruned snapshot stems (empty when there is no incumbent yet)."""
+    final = os.path.join(ckpt_dir, f"{GEN_STEM}__azfinal.pt")
+    if not os.path.exists(final):
+        return []
+    final_steps = _read_steps(final)
+    pruned = []
+    for p in sorted(glob.glob(os.path.join(ckpt_dir, f"{GEN_STEM}__azv*.pt"))):
+        m = re.fullmatch(rf"{GEN_STEM}__azv(\d+)\.pt", os.path.basename(p))
+        if not m or int(m.group(1)) <= final_steps:
+            continue
+        stem = p[:-len(".pt")]
+        for f in (p, stem + ".meta.json", stem + ".ts.pt",
+                  stem + ".ts.meta.json"):
+            if os.path.exists(f):
+                os.remove(f)
+        pruned.append(os.path.basename(stem))
+    return pruned
+
+
 # ----------------------------------------------------------------------
 # One full cycle: generate -> train -> eval
 # ----------------------------------------------------------------------
+
+# Seed offset between the expert passes of a comma-separated --expert-opponent
+# list, so each opponent gets its own matchup schedule.
+_EXPERT_OPPONENT_SEED_STRIDE = 7919
+
+
+def _split_expert_opponents(expert_opponent) -> list:
+    """The expert games' opponent specs, one pass each: ``None`` (the default,
+    hard both seats and both recorded) stays a single ``[None]`` pass; a
+    string is split on commas; a list is taken as is."""
+    if expert_opponent is None:
+        return [None]
+    if isinstance(expert_opponent, str):
+        opps = [s.strip() for s in expert_opponent.split(",") if s.strip()]
+    else:
+        opps = [str(s).strip() for s in expert_opponent if str(s).strip()]
+    return opps or [None]
+
 
 def _resolve_expert_decks(expert_decks) -> Optional[list]:
     """Resolve an ``--expert-decks`` value to a deck list (or None = no experts).
@@ -994,9 +1671,20 @@ def _resolve_expert_decks(expert_decks) -> Optional[list]:
 
 def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              sims: int = DEFAULT_AZ_SIMS, worlds: int = DEFAULT_AZ_WORLDS,
+             full_search_frac: float = DEFAULT_AZ_FULL_SEARCH_FRAC,
+             fast_sims: int = DEFAULT_AZ_FAST_SIMS,
+             c_puct: float = DEFAULT_AZ_C_PUCT,
+             epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
+             rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
+             gate_shards: bool = True,
              sb_branches: int = DEFAULT_SB_BRANCHES,
              sb_worlds: int = DEFAULT_SB_WORLDS,
              sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+             sb_mode: str = DEFAULT_SB_SELFPLAY_MODE,
+             sb_explore_temp: float = DEFAULT_SB_EXPLORE_TEMP,
+             sb_explore_eps: float = DEFAULT_SB_EXPLORE_EPS,
+             sb_batch_frac: float = DEFAULT_SB_BATCH_FRAC,
+             sb_loss_coef: float = DEFAULT_SB_LOSS_COEF,
              workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
              td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
@@ -1012,6 +1700,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              mirror_frac: float = DEFAULT_MIRROR_FRAC,
              scripted_opponent_frac: float = 0.0,
              gate_floor: float = DEFAULT_GATE_FLOOR,
+             floor_min_matches: int = DEFAULT_GATE_FLOOR_MIN,
+             gate_max_rounds: int = DEFAULT_GATE_MAX_ROUNDS,
+             gate_alpha: float = DEFAULT_GATE_ALPHA,
              expert_decks=EXPERT_DECKS_ROSTER,
              expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
              expert_opponent: Optional[str] = None,
@@ -1020,7 +1711,10 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              exhaustive_selfplay: bool = False,
              exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
              scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
-             slot: int = 0) -> dict:
+             slot: int = 0,
+             opp_pool_frac: float = DEFAULT_AZ_OPP_POOL_FRAC,
+             selfplay_checkpoint: Optional[str] = None,
+             selfplay_exclude: Optional[list] = None) -> dict:
     """Sequential single-process cycle: cross-deck self-play (mirror + roster,
     ``mirror_frac``) -> train the ONE gen candidate -> gate it against the current
     incumbent over a matchup sample (promote on aggregate WR).
@@ -1066,7 +1760,16 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     the expert games' opponent seat and records only the focus seat — for a
     combo deck that loses its hard-vs-hard matchups, this is what makes the
     demonstrations come from games the combo actually wins (see
-    :func:`az_selfplay.generate_expert`).
+    :func:`az_selfplay.generate_expert`). A comma-separated list
+    (``"scripted:random,scripted:hard"``) writes ``expert_games`` matches per
+    deck against EACH opponent, each pass on its own seed offset; an explicit
+    ``scripted:hard`` there records the focus seat only, unlike the default.
+
+    ``selfplay_exclude`` removes decks from the SELF-PLAY roster and focus
+    (the matrix, the scripted cells, the opponent pool) without touching the
+    gate panel or the expert list — a deck the net cannot yet pilot (every
+    self-play game a z=-1 row for its seat) trains from demonstrations alone
+    while the gate keeps measuring it.
 
     ``deck`` is the FOCUS pool — a str (single focus), a list of stems (a
     deck×opponent matrix), or None (default: the whole decks/league/ roster). Each
@@ -1081,13 +1784,25 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     gate, which stays candidate-vs-incumbent.
 
     ``use_actor`` chooses the self-play backend (None=AUTO: the C++ actor iff
-    built, else Python; see :func:`az_selfplay.generate`)."""
+    built, else Python; see :func:`az_selfplay.generate`).
+
+    ``selfplay_checkpoint`` overrides the net that GENERATES self-play (default
+    None = ``az_selfplay.resolve_source``'s candidate-line preference) without
+    touching the training warm-start — az-league passes the incumbent here
+    after a failed gate so a rejected line stops feeding itself."""
     import az_selfplay
 
     if roster is None:
         roster = _default_az_league_roster()
     focus = _normalize_focus(deck, _default_az_league_roster())
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
+    excluded = [d for d in (selfplay_exclude or []) if d]
+    sp_roster = [d for d in roster if d not in excluded] or list(roster)
+    sp_focus = [d for d in focus if d not in excluded] or list(focus)
+    if excluded:
+        print(f"[az cycle] self-play excludes {', '.join(excluded)}: "
+              f"{len(sp_focus)} focus / {len(sp_roster)} roster deck(s) play; "
+              f"the gate panel and expert list are unaffected")
 
     exhaustive = bool(exhaustive) or bool(exhaustive_selfplay)
     matrix_txt = ("" if not exhaustive else
@@ -1096,33 +1811,49 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                   + (f" x{exhaustive_repeats}" if exhaustive_repeats > 1 else ""))
     print(f"=== az cycle: self-play (cross-deck, focus={label}, "
           f"{'bo3' if bo3 else 'bo1'}{matrix_txt}) ===")
-    gen = az_selfplay.generate(focus[0], games=games, sims=sims, worlds=worlds,
+    gen = az_selfplay.generate(sp_focus[0], games=games, sims=sims, worlds=worlds,
+                               full_search_frac=full_search_frac,
+                               fast_sims=fast_sims,
+                               c_puct=c_puct,
+                               checkpoint=selfplay_checkpoint,
                                sb_branches=sb_branches, sb_worlds=sb_worlds,
                                sb_rollout_turns=sb_rollout_turns,
+                               sb_mode=sb_mode,
+                               sb_explore_temp=sb_explore_temp,
+                               sb_explore_eps=sb_explore_eps,
                                workers=workers, seed=seed, use_actor=use_actor,
                                actor_device=actor_device,
                                eval_server=eval_server,
                                cross_world=cross_world,
-                               roster=roster, focus_decks=focus,
+                               roster=sp_roster, focus_decks=sp_focus,
                                mirror_frac=mirror_frac,
                                scripted_opponent_frac=scripted_opponent_frac,
                                bo3=bo3, exhaustive=exhaustive,
                                exhaustive_selfplay=exhaustive_selfplay,
                                exhaustive_repeats=exhaustive_repeats,
                                scripted_cells=scripted_cells, slot=slot,
+                               opp_pool_frac=opp_pool_frac,
                                td_n=td_n)
     experts = _resolve_expert_decks(expert_decks)
     if experts:
         # Per-listed-deck matches so a multi-deck list doesn't dilute each deck's
         # demonstrations; written AFTER self-play so both land inside the window.
-        print("=== az cycle: expert demonstrations (scripted:hard"
-              + (f" vs {expert_opponent}" if expert_opponent else "") + ") ===")
-        print(f"[az cycle] expert decks: {expert_decks} -> {len(experts)} deck(s) "
-              f"[{', '.join(experts)}] x {expert_games} matches each")
-        gen["expert"] = az_selfplay.generate_expert(
-            experts, games=expert_games * len(experts),
-            roster=roster, mirror_frac=mirror_frac, bo3=bo3, seed=seed,
-            opponent=expert_opponent)
+        # One pass per listed opponent, each on its own seed offset so the
+        # schedules differ.
+        merged = {"samples": 0, "shards": [], "stats": []}
+        for k, opp in enumerate(_split_expert_opponents(expert_opponent)):
+            print("=== az cycle: expert demonstrations (scripted:hard"
+                  + (f" vs {opp}" if opp else "") + ") ===")
+            print(f"[az cycle] expert decks: {expert_decks} -> {len(experts)} "
+                  f"deck(s) [{', '.join(experts)}] x {expert_games} matches each")
+            r = az_selfplay.generate_expert(
+                experts, games=expert_games * len(experts),
+                roster=roster, mirror_frac=mirror_frac, bo3=bo3,
+                seed=seed + _EXPERT_OPPONENT_SEED_STRIDE * k, opponent=opp)
+            merged["samples"] += int(r.get("samples", 0))
+            merged["shards"] += list(r.get("shards", []))
+            merged["stats"].append(r.get("stats"))
+        gen["expert"] = merged
     else:
         print(f"[az cycle] expert decks: {expert_decks!r} -> none "
               f"(no expert shards this cycle)")
@@ -1135,7 +1866,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
               f"window={window} (2x, covers this pass + the previous one)")
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
-                  q_mix=q_mix, window=window, seed=seed)
+                  q_mix=q_mix, window=window, epoch_frac=epoch_frac,
+                  rows_per_game=rows_per_game, seed=seed,
+                  sb_batch_frac=sb_batch_frac, sb_loss_coef=sb_loss_coef)
     if not gate:
         print("=== az cycle: eval/gate skipped (gated every K slots) ===")
         return {"generate": gen, "train": tr, "eval": None}
@@ -1143,14 +1876,27 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     # The gate inherits the cycle's actor-backend knobs (backend choice,
     # device, Stage C eval-server tri-state, cross-world), so a GPU-served
     # generation pass gates on the same machinery.
+    # Gate-shard recording (default on): the gate's candidate-vs-incumbent
+    # matches are recorded and pooled into az_data/gen, so the NEXT training
+    # window carries cross-net games alongside self-play. Actor backend only
+    # (az_eval prints a notice and skips otherwise).
+    record_dir = None
+    if gate_shards and bo3:
+        record_dir = os.path.join(_AZ_DATA_DIR, "gate",
+                                  time.strftime("gate_%Y%m%d_%H%M%S"))
     ev = az_eval(focus, candidate=tr["snapshot"], games=eval_games, sims=eval_sims,
-                 worlds=eval_worlds, sb_branches=sb_branches, sb_worlds=sb_worlds,
+                 worlds=eval_worlds, c_puct=c_puct,
+                 sb_branches=sb_branches, sb_worlds=sb_worlds,
                  sb_rollout_turns=sb_rollout_turns,
                  promote_threshold=promote_threshold,
                  promote=True, seed=seed, roster=roster, gate_floor=gate_floor,
+                 floor_min_matches=floor_min_matches,
+                 max_rounds=gate_max_rounds, alpha=gate_alpha,
                  bo3=bo3, workers=workers, use_actor=use_actor,
                  actor_device=actor_device, eval_server=eval_server,
-                 cross_world=cross_world)
+                 cross_world=cross_world,
+                 record_dir=record_dir, pool_shards=bool(record_dir),
+                 td_n=td_n)
     return {"generate": gen, "train": tr, "eval": ev}
 
 
@@ -1197,9 +1943,21 @@ def _default_az_league_roster() -> list:
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               games: int = DEFAULT_AZ_GAMES, sims: int = DEFAULT_AZ_SIMS,
               worlds: int = DEFAULT_AZ_WORLDS,
+              full_search_frac: float = DEFAULT_AZ_FULL_SEARCH_FRAC,
+              fast_sims: int = DEFAULT_AZ_FAST_SIMS,
+              opp_pool_frac: float = DEFAULT_AZ_OPP_POOL_FRAC,
+              c_puct: float = DEFAULT_AZ_C_PUCT,
+              epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
+              rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
+              gate_shards: bool = True,
               sb_branches: int = DEFAULT_SB_BRANCHES,
               sb_worlds: int = DEFAULT_SB_WORLDS,
               sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS,
+              sb_mode: str = DEFAULT_SB_SELFPLAY_MODE,
+              sb_explore_temp: float = DEFAULT_SB_EXPLORE_TEMP,
+              sb_explore_eps: float = DEFAULT_SB_EXPLORE_EPS,
+              sb_batch_frac: float = DEFAULT_SB_BATCH_FRAC,
+              sb_loss_coef: float = DEFAULT_SB_LOSS_COEF,
               workers: Optional[int] = None, batches: int = DEFAULT_AZ_CYCLE_BATCHES,
               batch_size: int = DEFAULT_AZ_BATCH_SIZE, lr: float = DEFAULT_AZ_LR,
               td_n: int = DEFAULT_AZ_TD_N, q_mix: float = DEFAULT_AZ_Q_MIX,
@@ -1215,6 +1973,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               exhaustive_repeats: int = DEFAULT_AZ_EXHAUSTIVE_REPEATS,
               scripted_cells: int = DEFAULT_AZ_SCRIPTED_CELLS,
               gate_floor: float = DEFAULT_GATE_FLOOR,
+              floor_min_matches: int = DEFAULT_GATE_FLOOR_MIN,
+              gate_max_rounds: int = DEFAULT_GATE_MAX_ROUNDS,
+              gate_alpha: float = DEFAULT_GATE_ALPHA,
               gate_every: int = DEFAULT_GATE_EVERY,
               expert_decks=EXPERT_DECKS_ROSTER,
               expert_games: int = DEFAULT_AZ_EXPERT_GAMES,
@@ -1223,8 +1984,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               eval_server: Optional[bool] = None,
               cross_world: bool = True,
               resume: bool = False,
-              bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR) -> dict:
-    """Rotate ``az_cycle`` over the league roster.
+              bo3: bool = True, ckpt_dir: str = _AZ_CKPT_DIR,
+              selfplay_exclude: Optional[list] = None) -> dict:
+    """Rotate ``az_cycle`` over the league roster. ``selfplay_exclude`` (a
+    deck list, persisted in the sidecar) drops decks from every slot's
+    self-play matrix while the gate panel still covers them — see
+    :func:`az_cycle`.
 
     The unit of work is one deck cycle; slot ``i`` maps to (rotation, deck,
     cycle) by index arithmetic and the sidecar persists the index of the NEXT
@@ -1275,13 +2040,24 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
 
     ``rotations=0`` runs INDEFINITELY: slots keep generating until the process
     is interrupted. The sidecar still advances after every completed slot, so an
-    interrupted indefinite run resumes with ``--resume`` like a finite one, and
-    each training pass prunes shards outside the last two windows (see
-    :func:`prune_shards`) so ``az_data/gen`` stays bounded."""
+    interrupted indefinite run resumes with ``--resume`` like a finite one.
+    Shards are never deleted — ``az_data/gen`` grows with the run (the training
+    window bounds what gets READ, not what is kept).
+
+    Gate-failure handling: after any FAILED gate, subsequent slots' self-play is
+    generated by the INCUMBENT (``gen__azfinal``) instead of the newest candidate
+    snapshot, so a rejected line stops feeding itself flat search targets; the
+    TRAINING warm-start still continues the candidate line. After
+    ``GATE_FAILS_BEFORE_RESET`` CONSECUTIVE failures the candidate line is
+    abandoned: every ``gen__azv*`` snapshot newer than the incumbent is deleted,
+    so the next slot both trains from and generates with the incumbent's
+    weights. A promotion resets the failure count (and the new incumbent is the
+    candidate line anyway). The count persists in the sidecar across --resume."""
     os.makedirs(ckpt_dir, exist_ok=True)
 
     slot_index = 0
     results: list = []
+    gate_failures = 0
     if resume:
         state = _read_az_league_state(ckpt_dir)
         if state is None:
@@ -1296,12 +2072,25 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         games = int(p.get("games", games))
         sims = int(p.get("sims", sims))
         worlds = int(p.get("worlds", worlds))
+        # .get defaults keep sidecars written before the playout cap resumable.
+        full_search_frac = float(p.get("full_search_frac", full_search_frac))
+        fast_sims = int(p.get("fast_sims", fast_sims))
+        opp_pool_frac = float(p.get("opp_pool_frac", opp_pool_frac))
+        c_puct = float(p.get("c_puct", c_puct))
+        epoch_frac = float(p.get("epoch_frac", epoch_frac))
+        rows_per_game = int(p.get("rows_per_game", rows_per_game))
+        gate_shards = bool(p.get("gate_shards", gate_shards))
         # p.get defaults keep older sidecars resumable (a pre-plan-search
         # sidecar carries no sb_branches key; stale keys for the removed PUCT
         # sideboard knobs are simply ignored).
         sb_branches = int(p.get("sb_branches", sb_branches))
         sb_worlds = int(p.get("sb_worlds", sb_worlds))
         sb_rollout_turns = int(p.get("sb_rollout_turns", sb_rollout_turns))
+        sb_mode = str(p.get("sb_mode", sb_mode))
+        sb_explore_temp = float(p.get("sb_explore_temp", sb_explore_temp))
+        sb_explore_eps = float(p.get("sb_explore_eps", sb_explore_eps))
+        sb_batch_frac = float(p.get("sb_batch_frac", sb_batch_frac))
+        sb_loss_coef = float(p.get("sb_loss_coef", sb_loss_coef))
         workers = p.get("workers", workers)
         batches = int(p.get("batches", batches))
         batch_size = int(p.get("batch_size", batch_size))
@@ -1325,6 +2114,9 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         exhaustive_repeats = int(p.get("exhaustive_repeats", 1))
         scripted_cells = int(p.get("scripted_cells", 0))
         gate_floor = float(p.get("gate_floor", gate_floor))
+        floor_min_matches = int(p.get("floor_min_matches", floor_min_matches))
+        gate_max_rounds = int(p.get("gate_max_rounds", gate_max_rounds))
+        gate_alpha = float(p.get("gate_alpha", gate_alpha))
         gate_every = int(p.get("gate_every", gate_every))
         # The RAW user value (sentinel included) is what the sidecar carries;
         # _resolve_expert_decks interprets it at use, so a resumed run re-reads
@@ -1334,6 +2126,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         expert_decks = p.get("expert_decks", None)
         expert_games = int(p.get("expert_games", expert_games))
         expert_opponent = p.get("expert_opponent", expert_opponent)
+        selfplay_exclude = p.get("selfplay_exclude", selfplay_exclude)
         use_actor = p.get("use_actor", use_actor)
         actor_device = p.get("actor_device", actor_device)
         eval_server = p.get("eval_server", eval_server)
@@ -1341,8 +2134,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         bo3 = bool(p.get("bo3", bo3))
         slot_index = int(state.get("slot_index", 0))
         results = list(state.get("results", []))
+        # Older sidecars predate the failure counter; .get keeps them resumable.
+        gate_failures = int(state.get("gate_failures", 0))
         print(f"[az-league] resuming from {_az_league_state_path(ckpt_dir)}: "
-              f"next slot {slot_index}")
+              f"next slot {slot_index}"
+              + (f" (consecutive gate failures: {gate_failures})"
+                 if gate_failures else ""))
     elif decks:
         roster = ([d.strip() for d in decks.split(",") if d.strip()]
                   if isinstance(decks, str) else [str(d).strip() for d in decks if str(d).strip()])
@@ -1391,8 +2188,18 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         "cycles_per_deck": cycles_per_deck,
         "params": {
             "games": games, "sims": sims, "worlds": worlds,
+            "full_search_frac": full_search_frac, "fast_sims": fast_sims,
+            "opp_pool_frac": opp_pool_frac,
+            "c_puct": c_puct, "epoch_frac": epoch_frac,
+            "rows_per_game": rows_per_game,
+            "gate_shards": gate_shards,
             "sb_branches": sb_branches, "sb_worlds": sb_worlds,
             "sb_rollout_turns": sb_rollout_turns,
+            "sb_mode": sb_mode,
+            "sb_explore_temp": sb_explore_temp,
+            "sb_explore_eps": sb_explore_eps,
+            "sb_batch_frac": sb_batch_frac,
+            "sb_loss_coef": sb_loss_coef,
             "workers": workers,
             "batches": batches, "batch_size": batch_size, "lr": lr,
             "td_n": td_n, "q_mix": q_mix,
@@ -1405,9 +2212,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "exhaustive_repeats": exhaustive_repeats,
             "scripted_cells": scripted_cells,
             "gate_floor": gate_floor, "gate_every": gate_every,
+            "floor_min_matches": floor_min_matches,
+            "gate_max_rounds": gate_max_rounds, "gate_alpha": gate_alpha,
             "expert_decks": expert_decks,
             "expert_games": expert_games,
             "expert_opponent": expert_opponent, "use_actor": use_actor,
+            "selfplay_exclude": list(selfplay_exclude or []),
             "actor_device": actor_device,
             "eval_server": eval_server,
             "cross_world": cross_world,
@@ -1434,13 +2244,23 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     gate_txt = ("OFF (ungated promotion at run completion)" if gate_every == 0
                 else str(gate_every))
     window_txt = "auto(2x new shards)" if window == 0 else str(window)
-    print(f"  games={games} sims={sims} worlds={worlds} mirror_frac={mirror_frac}  "
+    print(f"  games={games} sims={sims} worlds={worlds} "
+          f"full_search_frac={full_search_frac} fast_sims={fast_sims} "
+          f"opp_pool_frac={opp_pool_frac} "
+          f"c_puct={c_puct} "
+          f"epoch_frac={epoch_frac} rows_per_game={rows_per_game} "
+          f"gate_shards={int(gate_shards)} "
+          f"mirror_frac={mirror_frac}  "
           f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
-          f"sb_rollout_turns={sb_rollout_turns}  "
+          f"sb_rollout_turns={sb_rollout_turns} sb_mode={sb_mode} "
+          f"sb_explore_temp={sb_explore_temp} sb_explore_eps={sb_explore_eps} "
+          f"sb_batch_frac={sb_batch_frac} sb_loss_coef={sb_loss_coef}  "
           f"batches={batches} window={window_txt} td_n={td_n} q_mix={q_mix}  "
           f"cross_world={int(cross_world)}  "
           f"eval_games={eval_games} promote>={promote_threshold} "
-          f"gate_floor={gate_floor} gate_every={gate_txt}")
+          f"gate_floor={gate_floor}/{floor_min_matches} "
+          f"gate_rounds<={gate_max_rounds} gate_alpha={gate_alpha} "
+          f"gate_every={gate_txt}")
     if gate_every == 0 and total is None:
         print("  WARNING: gate_every=0 with rotations=0 (indefinite) never "
               "reaches completion, so gen__azfinal is never refreshed — prefer "
@@ -1464,6 +2284,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
     def save_progress(next_slot: int):
         _write_az_league_state(ckpt_dir, {
             **base_state, "slot_index": int(next_slot), "results": results,
+            "gate_failures": int(gate_failures),
             "updated": time.strftime("%Y-%m-%d %H:%M:%S")})
 
     # Record the starting position so an interruption before the first cycle still
@@ -1497,14 +2318,33 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         gate_note = ("" if do_gate
                      else "  [gating off]" if gate_every == 0
                      else f"  [gate deferred: every {gate_every} slots]")
+        # Drift brake: while the last gate(s) failed, self-play generates from
+        # the INCUMBENT, not the rejected candidate line (training still
+        # continues the candidate — see GATE_FAILS_BEFORE_RESET above).
+        selfplay_ckpt = None
+        if gate_failures > 0:
+            from az_net import resolve_az_checkpoint
+            selfplay_ckpt = resolve_az_checkpoint(GEN_STEM, prefer="final")
         print(f"\n{'='*60}")
         print(f"[az-league slot {slot_txt}] rotation {rot_txt}  "
               f"deck={deck_label}  cycle {c + 1}/{cycles_per_deck}  "
               f"(seed={slot_seed}){gate_note}")
+        if selfplay_ckpt:
+            print(f"[az-league] {gate_failures} consecutive failed gate(s): "
+                  f"self-play pinned to the incumbent {selfplay_ckpt}")
         print(f"{'='*60}")
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
+                       full_search_frac=full_search_frac, fast_sims=fast_sims,
+                       c_puct=c_puct, epoch_frac=epoch_frac,
+                       rows_per_game=rows_per_game,
+                       gate_shards=gate_shards,
                        sb_branches=sb_branches, sb_worlds=sb_worlds,
                        sb_rollout_turns=sb_rollout_turns,
+                       sb_mode=sb_mode,
+                       sb_explore_temp=sb_explore_temp,
+                       sb_explore_eps=sb_explore_eps,
+                       sb_batch_frac=sb_batch_frac,
+                       sb_loss_coef=sb_loss_coef,
                        workers=workers,
                        batches=batches, batch_size=batch_size, lr=lr,
                        td_n=td_n, q_mix=q_mix, window=window,
@@ -1517,22 +2357,54 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        mirror_frac=mirror_frac,
                        scripted_opponent_frac=scripted_opponent_frac,
                        gate_floor=gate_floor,
+                       floor_min_matches=floor_min_matches,
+                       gate_max_rounds=gate_max_rounds, gate_alpha=gate_alpha,
                        expert_decks=expert_decks, expert_games=expert_games,
                        expert_opponent=expert_opponent,
                        roster=roster, bo3=bo3, gate=do_gate,
                        exhaustive=exhaustive,
                        exhaustive_selfplay=exhaustive_selfplay,
                        exhaustive_repeats=exhaustive_repeats,
-                       scripted_cells=scripted_cells, slot=si)
+                       scripted_cells=scripted_cells, slot=si,
+                       opp_pool_frac=opp_pool_frac,
+                       selfplay_checkpoint=selfplay_ckpt,
+                       selfplay_exclude=selfplay_exclude)
         gen, tr, ev = res["generate"], res["train"], res["eval"]
         last_snapshot = tr.get("snapshot")
+        if ev is not None:
+            if ev["promoted"]:
+                gate_failures = 0
+            elif ev.get("undecided"):
+                # The round cap ran out with the score inside the indifference
+                # region: not demonstrably better, not demonstrably worse. The
+                # incumbent keeps the seat, but this is no evidence of a sick
+                # line, so it neither resets nor advances the failure count.
+                print(f"[az-league] gate undecided at the round cap (score "
+                      f"{ev['score']:.3f}): incumbent kept, consecutive gate "
+                      f"failures stay at {gate_failures}")
+            else:
+                gate_failures += 1
+                if gate_failures >= GATE_FAILS_BEFORE_RESET:
+                    pruned = _prune_candidate_snapshots(ckpt_dir)
+                    print(f"[az-league] {gate_failures} consecutive failed "
+                          f"gates: candidate line abandoned — pruned "
+                          f"{len(pruned)} snapshot(s) newer than the incumbent"
+                          + (f" ({pruned[0]}..{pruned[-1]})" if pruned else "")
+                          + "; next slot trains from and generates with the "
+                            "incumbent's weights")
+                    gate_failures = 0
+                    last_snapshot = None
         if ev is None:
             gate_txt = "gating off" if gate_every == 0 else "gate deferred"
         else:
             veto_txt = (f" (floor-veto: {', '.join(ev['vetoes'])})"
                         if ev.get("vetoes") else "")
             gate_txt = (f"gate {ev['wins']}W-{ev['losses']}L-{ev['draws']}D "
-                        f"wr={ev['win_rate']:.3f} "
+                        f"wr={ev['win_rate']:.3f} over {ev.get('matches', 0)} "
+                        f"matches / {ev.get('rounds', 1)} round(s) "
+                        f"[{str(ev.get('verdict', '')).upper()}"
+                        + ("/cap" if ev.get("capped") else "")
+                        + ("/undecided" if ev.get("undecided") else "") + "] "
                         f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent' + veto_txt}")
         print(f"[az-league] slot {slot_txt} deck={deck_label}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
@@ -1543,7 +2415,12 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                         "gate_win_rate": ev["win_rate"] if ev else None,
                         "promoted": ev["promoted"] if ev else None,
                         "gate_per_deck": ev.get("per_deck") if ev else None,
-                        "gate_vetoes": ev.get("vetoes") if ev else None})
+                        "gate_vetoes": ev.get("vetoes") if ev else None,
+                        "gate_rounds": ev.get("rounds") if ev else None,
+                        "gate_matches": ev.get("matches") if ev else None,
+                        "gate_verdict": ev.get("verdict") if ev else None,
+                        "gate_llr": ev.get("llr") if ev else None,
+                        "gate_capped": ev.get("capped") if ev else None})
         del results[:-_AZ_LEAGUE_MAX_RESULTS]
         save_progress(si + 1)
         si += 1
@@ -1583,8 +2460,13 @@ def run_train(args) -> None:
     train_az(args.deck, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, c_v=args.c_v,
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX), window=args.window,
+             epoch_frac=getattr(args, "epoch_frac", DEFAULT_AZ_EPOCH_FRAC),
+             rows_per_game=int(getattr(args, "rows_per_game",
+                                       DEFAULT_AZ_ROWS_PER_GAME)),
              from_ppo=args.from_ppo, fresh=args.fresh,
              snapshot_every=args.snapshot_every,
+             sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
+             sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
              seed=args.seed if args.seed is not None else 0)
 
 
@@ -1593,19 +2475,29 @@ def run_eval(args) -> None:
     # az-eval defaults to bo3 matches; --bo1 opts back into single games.
     az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
+            c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
             sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
             sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
             sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                      DEFAULT_SB_ROLLOUT_TURNS),
             promote_threshold=args.promote_threshold, promote=args.promote,
             gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
+            floor_min_matches=getattr(args, "gate_floor_min",
+                                      DEFAULT_GATE_FLOOR_MIN),
+            max_rounds=getattr(args, "gate_max_rounds",
+                               DEFAULT_GATE_MAX_ROUNDS),
+            alpha=getattr(args, "gate_alpha", DEFAULT_GATE_ALPHA),
             seed=args.seed if args.seed is not None else 1,
             bo3=not getattr(args, "bo1", False),
             workers=getattr(args, "workers", None),
             use_actor=_resolve_use_actor(args),
             actor_device=getattr(args, "actor_device", "cpu"),
             eval_server=az_selfplay.resolve_eval_server(args),
-            cross_world=not getattr(args, "no_cross_world", False))
+            cross_world=not getattr(args, "no_cross_world", False),
+            cross_pairs=getattr(args, "cross_pairs", DEFAULT_GATE_CROSS_PAIRS),
+            record_dir=getattr(args, "record_dir", None),
+            pool_shards=not getattr(args, "no_pool_shards", False),
+            td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N))
 
 
 def _split_decks(val) -> Optional[list]:
@@ -1626,10 +2518,28 @@ def run_cycle(args) -> None:
     roster = _split_decks(getattr(args, "opponents", None))
     # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
+             full_search_frac=float(getattr(args, "full_search_frac",
+                                            DEFAULT_AZ_FULL_SEARCH_FRAC)),
+             fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
+             opp_pool_frac=float(getattr(args, "opp_pool_frac",
+                                         DEFAULT_AZ_OPP_POOL_FRAC)),
+             c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
+             epoch_frac=float(getattr(args, "epoch_frac",
+                                      DEFAULT_AZ_EPOCH_FRAC)),
+             rows_per_game=int(getattr(args, "rows_per_game",
+                                       DEFAULT_AZ_ROWS_PER_GAME)),
+             gate_shards=not getattr(args, "no_gate_shards", False),
              sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
              sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                       DEFAULT_SB_ROLLOUT_TURNS),
+             sb_mode=getattr(args, "sb_selfplay_mode", DEFAULT_SB_SELFPLAY_MODE),
+             sb_explore_temp=getattr(args, "sb_explore_temp",
+                                     DEFAULT_SB_EXPLORE_TEMP),
+             sb_explore_eps=getattr(args, "sb_explore_eps",
+                                    DEFAULT_SB_EXPLORE_EPS),
+             sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
+             sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
              workers=args.workers, batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
@@ -1640,11 +2550,18 @@ def run_cycle(args) -> None:
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              scripted_opponent_frac=getattr(args, "scripted_opponent_frac", 0.0),
              gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
+             floor_min_matches=getattr(args, "gate_floor_min",
+                                       DEFAULT_GATE_FLOOR_MIN),
+             gate_max_rounds=getattr(args, "gate_max_rounds",
+                                     DEFAULT_GATE_MAX_ROUNDS),
+             gate_alpha=getattr(args, "gate_alpha", DEFAULT_GATE_ALPHA),
              # Raw value: az_cycle resolves the roster/none sentinel.
              expert_decks=_split_decks(getattr(args, "expert_decks",
                                                EXPERT_DECKS_ROSTER)),
              expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
              expert_opponent=getattr(args, "expert_opponent", None),
+             selfplay_exclude=_split_decks(getattr(args, "selfplay_exclude",
+                                                   None)),
              roster=roster, bo3=not getattr(args, "bo1", False),
              use_actor=_resolve_use_actor(args),
              actor_device=getattr(args, "actor_device", "cpu"),
@@ -1663,10 +2580,28 @@ def run_league(args) -> None:
     az_league(decks=args.decks, rotations=args.rotations,
               cycles_per_deck=args.cycles_per_deck,
               games=args.games, sims=args.sims, worlds=args.worlds,
+              full_search_frac=float(getattr(args, "full_search_frac",
+                                             DEFAULT_AZ_FULL_SEARCH_FRAC)),
+              fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
+              opp_pool_frac=float(getattr(args, "opp_pool_frac",
+                                          DEFAULT_AZ_OPP_POOL_FRAC)),
+              c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
+              epoch_frac=float(getattr(args, "epoch_frac",
+                                       DEFAULT_AZ_EPOCH_FRAC)),
+              rows_per_game=int(getattr(args, "rows_per_game",
+                                        DEFAULT_AZ_ROWS_PER_GAME)),
+              gate_shards=not getattr(args, "no_gate_shards", False),
               sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
               sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
               sb_rollout_turns=getattr(args, "sb_rollout_turns",
                                        DEFAULT_SB_ROLLOUT_TURNS),
+              sb_mode=getattr(args, "sb_selfplay_mode", DEFAULT_SB_SELFPLAY_MODE),
+              sb_explore_temp=getattr(args, "sb_explore_temp",
+                                      DEFAULT_SB_EXPLORE_TEMP),
+              sb_explore_eps=getattr(args, "sb_explore_eps",
+                                     DEFAULT_SB_EXPLORE_EPS),
+              sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
+              sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
               workers=args.workers, batches=args.batches, batch_size=args.batch_size,
               lr=args.lr, td_n=getattr(args, "td_n", DEFAULT_AZ_TD_N),
               q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX),
@@ -1684,12 +2619,19 @@ def run_league(args) -> None:
               scripted_cells=getattr(args, "scripted_cells",
                                      DEFAULT_AZ_SCRIPTED_CELLS),
               gate_floor=getattr(args, "gate_floor", DEFAULT_GATE_FLOOR),
+              floor_min_matches=getattr(args, "gate_floor_min",
+                                        DEFAULT_GATE_FLOOR_MIN),
+              gate_max_rounds=getattr(args, "gate_max_rounds",
+                                      DEFAULT_GATE_MAX_ROUNDS),
+              gate_alpha=getattr(args, "gate_alpha", DEFAULT_GATE_ALPHA),
               gate_every=getattr(args, "gate_every", DEFAULT_GATE_EVERY),
               # Raw value: az_cycle resolves the roster/none sentinel per slot.
               expert_decks=_split_decks(getattr(args, "expert_decks",
                                                 EXPERT_DECKS_ROSTER)),
               expert_games=getattr(args, "expert_games", DEFAULT_AZ_EXPERT_GAMES),
               expert_opponent=getattr(args, "expert_opponent", None),
+              selfplay_exclude=_split_decks(getattr(args, "selfplay_exclude",
+                                                    None)),
               use_actor=_resolve_use_actor(args),
               actor_device=getattr(args, "actor_device", "cpu"),
               eval_server=az_selfplay.resolve_eval_server(args),
@@ -1751,6 +2693,15 @@ if __name__ == "__main__":
     c.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                    help="Self-play PUCT sims, TOTAL across --worlds")
     c.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
+    c.add_argument("--full-search-frac", type=float,
+                   default=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                   help="Playout cap: fraction of searched in-game roots that "
+                        "get the FULL --sims budget and record pi; the rest "
+                        "run --fast-sims with no policy target (1.0 = every "
+                        "root full)")
+    c.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
+                   help="PUCT sims (TOTAL across --worlds) for the playout "
+                        "cap's fast searches")
     c.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
                    help="Candidate plans at a bo3 sideboard root (bo3 only)")
     c.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
@@ -1831,6 +2782,15 @@ if __name__ == "__main__":
     lg.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
                     help="Self-play PUCT sims, TOTAL across --worlds")
     lg.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
+    lg.add_argument("--full-search-frac", type=float,
+                    default=DEFAULT_AZ_FULL_SEARCH_FRAC,
+                    help="Playout cap: fraction of searched in-game roots that "
+                         "get the FULL --sims budget and record pi; the rest "
+                         "run --fast-sims with no policy target (1.0 = every "
+                         "root full)")
+    lg.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
+                    help="PUCT sims (TOTAL across --worlds) for the playout "
+                         "cap's fast searches")
     lg.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
                     help="Candidate plans at a bo3 sideboard root (bo3 only)")
     lg.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,

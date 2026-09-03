@@ -13,8 +13,9 @@ two builders self-play uses (``az_selfplay.sample_from_search_result`` /
 ``one_hot_sample``), so a recorded row is bit-identical to a self-play one:
   * A SEARCHED opponent decision — fed through :meth:`on_search_result`, the
     ``SearchController.on_result`` hook signature — becomes a full row: ``pi``
-    is the root visit posterior, ``q`` the search's root value,
-    ``explored`` whether the played action differs from the visit argmax.
+    is the root visit posterior, ``q`` the search's Q of the played action
+    (``az_selfplay.finalize_searched_sample``), ``explored`` whether the
+    played action differs from the visit argmax.
   * Every OTHER decision with >1 legal action (the human's decisions, and the
     opponent's unsearched fallback/trivial/tree-followed ones) becomes a
     behavior-cloning row exactly like ``az_selfplay.generate_expert`` writes:
@@ -123,11 +124,12 @@ class ShardRecorder:
     def on_search_result(self, obs, num_choices, result, chosen):
         """``SearchController.on_result`` hook: stash the searched row; the
         matching :meth:`observe_step` call commits it."""
-        from az_selfplay import sample_from_search_result
+        from az_selfplay import (finalize_searched_sample,
+                                 sample_from_search_result)
         sample = sample_from_search_result(obs, num_choices, result)
-        # The builder leaves explored=0 for its caller to finalize; here the
+        # The builder leaves explored/q for its caller to finalize; here the
         # played action is the controller's `chosen`.
-        sample["explored"] = int(int(chosen) != int(result.best_action()))
+        finalize_searched_sample(sample, result, chosen)
         with self._lock:
             self._pending = sample
 

@@ -2,34 +2,34 @@
   robomage 0.2
   Using seed: 1187322509
   -------- PREGAME --------
+  Player A draws Brainstorm
+  Player A draws Undercity Sewers
   Player A draws Thoughtseize
-  Player A draws Archon of Cruelty
-  Player A draws Force of Will
+  Player A draws Lotus Petal
   Player A draws Thoughtseize
-  Player A draws Thoughtseize
+  Player A draws Marsh Flats
   Player A draws Polluted Delta
-  Player A draws Ponder
-  Player B draws Arid Mesa
-  Player B draws Orcish Bowmasters
+  Player B draws Ocelot Pride
+  Player B draws Scrubland
+  Player B draws Voice of Victory
   Player B draws Swords to Plowshares
-  Player B draws Static Prison
-  Player B draws Guide of Souls
-  Player B draws Goblin Bombardment
-  Player B draws Ajani, Nacatl Pariah
+  Player B draws Cabal Therapy
+  Player B draws Amped Raptor
+  Player B draws Marsh Flats
   Player A hand:
-  Archon of Cruelty
-  Force of Will
+  Brainstorm
+  Lotus Petal
+  Marsh Flats
   Polluted Delta
-  Ponder
   Thoughtseize
   Thoughtseize
-  Thoughtseize
+  Undercity Sewers
 --- Pregame ---
 
 --- Decision 1 ---
   Priority: Player A (active)
   Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Force of Will, Polluted Delta, Ponder, Thoughtseize, Thoughtseize, Thoughtseize | lib 68
+  Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
@@ -37,53 +37,46 @@
   >> A/A: 1 (Mulligan)
 --- Narrative ---
   Player A mulligans.
-  Player A draws Force of Will
-  Player A draws Consign to Memory
-  Player A draws Scalding Tarn
-  Player A draws Marsh Flats
+  Player A draws Reanimate
+  Player A draws Bloodstained Mire
+  Player A draws Archon of Cruelty
   Player A draws Atraxa, Grand Unifier
-  Player A draws Ponder
-  Player A draws Force of Will
+  Player A draws Reanimate
+  Player A draws Polluted Delta
+  Player A draws Careful Study
   Player B hand:
-  Ajani, Nacatl Pariah
-  Arid Mesa
-  Goblin Bombardment
-  Guide of Souls
-  Orcish Bowmasters
-  Static Prison
+  Amped Raptor
+  Cabal Therapy
+  Marsh Flats
+  Ocelot Pride
+  Scrubland
   Swords to Plowshares
+  Voice of Victory
 
 --- Decision 2 ---
   Priority: Player B (non-active)
   Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Arid Mesa, Goblin Bombardment, Guide of Souls, Orcish Bowmasters, Static Prison, Swords to Plowshares | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 68
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 53
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
    1: Mulligan
-  >> B/B: 1 (Mulligan)
+  >> B/B: 0 (Keep)
 --- Narrative ---
-  Player B mulligans.
-  Player B draws Ajani, Nacatl Pariah
-  Player B draws Orcish Bowmasters
-  Player B draws Ocelot Pride
-  Player B draws Ajani, Nacatl Pariah
-  Player B draws Badlands
-  Player B draws Goblin Bombardment
-  Player B draws Wasteland
+  Player B keeps a 7-card hand.
   Player A hand:
+  Archon of Cruelty
   Atraxa, Grand Unifier
-  Force of Will
-  Force of Will
-  Marsh Flats
-  Ponder
-  Scalding Tarn
-  Consign to Memory
+  Bloodstained Mire
+  Careful Study
+  Polluted Delta
+  Reanimate
+  Reanimate
 
 --- Decision 3 ---
   Priority: Player A (active)
   Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 68
+  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Keep
@@ -96,99 +89,62 @@
 --- Decision 4 ---
   Priority: Player A (active)
   Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 68
+  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
-   0: Atraxa, Grand Unifier
-   1: Force of Will
-   2: Force of Will
-   3: Marsh Flats
-   4: Ponder
-   5: Scalding Tarn
-   6: Consign to Memory
-  >> A/A: 0 (Atraxa, Grand Unifier)
---- Narrative ---
-  Player B hand:
-  Ajani, Nacatl Pariah
-  Ajani, Nacatl Pariah
-  Badlands
-  Goblin Bombardment
-  Ocelot Pride
-  Orcish Bowmasters
-  Wasteland
-
---- Decision 5 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Ajani, Nacatl Pariah, Badlands, Goblin Bombardment, Ocelot Pride, Orcish Bowmasters, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 69
-  Actions:
-   0: Keep
-   1: Mulligan
-  >> B/B: 0 (Keep)
---- Narrative ---
-  Player B keeps a 6-card hand.
-  Player B: Choose card to put on library bottom (1 remaining):
-
---- Decision 6 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Ajani, Nacatl Pariah, Badlands, Goblin Bombardment, Ocelot Pride, Orcish Bowmasters, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 69
-  Actions:
-   0: Ajani, Nacatl Pariah
-   1: Ajani, Nacatl Pariah
-   2: Badlands
-   3: Goblin Bombardment
-   4: Ocelot Pride
-   5: Orcish Bowmasters
-   6: Wasteland
-  >> B/B: 0 (Ajani, Nacatl Pariah)
+   0: Archon of Cruelty
+   1: Atraxa, Grand Unifier
+   2: Bloodstained Mire
+   3: Careful Study
+   4: Polluted Delta
+   5: Reanimate
+   6: Reanimate
+  >> A/A: 0 (Archon of Cruelty)
 --- Narrative ---
   -------- TURN 1 (Player A) --------
 --- Turn 1 (Player A) ---
-  PA: Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory
-  PB: Ajani, Nacatl Pariah, Ajani, Nacatl Pariah, Badlands, Goblin Bombardment, Ocelot Pride, Orcish Bowmasters, Wasteland
+  PA: Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate
+  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 54
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Actions:
+   0: Pass priority
+   1: Play Bloodstained Mire
+   2: Play Polluted Delta
+  >> A/A: 1 (Play Bloodstained Mire)
+--- Narrative ---
+  Player A played Bloodstained Mire
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 54
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Bloodstained Mire
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Bloodstained Mire (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Bloodstained Mire (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Bloodstained Mire
+  Player A's Bloodstained Mire ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
 
 --- Decision 7 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Force of Will, Force of Will, Marsh Flats, Ponder, Scalding Tarn, Consign to Memory | lib 69
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Actions:
-   0: Pass priority
-   1: Play Marsh Flats
-   2: Play Scalding Tarn
-  >> A/A: 1 (Play Marsh Flats)
---- Narrative ---
-  Player A played Marsh Flats
-
---- Decision 8 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory | lib 69
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Marsh Flats
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Marsh Flats (ChangeZone)  [#0]
-  >> A/A: 1 (Activate Marsh Flats (ChangeZone))
---- Narrative ---
-  Player A pays 1 life
-  Player A sacrifices Marsh Flats
-  Player A's Marsh Flats ability is on the stack
-  Resolving ability (category: ChangeZone)
-  Searching Player A's library:
-
---- Decision 9 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory | lib 69
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Stack: Marsh Flats (ability, self)
-  Pending: Marsh Flats (self)
-  Self GY: Marsh Flats
+  Self:  19 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 54
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Stack: Bloodstained Mire (ability, self)
+  Pending: Bloodstained Mire (self)
+  Self GY: Bloodstained Mire
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -208,62 +164,200 @@
   --- Combat Damage ---
   --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
-  Player B draws Guide of Souls
+  Player B draws Thoughtseize
 --- Turn 2 (Player B) ---
-  PA: Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory
-  PB: Ajani, Nacatl Pariah, Badlands, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters, Wasteland
+  PA: Atraxa, Grand Unifier, Careful Study, Polluted Delta, Reanimate, Reanimate
+  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 8 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(8): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp BF:   Swamp
+  Opp GY:  Bloodstained Mire
+  Opp revealed: Swamp, Bloodstained Mire
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Scrubland
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 9 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Marsh Flats
+  Opp BF:   Swamp
+  Opp GY:  Bloodstained Mire
+  Opp revealed: Swamp, Bloodstained Mire
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
 
 --- Decision 10 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Badlands, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters, Wasteland | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 68
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Swamp
-  Opp GY:  Marsh Flats
-  Opp revealed: Swamp, Marsh Flats
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats
+  Opp GY:  Bloodstained Mire
+  Opp revealed: Swamp, Bloodstained Mire
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Badlands
+   2: Elegant Parlor
+   3: Plains
+   4: Plateau
+   5: Plateau
+   6: Scrubland
+   7: Shadowy Backstreet
+  >> B/B: 1 (Badlands)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Badlands to the battlefield
+
+--- Decision 11 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Badlands
+  Opp BF:   Swamp
+  Self GY: Marsh Flats
+  Opp GY:  Bloodstained Mire
+  Opp revealed: Swamp, Bloodstained Mire
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Play Badlands
-   2: Play Wasteland
-  >> B/B: 1 (Play Badlands)
+   1: Cast Cabal Therapy  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Cabal Therapy)
 --- Narrative ---
-  Player B played Badlands
+  Choose target for Cabal Therapy:
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Badlands
+  Opp BF:   Swamp
+  Pending: Cabal Therapy (self)
+  Self GY: Marsh Flats
+  Opp GY:  Bloodstained Mire
+  Opp revealed: Swamp, Bloodstained Mire
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Player A (19 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main (turn 2)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Badlands (T)
+  Opp BF:   Swamp
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Marsh Flats
+  Opp GY:  Bloodstained Mire
+  Opp revealed: Swamp, Bloodstained Mire
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Atraxa, Grand Unifier
+    Careful Study
+    Polluted Delta
+    Reanimate
+    Reanimate
+  No matching cards to discard.
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
   --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
-  Player A draws Polluted Delta
+  Player A draws Careful Study
 --- Turn 3 (Player A) ---
-  PA: Force of Will, Force of Will, Polluted Delta, Ponder, Scalding Tarn, Consign to Memory
-  PB: Ajani, Nacatl Pariah, Badlands, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters, Wasteland
+  PA: Atraxa, Grand Unifier, Careful Study, Careful Study, Polluted Delta, Reanimate, Reanimate
+  PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 11 ---
+--- Decision 14 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Force of Will, Polluted Delta, Ponder, Scalding Tarn, Consign to Memory | lib 67
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Swamp
-  Opp BF:   Badlands
-  Self GY: Marsh Flats
-  Opp revealed: Badlands
+  Opp BF:   Badlands (T)
+  Self GY: Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Actions:
    0: Pass priority
    1: Play Polluted Delta
-   2: Play Scalding Tarn
   >> A/A: 1 (Play Polluted Delta)
 --- Narrative ---
   Player A played Polluted Delta
 
---- Decision 12 ---
+--- Decision 15 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory | lib 67
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self:  19 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Polluted Delta | Swamp
-  Opp BF:   Badlands
-  Self GY: Marsh Flats
-  Opp revealed: Badlands
+  Opp BF:   Badlands (T)
+  Self GY: Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -276,17 +370,18 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 13 ---
+--- Decision 16 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory | lib 67
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self:  18 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate | lib 52
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Swamp
-  Opp BF:   Badlands
+  Opp BF:   Badlands (T)
   Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Marsh Flats
-  Opp revealed: Badlands
+  Self GY: Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -302,640 +397,90 @@
   Player A shuffles their library
   Player A puts Island to the battlefield
 
---- Decision 14 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Force of Will, Force of Will, Ponder, Scalding Tarn, Consign to Memory | lib 66
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island | Swamp
-  Opp BF:   Badlands
-  Self GY: Polluted Delta, Marsh Flats
-  Opp revealed: Badlands
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Ponder  [#0]
-  >> A/A: 1 (Cast Ponder)
---- Narrative ---
-  Player A activated Island for 1(U)
-  Player A casts Ponder
-
---- Decision 15 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Force of Will, Force of Will, Scalding Tarn, Consign to Memory | lib 66
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands
-  Stack: Ponder (spell, self)
-  Self GY: Polluted Delta, Marsh Flats
-  Opp revealed: Badlands
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Force of Will (alternate cost)  [#1]
-   2: Cast Force of Will (alternate cost)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: RearrangeTopOfLibrary)
-  Player A looks at the top 3 card(s) of their library.
-  Choose which card goes 3 from top:
-
---- Decision 16 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Force of Will, Force of Will, Scalding Tarn, Consign to Memory | lib 66
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Marsh Flats
-  Opp revealed: Badlands
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Flow State  [#2]
-   1: Otherworldly Gaze  [#2]
-   2: Careful Study  [#2]
-  >> A/A: 0 (Flow State)
---- Narrative ---
-  Choose which card goes 2 from top:
-
 --- Decision 17 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Force of Will, Force of Will, Scalding Tarn, Consign to Memory | lib 66
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Marsh Flats
-  Opp revealed: Badlands
+  Self:  18 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate | lib 51
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Island | Swamp
+  Opp BF:   Badlands (T)
+  Self GY: Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Otherworldly Gaze  [#1]
-   1: Careful Study  [#1]
-  >> A/A: 0 (Otherworldly Gaze)
+   0: Pass priority
+   1: Cast Careful Study  [#0]
+   2: Cast Careful Study  [#0]
+  >> A/A: 1 (Cast Careful Study)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Careful Study
+  Resolving ability (category: Draw, amount: 2)
+  Player A draws Undercity Sewers
+  Player A draws Careful Study
+  Resolving ability (category: Discard)
+  Player A chooses a card to discard:
 
 --- Decision 18 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Force of Will, Force of Will, Scalding Tarn, Consign to Memory | lib 66
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self:  18 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Marsh Flats
-  Known top: Careful Study, Otherworldly Gaze, Flow State, ?, ?
-  Opp revealed: Badlands
+  Opp BF:   Badlands (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Don't shuffle
-   1: Shuffle
-  >> A/A: 0 (Don't shuffle)
+   0: Atraxa, Grand Unifier
+   1: Careful Study
+   2: Careful Study
+   3: Reanimate
+   4: Reanimate
+   5: Undercity Sewers
+  >> A/A: 0 (Atraxa, Grand Unifier)
 --- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player A draws Careful Study
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 4 (Player B) --------
-  Player B draws Amped Raptor
---- Turn 4 (Player B) ---
-  PA: Force of Will, Force of Will, Scalding Tarn, Consign to Memory
-  PB: Ajani, Nacatl Pariah, Amped Raptor, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters, Wasteland
+  Player A discards Atraxa, Grand Unifier
+  Player A chooses a card to discard:
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Amped Raptor, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters, Wasteland | lib 52
-  Opp:   18 life | mana: empty | hand count: 5 | lib 65
-  Self BF:  Badlands
-  Opp BF:   Island (T) | Swamp
-  Opp GY:  Ponder, Polluted Delta, Marsh Flats
-  Opp revealed: Polluted Delta, Ponder, Island, Swamp, Marsh Flats
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Careful Study, Careful Study, Reanimate, Reanimate, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Badlands (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Atraxa, Grand Unifier, Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Pass priority
-   1: Play Wasteland
-  >> B/B: 1 (Play Wasteland)
+   0: Careful Study
+   1: Careful Study
+   2: Reanimate
+   3: Reanimate
+   4: Undercity Sewers
+  >> A/A: 3 (Reanimate)
 --- Narrative ---
-  Player B played Wasteland
+  Player A discards Reanimate
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Amped Raptor, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters | lib 52
-  Opp:   18 life | mana: empty | hand count: 5 | lib 65
-  Self BF:  Badlands | Wasteland
-  Opp BF:   Island (T) | Swamp
-  Opp GY:  Ponder, Polluted Delta, Marsh Flats
-  Opp revealed: Polluted Delta, Ponder, Island, Swamp, Marsh Flats
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Amped Raptor  [#0]
-   2: Cast Goblin Bombardment  [#0]
-   3: Cast Orcish Bowmasters  [#0]
-   4: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 1 (Cast Amped Raptor)
---- Narrative ---
-  Player B activated Badlands for 1(R)
-  Player B activated Wasteland for 1(C)
-  Player B casts Amped Raptor
-
---- Decision 21 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Careful Study, Force of Will, Force of Will, Scalding Tarn, Consign to Memory | lib 65
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Amped Raptor (spell, opponent)
-  Self GY: Ponder, Polluted Delta, Marsh Flats
-  Known top: Otherworldly Gaze, Flow State, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Force of Will (alternate cost)  [#1]
-   2: Cast Force of Will (alternate cost)  [#1]
-  >> A/A: 1 (Cast Force of Will (alternate cost))
---- Narrative ---
-  Choose target for Force of Will:
-
---- Decision 22 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Careful Study, Force of Will, Force of Will, Scalding Tarn, Consign to Memory | lib 65
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Amped Raptor (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Ponder, Polluted Delta, Marsh Flats
-  Known top: Otherworldly Gaze, Flow State, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: opp_lands_played=1
-  Actions:
-   0: Amped Raptor
-  >> A/A: 0 (Amped Raptor)
---- Narrative ---
-  Targeting choice 0
-
---- Decision 23 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Careful Study, Force of Will, Force of Will, Scalding Tarn, Consign to Memory | lib 65
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Amped Raptor (spell, opponent)
-  Self GY: Ponder, Polluted Delta, Marsh Flats
-  Known top: Otherworldly Gaze, Flow State, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: opp_lands_played=1
-  Actions:
-   0: Exile Careful Study
-   1: Exile Force of Will
-   2: Exile Consign to Memory
-  >> A/A: 0 (Exile Careful Study)
---- Narrative ---
-  Player A pays 1 life
-  Player A exiles Careful Study
-  Player A casts Force of Will targeting Amped Raptor
-
---- Decision 24 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Consign to Memory | lib 65
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Force of Will (spell, self) -> Amped Raptor (opponent, slot 97) -> Amped Raptor (spell, opponent)
-  Self GY: Ponder, Polluted Delta, Marsh Flats
-  Self exile: Careful Study
-  Known top: Otherworldly Gaze, Flow State, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: opp_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Force of Will (alternate cost)  [#1]
-  >> A/A: 1 (Cast Force of Will (alternate cost))
---- Narrative ---
-  Choose target for Force of Will:
-
---- Decision 25 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Consign to Memory | lib 65
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Force of Will (spell, self) -> Amped Raptor (opponent, slot 97) -> Amped Raptor (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Ponder, Polluted Delta, Marsh Flats
-  Self exile: Careful Study
-  Known top: Otherworldly Gaze, Flow State, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: opp_lands_played=1
-  Actions:
-   0: Force of Will
-   1: Amped Raptor
-  >> A/A: 1 (Amped Raptor)
---- Narrative ---
-  Targeting choice 1
-
---- Decision 26 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Consign to Memory | lib 65
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Force of Will (spell, self) -> Amped Raptor (opponent, slot 97) -> Amped Raptor (spell, opponent)
-  Self GY: Ponder, Polluted Delta, Marsh Flats
-  Self exile: Careful Study
-  Known top: Otherworldly Gaze, Flow State, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: opp_lands_played=1
-  Actions:
-   0: Exile Consign to Memory
-  >> A/A: 0 (Exile Consign to Memory)
---- Narrative ---
-  Player A pays 1 life
-  Player A exiles Consign to Memory
-  Player A casts Force of Will targeting Amped Raptor
-  Resolving ability (category: Counter)
-  Amped Raptor is countered
-  Counter fizzles
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 5 (Player A) --------
-  Player A draws Otherworldly Gaze
---- Turn 5 (Player A) ---
-  PA: Otherworldly Gaze, Scalding Tarn
-  PB: Ajani, Nacatl Pariah, Amped Raptor, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters
-
---- Decision 27 ---
   Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  16 life | mana: empty | hand(2): Otherworldly Gaze, Scalding Tarn | lib 64
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Self GY: Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Known top: Flow State, ?, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Actions:
-   0: Pass priority
-   1: Cast Otherworldly Gaze  [#0]
-  >> A/A: 1 (Cast Otherworldly Gaze)
---- Narrative ---
-  Player A activated Island for 1(U)
-  Player A casts Otherworldly Gaze
-  Resolving ability (category: Surveil, amount: 3)
-  Player A surveils 3.
-  Surveil: looking at Flow State
-  Surveil: looking at Fatal Push
-  Surveil: looking at Force of Will
-
---- Decision 28 ---
-  Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  16 life | mana: empty | hand(1): Scalding Tarn | lib 64
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Careful Study, Careful Study, Reanimate, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Known top: Flow State, ?, ?, ?, ?
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Actions:
-   0: Put Flow State on top of library  [#0]
-   1: Put Fatal Push on top of library  [#0]
-   2: Put Force of Will on top of library  [#0]
-   3: Put Flow State into graveyard
-   4: Put Fatal Push into graveyard
-   5: Put Force of Will into graveyard
-  >> A/A: 3 (Put Flow State into graveyard)
---- Narrative ---
-  Player A puts Flow State into their graveyard.
-
---- Decision 29 ---
-  Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  16 life | mana: empty | hand(1): Scalding Tarn | lib 63
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Actions:
-   0: Put Fatal Push on top of library  [#0]
-   1: Put Force of Will on top of library  [#0]
-   2: Put Fatal Push into graveyard
-   3: Put Force of Will into graveyard
-  >> A/A: 2 (Put Fatal Push into graveyard)
---- Narrative ---
-  Player A puts Fatal Push into their graveyard.
-
---- Decision 30 ---
-  Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  16 life | mana: empty | hand(1): Scalding Tarn | lib 62
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Actions:
-   0: Put Force of Will on top of library  [#0]
-   1: Put Force of Will into graveyard
-  >> A/A: 1 (Put Force of Will into graveyard)
---- Narrative ---
-  Player A puts Force of Will into their graveyard.
-
---- Decision 31 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  16 life | mana: empty | hand(1): Scalding Tarn | lib 61
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Self GY: Otherworldly Gaze, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Actions:
-   0: Pass priority
-   1: Play Scalding Tarn
-  >> A/A: 1 (Play Scalding Tarn)
---- Narrative ---
-  Player A played Scalding Tarn
-
---- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  16 life | mana: empty | hand(0): (empty) | lib 61
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Scalding Tarn | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Self GY: Otherworldly Gaze, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)  [#0]
-  >> A/A: 1 (Activate Scalding Tarn (ChangeZone))
---- Narrative ---
-  Player A pays 1 life
-  Player A sacrifices Scalding Tarn
-  Player A's Scalding Tarn ability is on the stack
-  Resolving ability (category: ChangeZone)
-  Searching Player A's library:
-
---- Decision 33 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 61
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Otherworldly Gaze, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Badlands, Amped Raptor
+  Opp BF:   Badlands (T)
+  Self GY: Careful Study, Reanimate, Atraxa, Grand Unifier, Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Fail to find
-   1: Undercity Sewers
-   2: Undercity Sewers
-   3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-  >> A/A: 1 (Undercity Sewers)
---- Narrative ---
-  Player A shuffles their library
-  Player A puts Undercity Sewers to the battlefield
-  Undercity Sewers enters tapped.
-  Undercity Sewers triggered
-  Resolving ability (category: Surveil, amount: 1)
-  Player A surveils 1.
-  Surveil: looking at Show and Tell
-
---- Decision 34 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 60
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Wasteland (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Pending: Undercity Sewers (self)
-  Self GY: Scalding Tarn, Otherworldly Gaze, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Badlands, Amped Raptor
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Put Show and Tell on top of library  [#0]
-   1: Put Show and Tell into graveyard
-  >> A/A: 1 (Put Show and Tell into graveyard)
---- Narrative ---
-  Player A puts Show and Tell into their graveyard.
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 6 (Player B) --------
---- Turn 6 (Player B) ---
-  PA: (empty)
-  PB: Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters
-
---- Decision 35 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride, Orcish Bowmasters | lib 52
-  Opp:   15 life | mana: empty | hand count: 0 | lib 59
-  Self BF:  Badlands | Wasteland
-  Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
-  Self GY: Amped Raptor
-  Opp GY:  Show and Tell, Scalding Tarn, Otherworldly Gaze, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Careful Study, Otherworldly Gaze, Show and Tell
-  Actions:
-   0: Pass priority
-   1: Cast Orcish Bowmasters  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 1 (Cast Orcish Bowmasters)
---- Narrative ---
-  Player B activated Badlands for 1(B)
-  Player B activated Wasteland for 1(C)
-  Player B casts Orcish Bowmasters
-  Orcish Bowmasters enters the battlefield
-  Choose target for Orcish Bowmasters:
-
---- Decision 36 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  20 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride | lib 52
-  Opp:   15 life | mana: empty | hand count: 0 | lib 59
-  Self BF:  Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Wasteland (T)
-  Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Amped Raptor
-  Opp GY:  Show and Tell, Scalding Tarn, Otherworldly Gaze, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Careful Study, Otherworldly Gaze, Show and Tell
-  Actions:
-   0: Player A (15 life)
-   1: Player B (20 life)
-   2: Orcish Bowmasters
-  >> B/B: 0 (Player A (15 life))
---- Narrative ---
-  Targeting choice 0
-  Orcish Bowmasters triggered
-  Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 14 life)
-  Resolving ability (category: Amass)
-  Amass Orc 1: Player B Army is now 1/1.
-  Player B draws Voice of Victory
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 7 (Player A) --------
---- Turn 7 (Player A) ---
-  PA: (empty)
-  PB: Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride
-
---- Decision 37 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  14 life | mana: empty | hand(0): (empty) | lib 59
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Island | Swamp | Undercity Sewers
-  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Show and Tell, Scalding Tarn, Otherworldly Gaze, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Badlands, Amped Raptor
-  Actions:
-   0: Pass priority
-   1: Cast Otherworldly Gaze (flashback)  [#4]
-  >> A/A: 1 (Cast Otherworldly Gaze (flashback))
---- Narrative ---
-  Player A activated Island for 1(U)
-  Player A activated Swamp for 1(B)
-  Player A casts Otherworldly Gaze
-  Resolving ability (category: Surveil, amount: 3)
-  Player A surveils 3.
-  Surveil: looking at The Creation of Avacyn
-  Surveil: looking at Brainstorm
-  Surveil: looking at Griselbrand
-
---- Decision 38 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  14 life | mana: empty | hand(0): (empty) | lib 59
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Badlands, Amped Raptor
-  Actions:
-   0: Put The Creation of Avacyn on top of library  [#0]
-   1: Put Brainstorm on top of library  [#0]
-   2: Put Griselbrand on top of library  [#0]
-   3: Put The Creation of Avacyn into graveyard
-   4: Put Brainstorm into graveyard
-   5: Put Griselbrand into graveyard
-  >> A/A: 3 (Put The Creation of Avacyn into graveyard)
---- Narrative ---
-  Player A puts The Creation of Avacyn into their graveyard.
-
---- Decision 39 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  14 life | mana: empty | hand(0): (empty) | lib 58
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Badlands, Amped Raptor
-  Actions:
-   0: Put Brainstorm on top of library  [#0]
-   1: Put Griselbrand on top of library  [#0]
-   2: Put Brainstorm into graveyard
-   3: Put Griselbrand into graveyard
-  >> A/A: 2 (Put Brainstorm into graveyard)
---- Narrative ---
-  Player A puts Brainstorm into their graveyard.
-
---- Decision 40 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  14 life | mana: empty | hand(0): (empty) | lib 57
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Otherworldly Gaze (spell, self) [flashback]
-  Pending: Otherworldly Gaze (self)
-  Self GY: Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Badlands, Amped Raptor
-  Actions:
-   0: Put Griselbrand on top of library  [#0]
-   1: Put Griselbrand into graveyard
-  >> A/A: 1 (Put Griselbrand into graveyard)
---- Narrative ---
-  Player A puts Griselbrand into their graveyard.
-  Otherworldly Gaze is exiled (flashback)
-  Player A draws Reanimate
-
---- Decision 41 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(1): Reanimate | lib 55
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Griselbrand, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Badlands, Amped Raptor
   Actions:
    0: Pass priority
    1: Cast Reanimate  [#0]
@@ -943,853 +488,404 @@
 --- Narrative ---
   Choose target for Reanimate:
 
---- Decision 42 ---
+--- Decision 21 ---
   Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(1): Reanimate | lib 55
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Careful Study, Careful Study, Reanimate, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Island (T) | Swamp
+  Opp BF:   Badlands (T)
   Pending: Reanimate (self)
-  Self GY: Griselbrand, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Badlands, Amped Raptor
+  Self GY: Careful Study, Reanimate, Atraxa, Grand Unifier, Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Amped Raptor
-   1: Griselbrand
-  >> A/A: 1 (Griselbrand)
---- Narrative ---
-  Targeting choice 1
-  Player A activated Undercity Sewers for 1(B)
-  Player A casts Reanimate targeting Griselbrand
-  Resolving ability (category: ChangeZone)
-  Griselbrand is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 8)
-  Player A loses 8 life (now at 6)
-  Resolving ability (category: Cleanup)
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 8 (Player B) --------
---- Turn 8 (Player B) ---
-  PA: Reanimate
-  PB: Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride, Voice of Victory
-
---- Decision 43 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride, Voice of Victory | lib 51
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands | Orcish Bowmasters [1/1] [Flash] | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player B draws Thoughtseize
-
---- Decision 44 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  20 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands | Orcish Bowmasters [1/1] [Flash] | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands | Orcish Bowmasters [1/1] [Flash] | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Cast Goblin Bombardment  [#0]
-   2: Cast Thoughtseize  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 1 (Cast Goblin Bombardment)
---- Narrative ---
-  Player B activated Badlands for 1(R)
-  Player B activated Wasteland for 1(C)
-  Player B casts Goblin Bombardment
-  Goblin Bombardment enters the battlefield
-
---- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands (T) | Goblin Bombardment | Orcish Bowmasters [1/1] [Flash] | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Activate Goblin Bombardment (DealDamage)  [#0]
-  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
---- Narrative ---
-  Choose target for Goblin Bombardment:
-
---- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands (T) | Goblin Bombardment | Orcish Bowmasters [1/1] [Flash] | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Pending: Goblin Bombardment (self)
-  Self GY: Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Player A (6 life)
-   1: Player B (20 life)
-   2: Griselbrand
-   3: Orcish Bowmasters
-   4: Orc Army token
-  >> B/B: 0 (Player A (6 life))
---- Narrative ---
-  Targeting choice 0
-
---- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands (T) | Goblin Bombardment | Orcish Bowmasters [1/1] [Flash] | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Sacrifice Orcish Bowmasters
-   1: Sacrifice Orc Army
-  >> B/B: 0 (Sacrifice Orcish Bowmasters)
---- Narrative ---
-  Player B sacrifices Orcish Bowmasters
-  Player B's Goblin Bombardment ability targeting Player A is on the stack
-
---- Decision 49 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands (T) | Goblin Bombardment | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Self GY: Orcish Bowmasters, Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Goblin Bombardment (DealDamage)  [#0]
-  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
---- Narrative ---
-  Choose target for Goblin Bombardment:
-
---- Decision 50 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands (T) | Goblin Bombardment | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Pending: Goblin Bombardment (self)
-  Self GY: Orcish Bowmasters, Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Extras: self_revolt
-  Actions:
-   0: Player A (6 life)
-   1: Player B (20 life)
-   2: Griselbrand
-   3: Orc Army token
-  >> B/B: 0 (Player A (6 life))
---- Narrative ---
-  Targeting choice 0
-
---- Decision 51 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  20 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory | lib 50
-  Opp:   6 life | mana: empty | hand count: 0 | lib 55
-  Self BF:  Badlands (T) | Goblin Bombardment | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (SICK) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
-  Self GY: Orcish Bowmasters, Amped Raptor
-  Opp GY:  Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Swamp, Undercity Sewers, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Extras: self_revolt
-  Actions:
-   0: Sacrifice Orc Army
-  >> B/B: 0 (Sacrifice Orc Army)
---- Narrative ---
-  Player B sacrifices Orc Army
-  Player B's Goblin Bombardment ability targeting Player A is on the stack
-  Orc Army (token) is put into the graveyard and ceases to exist.
-  Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 5 life)
-  Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 4 life)
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 9 (Player A) --------
-  Player A draws Thoughtseize
---- Turn 9 (Player A) ---
-  PA: Thoughtseize
-  PB: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory
-
---- Decision 52 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(1): Thoughtseize | lib 54
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island | Swamp | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Goblin Bombardment, Badlands, Amped Raptor
-  Actions:
-   0: Pass priority
-   1: Cast Thoughtseize  [#0]
-  >> A/A: 1 (Cast Thoughtseize)
---- Narrative ---
-  Choose target for Thoughtseize:
-
---- Decision 53 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(1): Thoughtseize | lib 54
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island | Swamp | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Pending: Thoughtseize (self)
-  Self GY: Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Wasteland, Orcish Bowmasters, Goblin Bombardment, Badlands, Amped Raptor
-  Actions:
-   0: Player B (20 life)
-   1: Player A (4 life)
-  >> A/A: 0 (Player B (20 life))
+   0: Atraxa, Grand Unifier
+  >> A/A: 0 (Atraxa, Grand Unifier)
 --- Narrative ---
   Targeting choice 0
   Player A activated Swamp for 1(B)
-  Player A casts Thoughtseize targeting Player B
-  Resolving ability (category: Discard)
-  Player B reveals their hand:
-    Ajani, Nacatl Pariah
-    Guide of Souls
-    Ocelot Pride
-    Thoughtseize
-    Voice of Victory
-  Player A chooses a card to discard:
-
---- Decision 54 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(0): (empty) | lib 54
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize, Voice of Victory
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Ajani, Nacatl Pariah
-   1: Guide of Souls
-   2: Ocelot Pride
-   3: Thoughtseize
-   4: Voice of Victory
-  >> A/A: 4 (Voice of Victory)
---- Narrative ---
-  Player B discards Voice of Victory
-  Resolving ability (category: LoseLife, amount: 2)
-  Player A loses 2 life (now at 2)
-  --- Declare Attackers (Player A) ---
-
---- Decision 55 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  2 life | mana: empty | hand(0): (empty) | lib 54
-  Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Extras: mandatory_choice=Declare Atk
-  Actions:
-   0: Griselbrand [7/7]
-   1: Confirm attackers
-  >> A/A: 0 (Griselbrand [7/7])
---- Narrative ---
-  Griselbrand attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Griselbrand [7/7] -> Player B
-
---- Decision 56 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  2 life | mana: empty | hand(0): (empty) | lib 54
-  Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (ATK) | Island | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Extras: mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Griselbrand -> Player B
-  No creatures eligible to block.
-  --- Combat Damage ---
-    Griselbrand deals 7 damage to Player B
-    Player A gains 7 life (lifelink)
-  --- End Combat Damage ---
-
---- Decision 57 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 9)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 54
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T,ATK) | Island | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Pass priority
-   1: Activate Griselbrand (Draw)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 58 ---
-  Priority: Player A (active)
-  Step: End Combat (turn 9)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 54
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T,ATK) | Island | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Pass priority
-   1: Activate Griselbrand (Draw)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 59 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 54
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Pass priority
-   1: Activate Griselbrand (Draw)  [#0]
-  >> A/A: 1 (Activate Griselbrand (Draw))
---- Narrative ---
-  Player A pays 7 life
-  Player A's Griselbrand ability is on the stack
-  Resolving ability (category: Draw, amount: 7)
-  Player A draws Underground Sea
-  Player A draws Ponder
-  Player A draws Flow State
-  Player A draws Force of Negation
-  Player A draws Atraxa, Grand Unifier
-  Player A draws Reanimate
-  Player A draws Atraxa, Grand Unifier
-
---- Decision 60 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(7): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Flow State, Ponder, Reanimate, Underground Sea, Force of Negation | lib 47
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island | Swamp (T) | Undercity Sewers
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Pass priority
-   1: Play Underground Sea
-   2: Cast Flow State  [#0]
-   3: Cast Ponder  [#0]
-   4: Cast Reanimate  [#0]
-  >> A/A: 2 (Cast Flow State)
---- Narrative ---
-  Player A activated Island for 1(U)
-  Player A activated Undercity Sewers for 1(U)
-  Player A casts Flow State
-  Resolving ability (category: Dig)
-  Player A looks at the top 3 card(s) of their library.
-
---- Decision 61 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(6): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Ponder, Reanimate, Underground Sea, Force of Negation | lib 47
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Flow State (spell, self)
-  Pending: Flow State (self)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Archon of Cruelty
-   1: Thoughtseize
-   2: The Creation of Avacyn
-  >> A/A: 1 (Thoughtseize)
-
---- Decision 62 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(6): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Ponder, Reanimate, Underground Sea, Force of Negation | lib 47
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Flow State (spell, self)
-  Pending: Flow State (self)
-  Self GY: Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Archon of Cruelty
-   1: The Creation of Avacyn
-  >> A/A: 1 (The Creation of Avacyn)
---- Narrative ---
-  Player A puts Thoughtseize into hand.
-  Player A puts The Creation of Avacyn into hand.
-  Player A puts 1 card(s) on the bottom of their library.
-
---- Decision 63 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(8): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Ponder, Reanimate, Thoughtseize, Underground Sea, Force of Negation, The Creation of Avacyn | lib 45
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Actions:
-   0: Pass priority
-   1: Play Underground Sea
-  >> A/A: 1 (Play Underground Sea)
---- Narrative ---
-  Player A played Underground Sea
-
---- Decision 64 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(7): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Ponder, Reanimate, Thoughtseize, Force of Negation, The Creation of Avacyn | lib 45
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Ponder  [#0]
-   2: Cast Reanimate  [#0]
-   3: Cast Thoughtseize  [#0]
-  >> A/A: 1 (Cast Ponder)
---- Narrative ---
-  Player A activated Underground Sea for 1(U)
-  Player A casts Ponder
-  Resolving ability (category: RearrangeTopOfLibrary)
-  Player A looks at the top 3 card(s) of their library.
-  Choose which card goes 3 from top:
-
---- Decision 65 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(6): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Reanimate, Thoughtseize, Force of Negation, The Creation of Avacyn | lib 45
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Extras: self_lands_played=1
-  Actions:
-   0: Brainstorm  [#2]
-   1: Underground Sea  [#2]
-   2: Brainstorm  [#2]
-  >> A/A: 0 (Brainstorm)
---- Narrative ---
-  Choose which card goes 2 from top:
-
---- Decision 66 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(6): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Reanimate, Thoughtseize, Force of Negation, The Creation of Avacyn | lib 45
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Extras: self_lands_played=1
-  Actions:
-   0: Underground Sea  [#1]
-   1: Brainstorm  [#1]
-  >> A/A: 0 (Underground Sea)
-
---- Decision 67 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(6): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Reanimate, Thoughtseize, Force of Negation, The Creation of Avacyn | lib 45
-  Opp:   13 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known top: Brainstorm, Underground Sea, Brainstorm, ?, ?
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Extras: self_lands_played=1
-  Actions:
-   0: Don't shuffle
-   1: Shuffle
-  >> A/A: 0 (Don't shuffle)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player A draws Brainstorm
-  -------- TURN 10 (Player B) --------
---- Turn 10 (Player B) ---
-  PA: Atraxa, Grand Unifier, Atraxa, Grand Unifier, Reanimate, Thoughtseize, Force of Negation, The Creation of Avacyn
-  PB: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-
---- Decision 68 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  13 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize | lib 50
-  Opp:   2 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Badlands | Goblin Bombardment | Wasteland
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player B draws Amped Raptor
-
---- Decision 69 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  13 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Guide of Souls, Ocelot Pride, Thoughtseize | lib 49
-  Opp:   2 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Badlands | Goblin Bombardment | Wasteland
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 70 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  13 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Guide of Souls, Ocelot Pride, Thoughtseize | lib 49
-  Opp:   2 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Badlands | Goblin Bombardment | Wasteland
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Cast Amped Raptor  [#0]
-   2: Cast Thoughtseize  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 1 (Cast Amped Raptor)
---- Narrative ---
-  Player B activated Badlands for 1(R)
-  Player B activated Wasteland for 1(C)
-  Player B casts Amped Raptor
-  Amped Raptor enters the battlefield
-  Amped Raptor triggered
-
---- Decision 71 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  13 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize | lib 49
-  Opp:   2 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Amped Raptor (ability, self)
-  Self GY: Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Pass priority
-   1: Activate Goblin Bombardment (DealDamage)  [#0]
-  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
---- Narrative ---
-  Choose target for Goblin Bombardment:
-
---- Decision 72 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  13 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize | lib 49
-  Opp:   2 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Amped Raptor (ability, self)
-  Pending: Goblin Bombardment (self)
-  Self GY: Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Player A (2 life)
-   1: Player B (13 life)
-   2: Griselbrand
-   3: Amped Raptor
-  >> B/B: 0 (Player A (2 life))
---- Narrative ---
-  Targeting choice 0
-
---- Decision 73 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  13 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize | lib 49
-  Opp:   2 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Amped Raptor (ability, self)
-  Self GY: Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Actions:
-   0: Sacrifice Amped Raptor
-  >> B/B: 0 (Sacrifice Amped Raptor)
---- Narrative ---
-  Player B sacrifices Amped Raptor
-  Player B's Goblin Bombardment ability targeting Player A is on the stack
-  Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 1 life)
-  Resolving ability (category: PutCounter, amount: 2)
-  Player B gets 2 ENERGY counter(s) (now 2).
-  Resolving ability (category: DigUntil)
-  Player B reveals Thoughtseize.
-  Player B exiles Thoughtseize.
-  Resolving ability (category: Play)
-  Player B may cast Thoughtseize this turn by paying 1 energy rather than its mana cost.
+  Player A casts Reanimate targeting Atraxa, Grand Unifier
+  Resolving ability (category: ChangeZone)
+  Atraxa, Grand Unifier is moved to the battlefield
+  Resolving ability (category: LoseLife, amount: 7)
+  Player A loses 7 life (now at 11)
   Resolving ability (category: Cleanup)
+  Atraxa, Grand Unifier triggered
+  Resolving ability (category: PeekAndReveal)
+  Player A reveals Brainstorm from the top of their library
+  Player A reveals Reanimate from the top of their library
+  Player A reveals Raph & Mikey, Troublemakers from the top of their library
+  Player A reveals Ponder from the top of their library
+  Player A reveals Brainstorm from the top of their library
+  Player A reveals Polluted Delta from the top of their library
+  Player A reveals Thoughtseize from the top of their library
+  Player A reveals Force of Will from the top of their library
+  Player A reveals Marsh Flats from the top of their library
+  Player A reveals Brainstorm from the top of their library
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: ChooseCard)
+  Player A may put a Creature card from among the revealed cards into their hand:
 
---- Decision 74 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  13 life | mana: empty | energy 2 | hand(4): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize | lib 48
-  Opp:   1 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Self exile: Thoughtseize
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Extras: self_revolt
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Opp BF:   Badlands (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Pass priority
-   1: Cast Thoughtseize (impulse, alt cost)  [#7]
-  >> B/B: 1 (Cast Thoughtseize (impulse, alt cost))
+   0: Put Raph & Mikey, Troublemakers (Creature) into hand
+   1: Put no Creature card into hand
+  >> A/A: 0 (Put Raph & Mikey, Troublemakers (Creature) into hand)
 --- Narrative ---
-  Player B pays 1 energy
-  Choose target for Thoughtseize:
+  Player A chooses Raph & Mikey, Troublemakers
+  Resolving ability (category: ChooseCard)
+  Player A may put a Instant card from among the revealed cards into their hand:
 
---- Decision 75 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  13 life | mana: empty | energy 1 | hand(4): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize | lib 48
-  Opp:   1 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Pending: Thoughtseize (self)
-  Self GY: Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Self exile: Thoughtseize
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, The Creation of Avacyn
-  Extras: self_revolt
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Opp BF:   Badlands (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Player A (1 life)
-   1: Player B (13 life)
-  >> B/B: 0 (Player A (1 life))
+   0: Put Brainstorm (Instant) into hand
+   1: Put Brainstorm (Instant) into hand
+   2: Put Force of Will (Instant) into hand
+   3: Put Brainstorm (Instant) into hand
+   4: Put no Instant card into hand
+  >> A/A: 0 (Put Brainstorm (Instant) into hand)
 --- Narrative ---
-  Targeting choice 0
-  Player B casts Thoughtseize targeting Player A
+  Player A chooses Brainstorm
+  Resolving ability (category: ChooseCard)
+  Player A may put a Land card from among the revealed cards into their hand:
 
---- Decision 76 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  1 life | mana: empty | hand(7): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Brainstorm, Reanimate, Thoughtseize, Force of Negation, The Creation of Avacyn | lib 44
-  Opp:   13 life | mana: empty | energy 1 | hand count: 4 | lib 48
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Thoughtseize (spell, opponent) -> self (player)
-  Self GY: Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known top: Underground Sea, Brainstorm, ?, ?, ?
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
-  Extras: opp_revolt
+--- Decision 24 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Opp BF:   Badlands (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Pass priority
-   1: Cast Force of Negation (alternate cost)  [#1]
-  >> A/A: 0 (Pass priority)
+   0: Put Polluted Delta (Land) into hand
+   1: Put Marsh Flats (Land) into hand
+   2: Put no Land card into hand
+  >> A/A: 0 (Put Polluted Delta (Land) into hand)
 --- Narrative ---
-  Resolving ability (category: Discard)
-  Player A reveals their hand:
-    Atraxa, Grand Unifier
-    Atraxa, Grand Unifier
-    Brainstorm
-    Reanimate
-    Thoughtseize
-    Force of Negation
-    The Creation of Avacyn
-  Player B chooses a card to discard:
+  Player A chooses Polluted Delta
+  Resolving ability (category: ChooseCard)
+  Player A may put a Sorcery card from among the revealed cards into their hand:
 
---- Decision 77 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  13 life | mana: empty | energy 1 | hand(4): Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize | lib 48
-  Opp:   1 life | mana: empty | hand count: 7 | lib 44
-  Self BF:  Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Opp BF:   Griselbrand [7/7] [Flying, Lifelink] (T) | Island (T) | Swamp (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Opp GY:  Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp exile:  Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Atraxa, Grand Unifier, Atraxa, Grand Unifier, Brainstorm, Reanimate, Thoughtseize, Force of Negation, The Creation of Avacyn
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Underground Sea, Force of Negation, Fatal Push, Flow State, Marsh Flats, Consign to Memory, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Show and Tell, Atraxa, Grand Unifier, The Creation of Avacyn
-  Extras: self_revolt
+--- Decision 25 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Opp BF:   Badlands (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
   Actions:
-   0: Atraxa, Grand Unifier
-   1: Atraxa, Grand Unifier
-   2: Brainstorm
-   3: Reanimate
-   4: Thoughtseize
-   5: Force of Negation
-   6: The Creation of Avacyn
-  >> B/B: 5 (Force of Negation)
+   0: Put Reanimate (Sorcery) into hand
+   1: Put Ponder (Sorcery) into hand
+   2: Put Thoughtseize (Sorcery) into hand
+   3: Put no Sorcery card into hand
+  >> A/A: 0 (Put Reanimate (Sorcery) into hand)
 --- Narrative ---
-  Player A discards Force of Negation
-  Resolving ability (category: LoseLife, amount: 2)
-  Player B loses 2 life (now at 11)
+  Player A chooses Reanimate
+  Resolving ability (category: ChangeZone)
+  Raph & Mikey, Troublemakers is moved to hand
+  Brainstorm is moved to hand
+  Polluted Delta is moved to hand
+  Reanimate is moved to hand
+  Resolving ability (category: ChangeZoneAll)
+  Player A moves Brainstorm to the bottom of their library
+  Player A moves Force of Will to the bottom of their library
+  Player A moves Brainstorm to the bottom of their library
+  Player A moves Ponder to the bottom of their library
+  Player A moves Thoughtseize to the bottom of their library
+  Player A moves Marsh Flats to the bottom of their library
+  Player A moves 6 card(s) to the bottom of their library
+  Resolving ability (category: Cleanup)
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
   --- End Combat Damage ---
-  -------- TURN 11 (Player A) --------
---- Turn 11 (Player A) ---
-  PA: Atraxa, Grand Unifier, Atraxa, Grand Unifier, Brainstorm, Reanimate, Thoughtseize, The Creation of Avacyn
-  PB: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
+  -------- TURN 4 (Player B) --------
+  Player B draws Amped Raptor
+--- Turn 4 (Player B) ---
+  PA: Careful Study, Careful Study, Undercity Sewers
+  PB: Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 78 ---
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badlands
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badlands
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Pending: Thoughtseize (self)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Actions:
+   0: Player A (11 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (11 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Brainstorm
+    Careful Study
+    Careful Study
+    Polluted Delta
+    Raph & Mikey, Troublemakers
+    Reanimate
+    Undercity Sewers
+  Player B chooses a card to discard:
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 7 | lib 45
+  Self BF:  Badlands (T)
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Raph & Mikey, Troublemakers, Reanimate, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Actions:
+   0: Brainstorm
+   1: Careful Study
+   2: Careful Study
+   3: Raph & Mikey, Troublemakers
+   4: Reanimate
+  >> B/B: 3 (Raph & Mikey, Troublemakers)
+--- Narrative ---
+  Player A discards Raph & Mikey, Troublemakers
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 17)
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(6): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Badlands (T)
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(5): Amped Raptor, Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Badlands (T) | Scrubland
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Pending: Cabal Therapy (self)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (11 life)
+   1: Player B (17 life)
+  >> B/B: 0 (Player A (11 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 33 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1
+  Actions:
+   0: Sacrifice Ocelot Pride
+  >> B/B: 0 (Sacrifice Ocelot Pride)
+--- Narrative ---
+  Player B sacrifices Ocelot Pride
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 34 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   11 life | mana: empty | hand count: 6 | lib 45
+  Self BF:  Badlands (T) | Scrubland (T)
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Brainstorm
+    Careful Study
+    Careful Study
+    Polluted Delta
+    Reanimate
+    Undercity Sewers
+  No matching cards to discard.
+  Cabal Therapy is exiled (flashback)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
+  PB: Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory
+
+--- Decision 35 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  1 life | mana: empty | hand(6): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Brainstorm, Reanimate, Thoughtseize, The Creation of Avacyn | lib 44
-  Opp:   11 life | mana: empty | energy 1 | hand count: 4 | lib 48
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island | Swamp | Undercity Sewers | Underground Sea
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Force of Negation, Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known top: Underground Sea, Brainstorm, ?, ?, ?
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
+  Step: Upkeep (turn 5)
+  Self:  11 life | mana: empty | hand(6): Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1798,147 +894,455 @@
   Player A activated Island for 1(U)
   Player A casts Brainstorm
   Resolving ability (category: Draw, amount: 3)
-  Player A draws Underground Sea
-  Player A draws Brainstorm
-  Player A draws Flooded Strand
+  Player A draws Polluted Delta
+  Player A draws Archon of Cruelty
+  Player A draws Lotus Petal
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 79 ---
+--- Decision 36 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  1 life | mana: empty | hand(8): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Brainstorm, Flooded Strand, Reanimate, Thoughtseize, Underground Sea, The Creation of Avacyn | lib 41
-  Opp:   11 life | mana: empty | energy 1 | hand count: 4 | lib 48
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island (T) | Swamp | Undercity Sewers | Underground Sea
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
+  Step: Upkeep (turn 5)
+  Self:  11 life | mana: empty | hand(8): Archon of Cruelty, Careful Study, Careful Study, Lotus Petal, Polluted Delta, Polluted Delta, Reanimate, Undercity Sewers | lib 42
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
-  Self GY: Force of Negation, Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
+  Self GY: Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
   Actions:
-   0: Atraxa, Grand Unifier
-   1: Atraxa, Grand Unifier
-   2: Brainstorm
-   3: Flooded Strand
-   4: Reanimate
-   5: Thoughtseize
-   6: Underground Sea
-   7: The Creation of Avacyn
-  >> A/A: 2 (Brainstorm)
+   0: Archon of Cruelty
+   1: Careful Study
+   2: Careful Study
+   3: Lotus Petal
+   4: Polluted Delta
+   5: Polluted Delta
+   6: Reanimate
+   7: Undercity Sewers
+  >> A/A: 4 (Polluted Delta)
 --- Narrative ---
-  Player A puts Brainstorm to top of library
+  Player A puts Polluted Delta to top of library
   Player A chooses a card from Player A hand:
 
---- Decision 80 ---
+--- Decision 37 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  1 life | mana: empty | hand(7): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Flooded Strand, Reanimate, Thoughtseize, Underground Sea, The Creation of Avacyn | lib 42
-  Opp:   11 life | mana: empty | energy 1 | hand count: 4 | lib 48
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island (T) | Swamp | Undercity Sewers | Underground Sea
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
+  Step: Upkeep (turn 5)
+  Self:  11 life | mana: empty | hand(7): Archon of Cruelty, Careful Study, Careful Study, Lotus Petal, Polluted Delta, Reanimate, Undercity Sewers | lib 43
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
-  Self GY: Force of Negation, Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
+  Self GY: Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
   Actions:
-   0: Atraxa, Grand Unifier
-   1: Atraxa, Grand Unifier
-   2: Flooded Strand
-   3: Reanimate
-   4: Thoughtseize
-   5: Underground Sea
-   6: The Creation of Avacyn
-  >> A/A: 0 (Atraxa, Grand Unifier)
+   0: Archon of Cruelty
+   1: Careful Study
+   2: Careful Study
+   3: Lotus Petal
+   4: Polluted Delta
+   5: Reanimate
+   6: Undercity Sewers
+  >> A/A: 0 (Archon of Cruelty)
 --- Narrative ---
-  Player A puts Atraxa, Grand Unifier to top of library
-  Player A draws Atraxa, Grand Unifier
+  Player A puts Archon of Cruelty to top of library
+  Player A draws Archon of Cruelty
 
---- Decision 81 ---
+--- Decision 38 ---
   Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  1 life | mana: empty | hand(7): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Flooded Strand, Reanimate, Thoughtseize, Underground Sea, The Creation of Avacyn | lib 42
-  Opp:   11 life | mana: empty | energy 1 | hand count: 4 | lib 48
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island (T) | Swamp | Undercity Sewers | Underground Sea
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Self GY: Brainstorm, Force of Negation, Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(7): Archon of Cruelty, Careful Study, Careful Study, Lotus Petal, Polluted Delta, Reanimate, Undercity Sewers | lib 43
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
   Actions:
    0: Pass priority
-   1: Play Flooded Strand
-   2: Play Underground Sea
-   3: Cast Reanimate  [#0]
-   4: Cast Thoughtseize  [#0]
-   5: Cast The Creation of Avacyn  [#0]
-  >> A/A: 4 (Cast Thoughtseize)
+   1: Play Polluted Delta
+   2: Play Undercity Sewers
+   3: Cast Lotus Petal  [#0]
+   4: Cast Reanimate  [#0]
+  >> A/A: 3 (Cast Lotus Petal)
 --- Narrative ---
-  Choose target for Thoughtseize:
+  Player A casts Lotus Petal
+  Lotus Petal enters the battlefield
 
---- Decision 82 ---
+--- Decision 39 ---
   Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  1 life | mana: empty | hand(7): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Flooded Strand, Reanimate, Thoughtseize, Underground Sea, The Creation of Avacyn | lib 42
-  Opp:   11 life | mana: empty | energy 1 | hand count: 4 | lib 48
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island (T) | Swamp | Undercity Sewers | Underground Sea
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Pending: Thoughtseize (self)
-  Self GY: Brainstorm, Force of Negation, Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(6): Archon of Cruelty, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers | lib 43
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
   Actions:
-   0: Player B (11 life)
-   1: Player A (1 life)
-  >> A/A: 0 (Player B (11 life))
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Undercity Sewers
+   3: Cast Careful Study  [#0]
+   4: Cast Careful Study  [#0]
+   5: Cast Reanimate  [#0]
+  >> A/A: 3 (Cast Careful Study)
 --- Narrative ---
-  Targeting choice 0
-  Player A activated Swamp for 1(B)
-  Player A casts Thoughtseize targeting Player B
+  Player A sacrifices Lotus Petal
+  Player A activated Lotus Petal for 1(U)
+  Player A casts Careful Study
+  Resolving ability (category: Draw, amount: 2)
+  Player A draws Polluted Delta
+  Player A draws Underground Sea
   Resolving ability (category: Discard)
-  Player B reveals their hand:
-    Ajani, Nacatl Pariah
-    Guide of Souls
-    Ocelot Pride
-    Thoughtseize
   Player A chooses a card to discard:
 
---- Decision 83 ---
+--- Decision 40 ---
   Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  1 life | mana: empty | hand(6): Atraxa, Grand Unifier, Atraxa, Grand Unifier, Flooded Strand, Reanimate, Underground Sea, The Creation of Avacyn | lib 42
-  Opp:   11 life | mana: empty | energy 1 | hand count: 4 | lib 48
-  Self BF:  Griselbrand [7/7] [Flying, Lifelink] | Island (T) | Swamp (T) | Undercity Sewers | Underground Sea
-  Opp BF:   Badlands (T) | Goblin Bombardment | Wasteland (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Brainstorm, Force of Negation, Ponder, Flow State, Thoughtseize, Reanimate, Brainstorm, The Creation of Avacyn, Show and Tell, Scalding Tarn, Force of Will, Fatal Push, Flow State, Force of Will, Force of Will, Ponder, Polluted Delta, Marsh Flats
-  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Orcish Bowmasters, Amped Raptor
-  Self exile: Otherworldly Gaze, Consign to Memory, Careful Study
-  Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Ajani, Nacatl Pariah, Guide of Souls, Ocelot Pride, Thoughtseize
-  Opp revealed: Wasteland, Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Ocelot Pride, Voice of Victory, Goblin Bombardment, Badlands, Amped Raptor, Guide of Souls
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(7): Archon of Cruelty, Careful Study, Polluted Delta, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_revolt
   Actions:
-   0: Ajani, Nacatl Pariah
-   1: Guide of Souls
-   2: Ocelot Pride
-   3: Thoughtseize
-  >> A/A: 0 (Ajani, Nacatl Pariah)
+   0: Archon of Cruelty
+   1: Careful Study
+   2: Polluted Delta
+   3: Polluted Delta
+   4: Reanimate
+   5: Undercity Sewers
+   6: Underground Sea
+  >> A/A: 0 (Archon of Cruelty)
 --- Narrative ---
-  Player B discards Ajani, Nacatl Pariah
-  Resolving ability (category: LoseLife, amount: 2)
-  Player A loses 2 life (now at -1)
-  Player A has -1 life - Player B wins!
+  Player A discards Archon of Cruelty
+  Player A chooses a card to discard:
 
-=== B/B wins ===
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(6): Careful Study, Polluted Delta, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Archon of Cruelty, Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_revolt
+  Actions:
+   0: Careful Study
+   1: Polluted Delta
+   2: Polluted Delta
+   3: Reanimate
+   4: Undercity Sewers
+   5: Underground Sea
+  >> A/A: 1 (Polluted Delta)
+--- Narrative ---
+  Player A discards Polluted Delta
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(5): Careful Study, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Undercity Sewers
+   3: Play Underground Sea
+   4: Cast Reanimate  [#0]
+  >> A/A: 4 (Cast Reanimate)
+--- Narrative ---
+  Choose target for Reanimate:
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  11 life | mana: empty | hand(5): Careful Study, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Pending: Reanimate (self)
+  Self GY: Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_revolt
+  Actions:
+   0: Ocelot Pride
+   1: Archon of Cruelty
+   2: Raph & Mikey, Troublemakers
+  >> A/A: 2 (Raph & Mikey, Troublemakers)
+--- Narrative ---
+  Targeting choice 2
+  Player A activated Swamp for 1(B)
+  Player A casts Reanimate targeting Raph & Mikey, Troublemakers
+  Resolving ability (category: ChangeZone)
+  Raph & Mikey, Troublemakers is moved to the battlefield
+  Resolving ability (category: LoseLife, amount: 7)
+  Player A loses 7 life (now at 4)
+  Resolving ability (category: Cleanup)
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  4 life | mana: empty | hand(4): Careful Study, Polluted Delta, Undercity Sewers, Underground Sea | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Undercity Sewers
+   3: Play Underground Sea
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  4 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Polluted Delta | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Fail to find
+   1: Undercity Sewers
+   2: Underground Sea
+   3: Underground Sea
+   4: Underground Sea
+  >> A/A: 1 (Undercity Sewers)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Undercity Sewers to the battlefield
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player A surveils 1.
+  Surveil: looking at Animate Dead
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 40
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
+  Self GY: Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Put Animate Dead on top of library  [#0]
+   1: Put Animate Dead into graveyard
+  >> A/A: 1 (Put Animate Dead into graveyard)
+--- Narrative ---
+  Player A puts Animate Dead into their graveyard.
+  --- Declare Attackers (Player A) ---
+
+--- Decision 48 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 39
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Atraxa, Grand Unifier [7/7]
+   1: Raph & Mikey, Troublemakers [7/7]
+   2: Confirm attackers
+  >> A/A: 0 (Atraxa, Grand Unifier [7/7])
+--- Narrative ---
+  Atraxa, Grand Unifier attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Atraxa, Grand Unifier [7/7] -> Player B
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 39
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Raph & Mikey, Troublemakers [7/7]
+   1: Confirm attackers
+  >> A/A: 0 (Raph & Mikey, Troublemakers [7/7])
+--- Narrative ---
+  Raph & Mikey, Troublemakers attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Atraxa, Grand Unifier [7/7] -> Player B
+    [attacking] Raph & Mikey, Troublemakers [7/7] -> Player B
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 39
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (ATK,SICK) | Swamp (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Atraxa, Grand Unifier -> Player B
+    Raph & Mikey, Troublemakers -> Player B
+  Raph & Mikey, Troublemakers triggered
+  Resolving ability (category: DigUntil)
+  Player A reveals Lotus Petal.
+  Player A reveals Thoughtseize.
+  Player A reveals Otherworldly Gaze.
+  Player A reveals Underground Sea.
+  Player A reveals Thoughtseize.
+  Player A reveals Brainstorm.
+  Player A reveals Flow State.
+  Player A reveals Ponder.
+  Player A reveals Archon of Cruelty.
+  Player A puts Archon of Cruelty onto the battlefield tapped and attacking.
+  Archon of Cruelty enters tapped.
+  Archon of Cruelty is attacking.
+  Choose target for Archon of Cruelty:
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 5)
+  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 38
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Pending: Archon of Cruelty (self)
+  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Player B (17 life)
+  >> A/A: 0 (Player B (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Archon of Cruelty triggered
+  Resolving ability (category: Sacrifice)
+  Resolving ability (category: Discard)
+  Player B chooses a card to discard:
+
+--- Decision 52 ---
+  Priority: Player B (non-active)
+  Step: Declare Atk (turn 5)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
+  Opp:   3 life | mana: empty | hand count: 3 | lib 38
+  Self BF:  Badlands (T) | Scrubland (T)
+  Opp BF:   Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Undercity Sewers (T)
+  Stack: Archon of Cruelty (ability, opponent) -> self (player)
+  Pending: Archon of Cruelty (opp)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Self exile: Cabal Therapy
+  Known opp hand: Careful Study, Undercity Sewers
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Extras: opp_lands_played=1, opp_revolt
+  Actions:
+   0: Amped Raptor
+   1: Amped Raptor
+   2: Swords to Plowshares
+   3: Voice of Victory
+  >> B/B: 3 (Voice of Victory)
+--- Narrative ---
+  Player B discards Voice of Victory
+  Resolving ability (category: LoseLife, amount: 3)
+  Player B loses 3 life (now at 14)
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Underground Sea
+  Resolving ability (category: GainLife, amount: 3)
+  Player A gains 3 life (now at 6)
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Archon of Cruelty deals 6 damage to Player B
+    Atraxa, Grand Unifier deals 7 damage to Player B
+    Raph & Mikey, Troublemakers deals 7 damage to Player B
+    Player A gains 7 life (lifelink)
+  --- End Combat Damage ---
+  Player B has -6 life - Player A wins!
+
+=== A/A wins ===

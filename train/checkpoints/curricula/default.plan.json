@@ -10,28 +10,20 @@
         "scripted_anchor_frac": 0.2,
         "exploiter_floor": 0.0,
         "promote_margin": 0.0,
-        "fresh": true,
-        "n_envs": 24,
+        "n_envs": 64,
         "popart": true,
         "bo3": true
       }
     },
     {
       "kind": "az-league",
-      "rotations": 2,
-      "games": 50,
-      "overrides": {
-        "workers": 28,
-        "exhaustive_selfplay": true,
-        "actor": true
-      }
-    },
-    {
-      "kind": "baseline",
+      "rotations": 6,
       "games": 100,
       "overrides": {
-        "all": true,
-        "workers": 28
+        "workers": 72,
+        "window": 0,
+        "exhaustive_selfplay": true,
+        "expert_games": 0
       }
     }
   ]

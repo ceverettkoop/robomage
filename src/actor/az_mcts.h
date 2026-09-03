@@ -76,7 +76,8 @@ struct MCTSConfig {
     // the next game); plan value = mean over worlds, Q per first pick = its
     // best plan's value, and the training/pi target is softmax(Q / kSbPiTau).
     // Plan values are memoized per (world seed, sorted pick multiset) in a
-    // boundary-shared table (takeback-containing multisets excluded), which
+    // boundary-shared table (multisets holding one card in both directions
+    // excluded — see memo_eligible in az_mcts.cpp), which
     // both dedups converging coverage plans and re-prices consistent plans for
     // free at the boundary's later picks — this REPLACES tree-based boundary
     // persistence. -1 = the compiled default (kDefaultSbBranches /
@@ -85,6 +86,21 @@ struct MCTSConfig {
     int sb_branches = -1;
     int sb_worlds = -1;
     int sb_rollout_turns = -1;
+
+    // ── prior-rollout sideboard self-play (mirrors az_selfplay's sb prior
+    // mode) ────────────────────────────────────────────────────────────────
+    // When `sb_prior_mode` is set (generation only — az_selfplay passes
+    // --sb-selfplay-mode prior; gate/eval/parity callers leave it off), a
+    // sideboard root skips the plan search entirely: one net eval, the
+    // dead-card rules mask (sb_rules.h), the behavior policy
+    //   b = (1-eps) * softmax(log p / temp) + eps * uniform(live),
+    // one sampled pick (argmax without --selfplay), and a ONE-HOT training
+    // row priced by the realized next-game z. Arithmetic MIRRORS
+    // az_selfplay.sb_prior_policy in float64; only the final sample draw is
+    // backend-native.
+    bool sb_prior_mode = false;
+    double sb_explore_temp = 1.0;   // cli_spec DEFAULT_SB_EXPLORE_TEMP
+    double sb_explore_eps = 0.10;   // cli_spec DEFAULT_SB_EXPLORE_EPS
 
     // ── leaf rollouts (mirrors mcts.py's rollout_turns; in-game roots) ──────
     // When the budget in force has rollout_turns > 0, a freshly expanded leaf is
@@ -106,6 +122,25 @@ struct MCTSConfig {
     // mixed into the base priors per world in begin_world. Defaults keep the
     // parity paths (--search without --selfplay) noise-free (eps=0) and argmax.
     bool selfplay = false;
+    // ── playout-cap randomization (mirrors az_selfplay's playout cap) ───────
+    // Self-play only: each searched IN-GAME root gets the full `sims` budget
+    // with probability full_search_frac (its sample records pi), else a
+    // fast_sims search — no root noise, and its sample keeps a real q/explored
+    // but an ALL-ZERO pi (no policy target; the trainer keys off pi.sum()>0).
+    // The coin is a deterministic hash of (the match's engine seed, a
+    // per-match searched-root counter) — playout_cap_full in az_mcts.cpp, the
+    // bit-lockstep twin of az_selfplay.playout_cap_full — never an rng draw.
+    // >= 1 disables (every root full); the driver forces 1.0 outside
+    // --selfplay so parity/record paths never consult the coin. Sideboard
+    // plan roots are exempt (own budget, always full policy rows).
+    double full_search_frac = 1.0;
+    int fast_sims = 128;
+    // Record searched-root samples WITHOUT the self-play exploration knobs
+    // (no root noise, always argmax): eval/gate matches (--search --record)
+    // then write trainer-schema shards of what the two nets actually played,
+    // so a gate's decisions are browsable/probeable like self-play data. Implied
+    // by `selfplay`; on its own it never changes a played action.
+    bool record = false;
     double noise_eps = 0.0;         // 0 disables root noise (parity default)
     double noise_alpha = 1.0;       // Dirichlet concentration
     int temp_moves = 20;            // # of leading real moves that sample-from-visits
@@ -120,6 +155,19 @@ struct MCTSConfig {
     // boundary. Search simulations never consult the provider: tree play is
     // net-both-seats, exactly like the Python reference.
     int scripted_seat = 0;
+
+    // ── opponent-pool learner seat (mirrors _play_match's opp_evaluator/
+    // net_is_a) ──────────────────────────────────────────────────────────────
+    // 0 = none (both seats are the learner, classic self-play); 1 = Player A,
+    // 2 = Player B is the LEARNER. Requires a two-evaluator setup (the other
+    // seat's net is an older checkpoint, wired through the ctor's evaluator_b
+    // slot by seat). Under --selfplay, only the learner seat's searched roots
+    // record samples, mix root noise, and sample-from-visits under the tau
+    // schedule; the opponent's roots search noise-free and play argmax, but
+    // still advance the per-game move counter and the SHARED playout-cap root
+    // counter (so an opponent-pool match costs the mirror-match budget and
+    // the coin stream matches the Python twin's one-counter rule).
+    int net_seat = 0;
 };
 
 // One stored self-play training sample (z + td_q are backfilled at real game end).
@@ -190,9 +238,12 @@ public:
 
     // ── self-play ───────────────────────────────────────────────────────────
     // Full reset of per-match sample-buffer state (real-move counter + stored
-    // samples). Call ONCE before a bo3 match (the RNG streams across games), and
-    // per-game in the bo1 loop.
-    void begin_match();
+    // samples + the playout cap's searched-root counter). Call ONCE before a
+    // bo3 match (the RNG streams across games), and per-game in the bo1 loop.
+    // `cap_seed` is the match's engine seed — the playout-cap coin's per-match
+    // key (mirrors the Python side keying playout_cap_full off _play_match's
+    // seed).
+    void begin_match(uint32_t cap_seed = 0);
     // End-of-game reset: clears the buffered samples and resets the tau/move
     // counter. Call AFTER a game's samples have been priced+flushed (from the
     // actor's backfill hook), so any sideboard samples recorded before the NEXT

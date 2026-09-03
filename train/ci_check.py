@@ -26,6 +26,13 @@ fails, so one invocation reports every finding):
   curriculum The curriculum plan schema and the argv each phase kind composes
           for its train.py subcommand, the resume argv forms, and the plan-hash
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
+  gatesprt The AZ promotion gate's sequential test (train/gate_sprt.py): the
+          hypotheses are symmetric about 0.5, draws score half/half, the
+          verdict is monotone and mirror-symmetric, the round cap's tie-break
+          is the unbiased score > 0.5, and simulated gates accept a stronger
+          candidate (in fewer matches than the fixed panel it replaced), reject
+          a weaker one, and coin-flip an EQUAL one instead of favoring the
+          incumbent (train/test_gate_sprt.py). Stdlib-only, instant.
   shardrec The play-session shard recorder (train/shard_record.py behind the
           GUI's "Record shards" / play.py --record-shards): a synthetic bo3
           match's searched + one-hot rows write trainer-schema shards, a
@@ -68,6 +75,9 @@ fails, so one invocation reports every finding):
           through the real _play_match, then assert a sideboard sample exists,
           gates the next game, and its z is +/-1 per that game's result
           (train/test_sideboard_selfplay.py). Torch-free; needs bin/robomage.
+  sbrules The dead-sideboard-card rules table (train/sb_dead_rules.json ->
+          generated sb_rules.py) and mcts.sb_dead_mask semantics on synthetic
+          observations (train/test_sb_rules.py). Engine- and torch-free.
   plansearch The sideboard plan search (mcts.run_plan_search + the analysis
           window's IncrementalPlanSearch): coverage of every first pick, the
           world-mean/Q/softmax-pi accounting, pinned-seed determinism, the
@@ -167,8 +177,9 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "shardrec", "concede", "obsinv",
-             "actorobs", "pergame", "snapshot", "sbselfplay", "plansearch",
+ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "concede", "obsinv",
+             "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
+             "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
@@ -276,7 +287,8 @@ def tier_pygen(rep):
     half-regenerated (the developer runs `make pygen` to actually update them)."""
     tracked = ["train/_enums.py", "src/gen/archetypes_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
-                "train/gen_card_props.py", "train/gen_archetypes.py"):
+                "train/gen_card_props.py", "train/gen_archetypes.py",
+                "train/gen_sb_rules.py"):
         r = subprocess.run([sys.executable, gen], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
         if r.returncode != 0:
@@ -338,6 +350,24 @@ def tier_curriculum(rep):
         rep.error("curriculum", "curriculum plan/argv violation "
                                 f"(test_curriculum.py exit {r.returncode}):\n"
                                 f"{r.stdout}{r.stderr}")
+
+
+def tier_gatesprt(rep):
+    """AZ promotion-gate sequential-test regression (train/gate_sprt.py).
+
+    The gate's promote/keep verdict is decided by an SPRT on the aggregate
+    match score, so a silent change to that math changes which nets get
+    promoted with no other symptom. Asserts the symmetry, draw handling,
+    monotonicity, Wald bounds, unbiased cap tie-break, and end-to-end
+    simulated-gate behavior (see train/test_gate_sprt.py). Stdlib-only,
+    torch-free, engine-free."""
+    r = subprocess.run([sys.executable, "train/test_gate_sprt.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("gatesprt", "gate sequential-test violation "
+                              f"(test_gate_sprt.py exit {r.returncode}):\n"
+                              f"{r.stdout}{r.stderr}")
 
 
 def tier_shardrec(rep):
@@ -422,6 +452,22 @@ def tier_sbselfplay(rep):
         rep.error("sbselfplay", "sideboard self-play data-path violation "
                                 f"(test_sideboard_selfplay.py exit {r.returncode}):\n"
                                 f"{r.stdout}{r.stderr}")
+
+
+def tier_sbrules(rep):
+    """Dead-sideboard-card rules table + mask (train/sb_dead_rules.json).
+
+    Runs train/test_sb_rules.py: generated-table integrity and the
+    mcts.sb_dead_mask semantics on synthetic observations. Engine-free,
+    torch-free, fast. The C++ twin (src/actor/sb_rules.h) is covered by the
+    opt-in `actor` tier's parity legs."""
+    r = subprocess.run([sys.executable, "train/test_sb_rules.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("sbrules", "dead-sideboard-card rules violation "
+                             f"(test_sb_rules.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
 
 
 def tier_plansearch(rep):
@@ -932,6 +978,8 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "curriculum":
             tier_curriculum(rep)
+        elif t == "gatesprt":
+            tier_gatesprt(rep)
         elif t == "shardrec":
             tier_shardrec(rep)
         elif t == "concede":
@@ -946,6 +994,8 @@ def main(argv=None):
             tier_pergame(rep)
         elif t == "sbselfplay":
             tier_sbselfplay(rep)
+        elif t == "sbrules":
+            tier_sbrules(rep)
         elif t == "plansearch":
             tier_plansearch(rep)
         elif t == "mirror":

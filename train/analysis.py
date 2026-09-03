@@ -2011,6 +2011,9 @@ def _sim_sideboard_report(games):
     # Per-phase records: list of (match_idx, after_game_num, cards_in, cards_out).
     # after_game_num is 1-based: the game that just ended (so a 2-game match has
     # one phase with after_game_num=1; a 3-game match has after_game_num=1 and 2).
+    # The engine stamps sideboard rows with the UPCOMING game's number (0-based),
+    # which is numerically the 1-based number of the game that just ended, so we
+    # use it directly as after_game_num (no +1).
     phases = []
 
     for gi, g in enumerate(games):
@@ -2022,7 +2025,8 @@ def _sim_sideboard_report(games):
         # Track current sideboard phase
         cards_in = []
         cards_out = []
-        current_after_game = None  # match_game_number at the phase (0-based)
+        current_after_game = None  # upcoming game number (0-based) == the
+        #                            1-based number of the game that just ended
 
         for si in range(n_steps):
             obs = observations[si]
@@ -2033,15 +2037,20 @@ def _sim_sideboard_report(games):
 
             is_sb_action = cat in (_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE)
 
-            # If an in-progress phase has no DONE (engine hit its 15-swap cap
-            # and moved on silently), close it out when gameplay resumes so
-            # after-game-1 and after-game-2 stay separate.
-            if not is_sb_action and current_after_game is not None:
-                after_game = current_after_game + 1
-                phases.append((gi, after_game, list(cards_in), list(cards_out)))
-                cards_in.clear()
-                cards_out.clear()
-                current_after_game = None
+            # A whole sideboard boundary (all the IN/OUT/DONE decisions before
+            # one game) is ONE phase — do NOT split on each DONE; a bo3 boundary
+            # can contain several DONEs. A phase closes only when gameplay
+            # resumes (a non-sideboard action) or, defensively, when the
+            # upcoming game number changes with no gameplay in between.
+            if current_after_game is not None:
+                this_after = (int(round(obs[_MATCH_CTX_START] * 3.0))
+                              if is_sb_action else None)
+                if not is_sb_action or this_after != current_after_game:
+                    phases.append((gi, current_after_game,
+                                   list(cards_in), list(cards_out)))
+                    cards_in.clear()
+                    cards_out.clear()
+                    current_after_game = None
 
             if is_sb_action and current_after_game is None:
                 current_after_game = int(round(obs[_MATCH_CTX_START] * 3.0))
@@ -2062,18 +2071,15 @@ def _sim_sideboard_report(games):
                 else:
                     name = "?"
                 cards_out.append(name)
-            elif cat == _CAT_SB_DONE:
-                # match_game_number is 0-based; add 1 so "after game 1" is human-readable.
-                after_game = (current_after_game + 1) if current_after_game is not None else 0
-                phases.append((gi, after_game, list(cards_in), list(cards_out)))
-                cards_in.clear()
-                cards_out.clear()
-                current_after_game = None
+            # A DONE just ends one player's/stage's submission within the
+            # boundary; it neither adds a card nor closes the phase (the phase
+            # closes when gameplay resumes, handled above).
 
-        # Flush any in-progress phase (shouldn't happen but safety)
-        if cards_in or cards_out:
-            after_game = (current_after_game + 1) if current_after_game is not None else 0
-            phases.append((gi, after_game, list(cards_in), list(cards_out)))
+        # Flush a sideboard boundary that ran to the end of the recorded steps
+        # (no gameplay resumed after it — e.g. a truncated tail).
+        if current_after_game is not None:
+            phases.append((gi, current_after_game,
+                           list(cards_in), list(cards_out)))
 
     if not phases:
         print("  No sideboard phases found. (Are these bo3 games?)")

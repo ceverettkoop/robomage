@@ -247,9 +247,55 @@ def check_td_targets():
             f"expert->z")
 
 
+def check_playout_cap():
+    """The playout cap's coin and its shard contract.
+
+    A fast-search row records no pi (all zeros) but a REAL root value q — so a
+    full row whose bootstrap index lands on it must still bootstrap (a NaN q
+    there would silently degrade the neighbour's target to z)."""
+    from az_selfplay import playout_cap_full
+
+    # Short-circuits: frac >= 1 is always full, frac <= 0 never.
+    for ridx in range(50):
+        if not playout_cap_full(123, ridx, 1.0):
+            raise SplitError("frac=1.0 must always pick the full search")
+        if playout_cap_full(123, ridx, 0.0):
+            raise SplitError("frac=0.0 must never pick the full search")
+    # Deterministic for a fixed (cap_seed, root_idx) and sensitive to both.
+    picks = [playout_cap_full(7, i, 0.25) for i in range(4096)]
+    if picks != [playout_cap_full(7, i, 0.25) for i in range(4096)]:
+        raise SplitError("the coin must be deterministic per (seed, root)")
+    if picks == [playout_cap_full(8, i, 0.25) for i in range(4096)]:
+        raise SplitError("the coin must depend on cap_seed")
+    # Empirical rate ~ frac (binomial 3-sigma band around 0.25 over 4096).
+    rate = sum(picks) / len(picks)
+    if not 0.23 <= rate <= 0.27:
+        raise SplitError(f"frac=0.25 coin rate {rate:.3f} outside [0.23, 0.27]")
+
+    # td bootstrap THROUGH a fast row: index 0's window (td_n=3) lands on
+    # index 3 — a fast row (zero pi, finite q). Same-seat stream so no flip.
+    fast = _td_sample(0, True, 0.75)
+    fast["pi"] = np.zeros(MAX_ACTIONS, dtype=np.float32)
+    samples = [_td_sample(0, True, 0.10), _td_sample(0, True, 0.20),
+               _td_sample(0, True, 0.30), fast,
+               _td_sample(0, True, 0.50), _td_sample(0, True, 0.60),
+               _td_sample(0, True, 0.70)]
+    packed = _backfill_and_pack(samples, ["A"], td_n=TD_N)
+    if abs(float(packed["td_q"][0]) - 0.75) > 1e-6:
+        raise SplitError(f"row 0 must bootstrap off the fast row's q=0.75, "
+                         f"got {float(packed['td_q'][0])}")
+    if float(packed["pi"][3].sum()) != 0.0:
+        raise SplitError("the fast row's zero pi must survive packing")
+    if float(packed["q"][3]) != 0.75:
+        raise SplitError("the fast row must keep its real root value q")
+
+    return (f"coin: frac 0/1 short-circuit, deterministic, rate {rate:.3f} "
+            f"at frac=0.25; td bootstraps through a zero-pi fast row")
+
+
 def main():
     checks = (check_seat_flip, check_merge_and_format, check_td_targets,
-              check_live_bo3)
+              check_playout_cap, check_live_bo3)
     for fn in checks:
         try:
             detail = fn()

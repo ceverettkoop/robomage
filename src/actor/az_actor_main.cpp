@@ -81,6 +81,12 @@ struct ActorConfig {
     int sb_branches = -1;
     int sb_worlds = -1;
     int sb_rollout_turns = -1;
+    // Prior-rollout sideboard self-play (see az_mcts.h). Default OFF ('plan')
+    // so gate/eval/parity callers keep the plan search unless az_selfplay
+    // explicitly passes --sb-selfplay-mode prior for generation.
+    bool sb_prior_mode = false;
+    double sb_explore_temp = 1.0;
+    double sb_explore_eps = 0.10;
     // In-game leaf-rollout horizon in player turns (see az_mcts.h). 0 = off.
     int rollout_turns = 0;
     // Duplicate-edge merging (see az_mcts.h / menu_merge.h; must match the
@@ -88,6 +94,16 @@ struct ActorConfig {
     int merge_dupes = 1;
     // Self-play (--selfplay, implies --search) config.
     bool selfplay = false;
+    // Playout-cap randomization (self-play only; see az_mcts.h). Compiled
+    // defaults mirror cli_spec's DEFAULT_AZ_FULL_SEARCH_FRAC /
+    // DEFAULT_AZ_FAST_SIMS; az_selfplay always passes both flags explicitly.
+    double full_search_frac = 0.25;
+    int fast_sims = 128;
+    // --record: write trainer-schema shards of the searched decisions WITHOUT
+    // the self-play exploration knobs (no root noise, argmax picks) — the
+    // eval/gate recorder. Allowed with a seat-B evaluator (a two-model gate's
+    // samples are priced per game like self-play: z from the mover's seat).
+    bool record = false;
     double noise_eps = 0.25;
     double noise_alpha = 1.0;
     int temp_moves = 20;
@@ -102,6 +118,15 @@ struct ActorConfig {
     // (train/scripted_oracle.py); the OTHER seat searches as usual. 0 = none.
     int scripted_seat = 0;             // 0 none, 1 = Player A, 2 = Player B
     std::string scripted_oracle;       // Unix socket path
+    // Opponent-pool self-play (--net-seat A|B + --opp-model <path.ts.pt>):
+    // the primary evaluator (--model/--eval-server) pilots and RECORDS the
+    // net seat while --opp-model (an OLDER checkpoint's TorchScript, loaded
+    // locally) pilots the other noise-free/argmax — the C++ twin of
+    // az_selfplay._play_match's opp_evaluator/net_is_a mode. Requires
+    // --selfplay; mutually exclusive with --scripted-seat and --model-b/
+    // --eval-server-b. 0 = none.
+    int net_seat = 0;                  // 0 none, 1 = Player A, 2 = Player B
+    std::string opp_model;             // opponent checkpoint TorchScript path
 };
 
 // Shard flush threshold — mirrors az_selfplay.py::FLUSH_SAMPLES.
@@ -120,14 +145,28 @@ void print_usage(const char* prog) {
                  "[--resources <dir>]\n"
                  "       [--sb-branches N] [--sb-worlds N] [--sb-rollout-turns N] "
                  "(bo3 sideboard plan-search budget; -1=compiled defaults)\n"
+                 "       [--sb-selfplay-mode prior|plan] [--sb-explore-temp F] "
+                 "[--sb-explore-eps F] (prior-rollout sideboard self-play; "
+                 "default plan)\n"
                  "       [--rollout-turns N] "
                  "(in-game leaf-rollout horizon in player turns; 0=off)\n"
                  "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
                  "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
-                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N]]\n"
+                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N] "
+                 "[--full-search-frac F] [--fast-sims N]]\n"
+                 "       (playout cap, self-play only: P(full --sims search, "
+                 "pi recorded) per in-game root; the rest run --fast-sims "
+                 "with no pi. 1.0 = every root full)\n"
+                 "       [--record [--out-dir <dir>] [--td-n N]] (eval-mode shard "
+                 "recording: searched roots stored, no noise, argmax picks; "
+                 "allowed with --model-b)\n"
                  "       [--scripted-seat A|B --scripted-oracle <socket>] "
-                 "(vs-scripted: that seat plays via train/scripted_oracle.py)\n",
+                 "(vs-scripted: that seat plays via train/scripted_oracle.py)\n"
+                 "       [--net-seat A|B --opp-model <path.ts.pt>] "
+                 "(opponent-pool self-play: --model/--eval-server pilots and "
+                 "records the net seat, --opp-model pilots the other "
+                 "noise-free/argmax; requires --selfplay)\n",
                  prog);
 }
 
@@ -204,11 +243,33 @@ int main(int argc, char const* argv[]) {
             cfg.rollout_turns = std::stoi(need_arg(argc, argv, i, "--rollout-turns"));
         } else if (a == "--sb-rollout-turns") {
             cfg.sb_rollout_turns = std::stoi(need_arg(argc, argv, i, "--sb-rollout-turns"));
+        } else if (a == "--sb-selfplay-mode") {
+            const std::string m = need_arg(argc, argv, i, "--sb-selfplay-mode");
+            if (m != "prior" && m != "plan") {
+                std::fprintf(stderr,
+                             "error: --sb-selfplay-mode takes prior or plan\n");
+                std::exit(2);
+            }
+            cfg.sb_prior_mode = (m == "prior");
+        } else if (a == "--sb-explore-temp") {
+            cfg.sb_explore_temp =
+                std::stod(need_arg(argc, argv, i, "--sb-explore-temp"));
+        } else if (a == "--sb-explore-eps") {
+            cfg.sb_explore_eps =
+                std::stod(need_arg(argc, argv, i, "--sb-explore-eps"));
         } else if (a == "--merge-dupes") {
             cfg.merge_dupes = std::stoi(need_arg(argc, argv, i, "--merge-dupes"));
         } else if (a == "--selfplay") {
             cfg.selfplay = true;
             cfg.search = true;  // self-play implies MCTS search
+        } else if (a == "--record") {
+            cfg.record = true;
+            cfg.search = true;  // only searched roots carry a sample
+        } else if (a == "--full-search-frac") {
+            cfg.full_search_frac =
+                std::stod(need_arg(argc, argv, i, "--full-search-frac"));
+        } else if (a == "--fast-sims") {
+            cfg.fast_sims = std::stoi(need_arg(argc, argv, i, "--fast-sims"));
         } else if (a == "--noise-eps") {
             cfg.noise_eps = std::stod(need_arg(argc, argv, i, "--noise-eps"));
         } else if (a == "--noise-alpha") {
@@ -223,6 +284,18 @@ int main(int argc, char const* argv[]) {
             cfg.rng_seed = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--rng-seed")));
             cfg.rng_seed_set = true;
+        } else if (a == "--net-seat") {
+            std::string s = need_arg(argc, argv, i, "--net-seat");
+            if (s == "A" || s == "a") {
+                cfg.net_seat = 1;
+            } else if (s == "B" || s == "b") {
+                cfg.net_seat = 2;
+            } else {
+                std::fprintf(stderr, "error: --net-seat takes A or B\n");
+                return 2;
+            }
+        } else if (a == "--opp-model") {
+            cfg.opp_model = need_arg(argc, argv, i, "--opp-model");
         } else if (a == "--scripted-seat") {
             std::string s = need_arg(argc, argv, i, "--scripted-seat");
             if (s == "A" || s == "a") {
@@ -293,6 +366,37 @@ int main(int argc, char const* argv[]) {
         return 2;
     }
 
+    if ((cfg.net_seat != 0) != !cfg.opp_model.empty()) {
+        std::fprintf(stderr, "error: --net-seat and --opp-model must be given "
+                             "together\n");
+        return 2;
+    }
+    if (cfg.net_seat != 0) {
+        if (!cfg.selfplay) {
+            std::fprintf(stderr, "error: --net-seat/--opp-model is the "
+                                 "opponent-pool SELF-PLAY mode (requires "
+                                 "--selfplay)\n");
+            return 2;
+        }
+        if (cfg.scripted_seat != 0) {
+            std::fprintf(stderr, "error: a match has one opponent — "
+                                 "--net-seat/--opp-model and --scripted-seat "
+                                 "are mutually exclusive\n");
+            return 2;
+        }
+        if (have_b) {
+            std::fprintf(stderr, "error: --opp-model and --model-b/"
+                                 "--eval-server-b are mutually exclusive (the "
+                                 "opponent-pool net is wired by --net-seat)\n");
+            return 2;
+        }
+        if (cfg.uniform) {
+            std::fprintf(stderr, "error: --net-seat requires a real net source "
+                                 "(--model or --eval-server), not --uniform\n");
+            return 2;
+        }
+    }
+
     // RESOURCE_DIR mirrors robomage's convention: getcwd()/resources (the binary
     // is run from bin/), overridable with --resources.
     if (!cfg.resources.empty()) {
@@ -333,6 +437,7 @@ int main(int argc, char const* argv[]) {
     // its own server connection; null pointer = single-model (both seats on
     // `evaluator`).
     AZEvaluator evaluator_b;
+    AZEvaluator* eval_a_ptr = cfg.uniform ? nullptr : &evaluator;
     AZEvaluator* eval_b_ptr = nullptr;
     if (!cfg.eval_server_b.empty()) {
         evaluator_b.connect_server(cfg.eval_server_b);
@@ -340,6 +445,19 @@ int main(int argc, char const* argv[]) {
     } else if (!cfg.model_b.empty()) {
         evaluator_b.load(cfg.model_b, cfg.device);
         eval_b_ptr = &evaluator_b;
+    } else if (!cfg.opp_model.empty()) {
+        // Opponent-pool self-play: the older checkpoint always loads locally
+        // (the central eval server, when any, serves the learner). Wire the
+        // two evaluators BY SEAT so az_mcts's per-decision seat selection
+        // (eval_a = Player A, eval_b = Player B) needs no special case: the
+        // learner takes its --net-seat seat, the opponent the other.
+        evaluator_b.load(cfg.opp_model, "cpu");
+        if (cfg.net_seat == 1) {
+            eval_b_ptr = &evaluator_b;
+        } else {
+            eval_b_ptr = eval_a_ptr;
+            eval_a_ptr = &evaluator_b;
+        }
     }
 
     // Optional binary obs dump: per decision, int32 num_choices then
@@ -367,15 +485,22 @@ int main(int argc, char const* argv[]) {
         mc.sb_worlds = cfg.sb_worlds;          // -1 = compiled default
         mc.rollout_turns = cfg.rollout_turns;
         mc.sb_rollout_turns = cfg.sb_rollout_turns;  // -1 = compiled default
+        mc.sb_prior_mode = cfg.sb_prior_mode;
+        mc.sb_explore_temp = cfg.sb_explore_temp;
+        mc.sb_explore_eps = cfg.sb_explore_eps;
         mc.merge_dupes = cfg.merge_dupes != 0;
         mc.selfplay = cfg.selfplay;
+        mc.record = cfg.record;
         mc.noise_eps = cfg.selfplay ? cfg.noise_eps : 0.0;  // never leak into parity
+        // Like noise_eps: the playout cap never leaks into parity/record runs.
+        mc.full_search_frac = cfg.selfplay ? cfg.full_search_frac : 1.0;
+        mc.fast_sims = cfg.fast_sims;
         mc.noise_alpha = cfg.noise_alpha;
         mc.temp_moves = cfg.temp_moves;
         mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
         mc.scripted_seat = cfg.scripted_seat;
-        mcts = std::make_unique<AZMcts>(mc, cfg.uniform ? nullptr : &evaluator,
-                                        eval_b_ptr);
+        mc.net_seat = cfg.net_seat;
+        mcts = std::make_unique<AZMcts>(mc, eval_a_ptr, eval_b_ptr);
         search_set_game_end_hook([&](int winner) { return mcts->on_game_end(winner); });
     }
 
@@ -393,8 +518,9 @@ int main(int argc, char const* argv[]) {
     // Self-play shard accumulator: default out-dir ../train/az_data/<deck> (the
     // binary runs from bin/, so this resolves to the repo's train/az_data/<deck>,
     // matching az_selfplay.py's layout and the trainer's shard_*.npz glob).
+    const bool recording = cfg.selfplay || cfg.record;
     std::unique_ptr<ShardAccumulator> shards;
-    if (cfg.selfplay) {
+    if (recording) {
         std::string dir = cfg.out_dir.empty()
                               ? ("../train/az_data/" + cfg.deck)
                               : cfg.out_dir;
@@ -402,10 +528,15 @@ int main(int argc, char const* argv[]) {
             dir, FLUSH_SAMPLES, static_cast<size_t>(ACTOR_OBS_SIZE),
             static_cast<size_t>(MAX_ACTIONS));
         std::fprintf(stderr,
-                     "az_actor: self-play out_dir=%s sims=%d worlds=%d "
-                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d td_n=%d\n",
-                     dir.c_str(), cfg.sims, cfg.worlds, cfg.noise_eps,
-                     cfg.noise_alpha, cfg.temp_moves, cfg.td_n);
+                     "az_actor: %s out_dir=%s sims=%d worlds=%d "
+                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d td_n=%d "
+                     "full_search_frac=%.3f fast_sims=%d\n",
+                     cfg.selfplay ? "self-play" : "record (eval-mode)",
+                     dir.c_str(), cfg.sims, cfg.worlds,
+                     cfg.selfplay ? cfg.noise_eps : 0.0, cfg.noise_alpha,
+                     cfg.selfplay ? cfg.temp_moves : 0, cfg.td_n,
+                     cfg.selfplay ? cfg.full_search_frac : 1.0,
+                     cfg.fast_sims);
     }
 
     InputLogger::instance().set_input_provider(
@@ -441,7 +572,7 @@ int main(int argc, char const* argv[]) {
     // the SELFPLAY lines across all games of the run. Returns the sample count.
     int game_log_idx = 0;
     auto backfill_selfplay = [&](int winner) {
-        if (!cfg.selfplay) return;
+        if (!recording) return;
         bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
                     winner != static_cast<int>(Zone::PLAYER_B);
         bool winner_is_a = winner == static_cast<int>(Zone::PLAYER_A);
@@ -495,7 +626,7 @@ int main(int argc, char const* argv[]) {
         for (int m = 0; m < cfg.games; m++) {
             unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
             std::srand(match_seed);
-            if (cfg.selfplay) mcts->begin_match();
+            if (recording) mcts->begin_match(match_seed);
             // agent.new_game() at match start + after every completed game —
             // the exact call sites az_selfplay._play_match uses (reset + each
             // GAME_RESULT boundary, before the next game's sideboard prompts).
@@ -516,7 +647,9 @@ int main(int argc, char const* argv[]) {
             std::srand(seed_g);
             match_reset_revealed();
             EcsSystems sys = init_ecs();
-            if (cfg.selfplay) mcts->begin_match();  // reset per-game move counter + samples
+            // Reset per-game move counter + samples; seed_g keys the cap coin
+            // (a bo1 match is one game, matching the Python per-match seed).
+            if (recording) mcts->begin_match(seed_g);
             if (oracle) oracle->new_game();
             int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
             bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
@@ -531,7 +664,7 @@ int main(int argc, char const* argv[]) {
         }
     }
 
-    if (cfg.selfplay) {
+    if (recording) {
         shards->flush_final();
         std::printf("SELFPLAY: total_samples=%zu shards=%zu\n",
                     shards->total_samples(), shards->shards_written());

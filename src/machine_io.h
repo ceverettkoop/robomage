@@ -48,7 +48,7 @@
 //
 // The Python env pads the per-action arrays to MAX_ACTIONS slots; cats, ids,
 // ctrl, zone, refs, and ords go into the observation (STATE_SIZE +
-// N_ACTION_OBS_BLOCKS*MAX_ACTIONS floats plus cost features); pub stays a
+// N_ACTION_OBS_BLOCKS*MAX_ACTIONS floats plus the matchup tail); pub stays a
 // side-channel for observers.
 //
 // State is always serialized from the PRIORITY PLAYER'S perspective ("self").
@@ -243,8 +243,10 @@
 //                       (0.0 outside the phase)
 //                  [5976] sideboard maindeck drift, (d + 1) / 2 so -1/0/+1 map to
 //                       0.0/0.5/1.0 and "balanced" is the 0.5 midpoint. Always 0.5
-//                       outside the phase (and under the paired IN->OUT menu, which
-//                       never leaves the deck unbalanced at a decision point).
+//                       outside the phase. The encoding is kept, but the 0.0 pole is
+//                       unreachable: the menu is IN-FIRST, so drift is only ever 0
+//                       or +1 and only 0.5/1.0 are ever emitted (see
+//                       run_sideboard_phase in src/game_driver.cpp).
 //
 //  ── Deck-identity tail blocks ────────────────────────────────────────────────
 //  Each slot is (card_id, count): card_id via norm_card_id (empty slot = -1

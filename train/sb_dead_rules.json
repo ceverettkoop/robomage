@@ -1,0 +1,41 @@
+{
+  "_doc": [
+    "Dead sideboard-card rules, hand-editable. A SIDEBOARD_IN action for",
+    "<card> is pruned (training sampling AND plan search, both backends)",
+    "when the opponent's REGISTERED 75 contains ZERO cards matching ANY of",
+    "the rule's conditions. Only list cards that are 100% dead under the",
+    "condition - marginal cards must stay searchable.",
+    "",
+    "Condition forms (dead_unless_opp_has takes one object or a list = OR):",
+    "  {\"color\": \"W|U|B|R|G\"}                      - printed color",
+    "  {\"land_subtype\": \"Plains|Island|Swamp|Mountain|Forest\"}",
+    "  {\"card_type\": \"artifact|enchantment|creature|land|instant|sorcery|planeswalker\"}",
+    "",
+    "Facts come from the card scripts via train/gen_card_props.py's parser;",
+    "note a dual land like Volcanic Island counts as an Island. Consumed by",
+    "train/gen_sb_rules.py which emits train/sb_rules.py and",
+    "src/gen/sb_rules_gen.h (both untracked, regenerated every make).",
+    "",
+    "pending_review: candidate cards whose deadness is a judgment call the",
+    "table's maintainer has not made yet (condition: null = no rule active).",
+    "Codegen ignores them. REVIEW THESE MANUALLY and promote any you endorse",
+    "into rules with a real condition."
+  ],
+
+  "rules": [
+    {"card": "Red Elemental Blast",  "dead_unless_opp_has": {"color": "U"}},
+    {"card": "Pyroblast",            "dead_unless_opp_has": {"color": "U"}},
+    {"card": "Blue Elemental Blast", "dead_unless_opp_has": {"color": "R"}},
+    {"card": "Hydroblast",           "dead_unless_opp_has": {"color": "R"}},
+    {"card": "Choke",                "dead_unless_opp_has": {"land_subtype": "Island"}},
+    {"card": "Carpet of Flowers",    "dead_unless_opp_has": {"land_subtype": "Island"}},
+    {"card": "Null Rod",             "dead_unless_opp_has": {"card_type": "artifact"}},
+    {"card": "Stony Silence",        "dead_unless_opp_has": {"card_type": "artifact"}},
+    {"card": "Meltdown",             "dead_unless_opp_has": {"card_type": "artifact"}},
+    {"card": "Smash to Smithereens", "dead_unless_opp_has": {"card_type": "artifact"}},
+    {"card": "Veil of Summer",       "dead_unless_opp_has": [{"color": "U"}, {"color": "B"}]},
+    {"card": "Force of Vigor",       "dead_unless_opp_has": [{"card_type": "artifact"}, {"card_type": "enchantment"}]}
+  ],
+
+  "pending_review": []
+}

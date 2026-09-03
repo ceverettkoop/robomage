@@ -16,31 +16,30 @@
 
 // Per-player sideboard-phase state. run_sideboard_phase reads/writes this so the
 // phase is resumable: the whole menu is a pure function of (deck, these one-shot
-// name sets, delta, unpaired_name), so after a MATCH-scoped restore the phase
-// re-derives the identical menu — which is what makes a sideboard prompt a
-// loop-safe MCTS search root.
+// name sets, delta, unpaired_name, force_done), so after a MATCH-scoped restore
+// the phase re-derives the identical menu — which is what makes a sideboard
+// prompt a loop-safe MCTS search root.
 struct SideboardPhaseState {
     Zone::Ownership player = Zone::UNKNOWN;
-    // Completed swaps (a +1 paired with a -1). Takebacks do not count.
+    // Completed swaps (an IN paired with the OUT that balances it). The forced
+    // cut that resolves a stranded IN counts as one.
     int sb_swaps = 0;
     // One-shot direction locks, keyed by card name: a name in sided_out_names can
     // no longer move INTO the maindeck, one in sided_in_names can no longer move
-    // OUT of it. They prevent oscillation, and a takeback adds its card to the
-    // opposing set — so each takeback permanently shrinks one pool and the phase
-    // is guaranteed to terminate.
+    // OUT of it. They prevent oscillation, and every completed swap permanently
+    // shrinks both pools — so the phase is guaranteed to terminate.
     std::unordered_set<std::string> sided_out_names;
     std::unordered_set<std::string> sided_in_names;
-    // Maindeck drift from its size at phase start, constrained to {-1, 0, +1} and
-    // serialized into the observation. Nonzero means a move is outstanding: the
-    // menu offers only the balancing direction and Done is withheld, so the deck
-    // can never be submitted off-size.
+    // Maindeck drift from its size at phase start, constrained to {0, +1} and
+    // serialized into the observation. Every swap opens with its IN half, so the
+    // deck is only ever oversized; +1 means a cut is outstanding, the menu offers
+    // only cuts and Done is withheld, so the deck can never be submitted off-size.
     int delta = 0;
-    // The card whose unpaired move produced a nonzero delta ("" when balanced).
-    // Its takeback is offered ONLY when the balancing direction has no genuine
-    // completion (the stranded case): between the two halves of a swap no new
-    // information arrives, so an avoidable takeback is a pure two-decision no-op
-    // that outcome-driven training could never learn to skip.
+    // The card whose unpaired IN produced delta == +1 ("" when balanced).
     std::string unpaired_name;
+    // Set when a stranded +1 was resolved by the forced cut of main_deck[0]: the
+    // next balanced menu offers ONLY Done, force-ending the phase.
+    bool force_done = false;
 };
 
 // The whole match's between-game state, in one snapshottable value struct.

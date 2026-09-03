@@ -9,7 +9,11 @@ one-mirror panel must
 
   * play the panel on the actor (two legs per matchup, seats alternating) and
     return a coherent tally (wins + losses + draws == the panel's match count,
-    per-deck/breakdown shapes intact);
+    per-deck/breakdown shapes intact) — driven at max_rounds=1, the sequential
+    gate's single-round degenerate case, so the tally is a fixed size;
+  * honour the SEQUENTIAL loop: a multi-round gate keeps playing rounds until
+    its SPRT decides (or the cap), accumulating into the same tallies, and
+    round 2 plays DIFFERENT games than round 1 rather than replaying it;
   * be DETERMINISTIC: an identical second call returns the identical result;
   * enforce the backend guards loudly: --actor with no incumbent is a
     ValueError (the vs-scripted fallback is Python-only), and the leg/tally
@@ -28,7 +32,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import AZNet, obs_space_from_const
 from az_selfplay import _ACTOR_BIN as ACTOR_BIN  # the driver's own resolution
-from az_train import _parse_gate_output, az_eval
+from az_train import (_GATE_ROUND_SEED_STRIDE as _ROUND_STRIDE,
+                      _parse_gate_output, az_eval)
 
 DECK = "league/ur_delver"
 
@@ -58,12 +63,14 @@ def _test_parse() -> int:
 
 
 def main() -> int:
-    if not os.path.exists(ACTOR_BIN):
-        print(f"SKIP: {ACTOR_BIN} not built (make actor)")
-        return 0
+    # The parser/tally checks are pure python — run them before the binary
+    # gate so they still cover a box with no actor build.
     rc = _test_parse()
     if rc:
         return rc
+    if not os.path.exists(ACTOR_BIN):
+        print(f"SKIP: {ACTOR_BIN} not built (make actor)")
+        return 0
 
     with tempfile.TemporaryDirectory() as td:
         cand = _fresh_net_ckpt(td, "cand", seed=0)
@@ -74,7 +81,8 @@ def main() -> int:
             az_eval(DECK, candidate=cand,
                     incumbent=os.path.join(td, "missing.pt"),
                     games=2, sims=4, worlds=2, roster=[DECK], cross_pairs=0,
-                    bo3=False, use_actor=True, eval_server=False, workers=1)
+                    bo3=False, use_actor=True, eval_server=False, workers=1,
+                    max_rounds=1, pool_shards=False)
         except ValueError as exc:
             print(f"PASS [guard]: --actor without incumbent raises ({exc})")
         else:
@@ -87,7 +95,8 @@ def main() -> int:
         # seat orientation.
         kw = dict(games=2, sims=4, worlds=2, roster=[DECK], cross_pairs=0,
                   bo3=False, use_actor=True, eval_server=False,
-                  cross_world=True, workers=2, seed=7)
+                  cross_world=True, workers=2, seed=7, max_rounds=1,
+                  pool_shards=False)
         r1 = az_eval(DECK, candidate=cand, incumbent=inc, **kw)
         n = r1["wins"] + r1["losses"] + r1["draws"]
         if n != 2:
@@ -103,13 +112,45 @@ def main() -> int:
 
         r2 = az_eval(DECK, candidate=cand, incumbent=inc, **kw)
         for k in ("wins", "losses", "draws", "win_rate", "breakdown",
-                  "per_deck", "vetoes", "promoted"):
+                  "per_deck", "vetoes", "promoted", "rounds", "verdict",
+                  "llr"):
             if r1[k] != r2[k]:
                 print(f"FAIL: actor gate not deterministic ({k}: "
                       f"{r1[k]!r} vs {r2[k]!r})", file=sys.stderr)
                 return 1
+        if r1["rounds"] != 1 or not r1["capped"]:
+            print(f"FAIL: max_rounds=1 gate did not report one capped round "
+                  f"({r1})", file=sys.stderr)
+            return 1
         print("PASS [determinism]: identical rerun returned the identical "
               "gate result")
+
+        # Sequential loop: two nets this close never clear an SPRT bound on a
+        # one-mirror panel, so a 3-round gate must play all three rounds, tally
+        # 3x the matches, and — because each round derives its own seed — not
+        # merely replay round 1 three times.
+        seq = dict(kw)
+        seq["max_rounds"] = 3
+        r3 = az_eval(DECK, candidate=cand, incumbent=inc, **seq)
+        n3 = r3["wins"] + r3["losses"] + r3["draws"]
+        if r3["rounds"] != 3 or n3 != 6:
+            print(f"FAIL: 3-round gate played {r3['rounds']} round(s) / {n3} "
+                  f"game(s), expected 3 / 6 ({r3})", file=sys.stderr)
+            return 1
+        # Rounds must play DIFFERENT games, not replay round 1: their seeds
+        # step by a stride that is a multiple of the per-matchup stride, so no
+        # round can land on another round's matchup seeds. (Asserted on the
+        # derivation rather than on the tallies — two nets this close can
+        # legitimately post the same 2-0 in every round.)
+        if _ROUND_STRIDE <= 0 or _ROUND_STRIDE % 100003 != 0:
+            print(f"FAIL: gate round seed stride {_ROUND_STRIDE} is not a "
+                  f"positive multiple of the per-matchup stride 100003 — "
+                  f"rounds can collide with other rounds' matchups",
+                  file=sys.stderr)
+            return 1
+        print(f"PASS [sequential]: 3 rounds accumulated to {n3} games "
+              f"({r3['wins']}W-{r3['losses']}L-{r3['draws']}D, "
+              f"verdict={r3['verdict']})")
     return 0
 
 

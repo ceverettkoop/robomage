@@ -61,7 +61,8 @@ PROGRESS_SUFFIX = ".progress.json"
 
 # Phase kinds == train.py subcommands. Adding one is a single entry here plus
 # its convenience-field aliases below; its flags come from cli_spec.
-PHASE_KINDS = ("league", "exploiter", "az", "az-league", "az-selfplay", "baseline")
+PHASE_KINDS = ("league", "exploiter", "az", "az-league", "az-selfplay", "az-eval",
+               "baseline")
 
 # Kinds whose subcommand has its own progress sidecar and --resume: a phase of
 # one of these that was interrupted mid-way is RELAUNCHED with --resume (it then
@@ -83,6 +84,9 @@ PHASE_FIELDS = {
     "az":        {"decks": "deck", "games": "games"},
     "az-league": {"decks": "decks", "rotations": "rotations", "games": "games"},
     "az-selfplay": {"decks": "deck", "games": "games"},
+    # az-eval: a standalone promotion gate (candidate vs gen__azfinal). "model"
+    # is the CANDIDATE spec ('gen' = the newest gen__azv* snapshot).
+    "az-eval":   {"model": "candidate", "deck": "deck", "games": "games"},
     "baseline":  {"model": "model", "deck": "deck", "games": "games"},
 }
 
@@ -329,6 +333,28 @@ def _format_value(arg, value, where: str):
     elif arg.kind == "choice" and text not in arg.choices:
         raise PlanError(f"{where}: {arg.name} must be one of "
                         f"{', '.join(arg.choices)} (got {value!r})")
+    elif getattr(arg, "suggest", None) in _CHECKPOINT_SUGGESTS:
+        text = expand_checkpoint(text)
+    return text
+
+
+# Arg.suggest tags whose values the TUI pickers offer as checkpoints/-relative
+# paths ('az/gen__azv123.pt', 'gen__final.zip'). The plain TUI forms expand those
+# at argv time (tui._expand_checkpoint); a plan stores the raw pick, so the
+# curriculum's argv composition has to do the same expansion or the subprocess
+# resolves the path against the repo root and fails to find it.
+_CHECKPOINT_SUGGESTS = frozenset({"checkpoint", "agent", "az_checkpoint"})
+
+
+def expand_checkpoint(text: str, checkpoint_dir: str = None) -> str:
+    """A checkpoints/-relative model path → the repo-relative path every
+    subcommand can load. Anything else (an existing path, 'gen', an az:/azraw:/
+    mcts: spec, 'scripted') is returned unchanged."""
+    checkpoint_dir = checkpoint_dir or CHECKPOINT_DIR
+    if os.path.exists(text):
+        return text
+    if os.path.exists(os.path.join(checkpoint_dir, text)):
+        return os.path.join("train", "checkpoints", text)
     return text
 
 
@@ -640,11 +666,37 @@ def run_curriculum(plan_ref: str, resume: bool = False, status: bool = False,
             row["kind"] = phase["kind"]
         state["phases"] = rows
     elif any(r.get("status") != "pending" for r in state.get("phases", [])):
-        print(f"[{_LABEL}] {progress_path(path)} already records progress "
-              f"(phase {state.get('phase_index', 0) + 1}/{len(phases)}). Pass "
-              f"--resume to continue it, --status to inspect it, or delete the "
-              f"file to run the curriculum from the start.", file=sys.stderr)
-        return 2
+        prog_path = progress_path(path)
+        msg = (f"[{_LABEL}] {prog_path} already records progress "
+               f"(phase {state.get('phase_index', 0) + 1}/{len(phases)}).")
+        if not sys.stdin.isatty():
+            print(msg + " Pass --resume to continue it, --status to inspect "
+                  f"it, or delete the file to run the curriculum from the "
+                  f"start.", file=sys.stderr)
+            return 2
+        print(msg, file=sys.stderr)
+        choice = None
+        while choice not in ("1", "2", "3"):
+            choice = input("  1) resume  2) delete progress and restart  "
+                            "3) exit\n> ").strip()
+        if choice == "3":
+            return 130
+        if choice == "1":
+            resume = True
+            check_plan_unchanged(plan, state)
+            state["phase_hashes"] = [phase_hash(p) for p in phases]
+            state["plan_hash"] = plan_hash(plan)
+            rows = state.get("phases", [])
+            rows = rows[:len(phases)] + [{"kind": p["kind"], "status": "pending",
+                                          "started": None, "finished": None,
+                                          "exit_code": None, "summary": None}
+                                         for p in phases[len(rows):]]
+            for row, phase in zip(rows, phases):
+                row["kind"] = phase["kind"]
+            state["phases"] = rows
+        else:
+            os.remove(prog_path)
+            state = new_progress(plan, path)
 
     print(f"[{_LABEL}] '{plan.get('name')}': {len(phases)} phase(s) from "
           f"{os.path.relpath(path, REPO_ROOT)}")

@@ -30,10 +30,12 @@ from typing import Optional, Protocol, Sequence
 
 import numpy as np
 
-from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT
+from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, N_CARD_TYPES
 from decode import menu_merge_reps
 from env import (_CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _MATCH_CTX_START,
+                 _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END,
                  _SELF_IS_A_IDX, _obs_action_category, _obs_action_card_id)
+from sb_rules import SB_CARD_FACTS, SB_DEAD_RULES
 from search_env import SearchRoboMageEnv, SimQuery
 
 # Leaf-rollout step cap, per horizon turn: a rollout may take at most
@@ -479,7 +481,8 @@ def run_search(
     ``memo_picks`` are the descriptors (:func:`sb_pick_descriptor`) of the
     REAL picks played since the boundary root. Rollouts from leaves still in
     the sideboard phase are stored/reused keyed on the pinned world seed and
-    the order-insensitive pick multiset (takeback-containing paths excluded).
+    the order-insensitive pick multiset (paths holding one card in BOTH
+    directions excluded — see :func:`rollout_memo_eligible`).
     A hit backs up the stored result with 0 engine steps; ``memo_hits``
     reports the count. ``None`` disables (byte-identical default).
 
@@ -996,6 +999,37 @@ def pick_meta_for(obs: np.ndarray, num_choices: int) -> tuple:
     return tuple(sb_pick_descriptor(obs, a) for a in range(num_choices))
 
 
+def sb_dead_mask(obs: np.ndarray, num_choices: int) -> np.ndarray:
+    """Bool array over the menu: True where the action is a SIDEBOARD_IN of a
+    card the dead-card rules table (train/sb_dead_rules.json, compiled into the
+    generated sb_rules.py) declares 100% dead against the opponent's REGISTERED
+    75. Consumed by the plan search (coverage/completions/extras) and by the
+    prior-sampling self-play path; only CAT_SIDEBOARD_IN actions are ever
+    masked, so Done and OUT picks always stay available.
+
+    MIRRORED in src/actor/sb_rules.h (sb_dead_mask) — the obs decode
+    arithmetic, the fact-bit union over the opp deck blocks, and the rule
+    lookup must stay in lockstep or sb parity breaks. Pure obs -> bool, no
+    engine reads (the opp registered 75 lives in the obs deck-identity tail)."""
+    dead = np.zeros(num_choices, dtype=bool)
+    if obs[_IS_SIDEBOARD_IDX] <= 0.5:
+        return dead
+    # Union of fact bits over the opponent's registered main + side blocks.
+    # Slots are (card_id, count) pairs; the empty-slot sentinel decodes to -1.
+    opp_facts = 0
+    for j in range(_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END, 2):
+        cid = int(round(float(obs[j]) * N_CARD_TYPES))
+        if cid >= 0:
+            opp_facts |= SB_CARD_FACTS[cid]
+    for a in range(num_choices):
+        if _obs_action_category(obs, a) != CAT_SIDEBOARD_IN:
+            continue
+        rule = SB_DEAD_RULES.get(_obs_action_card_id(obs, a))
+        if rule is not None and (opp_facts & rule) == 0:
+            dead[a] = True
+    return dead
+
+
 def rollout_memo_key(world_seed: int, leaf_seat_is_a: bool, picks) -> tuple:
     """Memo key for a rollout from a leaf still inside the sideboard phase:
     the pinned world seed (the sampled next-game deal), the leaf's mover seat,
@@ -1007,10 +1041,12 @@ def rollout_memo_key(world_seed: int, leaf_seat_is_a: bool, picks) -> tuple:
 
 
 def rollout_memo_eligible(picks) -> bool:
-    """False when any (card, seat) appears in BOTH pick directions — a
-    takeback changes the one-shot direction locks without changing the deck,
-    so the greedy completion (and therefore the rollout) genuinely diverges
-    between orderings; such keys are never memoized."""
+    """False when any (card, seat) appears in BOTH pick directions. Under the
+    IN-FIRST engine menu that arises only via the forced OUT of a stranded IN,
+    which may cut a name that was just sided in: the deck ends unchanged but the
+    one-shot direction locks do not, so the greedy completion (and therefore the
+    rollout) genuinely diverges between orderings. Such keys are never
+    memoized."""
     ins: set = set()
     outs: set = set()
     for cat, cid, seat in picks:
@@ -1336,7 +1372,10 @@ def _flush_pending(evaluator: Evaluator, pending: list, world_pending,
 # keyed values on the order-insensitive pick multiset), and at the old budgets a
 # single world's tree could not even visit every first pick once. Instead the
 # root is searched as a flat set of PLANS — complete pick sequences through the
-# mover's Done:
+# mover's Done. The engine menu is IN-FIRST (Done + the sideboard's INs while
+# balanced; the maindeck's OUTs while a swap is open), so a plan is Done, or an
+# alternating in/out/in/out/.../Done chain, and coverage costs one plan per
+# distinct sideboard name plus one:
 #
 #   * COVERAGE: one plan per legal root action (the action, then an
 #     argmax-greedy raw-policy completion of the mover's remaining picks).
@@ -1377,10 +1416,16 @@ def _flush_pending(evaluator: Evaluator, pending: list, world_pending,
 # src/actor/az_mcts.cpp.
 SB_PI_TAU = 0.25
 
-# Safety bound on one plan's own pick sequence (the engine caps swaps at
-# SIDEBOARD_SWAP_CAP per seat; 4x that plus slack can only be exceeded if the
-# sideboard menu loop is broken — fail loudly rather than spin).
-_PLAN_PICK_CAP = 68
+# Safety bound on one plan's own pick sequence, and an EXACT one: the engine's
+# menu is IN-FIRST, so every decision is either the IN half of a swap, the OUT
+# half that closes it, or Done. SIDEBOARD_SWAP_CAP (15) completed swaps therefore
+# cost at most 15 * 2 + 1 (Done) = 31 decisions, and the stranded path is no
+# longer: 14 swaps + the stranding IN + its forced OUT + the Done-only menu is 31
+# too. The check below is a strict `>` applied BEFORE the pick is appended, so a
+# legal line (whose longest prefix at check time is 30) never trips it and 31 is
+# not off by one. Anything past it is a broken menu loop, not a long deck.
+# Mirrored as kPlanPickCap in src/actor/az_mcts.cpp.
+_PLAN_PICK_CAP = 31
 
 
 @dataclass
@@ -1441,8 +1486,17 @@ def _generate_plan(env: SearchRoboMageEnv, evaluator: Evaluator, *,
                 "sideboard menu loop did not terminate")
         priors, _ = evaluator.evaluate(query.obs, query.num_choices)
         counters["evals"] += 1
+        # Dead-card rules: a completion never sides in a table-dead card (the
+        # menu always keeps Done/OUT unmasked, so an argmax target remains).
+        # MIRRORED in az_mcts.cpp plan_gen_step.
+        _pdead = sb_dead_mask(query.obs, query.num_choices)
+        n_live = query.num_choices - int(_pdead.sum())
+        if _pdead.any():
+            priors = np.where(_pdead, 0.0, priors)
         dev += 1
-        if variant > 0 and dev == variant and query.num_choices >= 2:
+        # (n_live >= 2 guards the deviation from landing on a masked action.)
+        if (variant > 0 and dev == variant and query.num_choices >= 2
+                and n_live >= 2):
             a = _second_best(priors)
         else:
             a = int(np.argmax(priors))
@@ -1592,9 +1646,13 @@ def run_plan_search(
         return plan, novel
 
     # Coverage pass: every legal root action, ascending — always completes
-    # (converging configurations price for free through the memo).
+    # (converging configurations price for free through the memo). First picks
+    # the dead-card rules table kills are skipped: they keep q = -inf, so the
+    # softmax gives them exactly zero policy mass. MIRRORED in az_mcts.cpp.
+    dead = sb_dead_mask(root_obs, root_n)
     for a in range(root_n):
-        _run_plan(a, 0)
+        if not dead[a]:
+            _run_plan(a, 0)
 
     # Extras deviate the best branches: candidate i re-completes branch
     # ranked[i % root_n] with variant 1 + i // root_n. Candidates that collapse
@@ -1605,7 +1663,11 @@ def run_plan_search(
     for p in plans:
         if p.variant == 0:
             cov_q[p.first_action] = p.value
-    ranked = np.argsort(-cov_q, kind="stable")
+    # Extras cycle the LIVE (non-dead) actions only; branch/variant arithmetic
+    # is over n_live, MIRRORED in az_mcts.cpp (n_live >= 1: Done is never dead).
+    live = np.nonzero(~dead)[0]
+    ranked = live[np.argsort(-cov_q[live], kind="stable")]
+    n_live = len(ranked)
 
     novel_extras = 0
     attempt = 0
@@ -1613,20 +1675,23 @@ def run_plan_search(
     while novel_extras < int(branches) and attempt < max_attempts:
         if deadline is not None and time.monotonic() >= deadline:
             break
-        branch = int(ranked[attempt % root_n])
-        variant = 1 + attempt // root_n
+        branch = int(ranked[attempt % n_live])
+        variant = 1 + attempt // n_live
         attempt += 1
         _plan, novel = _run_plan(branch, variant)
         if novel:
             novel_extras += 1
 
     # Q per first pick = best plan value starting with it (coverage guarantees
-    # every first pick has at least one plan).
+    # every LIVE first pick has at least one plan; rule-dead picks stay -inf,
+    # giving them exactly zero softmax mass — then sanitized to 0.0 so the
+    # visit/w_sum/root_value arithmetic stays finite).
     q_arr = np.full(root_n, -np.inf, dtype=np.float64)
     for p in plans:
         q_arr[p.first_action] = max(q_arr[p.first_action], p.value)
 
     pi = _plan_softmax(q_arr)
+    q_arr = np.where(np.isfinite(q_arr), q_arr, 0.0)
     n_evals = len(plans) * worlds
     visits = pi * float(n_evals)
     w_sum = q_arr * visits
@@ -1956,6 +2021,9 @@ class IncrementalPlanSearch:
         priors, net_value = evaluator.evaluate(self.root_obs, self.num_choices)
         self.priors = priors
         self.net_value = float(net_value)
+        # Dead-card rules mask (same schedule as run_plan_search: dead first
+        # picks are never covered and never ranked for extras).
+        self._dead = sb_dead_mask(self.root_obs, self.num_choices)
         self.seeds = [int(world_seeds[w]) if world_seeds is not None
                       else int(rng.integers(1, 2**31 - 1))
                       for w in range(self._worlds)]
@@ -2025,17 +2093,21 @@ class IncrementalPlanSearch:
         target = self._counters["evals"] + max(0, int(n_sims))
         while not self.done and self._counters["evals"] < target:
             if self._cursor < self.num_choices:
-                self._run_one_plan(self._cursor, 0)
+                a = self._cursor
                 self._cursor += 1
+                if not self._dead[a]:
+                    self._run_one_plan(a, 0)
                 continue
             if self._ranked is None:
                 cov_q = np.zeros(self.num_choices, dtype=np.float64)
                 for p in self.plans:
                     if p.variant == 0:
                         cov_q[p.first_action] = p.value
-                self._ranked = np.argsort(-cov_q, kind="stable")
-            branch = int(self._ranked[self._extra_attempt % self.num_choices])
-            variant = 1 + self._extra_attempt // self.num_choices
+                live = np.nonzero(~self._dead)[0]
+                self._ranked = live[np.argsort(-cov_q[live], kind="stable")]
+            n_live = len(self._ranked)
+            branch = int(self._ranked[self._extra_attempt % n_live])
+            variant = 1 + self._extra_attempt // n_live
             self._extra_attempt += 1
             if self._run_one_plan(branch, variant):
                 self._novel_extras += 1
