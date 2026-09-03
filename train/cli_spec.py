@@ -168,6 +168,16 @@ DEFAULT_AZ_VALUE_DECAY = 1e-4    # weight decay on the dense value_body.* params
                                  # shrinks leaf values (td-calibration gain a stuck
                                  # ~1.5-1.8), starving PUCT of value signal
 DEFAULT_AZ_EPOCH_FRAC = 1.0      # auto-batches (batches=0) = this fraction of one epoch
+                                 # — only with --rows-per-game 0 (row-uniform sampling)
+# Game-uniform training sampler: each cycle draws at most this many rows from
+# every GAME in the window (uniformly within the game, without replacement),
+# shuffles the pool and trains one pass over it. Row-uniform sampling let a
+# 230-row game push its outcome label six times harder than a 40-row game —
+# the value head's cheapest fit is then a per-game fingerprint (the 2x
+# pre/post-train MSE tripwire). The cap equalizes every game's weight and
+# bounds how often any one label is seen; the pool size (~games x cap) sets
+# the batch count, so --epoch-frac is inert unless this is 0.
+DEFAULT_AZ_ROWS_PER_GAME = 32
                                  # over the window; safe at a full epoch now that
                                  # playout-cap randomization supplies ~3x distinct games
                                  # per slot — the pre-vs-post-train window MSE tripwire
@@ -666,10 +676,26 @@ def _c_puct():
 def _epoch_frac():
     """--epoch-frac (az-train / az / az-league): auto-batches epoch fraction."""
     return Arg("--epoch-frac", "float", default=DEFAULT_AZ_EPOCH_FRAC,
-               help="With batches=0 (AUTO), train this fraction of one epoch "
-                    f"over the loaded window (default {DEFAULT_AZ_EPOCH_FRAC}). "
+               help="ROW-UNIFORM sampling only (--rows-per-game 0): with "
+                    "batches=0 (AUTO), train this fraction of one epoch over "
+                    f"the loaded window (default {DEFAULT_AZ_EPOCH_FRAC}). "
                     "A full epoch (1.0) memorizes the window's small set of "
-                    "distinct games; explicit --batches ignores this")
+                    "distinct games; explicit --batches ignores this. Inert "
+                    "under the default game-uniform sampler, whose batch count "
+                    "comes from --rows-per-game")
+
+
+def _rows_per_game():
+    """--rows-per-game (az-train / az / az-league): game-uniform sampler cap."""
+    return Arg("--rows-per-game", "int", default=DEFAULT_AZ_ROWS_PER_GAME,
+               help="Game-uniform training sampler: each cycle takes at most "
+                    "this many rows from every game in the window (uniform "
+                    "within the game, no replacement), shuffles the pool and "
+                    "trains one pass over it, so every game's outcome label "
+                    "carries the same weight whatever its length (default "
+                    f"{DEFAULT_AZ_ROWS_PER_GAME}); the pool size sets the "
+                    "AUTO batch count. 0 = the old row-uniform draw governed "
+                    "by --epoch-frac")
 
 
 def _full_search_frac():
@@ -1249,6 +1275,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--window", "int", default=DEFAULT_AZ_WINDOW,
             help="Number of most-recent shards to train on"),
         _epoch_frac(),
+        _rows_per_game(),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
             help="Warm-start from a PPO checkpoint instead of resuming AZ"),
         Arg("--fresh", "flag", help="Start from random init"),
@@ -1360,6 +1387,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "max(1, samples // batch_size) updates, so the epoch count "
                  "cannot drift as the window's data volume changes"),
         _epoch_frac(),
+        _rows_per_game(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -1507,6 +1535,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "max(1, samples // batch_size) updates, so the epoch count "
                  "cannot drift as the window's data volume changes"),
         _epoch_frac(),
+        _rows_per_game(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),

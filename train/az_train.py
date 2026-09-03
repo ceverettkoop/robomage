@@ -65,6 +65,8 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
                       DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
+from cli_spec import DEFAULT_AZ_ROWS_PER_GAME
+from env import _MATCH_CTX_START as _GAME_NUMBER_IDX
 from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, VERDICT_REJECT,
                        floor_locked, sprt_cap_line, sprt_cap_verdict,
                        sprt_plan_line, sprt_verdict)
@@ -174,9 +176,12 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
     (tests point it at a temp dir).
 
     Returns a dict of the :data:`az_selfplay.SHARD_KEYS` arrays plus
-    ``n_shards``. Every key is REQUIRED: a shard predating the n-step TD schema
-    (no ``td_q`` column) is a hard error, because silently training such a shard
-    would mix two different value targets in one window."""
+    ``n_shards`` and ``game_id`` — a dense 0-based id per row identifying the
+    GAME it came from (a shard is one match; games inside it are told apart by
+    the obs match-context game number, sideboard rows included with the game
+    they precede). Every key is REQUIRED: a shard predating the n-step TD
+    schema (no ``td_q`` column) is a hard error, because silently training
+    such a shard would mix two different value targets in one window."""
     from az_selfplay import SHARD_KEYS
     data_dir = data_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     shards = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
@@ -186,6 +191,8 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
             f"no self-play shards in {data_dir} — run az-selfplay first")
     shards = shards[-window:]
     parts = {k: [] for k in SHARD_KEYS}
+    game_ids = []
+    next_gid = 0
     for s in shards:
         d = np.load(s)
         missing = [k for k in SHARD_KEYS if k not in d.files]
@@ -197,7 +204,12 @@ def load_window(deck: str, window: int, data_dir: Optional[str] = None) -> dict:
                 f"re-run az-selfplay / the az cycle.")
         for k in SHARD_KEYS:
             parts[k].append(d[k])
+        gnum = np.round(d["obs"][:, _GAME_NUMBER_IDX].astype(np.float64), 4)
+        _uniq, local = np.unique(gnum, return_inverse=True)
+        game_ids.append(local.astype(np.int64) + next_gid)
+        next_gid += len(_uniq)
     out = {k: np.concatenate(v, axis=0) for k, v in parts.items()}
+    out["game_id"] = np.concatenate(game_ids, axis=0)
     # Shards are raw observation rows, so an obs-layout change (e.g. a new tail
     # block) makes older shards unusable. Say so instead of letting the net's
     # first slice fail with a bare shape error deep in the forward pass.
@@ -304,6 +316,27 @@ def _calibrate_td_targets(z, td_q, sb_rows):
     return td_cal
 
 
+def _capped_game_pool(game_id: np.ndarray, cap: int, rng) -> np.ndarray:
+    """Row indices for one game-uniform pass: at most ``cap`` rows from every
+    game (uniform within the game, without replacement — a shorter game
+    contributes all of its rows), shuffled. Returns the index array and, via
+    the caller's print, the per-game row-count spread."""
+    order = np.argsort(game_id, kind="stable")
+    sorted_ids = game_id[order]
+    bounds = np.flatnonzero(np.diff(sorted_ids)) + 1
+    starts = np.concatenate(([0], bounds))
+    ends = np.concatenate((bounds, [len(order)]))
+    picks = []
+    for s, e in zip(starts, ends):
+        rows = order[s:e]
+        if len(rows) > cap:
+            rows = rng.choice(rows, size=cap, replace=False)
+        picks.append(rows)
+    pool = np.concatenate(picks) if picks else np.zeros(0, dtype=np.int64)
+    rng.shuffle(pool)
+    return pool
+
+
 def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              batch_size: int = DEFAULT_AZ_BATCH_SIZE,
              lr: float = DEFAULT_AZ_LR, c_v: float = DEFAULT_AZ_CV,
@@ -312,6 +345,7 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              weight_decay: float = DEFAULT_AZ_WEIGHT_DECAY,
              value_decay: float = DEFAULT_AZ_VALUE_DECAY,
              epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
+             rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
              sb_batch_frac: float = DEFAULT_SB_BATCH_FRAC,
              sb_loss_coef: float = DEFAULT_SB_LOSS_COEF,
              from_ppo: Optional[str] = None,
@@ -320,11 +354,17 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              ckpt_dir: str = _AZ_CKPT_DIR, seed: int = 0) -> dict:
     """Optimize the gen AZNet on the newest ``window`` shards.
 
-    ``batches <= 0`` resolves to AUTO — ``max(1, n_samples // batch_size)``
-    optimizer updates, i.e. exactly one epoch over the loaded window — and the
-    resolution is printed (``batches=auto(one-epoch)->534``). That is the az /
-    az-league cycle default (``DEFAULT_AZ_CYCLE_BATCHES``); the standalone
-    az-train default stays a fixed batch count.
+    Sampling is GAME-UNIFORM by default (``rows_per_game`` > 0): each cycle
+    draws at most ``rows_per_game`` rows from every game in the window
+    (uniform within the game, without replacement), shuffles that pool and
+    trains one pass over it, so a 230-row game and a 40-row game push their
+    outcome labels equally hard and no label is seen more than ``rows_per_game``
+    times. ``batches <= 0`` (AUTO, the az / az-league cycle default) then
+    resolves to one pass over the pool — ``pool_rows // batch_size`` updates,
+    printed as ``batches=auto(32/game)->213``; an explicit batch count keeps
+    drawing from the pool, reshuffling it per pass. ``rows_per_game=0`` is the
+    old row-uniform draw, where AUTO means ``epoch_frac`` of one epoch over the
+    window's rows. The standalone az-train default stays a fixed batch count.
 
     The value target is the MIX ``(1 - q_mix) * z + q_mix * td_cal``: the
     shard's per-game outcome blended with its recorded n-step TD bootstrap (see
@@ -384,12 +424,30 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     # the volume.
     bs = min(batch_size, n)
     batches_txt = str(batches)
-    if batches <= 0:
-        # epoch_frac < 1 trains a FRACTION of one epoch: a full pass over the
-        # window's small set of distinct games is already enough to memorize
-        # their outcomes (v_z fell 0.45->0.15 within one epoch on the 2026-08
-        # runs), and the 2x window means every game still gets ~2*epoch_frac
-        # epochs of total exposure across consecutive cycles.
+    game_id = w["game_id"]
+    pool = None
+    if int(rows_per_game) > 0:
+        # Game-uniform sampler: every game weighs the same and no outcome
+        # label is seen more than rows_per_game times per cycle (see
+        # cli_spec.DEFAULT_AZ_ROWS_PER_GAME).
+        pool = _capped_game_pool(game_id, int(rows_per_game), rng)
+        bs = min(bs, len(pool))
+        counts = np.bincount(game_id)
+        counts = counts[counts > 0]
+        if batches <= 0:
+            batches = max(1, len(pool) // bs)
+            batches_txt = f"auto({int(rows_per_game)}/game)->{batches}"
+        print(f"[az-train] game-uniform sampling: {len(counts)} games in the "
+              f"window, rows/game min/median/max {int(counts.min())}/"
+              f"{int(np.median(counts))}/{int(counts.max())}, cap "
+              f"{int(rows_per_game)} -> pool {len(pool)} rows "
+              f"({100.0 * len(pool) / max(1, n):.0f}% of the window)")
+    elif batches <= 0:
+        # Row-uniform draw: epoch_frac < 1 trains a FRACTION of one epoch: a
+        # full pass over the window's small set of distinct games is already
+        # enough to memorize their outcomes (v_z fell 0.45->0.15 within one
+        # epoch on the 2026-08 runs), and the 2x window means every game still
+        # gets ~2*epoch_frac epochs of total exposure across consecutive cycles.
         batches = max(1, int((n // bs) * float(epoch_frac)))
         batches_txt = f"auto({float(epoch_frac):g}-epoch)->{batches}"
     print(f"[az-train] gen (focus={deck}): {n} samples from {n_shards} shards; "
@@ -462,8 +520,18 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     with open(log_path, "a") as logf:
         logf.write(f"# az-train {time.strftime('%Y-%m-%d %H:%M:%S')} deck={deck} "
                    f"samples={n} batches={batches} bs={bs} lr={lr}\n")
+        pool_pos = 0
         for b in range(batches):
-            idx = rng.integers(0, n, size=bs)
+            if pool is not None:
+                # Sequential slices of the shuffled pool: one pass sees every
+                # pooled row exactly once; a longer explicit run reshuffles.
+                if pool_pos + bs > len(pool):
+                    rng.shuffle(pool)
+                    pool_pos = 0
+                idx = pool[pool_pos:pool_pos + bs].copy()
+                pool_pos += bs
+            else:
+                idx = rng.integers(0, n, size=bs)
             if n_sb_draw:
                 # Oversample sb one-hot rows: they are ~0.3% of a window, far
                 # too rare for the sparse REINFORCE signal at a uniform draw.
@@ -1607,6 +1675,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              fast_sims: int = DEFAULT_AZ_FAST_SIMS,
              c_puct: float = DEFAULT_AZ_C_PUCT,
              epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
+             rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
              gate_shards: bool = True,
              sb_branches: int = DEFAULT_SB_BRANCHES,
              sb_worlds: int = DEFAULT_SB_WORLDS,
@@ -1797,7 +1866,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
               f"window={window} (2x, covers this pass + the previous one)")
     print("=== az cycle: train (gen net) ===")
     tr = train_az(label, batches=batches, batch_size=batch_size, lr=lr,
-                  q_mix=q_mix, window=window, epoch_frac=epoch_frac, seed=seed,
+                  q_mix=q_mix, window=window, epoch_frac=epoch_frac,
+                  rows_per_game=rows_per_game, seed=seed,
                   sb_batch_frac=sb_batch_frac, sb_loss_coef=sb_loss_coef)
     if not gate:
         print("=== az cycle: eval/gate skipped (gated every K slots) ===")
@@ -1878,6 +1948,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               opp_pool_frac: float = DEFAULT_AZ_OPP_POOL_FRAC,
               c_puct: float = DEFAULT_AZ_C_PUCT,
               epoch_frac: float = DEFAULT_AZ_EPOCH_FRAC,
+              rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
               gate_shards: bool = True,
               sb_branches: int = DEFAULT_SB_BRANCHES,
               sb_worlds: int = DEFAULT_SB_WORLDS,
@@ -2007,6 +2078,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         opp_pool_frac = float(p.get("opp_pool_frac", opp_pool_frac))
         c_puct = float(p.get("c_puct", c_puct))
         epoch_frac = float(p.get("epoch_frac", epoch_frac))
+        rows_per_game = int(p.get("rows_per_game", rows_per_game))
         gate_shards = bool(p.get("gate_shards", gate_shards))
         # p.get defaults keep older sidecars resumable (a pre-plan-search
         # sidecar carries no sb_branches key; stale keys for the removed PUCT
@@ -2119,6 +2191,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "full_search_frac": full_search_frac, "fast_sims": fast_sims,
             "opp_pool_frac": opp_pool_frac,
             "c_puct": c_puct, "epoch_frac": epoch_frac,
+            "rows_per_game": rows_per_game,
             "gate_shards": gate_shards,
             "sb_branches": sb_branches, "sb_worlds": sb_worlds,
             "sb_rollout_turns": sb_rollout_turns,
@@ -2175,7 +2248,8 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
           f"full_search_frac={full_search_frac} fast_sims={fast_sims} "
           f"opp_pool_frac={opp_pool_frac} "
           f"c_puct={c_puct} "
-          f"epoch_frac={epoch_frac} gate_shards={int(gate_shards)} "
+          f"epoch_frac={epoch_frac} rows_per_game={rows_per_game} "
+          f"gate_shards={int(gate_shards)} "
           f"mirror_frac={mirror_frac}  "
           f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
           f"sb_rollout_turns={sb_rollout_turns} sb_mode={sb_mode} "
@@ -2262,6 +2336,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         res = az_cycle(focus, games=games, sims=sims, worlds=worlds,
                        full_search_frac=full_search_frac, fast_sims=fast_sims,
                        c_puct=c_puct, epoch_frac=epoch_frac,
+                       rows_per_game=rows_per_game,
                        gate_shards=gate_shards,
                        sb_branches=sb_branches, sb_worlds=sb_worlds,
                        sb_rollout_turns=sb_rollout_turns,
@@ -2386,6 +2461,8 @@ def run_train(args) -> None:
              lr=args.lr, c_v=args.c_v,
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX), window=args.window,
              epoch_frac=getattr(args, "epoch_frac", DEFAULT_AZ_EPOCH_FRAC),
+             rows_per_game=int(getattr(args, "rows_per_game",
+                                       DEFAULT_AZ_ROWS_PER_GAME)),
              from_ppo=args.from_ppo, fresh=args.fresh,
              snapshot_every=args.snapshot_every,
              sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
@@ -2449,6 +2526,8 @@ def run_cycle(args) -> None:
              c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
              epoch_frac=float(getattr(args, "epoch_frac",
                                       DEFAULT_AZ_EPOCH_FRAC)),
+             rows_per_game=int(getattr(args, "rows_per_game",
+                                       DEFAULT_AZ_ROWS_PER_GAME)),
              gate_shards=not getattr(args, "no_gate_shards", False),
              sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
@@ -2509,6 +2588,8 @@ def run_league(args) -> None:
               c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
               epoch_frac=float(getattr(args, "epoch_frac",
                                        DEFAULT_AZ_EPOCH_FRAC)),
+              rows_per_game=int(getattr(args, "rows_per_game",
+                                        DEFAULT_AZ_ROWS_PER_GAME)),
               gate_shards=not getattr(args, "no_gate_shards", False),
               sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
               sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
