@@ -34,16 +34,9 @@
   Actions:
    0: Keep
    1: Mulligan
-  >> A/A: 1 (Mulligan)
+  >> A/A: 0 (Keep)
 --- Narrative ---
-  Player A mulligans.
-  Player A draws Reanimate
-  Player A draws Bloodstained Mire
-  Player A draws Archon of Cruelty
-  Player A draws Atraxa, Grand Unifier
-  Player A draws Reanimate
-  Player A draws Polluted Delta
-  Player A draws Careful Study
+  Player A keeps a 7-card hand.
   Player B hand:
   Amped Raptor
   Cabal Therapy
@@ -64,101 +57,235 @@
   >> B/B: 0 (Keep)
 --- Narrative ---
   Player B keeps a 7-card hand.
-  Player A hand:
-  Archon of Cruelty
-  Atraxa, Grand Unifier
-  Bloodstained Mire
-  Careful Study
-  Polluted Delta
-  Reanimate
-  Reanimate
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers
+  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
 
 --- Decision 3 ---
   Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 53
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
-   0: Keep
-   1: Mulligan
-  >> A/A: 0 (Keep)
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Polluted Delta
+   3: Play Undercity Sewers
+   4: Cast Lotus Petal  [#0]
+  >> A/A: 4 (Cast Lotus Petal)
 --- Narrative ---
-  Player A keeps a 6-card hand.
-  Player A: Choose card to put on library bottom (1 remaining):
+  Player A casts Lotus Petal
+  Lotus Petal enters the battlefield
 
 --- Decision 4 ---
   Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 53
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(6): Brainstorm, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Lotus Petal
   Actions:
-   0: Archon of Cruelty
-   1: Atraxa, Grand Unifier
-   2: Bloodstained Mire
-   3: Careful Study
-   4: Polluted Delta
-   5: Reanimate
-   6: Reanimate
-  >> A/A: 0 (Archon of Cruelty)
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Polluted Delta
+   3: Play Undercity Sewers
+   4: Cast Brainstorm  [#0]
+   5: Cast Thoughtseize  [#0]
+   6: Cast Thoughtseize  [#0]
+  >> A/A: 4 (Cast Brainstorm)
 --- Narrative ---
-  -------- TURN 1 (Player A) --------
---- Turn 1 (Player A) ---
-  PA: Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate
-  PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory
+  Player A sacrifices Lotus Petal
+  Player A activated Lotus Petal for 1(U)
+  Player A casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player A draws Archon of Cruelty
+  Player A draws Bloodstained Mire
+  Player A draws Otherworldly Gaze
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
 
 --- Decision 5 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Atraxa, Grand Unifier, Bloodstained Mire, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 54
+  Self:  20 life | mana: empty | hand(8): Archon of Cruelty, Bloodstained Mire, Marsh Flats, Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 50
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Lotus Petal
+  Extras: self_revolt
   Actions:
-   0: Pass priority
-   1: Play Bloodstained Mire
-   2: Play Polluted Delta
-  >> A/A: 1 (Play Bloodstained Mire)
+   0: Archon of Cruelty
+   1: Bloodstained Mire
+   2: Marsh Flats
+   3: Otherworldly Gaze
+   4: Polluted Delta
+   5: Thoughtseize
+   6: Thoughtseize
+   7: Undercity Sewers
+  >> A/A: 1 (Bloodstained Mire)
 --- Narrative ---
-  Player A played Bloodstained Mire
+  Player A puts Bloodstained Mire to top of library
+  Player A chooses a card from Player A hand:
 
 --- Decision 6 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 54
+  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Marsh Flats, Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Bloodstained Mire
-  Extras: self_lands_played=1
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Lotus Petal
+  Known top: Bloodstained Mire, ?, ?, ?, ?
+  Extras: self_revolt
   Actions:
-   0: Pass priority
-   1: Activate Bloodstained Mire (ChangeZone)  [#0]
-  >> A/A: 1 (Activate Bloodstained Mire (ChangeZone))
+   0: Archon of Cruelty
+   1: Marsh Flats
+   2: Otherworldly Gaze
+   3: Polluted Delta
+   4: Thoughtseize
+   5: Thoughtseize
+   6: Undercity Sewers
+  >> A/A: 1 (Marsh Flats)
 --- Narrative ---
-  Player A pays 1 life
-  Player A sacrifices Bloodstained Mire
-  Player A's Bloodstained Mire ability is on the stack
-  Resolving ability (category: ChangeZone)
-  Searching Player A's library:
+  Player A puts Marsh Flats to top of library
 
 --- Decision 7 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 54
+  Self:  20 life | mana: empty | hand(6): Archon of Cruelty, Otherworldly Gaze, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Bloodstained Mire (ability, self)
-  Pending: Bloodstained Mire (self)
-  Self GY: Bloodstained Mire
+  Self GY: Brainstorm, Lotus Petal
+  Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Undercity Sewers
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  20 life | mana: empty | hand(5): Archon of Cruelty, Otherworldly Gaze, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Polluted Delta
+  Self GY: Brainstorm, Lotus Petal
+  Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Otherworldly Gaze, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Stack: Polluted Delta (ability, self)
+  Pending: Polluted Delta (self)
+  Self GY: Polluted Delta, Brainstorm, Lotus Petal
+  Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
-   1: Swamp
-   2: Undercity Sewers
+   1: Island
+   2: Swamp
    3: Undercity Sewers
    4: Underground Sea
    5: Underground Sea
    6: Underground Sea
    7: Underground Sea
-  >> A/A: 1 (Swamp)
+  >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
-  Player A puts Swamp to the battlefield
+  Player A puts Island to the battlefield
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Otherworldly Gaze, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Island
+  Self GY: Polluted Delta, Brainstorm, Lotus Petal
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Otherworldly Gaze  [#0]
+  >> A/A: 1 (Cast Otherworldly Gaze)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Otherworldly Gaze
+  Resolving ability (category: Surveil, amount: 3)
+  Player A surveils 3.
+  Surveil: looking at Swamp
+  Surveil: looking at Bloodstained Mire
+  Surveil: looking at Reanimate
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Island (T)
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Polluted Delta, Brainstorm, Lotus Petal
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Put Swamp on top of library  [#0]
+   1: Put Bloodstained Mire on top of library  [#0]
+   2: Put Reanimate on top of library  [#0]
+   3: Put Swamp into graveyard
+   4: Put Bloodstained Mire into graveyard
+   5: Put Reanimate into graveyard
+  >> A/A: 3 (Put Swamp into graveyard)
+--- Narrative ---
+  Player A puts Swamp into their graveyard.
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 50
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Island (T)
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Put Bloodstained Mire on top of library  [#0]
+   1: Put Reanimate on top of library  [#0]
+   2: Put Bloodstained Mire into graveyard
+   3: Put Reanimate into graveyard
+  >> A/A: 2 (Put Bloodstained Mire into graveyard)
+--- Narrative ---
+  Player A puts Bloodstained Mire into their graveyard.
+
+--- Decision 13 ---
+  Priority: Player A (active)
+  Step: First Main (turn 1)
+  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 49
+  Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Self BF:  Island (T)
+  Stack: Otherworldly Gaze (spell, self)
+  Pending: Otherworldly Gaze (self)
+  Self GY: Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Put Reanimate on top of library  [#0]
+   1: Put Reanimate into graveyard
+  >> A/A: 1 (Put Reanimate into graveyard)
+--- Narrative ---
+  Player A puts Reanimate into their graveyard.
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
@@ -166,17 +293,17 @@
   -------- TURN 2 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 2 (Player B) ---
-  PA: Atraxa, Grand Unifier, Careful Study, Polluted Delta, Reanimate, Reanimate
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers
   PB: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 8 ---
+--- Decision 14 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(8): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Swamp
-  Opp GY:  Bloodstained Mire
-  Opp revealed: Swamp, Bloodstained Mire
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
+  Opp BF:   Island (T)
+  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -185,15 +312,15 @@
 --- Narrative ---
   Player B played Marsh Flats
 
---- Decision 9 ---
+--- Decision 15 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Marsh Flats
-  Opp BF:   Swamp
-  Opp GY:  Bloodstained Mire
-  Opp revealed: Swamp, Bloodstained Mire
+  Opp BF:   Island (T)
+  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -206,17 +333,17 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 10 ---
+--- Decision 16 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Swamp
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
+  Opp BF:   Island (T)
   Stack: Marsh Flats (ability, self)
   Pending: Marsh Flats (self)
   Self GY: Marsh Flats
-  Opp GY:  Bloodstained Mire
-  Opp revealed: Swamp, Bloodstained Mire
+  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -232,16 +359,16 @@
   Player B shuffles their library
   Player B puts Badlands to the battlefield
 
---- Decision 11 ---
+--- Decision 17 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Badlands
-  Opp BF:   Swamp
+  Opp BF:   Island (T)
   Self GY: Marsh Flats
-  Opp GY:  Bloodstained Mire
-  Opp revealed: Swamp, Bloodstained Mire
+  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -251,17 +378,17 @@
 --- Narrative ---
   Choose target for Cabal Therapy:
 
---- Decision 12 ---
+--- Decision 18 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Badlands
-  Opp BF:   Swamp
+  Opp BF:   Island (T)
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
-  Opp GY:  Bloodstained Mire
-  Opp revealed: Swamp, Bloodstained Mire
+  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Player A (19 life)
@@ -274,18 +401,18 @@
   Resolving ability (category: NameCard)
   Player B names a card:
 
---- Decision 13 ---
+--- Decision 19 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Badlands (T)
-  Opp BF:   Swamp
+  Opp BF:   Island (T)
   Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
-  Opp GY:  Bloodstained Mire
-  Opp revealed: Swamp, Bloodstained Mire
+  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Name card: Ajani, Nacatl Pariah
@@ -315,833 +442,50 @@
   Player B names card: Ajani, Nacatl Pariah
   Resolving ability (category: Discard)
   Player A reveals their hand:
-    Atraxa, Grand Unifier
-    Careful Study
-    Polluted Delta
-    Reanimate
-    Reanimate
+    Archon of Cruelty
+    Thoughtseize
+    Thoughtseize
+    Undercity Sewers
   No matching cards to discard.
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
   --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
-  Player A draws Careful Study
+  Player A draws Polluted Delta
 --- Turn 3 (Player A) ---
-  PA: Atraxa, Grand Unifier, Careful Study, Careful Study, Polluted Delta, Reanimate, Reanimate
+  PA: Archon of Cruelty, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers
   PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
-
---- Decision 14 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Careful Study, Polluted Delta, Reanimate, Reanimate | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Swamp
-  Opp BF:   Badlands (T)
-  Self GY: Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Actions:
-   0: Pass priority
-   1: Play Polluted Delta
-  >> A/A: 1 (Play Polluted Delta)
---- Narrative ---
-  Player A played Polluted Delta
-
---- Decision 15 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Polluted Delta | Swamp
-  Opp BF:   Badlands (T)
-  Self GY: Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Polluted Delta (ChangeZone)  [#0]
-  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
---- Narrative ---
-  Player A pays 1 life
-  Player A sacrifices Polluted Delta
-  Player A's Polluted Delta ability is on the stack
-  Resolving ability (category: ChangeZone)
-  Searching Player A's library:
-
---- Decision 16 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate | lib 52
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Swamp
-  Opp BF:   Badlands (T)
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Fail to find
-   1: Island
-   2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
-  >> A/A: 1 (Island)
---- Narrative ---
-  Player A shuffles their library
-  Player A puts Island to the battlefield
-
---- Decision 17 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Badlands (T)
-  Self GY: Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Careful Study  [#0]
-   2: Cast Careful Study  [#0]
-  >> A/A: 1 (Cast Careful Study)
---- Narrative ---
-  Player A activated Island for 1(U)
-  Player A casts Careful Study
-  Resolving ability (category: Draw, amount: 2)
-  Player A draws Undercity Sewers
-  Player A draws Careful Study
-  Resolving ability (category: Discard)
-  Player A chooses a card to discard:
-
---- Decision 18 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Careful Study, Reanimate, Reanimate, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T)
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Atraxa, Grand Unifier
-   1: Careful Study
-   2: Careful Study
-   3: Reanimate
-   4: Reanimate
-   5: Undercity Sewers
-  >> A/A: 0 (Atraxa, Grand Unifier)
---- Narrative ---
-  Player A discards Atraxa, Grand Unifier
-  Player A chooses a card to discard:
-
---- Decision 19 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Careful Study, Careful Study, Reanimate, Reanimate, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T)
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Atraxa, Grand Unifier, Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Careful Study
-   1: Careful Study
-   2: Reanimate
-   3: Reanimate
-   4: Undercity Sewers
-  >> A/A: 3 (Reanimate)
---- Narrative ---
-  Player A discards Reanimate
 
 --- Decision 20 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Careful Study, Careful Study, Reanimate, Undercity Sewers | lib 49
+  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 47
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Island (T) | Swamp
+  Self BF:  Island
   Opp BF:   Badlands (T)
-  Self GY: Careful Study, Reanimate, Atraxa, Grand Unifier, Polluted Delta, Bloodstained Mire
+  Self GY: Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Cabal Therapy, Marsh Flats
   Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Reanimate  [#0]
-  >> A/A: 1 (Cast Reanimate)
---- Narrative ---
-  Choose target for Reanimate:
-
---- Decision 21 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Careful Study, Careful Study, Reanimate, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Island (T) | Swamp
-  Opp BF:   Badlands (T)
-  Pending: Reanimate (self)
-  Self GY: Careful Study, Reanimate, Atraxa, Grand Unifier, Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Atraxa, Grand Unifier
-  >> A/A: 0 (Atraxa, Grand Unifier)
---- Narrative ---
-  Targeting choice 0
-  Player A activated Swamp for 1(B)
-  Player A casts Reanimate targeting Atraxa, Grand Unifier
-  Resolving ability (category: ChangeZone)
-  Atraxa, Grand Unifier is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 7)
-  Player A loses 7 life (now at 11)
-  Resolving ability (category: Cleanup)
-  Atraxa, Grand Unifier triggered
-  Resolving ability (category: PeekAndReveal)
-  Player A reveals Brainstorm from the top of their library
-  Player A reveals Reanimate from the top of their library
-  Player A reveals Raph & Mikey, Troublemakers from the top of their library
-  Player A reveals Ponder from the top of their library
-  Player A reveals Brainstorm from the top of their library
-  Player A reveals Polluted Delta from the top of their library
-  Player A reveals Thoughtseize from the top of their library
-  Player A reveals Force of Will from the top of their library
-  Player A reveals Marsh Flats from the top of their library
-  Player A reveals Brainstorm from the top of their library
-  Resolving ability (category: RepeatEach)
-  Resolving ability (category: ChooseCard)
-  Player A may put a Creature card from among the revealed cards into their hand:
-
---- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Opp BF:   Badlands (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Put Raph & Mikey, Troublemakers (Creature) into hand
-   1: Put no Creature card into hand
-  >> A/A: 0 (Put Raph & Mikey, Troublemakers (Creature) into hand)
---- Narrative ---
-  Player A chooses Raph & Mikey, Troublemakers
-  Resolving ability (category: ChooseCard)
-  Player A may put a Instant card from among the revealed cards into their hand:
-
---- Decision 23 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Opp BF:   Badlands (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Put Brainstorm (Instant) into hand
-   1: Put Brainstorm (Instant) into hand
-   2: Put Force of Will (Instant) into hand
-   3: Put Brainstorm (Instant) into hand
-   4: Put no Instant card into hand
-  >> A/A: 0 (Put Brainstorm (Instant) into hand)
---- Narrative ---
-  Player A chooses Brainstorm
-  Resolving ability (category: ChooseCard)
-  Player A may put a Land card from among the revealed cards into their hand:
-
---- Decision 24 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Opp BF:   Badlands (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Put Polluted Delta (Land) into hand
-   1: Put Marsh Flats (Land) into hand
-   2: Put no Land card into hand
-  >> A/A: 0 (Put Polluted Delta (Land) into hand)
---- Narrative ---
-  Player A chooses Polluted Delta
-  Resolving ability (category: ChooseCard)
-  Player A may put a Sorcery card from among the revealed cards into their hand:
-
---- Decision 25 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  11 life | mana: empty | hand(3): Careful Study, Careful Study, Undercity Sewers | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Opp BF:   Badlands (T)
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Cabal Therapy, Marsh Flats
-  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Put Reanimate (Sorcery) into hand
-   1: Put Ponder (Sorcery) into hand
-   2: Put Thoughtseize (Sorcery) into hand
-   3: Put no Sorcery card into hand
-  >> A/A: 0 (Put Reanimate (Sorcery) into hand)
---- Narrative ---
-  Player A chooses Reanimate
-  Resolving ability (category: ChangeZone)
-  Raph & Mikey, Troublemakers is moved to hand
-  Brainstorm is moved to hand
-  Polluted Delta is moved to hand
-  Reanimate is moved to hand
-  Resolving ability (category: ChangeZoneAll)
-  Player A moves Brainstorm to the bottom of their library
-  Player A moves Force of Will to the bottom of their library
-  Player A moves Brainstorm to the bottom of their library
-  Player A moves Ponder to the bottom of their library
-  Player A moves Thoughtseize to the bottom of their library
-  Player A moves Marsh Flats to the bottom of their library
-  Player A moves 6 card(s) to the bottom of their library
-  Resolving ability (category: Cleanup)
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 4 (Player B) --------
-  Player B draws Amped Raptor
---- Turn 4 (Player B) ---
-  PA: Careful Study, Careful Study, Undercity Sewers
-  PB: Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory
-
---- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 7 | lib 45
-  Self BF:  Badlands
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Self GY: Cabal Therapy, Marsh Flats
-  Opp GY:  Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Pass priority
-   1: Play Scrubland
-   2: Cast Thoughtseize  [#0]
-  >> B/B: 2 (Cast Thoughtseize)
---- Narrative ---
-  Choose target for Thoughtseize:
-
---- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 7 | lib 45
-  Self BF:  Badlands
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Pending: Thoughtseize (self)
-  Self GY: Cabal Therapy, Marsh Flats
-  Opp GY:  Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Player A (11 life)
-   1: Player B (19 life)
-  >> B/B: 0 (Player A (11 life))
---- Narrative ---
-  Targeting choice 0
-  Player B activated Badlands for 1(B)
-  Player B casts Thoughtseize targeting Player A
-  Resolving ability (category: Discard)
-  Player A reveals their hand:
-    Brainstorm
-    Careful Study
-    Careful Study
-    Polluted Delta
-    Raph & Mikey, Troublemakers
-    Reanimate
-    Undercity Sewers
-  Player B chooses a card to discard:
-
---- Decision 28 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 7 | lib 45
-  Self BF:  Badlands (T)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Cabal Therapy, Marsh Flats
-  Opp GY:  Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Raph & Mikey, Troublemakers, Reanimate, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Brainstorm
-   1: Careful Study
-   2: Careful Study
-   3: Raph & Mikey, Troublemakers
-   4: Reanimate
-  >> B/B: 3 (Raph & Mikey, Troublemakers)
---- Narrative ---
-  Player A discards Raph & Mikey, Troublemakers
-  Resolving ability (category: LoseLife, amount: 2)
-  Player B loses 2 life (now at 17)
-
---- Decision 29 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(6): Amped Raptor, Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Badlands (T)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
-  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Actions:
-   0: Pass priority
-   1: Play Scrubland
-  >> B/B: 1 (Play Scrubland)
---- Narrative ---
-  Player B played Scrubland
-
---- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(5): Amped Raptor, Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Badlands (T) | Scrubland
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
-  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Ocelot Pride  [#0]
-   2: Cast Swords to Plowshares  [#0]
-  >> B/B: 1 (Cast Ocelot Pride)
---- Narrative ---
-  Player B activated Scrubland for 1(W)
-  Player B casts Ocelot Pride
-  Ocelot Pride enters the battlefield
-
---- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
-  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Cabal Therapy (flashback)  [#4]
-  >> B/B: 1 (Cast Cabal Therapy (flashback))
---- Narrative ---
-  Choose target for Cabal Therapy:
-
---- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
-  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Player A (11 life)
-   1: Player B (17 life)
-  >> B/B: 0 (Player A (11 life))
---- Narrative ---
-  Targeting choice 0
-
---- Decision 33 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
-  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1
-  Actions:
-   0: Sacrifice Ocelot Pride
-  >> B/B: 0 (Sacrifice Ocelot Pride)
---- Narrative ---
-  Player B sacrifices Ocelot Pride
-  Player B casts Cabal Therapy
-  Resolving ability (category: NameCard)
-  Player B names a card:
-
---- Decision 34 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   11 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Badlands (T) | Scrubland (T)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
-  Pending: Cabal Therapy (self)
-  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp GY:  Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Known opp hand: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
---- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
-  Resolving ability (category: Discard)
-  Player A reveals their hand:
-    Brainstorm
-    Careful Study
-    Careful Study
-    Polluted Delta
-    Reanimate
-    Undercity Sewers
-  No matching cards to discard.
-  Cabal Therapy is exiled (flashback)
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 5 (Player A) --------
---- Turn 5 (Player A) ---
-  PA: Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers
-  PB: Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory
-
---- Decision 35 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  11 life | mana: empty | hand(6): Brainstorm, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers | lib 45
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-  >> A/A: 1 (Cast Brainstorm)
---- Narrative ---
-  Player A activated Island for 1(U)
-  Player A casts Brainstorm
-  Resolving ability (category: Draw, amount: 3)
-  Player A draws Polluted Delta
-  Player A draws Archon of Cruelty
-  Player A draws Lotus Petal
-  Resolving ability (category: ChangeZone)
-  Player A chooses a card from Player A hand:
-
---- Decision 36 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  11 life | mana: empty | hand(8): Archon of Cruelty, Careful Study, Careful Study, Lotus Petal, Polluted Delta, Polluted Delta, Reanimate, Undercity Sewers | lib 42
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Actions:
-   0: Archon of Cruelty
-   1: Careful Study
-   2: Careful Study
-   3: Lotus Petal
-   4: Polluted Delta
-   5: Polluted Delta
-   6: Reanimate
-   7: Undercity Sewers
-  >> A/A: 4 (Polluted Delta)
---- Narrative ---
-  Player A puts Polluted Delta to top of library
-  Player A chooses a card from Player A hand:
-
---- Decision 37 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  11 life | mana: empty | hand(7): Archon of Cruelty, Careful Study, Careful Study, Lotus Petal, Polluted Delta, Reanimate, Undercity Sewers | lib 43
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Actions:
-   0: Archon of Cruelty
-   1: Careful Study
-   2: Careful Study
-   3: Lotus Petal
-   4: Polluted Delta
-   5: Reanimate
-   6: Undercity Sewers
-  >> A/A: 0 (Archon of Cruelty)
---- Narrative ---
-  Player A puts Archon of Cruelty to top of library
-  Player A draws Archon of Cruelty
-
---- Decision 38 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  11 life | mana: empty | hand(7): Archon of Cruelty, Careful Study, Careful Study, Lotus Petal, Polluted Delta, Reanimate, Undercity Sewers | lib 43
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
   Actions:
    0: Pass priority
    1: Play Polluted Delta
    2: Play Undercity Sewers
-   3: Cast Lotus Petal  [#0]
-   4: Cast Reanimate  [#0]
-  >> A/A: 3 (Cast Lotus Petal)
---- Narrative ---
-  Player A casts Lotus Petal
-  Lotus Petal enters the battlefield
-
---- Decision 39 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  11 life | mana: empty | hand(6): Archon of Cruelty, Careful Study, Careful Study, Polluted Delta, Reanimate, Undercity Sewers | lib 43
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Lotus Petal | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Known top: Polluted Delta, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Actions:
-   0: Pass priority
-   1: Play Polluted Delta
-   2: Play Undercity Sewers
-   3: Cast Careful Study  [#0]
-   4: Cast Careful Study  [#0]
-   5: Cast Reanimate  [#0]
-  >> A/A: 3 (Cast Careful Study)
---- Narrative ---
-  Player A sacrifices Lotus Petal
-  Player A activated Lotus Petal for 1(U)
-  Player A casts Careful Study
-  Resolving ability (category: Draw, amount: 2)
-  Player A draws Polluted Delta
-  Player A draws Underground Sea
-  Resolving ability (category: Discard)
-  Player A chooses a card to discard:
-
---- Decision 40 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  11 life | mana: empty | hand(7): Archon of Cruelty, Careful Study, Polluted Delta, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_revolt
-  Actions:
-   0: Archon of Cruelty
-   1: Careful Study
-   2: Polluted Delta
-   3: Polluted Delta
-   4: Reanimate
-   5: Undercity Sewers
-   6: Underground Sea
-  >> A/A: 0 (Archon of Cruelty)
---- Narrative ---
-  Player A discards Archon of Cruelty
-  Player A chooses a card to discard:
-
---- Decision 41 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  11 life | mana: empty | hand(6): Careful Study, Polluted Delta, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Archon of Cruelty, Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_revolt
-  Actions:
-   0: Careful Study
-   1: Polluted Delta
-   2: Polluted Delta
-   3: Reanimate
-   4: Undercity Sewers
-   5: Underground Sea
-  >> A/A: 1 (Polluted Delta)
---- Narrative ---
-  Player A discards Polluted Delta
-
---- Decision 42 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  11 life | mana: empty | hand(5): Careful Study, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Play Polluted Delta
-   2: Play Undercity Sewers
-   3: Play Underground Sea
-   4: Cast Reanimate  [#0]
-  >> A/A: 4 (Cast Reanimate)
---- Narrative ---
-  Choose target for Reanimate:
-
---- Decision 43 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  11 life | mana: empty | hand(5): Careful Study, Polluted Delta, Reanimate, Undercity Sewers, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Pending: Reanimate (self)
-  Self GY: Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Raph & Mikey, Troublemakers, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_revolt
-  Actions:
-   0: Ocelot Pride
-   1: Archon of Cruelty
-   2: Raph & Mikey, Troublemakers
-  >> A/A: 2 (Raph & Mikey, Troublemakers)
---- Narrative ---
-  Targeting choice 2
-  Player A activated Swamp for 1(B)
-  Player A casts Reanimate targeting Raph & Mikey, Troublemakers
-  Resolving ability (category: ChangeZone)
-  Raph & Mikey, Troublemakers is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 7)
-  Player A loses 7 life (now at 4)
-  Resolving ability (category: Cleanup)
-
---- Decision 44 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  4 life | mana: empty | hand(4): Careful Study, Polluted Delta, Undercity Sewers, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Play Polluted Delta
-   2: Play Undercity Sewers
-   3: Play Underground Sea
   >> A/A: 1 (Play Polluted Delta)
 --- Narrative ---
   Player A played Polluted Delta
 
---- Decision 45 ---
+--- Decision 21 ---
   Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  4 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Polluted Delta | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Island | Polluted Delta
+  Opp BF:   Badlands (T)
+  Self GY: Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -1153,19 +497,18 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 46 ---
+--- Decision 22 ---
   Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 47
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Island
+  Opp BF:   Badlands (T)
   Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Self GY: Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Fail to find
@@ -1173,6 +516,7 @@
    2: Underground Sea
    3: Underground Sea
    4: Underground Sea
+   5: Underground Sea
   >> A/A: 1 (Undercity Sewers)
 --- Narrative ---
   Player A shuffles their library
@@ -1183,19 +527,18 @@
   Player A surveils 1.
   Surveil: looking at Animate Dead
 
---- Decision 47 ---
+--- Decision 23 ---
   Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 40
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 46
+  Opp:   19 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Island | Undercity Sewers (T)
+  Opp BF:   Badlands (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
-  Self GY: Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Self GY: Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp revealed: Marsh Flats, Badlands, Cabal Therapy
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Put Animate Dead on top of library  [#0]
@@ -1203,146 +546,1020 @@
   >> A/A: 1 (Put Animate Dead into graveyard)
 --- Narrative ---
   Player A puts Animate Dead into their graveyard.
-  --- Declare Attackers (Player A) ---
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Thoughtseize
+--- Turn 4 (Player B) ---
+  PA: Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers
+  PB: Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Badlands
+  Opp BF:   Island | Undercity Sewers (T)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+   2: Cast Thoughtseize  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Badlands
+  Opp BF:   Island | Undercity Sewers (T)
+  Pending: Thoughtseize (self)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Actions:
+   0: Player A (18 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Archon of Cruelty
+    Thoughtseize
+    Thoughtseize
+    Undercity Sewers
+  Player B chooses a card to discard:
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Badlands (T)
+  Opp BF:   Island | Undercity Sewers (T)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Cabal Therapy, Marsh Flats
+  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Actions:
+   0: Archon of Cruelty
+   1: Thoughtseize
+   2: Thoughtseize
+  >> B/B: 0 (Archon of Cruelty)
+--- Narrative ---
+  Player A discards Archon of Cruelty
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 17)
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Badlands (T)
+  Opp BF:   Island | Undercity Sewers (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Archon of Cruelty, Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(5): Amped Raptor, Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Badlands (T) | Scrubland
+  Opp BF:   Island | Undercity Sewers (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Archon of Cruelty, Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Island | Undercity Sewers (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Archon of Cruelty, Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Island | Undercity Sewers (T)
+  Pending: Cabal Therapy (self)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Archon of Cruelty, Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Extras: self_lands_played=1
+  Actions:
+   0: Player A (18 life)
+   1: Player B (17 life)
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
+  Opp BF:   Island | Undercity Sewers (T)
+  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp GY:  Archon of Cruelty, Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Extras: self_lands_played=1
+  Actions:
+   0: Sacrifice Ocelot Pride
+  >> B/B: 0 (Sacrifice Ocelot Pride)
+--- Narrative ---
+  Player B sacrifices Ocelot Pride
+  Player B casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Opp:   18 life | mana: empty | hand count: 3 | lib 45
+  Self BF:  Badlands (T) | Scrubland (T)
+  Opp BF:   Island | Undercity Sewers (T)
+  Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
+  Pending: Cabal Therapy (self)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Archon of Cruelty, Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known opp hand: Thoughtseize, Thoughtseize, Undercity Sewers
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Name card: Ajani, Nacatl Pariah
+   1: Name card: Amped Raptor
+   2: Name card: Guide of Souls
+   3: Name card: Leyline of the Void
+   4: Name card: Ocelot Pride
+   5: Name card: Swords to Plowshares
+   6: Name card: Thoughtseize
+   7: Name card: Voice of Victory
+   8: Name card: Cabal Therapy
+   9: Name card: Orcish Bowmasters
+  10: Name card: Containment Priest
+  11: Name card: Goblin Bombardment
+  12: Name card: Pyroblast
+  13: Name card: Clarion Conqueror
+  14: Name card: Damping Sphere
+  15: Name card: Deafening Silence
+  16: Name card: Disruptor Flute
+  17: Name card: Hexing Squelcher
+  18: Name card: Null Rod
+  19: Name card: Static Prison
+  20: Name card: Stony Silence
+  21: Name card: Wrath of the Skies
+  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B names card: Ajani, Nacatl Pariah
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Thoughtseize
+    Thoughtseize
+    Undercity Sewers
+  No matching cards to discard.
+  Cabal Therapy is exiled (flashback)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Thoughtseize, Thoughtseize, Undercity Sewers
+  PB: Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Undercity Sewers | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Island | Undercity Sewers
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Archon of Cruelty, Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Cast Otherworldly Gaze (flashback)  [#4]
+  >> A/A: 1 (Cast Otherworldly Gaze (flashback))
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A activated Undercity Sewers for 1(U)
+  Player A casts Otherworldly Gaze
+  Resolving ability (category: Surveil, amount: 3)
+  Player A surveils 3.
+  Surveil: looking at Raph & Mikey, Troublemakers
+  Surveil: looking at Polluted Delta
+  Surveil: looking at Archon of Cruelty
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Undercity Sewers | lib 45
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Island (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Otherworldly Gaze (spell, self) [flashback]
+  Pending: Otherworldly Gaze (self)
+  Self GY: Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Put Raph & Mikey, Troublemakers on top of library  [#0]
+   1: Put Polluted Delta on top of library  [#0]
+   2: Put Archon of Cruelty on top of library  [#0]
+   3: Put Raph & Mikey, Troublemakers into graveyard
+   4: Put Polluted Delta into graveyard
+   5: Put Archon of Cruelty into graveyard
+  >> A/A: 3 (Put Raph & Mikey, Troublemakers into graveyard)
+--- Narrative ---
+  Player A puts Raph & Mikey, Troublemakers into their graveyard.
+
+--- Decision 35 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Undercity Sewers | lib 44
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Island (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Otherworldly Gaze (spell, self) [flashback]
+  Pending: Otherworldly Gaze (self)
+  Self GY: Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Put Polluted Delta on top of library  [#0]
+   1: Put Archon of Cruelty on top of library  [#0]
+   2: Put Polluted Delta into graveyard
+   3: Put Archon of Cruelty into graveyard
+  >> A/A: 2 (Put Polluted Delta into graveyard)
+--- Narrative ---
+  Player A puts Polluted Delta into their graveyard.
+
+--- Decision 36 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Undercity Sewers | lib 43
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Island (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Otherworldly Gaze (spell, self) [flashback]
+  Pending: Otherworldly Gaze (self)
+  Self GY: Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Put Archon of Cruelty on top of library  [#0]
+   1: Put Archon of Cruelty into graveyard
+  >> A/A: 1 (Put Archon of Cruelty into graveyard)
+--- Narrative ---
+  Player A puts Archon of Cruelty into their graveyard.
+  Otherworldly Gaze is exiled (flashback)
+  Player A draws Careful Study
+
+--- Decision 37 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(4): Careful Study, Thoughtseize, Thoughtseize, Undercity Sewers | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Island (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Self GY: Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Play Undercity Sewers
+  >> A/A: 1 (Play Undercity Sewers)
+--- Narrative ---
+  Player A played Undercity Sewers
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player A surveils 1.
+  Surveil: looking at Flow State
+
+--- Decision 38 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(3): Careful Study, Thoughtseize, Thoughtseize | lib 41
+  Opp:   17 life | mana: empty | hand count: 4 | lib 50
+  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
+  Self GY: Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Extras: self_lands_played=1
+  Actions:
+   0: Put Flow State on top of library  [#0]
+   1: Put Flow State into graveyard
+  >> A/A: 1 (Put Flow State into graveyard)
+--- Narrative ---
+  Player A puts Flow State into their graveyard.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Player B draws Orcish Bowmasters
+--- Turn 6 (Player B) ---
+  PA: Careful Study, Thoughtseize, Thoughtseize
+  PB: Amped Raptor, Orcish Bowmasters, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 39 ---
+  Priority: Player B (active)
+  Step: Draw (turn 6)
+  Self:  17 life | mana: empty | hand(5): Amped Raptor, Orcish Bowmasters, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Badlands | Scrubland
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Known opp hand: Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+  >> B/B: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player B activated Badlands for 1(B)
+  Player B activated Scrubland for 1(W)
+  Player B casts Orcish Bowmasters
+  Orcish Bowmasters enters the battlefield
+  Choose target for Orcish Bowmasters:
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: Draw (turn 6)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
+  Opp:   18 life | mana: empty | hand count: 3 | lib 40
+  Self BF:  Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T)
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
+  Pending: Orcish Bowmasters (self)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Known opp hand: Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Player A (18 life)
+   1: Player B (17 life)
+   2: Orcish Bowmasters
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 17 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player B Army is now 1/1.
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+  Player A draws Underground Sea
+--- Turn 7 (Player A) ---
+  PA: Careful Study, Thoughtseize, Thoughtseize, Underground Sea
+  PB: Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Careful Study, Thoughtseize, Thoughtseize, Underground Sea | lib 39
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island | Undercity Sewers | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Self GY: Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Orcish Bowmasters, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Careful Study  [#0]
+   3: Cast Thoughtseize  [#0]
+   4: Cast Thoughtseize  [#0]
+  >> A/A: 2 (Cast Careful Study)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Careful Study
+  Resolving ability (category: Draw, amount: 2)
+  Player A draws Force of Will
+  Player A draws Atraxa, Grand Unifier
+  Resolving ability (category: Discard)
+  Player A chooses a card to discard:
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(5): Atraxa, Grand Unifier, Force of Will, Thoughtseize, Thoughtseize, Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Undercity Sewers | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Orcish Bowmasters, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Atraxa, Grand Unifier
+   1: Force of Will
+   2: Thoughtseize
+   3: Thoughtseize
+   4: Underground Sea
+  >> A/A: 0 (Atraxa, Grand Unifier)
+--- Narrative ---
+  Player A discards Atraxa, Grand Unifier
+  Player A chooses a card to discard:
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Force of Will, Thoughtseize, Thoughtseize, Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Undercity Sewers | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Orcish Bowmasters, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Force of Will
+   1: Thoughtseize
+   2: Thoughtseize
+   3: Underground Sea
+  >> A/A: 0 (Force of Will)
+--- Narrative ---
+  Player A discards Force of Will
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 44 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
+  Opp:   17 life | mana: empty | hand count: 3 | lib 37
+  Self BF:  Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Undercity Sewers | Undercity Sewers
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Known opp hand: Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Orcish Bowmasters (DealDamage, targeted)  [#0]
+   1: Orcish Bowmasters (DealDamage, targeted)  [#1]
+  >> B/B: 0 (Orcish Bowmasters (DealDamage, targeted))
+--- Narrative ---
+  Choose target for Orcish Bowmasters:
+
+--- Decision 45 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
+  Opp:   17 life | mana: empty | hand count: 3 | lib 37
+  Self BF:  Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Undercity Sewers | Undercity Sewers
+  Pending: Orcish Bowmasters (self)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Known opp hand: Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Player A (17 life)
+   1: Player B (17 life)
+   2: Orcish Bowmasters
+   3: Orc Army token
+  >> B/B: 0 (Player A (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Choose target for Orcish Bowmasters:
+
+--- Decision 46 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  17 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 49
+  Opp:   17 life | mana: empty | hand count: 3 | lib 37
+  Self BF:  Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Island (T) | Undercity Sewers | Undercity Sewers
+  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Pending: Orcish Bowmasters (self)
+  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Known opp hand: Thoughtseize, Thoughtseize
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Player A (17 life)
+   1: Player B (17 life)
+   2: Orcish Bowmasters
+   3: Orc Army token
+  >> B/B: 0 (Player A (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 16 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player B Army is now 2/2.
+  Resolving ability (category: DealDamage, amount: 1)
+  Dealt 1 damage to player (now at 15 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player B Army is now 3/3.
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Undercity Sewers | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (SICK)
+  Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Opp revealed: Thoughtseize, Orcish Bowmasters, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Thoughtseize  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> A/A: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
 
 --- Decision 48 ---
   Priority: Player A (active)
-  Step: Declare Atk (turn 5)
-  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 39
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Undercity Sewers | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (SICK)
+  Pending: Thoughtseize (self)
+  Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
   Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Atraxa, Grand Unifier [7/7]
-   1: Raph & Mikey, Troublemakers [7/7]
-   2: Confirm attackers
-  >> A/A: 0 (Atraxa, Grand Unifier [7/7])
---- Narrative ---
-  Atraxa, Grand Unifier attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Atraxa, Grand Unifier [7/7] -> Player B
-
---- Decision 49 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 5)
-  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 39
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Raph & Mikey, Troublemakers [7/7]
-   1: Confirm attackers
-  >> A/A: 0 (Raph & Mikey, Troublemakers [7/7])
---- Narrative ---
-  Raph & Mikey, Troublemakers attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Atraxa, Grand Unifier [7/7] -> Player B
-    [attacking] Raph & Mikey, Troublemakers [7/7] -> Player B
-
---- Decision 50 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 5)
-  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 39
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (ATK,SICK) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Atraxa, Grand Unifier -> Player B
-    Raph & Mikey, Troublemakers -> Player B
-  Raph & Mikey, Troublemakers triggered
-  Resolving ability (category: DigUntil)
-  Player A reveals Lotus Petal.
-  Player A reveals Thoughtseize.
-  Player A reveals Otherworldly Gaze.
-  Player A reveals Underground Sea.
-  Player A reveals Thoughtseize.
-  Player A reveals Brainstorm.
-  Player A reveals Flow State.
-  Player A reveals Ponder.
-  Player A reveals Archon of Cruelty.
-  Player A puts Archon of Cruelty onto the battlefield tapped and attacking.
-  Archon of Cruelty enters tapped.
-  Archon of Cruelty is attacking.
-  Choose target for Archon of Cruelty:
-
---- Decision 51 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 5)
-  Self:  3 life | mana: empty | hand(3): Careful Study, Undercity Sewers, Underground Sea | lib 38
-  Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Badlands (T) | Scrubland (T)
-  Pending: Archon of Cruelty (self)
-  Self GY: Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp exile:  Cabal Therapy
-  Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt
+  Opp revealed: Thoughtseize, Orcish Bowmasters, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
   Actions:
    0: Player B (17 life)
+   1: Player A (15 life)
   >> A/A: 0 (Player B (17 life))
 --- Narrative ---
   Targeting choice 0
-  Archon of Cruelty triggered
-  Resolving ability (category: Sacrifice)
+  Player A activated Undercity Sewers for 1(B)
+  Player A casts Thoughtseize targeting Player B
   Resolving ability (category: Discard)
-  Player B chooses a card to discard:
+  Player B reveals their hand:
+    Amped Raptor
+    Swords to Plowshares
+    Thoughtseize
+    Voice of Victory
+  Player A chooses a card to discard:
 
---- Decision 52 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 5)
-  Self:  17 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory | lib 50
-  Opp:   3 life | mana: empty | hand count: 3 | lib 38
-  Self BF:  Badlands (T) | Scrubland (T)
-  Opp BF:   Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Swamp (T) | Undercity Sewers (T)
-  Stack: Archon of Cruelty (ability, opponent) -> self (player)
-  Pending: Archon of Cruelty (opp)
-  Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
-  Opp GY:  Animate Dead, Polluted Delta, Reanimate, Careful Study, Polluted Delta, Archon of Cruelty, Lotus Petal, Brainstorm, Reanimate, Careful Study, Reanimate, Polluted Delta, Bloodstained Mire
-  Self exile: Cabal Therapy
-  Known opp hand: Careful Study, Undercity Sewers
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: opp_lands_played=1, opp_revolt
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(2): Thoughtseize, Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 4 | lib 49
+  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (SICK)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Known opp hand: Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory
+  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ocelot Pride, Voice of Victory, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Amped Raptor
   Actions:
    0: Amped Raptor
-   1: Amped Raptor
-   2: Swords to Plowshares
+   1: Swords to Plowshares
+   2: Thoughtseize
    3: Voice of Victory
-  >> B/B: 3 (Voice of Victory)
+  >> A/A: 3 (Voice of Victory)
 --- Narrative ---
   Player B discards Voice of Victory
-  Resolving ability (category: LoseLife, amount: 3)
-  Player B loses 3 life (now at 14)
-  Resolving ability (category: Draw, amount: 1)
-  Player A draws Underground Sea
-  Resolving ability (category: GainLife, amount: 3)
-  Player A gains 3 life (now at 6)
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 13)
+
+--- Decision 50 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  13 life | mana: empty | hand(2): Thoughtseize, Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (SICK)
+  Self GY: Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Known opp hand: Amped Raptor, Swords to Plowshares, Thoughtseize
+  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ocelot Pride, Voice of Victory, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Thoughtseize  [#0]
+  >> A/A: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  13 life | mana: empty | hand(2): Thoughtseize, Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (SICK)
+  Pending: Thoughtseize (self)
+  Self GY: Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Known opp hand: Amped Raptor, Swords to Plowshares, Thoughtseize
+  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ocelot Pride, Voice of Victory, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Player B (17 life)
+   1: Player A (13 life)
+  >> A/A: 0 (Player B (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Undercity Sewers for 1(B)
+  Player A casts Thoughtseize targeting Player B
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    Amped Raptor
+    Swords to Plowshares
+    Thoughtseize
+  Player A chooses a card to discard:
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  13 life | mana: empty | hand(1): Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (SICK)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Known opp hand: Amped Raptor, Swords to Plowshares, Thoughtseize
+  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ocelot Pride, Voice of Victory, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Amped Raptor
+   1: Swords to Plowshares
+   2: Thoughtseize
+  >> A/A: 0 (Amped Raptor)
+--- Narrative ---
+  Player B discards Amped Raptor
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 11)
+
+--- Decision 53 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  11 life | mana: empty | hand(1): Underground Sea | lib 37
+  Opp:   17 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (SICK)
+  Self GY: Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares, Thoughtseize
+  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ocelot Pride, Voice of Victory, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+  >> A/A: 1 (Play Underground Sea)
+--- Narrative ---
+  Player A played Underground Sea
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Underground Sea
+  PB: Swords to Plowshares, Thoughtseize
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 8)
+  Self:  17 life | mana: empty | hand(2): Swords to Plowshares, Thoughtseize | lib 49
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands | Orcish Bowmasters [1/1] [Flash] | Scrubland | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Ocelot Pride
+
+--- Decision 55 ---
+  Priority: Player B (active)
+  Step: Draw (turn 8)
+  Self:  17 life | mana: empty | hand(3): Ocelot Pride, Swords to Plowshares, Thoughtseize | lib 48
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands | Orcish Bowmasters [1/1] [Flash] | Scrubland | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 56 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  17 life | mana: empty | hand(3): Ocelot Pride, Swords to Plowshares, Thoughtseize | lib 48
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands | Orcish Bowmasters [1/1] [Flash] | Scrubland | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+
+--- Decision 57 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  17 life | mana: empty | hand(2): Swords to Plowshares, Thoughtseize | lib 48
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Pass priority
+   1: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 58 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  17 life | mana: empty | hand(2): Swords to Plowshares, Thoughtseize | lib 48
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Pending: Thoughtseize (self)
+  Self GY: Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Actions:
+   0: Player A (11 life)
+   1: Player B (17 life)
+  >> B/B: 0 (Player A (11 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+  No valid cards to discard.
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 15)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 59 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  15 life | mana: empty | hand(1): Swords to Plowshares | lib 48
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Thoughtseize, Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [3/3]
+   2: Confirm attackers
+  >> B/B: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+
+--- Decision 60 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  15 life | mana: empty | hand(1): Swords to Plowshares | lib 48
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Thoughtseize, Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Orc Army token [3/3]
+   1: Confirm attackers
+  >> B/B: 0 (Orc Army token [3/3])
+--- Narrative ---
+  Orc Army token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+    [attacking] Orc Army token [3/3] -> Player A
+
+--- Decision 61 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  15 life | mana: empty | hand(1): Swords to Plowshares | lib 48
+  Opp:   11 life | mana: empty | hand count: 0 | lib 37
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (ATK)
+  Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self GY: Thoughtseize, Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self exile: Cabal Therapy
+  Opp exile:  Otherworldly Gaze
+  Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  Extras: mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player A
+    Orc Army token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Archon of Cruelty deals 6 damage to Player B
-    Atraxa, Grand Unifier deals 7 damage to Player B
-    Raph & Mikey, Troublemakers deals 7 damage to Player B
-    Player A gains 7 life (lifelink)
+    Orcish Bowmasters deals 1 damage to Player A
+    Orc Army token deals 3 damage to Player A
   --- End Combat Damage ---
-  Player B has -6 life - Player A wins!
+  -------- TURN 9 (Player A) --------
+  Player A draws Reanimate
+--- Turn 9 (Player A) ---
+  PA: Reanimate
+  PB: Swords to Plowshares
 
-=== A/A wins ===
+--- Decision 62 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  7 life | mana: empty | hand(1): Reanimate | lib 36
+  Opp:   15 life | mana: empty | hand count: 1 | lib 48
+  Self BF:  Island | Undercity Sewers | Undercity Sewers | Underground Sea
+  Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Self GY: Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ocelot Pride, Voice of Victory, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Pass priority
+   1: Cast Reanimate  [#0]
+  >> A/A: 1 (Cast Reanimate)
+--- Narrative ---
+  Choose target for Reanimate:
+
+--- Decision 63 ---
+  Priority: Player A (active)
+  Step: First Main (turn 9)
+  Self:  7 life | mana: empty | hand(1): Reanimate | lib 36
+  Opp:   15 life | mana: empty | hand count: 1 | lib 48
+  Self BF:  Island | Undercity Sewers | Undercity Sewers | Underground Sea
+  Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Pending: Reanimate (self)
+  Self GY: Thoughtseize, Thoughtseize, Careful Study, Force of Will, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Archon of Cruelty, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Thoughtseize, Amped Raptor, Voice of Victory, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self exile: Otherworldly Gaze
+  Opp exile:  Cabal Therapy
+  Known opp hand: Swords to Plowshares
+  Opp revealed: Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Ocelot Pride, Voice of Victory, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Amped Raptor
+  Actions:
+   0: Amped Raptor
+   1: Ocelot Pride
+   2: Voice of Victory
+   3: Archon of Cruelty
+   4: Archon of Cruelty
+   5: Atraxa, Grand Unifier
+   6: Raph & Mikey, Troublemakers
+  >> A/A: 6 (Raph & Mikey, Troublemakers)
+--- Narrative ---
+  Targeting choice 6
+  Player A activated Undercity Sewers for 1(B)
+  Player A casts Reanimate targeting Raph & Mikey, Troublemakers
+  Resolving ability (category: ChangeZone)
+  Raph & Mikey, Troublemakers is moved to the battlefield
+  Resolving ability (category: LoseLife, amount: 7)
+  Player A loses 7 life (now at 0)
+  Resolving ability (category: Cleanup)
+  Player A has 0 life - Player B wins!
+
+=== B/B wins ===

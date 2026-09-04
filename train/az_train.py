@@ -162,6 +162,11 @@ TD_CAL_MAX_GAIN = 4.0    # symmetric clamp on the scale-matching factor a:
                          # a is clipped to [1/TD_CAL_MAX_GAIN, TD_CAL_MAX_GAIN]
 TD_CAL_MAX_SHIFT = 0.5   # clamp on the bias shift b
 
+# Loss terms reported per batch and summarized per cycle (train_az). The
+# summed optimizer loss is never reported — see the batch loop.
+LOSS_TERMS = ("pi", "v_mix", "v_z", "sb")
+LOSS_SUMMARY_BATCHES = 10   # cycle summary = mean over the first/last N batches
+
 
 # ----------------------------------------------------------------------
 # Shard loading
@@ -277,6 +282,25 @@ def _read_steps(az_path: str) -> int:
 # ----------------------------------------------------------------------
 # Training
 # ----------------------------------------------------------------------
+
+def _format_loss_terms(terms, later=None) -> str:
+    """``pi=0.9476 v_mix=0.2529 ...`` for one batch's terms, or
+    ``pi=0.951->0.938 ...`` when ``later`` gives a second set to compare."""
+    if later is None:
+        return " ".join(f"{k}={terms[k]:.4f}" for k in LOSS_TERMS)
+    return " ".join(f"{k}={terms[k]:.3f}->{later[k]:.3f}" for k in LOSS_TERMS)
+
+
+def _summarize_loss_terms(hist):
+    """Mean of each term over the first and last LOSS_SUMMARY_BATCHES batches
+    (both windows are the whole run when it is shorter than that)."""
+    k = LOSS_SUMMARY_BATCHES
+    first = {t: float(np.mean(v[:k])) if v else float("nan")
+             for t, v in hist.items()}
+    last = {t: float(np.mean(v[-k:])) if v else float("nan")
+            for t, v in hist.items()}
+    return first, last
+
 
 def _calibrate_td_targets(z, td_q, sb_rows):
     """Anti-contraction correction for the td_q value-target component.
@@ -514,8 +538,20 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
 
     log_path = os.path.join(ckpt_dir, f"{GEN_STEM}_az_train.log")
     os.makedirs(ckpt_dir, exist_ok=True)
-    first_loss = None
-    last_loss = None
+    # Per-batch history of each loss term; the cycle summary reports the
+    # mean over the first and last LOSS_SUMMARY_BATCHES batches per term
+    # (a single batch's sb term is ~13 rows of signed REINFORCE — meaningless
+    # alone). The summed optimizer loss is never printed: sb can be negative
+    # or spike on one lucky exploration pick, so the total is not a health
+    # metric.
+    hist = {k: [] for k in LOSS_TERMS}
+    print("[az-train] loss terms per batch — "
+          "pi: policy cross-entropy vs the search posterior (nats; floor = "
+          "posterior entropy, ~1.6 would be uniform over ~5 legal actions) | "
+          "v_mix: value MSE vs the (1-q_mix)*z + q_mix*td_cal target "
+          "(trained) | v_z: value MSE vs the realized ±1 outcome (diagnostic, "
+          "tripwire input) | sb: sideboard REINFORCE -(z - V)*log p(pick) "
+          "(signed, unbounded; large positive = a low-prior pick won)")
 
     with open(log_path, "a") as logf:
         logf.write(f"# az-train {time.strftime('%Y-%m-%d %H:%M:%S')} deck={deck} "
@@ -574,14 +610,13 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             loss.backward()
             opt.step()
 
-            fl = float(loss.item())
-            if first_loss is None:
-                first_loss = fl
-            last_loss = fl
+            terms = {"pi": float(loss_pi.item()), "v_mix": float(loss_v.item()),
+                     "v_z": float(loss_vz.item()), "sb": float(loss_sb.item())}
+            for k, v in terms.items():
+                hist[k].append(v)
             if b == 0 or (b + 1) % log_every == 0 or b == batches - 1:
-                line = (f"[az-train] batch {b+1}/{batches} loss={fl:.4f} "
-                        f"(pi={loss_pi.item():.4f} v_mix={loss_v.item():.4f} "
-                        f"v_z={loss_vz.item():.4f} sb={loss_sb.item():.4f})")
+                line = (f"[az-train] batch {b+1}/{batches} "
+                        + _format_loss_terms(terms))
                 print(line)
                 logf.write(line + "\n"); logf.flush()
             if snapshot_every and (b + 1) % snapshot_every == 0:
@@ -594,7 +629,10 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     # through the az_eval promotion gate.
     snap = net.save(az_checkpoint_path(steps, ckpt_dir), steps)
     print(f"[az-train] saved candidate snapshot {snap}")
-    print(f"[az-train] loss {first_loss:.4f} -> {last_loss:.4f} over {batches} batches")
+    first_terms, last_terms = _summarize_loss_terms(hist)
+    print(f"[az-train] loss terms, mean of first {LOSS_SUMMARY_BATCHES} -> "
+          f"last {LOSS_SUMMARY_BATCHES} batches (of {batches}): "
+          + _format_loss_terms(first_terms, last_terms))
     # Memorization tripwire: the same sampled rows' value MSE after this
     # cycle's updates vs the pre-train baseline above. Fitting far below what
     # the net scored on the window before touching it means the value head
@@ -610,7 +648,7 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
               f"distinct games per slot first (a lower --full-search-frac "
               f"/ --fast-sims trades sims per position for games at the "
               f"same engine budget), else consider a lower --epoch-frac")
-    return {"samples": n, "first_loss": first_loss, "last_loss": last_loss,
+    return {"samples": n, "first_terms": first_terms, "last_terms": last_terms,
             "snapshot": snap, "steps": steps}
 
 
@@ -2408,7 +2446,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                         f"{'PROMOTED' if ev['promoted'] else 'kept-incumbent' + veto_txt}")
         print(f"[az-league] slot {slot_txt} deck={deck_label}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
-              f"train_loss {tr['first_loss']:.3f}->{tr['last_loss']:.3f}  "
+              f"train {_format_loss_terms(tr['first_terms'], tr['last_terms'])}  "
               f"{gate_txt}")
         results.append({"slot": si, "deck": deck_label, "rotation": r, "cycle": c,
                         "samples": gen["samples"], "shards": len(gen["shards"]),
