@@ -1795,11 +1795,32 @@
    2: Activate Clue token (Draw)  [#0]
    3: Activate Clue token (Draw)  [#0]
    4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 4 (Activate Edge of Autumn from hand (Draw))
+  >> B/B: 0 (Pass priority)
 
 --- Decision 69 ---
   Priority: Player B (active)
-  Step: Draw (turn 8)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(2): Dark Ritual, Edge of Autumn | lib 4
+  Opp:   18 life | mana: empty | hand count: 6 | lib 41
+  Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Self GY: Doomsday
+  Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
+  Known opp hand: Thundering Falls
+  Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Activate Clue token (Draw)  [#0]
+   3: Activate Clue token (Draw)  [#0]
+   4: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 4 (Activate Edge of Autumn from hand (Draw))
+
+--- Decision 70 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
   Self:  10 life | mana: empty | hand(2): Dark Ritual, Edge of Autumn | lib 4
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
@@ -1814,20 +1835,20 @@
    0: Sacrifice Cavern of Souls
    1: Sacrifice Island
    2: Sacrifice Scrubland
-  >> B/B: 0 (Sacrifice Cavern of Souls)
+  >> B/B: 2 (Sacrifice Scrubland)
 --- Narrative ---
-  Player B sacrifices Cavern of Souls
+  Player B sacrifices Scrubland
   Player B activates Edge of Autumn from hand
 
---- Decision 70 ---
+--- Decision 71 ---
   Priority: Player B (active)
-  Step: Draw (turn 8)
+  Step: First Main (turn 8)
   Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 4
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
-  Self BF:  Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Island (T) | Mystic Sanctuary (T)
   Stack: Edge of Autumn (ability, self) [amt=1]
-  Self GY: Edge of Autumn, Cavern of Souls, Doomsday
+  Self GY: Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
@@ -1836,22 +1857,21 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
+   1: Activate Clue token (Draw)  [#0]
    2: Activate Clue token (Draw)  [#0]
-   3: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 71 ---
+--- Decision 72 ---
   Priority: Player B (active)
-  Step: Draw (turn 8)
+  Step: First Main (turn 8)
   Self:  10 life | mana: empty | hand(2): Dark Ritual, Street Wraith | lib 3
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
-  Self BF:  Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Island (T) | Mystic Sanctuary (T)
-  Self GY: Edge of Autumn, Cavern of Souls, Doomsday
+  Self GY: Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
@@ -1860,24 +1880,23 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
+   1: Activate Clue token (Draw)  [#0]
    2: Activate Clue token (Draw)  [#0]
-   3: Activate Clue token (Draw)  [#0]
-   4: Activate Street Wraith from hand (Draw)  [#0]
-  >> B/B: 4 (Activate Street Wraith from hand (Draw))
+   3: Activate Street Wraith from hand (Draw)  [#0]
+  >> B/B: 3 (Activate Street Wraith from hand (Draw))
 --- Narrative ---
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 72 ---
+--- Decision 73 ---
   Priority: Player B (active)
-  Step: Draw (turn 8)
+  Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 3
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
-  Self BF:  Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Island (T) | Mystic Sanctuary (T)
   Stack: Street Wraith (ability, self) [amt=1]
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
+  Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
@@ -1886,24 +1905,23 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
+   1: Activate Clue token (Draw)  [#0]
    2: Activate Clue token (Draw)  [#0]
-   3: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
   Player B draws Thassa's Oracle
   Tamiyo, Inquisitive Student triggered
 
---- Decision 73 ---
+--- Decision 74 ---
   Priority: Player B (active)
-  Step: Draw (turn 8)
+  Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
-  Self BF:  Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Island (T) | Mystic Sanctuary (T)
   Stack: Tamiyo, Inquisitive Student (ability, self)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
+  Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, ?, ?, ?
@@ -1912,9 +1930,8 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
+   1: Activate Clue token (Draw)  [#0]
    2: Activate Clue token (Draw)  [#0]
-   3: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: ChangeZone)
@@ -1924,35 +1941,14 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
 
---- Decision 74 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
-  Opp:   18 life | mana: empty | hand count: 6 | lib 41
-  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
-  Opp BF:   Island (T) | Mystic Sanctuary (T)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Known opp hand: Thundering Falls
-  Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Clue token (Draw)  [#0]
-   3: Activate Clue token (Draw)  [#0]
-  >> B/B: 0 (Pass priority)
-
 --- Decision 75 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
-  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
   Opp BF:   Island (T) | Mystic Sanctuary (T)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
+  Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, ?, ?, ?
@@ -1961,24 +1957,30 @@
   Extras: self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
+   1: Cast Thassa's Oracle  [#0]
    2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
    3: Activate Clue token (Draw)  [#0]
    4: Activate Clue token (Draw)  [#0]
-  >> B/B: 2 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+  >> B/B: 1 (Cast Thassa's Oracle)
 --- Narrative ---
-  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
-  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Player B activated Cavern of Souls for 1(U)
+  Player B activated Island for 1(U)
+  Player B casts Thassa's Oracle
+  Thassa's Oracle enters the battlefield
+  Thassa's Oracle triggered
+  Resolving ability (category: Dig)
+  Player B looks at the top 2 card(s) of their library.
 
 --- Decision 76 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
+  Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
-  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue | Clue
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Thassa's Oracle [1/3] (SICK) | Clue | Clue
   Opp BF:   Island (T) | Mystic Sanctuary (T)
-  Stack: Tamiyo, Seasoned Scholar (ability, self)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
+  Stack: Thassa's Oracle (ability, self) [amt=1]
+  Pending: Thassa's Oracle (self)
+  Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, ?, ?, ?
@@ -1986,343 +1988,15 @@
   Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
   Extras: self_revolt
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Clue token (Draw)  [#0]
-   3: Activate Clue token (Draw)  [#0]
-  >> B/B: 2 (Activate Clue token (Draw))
+   0: Take nothing
+   1: Brainstorm
+   2: Brainstorm
+  >> B/B: 1 (Brainstorm)
 --- Narrative ---
-  Player B activated Scrubland for 1(W)
-  Player B activated Island for 1(U)
-  Player B sacrifices Clue token
-  Player B's Clue ability is on the stack
-  Clue (token) is put into the graveyard and ceases to exist.
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Brainstorm
-  Resolving ability (category: Effect)
-  A floating triggered ability is created until your next turn.
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 9 (Player A) --------
-  Player A draws Lightning Bolt
---- Turn 9 (Player A) ---
-  PA: Cori-Steel Cutter, Lightning Bolt, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland
-  PB: Dark Ritual, Thassa's Oracle
+  Player B puts Brainstorm on the top of their library.
+  Player B puts 1 card(s) on the bottom of their library.
+  Resolving ability (category: WinsGame)
+  Player B wins the game! (Thassa's Oracle)
+  Player B wins the game!
 
---- Decision 77 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Lightning Bolt, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island | Mystic Sanctuary
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Actions:
-   0: Pass priority
-   1: Play Thundering Falls
-   2: Play Volcanic Island
-   3: Play Volcanic Island
-   4: Play Wasteland
-   5: Cast Murktide Regent  [#0]
-  >> A/A: 5 (Cast Murktide Regent)
---- Narrative ---
-  Choose a card to exile via Delve (1 of 5):
-
---- Decision 78 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Lightning Bolt, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island | Mystic Sanctuary
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Actions:
-   0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Daze (Delve)
-   3: Exile Daze (Delve)
-   4: Exile Mishra's Bauble (Delve)
-   5: Exile Mishra's Bauble (Delve)
-   6: Exile Mishra's Bauble (Delve)
-   7: Exile Misty Rainforest (Delve)
-   8: Exile Ponder (Delve)
-   9: Exile Ponder (Delve)
-  10: Exile Scalding Tarn (Delve)
-  >> A/A: 0 (Exile Brainstorm (Delve))
---- Narrative ---
-  Player A exiles Brainstorm via Delve.
-  Choose a card to exile via Delve (2 of 5):
-
---- Decision 79 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Lightning Bolt, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island | Mystic Sanctuary
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Self exile: Brainstorm
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Actions:
-   0: Exile Brainstorm (Delve)
-   1: Exile Daze (Delve)
-   2: Exile Daze (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Mishra's Bauble (Delve)
-   5: Exile Mishra's Bauble (Delve)
-   6: Exile Misty Rainforest (Delve)
-   7: Exile Ponder (Delve)
-   8: Exile Ponder (Delve)
-   9: Exile Scalding Tarn (Delve)
-  >> A/A: 0 (Exile Brainstorm (Delve))
---- Narrative ---
-  Player A exiles Brainstorm via Delve.
-  Choose a card to exile via Delve (3 of 5):
-
---- Decision 80 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Lightning Bolt, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island | Mystic Sanctuary
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Mishra's Bauble, Daze, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Self exile: Brainstorm, Brainstorm
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Actions:
-   0: Exile Daze (Delve)
-   1: Exile Daze (Delve)
-   2: Exile Mishra's Bauble (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Mishra's Bauble (Delve)
-   5: Exile Misty Rainforest (Delve)
-   6: Exile Ponder (Delve)
-   7: Exile Ponder (Delve)
-   8: Exile Scalding Tarn (Delve)
-  >> A/A: 0 (Exile Daze (Delve))
---- Narrative ---
-  Player A exiles Daze via Delve.
-  Choose a card to exile via Delve (4 of 5):
-
---- Decision 81 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Lightning Bolt, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island | Mystic Sanctuary
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Self exile: Daze, Brainstorm, Brainstorm
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Actions:
-   0: Exile Daze (Delve)
-   1: Exile Mishra's Bauble (Delve)
-   2: Exile Mishra's Bauble (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Misty Rainforest (Delve)
-   5: Exile Ponder (Delve)
-   6: Exile Ponder (Delve)
-   7: Exile Scalding Tarn (Delve)
-  >> A/A: 0 (Exile Daze (Delve))
---- Narrative ---
-  Player A exiles Daze via Delve.
-  Choose a card to exile via Delve (5 of 5):
-
---- Decision 82 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Lightning Bolt, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island | Mystic Sanctuary
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Self exile: Daze, Daze, Brainstorm, Brainstorm
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Actions:
-   0: Exile Mishra's Bauble (Delve)
-   1: Exile Mishra's Bauble (Delve)
-   2: Exile Mishra's Bauble (Delve)
-   3: Exile Misty Rainforest (Delve)
-   4: Exile Ponder (Delve)
-   5: Exile Ponder (Delve)
-   6: Exile Scalding Tarn (Delve)
-  >> A/A: 0 (Exile Mishra's Bauble (Delve))
---- Narrative ---
-  Player A exiles Mishra's Bauble via Delve.
-  Player A activated Island for 1(U)
-  Player A activated Mystic Sanctuary for 1(U)
-  Player A casts Murktide Regent
-  Murktide Regent enters the battlefield
-  Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
-
---- Decision 83 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(6): Cori-Steel Cutter, Lightning Bolt, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T)
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Actions:
-   0: Pass priority
-   1: Play Thundering Falls
-   2: Play Volcanic Island
-   3: Play Volcanic Island
-   4: Play Wasteland
-  >> A/A: 1 (Play Thundering Falls)
---- Narrative ---
-  Player A played Thundering Falls
-  Thundering Falls enters tapped.
-  Thundering Falls triggered
-  Resolving ability (category: Surveil, amount: 1)
-  Player A surveils 1.
-  Surveil: looking at Ponder
-
---- Decision 84 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Volcanic Island, Volcanic Island, Wasteland | lib 40
-  Opp:   8 life | mana: empty | hand count: 3 | lib 1
-  Self BF:  Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T)
-  Opp BF:   Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
-  Stack: Thundering Falls (ability, self) [amt=1]
-  Pending: Thundering Falls (self)
-  Self GY: Misty Rainforest, Ponder, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble
-  Opp GY:  Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Self exile: Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_lands_played=1
-  Actions:
-   0: Put Ponder on top of library  [#0]
-   1: Put Ponder into graveyard
-  >> A/A: 1 (Put Ponder into graveyard)
---- Narrative ---
-  Player A puts Ponder into their graveyard.
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 10 (Player B) --------
---- Turn 10 (Player B) ---
-  PA: Cori-Steel Cutter, Lightning Bolt, Volcanic Island, Volcanic Island, Wasteland
-  PB: Brainstorm, Dark Ritual, Thassa's Oracle
-
---- Decision 85 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  8 life | mana: empty | hand(3): Brainstorm, Dark Ritual, Thassa's Oracle | lib 1
-  Opp:   18 life | mana: empty | hand count: 5 | lib 39
-  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Clue
-  Opp BF:   Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Opp GY:  Ponder, Misty Rainforest, Ponder, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Mystic Sanctuary
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Activate Clue token (Draw)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player B draws Brainstorm
-
---- Decision 86 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  8 life | mana: empty | hand(4): Brainstorm, Brainstorm, Dark Ritual, Thassa's Oracle | lib 0
-  Opp:   18 life | mana: empty | hand count: 5 | lib 39
-  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Clue
-  Opp BF:   Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Opp GY:  Ponder, Misty Rainforest, Ponder, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm
-  Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Mystic Sanctuary
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-   2: Cast Brainstorm  [#0]
-   3: Cast Dark Ritual  [#0]
-   4: Activate Clue token (Draw)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 87 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  8 life | mana: empty | hand(4): Brainstorm, Brainstorm, Dark Ritual, Thassa's Oracle | lib 0
-  Opp:   18 life | mana: empty | hand count: 5 | lib 39
-  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Clue
-  Opp BF:   Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Opp GY:  Ponder, Misty Rainforest, Ponder, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm
-  Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Mystic Sanctuary
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-   2: Cast Brainstorm  [#0]
-   3: Cast Dark Ritual  [#0]
-   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
-   5: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
-   6: Activate Clue token (Draw)  [#0]
-  >> B/B: 4 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
---- Narrative ---
-  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
-  Player B's Tamiyo, Seasoned Scholar ability is on the stack
-
---- Decision 88 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  8 life | mana: empty | hand(4): Brainstorm, Brainstorm, Dark Ritual, Thassa's Oracle | lib 0
-  Opp:   18 life | mana: empty | hand count: 5 | lib 39
-  Self BF:  Island | Scrubland | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Clue
-  Opp BF:   Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T)
-  Stack: Tamiyo, Seasoned Scholar (ability, self)
-  Self GY: Street Wraith, Edge of Autumn, Cavern of Souls, Doomsday
-  Opp GY:  Ponder, Misty Rainforest, Ponder, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
-  Opp exile:  Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm
-  Opp revealed: Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Mystic Sanctuary
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-   2: Cast Brainstorm  [#0]
-   3: Cast Dark Ritual  [#0]
-   4: Activate Clue token (Draw)  [#0]
-  >> B/B: 4 (Activate Clue token (Draw))
---- Narrative ---
-  Player B activated Scrubland for 1(W)
-  Player B activated Island for 1(U)
-  Player B sacrifices Clue token
-  Player B's Clue ability is on the stack
-  Clue (token) is put into the graveyard and ceases to exist.
-  Resolving ability (category: Draw, amount: 1)
-  Player B attempts to draw from an empty library.
-  Player B decked - Player A wins!
-
-=== A/A wins ===
+=== B/B wins ===
