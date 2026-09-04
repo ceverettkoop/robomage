@@ -116,11 +116,12 @@ struct MCTSConfig {
     int rollout_turns = 0;
 
     // ── self-play (--selfplay) ──────────────────────────────────────────────
-    // When `selfplay` is set, each SEARCHED root stores a training sample and the
-    // first `temp_moves` real moves sample the real action from the visit
-    // distribution (rng) instead of argmax. Root Dirichlet noise (eps/alpha) is
-    // mixed into the base priors per world in begin_world. Defaults keep the
-    // parity paths (--search without --selfplay) noise-free (eps=0) and argmax.
+    // When `selfplay` is set, each SEARCHED root stores a training sample and
+    // the exploration clock (explore_* below) decides per learner root whether
+    // the real action is sampled from the visit distribution (rng) or the
+    // argmax is played. Root Dirichlet noise (eps/alpha) is mixed into the base
+    // priors per world in begin_world. Defaults keep the parity paths
+    // (--search without --selfplay) noise-free (eps=0) and argmax.
     bool selfplay = false;
     // ── playout-cap randomization (mirrors az_selfplay's playout cap) ───────
     // Self-play only: each searched IN-GAME root gets the full `sims` budget
@@ -143,17 +144,28 @@ struct MCTSConfig {
     bool record = false;
     double noise_eps = 0.0;         // 0 disables root noise (parity default)
     double noise_alpha = 1.0;       // Dirichlet concentration
-    int temp_moves = 20;            // # of leading real moves that sample-from-visits
+    // Exploration clock (mirrors az_selfplay.explore_prob / cli_spec's
+    // DEFAULT_AZ_EXPLORE_*): keyed on the root obs's game-turn float (the
+    // engine's per-PLAYER-turn counter; a sideboard root is turn 0 of the
+    // upcoming game). P(sample from visits) is 1.0 through explore_full_turns,
+    // falls linearly to explore_floor over the next explore_decay_turns turns,
+    // then stays at the floor. The per-root verdict is a hash coin on (the
+    // match's engine seed salted, the playout cap's searched-root index) —
+    // explore_coin in az_mcts.cpp, the bit-lockstep twin of
+    // az_selfplay.explore_coin — never an rng draw; the rng is consumed only
+    // by the sample itself when the coin says explore.
+    int explore_full_turns = 8;
+    int explore_decay_turns = 8;
+    double explore_floor = 0.05;
     uint32_t selfplay_rng_seed = 0; // seeds the per-run noise+sampling RNG
 
     // ── vs-scripted seat (mirrors az_selfplay._play_match's agent/net_is_a) ──
     // 0 = none (pure self-play); 1 = Player A, 2 = Player B is piloted by the
     // scripted oracle (set_scripted_provider). That seat's REAL decisions are
     // answered by the provider — no search, no sample, no searched/fallback
-    // counters — but they DO advance the per-game tau counter (Python's
-    // game_move counts every decision) and latch into a live sideboard
-    // boundary. Search simulations never consult the provider: tree play is
-    // net-both-seats, exactly like the Python reference.
+    // counters — but they DO latch into a live sideboard boundary. Search
+    // simulations never consult the provider: tree play is net-both-seats,
+    // exactly like the Python reference.
     int scripted_seat = 0;
 
     // ── opponent-pool learner seat (mirrors _play_match's opp_evaluator/
@@ -237,19 +249,17 @@ public:
     void set_scripted_provider(std::function<int(const float*, int)> fn);
 
     // ── self-play ───────────────────────────────────────────────────────────
-    // Full reset of per-match sample-buffer state (real-move counter + stored
-    // samples + the playout cap's searched-root counter). Call ONCE before a
-    // bo3 match (the RNG streams across games), and per-game in the bo1 loop.
-    // `cap_seed` is the match's engine seed — the playout-cap coin's per-match
-    // key (mirrors the Python side keying playout_cap_full off _play_match's
-    // seed).
+    // Full reset of per-match sample-buffer state (stored samples + the
+    // playout cap's searched-root counter, which the exploration coin shares).
+    // Call ONCE before a bo3 match (the RNG streams across games), and
+    // per-game in the bo1 loop. `cap_seed` is the match's engine seed — the
+    // per-match key of both hash coins (mirrors the Python side keying
+    // playout_cap_full / explore_coin off _play_match's seed).
     void begin_match(uint32_t cap_seed = 0);
-    // End-of-game reset: clears the buffered samples and resets the tau/move
-    // counter. Call AFTER a game's samples have been priced+flushed (from the
-    // actor's backfill hook), so any sideboard samples recorded before the NEXT
-    // game start stay buffered and are priced by that next game's result — and the
-    // tau counter resets at the game boundary (before the sideboard prompts),
-    // matching Python's per-game game_move.
+    // End-of-game reset: clears the buffered samples. Call AFTER a game's
+    // samples have been priced+flushed (from the actor's backfill hook), so any
+    // sideboard samples recorded before the NEXT game start stay buffered and
+    // are priced by that next game's result.
     void end_game();
     // Samples stored since the last begin_match()/end_game() (valid until the next
     // one). In bo3, between a game's backfill and the next game's start this holds

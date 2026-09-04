@@ -10,8 +10,8 @@ Defaults REPLICATE the reset_league_8_24 curriculum's az-league slots (the
 the EXHAUSTIVE-SELFPLAY matrix (every unordered roster pair x2 = 110 matches +
 20 rotating vs-scripted cells = 130 matches/leg on the 10-deck roster; the
 slot index advances per leg exactly like consecutive league slots) at the
-shared cli_spec training budget — sims=1028 worlds=8 c_puct=2.5 td_n=10
-temp_moves=20 and the sb plan-search knobs. Pass --random-draw for the old
+shared cli_spec training budget — sims=1028 worlds=8 c_puct=2.5 td_n=10,
+the default exploration clock and the sb plan-search knobs. Pass --random-draw for the old
 mirror_frac-draw schedule instead (then --games/--mirror-frac apply).
 
 Legs call ``az_selfplay.generate(..., bo3=True)`` IN-PROCESS — the same code

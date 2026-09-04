@@ -70,20 +70,62 @@ static constexpr int kPlanPickCap = 31;
 // max_attempts multiplier).
 static constexpr int kExtrasAttemptFactor = 4;
 
-// Playout-cap coin — the C++ twin of az_selfplay.playout_cap_full. The two
-// MUST stay in exact lockstep (same murmur3 finalizer, same 24-bit
-// threshold): --full-search-frac has to mean the same coin on either backend.
-// frac >= 1 short-circuits to always-full without consulting the hash.
-static bool playout_cap_full(uint32_t cap_seed, uint32_t root_idx,
-                             double full_search_frac) {
-    if (full_search_frac >= 1.0) return true;
-    if (full_search_frac <= 0.0) return false;
-    uint32_t x = cap_seed ^ (0x9E3779B9u * root_idx);
+// Hash coin — the C++ twin of az_selfplay._hash_coin: Bernoulli(prob) from a
+// murmur3 finalizer of (seed, idx), 24-bit threshold. The two MUST stay in
+// exact lockstep so a knob means the same coin on either backend. prob >= 1 /
+// <= 0 short-circuit without consulting the hash.
+static bool hash_coin(uint32_t seed, uint32_t idx, double prob) {
+    if (prob >= 1.0) return true;
+    if (prob <= 0.0) return false;
+    uint32_t x = seed ^ (0x9E3779B9u * idx);
     x = (x ^ (x >> 16)) * 0x85EBCA6Bu;
     x = (x ^ (x >> 13)) * 0xC2B2AE35u;
     x ^= x >> 16;
-    return (x >> 8) < static_cast<uint32_t>(full_search_frac *
-                                            static_cast<double>(1u << 24));
+    return (x >> 8) < static_cast<uint32_t>(prob * static_cast<double>(1u << 24));
+}
+
+// Playout-cap coin (az_selfplay.playout_cap_full): does the root_idx-th
+// searched in-game root of this match get the full sims budget?
+static bool playout_cap_full(uint32_t cap_seed, uint32_t root_idx,
+                             double full_search_frac) {
+    return hash_coin(cap_seed, root_idx, full_search_frac);
+}
+
+// Exploration clock (az_selfplay.explore_prob; knobs documented on
+// MCTSConfig): P(a learner searched root at game `turn` samples its real
+// action from the visit distribution). Same double arithmetic as the Python
+// twin so the coin threshold matches bit-for-bit.
+static double explore_prob(int turn, const MCTSConfig& cfg) {
+    const double floor = std::min(std::max(cfg.explore_floor, 0.0), 1.0);
+    if (turn <= cfg.explore_full_turns) return 1.0;
+    if (cfg.explore_decay_turns > 0 &&
+        turn <= cfg.explore_full_turns + cfg.explore_decay_turns) {
+        const double remaining = static_cast<double>(
+            cfg.explore_full_turns + cfg.explore_decay_turns - turn);
+        return floor + (1.0 - floor) *
+                           (remaining / static_cast<double>(cfg.explore_decay_turns));
+    }
+    return floor;
+}
+
+// The game turn an exploration-clock root belongs to (az_selfplay.obs_turn):
+// 0 at a sideboard root (the obs turn slot still holds the ENDED game's turn),
+// else the root obs's current-turn float decoded.
+static int obs_turn(const float* o, bool sideboard_root) {
+    if (sideboard_root) return 0;
+    return static_cast<int>(
+        std::lround(static_cast<double>(o[CUR_TURN_IDX]) * TURN_NORMALIZER));
+}
+
+// Salt XORed into the match seed for the exploration coin so it never
+// correlates with the playout-cap coin at the same root index
+// (az_selfplay._EXPLORE_COIN_SALT).
+static constexpr uint32_t kExploreCoinSalt = 0x5BD1E995u;
+
+// Exploration coin (az_selfplay.explore_coin): hash_coin under `prob` on the
+// salted match seed and the playout cap's searched-root index.
+static bool explore_coin(uint32_t cap_seed, uint32_t root_idx, double prob) {
+    return hash_coin(cap_seed ^ kExploreCoinSalt, root_idx, prob);
 }
 
 namespace {
@@ -290,23 +332,24 @@ struct AZMcts::Impl {
 
     // ── self-play state ─────────────────────────────────────────────────────
     std::mt19937 rng;                        // noise + real-action sampling RNG
-    long move_counter = 0;                   // per-game real-decision counter
     std::vector<float> root_obs;             // clean root obs (captured before determinize)
     std::vector<SelfPlaySample> game_samples; // samples stored this game
-    // ── playout cap (cfg.full_search_frac; see az_mcts.h) ──────────────────
+    // ── playout cap + exploration coin (see az_mcts.h) ─────────────────────
     // cap_seed_ = the match's engine seed; cap_root_counter counts searched
     // in-game roots WITHIN the match (never reset at a game boundary,
-    // mirroring the Python per-match counter); cur_full is the coin's verdict
-    // for the search in flight (latched at root setup like cur_sims).
+    // mirroring the Python per-match counter); cur_root_idx is the in-flight
+    // in-game root's index (the key both coins share); cur_full is the
+    // playout-cap coin's verdict for the search in flight (latched at root
+    // setup like cur_sims).
     uint32_t cap_seed_ = 0;
     long cap_root_counter = 0;
+    uint32_t cur_root_idx = 0;
     bool cur_full = true;
 
     explicit Impl(const MCTSConfig& c, AZEvaluator* e, AZEvaluator* eb)
         : cfg(c), eval(e), eval_a(e), eval_b(eb), rng(c.selfplay_rng_seed) {}
 
     void begin_match(uint32_t cap_seed) {
-        move_counter = 0;
         game_samples.clear();
         cap_seed_ = cap_seed;
         cap_root_counter = 0;
@@ -315,10 +358,18 @@ struct AZMcts::Impl {
     void end_game() {
         // Called after a game's samples are priced+flushed. Any sideboard samples
         // recorded before the next game starts accumulate into the now-empty
-        // buffer and get priced by the next game's z; the tau counter restarts at
-        // the game boundary (before the sideboard prompts), matching Python.
-        move_counter = 0;
+        // buffer and get priced by the next game's z.
         game_samples.clear();
+    }
+
+    // Exploration-clock verdict for the real decision being finalized: sample
+    // the real action from the visit distribution (true) or play argmax.
+    // Self-play only; `sideboard_root` roots are turn 0 (eps = 1, coin
+    // short-circuits, root index unused).
+    bool explore_this_root(bool sideboard_root) const {
+        if (!cfg.selfplay) return false;
+        const double eps = explore_prob(obs_turn(root_obs.data(), sideboard_root), cfg);
+        return explore_coin(cap_seed_, sideboard_root ? 0u : cur_root_idx, eps);
     }
 
     // ── evaluator wrappers (uniform-safe) ──────────────────────────────────
@@ -1067,10 +1118,8 @@ struct AZMcts::Impl {
         results.push_back(std::move(sr));
 
         int chosen = greedy;
-        if ((cfg.selfplay || cfg.record) && !learner_root()) {
-            // Opponent-pool seat: argmax masked prior, no sample.
-            move_counter += 1;
-        } else if (cfg.selfplay || cfg.record) {
+        // Opponent-pool seat: argmax masked prior, no sample.
+        if ((cfg.selfplay || cfg.record) && learner_root()) {
             if (cfg.selfplay) {
                 // Prior mode samples at EVERY learner sb root (mirrors
                 // _sb_prior_sample's unconditional rng.choice).
@@ -1088,7 +1137,6 @@ struct AZMcts::Impl {
             s.q = static_cast<float>(r.value);
             s.explored = chosen != greedy;
             game_samples.push_back(std::move(s));
-            move_counter += 1;
         }
         phase = IDLE;
         return chosen;
@@ -1141,12 +1189,9 @@ struct AZMcts::Impl {
             if (pi[static_cast<size_t>(i)] > pi[static_cast<size_t>(best)]) best = i;
 
         int chosen = best;
-        // Opponent-pool sb plan root: no sample, no tau — argmax pick only
-        // (mirrors _opp_net_action's plan-search branch); the move counter
-        // still advances.
-        if ((cfg.selfplay || cfg.record) && !learner_root()) {
-            move_counter += 1;
-        } else if (cfg.selfplay || cfg.record) {
+        // Opponent-pool sb plan root: no sample, no exploration — argmax pick
+        // only (mirrors _opp_net_action's plan-search branch).
+        if ((cfg.selfplay || cfg.record) && learner_root()) {
             SelfPlaySample s;
             s.obs = root_obs;
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
@@ -1158,7 +1203,9 @@ struct AZMcts::Impl {
                     static_cast<float>(pi[static_cast<size_t>(i)]);
                 s.mask[static_cast<size_t>(i)] = 1;
             }
-            if (cfg.selfplay && move_counter < cfg.temp_moves) {
+            // A sideboard root is turn 0 of the upcoming game: the exploration
+            // clock always samples here under --selfplay.
+            if (explore_this_root(true)) {
                 std::discrete_distribution<int> dist(pi.begin(), pi.end());
                 chosen = dist(rng);
             }
@@ -1167,7 +1214,6 @@ struct AZMcts::Impl {
             s.q = static_cast<float>(q[static_cast<size_t>(chosen)]);
             s.explored = chosen != best;
             game_samples.push_back(std::move(s));
-            move_counter += 1;
         }
 
         phase = IDLE;
@@ -1191,15 +1237,13 @@ struct AZMcts::Impl {
         if (eval_b) eval = (o[SELF_IS_A_IDX] > 0.5f) ? eval_a : eval_b;
         // Vs-scripted seat (mirrors _play_match's non-net_to_move branch): the
         // scripted seat's real decisions come from the oracle provider — no
-        // search, no sample, no searched/fallback counters — but they DO
-        // advance the per-game tau counter (Python's game_move counts every
-        // decision, both seats) and latch into a live sideboard boundary (the
-        // walk must replay the true action sequence, whoever played it).
-        // Search simulations never reach here (DESCENDING/ROLLOUT phases), so
-        // tree play stays net-both-seats exactly like the Python reference.
+        // search, no sample, no searched/fallback counters — but they DO latch
+        // into a live sideboard boundary (the walk must replay the true action
+        // sequence, whoever played it). Search simulations never reach here
+        // (DESCENDING/ROLLOUT phases), so tree play stays net-both-seats
+        // exactly like the Python reference.
         if (cfg.scripted_seat != 0 &&
             (o[SELF_IS_A_IDX] > 0.5f) == (cfg.scripted_seat == 1)) {
-            move_counter += 1;
             int a = 0;
             if (nc > 1) {
                 if (!scripted_provider)
@@ -1213,8 +1257,7 @@ struct AZMcts::Impl {
         bool searchable = search_loop_safe() && nc > 1;
         if (!searchable) {
             // A trivial / unsafe real decision: not stored, evaluator-argmax
-            // fallback. It still counts as one real move for the tau schedule.
-            move_counter += 1;
+            // fallback.
             int a = 0;
             if (nc > 1) a = argmax_priors(eval_priors(o, nc), nc);
             // A forced/fallback pick inside an active boundary (direction
@@ -1296,13 +1339,15 @@ struct AZMcts::Impl {
         plan_active = false;
         plan_memo.clear();
         sb_picks.clear();
-        // Playout-cap coin (self-play only — the driver forces frac=1.0 for
-        // every other mode): a fast root searches cfg.fast_sims, mixes no
+        // Searched-root index — the key both hash coins share; the counter
+        // advances only under self-play (the coins are never consulted
+        // elsewhere: the driver forces frac=1.0 and sampling is off).
+        cur_root_idx = static_cast<uint32_t>(cap_root_counter);
+        if (cfg.selfplay) cap_root_counter++;
+        // Playout-cap coin: a fast root searches cfg.fast_sims, mixes no
         // root noise, and its sample carries an all-zero pi (see finalize).
         cur_full = !cfg.selfplay ||
-                   playout_cap_full(cap_seed_,
-                                    static_cast<uint32_t>(cap_root_counter++),
-                                    cfg.full_search_frac);
+                   playout_cap_full(cap_seed_, cur_root_idx, cfg.full_search_frac);
         cur_sims = cur_full ? cfg.sims : cfg.fast_sims;
         cur_worlds = cfg.worlds;
         cur_max_depth = cfg.max_depth;
@@ -1420,7 +1465,7 @@ struct AZMcts::Impl {
                         std::to_string(child->num_choices) + " choices, engine gave " +
                         std::to_string(nc) +
                         "\n  root#" + std::to_string(this_root) +
-                        " move=" + std::to_string(move_counter) +
+                        " cap_root=" + std::to_string(cap_root_counter) +
                         " world=" + std::to_string(cur_world) +
                         " (seed=" + std::to_string(cur_world_seed) + ")" +
                         " sim=" + std::to_string(cur_sim) +
@@ -1541,16 +1586,13 @@ struct AZMcts::Impl {
                 best = i;
 
         // Self-play: store the searched sample and pick the real action per the
-        // tau schedule (sample-from-visits for the first temp_moves real moves,
-        // argmax after). Parity/eval mode stores nothing and always plays argmax;
-        // --record stores the sample but keeps the eval-mode argmax pick.
-        // An opponent-pool root (selfplay with net_seat set, opponent to move)
-        // stores nothing and plays argmax, but still advances the per-game
-        // move counter below (Python's game_move counts every decision).
+        // exploration clock (sample-from-visits when the root's coin says
+        // explore, argmax otherwise). Parity/eval mode stores nothing and
+        // always plays argmax; --record stores the sample but keeps the
+        // eval-mode argmax pick. An opponent-pool root (selfplay with net_seat
+        // set, opponent to move) stores nothing and plays argmax.
         int chosen = best;
-        if ((cfg.selfplay || cfg.record) && !learner_root()) {
-            move_counter += 1;
-        } else if (cfg.selfplay || cfg.record) {
+        if ((cfg.selfplay || cfg.record) && learner_root()) {
             SelfPlaySample s;
             s.obs = root_obs;                                    // clean root obs
             s.pi.assign(static_cast<size_t>(MAX_ACTIONS), 0.0f);
@@ -1573,7 +1615,7 @@ struct AZMcts::Impl {
                 s.mask[static_cast<size_t>(i)] = 1;
             }
 
-            if (cfg.selfplay && move_counter < cfg.temp_moves && total > 0) {
+            if (total > 0 && explore_this_root(false)) {
                 std::discrete_distribution<int> dist(
                     visit_totals.begin(), visit_totals.begin() + root_n);
                 chosen = dist(rng);
@@ -1591,7 +1633,6 @@ struct AZMcts::Impl {
                       : 0.0f;
             s.explored = chosen != best;
             game_samples.push_back(std::move(s));
-            move_counter += 1;
         }
 
         phase = IDLE;
@@ -1626,12 +1667,12 @@ struct AZMcts::Impl {
             stderr,
             "az_mcts DIVERGENCE: about to return index %d into a %zu-action live menu "
             "(turn=%zu step=%s)\n"
-            "  phase=%s this_root=%d root_n=%d move_counter=%ld "
+            "  phase=%s this_root=%d root_n=%d cap_root=%ld "
             "world=%d/%d sim=%d/%d sims_run=%d sb_active=%d sideboard_phase=%d\n"
             "  live menu (%zu action(s)):%s\n"
             "  search-root menu (%zu action(s)):%s\n",
             r, actions.size(), cur_game.turn, step_to_string(cur_game.cur_step),
-            phname, this_root, root_n, move_counter, cur_world, cur_worlds, cur_sim,
+            phname, this_root, root_n, cap_root_counter, cur_world, cur_worlds, cur_sim,
             cur_sims, sims_run, sb_active ? 1 : 0, sideboard_phase ? 1 : 0,
             actions.size(), live.c_str(), root_menu_desc.size(), root.c_str());
         std::fflush(stderr);

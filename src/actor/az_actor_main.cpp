@@ -106,7 +106,11 @@ struct ActorConfig {
     bool record = false;
     double noise_eps = 0.25;
     double noise_alpha = 1.0;
-    int temp_moves = 20;
+    // Exploration clock (see az_mcts.h; compiled defaults mirror cli_spec's
+    // DEFAULT_AZ_EXPLORE_*; az_selfplay always passes all three explicitly).
+    int explore_full_turns = 8;
+    int explore_decay_turns = 8;
+    double explore_floor = 0.05;
     // n-step TD horizon for the recorded value target (mirrors
     // cli_spec.DEFAULT_AZ_TD_N; az_selfplay always passes --td-n explicitly).
     int td_n = 10;
@@ -153,8 +157,12 @@ void print_usage(const char* prog) {
                  "       [--merge-dupes 0|1] (merge interchangeable duplicate menu "
                  "actions into one search edge; default 1)\n"
                  "       [--selfplay [--noise-eps F] [--noise-alpha F] "
-                 "[--temp-moves N] [--td-n N] [--out-dir <dir>] [--rng-seed N] "
+                 "[--explore-full-turns N] [--explore-decay-turns N] "
+                 "[--explore-floor F] [--td-n N] [--out-dir <dir>] [--rng-seed N] "
                  "[--full-search-frac F] [--fast-sims N]]\n"
+                 "       (exploration clock, self-play only: P(sample the real "
+                 "action from visits) is 1 through game turn N, decays linearly "
+                 "over the next N turns to the floor F)\n"
                  "       (playout cap, self-play only: P(full --sims search, "
                  "pi recorded) per in-game root; the rest run --fast-sims "
                  "with no pi. 1.0 = every root full)\n"
@@ -274,8 +282,14 @@ int main(int argc, char const* argv[]) {
             cfg.noise_eps = std::stod(need_arg(argc, argv, i, "--noise-eps"));
         } else if (a == "--noise-alpha") {
             cfg.noise_alpha = std::stod(need_arg(argc, argv, i, "--noise-alpha"));
-        } else if (a == "--temp-moves") {
-            cfg.temp_moves = std::stoi(need_arg(argc, argv, i, "--temp-moves"));
+        } else if (a == "--explore-full-turns") {
+            cfg.explore_full_turns =
+                std::stoi(need_arg(argc, argv, i, "--explore-full-turns"));
+        } else if (a == "--explore-decay-turns") {
+            cfg.explore_decay_turns =
+                std::stoi(need_arg(argc, argv, i, "--explore-decay-turns"));
+        } else if (a == "--explore-floor") {
+            cfg.explore_floor = std::stod(need_arg(argc, argv, i, "--explore-floor"));
         } else if (a == "--td-n") {
             cfg.td_n = std::stoi(need_arg(argc, argv, i, "--td-n"));
         } else if (a == "--out-dir") {
@@ -496,7 +510,9 @@ int main(int argc, char const* argv[]) {
         mc.full_search_frac = cfg.selfplay ? cfg.full_search_frac : 1.0;
         mc.fast_sims = cfg.fast_sims;
         mc.noise_alpha = cfg.noise_alpha;
-        mc.temp_moves = cfg.temp_moves;
+        mc.explore_full_turns = cfg.explore_full_turns;
+        mc.explore_decay_turns = cfg.explore_decay_turns;
+        mc.explore_floor = cfg.explore_floor;
         mc.selfplay_rng_seed = cfg.rng_seed_set ? cfg.rng_seed : cfg.seed;
         mc.scripted_seat = cfg.scripted_seat;
         mc.net_seat = cfg.net_seat;
@@ -529,12 +545,16 @@ int main(int argc, char const* argv[]) {
             static_cast<size_t>(MAX_ACTIONS));
         std::fprintf(stderr,
                      "az_actor: %s out_dir=%s sims=%d worlds=%d "
-                     "noise_eps=%.3f noise_alpha=%.3f temp_moves=%d td_n=%d "
+                     "noise_eps=%.3f noise_alpha=%.3f "
+                     "explore_full_turns=%d explore_decay_turns=%d "
+                     "explore_floor=%.3f td_n=%d "
                      "full_search_frac=%.3f fast_sims=%d\n",
                      cfg.selfplay ? "self-play" : "record (eval-mode)",
                      dir.c_str(), cfg.sims, cfg.worlds,
                      cfg.selfplay ? cfg.noise_eps : 0.0, cfg.noise_alpha,
-                     cfg.selfplay ? cfg.temp_moves : 0, cfg.td_n,
+                     cfg.selfplay ? cfg.explore_full_turns : -1,
+                     cfg.selfplay ? cfg.explore_decay_turns : 0,
+                     cfg.selfplay ? cfg.explore_floor : 0.0, cfg.td_n,
                      cfg.selfplay ? cfg.full_search_frac : 1.0,
                      cfg.fast_sims);
     }
@@ -603,11 +623,11 @@ int main(int argc, char const* argv[]) {
         std::printf("SELFPLAY: game %d samples=%zu winner=%s\n", ++game_log_idx,
                     gs.size(), wstr);
         std::fflush(stdout);
-        // End-of-game reset AFTER pricing+flushing: clears the buffer and resets
-        // the tau counter at the game boundary. Any bo3 sideboard samples recorded
-        // between now and the next game's start accumulate into the now-empty
-        // buffer and are priced by the NEXT game's z (mirrors az_selfplay.py, where
-        // a sideboard sample carries game_idx == k+1 and game_move restarts at 0).
+        // End-of-game reset AFTER pricing+flushing: clears the buffer. Any bo3
+        // sideboard samples recorded between now and the next game's start
+        // accumulate into the now-empty buffer and are priced by the NEXT
+        // game's z (mirrors az_selfplay.py, where a sideboard sample carries
+        // game_idx == k+1).
         mcts->end_game();
     };
 
@@ -616,13 +636,13 @@ int main(int argc, char const* argv[]) {
         // (a match uses seeds match_seed + {0,1,2}) so games never share a seed
         // across matches. play_bo3_match owns the exact sequencing main.cpp uses
         // (game boundaries, loser-on-the-play, revealed accumulator, sideboarding),
-        // with per-game hooks. The sample buffer + tau counter reset ONCE per match
-        // here (begin_match) and again at each game boundary inside the after-game
-        // hook (backfill_selfplay -> end_game, AFTER pricing that game). before_game
-        // no longer clears anything, so sideboard samples recorded between a game's
-        // backfill and the next game's start stay buffered and are priced by the
-        // NEXT game (matching Python's game_idx == k+1 sideboard samples + the
-        // game_move reset at the boundary).
+        // with per-game hooks. The sample buffer + coin counter reset ONCE per
+        // match here (begin_match); the buffer clears again at each game boundary
+        // inside the after-game hook (backfill_selfplay -> end_game, AFTER pricing
+        // that game). before_game clears nothing, so sideboard samples recorded
+        // between a game's backfill and the next game's start stay buffered and
+        // are priced by the NEXT game (matching Python's game_idx == k+1
+        // sideboard samples).
         for (int m = 0; m < cfg.games; m++) {
             unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
             std::srand(match_seed);

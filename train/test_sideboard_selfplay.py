@@ -69,7 +69,6 @@ SB_WORLDS = 2
 # sideboard root (uniform-evaluator rollouts argmax to action 0 and are bounded
 # by the 40/turn step cap).
 SB_ROLLOUT_TURNS = 2
-TEMP_MOVES = 20
 SEED = 7
 
 
@@ -115,7 +114,7 @@ def check_opp_pool_match() -> int:
     try:
         samples, game_winners, searched, fallback, dropped, sb_stats = _play_match(
             env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
-            temp_moves=TEMP_MOVES, root_noise_eps=0.0, root_noise_alpha=1.0,
+            root_noise_eps=0.0, root_noise_alpha=1.0,
             seed=SEED, sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
             sb_rollout_turns=SB_ROLLOUT_TURNS,
             opp_evaluator=UniformEvaluator(), net_is_a=True,
@@ -422,7 +421,7 @@ def main() -> int:
     try:
         samples, game_winners, searched, fallback, dropped, sb_stats = _play_match(
             env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
-            temp_moves=TEMP_MOVES, root_noise_eps=0.0, root_noise_alpha=1.0,
+            root_noise_eps=0.0, root_noise_alpha=1.0,
             seed=SEED, sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
             sb_rollout_turns=SB_ROLLOUT_TURNS)
     finally:
@@ -569,7 +568,7 @@ def main() -> int:
     try:
         samples2, winners2, _se2, _f2, _d2, _st2 = _play_match(
             env2, UniformEvaluator(), np.random.default_rng(SEED),
-            sims=SIMS, worlds=WORLDS, temp_moves=TEMP_MOVES,
+            sims=SIMS, worlds=WORLDS,
             root_noise_eps=0.0, root_noise_alpha=1.0, seed=SEED,
             sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
             sb_rollout_turns=SB_ROLLOUT_TURNS, sb_mode="plan")

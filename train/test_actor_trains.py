@@ -112,7 +112,6 @@ def _python_selfplay(ckpt, out_dir):
             (samples, game_winners, _searched, _fallback,
              _dropped, _sb_stats) = az_selfplay._play_match(
                 env, evaluator, rng, sims=SIMS, worlds=WORLDS,
-                temp_moves=az_selfplay.DEFAULT_TEMP_MOVES,
                 root_noise_eps=az_selfplay.DEFAULT_ROOT_NOISE_EPS,
                 root_noise_alpha=az_selfplay.DEFAULT_ROOT_NOISE_ALPHA, seed=seed)
             buf.append(az_selfplay._backfill_and_pack(samples, game_winners))
