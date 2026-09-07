@@ -293,9 +293,76 @@ def check_playout_cap():
             f"at frac=0.25; td bootstraps through a zero-pi fast row")
 
 
+def check_explore_clock():
+    """The self-play exploration clock (az_selfplay.explore_prob /
+    explore_coin): the turn-keyed schedule's shape, its short-circuits at the
+    ends, the sideboard-root turn-0 rule, and the coin's determinism and
+    independence from the playout-cap coin at the same root index."""
+    from az_selfplay import (explore_prob, explore_coin, obs_turn,
+                             playout_cap_full, _hash_coin)
+    from env import _CUR_TURN_IDX
+
+    full, decay, floor = 8, 8, 0.05
+    # Every turn through `full` (turn 0 = pregame included) explores for sure.
+    for t in range(0, full + 1):
+        if explore_prob(t, full, decay, floor) != 1.0:
+            raise SplitError(f"turn {t} must explore with probability 1")
+    # Linear fall to the floor, hitting it exactly at full + decay.
+    expect = {10: 0.7625, 12: 0.525, 14: 0.2875, 16: 0.05}
+    for t, e in expect.items():
+        got = explore_prob(t, full, decay, floor)
+        if abs(got - e) > 1e-12:
+            raise SplitError(f"turn {t}: expected eps {e}, got {got}")
+    for t in (17, 30, 200):
+        if explore_prob(t, full, decay, floor) != floor:
+            raise SplitError(f"turn {t} must sit at the floor")
+    # A zero-length decay drops straight to the floor; floor 0 = pure argmax.
+    if explore_prob(full + 1, full, 0, 0.0) != 0.0:
+        raise SplitError("decay 0 / floor 0 must give eps 0 past full_turns")
+    # A monotone schedule — never rises with the turn.
+    seq = [explore_prob(t, full, decay, floor) for t in range(0, 40)]
+    if any(b > a for a, b in zip(seq, seq[1:])):
+        raise SplitError("explore_prob must be non-increasing in turn")
+
+    # obs_turn: a sideboard root is turn 0 whatever the turn slot holds.
+    obs = np.zeros(OBS_SIZE, dtype=np.float32)
+    obs[_CUR_TURN_IDX] = 12 / 50.0
+    if obs_turn(obs) != 12:
+        raise SplitError(f"obs_turn decoded {obs_turn(obs)}, expected 12")
+    obs[_IS_SIDEBOARD_IDX] = 1.0
+    if obs_turn(obs) != 0:
+        raise SplitError("a sideboard root must be turn 0")
+
+    # Coin: short-circuits, deterministic, keyed on seed AND root index, and
+    # decorrelated from the playout-cap coin at the same (seed, idx).
+    for ridx in range(50):
+        if not explore_coin(123, ridx, 1.0):
+            raise SplitError("eps=1 must always explore")
+        if explore_coin(123, ridx, 0.0):
+            raise SplitError("eps=0 must never explore")
+    picks = [explore_coin(7, i, 0.05) for i in range(20000)]
+    if picks != [explore_coin(7, i, 0.05) for i in range(20000)]:
+        raise SplitError("the coin must be deterministic per (seed, root)")
+    if picks == [explore_coin(8, i, 0.05) for i in range(20000)]:
+        raise SplitError("the coin must depend on the seed")
+    rate = sum(picks) / len(picks)
+    if not 0.04 <= rate <= 0.06:
+        raise SplitError(f"eps=0.05 coin rate {rate:.4f} outside [0.04, 0.06]")
+    cap = [playout_cap_full(7, i, 0.25) for i in range(20000)]
+    both = sum(1 for e, c in zip(picks, cap) if e and c) / len(picks)
+    if not 0.008 <= both <= 0.018:   # independent coins: 0.05 * 0.25 = 0.0125
+        raise SplitError(f"explore/cap coin joint rate {both:.4f} is not the "
+                         f"product of the marginals (~0.0125)")
+    if _hash_coin(7, 3, 0.5) != playout_cap_full(7, 3, 0.5):
+        raise SplitError("playout_cap_full must be _hash_coin on the bare seed")
+    return (f"schedule 1.0 through turn {full}, linear to {floor} at turn "
+            f"{full + decay}; sb root = turn 0; coin rate {rate:.4f} at "
+            f"eps=0.05, joint with cap {both:.4f}")
+
+
 def main():
     checks = (check_seat_flip, check_merge_and_format, check_td_targets,
-              check_playout_cap, check_live_bo3)
+              check_playout_cap, check_explore_clock, check_live_bo3)
     for fn in checks:
         try:
             detail = fn()

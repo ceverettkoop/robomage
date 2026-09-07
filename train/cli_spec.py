@@ -144,7 +144,21 @@ DEFAULT_AZ_MIRROR_FRAC = 0.25  # P(opponent deck == focus deck) per self-play ga
 # self-play). GENERATION side, honored by both backends.
 DEFAULT_AZ_OPP_POOL_FRAC = 0.25
 DEFAULT_AZ_OPP_POOL_SIZE = 3
-DEFAULT_AZ_TEMP_MOVES = 20   # sample from visit counts for the first N decisions per game
+# Self-play exploration clock (GENERATION side, both backends). Keyed on the
+# obs's game-turn float (the engine's turn counter advances once per PLAYER
+# turn, so 8 = each player's first 4 turns); a bo3 sideboard root counts as
+# turn 0 of the upcoming game. At each learner searched root the exploration
+# probability eps(turn) decides — by a deterministic (seed, root_idx) hash coin,
+# never a play-rng draw — whether the real action is SAMPLED from the visit
+# distribution (an exploratory row) or the visit argmax is played:
+#   turn <= full_turns                : eps = 1.0
+#   full_turns < turn <= full + decay : eps falls linearly from 1.0 to floor
+#   beyond                            : eps = floor
+# Sampling uses the raw visit posterior (temperature 1), so a late exploratory
+# draw stays near the search's own line. See az_selfplay.explore_prob.
+DEFAULT_AZ_EXPLORE_FULL_TURNS = 8
+DEFAULT_AZ_EXPLORE_DECAY_TURNS = 8
+DEFAULT_AZ_EXPLORE_FLOOR = 0.05
 # n-step TD value target (GENERATION side — baked into each shard's td_q column).
 # Each recorded sample's value target bootstraps off the search root value q of
 # the sample n decisions later in the same game, sign-flipped when that decision's
@@ -1236,8 +1250,16 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
             help="AZ (.pt) / PPO (.zip) ckpt or 'gen' (default: generalist AZ "
                  "ckpt, else gen PPO warm-start, else random init)"),
-        Arg("--temp-moves", "int", default=DEFAULT_AZ_TEMP_MOVES,
-            help="Sample from visit counts for the first N real decisions, then argmax"),
+        Arg("--explore-full-turns", "int", default=DEFAULT_AZ_EXPLORE_FULL_TURNS,
+            help="Exploration clock: through this game turn (player turns; "
+                 "sideboard roots are turn 0) every searched root samples its "
+                 "action from the visit distribution"),
+        Arg("--explore-decay-turns", "int", default=DEFAULT_AZ_EXPLORE_DECAY_TURNS,
+            help="Exploration clock: over the next N game turns the per-root "
+                 "sampling probability falls linearly to --explore-floor"),
+        Arg("--explore-floor", "float", default=DEFAULT_AZ_EXPLORE_FLOOR,
+            help="Exploration clock: per-root sampling probability for the rest "
+                 "of the game (0 = argmax after the decay)"),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
         *sb_search_args(),
         *sb_selfplay_args(),

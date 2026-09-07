@@ -53,7 +53,8 @@ from typing import Optional
 import numpy as np
 
 try:
-    from env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+    from env import (OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
+                     _CUR_TURN_IDX)
     from cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
                           DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                           DEFAULT_SB_ROLLOUT_TURNS,
@@ -61,14 +62,17 @@ try:
                           DEFAULT_SB_EXPLORE_EPS,
                           DEFAULT_AZ_GAMES, DEFAULT_AZ_SIMS,
                           DEFAULT_AZ_WORLDS, DEFAULT_AZ_MIRROR_FRAC,
-                          DEFAULT_AZ_TEMP_MOVES, DEFAULT_AZ_TD_N,
+                          DEFAULT_AZ_EXPLORE_FULL_TURNS,
+                          DEFAULT_AZ_EXPLORE_DECAY_TURNS,
+                          DEFAULT_AZ_EXPLORE_FLOOR, DEFAULT_AZ_TD_N,
                           DEFAULT_AZ_EXHAUSTIVE_REPEATS,
                           DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
                           DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
                           DEFAULT_AZ_OPP_POOL_SIZE)
     from opponents import GEN_STEM
 except ImportError:  # pragma: no cover
-    from train.env import OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX
+    from train.env import (OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX,
+                           _IS_SIDEBOARD_IDX, _CUR_TURN_IDX)
     from train.cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
                                 DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                                 DEFAULT_SB_ROLLOUT_TURNS,
@@ -77,7 +81,10 @@ except ImportError:  # pragma: no cover
                                 DEFAULT_SB_EXPLORE_EPS,
                                 DEFAULT_AZ_GAMES,
                                 DEFAULT_AZ_SIMS, DEFAULT_AZ_WORLDS,
-                                DEFAULT_AZ_MIRROR_FRAC, DEFAULT_AZ_TEMP_MOVES,
+                                DEFAULT_AZ_MIRROR_FRAC,
+                                DEFAULT_AZ_EXPLORE_FULL_TURNS,
+                                DEFAULT_AZ_EXPLORE_DECAY_TURNS,
+                                DEFAULT_AZ_EXPLORE_FLOOR,
                                 DEFAULT_AZ_TD_N,
                                 DEFAULT_AZ_EXHAUSTIVE_REPEATS,
                                 DEFAULT_AZ_SCRIPTED_CELLS, DEFAULT_AZ_C_PUCT,
@@ -98,9 +105,18 @@ _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 # Defaults (AlphaZero-style)
 DEFAULT_ROOT_NOISE_EPS = 0.25
 DEFAULT_ROOT_NOISE_ALPHA = 1.0
-# sample-from-visits for the first N real decisions, then argmax; value lives
-# in cli_spec's AZ-defaults block (one home), local alias kept for callers.
-DEFAULT_TEMP_MOVES = DEFAULT_AZ_TEMP_MOVES
+# Exploration clock (see explore_prob); values live in cli_spec's AZ-defaults
+# block (one home), local aliases kept for callers.
+DEFAULT_EXPLORE_FULL_TURNS = DEFAULT_AZ_EXPLORE_FULL_TURNS
+DEFAULT_EXPLORE_DECAY_TURNS = DEFAULT_AZ_EXPLORE_DECAY_TURNS
+DEFAULT_EXPLORE_FLOOR = DEFAULT_AZ_EXPLORE_FLOOR
+# Turn-float normalizer of the obs's current-turn slot (machine_io.h
+# TURN_NORMALIZER; mcts.py decodes the same slot the same way).
+_TURN_NORMALIZER = 50.0
+# Salt XORed into the match seed for the exploration coin so it never
+# correlates with the playout-cap coin at the same root index (C++ twin:
+# kExploreCoinSalt in az_mcts.cpp).
+_EXPLORE_COIN_SALT = 0x5BD1E995
 # Sideboard plan-search budget (DEFAULT_SB_BRANCHES/WORLDS/ROLLOUT_TURNS) lives
 # in cli_spec — the single home shared with opponents.SearchController and the
 # CLI flag defaults — and is imported above.
@@ -515,22 +531,70 @@ def playout_cap_full(cap_seed: int, root_idx: int,
     C++ twin: ``playout_cap_full`` in src/actor/az_mcts.cpp — the two MUST
     stay in exact lockstep (same finalizer, same 24-bit threshold), so the
     knob means the same coin on either backend."""
-    if full_search_frac >= 1.0:
+    return _hash_coin(cap_seed, root_idx, full_search_frac)
+
+
+def _hash_coin(seed: int, idx: int, prob: float) -> bool:
+    """Bernoulli(``prob``) from a murmur3-finalizer hash of ``(seed, idx)``:
+    True with probability ``prob`` (24-bit threshold). ``prob >= 1`` is always
+    True and ``prob <= 0`` always False without consulting the hash. C++ twin:
+    ``hash_coin`` in src/actor/az_mcts.cpp (exact lockstep)."""
+    if prob >= 1.0:
         return True
-    if full_search_frac <= 0.0:
+    if prob <= 0.0:
         return False
-    x = (int(cap_seed) ^ ((0x9E3779B9 * int(root_idx)) & 0xFFFFFFFF)) & 0xFFFFFFFF
+    x = (int(seed) ^ ((0x9E3779B9 * int(idx)) & 0xFFFFFFFF)) & 0xFFFFFFFF
     x = ((x ^ (x >> 16)) * 0x85EBCA6B) & 0xFFFFFFFF
     x = ((x ^ (x >> 13)) * 0xC2B2AE35) & 0xFFFFFFFF
     x ^= x >> 16
-    return (x >> 8) < int(full_search_frac * float(1 << 24))
+    return (x >> 8) < int(prob * float(1 << 24))
+
+
+def explore_prob(turn: int, full_turns: int, decay_turns: int,
+                 floor: float) -> float:
+    """Exploration clock: P(the learner's searched root at game ``turn`` SAMPLES
+    its real action from the visit distribution instead of playing argmax).
+
+    ``turn`` is the engine's per-PLAYER-turn counter (0 before the first turn:
+    mulligans, and a bo3 sideboard root by :func:`obs_turn`). 1.0 through
+    ``full_turns``; then a linear fall to ``floor`` over the next
+    ``decay_turns`` turns; ``floor`` for the rest of the game. C++ twin:
+    ``explore_prob`` in src/actor/az_mcts.cpp — same arithmetic in double so
+    the coin threshold matches bit-for-bit."""
+    floor = min(max(float(floor), 0.0), 1.0)
+    if turn <= full_turns:
+        return 1.0
+    if decay_turns > 0 and turn <= full_turns + decay_turns:
+        remaining = float(full_turns + decay_turns - turn)
+        return floor + (1.0 - floor) * (remaining / float(decay_turns))
+    return floor
+
+
+def obs_turn(obs) -> int:
+    """The game turn an exploration-clock root belongs to: 0 at a bo3
+    sideboard root (the upcoming game has not started; the obs turn slot still
+    holds the ENDED game's turn), else the obs's current-turn float decoded."""
+    if obs[_IS_SIDEBOARD_IDX] > 0.5:
+        return 0
+    return int(round(float(obs[_CUR_TURN_IDX]) * _TURN_NORMALIZER))
+
+
+def explore_coin(cap_seed: int, root_idx: int, prob: float) -> bool:
+    """The exploration clock's per-root coin: :func:`_hash_coin` under
+    ``prob`` on the match seed salted with ``_EXPLORE_COIN_SALT`` and the same
+    searched-root index the playout cap uses, so both backends flip the same
+    coin at the same root and neither coin correlates with the other."""
+    return _hash_coin((int(cap_seed) ^ _EXPLORE_COIN_SALT) & 0xFFFFFFFF,
+                      root_idx, prob)
 
 
 # Per-match search knobs, built once per match and passed to
 # :func:`_search_and_sample` (which must stay a pure re-spelling of the
 # in-loop block it was extracted from — see its BIT CONTRACT note).
 _MatchKnobs = namedtuple("_MatchKnobs", (
-    "sims", "worlds", "c_puct", "temp_moves", "root_noise_eps", "root_noise_alpha",
+    "sims", "worlds", "c_puct",
+    "explore_full_turns", "explore_decay_turns", "explore_floor",
+    "root_noise_eps", "root_noise_alpha",
     "sb_branches", "sb_worlds", "sb_rollout_turns",
     "sb_mode", "sb_explore_temp", "sb_explore_eps",
     "merge_dupes", "full_search_frac", "fast_sims", "cap_seed"))
@@ -594,16 +658,16 @@ def _sb_prior_sample(env, evaluator, rng, knobs, *, num_choices):
 
 
 def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
-                       priority_is_a, game_idx, game_move, sb_boundary,
-                       sb_stats):
+                       priority_is_a, game_idx, sb_boundary, sb_stats):
     """Run the search at the current decision and turn it into (action, sample,
     sb_boundary).
 
     BIT CONTRACT: this is the verbatim searched-decision block of
     :func:`_play_match` (statement order around ``rng`` draws unchanged — the
-    single draw is the temperature ``rng.choice``), so extracting it leaves the
-    sampled play stream byte-identical. ``sb_stats`` is mutated in place with
-    the boundary-persistence and playout-cap counters; the returned
+    single draw is the exploration clock's ``rng.choice``, taken only at a root
+    whose hash coin says "explore"), so extracting it leaves the sampled play
+    stream byte-identical. ``sb_stats`` is mutated in place with the
+    boundary-persistence and playout-cap counters; the returned
     ``sb_boundary`` replaces the caller's (None outside a sideboard root).
 
     Playout-cap randomization: an in-game root searches the full
@@ -647,6 +711,7 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
             memo_picks=tuple(b["picks"]))
         b["seeds"] = result.seeds
         sb_stats["sb_memo_hits"] += result.memo_hits
+        root_idx = 0   # sb roots do not advance the cap counter (see below)
     else:
         sb_boundary = None
         root_idx = sb_stats["cap_root_idx"]
@@ -670,9 +735,13 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
         # loss and every pi consumer key off pi.sum() > 0).
         sample["pi"] = np.zeros_like(sample["pi"])
     sample["game_idx"] = game_idx
-    # Temperature schedule is per-game: the first temp_moves decisions of
-    # EACH game sample from the visit counts, then switch to argmax.
-    if game_move < knobs.temp_moves:
+    # Exploration clock (explore_prob): the root's game turn sets P(sample
+    # from the visit distribution), a hash coin on (seed, root_idx) decides.
+    # A sideboard plan root is turn 0 (eps = 1: the coin short-circuits and
+    # root_idx — the cap counter, which sb roots do not advance — is unused).
+    eps = explore_prob(obs_turn(env._obs), knobs.explore_full_turns,
+                       knobs.explore_decay_turns, knobs.explore_floor)
+    if explore_coin(knobs.cap_seed, root_idx, eps):
         action = int(rng.choice(num_choices, p=visits))
     else:
         action = result.best_action()
@@ -759,8 +828,11 @@ def _sb_latch_played(sb_boundary, obs, action):
 # One game of self-play
 # ----------------------------------------------------------------------
 
-def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
+def _play_match(env, evaluator, rng, *, sims, worlds,
                 root_noise_eps, root_noise_alpha, seed, on_progress=None,
+                explore_full_turns=DEFAULT_EXPLORE_FULL_TURNS,
+                explore_decay_turns=DEFAULT_EXPLORE_DECAY_TURNS,
+                explore_floor=DEFAULT_EXPLORE_FLOOR,
                 c_puct=DEFAULT_AZ_C_PUCT,
                 sb_branches=DEFAULT_SB_BRANCHES, sb_worlds=DEFAULT_SB_WORLDS,
                 sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
@@ -810,12 +882,18 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     off the ``is_sideboard_phase`` state flag (``_IS_SIDEBOARD_IDX``) and searched
     with :func:`mcts.run_plan_search` — one greedily-completed plan per legal
     first pick plus ``sb_branches`` alternates, each priced by rollout on every
-    ``sb_worlds`` world; ``pi = softmax(Q/SB_PI_TAU)``. Because ``game_move`` and ``game_idx`` are advanced at the preceding
-    game's GAME_RESULT boundary, a sideboard sample naturally carries
-    ``game_idx == k+1`` (the UPCOMING game) — so ``_backfill_and_pack`` prices it by
-    that game's winner — and re-enters the per-game temperature schedule at
-    ``game_move == 0``. (Do NOT key off ``is_post_board``/``game_number``: at a
-    game-1->2 sideboard root those still reflect the ENDED game.)
+    ``sb_worlds`` world; ``pi = softmax(Q/SB_PI_TAU)``. Because ``game_idx`` is
+    advanced at the preceding game's GAME_RESULT boundary, a sideboard sample
+    naturally carries ``game_idx == k+1`` (the UPCOMING game) — so
+    ``_backfill_and_pack`` prices it by that game's winner — and the
+    exploration clock treats it as turn 0 of that game (:func:`obs_turn`).
+    (Do NOT key off ``is_post_board``/``game_number``: at a game-1->2
+    sideboard root those still reflect the ENDED game.)
+
+    Exploration clock (``explore_full_turns``/``explore_decay_turns``/
+    ``explore_floor``, see :func:`explore_prob`): each learner searched root
+    samples its real action from the visit distribution with a turn-keyed
+    probability decided by a hash coin, else plays argmax.
 
     ``on_progress(move, searched, fallback)``, when given, fires every
     HEARTBEAT_MOVES decisions. Observation-only: it must not (and cannot)
@@ -838,7 +916,6 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     samples = []
     game_winners = []   # winner of each completed game, in order
     game_idx = 0        # index of the game currently in progress
-    game_move = 0       # decisions made in the current game (temperature schedule)
     move = 0            # decisions made in the whole match (heartbeat/progress)
     done = False
     dropped = 0
@@ -852,7 +929,9 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
     # counter and fast-search tally (see playout_cap_full).
     sb_stats = {"sb_memo_hits": 0, "cap_root_idx": 0, "fast_searched": 0}
     knobs = _MatchKnobs(sims=sims, worlds=worlds, c_puct=c_puct,
-                        temp_moves=temp_moves,
+                        explore_full_turns=int(explore_full_turns),
+                        explore_decay_turns=int(explore_decay_turns),
+                        explore_floor=float(explore_floor),
                         root_noise_eps=root_noise_eps,
                         root_noise_alpha=root_noise_alpha,
                         sb_branches=sb_branches, sb_worlds=sb_worlds,
@@ -876,8 +955,7 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
             action, sample, sb_boundary = _search_and_sample(
                 env, evaluator, rng, knobs, num_choices=num_choices,
                 priority_is_a=priority_is_a, game_idx=game_idx,
-                game_move=game_move, sb_boundary=sb_boundary,
-                sb_stats=sb_stats)
+                sb_boundary=sb_boundary, sb_stats=sb_stats)
             samples.append(sample)
             searched += 1
         elif net_to_move:
@@ -900,14 +978,12 @@ def _play_match(env, evaluator, rng, *, sims, worlds, temp_moves,
 
         obs, reward, terminated, truncated, info = env.step(action)
         move += 1
-        game_move += 1
         # A GAME_RESULT landed on this step -> the game the just-stepped action
         # belonged to has finished. Record its winner and advance to the next game.
         boundary = bool(info.get("game_result"))
         if boundary:
             game_winners.append(winner_from_reward(reward))
             game_idx += 1
-            game_move = 0
             sb_boundary = None
             if agent is not None:
                 agent.new_game()
@@ -1067,7 +1143,8 @@ def _match_winner(game_winners) -> str:
     return "A" if a > b else ("B" if b > a else "DRAW")
 
 
-def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
+def _worker(matchups, source, sims, worlds, explore_full_turns,
+            explore_decay_turns, explore_floor, root_noise_eps,
             root_noise_alpha, out_dir, base_seed, worker_idx, result_q, bo3,
             sb_branches, sb_worlds, sb_rollout_turns,
             sb_mode, sb_explore_temp, sb_explore_eps,
@@ -1144,7 +1221,10 @@ def _worker(matchups, source, sims, worlds, temp_moves, root_noise_eps,
                 agent.set_deck_names(*matchups[m])
             samples, game_winners, searched, fallback, dropped, sb_st = _play_match(
                 env, evaluator, rng, sims=sims, worlds=worlds, c_puct=c_puct,
-                temp_moves=temp_moves, root_noise_eps=root_noise_eps,
+                explore_full_turns=explore_full_turns,
+                explore_decay_turns=explore_decay_turns,
+                explore_floor=explore_floor,
+                root_noise_eps=root_noise_eps,
                 root_noise_alpha=root_noise_alpha, seed=seed,
                 on_progress=beat, sb_branches=sb_branches, sb_worlds=sb_worlds,
                 sb_rollout_turns=sb_rollout_turns, sb_mode=sb_mode,
@@ -1244,7 +1324,9 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
              fast_sims: int = DEFAULT_AZ_FAST_SIMS,
              c_puct: float = DEFAULT_AZ_C_PUCT,
              workers: Optional[int] = None, checkpoint: Optional[str] = None,
-             temp_moves: int = DEFAULT_TEMP_MOVES,
+             explore_full_turns: int = DEFAULT_EXPLORE_FULL_TURNS,
+             explore_decay_turns: int = DEFAULT_EXPLORE_DECAY_TURNS,
+             explore_floor: float = DEFAULT_EXPLORE_FLOOR,
              root_noise_eps: float = DEFAULT_ROOT_NOISE_EPS,
              root_noise_alpha: float = DEFAULT_ROOT_NOISE_ALPHA,
              out_dir: Optional[str] = None, seed: int = 1,
@@ -1509,7 +1591,10 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
 
     common = dict(source=source, schedule=schedule, sims=sims, worlds=worlds,
                   full_search_frac=full_search_frac, fast_sims=fast_sims,
-                  c_puct=c_puct, workers=workers, temp_moves=temp_moves,
+                  c_puct=c_puct, workers=workers,
+                  explore_full_turns=explore_full_turns,
+                  explore_decay_turns=explore_decay_turns,
+                  explore_floor=explore_floor,
                   root_noise_eps=root_noise_eps, root_noise_alpha=root_noise_alpha,
                   out_dir=out_dir, seed=seed, td_n=td_n,
                   merge_dupes=merge_dupes)
@@ -1547,7 +1632,8 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
 # Python multiprocess backend
 # ----------------------------------------------------------------------
 
-def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_moves,
+def _generate_python(deck, *, source, schedule, sims, worlds, workers,
+                     explore_full_turns, explore_decay_turns, explore_floor,
                      root_noise_eps, root_noise_alpha, out_dir, seed,
                      c_puct=DEFAULT_AZ_C_PUCT,
                      full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
@@ -1587,7 +1673,9 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers, temp_move
         if per[wi] == 0:
             continue
         p = ctx.Process(target=_worker,
-                        args=(slices[wi], source, sims, worlds, temp_moves,
+                        args=(slices[wi], source, sims, worlds,
+                              explore_full_turns, explore_decay_turns,
+                              explore_floor,
                               root_noise_eps, root_noise_alpha, out_dir, seed,
                               wi, result_q, bo3, sb_branches, sb_worlds,
                               sb_rollout_turns, sb_mode, sb_explore_temp,
@@ -1830,7 +1918,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
                        fast_sims=DEFAULT_AZ_FAST_SIMS,
                        out_dir, deck_b=None, noise_eps=DEFAULT_ROOT_NOISE_EPS,
                        noise_alpha=DEFAULT_ROOT_NOISE_ALPHA,
-                       temp_moves=DEFAULT_TEMP_MOVES, rng_seed=None,
+                       explore_full_turns=DEFAULT_EXPLORE_FULL_TURNS,
+                       explore_decay_turns=DEFAULT_EXPLORE_DECAY_TURNS,
+                       explore_floor=DEFAULT_EXPLORE_FLOOR, rng_seed=None,
                        bo3=False, sb_branches=DEFAULT_SB_BRANCHES,
                        sb_worlds=DEFAULT_SB_WORLDS,
                        sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS,
@@ -1900,7 +1990,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            *model_args, "--out-dir", out_dir,
            "--noise-eps", str(noise_eps),
            "--noise-alpha", str(noise_alpha),
-           "--temp-moves", str(temp_moves),
+           "--explore-full-turns", str(explore_full_turns),
+           "--explore-decay-turns", str(explore_decay_turns),
+           "--explore-floor", str(explore_floor),
            "--td-n", str(td_n),
            "--merge-dupes", str(int(merge_dupes))]
     if c_puct != 1.5:   # appended only when non-default: default argv unchanged
@@ -1955,7 +2047,8 @@ def _spawn_oracle():
     return proc, sock, tmpdir
 
 
-def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves,
+def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
+                    explore_full_turns, explore_decay_turns, explore_floor,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
                     c_puct=DEFAULT_AZ_C_PUCT,
                     full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
@@ -2108,7 +2201,10 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers, temp_moves
             full_search_frac=full_search_frac, fast_sims=fast_sims,
             out_dir=out_dir,
             noise_eps=root_noise_eps, noise_alpha=root_noise_alpha,
-            temp_moves=temp_moves, rng_seed=seed + 100003 * (gi + 1),
+            explore_full_turns=explore_full_turns,
+            explore_decay_turns=explore_decay_turns,
+            explore_floor=explore_floor,
+            rng_seed=seed + 100003 * (gi + 1),
             bo3=bo3, sb_branches=sb_branches, sb_worlds=sb_worlds,
             sb_rollout_turns=sb_rollout_turns,
             sb_mode=sb_mode, sb_explore_temp=sb_explore_temp,
@@ -2451,7 +2547,13 @@ def run(args) -> None:
              opp_pool_frac=float(getattr(args, "opp_pool_frac", 0.0)),
              c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
              workers=args.workers, checkpoint=args.checkpoint,
-             temp_moves=args.temp_moves, seed=resolve_seed(args),
+             explore_full_turns=int(getattr(args, "explore_full_turns",
+                                            DEFAULT_EXPLORE_FULL_TURNS)),
+             explore_decay_turns=int(getattr(args, "explore_decay_turns",
+                                             DEFAULT_EXPLORE_DECAY_TURNS)),
+             explore_floor=float(getattr(args, "explore_floor",
+                                         DEFAULT_EXPLORE_FLOOR)),
+             seed=resolve_seed(args),
              out_dir=args.out, use_actor=_resolve_use_actor(args),
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
@@ -2503,7 +2605,23 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                     help="AZ (.pt) / PPO (.zip) checkpoint or 'gen' "
                          "(default: generalist AZ ckpt, else gen PPO warm-start, "
                          "else random)")
-    ap.add_argument("--temp-moves", type=int, default=DEFAULT_TEMP_MOVES)
+    ap.add_argument("--explore-full-turns", type=int,
+                    default=DEFAULT_EXPLORE_FULL_TURNS,
+                    help="Exploration clock: through this game turn (player "
+                         "turns; sideboard roots are turn 0) every searched "
+                         "root samples from the visit distribution (default "
+                         "%d)" % DEFAULT_EXPLORE_FULL_TURNS)
+    ap.add_argument("--explore-decay-turns", type=int,
+                    default=DEFAULT_EXPLORE_DECAY_TURNS,
+                    help="Exploration clock: over the next N game turns the "
+                         "per-root sampling probability falls linearly to "
+                         "--explore-floor (default %d)"
+                         % DEFAULT_EXPLORE_DECAY_TURNS)
+    ap.add_argument("--explore-floor", type=float,
+                    default=DEFAULT_EXPLORE_FLOOR,
+                    help="Exploration clock: per-root sampling probability for "
+                         "the rest of the game (default %g; 0 = argmax after "
+                         "the decay)" % DEFAULT_EXPLORE_FLOOR)
     ap.add_argument("--merge-dupes", type=int, default=1,
                     help="Merge interchangeable duplicate menu actions into one "
                          "search edge (decode.menu_merge_reps; default 1, pass "

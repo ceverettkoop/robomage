@@ -144,7 +144,6 @@ def _python_leg(ckpt, out_dir, args, scripted=False):
             (samples, _game_winners, _searched, _fallback,
              _dropped, _sb_stats) = az_selfplay._play_match(
                 env, evaluator, rng, sims=args.sims, worlds=args.worlds,
-                temp_moves=az_selfplay.DEFAULT_TEMP_MOVES,
                 root_noise_eps=az_selfplay.DEFAULT_ROOT_NOISE_EPS,
                 root_noise_alpha=az_selfplay.DEFAULT_ROOT_NOISE_ALPHA, seed=seed,
                 agent=agent, net_is_a=(True if scripted else None))

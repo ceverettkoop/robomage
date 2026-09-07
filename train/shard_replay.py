@@ -28,9 +28,11 @@ lazily, only when a value net is actually requested.
 
 Known reconstruction limits (inherent to the shard format, surfaced in the UI):
   * The played action is ``argmax(pi)`` — exact wherever self-play picked
-    ``best_action()``, but each game's first ``temp_moves`` (default 20)
-    searched decisions were SAMPLED from ``pi``, so there argmax is only the
-    most probable reconstruction.
+    ``best_action()``, but the exploration clock (``az_selfplay.explore_prob``:
+    every searched decision through each player's first turns, a decaying
+    fraction after, a small floor for the rest of the game) SAMPLES the
+    action from ``pi``, so there argmax is only the most probable
+    reconstruction.
   * TRAINING-POOL shards record only searched decisions, so step sequences
     have gaps at the residual unsafe roots. (GUI-play recordings do NOT have
     this gap: shard_record writes every >1-choice decision, the unsearched
