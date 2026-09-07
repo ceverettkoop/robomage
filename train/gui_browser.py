@@ -43,14 +43,16 @@ import numpy as np
 from PySide6.QtCore import Qt, QObject, QSize, QTimer, Signal
 from PySide6.QtGui import (QColor, QFont, QFontDatabase, QKeySequence,
                            QPainter, QPen, QShortcut)
-from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QListWidget,
-                               QListWidgetItem, QPlainTextEdit, QPushButton,
-                               QSplitter, QTabWidget, QTableWidget,
-                               QTableWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
+                               QListWidget, QListWidgetItem, QPlainTextEdit,
+                               QPushButton, QSplitter, QTabWidget,
+                               QTableWidget, QTableWidgetItem, QTreeWidget,
+                               QTreeWidgetItem, QVBoxLayout, QWidget)
 
 import browse_session as bs
 import decode
 import shard_probes
+import tree_rebuild
 from cli_spec import BINARY
 from env import STATE_SIZE
 from game_driver import stack_target_refs
@@ -82,6 +84,19 @@ _MSG_NO_ENV = "Live env not ready."
 _MSG_BUSY = ("Engine is busy (simulating or branching) — try again when it "
              "finishes.")
 _MSG_NO_SEL = "Select a game and step first."
+_MSG_TREE_NOT_SHARDS = ("Rebuilding a search tree needs a recording (shard "
+                        "mode) — only recorded rows carry search diagnostics.")
+_MSG_NO_DIAG = ("This decision has no search diagnostics — only a search "
+                "opponent's own searched or tree-followed decision has a "
+                "tree to rebuild.")
+
+
+def _tree_ready_status(ev):
+    """The status-line text for a TreeReady."""
+    if not ev.verified:
+        return f"Tree ready (MISMATCH {ev.mismatch})"
+    return ("Tree ready (cache hit)" if ev.from_cache
+            else "Tree ready (rebuilt, verified)")
 
 # Namespace dests per cli_spec.ANALYSIS_TUI_TOOL (the schema _load_model_and_env
 # consumes): opts-dict key -> default.
@@ -130,7 +145,8 @@ class EngineWorker(threading.Thread):
 
     Commands (via the queue): ("load", n, stop) / ("collect", n, stop) /
     ("whatif", gn, step, k, game) / ("search", gn, step, game) /
-    ("shutdown",). Stop events are created at
+    ("tree", gn, step, game) / ("tree_expand", world, path) /
+    ("tree_close",) / ("shutdown",). Stop events are created at
     submit time, one per collect run (the AnalysisWorker discipline), so a
     stop that lands before the worker even dequeues the run still sticks. The
     UI rejects submissions while the store is engine_busy, keeping the queue
@@ -159,6 +175,12 @@ class EngineWorker(threading.Thread):
                     self._core.whatif(cmd[1], cmd[2], cmd[3], cmd[4])
                 elif kind == "search":
                     self._core.search_step(cmd[1], cmd[2], cmd[3])
+                elif kind == "tree":
+                    self._core.open_tree(cmd[1], cmd[2], cmd[3])
+                elif kind == "tree_expand":
+                    self._core.tree_expand(cmd[1], cmd[2])
+                elif kind == "tree_close":
+                    self._core.close_tree()
             except Exception:   # noqa: BLE001 — the worker loop must survive
                 # EngineCore jobs guard themselves; this is the last-resort
                 # net so a bug can't kill the queue loop silently.
@@ -503,7 +525,10 @@ class DecisionPanel(QWidget):
     the opponent's actions since the previous decision, the match-clock line,
     and the shard-replay caveat."""
 
-    _COLS = ("#", "P(a)", "", "Action")
+    _COLS = ("#", "π", "N", "Q", "P", "", "Action")
+    # Column indices; the diag columns hide when the step recorded no search.
+    _COL_PI, _COL_N, _COL_Q, _COL_P, _COL_BAR, _COL_ACTION = 1, 2, 3, 4, 5, 6
+    _DIAG_COLS = (_COL_N, _COL_Q, _COL_P)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -517,6 +542,11 @@ class DecisionPanel(QWidget):
         self._clock.setStyleSheet("color: #9a9aa2;")
         self._clock.hide()
         v.addWidget(self._clock)
+        self._search = QLabel("")
+        self._search.setStyleSheet("color: #9a9aa2;")
+        self._search.setWordWrap(True)
+        self._search.hide()
+        v.addWidget(self._search)
         self._table = QTableWidget(0, len(self._COLS))
         self._table.setHorizontalHeaderLabels(self._COLS)
         self._table.verticalHeader().setVisible(False)
@@ -540,46 +570,61 @@ class DecisionPanel(QWidget):
     def clear(self):
         self._head.setText("Decision — legal actions with policy P(a)")
         self._clock.hide()
+        self._search.hide()
         self._table.setRowCount(0)
         self._opp.hide()
         self._caveat.hide()
+
+    @staticmethod
+    def _row_cells(r):
+        """The table's cell texts for one DecisionRow (column order _COLS)."""
+        pi = f"{r.prob * 100:5.1f}%" if r.prob is not None else ""
+        bar = ("▮" * max(1 if r.prob > 0.005 else 0, round(r.prob * 10))
+               if r.prob is not None else "")
+        n = str(r.visits) if r.visits is not None else ""
+        q = f"{r.q:+.3f}" if r.q is not None else ""
+        p = f"{r.prior * 100:5.1f}%" if r.prior is not None else ""
+        desc = r.desc + ("  ◀ chosen" if r.is_chosen else "")
+        return (str(r.k), pi, n, q, p, bar, desc)
 
     def show_decision(self, game, step):
         dd = bs.decision_data(game, step)
         self._head.setText(f"Decision — {dd.num_choices} legal")
         self._clock.setText(dd.clock)
         self._clock.setVisible(bool(dd.clock))
+        self._search.setText(dd.search_line)
+        self._search.setVisible(bool(dd.search_line))
 
         has_probs = any(r.prob is not None for r in dd.rows)
-        self._table.setColumnHidden(1, not has_probs)
-        self._table.setColumnHidden(2, not has_probs)
+        has_diag = any(r.visits is not None for r in dd.rows)
+        self._table.setColumnHidden(self._COL_PI, not has_probs)
+        self._table.setColumnHidden(self._COL_BAR, not has_probs)
+        for col in self._DIAG_COLS:
+            self._table.setColumnHidden(col, not has_diag)
         self._table.setRowCount(len(dd.rows))
         bold = QFont(self._table.font())
         bold.setBold(True)
+        numeric = (0, self._COL_PI) + self._DIAG_COLS
         for row, r in enumerate(dd.rows):
-            if r.prob is not None:
-                bar = "▮" * max(1 if r.prob > 0.005 else 0, round(r.prob * 10))
-                cells = (str(r.k), f"{r.prob * 100:5.1f}%", bar, r.desc)
-            else:
-                cells = (str(r.k), "", "", r.desc)
-            if r.is_chosen:
-                cells = cells[:3] + (cells[3] + "  ◀ chosen",)
-            for col, text in enumerate(cells):
+            for col, text in enumerate(self._row_cells(r)):
                 item = QTableWidgetItem(text)
-                if col in (0, 1):
+                if col in numeric:
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                 if col == 0:
                     item.setData(Qt.UserRole, r.k)     # row -> action index
                 if r.is_chosen:
                     item.setFont(bold)
                     item.setForeground(_CHOSEN_FG)
-                elif col == 2:
+                elif col == self._COL_BAR:
                     item.setForeground(_POS)
                 self._table.setItem(row, col, item)
         self._table.resizeColumnToContents(0)
         if has_probs:
-            self._table.resizeColumnToContents(1)
-            self._table.resizeColumnToContents(2)
+            self._table.resizeColumnToContents(self._COL_PI)
+            self._table.resizeColumnToContents(self._COL_BAR)
+        if has_diag:
+            for col in self._DIAG_COLS:
+                self._table.resizeColumnToContents(col)
         self._table.scrollToTop()
 
         if dd.opp_lines:
@@ -589,6 +634,277 @@ class DecisionPanel(QWidget):
         else:
             self._opp.hide()
         self._caveat.setVisible(dd.shard_caveat)
+
+
+# ── Tree panel ────────────────────────────────────────────────────────────────
+
+_TREE_IDLE = "no tree open — F7 rebuilds the recorded search tree of a searched decision"
+_MERGED_WORLD = -1
+
+
+def _fmt_node_rows(rows, labels):
+    """(action, N, Q, P) rows -> (key action, cell texts) most-visited first."""
+    out = []
+    for a, n, q, p in sorted(rows, key=lambda r: -r[1]):
+        label = labels[a] if a < len(labels) else f"#{a}"
+        out.append((a, n, (f"[{a}] {label}", str(n), f"{q:+.3f}",
+                           f"{p * 100:5.1f}%")))
+    return out
+
+
+class TreePanel(QWidget):
+    """The Tree tab: the rebuilt search tree of one recorded decision.
+
+    Header (TreeSession summary + verified badge), a world picker ("merged
+    root" = the summed root statistics, not expandable; one entry per
+    determinized world whose private tree is browsable), a lazily expanded
+    QTreeWidget (Action / N / Q / P per node; a node's children are fetched
+    from the engine worker the first time it is expanded or clicked, then
+    cached per (world, path)), the principal variation of the selected root
+    action, and a MiniBoard rendering the hypothetical position the clicked
+    node's walk reached (opponent-to-act hands hidden unless revealed). All
+    engine access goes through `expand_requested` — the pane submits the job
+    and feeds `show_nodes` back."""
+
+    expand_requested = Signal(int, object)      # (world, path list)
+    _COLS = ("Action", "N", "Q", "P")
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._ready = None            # the TreeReady on display
+        self._nodes = {}              # (world, path) -> TreeNodes
+        self._items = {}              # (world, path) -> QTreeWidgetItem
+        self._requested = set()       # (world, path) already submitted
+        self._board = None            # MiniBoard (built per viewpoint)
+        self._board_opp_is_a = None
+        self._shown = None            # TreeNodes on the board
+        self._follow_target = None    # (world, path) to select on arrival
+
+        v = QVBoxLayout(self)
+        v.setContentsMargins(4, 2, 4, 2)
+        v.setSpacing(2)
+        self._head = QLabel(_TREE_IDLE)
+        self._head.setWordWrap(True)
+        self._head.setStyleSheet("color: #b8b8c0; font-weight: bold;")
+        v.addWidget(self._head)
+        top = QHBoxLayout()
+        top.addWidget(QLabel("World:"))
+        self._world = QComboBox()
+        self._world.currentIndexChanged.connect(lambda _i: self._rebuild_root())
+        top.addWidget(self._world)
+        self._reveal = QCheckBox("reveal hidden hand")
+        self._reveal.toggled.connect(self._on_reveal)
+        top.addWidget(self._reveal)
+        top.addStretch(1)
+        v.addLayout(top)
+        split = QSplitter(Qt.Vertical)
+        self._tree = QTreeWidget()
+        self._tree.setColumnCount(len(self._COLS))
+        self._tree.setHeaderLabels(self._COLS)
+        self._tree.setFont(_mono_font())
+        self._tree.itemExpanded.connect(self._on_expanded)
+        self._tree.itemClicked.connect(self._on_clicked)
+        split.addWidget(self._tree)
+        self._board_host = QWidget()
+        self._board_lay = QVBoxLayout(self._board_host)
+        self._board_lay.setContentsMargins(0, 0, 0, 0)
+        split.addWidget(self._board_host)
+        split.setStretchFactor(0, 3)
+        split.setStretchFactor(1, 2)
+        v.addWidget(split, 1)
+        self._pv = QLabel("")
+        self._pv.setWordWrap(True)
+        self._pv.setStyleSheet("color: #9a9aa2;")
+        v.addWidget(self._pv)
+
+    # ----- viewpoint / board -----
+
+    def set_viewpoint(self, opp_is_a):
+        """(Re)build the MiniBoard for the browsed seat: "you" is the record's
+        viewpoint seat, so its opponent is the other one."""
+        if self._board is not None and self._board_opp_is_a == opp_is_a:
+            return
+        from gui_analysis import MiniBoard
+        if self._board is not None:
+            self._board_lay.removeWidget(self._board)
+            self._board.deleteLater()
+        self._board = MiniBoard(opp_is_a)
+        self._board.set_reveal(self._reveal.isChecked())
+        self._board_opp_is_a = opp_is_a
+        self._board_lay.addWidget(self._board)
+        self._board.clear("")
+
+    def _on_reveal(self, checked):
+        if self._board is not None:
+            self._board.set_reveal(checked)
+            if self._shown is not None:
+                self._render(self._shown)
+
+    def _render(self, ev):
+        self._shown = ev
+        if self._board is None:
+            return
+        if ev.terminal is not None:
+            self._board.show_terminal(ev.terminal)
+        elif ev.walk_nodes and ev.walk_nodes[-1].obs is not None:
+            self._board.show_node(ev.walk_nodes[-1].obs)
+        else:
+            self._board.clear("(tree root — the recorded decision; "
+                              "see the Board tab)")
+
+    # ----- tree content -----
+
+    def clear(self, text=_TREE_IDLE):
+        self._ready = None
+        self._nodes = {}
+        self._items = {}
+        self._requested = set()
+        self._shown = None
+        self._follow_target = None
+        self._head.setText(text)
+        self._world.blockSignals(True)
+        self._world.clear()
+        self._world.blockSignals(False)
+        self._tree.clear()
+        self._pv.setText("")
+        if self._board is not None:
+            self._board.clear("")
+
+    def show_tree(self, ev):
+        """Install a TreeReady: root rows per world, PVs, and (a followed
+        row) the path to pre-expand and select."""
+        self.clear()
+        self._ready = ev
+        badge = ("verified" if ev.verified
+                 else f"MISMATCH ({ev.mismatch})")
+        self._head.setText(f"game {ev.gn} step {ev.step} · {badge} · "
+                           f"{ev.summary}")
+        self._world.blockSignals(True)
+        self._world.addItem("merged root", _MERGED_WORLD)
+        for w in range(ev.worlds):
+            self._world.addItem(f"world {w}", w)
+        start = ev.follow_worlds[0] if ev.follow_path and ev.follow_worlds \
+            else 0
+        self._world.setCurrentIndex(self._world.findData(start))
+        self._world.blockSignals(False)
+        self._rebuild_root()
+        if ev.follow_path:
+            path = tuple(int(a) for a in ev.follow_path)
+            self._follow_target = (start, path)
+            for i in range(len(path) + 1):
+                self._request(start, path[:i])
+
+    def current_world(self):
+        w = self._world.currentData()
+        return _MERGED_WORLD if w is None else int(w)
+
+    def _rebuild_root(self):
+        self._tree.clear()
+        self._items = {}
+        self._pv.setText("")
+        ev = self._ready
+        if ev is None:
+            return
+        w = self.current_world()
+        if w == _MERGED_WORLD:
+            rows, labels = ev.merged_rows, ev.root_labels
+        else:
+            rows, labels = ev.root_rows[w], ev.root_labels
+        for a, n, cells in _fmt_node_rows(rows, labels):
+            self._add_item(None, (w, (a,)), cells,
+                           expandable=(w != _MERGED_WORLD and n > 0))
+
+    def _add_item(self, parent, key, cells, expandable):
+        item = QTreeWidgetItem(list(cells))
+        for col in (1, 2, 3):
+            item.setTextAlignment(col, Qt.AlignRight | Qt.AlignVCenter)
+        item.setData(0, Qt.UserRole, key)
+        if parent is None:
+            self._tree.addTopLevelItem(item)
+        else:
+            parent.addChild(item)
+        if expandable:
+            item.addChild(QTreeWidgetItem(["…"]))      # lazy placeholder
+        self._items[key] = item
+        return item
+
+    @staticmethod
+    def _has_placeholder(item):
+        return (item.childCount() == 1
+                and item.child(0).data(0, Qt.UserRole) is None)
+
+    def _request(self, world, path):
+        key = (int(world), tuple(int(a) for a in path))
+        cached = self._nodes.get(key)
+        if cached is not None:
+            self.show_nodes(cached)      # a world re-pick rebuilt the items
+            return
+        if key in self._requested:
+            return
+        self._requested.add(key)
+        self.expand_requested.emit(key[0], list(key[1]))
+
+    def request_expand(self, world, path):
+        """Public entry (smoke): fetch a node like a click on it would."""
+        self._request(world, path)
+
+    def _on_expanded(self, item):
+        key = item.data(0, Qt.UserRole)
+        if key is not None and self._has_placeholder(item):
+            self._request(*key)
+
+    def _on_clicked(self, item, _col=0):
+        key = item.data(0, Qt.UserRole)
+        if key is None or self._ready is None:
+            return
+        world, path = key
+        if len(path) == 1 and world != _MERGED_WORLD:
+            self._pv.setText(
+                "PV: " + (self._ready.pv_lines[world].get(path[0]) or "—"))
+        elif world == _MERGED_WORLD:
+            self._pv.setText("(merged root — pick a world to walk its tree)")
+            return
+        cached = self._nodes.get(key)
+        if cached is not None:
+            self._render(cached)
+        else:
+            self._request(world, path)
+
+    def show_nodes(self, ev):
+        """Install a TreeNodes: populate the node's children (replacing the
+        placeholder) and, when it is the clicked/followed node, render its
+        walked position."""
+        if self._ready is None:
+            return
+        key = (int(ev.world), tuple(int(a) for a in ev.path))
+        self._nodes[key] = ev
+        item = self._items.get(key)
+        if item is not None:
+            if self._has_placeholder(item):
+                item.takeChild(0)
+            if item.childCount() == 0:
+                if ev.rows:
+                    for a, n, cells in _fmt_node_rows(ev.rows, ev.labels):
+                        self._add_item(item, (key[0], key[1] + (a,)), cells,
+                                       expandable=(n > 0))
+                elif ev.terminal is None:
+                    child = QTreeWidgetItem(["(unexpanded)"])
+                    child.setFlags(child.flags() & ~Qt.ItemIsEnabled)
+                    item.addChild(child)
+        current = self._tree.currentItem()
+        is_current = (current is not None
+                      and current.data(0, Qt.UserRole) == key)
+        if key == self._follow_target:
+            self._follow_target = None
+            if item is not None:
+                parent = item.parent()
+                while parent is not None:
+                    parent.setExpanded(True)
+                    parent = parent.parent()
+                self._tree.setCurrentItem(item)
+            is_current = True
+        if is_current or (key[1] == () and self._shown is None):
+            self._render(ev)
 
 
 # ── The pane ──────────────────────────────────────────────────────────────────
@@ -626,7 +942,9 @@ class BrowserPane(QWidget):
         core = bs.EngineCore(self._args, self._bridge.engine_event.emit)
         self._worker = EngineWorker(core)
         self._collect_stop = None      # stop event of the running collect job
-        self._busy_kind = None         # None | "sim" | "whatif"
+        self._busy_kind = None         # None | "sim" | "whatif" | "search" | "tree"
+        self._tree_open = False        # a TreeSession is open on the worker
+        self._tree_jobs = 0            # tree/tree_expand jobs not yet EngineIdle'd
         self._analysis_thread = None
         self._probe_net = None         # lazy az_inspect probe net (+ label)
         self._probe_net_label = ""
@@ -653,6 +971,11 @@ class BrowserPane(QWidget):
         self._smoke = os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1"
         self._smoke_pending = self._smoke
         self._smoke_wait_summary = False
+        # Tree smoke (ROBOMAGE_TREE_SMOKE=1): after the load, rebuild the
+        # first searched decision's tree and expand one root action.
+        self._tree_smoke = os.environ.get("ROBOMAGE_TREE_SMOKE") == "1"
+        self._tree_smoke_pending = self._tree_smoke
+        self._tree_smoke_path = None
 
         self._build_ui()
         self._build_shortcuts()
@@ -711,6 +1034,15 @@ class BrowserPane(QWidget):
             item = QListWidgetItem(label)
             item.setData(Qt.UserRole, key)
             self._menu_list.addItem(item)
+        # Exact-tree rebuild: only a recording's rows carry the search
+        # diagnostics (seeds, sims, visits) the rebuild needs.
+        for key, label in bs.TREE_MENU:
+            item = QListWidgetItem(label)
+            item.setData(Qt.UserRole, key)
+            if not self._shards:
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                item.setToolTip(_MSG_TREE_NOT_SHARDS)
+            self._menu_list.addItem(item)
         # Net probes (az_inspect over the browsed records): per-decision
         # block-importance / card-swap / sweeps / recorded-π-vs-net, plus the
         # pooled KL and calibration views. Work in every session mode; the
@@ -752,6 +1084,9 @@ class BrowserPane(QWidget):
         self._output.setReadOnly(True)
         self._output.setFont(_mono_font())
         self._tabs.addTab(self._output, "Analysis output")
+        self._tree_panel = TreePanel()
+        self._tree_panel.expand_requested.connect(self._submit_tree_expand)
+        self._tabs.addTab(self._tree_panel, "Tree")
         right.addWidget(self._tabs)
         hist_box = QWidget()
         hv = QVBoxLayout(hist_box)
@@ -786,7 +1121,8 @@ class BrowserPane(QWidget):
                  ("Home", lambda: self._set_step(0)),
                  ("End", self._step_end),
                  ("W", lambda: self._run_menu_entry("whatif")),
-                 ("F6", lambda: self._run_menu_entry("search"))]
+                 ("F6", lambda: self._run_menu_entry("search")),
+                 ("F7", lambda: self._run_menu_entry("tree"))]
         for seq, fn in binds:
             sc = QShortcut(QKeySequence(seq), self)
             sc.setContext(Qt.WidgetWithChildrenShortcut)
@@ -815,6 +1151,8 @@ class BrowserPane(QWidget):
         if self._worker is not None:
             if self._collect_stop is not None:
                 self._collect_stop.set()
+            if self._tree_open:
+                self._worker.submit(("tree_close",))
             self._worker.submit(("shutdown",))
             if self._worker.is_alive():
                 self._worker.join(5.0)
@@ -909,7 +1247,15 @@ class BrowserPane(QWidget):
             self._busy_kind = None
             self._log_output(ev.title, ev.text)
             self._tabs.setCurrentWidget(self._output)
+            if self._tree_smoke and ev.title.startswith("tree"):
+                self._tree_smoke_report(False, ev.text.strip().splitlines()[-1]
+                                        if ev.text.strip() else ev.title)
         elif isinstance(ev, bs.EngineIdle):
+            if self._tree_jobs > 0:
+                self._tree_jobs -= 1
+                if self._tree_jobs > 0:
+                    self._store.engine_busy = True   # expansions still queued
+                    return
             self._busy_kind = None
             self._collect_stop = None
             self._stop_btn.setEnabled(False)
@@ -918,6 +1264,31 @@ class BrowserPane(QWidget):
             if self._smoke_pending:
                 self._smoke_pending = False
                 self._run_smoke()
+            if self._tree_smoke_pending:
+                self._tree_smoke_pending = False
+                self._run_tree_smoke()
+        elif isinstance(ev, bs.TreeReady):
+            self._tree_open = True
+            g = self._store.games[ev.gn] if ev.gn < len(self._store.games) \
+                else None
+            if g is not None:
+                self._tree_panel.set_viewpoint(not bool(g.get("model_is_a")))
+            self._tree_panel.show_tree(ev)
+            self._tabs.setCurrentWidget(self._tree_panel)
+            self._say(_tree_ready_status(ev))
+            if self._tree_smoke and self._tree_smoke_path is None:
+                self._tree_smoke_expand(ev)
+        elif isinstance(ev, bs.TreeNodes):
+            self._tree_panel.show_nodes(ev)
+            if (self._tree_smoke and self._tree_smoke_path is not None
+                    and ev.world == 0 and list(ev.path) == self._tree_smoke_path):
+                self._tree_smoke_report(
+                    True, f"expanded {ev.path}: {len(ev.rows)} child rows, "
+                          f"{len(ev.walk_nodes)} walked node(s)")
+        elif isinstance(ev, bs.TreeClosed):
+            self._tree_open = False
+            if ev.reason != "replaced":
+                self._tree_panel.clear()
         elif isinstance(ev, bs.GameStarted):
             self._mark(rows={applied.game_idx}, summary=True)
             if self._follow.isChecked() or self._store.cur_game is None:
@@ -1028,6 +1399,8 @@ class BrowserPane(QWidget):
             text += "  (branching…)"
         elif self._store.engine_busy and self._busy_kind == "search":
             text += "  (searching…)"
+        elif self._store.engine_busy and self._busy_kind == "tree":
+            text += "  (rebuilding tree…)"
         self._summary.setText(text)
 
     def _refresh_selected(self):
@@ -1070,6 +1443,7 @@ class BrowserPane(QWidget):
         if idx == self._store.cur_game:
             return
         if self._store.select_game(idx):
+            self._close_tree()
             self._refresh_selected()
             self._tabs.setCurrentIndex(0)
 
@@ -1081,6 +1455,7 @@ class BrowserPane(QWidget):
         if step == st.cur_step:
             return
         st.cur_step = step
+        self._close_tree()
         g = st.selected()
         self._hist.set_cursor(step)
         self._board.show_step(g, st.cur_game, step)
@@ -1114,6 +1489,9 @@ class BrowserPane(QWidget):
             return
         if key == "search":
             self._run_search_entry()
+            return
+        if key == "tree":
+            self._run_tree_entry()
             return
         if key in shard_probes.PROBE_KEYS:
             self._run_probe_entry(key)
@@ -1208,6 +1586,55 @@ class BrowserPane(QWidget):
         self._say(f"Replaying game {gn} to step {step} and searching…")
         self._worker.submit(("search", gn, step, game))
 
+    def _run_tree_entry(self):
+        """Exact rebuild of the recorded search tree at the current game/step
+        (TREE_MENU / F7): the search_step gate chain plus a diag check — only
+        a search opponent's searched (kind 1) or tree-followed (kind 2) row
+        has a tree to rebuild. The job replaces any tree already open."""
+        if not self._shards:
+            self._say(_MSG_TREE_NOT_SHARDS)
+            return
+        if self._store.cur_game is None:
+            self._say(_MSG_NO_SEL)
+            return
+        if self._store.engine_busy:
+            self._say(_MSG_BUSY)
+            return
+        game = self._store.games[self._store.cur_game]
+        if game.get("live"):
+            self._say("The live game has no finished record yet.")
+            return
+        gn, step = self._store.cur_game, self._store.cur_step
+        diag = bs.step_diag(game, step)
+        if diag is None or diag.get("kind") not in (
+                tree_rebuild.DIAG_KIND_SEARCH, tree_rebuild.DIAG_KIND_FOLLOWED):
+            self._say(_MSG_NO_DIAG)
+            return
+        self._store.engine_busy = True
+        self._busy_kind = "tree"
+        self._tree_jobs += 1
+        self._mark(summary=True)
+        self._say("Rebuilding search tree…")
+        self._worker.submit(("tree", gn, step, game))
+
+    def _submit_tree_expand(self, world, path):
+        """TreePanel.expand_requested: fetch one node of the open tree. These
+        queue behind each other (a followed row pre-expands its whole path),
+        so engine_busy stays set until the last one's EngineIdle."""
+        if self._closed or not self._tree_open:
+            return
+        self._store.engine_busy = True
+        self._busy_kind = "tree"
+        self._tree_jobs += 1
+        self._worker.submit(("tree_expand", int(world), list(path)))
+
+    def _close_tree(self):
+        """Release the open tree (the selected decision changed)."""
+        if self._tree_open:
+            self._tree_open = False
+            self._worker.submit(("tree_close",))
+        self._tree_panel.clear()
+
     def _run_engine_entry(self, key):
         """Gate chain (verbatim parity with the TUI): live env → not busy →
         (whatif) a selected game. A live/unreplayable game passes through —
@@ -1290,3 +1717,49 @@ class BrowserPane(QWidget):
         n = len(self.traces())
         print(f"BROWSER SMOKE OK: {n} games", flush=True)
         self.smoke_done.emit(n)
+
+    # ----- tree smoke hook (ROBOMAGE_TREE_SMOKE=1) -----
+
+    def _run_tree_smoke(self):
+        """After the load: select the first searched (kind 1) decision and
+        rebuild its tree; TreeReady then expands world 0's most-visited root
+        action and TreeNodes reports."""
+        self._flush_refresh()
+        found = None
+        for gi, g in enumerate(self._store.games):
+            for s, d in enumerate(g.get("diag") or []):
+                if d is not None and d.get("kind") == tree_rebuild.DIAG_KIND_SEARCH:
+                    found = (gi, s)
+                    break
+            if found:
+                break
+        if found is None:
+            self._tree_smoke_report(False, "no searched decision in the records")
+            return
+        gi, s = found
+        self._syncing_selection = True
+        self._games_list.setCurrentRow(gi)
+        self._syncing_selection = False
+        self._store.select_game(gi)
+        self._store.cur_step = s
+        self._refresh_selected()
+        self._run_tree_entry()
+        if not self._store.engine_busy:
+            self._tree_smoke_report(False, "tree entry refused: "
+                                    + self._status_label.text())
+
+    def _tree_smoke_expand(self, ev):
+        rows = ev.root_rows[0] if ev.root_rows else []
+        if not rows:
+            self._tree_smoke_report(False, "world 0 root has no rows")
+            return
+        best = max(rows, key=lambda r: r[1])[0]
+        self._tree_smoke_path = [int(best)]
+        self._tree_panel.request_expand(0, self._tree_smoke_path)
+
+    def _tree_smoke_report(self, ok, detail):
+        if not self._tree_smoke:
+            return
+        self._tree_smoke = False
+        print(f"TREE SMOKE {'OK' if ok else 'FAILED'}: {detail}", flush=True)
+        self.smoke_done.emit(1 if ok else 0)

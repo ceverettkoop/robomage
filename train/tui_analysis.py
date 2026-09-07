@@ -82,11 +82,21 @@ _AXIS_STYLE = "dim"
 # (from the bottom). Downward bars reuse them via reverse-video (see _cell).
 _BLOCKS = " ▁▂▃▄▅▆▇█"
 
+
+def _diag_cells(row) -> str:
+    """The recorded-search columns of one decision row: visits N, Q and the
+    net prior P (blank where the diag carries none, e.g. a followed row)."""
+    n = str(row.visits) if row.visits is not None else ""
+    q = f"{row.q:+.3f}" if row.q is not None else ""
+    p = f"{row.prior * 100:5.1f}%" if row.prior is not None else ""
+    return f"{n:>5} {q:>6} {p:>6}"
+
 # The front-end-independent pieces live in browse_session (shared with the Qt
 # browser, gui_browser.py): the ONE process-global capture lock, the analyses
 # registry, and the label/summary helpers. Aliased to the old private names so
 # the rest of this file is unchanged.
 from browse_session import (CAPTURE_LOCK as _CAPTURE_LOCK, capture as _capture,
+                            decision_data as _decision_data,
                             result_str as _result_str,
                             has_probs as _has_probs, probs_guard as _probs_guard,
                             run_shap as _run_shap, ANALYSES as _ANALYSES,
@@ -947,26 +957,22 @@ class AnalysisApp(App):
         clock_line = self._clock_line(g, step)
         if clock_line:
             out.append(clock_line + "\n", style="dim")
-        num_ch = g["num_choices"][step] if step < len(g["num_choices"]) else 0
-        chosen = g["actions"][step] if step < len(g.get("actions", [])) else None
-        probs = None
-        if g.get("action_probs") and step < len(g["action_probs"]):
-            probs = g["action_probs"][step]
-
-        order = range(num_ch)
-        if probs is not None:
-            order = sorted(order, key=lambda k: -probs[k])
-        for k in order:
-            p = float(probs[k]) if probs is not None else None
-            desc = an._action_desc(obs, k)
-            is_chosen = (k == chosen)
-            style = f"bold {_CURSOR_COLOR}" if is_chosen else ""
-            if p is not None:
-                bar = "▮" * max(1 if p > 0.005 else 0, round(p * 10))
-                out.append(f"{p * 100:5.1f}% ", style=style or "dim")
+        dd = _decision_data(g, step)
+        if dd.search_line:
+            out.append(dd.search_line + "\n", style="dim")
+        has_diag = any(r.visits is not None for r in dd.rows)
+        if has_diag:
+            out.append(f"{'π':>6} {'N':>5} {'Q':>6} {'P':>6}\n", style="dim")
+        for r in dd.rows:
+            style = f"bold {_CURSOR_COLOR}" if r.is_chosen else ""
+            if r.prob is not None:
+                bar = "▮" * max(1 if r.prob > 0.005 else 0, round(r.prob * 10))
+                out.append(f"{r.prob * 100:5.1f}% ", style=style or "dim")
+                if has_diag:
+                    out.append(_diag_cells(r) + " ", style=style or "dim")
                 out.append(f"{bar:<10}", style=style or _POS_COLOR)
-            out.append(f"[{k}] {desc}", style=style)
-            if is_chosen:
+            out.append(f"[{r.k}] {r.desc}", style=style)
+            if r.is_chosen:
                 out.append("  ◀ chosen", style=style)
             out.append("\n")
 

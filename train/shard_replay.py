@@ -167,8 +167,103 @@ def _match_result(games, obs, z, viewpoint_is_a):
     return 1.0 if won > lost else -1.0
 
 
+def _strip_pad(row, pad):
+    """The leading run of a padded 1-D row before its first ``pad`` value."""
+    out = []
+    for v in row:
+        if v == pad:
+            break
+        out.append(v)
+    return out
+
+
+def diag_row(arrays, i, num_choices):
+    """Row ``i`` of a loaded ``.diag`` sidecar (the ``np.load`` archive or an
+    equivalent key -> array mapping) as a plain per-decision dict, menu
+    vectors cut to ``num_choices`` and the per-world / path padding stripped.
+    None for a kind-0 row (no search ran there). ``tree_rebuild`` consumes
+    this exact shape, so its keys are a contract."""
+    kind = int(arrays["kind"][i])
+    if kind == 0:
+        return None
+    n = int(num_choices)
+    n_worlds = int(arrays["n_worlds"][i])
+    tb = float(arrays["time_budget_s"][i])
+    tb_min = float(arrays["time_budget_min_s"][i])
+    follow_worlds = [int(w) for w in np.flatnonzero(arrays["follow_worlds"][i])]
+    return {
+        "kind": kind,
+        "num_choices": n,
+        "visits": np.asarray(arrays["visits"][i][:n]).astype(np.int64),
+        "priors": np.asarray(arrays["priors"][i][:n], dtype=np.float32),
+        "q_act": np.asarray(arrays["q_act"][i][:n], dtype=np.float32),
+        "w_sum": np.asarray(arrays["w_sum"][i][:n], dtype=np.float32),
+        "root_value": float(arrays["root_value"][i]),
+        "sims_run": int(arrays["sims_run"][i]),
+        "sim_steps": int(arrays["sim_steps"][i]),
+        "reused_visits": int(arrays["reused_visits"][i]),
+        "memo_hits": int(arrays["memo_hits"][i]),
+        "stopped_early": bool(arrays["stopped_early"][i]),
+        "time_budget_s": None if np.isnan(tb) else tb,
+        "time_budget_min_s": None if np.isnan(tb_min) else tb_min,
+        "n_worlds": n_worlds,
+        "world_seeds": [int(s) for s in arrays["world_seeds"][i][:n_worlds]],
+        "world_visits": [int(v) for v in arrays["world_visits"][i][:n_worlds]],
+        "world_values": [float(v) for v in arrays["world_values"][i][:n_worlds]],
+        "origin_row": int(arrays["origin_row"][i]),
+        "follow_path": [int(a) for a in _strip_pad(arrays["follow_path"][i], -1)],
+        "follow_worlds": follow_worlds,
+    }
+
+
+def load_diag_sidecars(spans, mask=None):
+    """Read each shard's ``.diag`` search-diagnostics sidecar
+    (``shard_record.diag_path_for``). Returns ``{global_row: diag dict}`` for
+    every searched / followed / plan row; rows without a sidecar (training
+    pool shards, kind-0 rows) are absent. A sidecar whose row count disagrees
+    with its shard (mid-update skew) or that fails to load is skipped.
+    ``mask`` is the concatenated shard mask (each row's sum = its menu
+    length); None re-reads each shard's own mask."""
+    from shard_record import diag_path_for
+
+    out = {}
+    for path, start, end in spans:
+        p = diag_path_for(path)
+        if not os.path.exists(p):
+            continue
+        try:
+            arrays = np.load(p)
+            if arrays["kind"].shape[0] != end - start:
+                continue
+            span_mask = (mask[start:end] if mask is not None
+                         else np.load(path)["mask"])
+            if span_mask.shape[0] != end - start:
+                continue
+            for k in range(end - start):
+                d = diag_row(arrays, k, int(span_mask[k].sum()))
+                if d is not None:
+                    out[start + k] = d
+        except (OSError, ValueError, KeyError):
+            continue
+    return out
+
+
+def _origin_steps(row_index, diags):
+    """Per step, the index within ``row_index`` of a followed row's origin
+    (kind 2 rows whose ``origin_row`` is one of this record's rows), else
+    None."""
+    pos = {r: s for s, r in enumerate(row_index)}
+    out = []
+    for d in diags:
+        origin = None
+        if d is not None and d["kind"] == 2 and d["origin_row"] >= 0:
+            origin = pos.get(d["origin_row"])
+        out.append(origin)
+    return out
+
+
 def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
-                        interp_fn=None, replay_docs=None):
+                        interp_fn=None, replay_docs=None, diags=None):
     """Pack match segments into analysis-schema trace dicts.
 
     Steps are the viewpoint seat's rows; the other seat's rows are summarized
@@ -185,6 +280,14 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
     browser's replay-to-step paths (whatif, MCTS analysis) work on the
     recording; without one they stay None and self-disable as before.
 
+    ``diags`` (``{global_row: diag dict}`` from :func:`load_diag_sidecars`)
+    attaches each step's search diagnostics: ``diag`` (per step, None where
+    no search ran), ``origin_step`` (per step, a followed row's origin as an
+    index into THIS record's steps, else None), ``row_index`` (per step, the
+    global shard row), plus the match-level ``diag_prov`` (the sidecar's
+    ``search_provenance``) and ``shard_stem`` (the shard path sans extension).
+    Without sidecars these load as all-None / empty.
+
     Matches where the viewpoint seat never held a searched root are skipped
     (nothing to page through).
     """
@@ -193,7 +296,7 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
         doc = replay_docs[mi] if replay_docs else None
         steps, vals, zs, interp, actions, num_choices, probs, opp = \
             [], [], [], [], [], [], [], []
-        g_prefix = []
+        g_prefix, row_index, step_diags = [], [], []
         for rows in games:
             for i in rows:
                 n = int(mask[i].sum())
@@ -210,6 +313,8 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
                     actions.append(best)
                     num_choices.append(n)
                     probs.append(pi[i, :n].astype(np.float64))
+                    row_index.append(int(i))
+                    step_diags.append(diags.get(i) if diags else None)
                     if doc is not None:
                         g_prefix.append(doc["row_prefix"].get(i))
                     if interp_fn is not None:
@@ -247,6 +352,11 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
             "clock_bank": None,
             "opp_clock_bank": None,
             "shard": True,      # marks a reconstructed trace (UI caveat footer)
+            "diag": step_diags,
+            "origin_step": _origin_steps(row_index, step_diags),
+            "row_index": row_index,
+            "diag_prov": doc.get("search_provenance") if doc else None,
+            "shard_stem": doc.get("stem") if doc else None,
         })
     return records
 
@@ -261,12 +371,16 @@ def load_replay_sidecars(spans, matches):
     sidecar, or the file segmented into more than one match — then its rows
     cannot be attributed) or a dict with ``engine_seed``/``actions``/
     ``deck_a``/``deck_b``/``bo3`` and ``row_prefix`` rebased to GLOBAL row
-    indices. Training-pool shards have no sidecars and load as all-None."""
+    indices, plus the sidecar's ``search_provenance`` (None when absent) and
+    the shard ``stem`` (path without extension). Training-pool shards have
+    no sidecars and load as all-None."""
     import gui_session_io
 
     per_span = {}
+    stems = {}
     for path, start, end in spans:
-        side = os.path.splitext(path)[0] + gui_session_io.PLAY_EXT
+        stem = os.path.splitext(path)[0]
+        side = stem + gui_session_io.PLAY_EXT
         if not os.path.exists(side):
             continue
         try:
@@ -277,6 +391,7 @@ def load_replay_sidecars(spans, matches):
         if not isinstance(idx, list) or len(idx) != end - start:
             continue    # mid-update skew or foreign file: not trustworthy
         per_span[(start, end)] = doc
+        stems[(start, end)] = stem
 
     # A span (file) maps cleanly only when it holds exactly one match.
     span_matches = {}
@@ -298,6 +413,8 @@ def load_replay_sidecars(spans, matches):
             "deck_a": doc.get("deck_a"), "deck_b": doc.get("deck_b"),
             "bo3": bool(doc.get("bo3", True)),
             "row_prefix": {start + k: int(p) for k, p in enumerate(idx)},
+            "search_provenance": doc.get("search_provenance"),
+            "stem": stems[(start, end)],
         }
     return docs
 
@@ -310,7 +427,8 @@ def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
                                   viewpoint_is_a=viewpoint_is_a,
                                   interp_fn=interp_fn,
                                   replay_docs=load_replay_sidecars(spans,
-                                                                   matches))
+                                                                   matches),
+                                  diags=load_diag_sidecars(spans, mask))
     if limit is not None:
         records = records[:limit]
     return records

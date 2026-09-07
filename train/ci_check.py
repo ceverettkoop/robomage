@@ -41,6 +41,12 @@ fails, so one invocation reports every finding):
           per-game per-mover, and both readers (shard_replay records,
           az_inspect samples) round-trip it (train/test_shard_record.py).
           Torch-free, engine-free, instant.
+  treecache The rebuilt-search-tree cache (train/tree_cache.py behind the
+          recording browser's Tree tab): synthetic per-world MCTS trees
+          (merged-duplicate reps included) round-trip through the npz layout
+          node-for-node — P/N/W/rep/sel_mask/children exact, argmax-visit PV
+          descent identical — and a bad format version is refused
+          (train/test_tree_cache.py). Torch-free, engine-free, instant.
   concede The CR 104.3a concession sentinels (CONCEDE_GAME -2 / CONCEDE_MATCH
           -3, accepted wherever the engine reads a decision): a bo1 concede
           loses for the conceding seat, a bo3 game concede is an ordinary game
@@ -125,6 +131,15 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           matches round-trip through synthetic shard_*.npz files into
           browsable match records (train/test_shard_replay.py).
           Torch-free; needs bin/robomage.
+  treerebuild The exact rebuild of a recorded opponent search
+          (train/tree_rebuild.py): a uniform-evaluator SearchController plays
+          a recorded match (fixed-sims and TIMED searches, so sims_run is
+          arbitrary), then every searched row is replayed and re-searched from
+          its recorded world seeds + sim count and must reproduce the recorded
+          root visits bit-for-bit; the cached tree reopens identical, walks
+          along the PV return boards, and a tree-followed row resolves to its
+          origin search (train/test_tree_rebuild.py). Torch-free; needs
+          bin/robomage.
   azinspect The AZ checkpoint inspector (az_inspect.py / tui_az_inspect.py):
           every view computed against a FRESH AZNet and synthetic shards, so it
           needs neither a trained checkpoint nor recorded self-play. Pins the
@@ -177,7 +192,8 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "concede", "obsinv",
+ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "treecache",
+             "concede", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
@@ -185,7 +201,7 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "concede", 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
 # self-skips cleanly when either is absent (so it never breaks a stock build).
-OPT_IN_TIERS = ["actor", "analysis", "azinspect", "gui"]
+OPT_IN_TIERS = ["actor", "analysis", "treerebuild", "azinspect", "gui"]
 KNOWN_TIERS = ALL_TIERS + OPT_IN_TIERS
 
 # Transcript scan (stdout narrative + captured engine stderr). Two severities:
@@ -388,6 +404,33 @@ def tier_shardrec(rep):
                               f"{r.stdout}{r.stderr}")
 
 
+def _run_test_script(rep, tier, script, what):
+    """Run one plain test script and report a nonzero exit as a tier error."""
+    r = subprocess.run([sys.executable, script], cwd=_REPO_ROOT,
+                       capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error(tier, f"{what} violation ({os.path.basename(script)} exit "
+                        f"{r.returncode}):\n{r.stdout}{r.stderr}")
+
+
+def tier_treecache(rep):
+    """Rebuilt-search-tree cache regression (train/tree_cache.py): synthetic
+    per-world trees round-trip node-for-node (see train/test_tree_cache.py).
+    Torch-free, engine-free."""
+    _run_test_script(rep, "treecache", "train/test_tree_cache.py", "tree-cache")
+
+
+def tier_treerebuild(rep):
+    """Exact search-rebuild regression (train/tree_rebuild.py): recorded
+    searches — fixed-sims and timed — re-run from their recorded seeds and sim
+    counts must reproduce the recorded root visits exactly, the cache reopens
+    identical, and followed rows resolve to their origin search (see
+    train/test_tree_rebuild.py). Torch-free; needs bin/robomage."""
+    _run_test_script(rep, "treerebuild", "train/test_tree_rebuild.py",
+                     "tree-rebuild")
+
+
 def tier_concede(rep):
     """Concession regression (CR 104.3a, train/test_concede.py).
 
@@ -573,8 +616,10 @@ def tier_gui(rep):
     extra). Runs offscreen: the play-board auto-drive, the shard-recording
     play session (--record-shards writes ≥1 valid shard into a scratch dir),
     the live-analysis window, the play-session save→reopen replay round-trip,
-    the synthetic .rmtrace open into the analysis browser, and the shard-mode
-    browser (self-skips without recorded shards). Self-skips without
+    the synthetic .rmtrace open into the analysis browser, the shard-mode
+    browser (self-skips without recorded shards), and a search-opponent
+    recording opened in the browser with its first searched decision's tree
+    rebuilt and expanded (torch-free mcts:uniform). Self-skips without
     PySide6."""
     try:
         import PySide6  # noqa: F401
@@ -583,6 +628,7 @@ def tier_gui(rep):
         return
     env = dict(os.environ, QT_QPA_PLATFORM="offscreen")
     rec_dir = tempfile.mkdtemp(prefix="ci_record_smoke_")
+    tree_rec_dir = tempfile.mkdtemp(prefix="ci_tree_smoke_")
     legs = [
         ("play smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8"),
@@ -613,6 +659,23 @@ def tier_gui(rep):
         ("browser shard smoke",
          dict(env, ROBOMAGE_BROWSER_SMOKE="1"),
          [sys.executable, "train/gui_main.py"]),
+        # Search-opponent recording leg: a torch-free mcts:uniform opponent
+        # records its own searched decisions WITH diagnostics (seeds, sims,
+        # visits) into a second scratch base, which the tree smoke below
+        # opens in a shard-mode browser, rebuilds the first searched
+        # decision's tree bit-for-bit (verified against the recorded
+        # visits) and expands one root action on the engine.
+        ("record-search smoke",
+         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=tree_rec_dir),
+         [sys.executable, "train/play.py", "--gui",
+          "--human-deck", "league/ur_delver",
+          "--model-deck", "league/gw_maverick",
+          "--model", "mcts:uniform?sims=32&worlds=2", "--search-procs", "1",
+          "--bo1", "--record-shards"]),
+        ("tree smoke",
+         dict(env, ROBOMAGE_TREE_SMOKE="1",
+              ROBOMAGE_BROWSER_SMOKE_SHARDS=tree_rec_dir),
+         [sys.executable, "train/gui_main.py"]),
     ]
     try:
         for name, leg_env, cmd in legs:
@@ -624,6 +687,7 @@ def tier_gui(rep):
                                  f"{r.stdout}{r.stderr}")
     finally:
         shutil.rmtree(rec_dir, ignore_errors=True)
+        shutil.rmtree(tree_rec_dir, ignore_errors=True)
 
 
 def tier_azinspect(rep):
@@ -957,12 +1021,13 @@ def main(argv=None):
 
     # Game tiers need a built binary and provisioned card scripts.
     game_tiers = {"smoke", "fuzz", "replay", "obsinv", "pergame", "snapshot",
-                  "sbselfplay", "plansearch", "mirror", "analysis"} & set(tiers)
+                  "sbselfplay", "plansearch", "mirror", "analysis",
+                  "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
     if {"smoke", "fuzz", "vocab", "obsinv", "snapshot", "sbselfplay",
-        "plansearch", "mirror", "analysis"} & set(tiers):
+        "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
             print(f"no card scripts under {cards_dir} — run "
@@ -982,6 +1047,10 @@ def main(argv=None):
             tier_gatesprt(rep)
         elif t == "shardrec":
             tier_shardrec(rep)
+        elif t == "treecache":
+            tier_treecache(rep)
+        elif t == "treerebuild":
+            tier_treerebuild(rep)
         elif t == "concede":
             tier_concede(rep)
         elif t == "obsinv":

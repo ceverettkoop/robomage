@@ -25,6 +25,7 @@ pure helpers stay importable everywhere.
 """
 
 import io
+import os
 import threading
 import traceback
 from contextlib import redirect_stdout
@@ -34,6 +35,7 @@ import numpy as np
 
 import analysis as an
 import decode
+import tree_rebuild
 from env import (STATE_SIZE, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX,
                  _STEP_ONEHOT_START,
                  _STEP_ONEHOT_SIZE)
@@ -143,6 +145,128 @@ REPLAY_MENU = [
                "(the live window's F6 review, offline)"),
 ]
 
+# Exact-tree entry: needs a recording whose step carries search diagnostics
+# (a search opponent's own decision, kind 1 searched / kind 2 followed) — the
+# recorded tree is rebuilt bit-for-bit and browsed in the Tree tab.
+TREE_MENU = [
+    ("tree", "Rebuild search tree (F7)"),
+]
+
+_MSG_NO_DECKS = ("This session does not know the game's seat decks — cannot "
+                 "build a replay env.")
+
+_TABLE_HEAD = f"   {'visits':>6} {'v%':>7} {'prior':>6} {'Q':>7}  action"
+
+
+def _tree_cache_dir(game):
+    """``<shard dir>/trees`` for a record that knows its shard, else None
+    (TreeSession then skips the cache)."""
+    stem = game.get("shard_stem")
+    return os.path.join(os.path.dirname(stem), "trees") if stem else None
+
+
+def _visit_table_lines(visits, priors, q, played, describe):
+    """The shared visits/v%/prior/Q rows, most-visited first; ``describe(i)``
+    names action ``i``."""
+    visits = np.asarray(visits, dtype=np.float64)
+    tot = max(float(visits.sum()), 1.0)
+    lines = [_TABLE_HEAD]
+    for i in np.argsort(-visits):
+        i = int(i)
+        mark = "▶" if i == played else " "
+        lines.append(f" {mark} {int(visits[i]):>6} {visits[i] / tot:>7.1%} "
+                     f"{float(priors[i]):>6.3f} {float(q[i]):>+7.3f}  [{i}] "
+                     f"{describe(i)}")
+    return lines
+
+
+def _mover_label(obs):
+    return "A" if bool(obs[_SELF_IS_A_IDX] > 0.5) else "B"
+
+
+def _rebuilt_tree_text(game, step, session):
+    """Display text for an exact rebuild: the verification line, the root
+    table (a followed row: its origin's root plus the followed node's own
+    summed table)."""
+    stats = session.root_stats()
+    root_step = session.root_step
+    root_obs = np.asarray(game["observations"][root_step], dtype=np.float32)
+    source = "cache hit" if session.from_cache else "rebuilt"
+    lines = [f"verified: rebuilt visits == recorded ({source})"
+             if session.verified else
+             f"MISMATCH: {session.mismatch} (showing rebuilt)"]
+    lines.append(session.summary())
+    lines.append("")
+    lines.append(f"Tree root @ step {root_step} (mover: Player "
+                 f"{_mover_label(root_obs)}) — root value "
+                 f"{stats.root_value:+.3f} "
+                 f"(win% {50.0 * (1.0 + stats.root_value):.1f})")
+    lines.append("")
+    lines += _visit_table_lines(stats.visits, stats.priors, stats.q,
+                                int(game["actions"][root_step]),
+                                lambda i: an._action_desc(root_obs, i))
+    if session.follow_path:
+        obs = np.asarray(game["observations"][step], dtype=np.float32)
+        num = int(game["num_choices"][step])
+        n_sum = np.zeros(num, dtype=np.int64)
+        w_sum = np.zeros(num, dtype=np.float64)
+        p_max = np.zeros(num, dtype=np.float64)
+        for w in session.follow_worlds:
+            for a, n, q, p in session.node_stats(w, session.follow_path):
+                if a < num:
+                    n_sum[a] += n
+                    w_sum[a] += q * n
+                    p_max[a] = max(p_max[a], p)
+        q_node = np.divide(w_sum, n_sum, out=np.zeros(num), where=n_sum > 0)
+        lines.append("")
+        lines.append(f"Followed node @ step {step} (mover: Player "
+                     f"{_mover_label(obs)}) — path {session.follow_path} in "
+                     f"worlds {session.follow_worlds}, summed over them")
+        lines.append("")
+        lines += _visit_table_lines(n_sum, p_max, q_node,
+                                    int(game["actions"][step]),
+                                    lambda i: an._action_desc(obs, i))
+    lines.append("")
+    lines.append("▶ = the action played in the recording. Q and the root "
+                 "value are from the MOVER's perspective.")
+    return "\n".join(lines)
+
+
+def pv_line(pv, labels):
+    """``a → b → c (N, Q)`` for a ``mcts.PVStep`` list: the root action named
+    from the real menu, deeper steps by index (their menus are synthesized
+    inside the simulation), then the root action's visits and Q."""
+    if not pv:
+        return ""
+    first = pv[0]
+    names = [labels[first.action] if first.action < len(labels)
+             else f"#{first.action}"]
+    names += [f"#{s.action}" for s in pv[1:]]
+    return f"{' → '.join(names)} ({first.visits}, {first.q:+.3f})"
+
+
+def _tree_ready_event(gn, step, session):
+    """Snapshot an open TreeSession's root into a TreeReady (every field a
+    plain Python value, so the UI thread never touches the session)."""
+    stats = session.root_stats()
+    labels = session.root_labels()
+    merged = [(i, int(stats.visits[i]), float(stats.q[i]),
+               float(stats.priors[i])) for i in range(int(stats.num_choices))]
+    root_rows, pv_lines = [], []
+    for w in range(session.worlds):
+        rows = session.node_stats(w, [])
+        root_rows.append(rows)
+        pv_lines.append({a: pv_line(session.pv(a, w), labels)
+                         for a, n, _q, _p in rows if n > 0})
+    return TreeReady(gn=int(gn), step=int(step), root_step=session.root_step,
+                     summary=session.summary(), verified=session.verified,
+                     from_cache=session.from_cache, mismatch=session.mismatch,
+                     worlds=session.worlds, root_labels=labels,
+                     root_rows=root_rows, merged_rows=merged,
+                     pv_lines=pv_lines,
+                     follow_path=list(session.follow_path),
+                     follow_worlds=list(session.follow_worlds))
+
 
 def replay_search_decks(game, args):
     """The (deck_a, deck_b, bo3) a replay-search env must be built with:
@@ -169,9 +293,14 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
     session (see :func:`replay_search_decks`) — the replay resets with the
     recorded engine seed and feeds the recorded action log, so no
     model-seat deck swap applies. The reached obs is verified against the
-    recorded one before searching (divergence is reported, not hidden)."""
+    recorded one before searching (divergence is reported, not hidden).
+
+    A step that recorded search diagnostics (a search opponent's own searched
+    or tree-followed decision) gets its EXACT tree instead — rebuilt with the
+    recording's seeds/evaluator (or installed from the tree cache beside the
+    shard) and verified against the recorded visits — so the table is the
+    played search, not a fresh one."""
     import mcts
-    from search_env import SearchRoboMageEnv
     from analysis_session import load_analysis_evaluator
 
     if not an._game_is_replayable(game):
@@ -181,17 +310,25 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
     prefix = game["prefix_len"][step]
     if prefix is None or game["full_actions"] is None:
         return "This step has no recorded replay position."
+    diag = step_diag(game, step)
+    if diag is not None and diag.get("kind") in (tree_rebuild.DIAG_KIND_SEARCH,
+                                                 tree_rebuild.DIAG_KIND_FOLLOWED):
+        try:
+            with tree_rebuild.TreeSession(
+                    game, step, binary=binary, deck_a=deck_a, deck_b=deck_b,
+                    bo3=bo3, cache_dir=_tree_cache_dir(game)) as session:
+                return _rebuilt_tree_text(game, step, session)
+        except tree_rebuild.RebuildError as exc:
+            return f"Cannot rebuild the recorded tree: {exc}"
     lines = []
-    env = SearchRoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
-                            bo3=bool(bo3))
     try:
-        obs, _ = env.reset(options={"engine_seed": game["engine_seed"]})
-        for a in game["full_actions"][:int(prefix)]:
-            obs, _r, term, trunc, _ = env.step(int(a))
-            if term or trunc:
-                return (f"Replay ended early inside the action prefix — "
-                        f"cannot reach step {step} (deck files changed since "
-                        f"the recording?).")
+        env = tree_rebuild.replay_to_step(game, step, binary=binary,
+                                         deck_a=deck_a, deck_b=deck_b,
+                                         bo3=bo3, strict=False)
+    except tree_rebuild.RebuildError as exc:
+        return f"{exc} (deck files changed since the recording?)."
+    try:
+        obs = env._obs
         expected = np.asarray(game["observations"][step], dtype=np.float32)
         if not np.allclose(obs, expected, atol=1e-4):
             n_diff = int(np.sum(~np.isclose(obs, expected, atol=1e-4)))
@@ -224,23 +361,15 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
                                   cross_world=True)
             effort = f"{res.sims_run} sims x {worlds} worlds"
         num = int(game["num_choices"][step])
-        played = int(game["actions"][step])
-        tot = max(float(res.visits.sum()), 1.0)
         q = res.q if res.q is not None else np.zeros(num)
-        mover = "A" if bool(expected[_SELF_IS_A_IDX] > 0.5) else "B"
-        lines.append(f"MCTS @ step {step} (mover: Player {mover}) — {label}, "
-                     f"{effort}, root value "
-                     f"{res.root_value:+.3f} "
+        lines.append(f"MCTS @ step {step} (mover: Player "
+                     f"{_mover_label(expected)}) — {label}, {effort}, "
+                     f"root value {res.root_value:+.3f} "
                      f"(win% {50.0 * (1.0 + res.root_value):.1f})")
         lines.append("")
-        lines.append(f"   {'visits':>6} {'v%':>7} {'prior':>6} {'Q':>7}  action")
-        for i in np.argsort(-res.visits):
-            i = int(i)
-            mark = "▶" if i == played else " "
-            lines.append(f" {mark} {int(res.visits[i]):>6} "
-                         f"{res.visits[i] / tot:>7.1%} {res.priors[i]:>6.3f} "
-                         f"{float(q[i]):>+7.3f}  [{i}] "
-                         f"{an._action_desc(expected, i)}")
+        lines += _visit_table_lines(res.visits, res.priors, q,
+                                    int(game["actions"][step]),
+                                    lambda i: an._action_desc(expected, i))
         lines.append("")
         lines.append("▶ = the action played in the recording. Q and the root "
                      "value are from the MOVER's perspective.")
@@ -400,6 +529,9 @@ class DecisionRow:
     prob: object              # float | None (no recorded policy)
     desc: str
     is_chosen: bool
+    visits: object = None     # int | None — search visit count (diag rows)
+    q: object = None          # float | None — search Q for this action
+    prior: object = None      # float | None — net prior the search started from
 
 
 @dataclass
@@ -409,31 +541,94 @@ class DecisionData:
     opp_lines: list           # opponent actions since the previous decision
     shard_caveat: bool
     num_choices: int
+    search_line: str = ""     # one-line search summary ("" without a diag)
+
+
+def step_diag(game, step):
+    """The recorded search diagnostics dict for `step` (None when the record
+    carries none, e.g. a simulated trace or a plain one-hot row)."""
+    diags = game.get("diag")
+    if diags and step < len(diags):
+        return diags[step]
+    return None
+
+
+def search_line_for(diag, origin_step):
+    """One-line summary of a step's recorded search (``diag`` as loaded by
+    ``shard_replay.diag_row``; ``origin_step`` the followed row's origin as a
+    step index in the same record, None when it isn't in view). "" when there
+    is no diag."""
+    if not diag:
+        return ""
+    kind = diag.get("kind", 0)
+    if kind == 2:
+        if origin_step is None:
+            return "followed (origin not in view)"
+        path = diag.get("follow_path") or []
+        visits = int(np.sum(diag.get("visits", [])))
+        return (f"followed from decision {origin_step} via {len(path)} "
+                f"action(s) · {visits} visits")
+    if kind == 3:
+        return f"sideboard plan search · {diag.get('sims_run', 0)} sims"
+    parts = [f"search: {diag.get('sims_run', 0)} sims",
+             f"{diag.get('n_worlds', 0)} worlds",
+             f"root V {diag.get('root_value', 0.0):+.3f}"]
+    tb = diag.get("time_budget_s")
+    if tb is not None:
+        timed = f"timed {tb:.1f}s"
+        if diag.get("stopped_early"):
+            timed += " (stopped early)"
+        parts.append(timed)
+    reused = int(diag.get("reused_visits", 0))
+    if reused:
+        parts.append(f"reused {reused}")
+    return " · ".join(parts)
 
 
 def decision_data(game, step):
     """The model's decision at `step` as renderer-agnostic rows (the recorded
     obs stays full OBS_SIZE — _action_desc reads the action-metadata blocks
-    past STATE_SIZE)."""
+    past STATE_SIZE). A recorded search's diag adds per-row visits / Q /
+    prior and the summary line; searched rows sort by visits, the rest by
+    probability."""
     obs = game["observations"][step]
     num_ch = game["num_choices"][step] if step < len(game["num_choices"]) else 0
     chosen = game["actions"][step] if step < len(game.get("actions", [])) else None
     probs = None
     if game.get("action_probs") and step < len(game["action_probs"]):
         probs = game["action_probs"][step]
+    diag = step_diag(game, step)
+    origins = game.get("origin_step") or []
+    origin_step = origins[step] if step < len(origins) else None
+
+    visits = q_act = priors = None
+    if diag is not None:
+        visits = diag.get("visits")
+        if diag.get("kind") in (1, 3):
+            q_act = diag.get("q_act")
+            priors = diag.get("priors")
+
+    def _field(vec, k, cast):
+        return cast(vec[k]) if vec is not None and k < len(vec) else None
 
     order = range(num_ch)
-    if probs is not None:
+    if visits is not None and diag.get("kind") in (1, 3):
+        order = sorted(order, key=lambda k: -(_field(visits, k, int) or 0))
+    elif probs is not None:
         order = sorted(order, key=lambda k: -probs[k])
     rows = [DecisionRow(k=k,
                         prob=float(probs[k]) if probs is not None else None,
                         desc=an._action_desc(obs, k),
-                        is_chosen=(k == chosen))
+                        is_chosen=(k == chosen),
+                        visits=_field(visits, k, int),
+                        q=_field(q_act, k, float),
+                        prior=_field(priors, k, float))
             for k in order]
     return DecisionData(clock=clock_line(game, step), rows=rows,
                         opp_lines=opp_actions_before(game, step),
                         shard_caveat=bool(game.get("shard")),
-                        num_choices=num_ch)
+                        num_choices=num_ch,
+                        search_line=search_line_for(diag, origin_step))
 
 
 # ── V(s) histogram geometry ───────────────────────────────────────────────────
@@ -591,6 +786,49 @@ class AnalysisDone:
 
 
 @dataclass
+class TreeReady:
+    """An exact rebuilt (or cached) search tree is open on the engine worker
+    for browsing (EngineCore.open_tree). ``root_rows[w]`` is world ``w``'s
+    root as ``(action, N, Q, P)`` rows; ``merged_rows`` the same over the
+    summed root stats; ``pv_lines[w][action]`` the pre-rendered principal
+    variation text. A followed row carries the path from this root to the
+    followed node and the worlds whose trees reach it."""
+    gn: int
+    step: int
+    root_step: int
+    summary: str
+    verified: bool
+    from_cache: bool
+    mismatch: object                # str | None
+    worlds: int
+    root_labels: list
+    root_rows: list                 # per world: [(action, N, Q, P)]
+    merged_rows: list               # [(action, N, Q, P)] from root_stats
+    pv_lines: list                  # per world: {action: "a → b (N, Q)"}
+    follow_path: list = field(default_factory=list)
+    follow_worlds: list = field(default_factory=list)
+
+
+@dataclass
+class TreeNodes:
+    """One node of the open tree, expanded (EngineCore.tree_expand): its
+    ``(action, N, Q, P)`` rows and the child action labels, plus the WalkNode
+    per step of the path (the last one's obs is the hypothetical board;
+    ``terminal`` is set when the walk ended the game)."""
+    world: int
+    path: list
+    rows: list
+    labels: list
+    walk_nodes: list
+    terminal: object                # None | "A" | "B" | "DRAW"
+
+
+@dataclass
+class TreeClosed:
+    reason: str
+
+
+@dataclass
 class Applied:
     """What a BrowseStore.apply changed, so the front end refreshes only what
     it must. game_idx is the affected row (None when no row changed);
@@ -714,6 +952,8 @@ class EngineCore:
         self.args = args
         self.emit = emit
         self.model = self.env = self.opp_model = None
+        self._tree = None              # open tree_rebuild.TreeSession
+        self._tree_key = None          # (gn, step) it was opened for
         if preloaded is not None:
             self.model, self.env, self.opp_model = preloaded
 
@@ -789,34 +1029,101 @@ class EngineCore:
         mode (recordings with .rmplay sidecars) and for replay-enabled traces
         alike. `game` is the (immutable) finished dict."""
         try:
-            decks = replay_search_decks(game, self.args)
-            if decks is None:
+            params = self._replay_params(game)
+            if params is None:
                 self.emit(AnalysisDone(
-                    f"search — game {gn}, step {step}",
-                    "This session does not know the game's seat decks — "
-                    "cannot build a replay env."))
+                    f"search — game {gn}, step {step}", _MSG_NO_DECKS))
                 return
-            deck_a, deck_b, bo3 = decks
-            binary = getattr(self.args, "binary", None)
-            if not binary:
-                from runner import BINARY as binary
             spec = getattr(self.args, "model", None) or "az:gen"
-            text = run_replay_search(game, step, binary=binary,
-                                     deck_a=deck_a, deck_b=deck_b, bo3=bo3,
-                                     eval_spec=spec)
+            text = run_replay_search(game, step, eval_spec=spec, **params)
             self.emit(AnalysisDone(f"search — game {gn}, step {step}", text))
         except Exception:
             self.emit(AnalysisDone("search error", traceback.format_exc()))
         finally:
             self.emit(EngineIdle())
 
+    # ----- exact-tree browsing (TREE_MENU) -----
+
+    def open_tree(self, gn, step, game):
+        """Rebuild (or load from cache) the recorded search tree of (gn, step)
+        and keep it open on this thread for tree_expand. Emits TreeReady, or
+        AnalysisDone("tree", why) + TreeClosed when the step has no
+        rebuildable tree; always ends with EngineIdle."""
+        try:
+            self._close_tree("replaced")
+            params = self._replay_params(game)
+            if params is None:
+                self.emit(AnalysisDone("tree", _MSG_NO_DECKS))
+                self.emit(TreeClosed("no decks"))
+                return
+            try:
+                session = tree_rebuild.TreeSession(
+                    game, step, cache_dir=_tree_cache_dir(game),
+                    **params).open()
+            except tree_rebuild.RebuildError as exc:
+                self.emit(AnalysisDone(
+                    "tree", f"Cannot rebuild the recorded tree: {exc}"))
+                self.emit(TreeClosed(str(exc)))
+                return
+            self._tree = session
+            self._tree_key = (int(gn), int(step))
+            self.emit(_tree_ready_event(gn, step, session))
+        except Exception:
+            self._close_tree("error")
+            self.emit(AnalysisDone("tree error", traceback.format_exc()))
+        finally:
+            self.emit(EngineIdle())
+
+    def tree_expand(self, world, path):
+        """Expand the open tree's node at ``path`` in ``world``: its rows and
+        child labels, plus the walked positions along the path."""
+        try:
+            if self._tree is None:
+                self.emit(AnalysisDone("tree", "No tree is open."))
+                return
+            path = [int(a) for a in path]
+            rows = self._tree.node_stats(world, path)
+            nodes, labels = self._tree.walk(world, path)
+            terminal = nodes[-1].terminal if nodes else None
+            self.emit(TreeNodes(int(world), path, rows, labels, nodes,
+                                terminal))
+        except Exception:
+            self.emit(AnalysisDone("tree error", traceback.format_exc()))
+        finally:
+            self.emit(EngineIdle())
+
+    def close_tree(self):
+        self._close_tree("closed")
+
     def close(self):
-        """Release the env (call on the worker thread as its last job)."""
+        """Release the tree session and the env (call on the worker thread as
+        its last job)."""
+        self._close_tree("shutdown")
         if self.env is not None:
             self.env.close()
             self.env = None
 
     # ----- internals -----
+
+    def _replay_params(self, game):
+        """The kwargs a replay/rebuild env needs (binary + absolute-seat decks
+        + bo3), or None when the session cannot know the decks."""
+        decks = replay_search_decks(game, self.args)
+        if decks is None:
+            return None
+        deck_a, deck_b, bo3 = decks
+        binary = getattr(self.args, "binary", None)
+        if not binary:
+            from runner import BINARY as binary
+        return {"binary": binary, "deck_a": deck_a, "deck_b": deck_b,
+                "bo3": bo3}
+
+    def _close_tree(self, reason):
+        tree, self._tree = self._tree, None
+        self._tree_key = None
+        if tree is not None:
+            tree.close()
+            self.emit(TreeClosed(reason))
 
     def _collect(self, n, stop=None):
         should_stop = stop.is_set if stop is not None else None

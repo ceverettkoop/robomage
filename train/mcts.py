@@ -159,6 +159,14 @@ class SearchResult:
     #                                           reported visits are cumulative,
     #                                           sims_run counts new sims only.
     memo_hits: int = 0                        # rollout-memo hits this search
+    # Recording diagnostics (shard_record's .diag sidecar): enough to rebuild
+    # the search exactly alongside seeds/roots. None for the plan search.
+    world_visits: Optional[np.ndarray] = None  # (worlds,) per-world root
+    #                                            N.sum(), world order
+    time_budget_s: Optional[float] = None     # wall-clock budget the caller
+    #                                           ran this search under (None =
+    #                                           sims-terminated)
+    time_budget_min_s: Optional[float] = None  # its stability-stop floor
 
     def best_action(self) -> int:
         return int(np.argmax(self.visits))
@@ -684,6 +692,7 @@ def run_search(
         seeds=seeds,
         reused_visits=reused_visits,
         memo_hits=memo_ctx["hits"] if memo_ctx is not None else 0,
+        world_visits=np.array([int(r.N.sum()) for r in roots], dtype=np.int64),
     )
 
 
@@ -907,6 +916,10 @@ def run_search_parallel(
         seeds=list(world_seeds),
         reused_visits=sum(r.reused_visits for r in results),
         memo_hits=sum(r.memo_hits for r in results),
+        world_visits=np.concatenate([
+            r.world_visits if r.world_visits is not None
+            else np.zeros(len(r.roots or []), dtype=np.int64)
+            for r in results]),
     )
 
 

@@ -1107,6 +1107,12 @@ class PlayPane(QWidget):
             # replayable in the browser (replay-to-step MCTS analysis).
             human_is_a = not self._opp_is_a
             env = session.env
+            ctrl = getattr(session, "controller", None)
+            # A search opponent's static provenance (spec, checkpoint hash,
+            # knobs, device) rides in the .rmplay sidecar; scripted opponents
+            # have none.
+            prov_fn = getattr(ctrl, "search_provenance", None)
+            provenance = prov_fn() if callable(prov_fn) else None
             self.recorder = ShardRecorder(
                 session.record_dir,
                 replay_meta={
@@ -1120,11 +1126,13 @@ class PlayPane(QWidget):
                     "bo3": self._bo3,
                     "opponent_spec": getattr(session, "opponent_spec", None),
                     "binary": getattr(env, "binary_path", None),
+                    "search_provenance": provenance,
                 },
                 seed_fn=lambda: getattr(env, "last_engine_seed", None),
                 replay_prefix=replay_actions)
             self._driver.step_observer = self.recorder.observe_step
-            ctrl = getattr(session, "controller", None)
+            if ctrl is not None and hasattr(ctrl, "on_followed"):
+                ctrl.on_followed = self.recorder.on_followed
             if ctrl is not None and hasattr(ctrl, "on_result"):
                 prev_sink = ctrl.on_result
                 rec_tap = self.recorder.on_search_result
