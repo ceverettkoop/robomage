@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include "root_diag.h"
+
 // ── low-level uncompressed-npz writer ──────────────────────────────────────
 class NpzWriter {
 public:
@@ -42,6 +44,15 @@ public:
                   const std::vector<size_t>& shape);
     // Add a uint8 ('|u1') array member (numpy dtype uint8, NOT bool).
     void add_uint8(const std::string& name, const uint8_t* data,
+                   const std::vector<size_t>& shape);
+    // Signed integer members ('|i1', '<i2', '<i4', '<i8').
+    void add_int8(const std::string& name, const int8_t* data,
+                  const std::vector<size_t>& shape);
+    void add_int16(const std::string& name, const int16_t* data,
+                   const std::vector<size_t>& shape);
+    void add_int32(const std::string& name, const int32_t* data,
+                   const std::vector<size_t>& shape);
+    void add_int64(const std::string& name, const int64_t* data,
                    const std::vector<size_t>& shape);
 
     // Write the central directory + EOCD, close, and rename the temp file into
@@ -68,6 +79,22 @@ private:
     bool finished_;
 };
 
+// What a match's `.rmplay` replay sidecar records (train/gui_session_io.py's
+// save_replay document): the engine seed, the match's full real-action log,
+// the absolute-seat decks, and the search provenance JSON object the caller
+// supplies verbatim (train/opponents.py SearchController.search_provenance's
+// shape; empty = null).
+struct MatchReplayMeta {
+    uint32_t engine_seed = 0;
+    const std::vector<int32_t>* actions = nullptr;
+    std::string deck_a;
+    std::string deck_b;
+    bool bo3 = true;
+    bool net_is_a = true;
+    int state_size = 0;                 // engine_build stamp (machine_io STATE_SIZE)
+    std::string provenance_json;        // a JSON object literal, or empty
+};
+
 // ── high-level self-play shard accumulator ─────────────────────────────────
 class ShardAccumulator {
 public:
@@ -76,9 +103,11 @@ public:
 
     // Append one backfilled sample row: the per-game outcome `z`, the search
     // root value `q`, the exploratory-move flag, and the n-step TD target
-    // `td_q` (see td_targets.h), all already resolved by the caller.
+    // `td_q` (see td_targets.h), all already resolved by the caller. `diag`
+    // (nullable) is the row's search diagnostics for the `.diag` sidecar.
     void add_sample(const float* obs, const float* pi, float z,
-                    const uint8_t* mask, float q, uint8_t explored, float td_q);
+                    const uint8_t* mask, float q, uint8_t explored, float td_q,
+                    const RootDiag* diag = nullptr);
 
     // Flush a shard if the buffer has reached the sample threshold. Call at a
     // GAME boundary (after adding a whole game's samples) so a game is never
@@ -88,12 +117,25 @@ public:
     // Flush any remaining buffered samples (call once at the end).
     void flush_final();
 
+    // Recording mode (one file per MATCH, like train/shard_record.py): flush
+    // everything buffered as this match's shard plus its same-stem `.diag`
+    // search-diagnostics sidecar and `.rmplay` replay sidecar. No-op when
+    // nothing is buffered. Call once at each match end.
+    void flush_match(const MatchReplayMeta& meta);
+
     size_t total_samples() const { return total_; }
     size_t shards_written() const { return shards_.size(); }
     const std::vector<std::string>& shard_paths() const { return shards_; }
 
 private:
+    // Write the buffered rows as the next shard file.
     void flush();
+    std::string next_shard_path() const;
+    void flush_to(const std::string& path);
+    void write_diag(const std::string& shard_path) const;
+    void write_replay(const std::string& shard_path,
+                      const MatchReplayMeta& meta) const;
+    void clear_buffers();
 
     std::string out_dir_;
     size_t flush_threshold_;
@@ -107,6 +149,7 @@ private:
     std::vector<float> q_;
     std::vector<uint8_t> explored_;
     std::vector<float> td_q_;
+    std::vector<RootDiag> diags_;  // parallel to the rows (kind 0 = none)
     size_t buffered_;  // rows currently buffered
     size_t total_;     // rows written across all shards
     int shard_n_;

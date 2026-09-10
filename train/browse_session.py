@@ -585,6 +585,18 @@ def search_line_for(diag, origin_step):
     return " · ".join(parts)
 
 
+def search_caption(game, step):
+    """The search-effort suffix for a step's caption (" · 512 sims", or
+    " · followed" for a decision answered from an earlier search's trees);
+    "" when no search ran there."""
+    diag = step_diag(game, step)
+    if not diag:
+        return ""
+    if diag.get("kind") == 2:
+        return " · followed"
+    return f" · {int(diag.get('sims_run', 0))} sims"
+
+
 def decision_data(game, step):
     """The model's decision at `step` as renderer-agnostic rows (the recorded
     obs stays full OBS_SIZE — _action_desc reads the action-metadata blocks
@@ -847,6 +859,7 @@ def _live_placeholder(model_is_a, engine_seed):
     return {"observations": [], "values": [], "interp_features": [],
             "actions": [], "num_choices": [], "action_probs": [],
             "opp_actions": [], "clock_remaining": [], "prefix_len": [],
+            "diag": [], "origin_step": [],
             "engine_seed": engine_seed, "full_actions": None,
             "result": None, "model_is_a": model_is_a,
             "clock_bank": None, "opp_clock_bank": None, "live": True}
@@ -855,6 +868,7 @@ def _live_placeholder(model_is_a, engine_seed):
 _STEP_KEYS = (("obs", "observations"), ("value", "values"),
               ("interp", "interp_features"), ("num_choices", "num_choices"),
               ("probs", "action_probs"), ("clock", "clock_remaining"),
+              ("diag", "diag"), ("origin_step", "origin_step"),
               ("prefix_len", "prefix_len"), ("action", "actions"))
 
 
@@ -882,7 +896,7 @@ class BrowseStore:
                 return Applied(ev)
             g = self.games[self.live_idx]
             for src, dst in _STEP_KEYS:
-                g[dst].append(ev.step[src])
+                g[dst].append(ev.step.get(src))
             return Applied(ev, game_idx=self.live_idx,
                            selected_grew=(self.cur_game == self.live_idx))
         if isinstance(ev, OppActionAppended):

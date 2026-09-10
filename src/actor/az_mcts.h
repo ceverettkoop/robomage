@@ -35,6 +35,7 @@
 #include <vector>
 
 #include "classes/action.h"  // LegalAction
+#include "root_diag.h"
 
 class AZEvaluator;
 
@@ -193,6 +194,8 @@ struct SelfPlaySample {
     float q = 0.0f;             // this search's ROOT VALUE, root-mover perspective
     bool explored = false;      // the played action != the visit argmax (tau branch)
     bool is_sideboard = false;  // the root was a bo3 sideboard prompt (own chain)
+    // Search diagnostics for the recording's `.diag` sidecar (root_diag.h).
+    RootDiag diag;
 };
 
 // One searched root's outcome (recorded for --dump-visits and stats).
@@ -265,6 +268,10 @@ public:
     // one). In bo3, between a game's backfill and the next game's start this holds
     // the sideboard-root samples awaiting the next game's z.
     const std::vector<SelfPlaySample>& game_samples() const;
+    // Every REAL action returned since begin_match(), all seats, in engine
+    // order — the match's replayable action log (a recording's `.rmplay`
+    // sidecar). Simulation steps are never included.
+    const std::vector<int32_t>& match_actions() const;
 
 private:
     struct Impl;

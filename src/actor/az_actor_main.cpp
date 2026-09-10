@@ -115,6 +115,13 @@ struct ActorConfig {
     // cli_spec.DEFAULT_AZ_TD_N; az_selfplay always passes --td-n explicitly).
     int td_n = 10;
     std::string out_dir;               // empty -> ../train/az_data/<deck>
+    // --replay-sidecars (with --record): one shard per MATCH plus the
+    // same-stem `.diag` search-diagnostics and `.rmplay` replay sidecars the
+    // GUI recorder writes, so the shard browsers can rebuild each searched
+    // decision's tree (F7). --provenance-json <object> is embedded verbatim
+    // as the replay's search_provenance (spec / checkpoint / knobs).
+    bool replay_sidecars = false;
+    std::string provenance_json;
     bool rng_seed_set = false;
     uint32_t rng_seed = 0;             // default derived from --seed
     // vs-scripted seat (--scripted-seat A|B + --scripted-oracle <socket>):
@@ -169,6 +176,9 @@ void print_usage(const char* prog) {
                  "       [--record [--out-dir <dir>] [--td-n N]] (eval-mode shard "
                  "recording: searched roots stored, no noise, argmax picks; "
                  "allowed with --model-b)\n"
+                 "       [--replay-sidecars [--provenance-json <object>]] (with "
+                 "--record: one shard per match plus .diag/.rmplay sidecars for "
+                 "the shard browsers' tree rebuild)\n"
                  "       [--scripted-seat A|B --scripted-oracle <socket>] "
                  "(vs-scripted: that seat plays via train/scripted_oracle.py)\n"
                  "       [--net-seat A|B --opp-model <path.ts.pt>] "
@@ -294,6 +304,10 @@ int main(int argc, char const* argv[]) {
             cfg.td_n = std::stoi(need_arg(argc, argv, i, "--td-n"));
         } else if (a == "--out-dir") {
             cfg.out_dir = need_arg(argc, argv, i, "--out-dir");
+        } else if (a == "--replay-sidecars") {
+            cfg.replay_sidecars = true;
+        } else if (a == "--provenance-json") {
+            cfg.provenance_json = need_arg(argc, argv, i, "--provenance-json");
         } else if (a == "--rng-seed") {
             cfg.rng_seed = static_cast<uint32_t>(
                 std::stoul(need_arg(argc, argv, i, "--rng-seed")));
@@ -616,9 +630,13 @@ int main(int argc, char const* argv[]) {
             const SelfPlaySample& s = gs[i];
             shards->add_sample(s.obs.data(), s.pi.data(), td_in[i].z,
                                s.mask.data(), s.q,
-                               static_cast<uint8_t>(s.explored ? 1 : 0), td_q[i]);
+                               static_cast<uint8_t>(s.explored ? 1 : 0), td_q[i],
+                               &s.diag);
         }
-        shards->maybe_flush();
+        // Sidecar recording flushes once per MATCH (flush_match below) so a
+        // shard's .rmplay names exactly one match; otherwise the threshold
+        // flush at the game boundary, as az_selfplay.py.
+        if (!cfg.replay_sidecars) shards->maybe_flush();
         const char* wstr = draw ? "DRAW" : (winner_is_a ? "A" : "B");
         std::printf("SELFPLAY: game %d samples=%zu winner=%s\n", ++game_log_idx,
                     gs.size(), wstr);
@@ -629,6 +647,22 @@ int main(int argc, char const* argv[]) {
         // game's z (mirrors az_selfplay.py, where a sideboard sample carries
         // game_idx == k+1).
         mcts->end_game();
+    };
+
+    // Sidecar recording: the match's replay document (seed, the MCTS's real-
+    // action log, decks, provenance) handed to the accumulator at match end.
+    auto flush_match_sidecars = [&](uint32_t match_seed) {
+        if (!recording || !cfg.replay_sidecars) return;
+        MatchReplayMeta meta;
+        meta.engine_seed = match_seed;
+        meta.actions = &mcts->match_actions();
+        meta.deck_a = cfg.deck;
+        meta.deck_b = deck_b_name_eff;
+        meta.bo3 = cfg.bo3;
+        meta.net_is_a = cfg.scripted_seat != 1;
+        meta.state_size = STATE_SIZE;
+        meta.provenance_json = cfg.provenance_json;
+        shards->flush_match(meta);
     };
 
     if (cfg.bo3) {
@@ -658,6 +692,7 @@ int main(int argc, char const* argv[]) {
                     backfill_selfplay(winner);
                     if (oracle) oracle->new_game();
                 });
+            flush_match_sidecars(match_seed);
         }
     } else {
         for (int g = 0; g < cfg.games; g++) {
@@ -681,6 +716,7 @@ int main(int argc, char const* argv[]) {
                             winner == Zone::PLAYER_A ? "A" : "B");
             std::fflush(stdout);
             backfill_selfplay(winner);
+            flush_match_sidecars(seed_g);
         }
     }
 

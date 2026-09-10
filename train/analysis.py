@@ -795,6 +795,34 @@ class CollectAbort(Exception):
     decisions (see _collect_game_traces' should_stop)."""
 
 
+def _install_search_diag_taps(ctrl, trace_diag, trace_origin):
+    """Point a search controller's ``on_result`` / ``on_followed`` taps at
+    this game's trace lists, so each searched model decision records its
+    diag (sims run, worlds, root value, per-action visits / Q / priors) and
+    each tree-followed one its origin step. The taps fire inside
+    ``choose()``, between on_query (which appended the None placeholders
+    for this step) and on_action, so they overwrite the last slot. A
+    raw-policy controller has no taps and records nothing."""
+    if not hasattr(ctrl, "on_result") or not hasattr(ctrl, "on_followed"):
+        return
+    from shard_record import (diag_from_result, followed_diag,
+                              last_search_origin)
+
+    def on_result(obs, num_choices, result, chosen):
+        if trace_diag:
+            trace_diag[-1] = diag_from_result(obs, num_choices, result)
+
+    def on_followed(obs, num_choices, visits, path, world_idx, chosen):
+        if trace_diag:
+            origin = last_search_origin(trace_diag[:-1])
+            trace_diag[-1] = followed_diag(num_choices, visits, path,
+                                           world_idx, origin)
+            trace_origin[-1] = origin if origin >= 0 else None
+
+    ctrl.on_result = on_result
+    ctrl.on_followed = on_followed
+
+
 def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
                          progress=None, should_stop=None):
     """Play n_games and collect per-step (obs, value, action) traces.
@@ -809,6 +837,11 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
         "engine_seed": int,          # engine --seed of the played game (replay key)
         "full_actions": [int, ...],  # every action index fed to env.step, in order
         "prefix_len": [int, ...],    # per model step: # of full_actions before it
+        "diag": [dict|None, ...],    # per model step: search diagnostics
+                                     # (shard_replay.diag_row shape) when the
+                                     # seat searched, else None
+        "origin_step": [int|None, ...],  # per model step: the searched step a
+                                     # tree-followed decision descends from
         "result": float,  # +1 win, -1 loss from model perspective
         "model_is_a": bool }
 
@@ -870,7 +903,10 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
         trace_probs = []
         trace_opp_actions = []
         trace_clock = []
+        trace_diag = []
+        trace_origin = []
         prefix_len = []
+        _install_search_diag_taps(ctrl_model, trace_diag, trace_origin)
 
         def on_query(d):
             if should_stop is not None and should_stop():
@@ -890,6 +926,10 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
             # Match-clock bank the model carries INTO this decision (None when
             # the seat has no clock= knob).
             trace_clock.append(_ctrl_clock_stats(ctrl_model)[1])
+            # Search diagnostics land here from the controller's taps while it
+            # chooses (None = no search ran: raw policy, or a fallback answer).
+            trace_diag.append(None)
+            trace_origin.append(None)
             prefix_len.append(d.index)   # actions fed before this model step
 
         def on_action(d, action):
@@ -904,6 +944,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
                         "interp": trace_interp[-1],
                         "num_choices": trace_num_choices[-1],
                         "probs": trace_probs[-1], "clock": trace_clock[-1],
+                        "diag": trace_diag[-1], "origin_step": trace_origin[-1],
                         "prefix_len": prefix_len[-1], "action": int(action)}})
             else:
                 # Decode now (obs is from the opponent's perspective and is not
@@ -947,6 +988,11 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
             "clock_remaining": trace_clock,
             "clock_bank": _ctrl_clock_stats(ctrl_model)[0],
             "opp_clock_bank": _ctrl_clock_stats(ctrl_opp)[0],
+            # Per-model-decision search diagnostics (shard_replay.diag_row's
+            # shape; None where no search ran) and, for tree-followed
+            # decisions, the step index of the search they descend from.
+            "diag": trace_diag,
+            "origin_step": trace_origin,
         })
         if progress is not None:
             progress({"kind": "game_end", "game": games[-1]})

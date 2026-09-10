@@ -188,6 +188,76 @@ def pack_diag(diags):
     return out
 
 
+def diag_from_result(obs, num_choices, result):
+    """The diag dict for a searched decision (``shard_replay.diag_row``'s
+    shape, so every diag consumer — the browsers' decision table / search
+    line, ``tree_rebuild`` — reads it the same way whether it was recorded
+    to a shard or captured live). Every field is read with getattr so a
+    minimal duck-typed result still records."""
+    g = lambda name, default=None: getattr(result, name, default)  # noqa: E731
+    num_choices = int(num_choices)
+    roots = g("roots")
+    plan = (not roots) and float(obs[_IS_SIDEBOARD_IDX]) > 0.5
+    q = g("q")
+    w_sum = g("w_sum")
+    seeds = g("seeds")
+    world_visits = g("world_visits")
+    world_values = g("world_values")
+    return {
+        "kind": DIAG_KIND_PLAN if plan else DIAG_KIND_SEARCH,
+        "num_choices": num_choices,
+        "visits": np.asarray(result.visits[:num_choices]).astype(np.int64),
+        "priors": (None if g("priors") is None
+                   else np.asarray(g("priors")[:num_choices],
+                                   dtype=np.float32)),
+        "q_act": (np.zeros(num_choices, dtype=np.float32) if q is None
+                  else np.asarray(q[:num_choices], dtype=np.float32)),
+        "w_sum": (np.zeros(num_choices, dtype=np.float32) if w_sum is None
+                  else np.asarray(w_sum[:num_choices], dtype=np.float32)),
+        "root_value": float(g("root_value", 0.0)),
+        "sims_run": int(g("sims_run", 0)),
+        "sim_steps": int(g("sim_steps", 0)),
+        "reused_visits": int(g("reused_visits", 0)),
+        "stopped_early": bool(g("stopped_early", False)),
+        "memo_hits": int(g("memo_hits", 0)),
+        "seeds": [int(s) for s in seeds] if seeds is not None else [],
+        "world_visits": (None if world_visits is None
+                         else [int(v) for v in world_visits]),
+        "world_values": (None if world_values is None
+                         else [float(v) for v in world_values]),
+        "n_worlds": max(len(seeds) if seeds is not None else 0,
+                        len(world_visits) if world_visits is not None else 0,
+                        len(world_values) if world_values is not None else 0),
+        "time_budget_s": g("time_budget_s"),
+        "time_budget_min_s": g("time_budget_min_s"),
+    }
+
+
+def followed_diag(num_choices, visits, path, world_idx, origin):
+    """The diag dict for a tree-followed decision (``SearchController.
+    on_followed``'s arguments); ``origin`` is the index of the searched row
+    whose trees were followed (-1 when it isn't in the same record)."""
+    num_choices = int(num_choices)
+    return {
+        "kind": DIAG_KIND_FOLLOWED,
+        "num_choices": num_choices,
+        "visits": np.asarray(visits[:num_choices]).astype(np.int64),
+        "origin_row": int(origin),
+        "follow_path": [int(a) for a in path],
+        "follow_worlds": [int(w) for w in world_idx],
+    }
+
+
+def last_search_origin(diags):
+    """Index of the most recent in-game search (kind 1) row in ``diags``, the
+    row a tree-followed decision descends from; -1 when there is none."""
+    for i in range(len(diags) - 1, -1, -1):
+        d = diags[i]
+        if d is not None and d["kind"] == DIAG_KIND_SEARCH:
+            return i
+    return -1
+
+
 def default_recording_dir(base_dir=None):
     """A fresh per-session recording directory:
     ``train/az_data/recorded/rec_{ts}_{pid}`` (not the training pool).
@@ -264,64 +334,17 @@ class ShardRecorder:
 
     @staticmethod
     def _diag_from_result(obs, num_choices, result):
-        """The diag dict for a searched decision. Every field is read with
-        getattr so a minimal duck-typed result still records."""
-        g = lambda name, default=None: getattr(result, name, default)  # noqa: E731
-        num_choices = int(num_choices)
-        roots = g("roots")
-        plan = (not roots) and float(obs[_IS_SIDEBOARD_IDX]) > 0.5
-        q = g("q")
-        w_sum = g("w_sum")
-        seeds = g("seeds")
-        world_visits = g("world_visits")
-        world_values = g("world_values")
-        return {
-            "kind": DIAG_KIND_PLAN if plan else DIAG_KIND_SEARCH,
-            "num_choices": num_choices,
-            "visits": np.asarray(result.visits[:num_choices]).astype(np.int64),
-            "priors": (None if g("priors") is None
-                       else np.asarray(g("priors")[:num_choices],
-                                       dtype=np.float32)),
-            "q_act": (np.zeros(num_choices, dtype=np.float32) if q is None
-                      else np.asarray(q[:num_choices], dtype=np.float32)),
-            "w_sum": (np.zeros(num_choices, dtype=np.float32) if w_sum is None
-                      else np.asarray(w_sum[:num_choices], dtype=np.float32)),
-            "root_value": float(g("root_value", 0.0)),
-            "sims_run": int(g("sims_run", 0)),
-            "sim_steps": int(g("sim_steps", 0)),
-            "reused_visits": int(g("reused_visits", 0)),
-            "stopped_early": bool(g("stopped_early", False)),
-            "memo_hits": int(g("memo_hits", 0)),
-            "seeds": [int(s) for s in seeds] if seeds is not None else [],
-            "world_visits": (None if world_visits is None
-                             else [int(v) for v in world_visits]),
-            "world_values": (None if world_values is None
-                             else [float(v) for v in world_values]),
-            "time_budget_s": g("time_budget_s"),
-            "time_budget_min_s": g("time_budget_min_s"),
-        }
+        return diag_from_result(obs, num_choices, result)
 
     def on_followed(self, obs, num_choices, visits, path, world_idx, chosen):
         """``SearchController.on_followed`` hook: stash the diag of a
         tree-followed decision (the trainer row itself is the one-hot
         :meth:`observe_step` builds). ``origin_row`` is the most recent
         searched (kind 1) row this match, whose trees were followed."""
-        num_choices = int(num_choices)
         with self._lock:
-            origin = -1
-            for i in range(len(self._diags) - 1, -1, -1):
-                d = self._diags[i]
-                if d is not None and d["kind"] == DIAG_KIND_SEARCH:
-                    origin = i
-                    break
-            self._pending_diag = {
-                "kind": DIAG_KIND_FOLLOWED,
-                "num_choices": num_choices,
-                "visits": np.asarray(visits[:num_choices]).astype(np.int64),
-                "origin_row": origin,
-                "follow_path": [int(a) for a in path],
-                "follow_worlds": [int(w) for w in world_idx],
-            }
+            self._pending_diag = followed_diag(
+                num_choices, visits, path, world_idx,
+                last_search_origin(self._diags))
 
     def observe_step(self, obs, num_choices, action, reward, info, done):
         """``GameDriver.step_observer`` hook, once per stepped decision.
