@@ -1989,8 +1989,8 @@ def baseline(binary_path: str, model, n_games: int = 100,
     PPO generalist), an explicit ``.zip``/``.pt`` path (e.g. an ``exp_*``
     exploiter checkpoint), or a search spec (``az:gen``, ``mcts:gen``,
     ``azraw:gen``, with the usual ``?sims=...`` knobs) — or a pre-built
-    ``Controller`` instance (``baseline_all`` passes one so the checkpoint loads
-    once for the whole round-robin).
+    ``Controller`` instance (``baseline_sweep`` passes one so the checkpoint
+    loads once for a whole sequential sweep).
 
     The model pilots ``deck`` (REQUIRED — a checkpoint no longer encodes a deck;
     the one generalist pilots whatever deck you name) and faces scripted:hard
@@ -2008,7 +2008,7 @@ def baseline(binary_path: str, model, n_games: int = 100,
 
     ``split_out``, when given, is a ``runner.tally_per_game``-shaped dict this
     run's per-game tallies are folded into (model's perspective), so a caller
-    running many matchups (``baseline_all``) can aggregate the split without
+    running many matchups (``baseline_sweep``) can aggregate the split without
     changing the return type.
 
     Returns ``(wins, losses, draws)`` from the model's perspective.
@@ -2094,7 +2094,7 @@ def _wld_line(w: int, l: int, d: int) -> str:
     return f"{w}W/{l}L/{d}D  {pct:.1f}% win rate"
 
 
-# Per-process controller cache for baseline_all's --workers pool: each spawned
+# Per-process controller cache for baseline_sweep's --workers pool: each spawned
 # worker builds the controller (checkpoint load) once and reuses it for every
 # matchup it is handed.
 _WORKER_CTRLS: dict = {}
@@ -2114,7 +2114,7 @@ def _baseline_worker_init():
 
 def _baseline_matchup_worker(binary_path: str, spec: str, deck: str, opp: str,
                              n_games: int, seed: int | None, bo3: bool):
-    """One (model deck, opponent deck) cell of the --all round-robin, run
+    """One (model deck, opponent deck) cell of a baseline sweep, run
     inside a pool worker. Returns ``(w, l, d, per_game_split)``."""
     from opponents import make_controller
 
@@ -2130,86 +2130,37 @@ def _baseline_matchup_worker(binary_path: str, spec: str, deck: str, opp: str,
     return w, l, d, split
 
 
-def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
-                 log_path: str | None = None, bo3: bool = False,
-                 model: str | None = None, workers: int = 1):
-    """Round-robin a model over every league matchup vs scripted:hard.
+def baseline_sweep(binary_path: str, spec: str, matchups: list,
+                   n_games: int, seed: int | None, bo3: bool,
+                   workers: int = 1) -> tuple:
+    """Play every ``(model deck, scripted deck)`` matchup vs scripted:hard on
+    the runner-based Python backend (the ``train.py baseline`` path for PPO
+    ``.zip`` models, ``mcts:`` specs and ``--no-actor``; ``az_baseline`` owns
+    the report and the actor backend).
 
-    ``model`` is any ``make_controller`` model spec — default ``'gen'`` (the one
-    PPO generalist), or e.g. ``az:gen`` (the AZ net under search), ``azraw:gen``
-    (AZ policy argmax, cheap), ``mcts:gen``, or an explicit ``.zip``/``.pt``
-    path such as an ``exp_*`` exploiter checkpoint. The model pilots *each*
-    league deck (decks/league/*.dk) against scripted:hard piloting *each* league
-    deck — the full N×N cross product, mirrors included — for ``n_games`` per
-    matchup (default 50). The report records every matchup's win rate plus
-    aggregate win rates per model deck (vs the whole scripted field) and per
-    opponent deck (against every model deck); all win rates are from the model's
-    perspective. It is appended to ``log_path`` (default
-    checkpoints/baseline_report.log) and printed to stdout.
+    ``spec`` is any ``make_controller`` model spec. Returns ``(results,
+    per_game)`` — ``results[(deck, opp)] = (w, l, d)`` from the model's view and
+    ``per_game`` the pooled ``runner.tally_per_game`` split (bo3 only).
 
     ``workers > 1`` runs that many matchups concurrently in a spawn-based
     process pool (one Python driver + one engine subprocess per worker; the
     matchup grid is embarrassingly parallel). Seeds mean the same thing in both
     modes — every matchup plays games ``seed .. seed+n_games-1`` — so a
     parallel run is game-for-game reproducible against a sequential one; only
-    the progress-line completion order varies. The report is identical.
+    the progress-line completion order varies.
     """
     import runner
     from opponents import make_controller
 
-    roster = _league_roster()
-    if not roster:
-        print(f"No league decks found under {_LEAGUE_DECKS_DIR}")
-        return
-
-    # One model pilots every deck. Resolve plain checkpoint specs up front for a
-    # friendly miss + provenance in the header; search specs (az:/mcts:/azraw:)
-    # resolve inside make_controller.
-    spec = model or GEN_STEM
-    display = spec
-    if ":" not in spec:
-        ckpt = _resolve_model(spec)
-        if not ckpt or not os.path.exists(ckpt):
-            print(f"No checkpoint found for model spec '{spec}' under "
-                  f"{_CHECKPOINT_ABS}. Train one first.")
-            return
-        display = spec if spec == os.path.basename(ckpt) else \
-            f"{spec} ({os.path.basename(ckpt)})"
-
-    if log_path is None:
-        log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
-
-    stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = (f"=== {display} baseline round-robin vs "
-              f"scripted:hard ({len(roster)}x{len(roster)} matchups) — {stamp} — "
-              f"{n_games} {'matches' if bo3 else 'games'}/matchup, seed={seed} ===")
-    lines = [header]
-    print(header, flush=True)
-
-    # W/L/D tallies, always from the model's perspective: per deck the model
-    # pilots (across the whole scripted field) and per deck the scripted
-    # opponent pilots (across every model deck).
-    per_model_deck = {deck: [0, 0, 0] for deck in roster}
-    per_opp_deck = {deck: [0, 0, 0] for deck in roster}
-    # Same tallies grouped by VALUE BUCKET (self archetype x opp archetype) — the
-    # unit the multi-head critic is split along, so this view says whether a whole
-    # matchup CLASS (e.g. burn piloting vs control) is the weak spot rather than
-    # one deck pairing.
-    per_bucket: dict[int, list[int]] = {}
-    # Pre-board vs post-board tallies pooled over every matchup (bo3 only).
-    per_game_all: dict[int, list[int]] = {}
-
-    # Gather every matchup's tally into results[(deck, opp)] — sequentially or
-    # across the worker pool; the report below reads them in roster order
-    # either way, so completion order never reorders the report.
-    matchups = [(deck, opp) for deck in roster for opp in roster]
     results: dict[tuple, tuple] = {}
-    if workers > 1:
+    per_game_all: dict[int, list[int]] = {}
+    if workers > 1 and len(matchups) > 1:
         import concurrent.futures as cf
         import multiprocessing as mp
 
         ctx = mp.get_context("spawn")
-        with cf.ProcessPoolExecutor(max_workers=workers, mp_context=ctx,
+        with cf.ProcessPoolExecutor(max_workers=min(workers, len(matchups)),
+                                    mp_context=ctx,
                                     initializer=_baseline_worker_init) as pool:
             futs = {pool.submit(_baseline_matchup_worker, binary_path, spec,
                                 deck, opp, n_games, seed, bo3): (deck, opp)
@@ -2232,60 +2183,7 @@ def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
             results[(deck, opp)] = baseline(
                 binary_path, ctrl, n_games=n_games, deck=deck, opp_deck=opp,
                 seed=seed, bo3=bo3, split_out=per_game_all)
-
-    for deck in roster:
-        row_cells = []
-        for opp in roster:
-            w, l, d = results[(deck, opp)]
-            total = w + l + d
-            pct = 100 * w / total if total else 0
-            row_cells.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
-            lines.append(f"{spec} piloting {deck:<22} vs scripted:hard {opp:<22} "
-                         + _wld_line(w, l, d))
-            bucket = archetypes.bucket_index(deck, opp)
-            for tally in (per_model_deck[deck], per_opp_deck[opp],
-                          per_bucket.setdefault(bucket, [0, 0, 0])):
-                tally[0] += w
-                tally[1] += l
-                tally[2] += d
-        lines.append(f"  [{spec} {deck}] " + "  ".join(row_cells))
-
-    lines.append("")
-    # Pre-board vs post-board: game 1 is played on the registered decks and cannot
-    # be affected by sideboarding, so it is the control for games 2-3.
-    split = runner.format_per_game_split(per_game_all, subject="model")
-    if split:
-        lines.extend(split)
-        lines.append("")
-    lines.append(f"per model deck ({spec} piloting it vs the whole scripted field):")
-    for deck, (w, l, d) in per_model_deck.items():
-        lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
-    lines.append("per opponent deck (scripted:hard piloting it vs every model deck; "
-                 "win rate is still the model's):")
-    for deck, (w, l, d) in per_opp_deck.items():
-        lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
-    # Archetype-grouped view: one row per value bucket the roster actually spans,
-    # then one row per self archetype pooled across every opponent archetype.
-    lines.append("per value bucket (self archetype vs opponent archetype — the "
-                 "multi-head critic's split):")
-    per_self_arch: dict[int, list[int]] = {}
-    for bucket in sorted(per_bucket):
-        w, l, d = per_bucket[bucket]
-        lines.append(f"  {archetypes.bucket_name(bucket):<34} " + _wld_line(w, l, d))
-        tally = per_self_arch.setdefault(archetypes.bucket_archetypes(bucket)[0],
-                                        [0, 0, 0])
-        tally[0] += w
-        tally[1] += l
-        tally[2] += d
-    lines.append("per self archetype (pooled over every opponent archetype):")
-    for arch in sorted(per_self_arch):
-        w, l, d = per_self_arch[arch]
-        lines.append(f"  {archetypes.arch_name_at(arch):<34} " + _wld_line(w, l, d))
-
-    summary = "\n".join(lines)
-    with open(log_path, "a") as f:
-        f.write(summary + "\n\n")
-    print(f"\n{summary}\n\nreport appended to {log_path}", flush=True)
+    return results, per_game_all
 
 
 def observe(binary_path: str,
@@ -2545,29 +2443,9 @@ if __name__ == "__main__":
     elif args.command == "baseline":
         # baseline defaults to bo3 matches; --bo1 opts back into single games
         # (--bo3 is accepted as a redundant no-op for backward compatibility).
-        if args.all:
-            baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
-                         log_path=args.log, bo3=not args.bo1, model=args.model,
-                         workers=args.workers)
-        elif args.model is None:
-            parser.error("baseline: give a model spec ('gen', 'az:gen', a .zip/.pt "
-                         "path), or --all to round-robin it over every league "
-                         "matchup")
-        elif not args.deck:
-            parser.error("baseline: --deck is required — a checkpoint no longer "
-                         "encodes the deck it pilots. Pass the deck the generalist "
-                         "should play (e.g. baseline gen --deck league/ur_delver).")
-        else:
-            from opponents import make_controller
-            try:
-                # Build here so a bad spec dies as a usage error, not mid-run.
-                ctrl = make_controller(args.model, checkpoint_resolver=_resolve_model,
-                                       deterministic=True)
-            except ValueError as exc:
-                parser.error(str(exc))
-            baseline(args.binary, ctrl, args.games or 100,
-                     deck=args.deck, opp_deck=args.opponent,
-                     seed=args.seed, bo3=not args.bo1)
+        import az_baseline
+        az_baseline.run(args, python_sweep=baseline_sweep,
+                        resolve_model=_resolve_model)
     elif args.command == "az-selfplay":
         import az_selfplay
         az_selfplay.run(args)

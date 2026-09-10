@@ -196,9 +196,13 @@ DEFAULT_AZ_ROWS_PER_GAME = 32
                                  # playout-cap randomization supplies ~3x distinct games
                                  # per slot — the pre-vs-post-train window MSE tripwire
                                  # polices memorization (warns at a 2x gap)
-DEFAULT_AZ_C_PUCT = 2.5          # PUCT exploration constant for the az paths: higher
-                                 # weights search Q over the net prior (1.5 was
-                                 # prior-dominated; analysis/parity tools keep 1.5)
+DEFAULT_AZ_C_PUCT = 2.5          # PUCT exploration constant, EVERY search path: az
+                                 # training/gate/baseline, the az:/mcts: spec grammar
+                                 # (play, observe, analysis), mcts.py defaults and the
+                                 # parity tests. Higher weights search Q over the net
+                                 # prior (1.5 was prior-dominated). The C++ actor's
+                                 # compiled default mirrors this BY HAND (az_mcts.h /
+                                 # az_actor_main.cpp) and every launcher passes --c.
 DEFAULT_AZ_BATCH_SIZE = 256
 DEFAULT_AZ_TRAIN_BATCHES = 1000  # standalone az-train
 # Per az / az-league slot: 0 = AUTO, one epoch over the loaded window
@@ -244,6 +248,14 @@ DEFAULT_AZ_EVAL_GAMES = 28        # matches per ROUND (>= 2 per panel matchup so
 # fewer sims per match.
 DEFAULT_AZ_EVAL_SIMS = DEFAULT_AZ_SIMS
 DEFAULT_AZ_EVAL_WORLDS = DEFAULT_AZ_WORLDS
+# `baseline`: the AZ generalist at the full league search budget vs scripted:hard
+# over the whole league grid — 10 bo3 matches per matchup (1000 matches on the
+# 10-deck roster, ~10-13 h on a 32-core box with the GPU eval server) on the C++
+# actor with 48 legs in flight (the engines are CPU-bound; more clients only
+# fill GPU batches, they do not add throughput).
+DEFAULT_BASELINE_MODEL = "az:gen"
+DEFAULT_BASELINE_GAMES = 10
+DEFAULT_BASELINE_WORKERS = 48
 DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55   # SPRT's H1; H0 is its mirror, 0.45
 DEFAULT_AZ_GATE_MAX_ROUNDS = 8    # hard cap: 8 x 28 = 224 matches. At the cap
                                   # the incumbent keeps the seat unless the
@@ -1198,38 +1210,65 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "into one-off games (--bo3 is a redundant no-op here)"),
         *common_args(),
     ]),
-    Sub("baseline", "Evaluate model win rate vs the scripted HARD agent (mirror match)", items=[
+    Sub("baseline",
+        "Evaluate the AZ generalist (full search, C++ actor) vs scripted:hard over "
+        "the league matchup grid; report appended to checkpoints/baseline_report.log",
+        items=[
         Arg("model", "str", required=False, suggest="agent",
-            help="Model to evaluate: 'gen', a .zip/.pt path (e.g. an exp_* "
-                 "exploiter checkpoint), or a search spec ('az:gen', 'mcts:gen', "
-                 "'azraw:gen', with the usual ?sims=... knobs). With --all it "
-                 "picks the model round-robined (default: gen)"),
-        Arg("--games", "int", default=None,
-            help="Games per matchup (default: 100 for a single model, 50 per opponent "
-                 "with --all)"),
-        Arg("--all", "flag",
-            help="Round-robin the model (default: the generalist gen__final.zip) on "
-                 "every league deck vs scripted:hard on every league deck (including "
-                 "the mirror): an N-deck roster runs N×N matchups of --games each, "
-                 "and the per-matchup win rates are appended to the report log"),
-        Arg("--log", "str", default=None,
-            help="Report file for --all (default: checkpoints/baseline_report.log, appended)"),
+            help=f"Model to evaluate (default {DEFAULT_BASELINE_MODEL} = the "
+                 "incumbent gen__azfinal.pt under search). An 'az:' spec or a .pt "
+                 "path runs on the C++ actor; its ?sims=&worlds=&c=&sb_* knobs "
+                 "override the --sims/--worlds/--c-puct/--sb-* flags. 'gen' (the "
+                 "PPO generalist), a .zip path, or an 'mcts:'/'azraw:' spec runs on "
+                 "the Python backend instead"),
+        Arg("--games", "int", default=DEFAULT_BASELINE_GAMES,
+            help=f"Matches per matchup (default {DEFAULT_BASELINE_GAMES}); seats "
+                 "alternate within each matchup (net in seat A for the first "
+                 "half, rounded up)"),
         Arg("--deck", "str", default=None, suggest="deck",
-            help="Deck the model pilots — REQUIRED (the generalist encodes no deck). "
-                 "The scripted opponent mirrors it."),
+            help="Restrict the grid to this piloted deck (a mirror match unless "
+                 "--opponent names the scripted deck). Default: every league "
+                 "deck piloted vs every league deck — the full N×N grid, mirrors "
+                 "included"),
         Arg("--opponent", "str", default=None, suggest="deck",
-            help="Deck the scripted opponent pilots (default: mirror of --deck; "
-                 "ignored with --all, which sweeps every roster pairing)"),
-        Arg("--workers", "int", default=1,
-            help="With --all: run this many matchups concurrently in a process "
-                 "pool (each worker is one Python driver + one engine subprocess, "
-                 "so size it to the core count; default 1 = sequential)"),
+            help="Restrict the scripted:hard side to this deck (alone: every "
+                 "league deck vs it; with --deck: that one cell)"),
+        Arg("--all", "flag",
+            help="Force the full league grid even when --deck/--opponent are "
+                 "given (the grid is already the default without them)"),
+        Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
+            help=f"PUCT simulations per decision, TOTAL across --worlds (default "
+                 f"{DEFAULT_AZ_SIMS}, the league budget)"),
+        Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS,
+            help=f"Determinized worlds per search (default {DEFAULT_AZ_WORLDS})"),
+        _c_puct(),
+        *sb_search_args(),
+        Arg("--workers", "int", default=DEFAULT_BASELINE_WORKERS,
+            help="Actor legs (each one engine + search process) or Python "
+                 f"matchup workers in flight at once (default "
+                 f"{DEFAULT_BASELINE_WORKERS})"),
+        Arg("--log", "str", default=None,
+            help="Report file (default: checkpoints/baseline_report.log, appended)"),
+        Arg("--record-dir", "str", default=None,
+            help="Record the net's searched decisions as trainer-schema shards "
+                 "(shard_net_<seat>__<deck>__<opp>_*.npz, one flat directory) for "
+                 "az_inspect / the shard browsers. Actor backend only. Default: a "
+                 "fresh dir under az_data/baseline/ — OUTSIDE the az_data/gen "
+                 "training pool, so a baseline never becomes training data"),
+        Arg("--no-record", "flag", help="Do not record shards"),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N,
+            help="n-step TD horizon stored in the recorded shards"),
         Arg("--seed", "int", default=None,
-            help="RNG seed for reproducible runs (game N uses seed+N; default: random)"),
+            help="Base RNG seed (matchup i uses seed + i*100003; default: randomly "
+                 "drawn and printed)"),
         Arg("--bo1", "flag",
             help="Single-game mode. baseline defaults to bo3 matches; this opts back "
                  "into one-off games (--bo3 is a redundant no-op here)"),
-        Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
+        _actor_mode(),
+        _actor_device(),
+        _eval_server(),
+        Arg("--binary", "str", default=BINARY,
+            help="Path to the robomage binary (Python backend only)"),
     ]),
     # ── AlphaZero (Phase C) ───────────────────────────────────────────────────
     Sub("az-selfplay",
@@ -1726,7 +1765,8 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
             Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
             Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
             *sb_search_args(),
-            Arg("--c", "float", default=1.5, help="PUCT exploration constant c_puct (default: 1.5)"),
+            Arg("--c", "float", default=DEFAULT_AZ_C_PUCT,
+                help=f"PUCT exploration constant c_puct (default {DEFAULT_AZ_C_PUCT})"),
             Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
             Arg("--top", "int", default=8,
                 help="Biggest prior-vs-visit disagreement decisions to decode (default: 8)"),

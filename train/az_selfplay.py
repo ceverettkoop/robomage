@@ -1913,7 +1913,7 @@ def _parse_actor_output(stdout: str, bo3: bool = False):
 
 
 def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
-                       c_puct=1.5,
+                       c_puct=DEFAULT_AZ_C_PUCT,
                        full_search_frac=DEFAULT_AZ_FULL_SEARCH_FRAC,
                        fast_sims=DEFAULT_AZ_FAST_SIMS,
                        out_dir, deck_b=None, noise_eps=DEFAULT_ROOT_NOISE_EPS,
@@ -1995,8 +1995,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
            "--explore-floor", str(explore_floor),
            "--td-n", str(td_n),
            "--merge-dupes", str(int(merge_dupes))]
-    if c_puct != 1.5:   # appended only when non-default: default argv unchanged
-        cmd += ["--c", str(c_puct)]
+    # Always pinned (like the noise/temperature knobs) so the actor never leans
+    # on its compiled-in default; the two mirror cli_spec.DEFAULT_AZ_C_PUCT.
+    cmd += ["--c", str(c_puct)]
     if batch != 1:
         cmd += ["--batch", str(batch)]
     if cross_world:

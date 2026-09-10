@@ -26,6 +26,7 @@ from env import (MAX_ACTIONS, STATE_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
 from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
                     CAT_CONFIRM_BLOCKERS)
+from cli_spec import DEFAULT_AZ_C_PUCT
 from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS)
 from scripted_agent import ScriptedAgent, make_agent
@@ -565,7 +566,7 @@ class SearchController:
     _PACE_IDLE_MAX_S = 0.5
 
     def __init__(self, evaluator, *, sims: int = 128, worlds: int = 4,
-                 c_puct: float = 1.5, temperature: float = 0.0,
+                 c_puct: float = DEFAULT_AZ_C_PUCT, temperature: float = 0.0,
                  label: str = "mcts", rng_seed: int = 0,
                  sb_branches: int = DEFAULT_SB_BRANCHES,
                  sb_worlds: int = DEFAULT_SB_WORLDS,
@@ -1225,7 +1226,7 @@ def make_controller(spec, *,
       - "play:<spec,spec,...>" → PlayController (semantic action script,
         same grammar as the test harness ``--play``);
       - "actions:<i,i,...>" → ActionListController (positional indices);
-      - "mcts:<gen-or-path>[?sims=128&worlds=4&c=1.5&temp=0&vscale=1&time=&clock=&paced=]" →
+      - "mcts:<gen-or-path>[?sims=128&worlds=4&c=&temp=0&vscale=1&time=&clock=&paced=]" →
         SearchController running PUCT search with that checkpoint's
         policy/value heads as priors/leaf values ("mcts:uniform" for the
         torch-free uniform evaluator — plumbing tests, weak play; "mcts:gen"
@@ -1437,7 +1438,7 @@ def _parse_search_knobs(spec: str) -> _SearchKnobs:
     _base, params = _parse_spec_query(spec)
     sims = _spec_knob(params, "sims", 128, int, spec)
     worlds = _spec_knob(params, "worlds", DEFAULT_SEARCH_WORLDS, int, spec)
-    c_puct = _spec_knob(params, "c", 1.5, float, spec)
+    c_puct = _spec_knob(params, "c", DEFAULT_AZ_C_PUCT, float, spec)
     temperature = _spec_knob(params, "temp", 0.0, float, spec)
     v_scale = _spec_knob(params, "vscale", 1.0, float, spec)
     rng_seed = _spec_knob(params, "seed", 0, int, spec)

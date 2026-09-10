@@ -53,7 +53,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import AZNet, obs_space_from_const, save_torchscript, torchscript_export_path
 from env import MAX_ACTIONS, _MATCH_CTX_START, _SELF_IS_A_IDX
-from cli_spec import BIN_DIR, BUILD_DIR
+from cli_spec import BIN_DIR, BUILD_DIR, DEFAULT_AZ_C_PUCT
 import runner
 from search_env import SearchRoboMageEnv
 
@@ -64,7 +64,7 @@ SCRIPTED_DECK_B = "league/gw_maverick"
 SEED = 1
 SIMS = 16
 WORLDS = 2
-C_PUCT = 1.5
+C_PUCT = DEFAULT_AZ_C_PUCT
 SEED_BASE = 42
 # Explicit sideboard PLAN-search budget for the bo3 parity cases (the in-game
 # sims/worlds/max_depth stay SIMS/WORLDS/default). Mirrors az_selfplay's

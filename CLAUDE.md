@@ -67,10 +67,12 @@ just built** — every `train/` entry point resolves its engine binary through `
 (`train/cli_spec.py`), defaulting to a build tier per tool:
 
 - **Debug by default** (`bin/debug/robomage`) — the test harness, `ci_check`/`make check`,
-  `observe`, `baseline`: correctness tools, so the extra assertions (`-D_GLIBCXX_ASSERTIONS`, no
-  `-O2`) are worth the slowdown.
-- **Release by default** (`bin/release/robomage`) — the GUI, the standalone TUI analysis browser,
-  and every PPO/AZ training driver.
+  `observe`, and `baseline`'s Python fallback: correctness tools, so the extra assertions
+  (`-D_GLIBCXX_ASSERTIONS`, no `-O2`) are worth the slowdown.
+- **Release by default** (`bin/release/robomage`, `bin/release/az_actor`) — the GUI, the
+  standalone TUI analysis browser, every PPO/AZ training driver, and `baseline`'s default
+  C++-actor path (`train/az_baseline.py`: `az:gen` at the full league search budget vs
+  scripted:hard over the league grid, report appended to `checkpoints/baseline_report.log`).
 
 **Override**: `ROBOMAGE_BUILD=debug|release` forces every tool onto one config (e.g. to reproduce
 a debug-only assertion failure); each subcommand also takes `--binary <path>` as a per-invocation

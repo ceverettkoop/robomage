@@ -70,7 +70,7 @@ struct ActorConfig {
     bool search = false;
     int sims = 128;
     int worlds = 4;
-    double c_puct = 1.5;
+    double c_puct = 2.5;  // mirrors train/cli_spec.py DEFAULT_AZ_C_PUCT (callers pass --c)
     int batch = 1;
     // Cross-world batched leaf evaluation (see az_mcts.h). Mutually exclusive
     // with --batch K>1.
