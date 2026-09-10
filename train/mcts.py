@@ -31,6 +31,7 @@ from typing import Optional, Protocol, Sequence
 import numpy as np
 
 from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, N_CARD_TYPES
+from cli_spec import DEFAULT_AZ_C_PUCT
 from decode import menu_merge_reps
 from env import (_CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _MATCH_CTX_START,
                  _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END,
@@ -427,7 +428,7 @@ def run_search(
     *,
     sims: int = 128,
     worlds: int = 4,
-    c_puct: float = 1.5,
+    c_puct: float = DEFAULT_AZ_C_PUCT,
     max_depth: int = 60,
     rollout_turns: int = 0,
     root_noise_eps: float = 0.0,
@@ -719,7 +720,7 @@ def run_search_parallel(
     *,
     sims: int = 128,
     worlds: int = 4,
-    c_puct: float = 1.5,
+    c_puct: float = DEFAULT_AZ_C_PUCT,
     max_depth: int = 60,
     rollout_turns: int = 0,
     root_noise_eps: float = 0.0,
@@ -1796,7 +1797,7 @@ class IncrementalSearch:
     """
 
     def __init__(self, env: SearchRoboMageEnv, evaluator: Evaluator, *,
-                 worlds: int = 4, c_puct: float = 1.5, max_depth: int = 60,
+                 worlds: int = 4, c_puct: float = DEFAULT_AZ_C_PUCT, max_depth: int = 60,
                  rollout_turns: int = 0,
                  rng: Optional[np.random.Generator] = None,
                  snapshot_slot: int = 0,
@@ -2002,7 +2003,7 @@ class IncrementalPlanSearch:
                  rng: Optional[np.random.Generator] = None,
                  snapshot_slot: int = 0,
                  world_seeds: Optional[Sequence[int]] = None,
-                 c_puct: float = 1.5, max_depth: int = 0,
+                 c_puct: float = DEFAULT_AZ_C_PUCT, max_depth: int = 0,
                  merge_dupes: bool = True, cross_world: bool = False):
         _check_world_seeds(world_seeds, worlds)
         rng = rng if rng is not None else np.random.default_rng()

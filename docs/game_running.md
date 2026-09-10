@@ -155,11 +155,20 @@ benchmarks; there is no other decision loop in the tree.
 - **`train.py observe`** — per-seat agent specs (`--player-a/-b`,
   `--play-a/-b`), any matchup. **Defaults to bo3**; pass `--bo1` for single
   games.
-- **`train.py baseline gen --deck <deck>`** — model vs scripted **HARD**, mirror
-  decks. `--deck` is REQUIRED (the generalist encodes no deck), seats alternate
-  per game, `--seed` reproducible. `--all` sweeps the generalist
-  (`gen__final.zip`) on every roster deck and appends per-matchup win rates to
-  `checkpoints/baseline_report.log` (override with `--log`).
+- **`train.py baseline`** — the AZ generalist (`az:gen` = `gen__azfinal.pt`)
+  under the full league search budget (1028 sims × 8 worlds) vs scripted
+  **HARD** over the whole league grid (every deck piloted vs every deck, mirrors
+  included), 10 bo3 matches per matchup, seats alternating. Runs on the C++
+  actor (`bin/az_actor --search` eval mode + the scripted oracle + the GPU eval
+  server, 48 legs in flight) — NOT on `drive_game`; PPO `.zip` models,
+  `mcts:` specs and `--no-actor` fall back to the runner-based
+  `train.baseline_sweep`. `--deck` narrows to one piloted deck (mirror unless
+  `--opponent`), `--games`/`--sims`/`--worlds`/`--workers` scale it, `--seed`
+  reproduces. Every run appends its report to `checkpoints/baseline_report.log`
+  (override with `--log`), and the actor path records the net's searched
+  decisions as shards under `az_data/baseline/baseline_<stamp>/` (analyzable
+  with `az_inspect`/the shard browsers; never pooled into training;
+  `--no-record` to skip). Implementation: `train/az_baseline.py`.
 - **`play.py`** — human vs model. Text mode = runner + `HumanController`
   (semantic input, `--seed`); `--tui` = Textual board.
 - **`fuzz_campaign.py`** — explore-tier fuzz sweeps for one matchup;

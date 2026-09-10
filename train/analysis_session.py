@@ -45,7 +45,8 @@ from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 
-from cli_spec import DEFAULT_SB_BRANCHES, DEFAULT_SB_ROLLOUT_TURNS
+from cli_spec import (DEFAULT_AZ_C_PUCT, DEFAULT_SB_BRANCHES,
+                      DEFAULT_SB_ROLLOUT_TURNS)
 from env import _IS_SIDEBOARD_IDX
 from mcts import (IncrementalPlanSearch, IncrementalSearch, LiveStats,
                   UniformEvaluator, _LockedEvaluator, _merge_root_stats)
@@ -99,7 +100,7 @@ class AnalysisConfig:
     worlds: int = 4
     chunk_sims: int = 16     # sims per UI update (~100ms/chunk at ~6ms/sim)
     max_sims: int = 800      # total per run; 0 = run until stopped
-    c_puct: float = 2.5
+    c_puct: float = DEFAULT_AZ_C_PUCT
     max_depth: int = 60
     sb_branches: int = DEFAULT_SB_BRANCHES  # sideboard roots: extra plans beyond the coverage pass
     sb_rollout_turns: int = DEFAULT_SB_ROLLOUT_TURNS  # sideboard roots: plan-pricing rollout horizon (player turns; 0 = static read)

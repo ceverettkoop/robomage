@@ -41,7 +41,7 @@ class AZEvaluator;
 struct MCTSConfig {
     int sims = 128;
     int worlds = 4;
-    double c_puct = 1.5;
+    double c_puct = 2.5;  // mirrors train/cli_spec.py DEFAULT_AZ_C_PUCT (callers pass --c)
     int max_depth = 60;
     int batch = 1;                  // 1 = exact mcts.py parity; K>1 = virtual-loss batching
     // Cross-world batched leaf evaluation (Stage 0 of

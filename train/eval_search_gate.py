@@ -49,6 +49,8 @@ def _run_batch(args):
 
 
 def main() -> int:
+    sys.path.insert(0, _TRAIN_DIR)
+    from cli_spec import DEFAULT_AZ_C_PUCT
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--checkpoint", required=True,
                     help="Checkpoint spec (deck shorthand or path) piloting BOTH sides")
@@ -65,7 +67,8 @@ def main() -> int:
     ap.add_argument("--sb-rollout-turns", type=int, default=None,
                     help="bo3 sideboard-root leaf-rollout horizon in player "
                          "turns, 0 = off (default budget)")
-    ap.add_argument("--c", type=float, default=1.5, dest="c_puct")
+    ap.add_argument("--c", type=float, default=DEFAULT_AZ_C_PUCT, dest="c_puct",
+                    help=f"PUCT exploration constant (default {DEFAULT_AZ_C_PUCT})")
     ap.add_argument("--vscale", type=float, default=1.0,
                     help="Value squash scale for the PPO value head")
     ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) - 1))
