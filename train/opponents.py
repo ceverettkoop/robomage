@@ -637,6 +637,11 @@ class SearchController:
         self._followed_trees = None
         self._followed_hist_len = 0
         self._followed_fp = None
+        # Follow bookkeeping for recording: the cumulative raw action path from
+        # the ORIGIN search's root to the current follow roots, and the origin
+        # world index of each surviving tree (in step with _followed_trees).
+        self._followed_path: list = []
+        self._followed_world_idx: list = []
         # Sideboard-boundary state for the plan search: one plan-value memo
         # shared across a boundary's consecutive picks. key = mcts.sb_root_key
         # identity; seeds = the pinned per-world determinize seeds (latched
@@ -658,6 +663,18 @@ class SearchController:
         # result and never fire it. Hook errors are swallowed — a display hook
         # must never break play.
         self.on_result = None
+        # Optional observer hook for tree-FOLLOWED decisions (answered from a
+        # previous search's trees, no new search): called with (obs_copy,
+        # num_choices, visits_copy, follow_path, follow_worlds, chosen_action)
+        # where follow_path is the cumulative raw action list from the origin
+        # search's root and follow_worlds the origin world indices of the
+        # surviving trees. Same thread and error-swallowing rules as on_result.
+        self.on_followed = None
+        # Static facts about how this controller was built (spec, checkpoint,
+        # knobs); factories fill it in. search_provenance() adds the lazily
+        # computed evaluator facts for a recording's replay sidecar.
+        self.provenance: dict = {}
+        self._provenance_cache: dict = {}
         self.stats = {"searched": 0, "fallback": 0, "trivial": 0, "followed": 0,
                       "sims": 0, "sim_steps": 0, "sb_searched": 0,
                       "sb_memo_hits": 0,
@@ -668,9 +685,8 @@ class SearchController:
 
     def bind_env(self, env) -> None:
         self._env = env
-        self._followed_trees = None
+        self._drop_trees()
         self._followed_hist_len = 0
-        self._followed_fp = None
         self._drop_boundary()
         # bind_env fires once per match (runner.run_games / tui_game.run), so
         # this is the one-bank-per-match reset point.
@@ -729,6 +745,50 @@ class SearchController:
     def _drop_trees(self) -> None:
         self._followed_trees = None
         self._followed_fp = None
+        self._followed_path = []
+        self._followed_world_idx = []
+
+    def search_provenance(self) -> dict:
+        """JSON-serializable record of how this controller searches: the
+        factory-supplied ``provenance`` (spec / checkpoint) plus the effective
+        knobs and lazily computed evaluator facts (device, torch threads, the
+        checkpoint's sha256 and size). Written into a recording's ``.rmplay``
+        sidecar so a recorded search can be rebuilt exactly. Torch is imported
+        lazily and every optional fact is best-effort."""
+        out = dict(self.provenance)
+        out.update({
+            "sims": self._sims, "worlds": self._worlds,
+            "c_puct": self._c_puct, "temperature": self._temperature,
+            "merge_dupes": self._merge_dupes,
+            "cross_world": self._cross_world, "procs": self._procs,
+            "time_budget": self._time_budget, "sims_cap": self._sims_cap,
+            "clock": (self._clock.bank if self._clock is not None else None),
+            "tmin": (self._clock.t_min if self._clock is not None else None),
+            "tmax": (self._clock.t_max if self._clock is not None else None),
+            "sb_branches": self._sb_branches, "sb_worlds": self._sb_worlds,
+            "sb_rollout_turns": self._sb_rollout_turns,
+        })
+        cache = self._provenance_cache
+        if "device" not in cache:
+            dev = getattr(self._evaluator, "_device", None)
+            if dev is None:
+                try:
+                    from az_net import resolve_eval_device
+                    dev = resolve_eval_device(None)
+                except Exception:  # noqa: BLE001 — best-effort fact
+                    dev = None
+            cache["device"] = None if dev is None else str(dev)
+            try:
+                import torch
+                cache["torch_threads"] = int(torch.get_num_threads())
+            except Exception:  # noqa: BLE001 — torch-free seat
+                cache["torch_threads"] = None
+            ckpt = out.get("checkpoint")
+            if isinstance(ckpt, str) and os.path.isfile(ckpt):
+                cache["checkpoint_sha256"] = _file_sha256(ckpt)
+                cache["checkpoint_size"] = int(os.path.getsize(ckpt))
+        out.update(cache)
+        return out
 
     def _drop_boundary(self) -> None:
         self._sbp_key = None
@@ -807,7 +867,8 @@ class SearchController:
             self._drop_trees()
             return None
         nodes = []
-        for root in trees:
+        world_idx = []
+        for root, w in zip(trees, self._followed_world_idx):
             node = root
             for a in delta:
                 a = int(a)
@@ -821,6 +882,7 @@ class SearchController:
             if (node is not None and node.num_choices == num_choices
                     and node.self_is_a == self_is_a):
                 nodes.append(node)
+                world_idx.append(w)
         if not nodes:
             self._drop_trees()
             return None
@@ -833,10 +895,20 @@ class SearchController:
             self._drop_trees()
             return None
         self._followed_trees = nodes
+        self._followed_world_idx = world_idx
+        self._followed_path.extend(int(a) for a in delta)
         self._followed_hist_len = len(hist)
         self._followed_fp = cur  # ratchet: a card that hides re-triggers on re-reveal
         from mcts import sample_visits
-        return sample_visits(visits, self._temperature, self._rng)
+        chosen = sample_visits(visits, self._temperature, self._rng)
+        if self.on_followed is not None:
+            try:
+                self.on_followed(np.array(obs, copy=True), int(num_choices),
+                                 visits.copy(), list(self._followed_path),
+                                 list(self._followed_world_idx), int(chosen))
+            except Exception:  # noqa: BLE001 — observer must never break play
+                pass
+        return chosen
 
     def _choose_impl(self, obs, num_choices, action_masks=None,
                      decoded_actions=None) -> int:
@@ -973,6 +1045,10 @@ class SearchController:
         self.stats["searched"] += 1
         self.stats["sims"] += result.sims_run
         self.stats["sim_steps"] += result.sim_steps
+        # The budget this search ran under travels with the result so a
+        # recording can reproduce the search's terminator.
+        result.time_budget_s = tb
+        result.time_budget_min_s = tmin_s
         # Arm tree-following from this search's per-world trees: the next
         # decisions are answered from them for as long as the real game walks
         # a line the sims explored and reveals nothing new (the fingerprint
@@ -985,6 +1061,8 @@ class SearchController:
             self._followed_trees = result.roots
             self._followed_hist_len = len(hist)
             self._followed_fp = hidden_info_fingerprint(obs[:STATE_SIZE])
+            self._followed_path = []
+            self._followed_world_idx = list(range(len(result.roots)))
         else:
             self._drop_trees()
         if result.stopped_early:
@@ -1475,11 +1553,22 @@ def _effort_label_for(knobs: _SearchKnobs) -> str:
     return _effort_label(knobs.sims, knobs.worlds, knobs.time_budget, knobs.clock)
 
 
+def _file_sha256(path: str) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def _build_search_controller(evaluator, label: str,
                              knobs: _SearchKnobs) -> "SearchController":
     """THE SearchController construction for both search grammars — the
-    factories differ only in which evaluator and label they hand over."""
-    return SearchController(evaluator, sims=knobs.sims, worlds=knobs.worlds,
+    factories differ only in which evaluator and label they hand over. Seeds
+    ``ctrl.provenance`` with the label and the parsed knobs (the factories add
+    the spec and resolved checkpoint)."""
+    ctrl = SearchController(evaluator, sims=knobs.sims, worlds=knobs.worlds,
                             c_puct=knobs.c_puct, temperature=knobs.temperature,
                             label=label, rng_seed=knobs.rng_seed,
                             sb_branches=knobs.sb_branches,
@@ -1491,6 +1580,9 @@ def _build_search_controller(evaluator, label: str,
                             clock_t_max=knobs.tmax,
                             clock_sb_t_max=knobs.sb_tmax, paced=knobs.paced,
                             cross_world=knobs.cross_world)
+    from dataclasses import asdict
+    ctrl.provenance = {"spec": label, "label": label, "knobs": asdict(knobs)}
+    return ctrl
 
 
 def _make_search_controller(spec: str, *,
@@ -1516,15 +1608,20 @@ def _make_search_controller(spec: str, *,
     base, _params = _parse_spec_query(spec)
     knobs = _parse_search_knobs(spec)
 
+    resolved = None
     if base.lower() == "uniform":
         evaluator = UniformEvaluator()
         label = f"mcts:uniform({_effort_label_for(knobs)})"
     else:
         resolver = checkpoint_resolver or resolve_checkpoint
-        model = _load_model(resolver(base))
+        resolved = resolver(base)
+        model = _load_model(resolved)
         evaluator = PPOEvaluator(model, v_scale=knobs.v_scale)
         label = f"mcts:{base}({_effort_label_for(knobs)})"
-    return _build_search_controller(evaluator, label, knobs)
+    ctrl = _build_search_controller(evaluator, label, knobs)
+    ctrl.provenance["spec"] = f"mcts:{spec}"
+    ctrl.provenance["checkpoint"] = resolved
+    return ctrl
 
 
 class AZRawController:
@@ -1633,8 +1730,11 @@ def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):
     if not search:
         return AZRawController(evaluator, label=f"azraw:{base}")
     knobs = _parse_search_knobs(spec)   # vscale is parsed and ignored here
-    return _build_search_controller(
+    ctrl = _build_search_controller(
         evaluator, f"az:{base}({_effort_label_for(knobs)})", knobs)
+    ctrl.provenance["spec"] = f"az:{spec}"
+    ctrl.provenance["checkpoint"] = resolved
+    return ctrl
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:

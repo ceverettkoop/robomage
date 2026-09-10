@@ -108,7 +108,8 @@ def _smoke_active():
     suppressed (a modal under offscreen has nothing to dismiss it)."""
     return any(os.environ.get(v) for v in (
         "ROBOMAGE_GUI_SMOKE", "ROBOMAGE_ANALYSIS_SMOKE",
-        "ROBOMAGE_GUI_SESSION_SMOKE", "ROBOMAGE_GUI_TRACE_SMOKE"))
+        "ROBOMAGE_GUI_SESSION_SMOKE", "ROBOMAGE_GUI_TRACE_SMOKE",
+        "ROBOMAGE_TREE_SMOKE"))
 
 
 def _critical(parent, title, text):
@@ -1257,6 +1258,69 @@ class _BrowserSmoke(_ShellSmoke):
                                        f"BROWSER SMOKE DONE: {n} games"))
 
 
+def _recording_dir(base):
+    """``base`` itself when it holds shards, else its newest ``rec_*``
+    recording subdirectory (ROBOMAGE_RECORD_DIR is a base the recorder
+    creates per-session dirs under), else None."""
+    import glob as _glob
+    if _glob.glob(os.path.join(base, "shard_*.npz")):
+        return base
+    recs = [d for d in _glob.glob(os.path.join(base, "rec_*"))
+            if _glob.glob(os.path.join(d, "shard_*.npz"))]
+    return max(recs, key=os.path.getmtime) if recs else None
+
+
+def _recording_search_seat(rec_dir):
+    """The seat the recording's search opponent played ("A"/"B"), from the
+    first .rmplay sidecar's human_is_a; the browser's viewpoint must be that
+    seat for the searched rows to be its decisions."""
+    import glob as _glob
+    for side in sorted(_glob.glob(os.path.join(rec_dir, "shard_*"
+                                               + gui_session_io.PLAY_EXT))):
+        try:
+            doc = gui_session_io.load_replay(side)
+        except (OSError, ValueError):
+            continue
+        return "B" if doc.get("human_is_a", True) else "A"
+    return "B"
+
+
+class _TreeSmoke(_ShellSmoke):
+    """Shard-mode browser over a search opponent's recording, driving the
+    pane's ROBOMAGE_TREE_SMOKE hook: rebuild the first searched decision's
+    tree and expand one root action. The recording dir comes from
+    ROBOMAGE_BROWSER_SMOKE_SHARDS (a recording, or a ROBOMAGE_RECORD_DIR base
+    holding rec_* dirs); the viewpoint seat is the recording's search seat.
+    Fails (never skips) without a recording — the ci leg that records one
+    runs first."""
+
+    def __init__(self, window):
+        super().__init__(window, timeout_s=300)
+        self._base = os.environ.get("ROBOMAGE_BROWSER_SMOKE_SHARDS", "")
+        self._started = False
+
+    def step(self):
+        mgr = self.manager
+        if self._started:
+            return
+        self._started = True
+        rec = _recording_dir(self._base) if self._base else None
+        if rec is None:
+            self._finish(1, f"TREE SMOKE FAILED: no recording under "
+                            f"{self._base!r}")
+            return
+        opts = {"shards": rec, "seat": _recording_search_seat(rec),
+                "no_net": True, "n_games": 0, "bo3": False,
+                "think_time": None, "match_clock": None, "deck_a": None,
+                "deck_b": None, "binary": mgr._binary}
+        if not mgr.new_analysis_session(opts):
+            self._finish(1, "TREE SMOKE FAILED: could not build")
+            return
+        mgr.pane.smoke_done.connect(
+            lambda ok: self._finish(0 if ok else 1,
+                                    f"TREE SMOKE DONE: {rec}"))
+
+
 def _start_shell_smoke(window):
     """Instantiate the shell smoke selected by env vars (None = interactive)."""
     if os.environ.get("ROBOMAGE_GUI_SESSION_SMOKE") == "1":
@@ -1265,6 +1329,8 @@ def _start_shell_smoke(window):
         return _TraceSmoke(window)
     if os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1":
         return _BrowserSmoke(window)
+    if os.environ.get("ROBOMAGE_TREE_SMOKE") == "1":
+        return _TreeSmoke(window)
     return None
 
 

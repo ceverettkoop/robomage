@@ -641,6 +641,21 @@ The browser also has **net-probe entries** (`train/shard_probes.py`, Qt-free glu
 pooled KL(search‖net), value calibration. Regression `train/test_shard_record.py` = default
 `make check` tier `shardrec`; opt-in `gui` tier adds a record-smoke leg.
 
+**Search diagnostics + exact tree rebuild.** Each recorded shard also gets a same-stem
+**`.diag` sidecar** (npz content; the extension is deliberately not `.npz` so shard globs skip
+it — `shard_record.DIAG_KEYS`): per row the raw root visit counts, net priors, per-action Q,
+sims run, per-world seeds/visits/values, the per-decision time budget, and for **tree-followed**
+decisions (answered from the previous search's tree, `SearchController.on_followed`) the origin
+row + the followed path. The `.rmplay` carries `search_provenance` (spec, checkpoint path +
+sha256, device, torch threads, knobs). Because an in-game search never reuses roots and plays
+with zero noise/temperature, `tree_rebuild.TreeSession` re-runs
+`IncrementalSearch(world_seeds=…).run_chunk(sims_run)` at the replayed decision and **verifies
+the rebuilt root visits equal the recorded ones exactly**; the tree is then cached under
+`<recording>/trees/` (`tree_cache.py`) so reopening is instant. The GUI recording browser's
+**Tree** tab (F7) walks it with hypothetical boards; both browsers show N/Q/P columns and a
+search line per decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
+`test_tree_rebuild.py` (opt-in tier `treerebuild`, needs the engine).
+
 ### Key files
 
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper. Lazily re-exports `scripted_action` for back-compat callers; the real rule-based agent logic lives in `train/scripted_agent.py`.
