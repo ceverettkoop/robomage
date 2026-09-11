@@ -2079,6 +2079,79 @@ def _cfg_get(cfg, key):
     return cfg[key] if key in cfg else _LAUNCHER_DEFAULTS[key]
 
 
+def is_search_spec(spec):
+    """az:/mcts: run a tree search (search knobs apply); azraw: is the raw
+    policy (no search), so it — like scripted/gen — takes no search knobs."""
+    return (spec or "").strip().lower().startswith(("az:", "mcts:"))
+
+
+def sync_clock_sims_exclusivity(owner, sims, clock):
+    """Enforce Match clock XOR Simulations on a dialog's two spinboxes:
+    whichever is set disables the other (parked on its "(default)" sentinel).
+    Clock checked first, so a persisted clock beats a persisted sims value at
+    dialog load. ``owner`` carries the re-entrancy guard (the setValue calls
+    re-fire the valueChanged signals this is connected to)."""
+    if getattr(owner, "_excl_guard", False):
+        return
+    owner._excl_guard = True
+    try:
+        if clock.value() != clock.minimum():
+            sims.setValue(sims.minimum())
+            sims.setEnabled(False)
+            clock.setEnabled(True)
+        elif sims.value() != sims.minimum():
+            clock.setValue(clock.minimum())
+            clock.setEnabled(False)
+            sims.setEnabled(True)
+        else:
+            sims.setEnabled(True)
+            clock.setEnabled(True)
+    finally:
+        owner._excl_guard = False
+
+
+def search_knob_pairs(*, sims=None, worlds=None, time_val=None, procs=None,
+                      clock=None, xw_on=True, device="", paced=None):
+    """(key, value) query pairs for a search spec from a launcher's search
+    fields (None = "(default)" = omit). Keys match the spec query grammar
+    make_controller parses (time=/procs=/…), mirroring how play.py appends
+    --think-time/--search-procs/etc.
+
+    ``procs=None`` means AUTO for interactive front ends (not the spec grammar's
+    procs=1): fan the worlds across half the cores, capped at the world count
+    in effect, as play.py's --search-procs default does. Cross-world batching
+    defaults ON in the controller, so only the off position needs a knob; the
+    device knob is appended only when set. ``paced``: explicit True/False wins;
+    None mirrors play.py and turns pacing on whenever the search has a variable
+    time budget (think time / clock)."""
+    if procs is None:
+        from opponents import default_search_procs, DEFAULT_SEARCH_WORLDS
+        procs = default_search_procs(
+            worlds if worlds is not None else DEFAULT_SEARCH_WORLDS)
+    pairs = [("sims", sims), ("worlds", worlds), ("time", time_val),
+             ("procs", procs), ("clock", clock)]
+    pairs = [(k, v) for k, v in pairs if v is not None]
+    if not xw_on:
+        pairs.append(("xw", 0))
+    if device:
+        pairs.append(("device", device))
+    has_variable_budget = time_val is not None or clock is not None
+    if paced is False:
+        pairs.append(("paced", 0))
+    elif paced is True or (paced is None and has_variable_budget):
+        pairs.append(("paced", 1))
+    return pairs
+
+
+def with_spec_query(spec, pairs):
+    """Append `pairs` to a controller spec's ?k=v&… query (later keys win in
+    make_controller's parser, so appending is always safe)."""
+    if not pairs:
+        return spec
+    sep = "&" if "?" in spec else "?"
+    return spec + sep + "&".join(f"{k}={v}" for k, v in pairs)
+
+
 def _scan_decks():
     """All .dk deck stems under bin/resources/decks/ (recursive), decks/-relative
     (e.g. 'delver', 'league/ur_delver'). Mirrors tui.py._scan_decks so the GUI
@@ -2399,26 +2472,7 @@ class NewPlaySessionDialog(QDialog):
         return sb.value() if sb.value() != sb.minimum() else None
 
     def _sync_clock_sims_exclusivity(self, *_):
-        """Enforce Match clock XOR Simulations: whichever is set disables the
-        other (parked on its "(default)" sentinel). Clock checked first, so a
-        persisted clock beats a persisted sims value at dialog load."""
-        if getattr(self, "_excl_guard", False):
-            return
-        self._excl_guard = True
-        try:
-            if self._spin_value(self._match_clock) is not None:
-                self._sims.setValue(self._sims.minimum())
-                self._sims.setEnabled(False)
-                self._match_clock.setEnabled(True)
-            elif self._spin_value(self._sims) is not None:
-                self._match_clock.setValue(self._match_clock.minimum())
-                self._match_clock.setEnabled(False)
-                self._sims.setEnabled(True)
-            else:
-                self._sims.setEnabled(True)
-                self._match_clock.setEnabled(True)
-        finally:
-            self._excl_guard = False
+        sync_clock_sims_exclusivity(self, self._sims, self._match_clock)
 
     def _update_search_visibility(self, *_):
         self._search_box.setVisible(self._is_search_spec(self._opponent_spec()))
@@ -2426,9 +2480,7 @@ class NewPlaySessionDialog(QDialog):
 
     @staticmethod
     def _is_search_spec(spec):
-        # az:/mcts: run a tree search (knobs apply); azraw: is the raw policy (no
-        # search), so it — like scripted/gen — hides the search group.
-        return (spec or "").strip().lower().startswith(("az:", "mcts:"))
+        return is_search_spec(spec)
 
     @staticmethod
     def _deck_combo(decks, current):
@@ -2456,46 +2508,19 @@ class NewPlaySessionDialog(QDialog):
         """(key, value) query pairs for the set search fields (empty ones omitted).
         Keys match the spec query grammar make_controller parses (time=/procs=/…),
         mirroring how play.py appends --think-time/--search-procs/etc."""
-        sims = self._spin_value(self._sims)
-        worlds = self._spin_value(self._worlds)
-        time_val = self._spin_value(self._think_time)
-        procs = self._spin_value(self._search_procs)
-        if procs is None:
-            # Unset means AUTO for interactive play (not the spec grammar's
-            # procs=1): fan the worlds across half the cores, capped at the
-            # world count in effect. Mirrors play.py's --search-procs default.
-            from opponents import default_search_procs, DEFAULT_SEARCH_WORLDS
-            procs = default_search_procs(
-                worlds if worlds is not None else DEFAULT_SEARCH_WORLDS)
-        clock = self._spin_value(self._match_clock)
-        pairs = [("sims", sims), ("worlds", worlds), ("time", time_val),
-                 ("procs", procs), ("clock", clock)]
-        pairs = [(k, v) for k, v in pairs if v is not None]
-        # Cross-world batching defaults ON in the controller; only the off
-        # position needs a knob. The device knob is appended only when set.
-        if not self._search_xw.isChecked():
-            pairs.append(("xw", 0))
-        dev = self._search_device.currentData()
-        if dev:
-            pairs.append(("device", dev))
-        # Paced: explicit On/Off wins; on Default, mirror play.py and turn pacing
-        # on whenever the opponent has a variable time budget (think-time/clock).
-        paced = self._paced.currentData()
-        has_variable_budget = time_val is not None or clock is not None
-        if paced is False:
-            pairs.append(("paced", 0))
-        elif paced is True or (paced is None and has_variable_budget):
-            pairs.append(("paced", 1))
-        return pairs
+        return search_knob_pairs(
+            sims=self._spin_value(self._sims),
+            worlds=self._spin_value(self._worlds),
+            time_val=self._spin_value(self._think_time),
+            procs=self._spin_value(self._search_procs),
+            clock=self._spin_value(self._match_clock),
+            xw_on=self._search_xw.isChecked(),
+            device=self._search_device.currentData(),
+            paced=self._paced.currentData())
 
     @staticmethod
     def _with_query(spec, pairs):
-        """Append `pairs` to a controller spec's ?k=v&… query (later keys win in
-        make_controller's parser, so appending is always safe)."""
-        if not pairs:
-            return spec
-        sep = "&" if "?" in spec else "?"
-        return spec + sep + "&".join(f"{k}={v}" for k, v in pairs)
+        return with_spec_query(spec, pairs)
 
     def _on_accept(self):
         human_deck = self._human_deck.currentText().strip()

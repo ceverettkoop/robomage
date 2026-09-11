@@ -97,6 +97,7 @@ def _diag_cells(row) -> str:
 # the rest of this file is unchanged.
 from browse_session import (CAPTURE_LOCK as _CAPTURE_LOCK, capture as _capture,
                             decision_data as _decision_data,
+                            search_caption as _search_caption,
                             result_str as _result_str,
                             has_probs as _has_probs, probs_guard as _probs_guard,
                             run_shap as _run_shap, ANALYSES as _ANALYSES,
@@ -1024,7 +1025,8 @@ class AnalysisApp(App):
         v = g["values"][self._cur_step] if self._cur_step < len(g["values"]) else None
         vs = f" · V={v:+.3f}" if v is not None else ""
         hist.border_subtitle = (f"game {self._cur_game} [{_result_str(g)}] · "
-                                f"step {self._cur_step}/{len(g['values']) - 1}{vs}")
+                                f"step {self._cur_step}/{len(g['values']) - 1}{vs}"
+                                f"{_search_caption(g, self._cur_step)}")
 
     @staticmethod
     def _opp_actions_before(g, step):

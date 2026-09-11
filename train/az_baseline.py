@@ -39,6 +39,7 @@ Run from the repo root:
 from __future__ import annotations
 
 import datetime
+import json
 import os
 import shlex
 import shutil
@@ -65,13 +66,17 @@ RECORD_ROOT = os.path.join(_HERE, "az_data", "baseline")
 # ----------------------------------------------------------------------
 
 def resolve_matchups(deck: Optional[str], opponent: Optional[str],
-                     all_flag: bool, roster: list) -> list:
+                     all_flag: bool, roster: list,
+                     mirrors: bool = False) -> list:
     """The ``(piloted deck, scripted deck)`` cells to play.
 
     No ``deck`` (or ``--all``) is the full roster grid, every ordered pair
-    including mirrors. A ``deck`` alone is its mirror; ``deck`` + ``opponent``
+    including mirrors. ``mirrors`` is the grid's diagonal only — every roster
+    deck vs itself. A ``deck`` alone is its mirror; ``deck`` + ``opponent``
     one cross cell; ``opponent`` alone is every roster deck vs that one
     scripted deck."""
+    if mirrors:
+        return [(d, d) for d in roster]
     if all_flag or (not deck and not opponent):
         return [(d, o) for d in roster for o in roster]
     if deck:
@@ -145,13 +150,17 @@ def actor_leg_cmd(actor_bin: str, *, deck_a: str, deck_b: str, games: int,
                   seed: int, scripted_seat: str, oracle_sock: str,
                   ts_path: str, server_sock: Optional[str], budget: dict,
                   bo3: bool, device: str, record_dir: Optional[str] = None,
-                  td_n: int = DEFAULT_AZ_TD_N) -> list:
+                  td_n: int = DEFAULT_AZ_TD_N,
+                  provenance_json: Optional[str] = None) -> list:
     """One ``bin/az_actor --search`` leg: the net pilots the non-scripted seat
     in eval mode (no root noise, argmax visits — the gate's mode), scripted:hard
     answers ``scripted_seat``'s real decisions over the oracle socket.
     ``record_dir`` adds ``--record --out-dir``: the net seat's searched
     decisions are written there as trainer-schema shards (the scripted seat
-    plays through the oracle and records nothing); played actions unchanged."""
+    plays through the oracle and records nothing); played actions unchanged.
+    ``provenance_json`` (a serialized search-provenance object) additionally
+    asks for one shard per match with the ``.diag`` / ``.rmplay`` sidecars
+    the shard browsers need to rebuild each searched decision's tree."""
     cmd = [actor_bin, "--search", "--deck", deck_a, "--deck-b", deck_b,
            "--seed", str(seed), "--games", str(games),
            "--sims", str(budget["sims"]), "--worlds", str(budget["worlds"]),
@@ -167,7 +176,33 @@ def actor_leg_cmd(actor_bin: str, *, deck_a: str, deck_b: str, games: int,
                 "--sb-rollout-turns", str(budget["sb_rollout_turns"])]
     if record_dir:
         cmd += ["--record", "--out-dir", record_dir, "--td-n", str(td_n)]
+        if provenance_json is not None:
+            cmd += ["--replay-sidecars", "--provenance-json", provenance_json]
     return cmd
+
+
+def search_provenance(spec: str, ckpt: str, budget: dict, device: str) -> dict:
+    """The ``search_provenance`` object an actor recording's ``.rmplay``
+    carries: the same keys ``opponents.SearchController.search_provenance``
+    writes for a GUI recording (so ``tree_rebuild.evaluator_spec_for`` and the
+    rebuild knobs read both alike), with the actor's fixed eval-mode facts."""
+    from opponents import _file_sha256
+    out = {
+        "spec": spec, "checkpoint": ckpt, "backend": "az_actor",
+        "sims": int(budget["sims"]), "worlds": int(budget["worlds"]),
+        "c_puct": float(budget["c_puct"]), "temperature": 0.0,
+        "merge_dupes": True, "cross_world": True, "procs": 1,
+        "time_budget": None, "sims_cap": None,
+        "clock": None, "tmin": None, "tmax": None,
+        "sb_branches": int(budget["sb_branches"]),
+        "sb_worlds": int(budget["sb_worlds"]),
+        "sb_rollout_turns": int(budget["sb_rollout_turns"]),
+        "device": device, "torch_threads": None,
+    }
+    if os.path.isfile(ckpt):
+        out["checkpoint_sha256"] = _file_sha256(ckpt)
+        out["checkpoint_size"] = int(os.path.getsize(ckpt))
+    return out
 
 
 def leg_record_dir(record_dir: str, deck: str, opp: str, net_is_a: bool) -> str:
@@ -184,7 +219,9 @@ def flatten_leg_shards(record_dir: str) -> int:
     """Move a finished run's shards from their per-leg subdirectories up into
     ``record_dir`` itself, renamed ``shard_<legtag>_<original>`` — one flat
     directory of ``shard_*.npz``, which is what az_inspect, shard_replay and
-    the shard browsers glob. Empty leg dirs are removed. Returns the count."""
+    the shard browsers glob. A shard's same-stem sidecars (``.diag`` /
+    ``.rmplay``) move with it under the same renamed stem, so they stay
+    paired. Empty leg dirs are removed. Returns the shard count."""
     moved = 0
     if not os.path.isdir(record_dir):
         return 0
@@ -193,10 +230,14 @@ def flatten_leg_shards(record_dir: str) -> int:
         if not os.path.isdir(leg_dir):
             continue
         for f in sorted(os.listdir(leg_dir)):
-            if f.startswith("shard_") and f.endswith(".npz"):
-                shutil.move(os.path.join(leg_dir, f),
-                            os.path.join(record_dir, f"shard_{leg}_{f[len('shard_'):]}"))
+            if not f.startswith("shard_"):
+                continue
+            stem, ext = os.path.splitext(f)
+            if ext == ".npz":
                 moved += 1
+            shutil.move(os.path.join(leg_dir, f),
+                        os.path.join(record_dir,
+                                     f"shard_{leg}_{stem[len('shard_'):]}{ext}"))
         if not os.listdir(leg_dir):
             os.rmdir(leg_dir)
     return moved
@@ -246,7 +287,8 @@ def run_actor_sweep(matchups: list, *, ckpt: str, n_games: int, seed: int,
                     actor_device: str = "cpu", eval_server=None,
                     record_dir: Optional[str] = None,
                     td_n: int = DEFAULT_AZ_TD_N,
-                    actor_bin: str = _ACTOR_BIN, tag: str = "baseline") -> tuple:
+                    actor_bin: str = _ACTOR_BIN, tag: str = "baseline",
+                    provenance: Optional[dict] = None) -> tuple:
     """Play every ``(deck, opp)`` matchup for ``n_games`` on the C++ actor.
 
     Returns ``(results, per_game, n_shards)``: ``results[(deck, opp)] =
@@ -258,7 +300,10 @@ def run_actor_sweep(matchups: list, *, ckpt: str, n_games: int, seed: int,
     trainer-schema shards (one subdir per leg, see :func:`leg_record_dir`,
     flattened into ``record_dir`` when the sweep finishes so the inspectors'
     flat ``shard_*.npz`` glob sees them). A leg that is terminated early has
-    its partial recording deleted, like a gate leg.
+    its partial recording deleted, like a gate leg. ``provenance`` (the
+    :func:`search_provenance` dict) makes each leg record one shard per match
+    with the ``.diag`` / ``.rmplay`` sidecars (tree-rebuildable in the shard
+    browsers); None records plain threshold-flushed shards.
 
     Each matchup is two legs so seats alternate exactly like the Python path:
     net-in-seat-A for ``n_games - n_games//2`` matches (seed
@@ -334,7 +379,8 @@ def run_actor_sweep(matchups: list, *, ckpt: str, n_games: int, seed: int,
                             seed=lseed, scripted_seat=("B" if net_is_a else "A"),
                             oracle_sock=oracle_sock, ts_path=ts_path,
                             server_sock=server_sock, budget=budget, bo3=bo3,
-                            device=actor_device, record_dir=rd, td_n=td_n)
+                            device=actor_device, record_dir=rd, td_n=td_n,
+                            provenance_json=prov_json)
         # Run from bin/ so the engine's getcwd-based RESOURCE_DIR resolves.
         p = subprocess.Popen(cmd, cwd=BIN_DIR, text=True, bufsize=1,
                              env=actor_env, stdout=subprocess.PIPE,
@@ -391,6 +437,12 @@ def run_actor_sweep(matchups: list, *, ckpt: str, n_games: int, seed: int,
               f", cross-world=on, scripted oracle at {oracle_sock}", flush=True)
         actor_env = (actor_gpu_env()
                      if (actor_device != "cpu" and server_sock is None) else None)
+        prov_json = None
+        if provenance is not None and record_dir:
+            prov = dict(provenance)
+            # The device the net forwards actually ran on this sweep.
+            prov["device"] = ("cuda" if server_sock else actor_device)
+            prov_json = json.dumps(prov)
 
         # Sliding pool (same shape as az_selfplay._generate_actor): keep up to
         # `workers` legs in flight, launching the next as any one exits.
@@ -570,7 +622,8 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     if not roster:
         print("No league decks found under bin/resources/decks/league")
         return
-    matchups = resolve_matchups(args.deck, args.opponent, args.all, roster)
+    matchups = resolve_matchups(args.deck, args.opponent, args.all, roster,
+                                mirrors=getattr(args, "mirrors", False))
     n_games = args.games
     bo3 = not args.bo1
     log_path = args.log or DEFAULT_LOG_PATH
@@ -603,14 +656,18 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
                    f"worlds={budget['worlds']} c={budget['c_puct']} [actor]")
         record_dir = None
         if not args.no_record:
-            record_dir = args.record_dir or os.path.join(
+            # Absolute: the actor legs run from bin/ (engine RESOURCE_DIR), so
+            # a relative --record-dir would land under bin/ instead.
+            record_dir = os.path.abspath(args.record_dir or os.path.join(
                 RECORD_ROOT,
-                "baseline_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+                "baseline_" + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")))
         results, per_game, n_shards = run_actor_sweep(
             matchups, ckpt=ckpt, n_games=n_games, seed=seed, budget=budget,
             bo3=bo3, workers=args.workers, actor_device=args.actor_device,
             eval_server=resolve_eval_server(args), record_dir=record_dir,
-            td_n=args.td_n)
+            td_n=args.td_n,
+            provenance=(search_provenance(spec, ckpt, budget, args.actor_device)
+                        if record_dir else None))
         split = format_per_game_index(per_game) if bo3 else []
         if record_dir:
             extra.append(f"shards: {n_shards} file(s) under {record_dir}")

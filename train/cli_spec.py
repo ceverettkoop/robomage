@@ -1236,6 +1236,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--all", "flag",
             help="Force the full league grid even when --deck/--opponent are "
                  "given (the grid is already the default without them)"),
+        Arg("--mirrors", "flag",
+            help="Only the grid's diagonal: every league deck piloted vs "
+                 "scripted:hard on the same deck (one leg per deck, all sharing "
+                 "the run's single eval server)"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help=f"PUCT simulations per decision, TOTAL across --worlds (default "
                  f"{DEFAULT_AZ_SIMS}, the league budget)"),

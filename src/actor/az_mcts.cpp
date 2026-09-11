@@ -283,6 +283,16 @@ struct AZMcts::Impl {
 
     std::vector<Node*> world_roots;    // this search's per-world roots
     std::vector<int> cur_budgets;      // per-world sim budgets
+    // Recording diagnostics (RootDiag): this search's per-world determinize
+    // seeds and, once a world is accumulated, its root N.sum() / ΣW/ΣN.
+    std::vector<uint32_t> root_world_seeds;
+    std::vector<int32_t> world_visits_acc;
+    std::vector<float> world_values_acc;
+    // Every real action returned since begin_match (all seats, engine order):
+    // the match's replay log. A sample's diag.decision_idx is this vector's
+    // size at the sample's own decision (the push lands after on_decision
+    // returns the action).
+    std::vector<int32_t> match_actions;
 
     // ── sideboard plan search (mirrors mcts.run_plan_search) ────────────────
     // One plan = a complete pick sequence through the mover's Done, priced on
@@ -351,8 +361,100 @@ struct AZMcts::Impl {
 
     void begin_match(uint32_t cap_seed) {
         game_samples.clear();
+        match_actions.clear();
         cap_seed_ = cap_seed;
         cap_root_counter = 0;
+    }
+
+    // ── recording diagnostics (RootDiag fills) ─────────────────────────────
+    static std::vector<float> to_f32(const std::vector<double>& v) {
+        return std::vector<float>(v.begin(), v.end());
+    }
+
+    // Diag of a finished in-game tree search (kind 1): the summed root
+    // visits, raw root priors, per-action Q / ΣW and the per-world facts
+    // accumulated by accumulate_world.
+    void fill_tree_diag(RootDiag& d, double root_value) const {
+        d.kind = DIAG_KIND_SEARCH;
+        d.num_choices = root_n;
+        d.visits.assign(visit_totals.begin(), visit_totals.end());
+        d.priors = to_f32(root_priors);
+        d.q_act.assign(static_cast<size_t>(root_n), 0.0f);
+        d.w_sum.assign(static_cast<size_t>(root_n), 0.0f);
+        for (int i = 0; i < root_n; i++) {
+            size_t k = static_cast<size_t>(i);
+            d.w_sum[k] = static_cast<float>(w_totals[k]);
+            if (visit_totals[k] > 0)
+                d.q_act[k] = static_cast<float>(
+                    w_totals[k] / static_cast<double>(visit_totals[k]));
+        }
+        d.root_value = static_cast<float>(root_value);
+        d.sims_run = sims_run;
+        d.sim_steps = static_cast<int32_t>(sim_steps);
+        d.memo_hits = memo_hits;
+        d.world_seeds.assign(root_world_seeds.begin(), root_world_seeds.end());
+        d.world_visits = world_visits_acc;
+        d.world_values = world_values_acc;
+        d.decision_idx = static_cast<int32_t>(match_actions.size());
+    }
+
+    // Diag of a sideboard plan search (kind 3), mirroring mcts.run_plan_search's
+    // SearchResult: visits = pi * n_evals, per-first-pick Q, ΣW = Q * visits,
+    // per-world mean plan value, the boundary's pinned world seeds.
+    void fill_plan_diag(RootDiag& d, const std::vector<double>& q,
+                        const std::vector<double>& pi, int n_evals,
+                        double root_value) const {
+        d.kind = DIAG_KIND_PLAN;
+        d.num_choices = root_n;
+        d.visits.assign(static_cast<size_t>(root_n), 0);
+        d.q_act = to_f32(q);
+        d.w_sum.assign(static_cast<size_t>(root_n), 0.0f);
+        for (int i = 0; i < root_n; i++) {
+            size_t k = static_cast<size_t>(i);
+            double v = pi[k] * static_cast<double>(n_evals);
+            d.visits[k] = static_cast<int32_t>(std::llround(v));
+            d.w_sum[k] = static_cast<float>(q[k] * v);
+        }
+        d.priors = to_f32(root_priors);
+        d.root_value = static_cast<float>(root_value);
+        d.sims_run = n_evals;
+        d.sim_steps = static_cast<int32_t>(sim_steps);
+        d.memo_hits = memo_hits;
+        d.world_seeds.clear();
+        d.world_values.assign(static_cast<size_t>(cur_worlds), 0.0f);
+        for (int w = 0; w < cur_worlds; w++) {
+            d.world_seeds.push_back(static_cast<int64_t>(plan_world_seed(w)));
+            double acc = 0.0;
+            for (const Plan& p : plans) acc += p.values[static_cast<size_t>(w)];
+            d.world_values[static_cast<size_t>(w)] =
+                plans.empty() ? 0.0f
+                              : static_cast<float>(acc / static_cast<double>(plans.size()));
+        }
+        d.world_visits.assign(static_cast<size_t>(cur_worlds), 0);
+        d.decision_idx = static_cast<int32_t>(match_actions.size());
+    }
+
+    // Diag of a prior-mode sideboard pick (kind 3, no search): the masked
+    // prior as the row's "visits" posterior.
+    void fill_prior_diag(RootDiag& d, const std::vector<double>& b, int nc,
+                         double value) const {
+        d.kind = DIAG_KIND_PLAN;
+        d.num_choices = nc;
+        d.visits.assign(static_cast<size_t>(nc), 0);
+        for (int i = 0; i < nc; i++)
+            d.visits[static_cast<size_t>(i)] =
+                static_cast<int32_t>(std::llround(b[static_cast<size_t>(i)] * 1e6));
+        d.priors = to_f32(b);
+        d.q_act.assign(static_cast<size_t>(nc), 0.0f);
+        d.w_sum.assign(static_cast<size_t>(nc), 0.0f);
+        d.root_value = static_cast<float>(value);
+        d.sims_run = 1;
+        d.sim_steps = 0;
+        d.memo_hits = 0;
+        d.world_seeds.clear();
+        d.world_visits.clear();
+        d.world_values.clear();
+        d.decision_idx = static_cast<int32_t>(match_actions.size());
     }
 
     void end_game() {
@@ -546,6 +648,7 @@ struct AZMcts::Impl {
         // cur_root->P, so the merge fold applies exactly once.
         init_merge(cur_root, root_obs.data());
         world_roots[static_cast<size_t>(w)] = cur_root;
+        root_world_seeds[static_cast<size_t>(w)] = cur_world_seed;
 #ifndef NDEBUG
         capture_menu(root_obs.data(), root_n, cur_root->dbg_menu);
         capture_state(root_obs.data(), cur_root->dbg_state);
@@ -580,7 +683,7 @@ struct AZMcts::Impl {
                 phase = DESCENDING;
                 return a;
             }
-            accumulate_world();
+            accumulate_world(cur_world);
             cur_world += 1;
         }
         return -1;
@@ -592,14 +695,21 @@ struct AZMcts::Impl {
         phase = AWAITING_ROOT;
     }
 
-    void accumulate_world() {
+    // Fold world `w`'s root (cur_root) into the search totals and record its
+    // per-world visit count / value for the recording diag.
+    void accumulate_world(int w) {
+        int64_t nsum = 0;
         for (int i = 0; i < root_n; i++) {
             visit_totals[static_cast<size_t>(i)] += cur_root->N[static_cast<size_t>(i)];
             w_totals[static_cast<size_t>(i)] += cur_root->W[static_cast<size_t>(i)];
+            nsum += cur_root->N[static_cast<size_t>(i)];
         }
         double wsum = 0.0;
-        for (double w : cur_root->W) wsum += w;
+        for (double x : cur_root->W) wsum += x;
         value_acc += wsum;
+        world_visits_acc[static_cast<size_t>(w)] = static_cast<int32_t>(nsum);
+        world_values_acc[static_cast<size_t>(w)] =
+            nsum > 0 ? static_cast<float>(wsum / static_cast<double>(nsum)) : 0.0f;
     }
 
     // ── cross-world scheduler (cross_active searches only) ─────────────────
@@ -1136,6 +1246,7 @@ struct AZMcts::Impl {
             for (int i = 0; i < nc; i++) s.mask[static_cast<size_t>(i)] = 1;
             s.q = static_cast<float>(r.value);
             s.explored = chosen != greedy;
+            fill_prior_diag(s.diag, b, nc, r.value);
             game_samples.push_back(std::move(s));
         }
         phase = IDLE;
@@ -1213,6 +1324,7 @@ struct AZMcts::Impl {
             // az_selfplay.finalize_searched_sample over run_plan_search's q).
             s.q = static_cast<float>(q[static_cast<size_t>(chosen)]);
             s.explored = chosen != best;
+            fill_plan_diag(s.diag, q, pi, n_evals, root_value);
             game_samples.push_back(std::move(s));
         }
 
@@ -1366,6 +1478,9 @@ struct AZMcts::Impl {
         path.clear();
         world_roots.assign(static_cast<size_t>(cur_worlds), nullptr);
         cur_budgets.assign(static_cast<size_t>(cur_worlds), sims_per_world);
+        root_world_seeds.assign(static_cast<size_t>(cur_worlds), 0u);
+        world_visits_acc.assign(static_cast<size_t>(cur_worlds), 0);
+        world_values_acc.assign(static_cast<size_t>(cur_worlds), 0.0f);
         cur_world = 0;
         cur_sim = 0;
         // Cross-world scheduling only when this search's budget has rollouts
@@ -1532,7 +1647,7 @@ struct AZMcts::Impl {
         cur_sim += 1;
         if (cur_sim >= cur_budgets[static_cast<size_t>(cur_world)]) {
             if (cfg.batch > 1) flush_pending();
-            accumulate_world();
+            accumulate_world(cur_world);
             cur_world += 1;
             int a = start_next_world_sim();  // skips fully-inherited worlds
             if (a < 0) return finalize();
@@ -1563,7 +1678,7 @@ struct AZMcts::Impl {
             // inherited) worlds fold in their cumulative visits here too.
             for (int w = 0; w < cur_worlds; w++) {
                 cur_root = world_roots[static_cast<size_t>(w)];
-                accumulate_world();
+                accumulate_world(w);
             }
         }
         snapshot_release_all();
@@ -1575,6 +1690,7 @@ struct AZMcts::Impl {
         int64_t total = 0;
         for (int64_t v : visit_totals) total += v;
         sr.root_value = total > 0 ? value_acc / static_cast<double>(total) : 0.0;
+        const double sr_root_value = sr.root_value;
         sr.sims_run = sims_run;
         sr.sim_steps = sim_steps;
         sr.memo_hits = memo_hits;
@@ -1632,6 +1748,7 @@ struct AZMcts::Impl {
                                 visit_totals[static_cast<size_t>(chosen)]))
                       : 0.0f;
             s.explored = chosen != best;
+            fill_tree_diag(s.diag, sr_root_value);
             game_samples.push_back(std::move(s));
         }
 
@@ -1780,6 +1897,10 @@ struct AZMcts::Impl {
         // Emit the search-side context first so the two together fully localize the
         // divergence. (No recovery here — a wrong index must still fail loudly.)
         if (r < 0 || r >= menu_n) dump_divergence(actions, r);
+        // Back at IDLE the returned index is a REAL engine action (a finished
+        // search's pick, a fallback / scripted / single-choice answer); every
+        // other phase returns a simulation step. Log the real ones.
+        if (phase == IDLE) match_actions.push_back(r);
         return r;
     }
 
@@ -1830,6 +1951,9 @@ void AZMcts::set_scripted_provider(std::function<int(const float*, int)> fn) {
 const std::vector<SearchRootResult>& AZMcts::results() const { return impl_->results; }
 void AZMcts::begin_match(uint32_t cap_seed) { impl_->begin_match(cap_seed); }
 void AZMcts::end_game() { impl_->end_game(); }
+const std::vector<int32_t>& AZMcts::match_actions() const {
+    return impl_->match_actions;
+}
 const std::vector<SelfPlaySample>& AZMcts::game_samples() const {
     return impl_->game_samples;
 }

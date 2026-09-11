@@ -52,7 +52,9 @@ from game_driver import build_session
 from gui_game import (PlayPane, NewPlaySessionDialog, _ensure_app,
                       _analysis_cfg_from, _smoke_n_from_env, _scan_decks,
                       _OPPONENT_PRESETS, _load_launcher_config,
-                      _save_launcher_config, _resolve_opponent_spec)
+                      _save_launcher_config, _resolve_opponent_spec,
+                      is_search_spec, sync_clock_sims_exclusivity,
+                      search_knob_pairs, with_spec_query)
 
 # Where the analysis-session dialog remembers its last-used options.
 _ANALYSIS_LAUNCHER_CONFIG = os.path.join(
@@ -65,8 +67,14 @@ _ANALYSIS_DEFAULTS = {
     "deck_b": "",
     "n_games": 20,
     "bo3": True,
+    # Search settings (az:/mcts: seats only; None = "(default)" = omit the knob).
+    "sims": None,
+    "worlds": None,
     "think_time": None,
+    "search_procs": None,                    # auto: half the cores, capped at worlds
     "match_clock": None,
+    "search_xw": True,                       # cross-world batched leaf eval
+    "search_device": "",                     # "" = CPU; "cuda" = GPU
     "shards_on": False,
     "shards": "",
     "shard_limit": 0,
@@ -171,9 +179,11 @@ class NewAnalysisSessionDialog(QDialog):
         self._model.addItems(_ANALYSIS_MODEL_PRESETS)
         self._model.setEditText(get("model") or "gen")
         self._model.setToolTip(
-            "The model whose play is analyzed: 'gen' (the generalist), an "
-            "az:/azraw:/mcts: search spec, or a checkpoint path. In shard "
-            "mode this is the V(s) net (unless 'no net').")
+            "The model whose play is analyzed: 'gen' (the generalist's raw "
+            "policy, no search), 'az:gen' / 'mcts:gen' (the same nets driving a "
+            "real MCTS search — the Search settings below apply), 'azraw:gen' "
+            "(the raw AZ policy), or a checkpoint path. In shard mode this is "
+            "the V(s) net (unless 'no net').")
         form.addRow("Model", self._model)
 
         self._opponent = QComboBox()
@@ -214,18 +224,13 @@ class NewAnalysisSessionDialog(QDialog):
         self._bo3.setChecked(bool(get("bo3")))
         form.addRow(self._bo3)
 
-        self._think_time = NewPlaySessionDialog._float_field(
-            get("think_time"),
-            "Wall-clock seconds per search decision (search specs only).")
-        self._match_clock = NewPlaySessionDialog._float_field(
-            get("match_clock"),
-            "Whole-match thinking bank in seconds (chess clock; search specs "
-            "only).")
-        form.addRow("Think time (s)", self._think_time)
-        form.addRow("Match clock (s)", self._match_clock)
-
         self._sim_box = QGroupBox("Simulate games")
         self._sim_box.setLayout(form)
+
+        # -- search settings group (az:/mcts: seats only) ---------------------
+        self._search_box = self._build_search_box(get)
+        self._model.currentTextChanged.connect(self._update_search_visibility)
+        self._opponent.currentTextChanged.connect(self._update_search_visibility)
 
         # -- shards group ----------------------------------------------------
         self._shards_box = QGroupBox("Browse recorded shards instead")
@@ -281,10 +286,92 @@ class NewAnalysisSessionDialog(QDialog):
         lay.addWidget(title)
         lay.addWidget(subtitle)
         lay.addWidget(self._sim_box)
+        lay.addWidget(self._search_box)
         lay.addWidget(self._shards_box)
         lay.addWidget(buttons)
         self.setMinimumWidth(460)
         self._update_enabled()
+        self._update_search_visibility()
+
+    def _build_search_box(self, get):
+        """The az:/mcts:-only search-tuning group, mirroring the play launcher's:
+        simulations / worlds / think time / search procs / match clock / eval
+        device / cross-world batching. Applies to EVERY seat whose spec is a
+        search spec (model and/or opponent); the knobs are folded into those
+        specs' ?query by options(). Hidden while neither seat searches."""
+        form = QFormLayout()
+        form.setSpacing(8)
+        self._sims = NewPlaySessionDialog._int_field(
+            get("sims"), "MCTS simulations per decision (more = stronger, slower).")
+        self._worlds = NewPlaySessionDialog._int_field(
+            get("worlds"), "Determinized worlds per decision (sims split across them).")
+        self._think_time = NewPlaySessionDialog._float_field(
+            get("think_time"), "Wall-clock seconds per decision — runs as many "
+            "sims as fit in this budget (overrides the sims terminator).")
+        self._search_procs = NewPlaySessionDialog._int_field(
+            get("search_procs"), "Engine processes to fan the worlds across "
+            "(world-parallel search). '(default)' means AUTO: half the visible "
+            "cores, capped at the world count. Set a value to override.")
+        self._match_clock = NewPlaySessionDialog._float_field(
+            get("match_clock"), "Whole-match thinking bank in seconds (chess "
+            "clock; 1500 = 25 min for a bo3). Each decision draws a variable "
+            "budget. Mutually exclusive with a Simulations cap — a clocked "
+            "search is paced by the clock alone.")
+        self._sims.valueChanged.connect(self._sync_clock_sims_exclusivity)
+        self._match_clock.valueChanged.connect(self._sync_clock_sims_exclusivity)
+        self._sync_clock_sims_exclusivity()
+        self._search_device = NewPlaySessionDialog._device_combo(
+            get("search_device"),
+            "Torch device for the search seats' net forwards: CPU, or the GPU "
+            "(cuda — the Radeon under the ROCm torch build). The GPU pays in "
+            "proportion to the rows per forward, i.e. together with cross-world "
+            "batching and higher world counts.")
+        self._search_xw = QCheckBox("Cross-world batched leaf evaluation")
+        self._search_xw.setChecked(bool(get("search_xw")))
+        self._search_xw.setToolTip(
+            "Batch each round's leaf evaluations (one per determinized world) "
+            "into a single net forward. Visit counts are arithmetically "
+            "identical to the sequential search — this is pure speed. "
+            "Uncheck only to debug.")
+        form.addRow("Simulations", self._sims)
+        form.addRow("Worlds", self._worlds)
+        form.addRow("Think time (s)", self._think_time)
+        form.addRow("Search procs", self._search_procs)
+        form.addRow("Match clock (s)", self._match_clock)
+        form.addRow("Eval device", self._search_device)
+        form.addRow(self._search_xw)
+        box = QGroupBox("Search settings (az:/mcts: model or opponent)")
+        box.setToolTip(
+            "Shown only while the model or the opponent is an az:/mcts: search "
+            "spec — 'gen' and 'azraw:gen' play the raw policy with no search, "
+            "so these knobs would not apply.")
+        box.setLayout(form)
+        return box
+
+    def _sync_clock_sims_exclusivity(self, *_):
+        sync_clock_sims_exclusivity(self, self._sims, self._match_clock)
+
+    def _search_seats(self):
+        """The (key, spec) pairs of the seats that run a tree search."""
+        seats = [("model", self._model.currentText().strip()),
+                 ("opponent", NewPlaySessionDialog._combo_spec(self._opponent))]
+        return [(k, s) for k, s in seats if is_search_spec(s)]
+
+    def _update_search_visibility(self, *_):
+        self._search_box.setVisible(bool(self._search_seats()))
+        self.adjustSize()
+
+    def _search_knobs(self):
+        return search_knob_pairs(
+            sims=NewPlaySessionDialog._spin_value(self._sims),
+            worlds=NewPlaySessionDialog._spin_value(self._worlds),
+            time_val=NewPlaySessionDialog._spin_value(self._think_time),
+            procs=NewPlaySessionDialog._spin_value(self._search_procs),
+            clock=NewPlaySessionDialog._spin_value(self._match_clock),
+            xw_on=self._search_xw.isChecked(),
+            device=self._search_device.currentData(),
+            # Simulated games have no human to hide timing tells from.
+            paced=False)
 
     def _browse_shards(self):
         path = QFileDialog.getExistingDirectory(self, "Shards directory",
@@ -301,9 +388,19 @@ class NewAnalysisSessionDialog(QDialog):
         Computed live so the dialog is inspectable without exec()."""
         shards_on = self._shards_box.isChecked()
         deck_b = self._deck_b.currentText().strip()
+        model = self._model.currentText().strip() or "gen"
+        opponent = NewPlaySessionDialog._combo_spec(self._opponent)
+        # The search knobs ride in each search seat's own spec query (the
+        # loader's --think-time/--match-clock flags would reject a run with
+        # no search seat, and can't carry sims/worlds/procs/device anyway).
+        knobs = self._search_knobs()
+        if is_search_spec(model):
+            model = with_spec_query(model, knobs)
+        if is_search_spec(opponent):
+            opponent = with_spec_query(opponent, knobs)
         return {
-            "model": self._model.currentText().strip() or "gen",
-            "opponent": NewPlaySessionDialog._combo_spec(self._opponent),
+            "model": model,
+            "opponent": opponent,
             "deck_a": self._deck_a.currentText().strip(),
             "deck_b": deck_b or None,
             # In shard mode n_games is the match-load cap (0 = all); in sim
@@ -311,8 +408,8 @@ class NewAnalysisSessionDialog(QDialog):
             "n_games": (int(self._shard_limit.value()) if shards_on
                         else int(self._n_games.value())),
             "bo3": self._bo3.isChecked(),
-            "think_time": NewPlaySessionDialog._spin_value(self._think_time),
-            "match_clock": NewPlaySessionDialog._spin_value(self._match_clock),
+            "think_time": None,
+            "match_clock": None,
             "shards": (self._shards_dir.text().strip() or None) if shards_on
                       else None,
             "seat": self._seat.currentText(),
@@ -336,14 +433,22 @@ class NewAnalysisSessionDialog(QDialog):
                 QMessageBox.warning(self, "Missing spec",
                                     "Pick a model and an opponent.")
                 return
+        spin = NewPlaySessionDialog._spin_value
         _save_launcher_config({
-            "model": opts["model"], "opponent": opts["opponent"],
+            # Persist the BASE specs (the search knobs are folded into
+            # opts["model"]/["opponent"] and save as their own fields).
+            "model": self._model.currentText().strip() or "gen",
+            "opponent": NewPlaySessionDialog._combo_spec(self._opponent),
             "deck_a": opts["deck_a"], "deck_b": opts["deck_b"] or "",
             # Persist the sim "Games" field itself (opts["n_games"] is the
             # shard-load cap in shard mode); the shard cap saves separately.
             "n_games": int(self._n_games.value()), "bo3": opts["bo3"],
-            "think_time": opts["think_time"],
-            "match_clock": opts["match_clock"],
+            "sims": spin(self._sims), "worlds": spin(self._worlds),
+            "think_time": spin(self._think_time),
+            "search_procs": spin(self._search_procs),
+            "match_clock": spin(self._match_clock),
+            "search_xw": self._search_xw.isChecked(),
+            "search_device": self._search_device.currentData() or "",
             "shards_on": self._shards_box.isChecked(),
             "shards": self._shards_dir.text().strip(),
             "shard_limit": int(self._shard_limit.value()),

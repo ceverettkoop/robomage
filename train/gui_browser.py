@@ -1431,7 +1431,8 @@ class BrowserPane(QWidget):
         vs = f" · V={v:+.3f}" if v is not None else ""
         self._hist_caption.setText(
             f"game {self._store.cur_game} [{bs.result_str(g)}] · "
-            f"step {step}/{max(len(g['values']) - 1, 0)}{vs}")
+            f"step {step}/{max(len(g['values']) - 1, 0)}{vs}"
+            f"{bs.search_caption(g, step)}")
 
     # ----- selection / stepping -----
 
@@ -1477,7 +1478,9 @@ class BrowserPane(QWidget):
             self._refresh_caption()
         else:
             vs = f" · V={value:+.3f}" if value is not None else ""
-            self._hist_caption.setText(f"step {step}{vs}")
+            g = self._store.selected()
+            ss = bs.search_caption(g, step) if g is not None else ""
+            self._hist_caption.setText(f"step {step}{vs}{ss}")
 
     # ----- analyses / engine menu -----
 

@@ -4,10 +4,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -144,6 +146,26 @@ void NpzWriter::add_uint8(const std::string& name, const uint8_t* data,
     add_member(name, "|u1", sizeof(uint8_t), data, shape);
 }
 
+void NpzWriter::add_int8(const std::string& name, const int8_t* data,
+                         const std::vector<size_t>& shape) {
+    add_member(name, "|i1", sizeof(int8_t), data, shape);
+}
+
+void NpzWriter::add_int16(const std::string& name, const int16_t* data,
+                          const std::vector<size_t>& shape) {
+    add_member(name, "<i2", sizeof(int16_t), data, shape);
+}
+
+void NpzWriter::add_int32(const std::string& name, const int32_t* data,
+                          const std::vector<size_t>& shape) {
+    add_member(name, "<i4", sizeof(int32_t), data, shape);
+}
+
+void NpzWriter::add_int64(const std::string& name, const int64_t* data,
+                          const std::vector<size_t>& shape) {
+    add_member(name, "<i8", sizeof(int64_t), data, shape);
+}
+
 void NpzWriter::add_member(const std::string& name, const char* descr,
                            size_t elem_size, const void* data,
                            const std::vector<size_t>& shape) {
@@ -257,7 +279,7 @@ ShardAccumulator::ShardAccumulator(std::string out_dir, size_t flush_samples,
 
 void ShardAccumulator::add_sample(const float* obs, const float* pi, float z,
                                   const uint8_t* mask, float q, uint8_t explored,
-                                  float td_q) {
+                                  float td_q, const RootDiag* diag) {
     obs_.insert(obs_.end(), obs, obs + obs_w_);
     pi_.insert(pi_.end(), pi, pi + act_w_);
     z_.push_back(z);
@@ -265,6 +287,7 @@ void ShardAccumulator::add_sample(const float* obs, const float* pi, float z,
     q_.push_back(q);
     explored_.push_back(explored);
     td_q_.push_back(td_q);
+    diags_.push_back(diag != nullptr ? *diag : RootDiag());
     buffered_++;
 }
 
@@ -276,15 +299,29 @@ void ShardAccumulator::flush_final() {
     if (buffered_ > 0) flush();
 }
 
-void ShardAccumulator::flush() {
+void ShardAccumulator::flush_match(const MatchReplayMeta& meta) {
     if (buffered_ == 0) return;
+    // The sidecars read the buffers, so write them before the flush clears.
+    const std::string path = next_shard_path();
+    write_diag(path);
+    write_replay(path, meta);
+    flush_to(path);
+}
+
+std::string ShardAccumulator::next_shard_path() const {
     char ts[32];
     std::time_t now = std::time(nullptr);
     std::strftime(ts, sizeof(ts), "%Y%m%d_%H%M%S", std::localtime(&now));
-    std::string path = out_dir_ + "/shard_" + ts + "_" +
-                       std::to_string(static_cast<long>(getpid())) + "_" +
-                       std::to_string(shard_n_) + ".npz";
+    return out_dir_ + "/shard_" + ts + "_" +
+           std::to_string(static_cast<long>(getpid())) + "_" +
+           std::to_string(shard_n_) + ".npz";
+}
 
+void ShardAccumulator::flush() {
+    if (buffered_ > 0) flush_to(next_shard_path());
+}
+
+void ShardAccumulator::flush_to(const std::string& path) {
     {
         NpzWriter w(path);
         w.add_float("obs", obs_.data(), {buffered_, obs_w_});
@@ -300,6 +337,10 @@ void ShardAccumulator::flush() {
     shards_.push_back(path);
     total_ += buffered_;
     shard_n_++;
+    clear_buffers();
+}
+
+void ShardAccumulator::clear_buffers() {
     obs_.clear();
     pi_.clear();
     z_.clear();
@@ -307,5 +348,167 @@ void ShardAccumulator::flush() {
     q_.clear();
     explored_.clear();
     td_q_.clear();
+    diags_.clear();
     buffered_ = 0;
+}
+
+// The `.diag` sidecar: shard_record.DIAG_KEYS with pack_diag's exact dtypes
+// and fixed widths (menu vectors MAX_ACTIONS wide, per-world vectors the
+// widest row's world count, follow_path one column), row index == shard row.
+// The extension is deliberately not .npz (readers glob shard_*.npz).
+void ShardAccumulator::write_diag(const std::string& shard_path) const {
+    const size_t n = buffered_;
+    size_t w_max = 1;
+    for (const RootDiag& d : diags_) {
+        w_max = std::max(w_max, d.world_seeds.size());
+        w_max = std::max(w_max, d.world_visits.size());
+        w_max = std::max(w_max, d.world_values.size());
+    }
+    const float nan = std::numeric_limits<float>::quiet_NaN();
+    std::vector<int8_t> kind(n, 0);
+    std::vector<int32_t> visits(n * act_w_, 0);
+    std::vector<float> priors(n * act_w_, 0.0f), q_act(n * act_w_, 0.0f),
+        w_sum(n * act_w_, 0.0f);
+    std::vector<float> root_value(n, 0.0f);
+    std::vector<int32_t> sims_run(n, 0), sim_steps(n, 0), reused(n, 0), memo(n, 0);
+    std::vector<uint8_t> stopped(n, 0);
+    std::vector<float> tb(n, nan), tb_min(n, nan);
+    std::vector<int16_t> n_worlds(n, 0);
+    std::vector<int64_t> world_seeds(n * w_max, -1);
+    std::vector<int32_t> world_visits(n * w_max, 0);
+    std::vector<float> world_values(n * w_max, nan);
+    std::vector<int32_t> origin_row(n, -1);
+    std::vector<int32_t> follow_path(n, -1);
+    std::vector<uint8_t> follow_worlds(n * w_max, 0);
+    for (size_t i = 0; i < n; i++) {
+        const RootDiag& d = diags_[i];
+        if (d.kind == DIAG_KIND_NONE) continue;
+        kind[i] = d.kind;
+        const size_t nc = std::min(static_cast<size_t>(d.num_choices), act_w_);
+        for (size_t k = 0; k < nc; k++) {
+            if (k < d.visits.size()) visits[i * act_w_ + k] = d.visits[k];
+            if (k < d.priors.size()) priors[i * act_w_ + k] = d.priors[k];
+            if (k < d.q_act.size()) q_act[i * act_w_ + k] = d.q_act[k];
+            if (k < d.w_sum.size()) w_sum[i * act_w_ + k] = d.w_sum[k];
+        }
+        root_value[i] = d.root_value;
+        sims_run[i] = d.sims_run;
+        sim_steps[i] = d.sim_steps;
+        memo[i] = d.memo_hits;
+        const size_t nw = std::max({d.world_seeds.size(), d.world_visits.size(),
+                                    d.world_values.size()});
+        n_worlds[i] = static_cast<int16_t>(nw);
+        for (size_t w = 0; w < nw && w < w_max; w++) {
+            if (w < d.world_seeds.size()) world_seeds[i * w_max + w] = d.world_seeds[w];
+            if (w < d.world_visits.size())
+                world_visits[i * w_max + w] = d.world_visits[w];
+            if (w < d.world_values.size())
+                world_values[i * w_max + w] = d.world_values[w];
+        }
+    }
+    std::string stem = shard_path.substr(0, shard_path.size() - 4);  // strip .npz
+    NpzWriter w(stem + ".diag");
+    w.add_int8("kind", kind.data(), {n});
+    w.add_int32("visits", visits.data(), {n, act_w_});
+    w.add_float("priors", priors.data(), {n, act_w_});
+    w.add_float("q_act", q_act.data(), {n, act_w_});
+    w.add_float("w_sum", w_sum.data(), {n, act_w_});
+    w.add_float("root_value", root_value.data(), {n});
+    w.add_int32("sims_run", sims_run.data(), {n});
+    w.add_int32("sim_steps", sim_steps.data(), {n});
+    w.add_int32("reused_visits", reused.data(), {n});
+    w.add_int32("memo_hits", memo.data(), {n});
+    w.add_uint8("stopped_early", stopped.data(), {n});
+    w.add_float("time_budget_s", tb.data(), {n});
+    w.add_float("time_budget_min_s", tb_min.data(), {n});
+    w.add_int16("n_worlds", n_worlds.data(), {n});
+    w.add_int64("world_seeds", world_seeds.data(), {n, w_max});
+    w.add_int32("world_visits", world_visits.data(), {n, w_max});
+    w.add_float("world_values", world_values.data(), {n, w_max});
+    w.add_int32("origin_row", origin_row.data(), {n});
+    w.add_int32("follow_path", follow_path.data(), {n, 1});
+    w.add_uint8("follow_worlds", follow_worlds.data(), {n, w_max});
+    w.finish();
+}
+
+namespace {
+
+std::string json_str(const std::string& s) {
+    std::string out = "\"";
+    for (unsigned char c : s) {
+        switch (c) {
+            case '"': out += "\\\""; break;
+            case '\\': out += "\\\\"; break;
+            case '\n': out += "\\n"; break;
+            case '\r': out += "\\r"; break;
+            case '\t': out += "\\t"; break;
+            default:
+                if (c < 0x20) {
+                    char buf[8];
+                    std::snprintf(buf, sizeof(buf), "\\u%04x", c);
+                    out += buf;
+                } else {
+                    out += static_cast<char>(c);
+                }
+        }
+    }
+    return out + "\"";
+}
+
+}  // namespace
+
+// The `.rmplay` sidecar: gui_session_io.save_replay's document, which
+// shard_replay.load_replay_sidecars pairs with the shard by stem. Written to
+// a temp path and renamed, like the shard itself.
+void ShardAccumulator::write_replay(const std::string& shard_path,
+                                    const MatchReplayMeta& meta) const {
+    std::string stem = shard_path.substr(0, shard_path.size() - 4);
+    std::string path = stem + ".rmplay";
+    std::string tmp = path + ".tmp";
+    char ts[40];
+    std::time_t now = std::time(nullptr);
+    std::strftime(ts, sizeof(ts), "%Y-%m-%dT%H:%M:%S+00:00", std::gmtime(&now));
+
+    std::string doc = "{\n";
+    doc += " \"format\": \"robomage-play-replay\",\n \"version\": 1,\n";
+    doc += " \"engine_seed\": " + std::to_string(meta.engine_seed) + ",\n";
+    doc += " \"actions\": [";
+    size_t n_actions = 0;
+    if (meta.actions != nullptr) {
+        n_actions = meta.actions->size();
+        for (size_t i = 0; i < n_actions; i++) {
+            if (i) doc += ", ";
+            doc += std::to_string((*meta.actions)[i]);
+        }
+    }
+    doc += "],\n";
+    doc += " \"deck_a\": " + json_str(meta.deck_a) + ",\n";
+    doc += " \"deck_b\": " + json_str(meta.deck_b) + ",\n";
+    doc += " \"human_deck\": null,\n \"opp_deck\": null,\n";
+    doc += std::string(" \"human_is_a\": ") + (meta.net_is_a ? "true" : "false") + ",\n";
+    doc += std::string(" \"bo3\": ") + (meta.bo3 ? "true" : "false") + ",\n";
+    doc += " \"opponent_spec\": null,\n \"analysis\": null,\n \"binary\": null,\n";
+    doc += " \"engine_build\": {\"obs_size\": " + std::to_string(obs_w_) +
+           ", \"max_actions\": " + std::to_string(act_w_) +
+           ", \"state_size\": " + std::to_string(meta.state_size) + "},\n";
+    doc += " \"history_len\": " + std::to_string(n_actions) + ",\n";
+    doc += " \"final_obs_sha256\": null,\n \"in_progress\": false,\n";
+    doc += std::string(" \"saved_at\": ") + json_str(ts) + ",\n";
+    doc += " \"row_decision_idx\": [";
+    for (size_t i = 0; i < buffered_; i++) {
+        if (i) doc += ", ";
+        doc += std::to_string(diags_[i].decision_idx);
+    }
+    doc += "],\n";
+    doc += " \"search_provenance\": " +
+           (meta.provenance_json.empty() ? std::string("null") : meta.provenance_json) +
+           "\n}\n";
+
+    std::FILE* fp = std::fopen(tmp.c_str(), "wb");
+    if (fp == nullptr) fatal_error("npz_writer: cannot open " + tmp);
+    if (std::fwrite(doc.data(), 1, doc.size(), fp) != doc.size() ||
+        std::fclose(fp) != 0)
+        fatal_error("npz_writer: write failed: " + tmp);
+    if (std::rename(tmp.c_str(), path.c_str()) != 0)
+        fatal_error("npz_writer: rename failed: " + path);
 }
