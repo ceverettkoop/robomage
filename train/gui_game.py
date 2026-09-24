@@ -52,15 +52,17 @@ from PySide6.QtWidgets import (QApplication, QWidget, QLabel,
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 from cli_spec import (HUMAN_SPEC, apply_search_knobs, is_bo3, is_search_spec,
-                      resolve_play_seats, scan_decks, smoke_leg)
+                      on_the_play_note, resolve_on_the_play,
+                      resolve_play_seats, scan_decks, seat_play_sides,
+                      smoke_leg)
 import launcher_config
 import decode
 import scryfall_cache
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, action_zone, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
-                         _STEP_ABBR, resolve_opponent_spec, stack_item_label,
-                         token_pt)
+                         seat_label, _STEP_ABBR, resolve_opponent_spec,
+                         stack_item_label, token_pt)
 
 # ── Card geometry ─────────────────────────────────────────────────────────────
 # Untapped cards are portrait at the real 63:88 Magic aspect; a tapped card is
@@ -1040,8 +1042,9 @@ class PlayPane(QWidget):
         opp_seat = "A" if self._opp_is_a else "B"
         fmt = "Best of 3" if self._bo3 else "Single game"
         self._title = (
-            f"RoboMage · {fmt}  —  You (Player {seat}, {self._human_deck}) "
-            f"vs {self._opp_label} (Player {opp_seat}, {self._opp_deck})")
+            f"RoboMage · {fmt}  —  You ({seat_label(seat)}, "
+            f"{self._human_deck}) vs {self._opp_label} "
+            f"({seat_label(opp_seat)}, {self._opp_deck})")
 
         # Bridge + driver. The bridge lives on the UI thread, so its signal
         # emissions from the worker thread are queued to this thread's slots.
@@ -1970,6 +1973,8 @@ _ANALYSIS_EVAL_PRESETS = [
 
 _FORMAT_LABELS = {"bo3": "Best of three (with sideboarding)",
                   "bo1": "Single game"}
+_ON_THE_PLAY_LABELS = {"a": "Player A", "b": "Player B",
+                       "random": "Random (coin flip)"}
 _DEVICE_LABELS = {None: "Default (CPU, or ROBOMAGE_EVAL_DEVICE)",
                   "cpu": "CPU", "cuda": "GPU (cuda / ROCm)"}
 
@@ -2172,10 +2177,12 @@ class NewPlaySessionDialog(LauncherDialog):
         form.setSpacing(8)
         self._player_a = self._spec("player_a", _OPPONENT_PRESETS, human=True)
         self._player_b = self._spec("player_b", _OPPONENT_PRESETS, human=True)
-        form.addRow("Player A (on the play)", self._player_a)
+        form.addRow("Player A", self._player_a)
         form.addRow("Player A deck", self._deck("deck_a", decks))
         form.addRow("Player B", self._player_b)
         form.addRow("Player B deck", self._deck("deck_b", decks))
+        form.addRow("On the play", self._choice("on_the_play",
+                                                _ON_THE_PLAY_LABELS))
         form.addRow("Match format", self._format())
         # YOUR own chess clock — the mirror of the search opponent's "Match
         # clock (s)", but it applies whatever the opponent is, so it lives here
@@ -2308,9 +2315,14 @@ class NewPlaySessionDialog(LauncherDialog):
             QMessageBox.warning(self, "Missing opponent",
                                 "Pick or type an opponent.")
             return
-        human_deck, model_deck = ((values["deck_a"], values["deck_b"])
-                                  if player == "A"
-                                  else (values["deck_b"], values["deck_a"]))
+        # On the play: the engine always starts its seat A, so a player-B
+        # start swaps the two (agent, deck) sides. A launcher session has no
+        # seed, so 'random' is a fresh coin flip.
+        first = resolve_on_the_play(values["on_the_play"])
+        player, human_deck, model_deck = seat_play_sides(
+            player, opponent, values["deck_a"], values["deck_b"], first)
+        print(on_the_play_note(values["on_the_play"], first, player,
+                               opponent, human_deck, model_deck), flush=True)
         # A search opponent carries its tuning knobs in the spec query; other
         # opponents ignore the (hidden) fields entirely.
         spec = apply_search_knobs(opponent, values)

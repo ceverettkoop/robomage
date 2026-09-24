@@ -3,7 +3,10 @@ Play interactively against a trained RoboMage model.
 
 The seats are --player-a / --player-b: exactly one is the spec 'human' (you),
 the other any opponents.make_controller spec (default: az:gen), with --deck-a /
---deck-b their decks. By default you are player A.
+--deck-b their decks. By default you are player A. Player A is on the play
+in game 1; --on-the-play b swaps the two sides (agent and deck) so player B's
+side starts on the engine's first seat, and --on-the-play random flips a coin
+(seeded by --seed when given).
 
 --board picks the front end: gui (the PySide6 app, the default — falls back to
 the TUI when PySide6 is missing), tui (the Textual board), or text (a plain
@@ -26,8 +29,9 @@ import sys
 from cli_spec import (BOARD_GUI, BOARD_TEXT, BOARD_TUI, DEFAULT_PLAY_OPPONENT,
                       PLAY_ANALYSIS_DESTS, PLAY_SESSION_DESTS, PLAY_TOOL,
                       SEARCH_KNOB_KEYS, apply_search_knobs, apply_to_parser,
-                      explicit_dests, is_bo3, is_search_spec, resolve_board,
-                      resolve_play_seats, spec_query_keys)
+                      explicit_dests, is_bo3, is_search_spec,
+                      on_the_play_note, resolve_board, resolve_on_the_play,
+                      resolve_play_seats, seat_play_sides, spec_query_keys)
 
 # Flags that only reach a GameDriver board (gui/tui), not the text board.
 _DRIVER_ONLY_DESTS = ("human_clock", "hard_timeout", "record_shards")
@@ -180,8 +184,13 @@ def main(argv=None):
     except ValueError as exc:
         parser.error(str(exc))
     opponent = opponent or DEFAULT_PLAY_OPPONENT
-    human_deck, model_deck = ((args.deck_a, args.deck_b) if human_player == "A"
-                              else (args.deck_b, args.deck_a))
+    # --on-the-play: the engine always starts its seat A, so a player-B start
+    # swaps the two (agent, deck) sides onto the other seats.
+    first = resolve_on_the_play(args.on_the_play, args.seed)
+    human_player, human_deck, model_deck = seat_play_sides(
+        human_player, opponent, args.deck_a, args.deck_b, first)
+    print(on_the_play_note(args.on_the_play, first, human_player, opponent,
+                           human_deck, model_deck), flush=True)
     check_board_options(parser, args, explicit, board)
     spec = apply_search_knobs(opponent,
                               search_values(parser, args, explicit, opponent))

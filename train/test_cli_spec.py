@@ -228,6 +228,46 @@ def test_play_seats():
             pass
 
 
+def test_on_the_play():
+    print("play --on-the-play: side swap, seeded coin flip, bad values")
+    rotp = cli_spec.resolve_on_the_play
+    order = cli_spec.order_play_sides
+    sides = ("human", "az:gen", "league/bug", "league/ur_delver")
+    check(order(*sides, "A") == sides, "a: the sides stay on their seats")
+    check(order(*sides, "B") == ("az:gen", "human", "league/ur_delver",
+                                 "league/bug"),
+          "b: player B's agent AND deck move to engine seat A")
+    check(rotp("a") == "A" and rotp("B") == "B" and rotp(None) == "A",
+          "a/b resolve directly (case-insensitive); unset is the default a")
+    picks = {seed: rotp("random", seed) for seed in range(40)}
+    check(all(rotp("random", seed) == side for seed, side in picks.items()),
+          "random with a seed is reproducible")
+    check(set(picks.values()) == {"A", "B"},
+          f"random reaches both sides across seeds: {set(picks.values())}")
+    check(rotp("random") in ("A", "B"), "unseeded random picks a side")
+    for bad in ("c", "", "first"):
+        try:
+            rotp(bad)
+            check(False, f"--on-the-play {bad!r} should be rejected")
+        except ValueError:
+            pass
+    parser = build(cli_spec.PLAY_TOOL.subs[0])
+    check(parser.parse_args([]).on_the_play == cli_spec.DEFAULT_ON_THE_PLAY
+          == "a", "--on-the-play defaults to a")
+    code, err = parse_error(parser, ["--on-the-play", "c"])
+    check(code == 2 and "invalid choice" in err,
+          f"--on-the-play c is rejected by the parser ({code}, {err!r})")
+    # The human's engine seat and decks after resolving seats + the sides.
+    for pa, pb, otp, want in ((None, None, "a", ("A", "x", "y")),
+                              (None, None, "b", ("B", "x", "y")),
+                              ("az:gen", "human", "b", ("A", "y", "x")),
+                              ("human", "scripted", "b", ("B", "x", "y"))):
+        human, opp = cli_spec.resolve_play_seats(pa, pb)
+        got = cli_spec.seat_play_sides(human, opp, "x", "y", rotp(otp))
+        check(got == want, f"{pa}/{pb} --on-the-play {otp}: (human seat, "
+                           f"human deck, opp deck) {got} != {want}")
+
+
 def test_format_default():
     print("--format defaults to bo3 on every game-playing subcommand")
     for tool, sub in all_subs():
@@ -1063,6 +1103,7 @@ def main():
     test_scoped_removal()
     test_seat_vocabulary()
     test_play_seats()
+    test_on_the_play()
     test_removed_env()
     test_removed_env_real()
     test_smoke_legs()

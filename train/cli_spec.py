@@ -10,6 +10,7 @@ or change a flag in one place and both stay in sync.
 """
 
 import os
+import random
 from dataclasses import dataclass, field, replace
 
 from archetypes import ARCHETYPES
@@ -510,6 +511,10 @@ DEFAULT_BOARD = BOARD_GUI
 DEFAULT_PLAY_OPPONENT = "az:gen"
 DEFAULT_PLAY_DECK_A = "league/bug"
 DEFAULT_PLAY_DECK_B = "league/ur_delver"
+# --on-the-play: which side (agent + deck) is on the play in game 1. The engine
+# always starts player A, so 'b' swaps the two sides onto the other seats.
+ON_THE_PLAY_CHOICES = ("a", "b", "random")
+DEFAULT_ON_THE_PLAY = "a"
 DEFAULT_PLAY_WORLDS = 8
 DEFAULT_PLAY_MATCH_CLOCK = 1500.0       # 25 min of thinking for the whole bo3
 # The analysis window (GUI board only): --analysis/--no-analysis defaults to
@@ -2710,7 +2715,8 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "actions). --board gui with no --player-a/-b or --deck-a/-b "
                  f"opens the GUI app on its welcome pane (default {DEFAULT_BOARD})"),
         Arg("--player-a", "str", default=None, suggest="agent",
-            help="Player A (on the play in game 1): 'human' for you, or any "
+            help="Player A (on the play in game 1 unless --on-the-play says "
+                 "otherwise): 'human' for you, or any "
                  "opponents.make_controller spec for the opponent — 'gen', a "
                  "model .zip path, az:gen (MCTS+AZNet), azraw:gen (raw AZ "
                  "policy), mcts:gen, scripted:<tier>. Exactly one seat is "
@@ -2725,6 +2731,13 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help=f"Player A's deck (.dk stem; default {DEFAULT_PLAY_DECK_A})"),
         Arg("--deck-b", "str", default=DEFAULT_PLAY_DECK_B, suggest="deck",
             help=f"Player B's deck (.dk stem; default {DEFAULT_PLAY_DECK_B})"),
+        Arg("--on-the-play", "choice", choices=ON_THE_PLAY_CHOICES,
+            default=DEFAULT_ON_THE_PLAY,
+            help="Which side is on the play in game 1: a (player A), b (player "
+                 "B's agent and deck move to the engine's first seat, so the "
+                 "board labels that side Player A), or random (a coin flip — "
+                 "seeded by --seed when given, so a seeded session is "
+                 f"reproducible). Default {DEFAULT_ON_THE_PLAY}"),
         format_arg(),
         Arg("--human-clock", "float", default=None,
             help="Arm YOUR OWN chess clock: total wall-clock thinking bank in "
@@ -2824,6 +2837,70 @@ def resolve_play_seats(player_a, player_b):
         raise ValueError("exactly one of --player-a / --player-b must be "
                          f"'{HUMAN_SPEC}' (got {a!r} and {b!r})")
     return ("A", b) if is_human_spec(a) else ("B", a)
+
+
+def play_seat_specs(human_seat, opponent_spec):
+    """``(player_a, player_b)`` specs for a resolved ``(human_seat,
+    opponent_spec)``: 'human' on the human's seat, the opponent on the other."""
+    return ((HUMAN_SPEC, opponent_spec) if human_seat == "A"
+            else (opponent_spec, HUMAN_SPEC))
+
+
+def resolve_on_the_play(choice, seed=None):
+    """The side ('A' or 'B') that --on-the-play ``choice`` puts on the play.
+
+    'random' is a coin flip: seeded from ``seed`` when one is given (the same
+    seed always picks the same side), else from the OS entropy source. Raises
+    ValueError on anything but a/b/random (case-insensitive)."""
+    key = (DEFAULT_ON_THE_PLAY if choice is None else str(choice)).lower()
+    if key not in ON_THE_PLAY_CHOICES:
+        raise ValueError(f"--on-the-play must be one of "
+                         f"{'/'.join(ON_THE_PLAY_CHOICES)} (got {choice!r})")
+    if key != "random":
+        return key.upper()
+    rng = (random.SystemRandom() if seed is None
+           else random.Random(f"on-the-play:{seed}"))
+    return rng.choice("AB")
+
+
+def order_play_sides(player_a, player_b, deck_a, deck_b, on_the_play):
+    """``(player_a, player_b, deck_a, deck_b)`` with the ``on_the_play`` side
+    ('A' or 'B', from :func:`resolve_on_the_play`) on the engine's seat A.
+
+    The engine always starts player A, so putting player B on the play swaps
+    the two (agent, deck) pairs between the seats."""
+    if on_the_play == "B":
+        return player_b, player_a, deck_b, deck_a
+    return player_a, player_b, deck_a, deck_b
+
+
+def seat_play_sides(human_seat, opponent_spec, deck_a, deck_b, on_the_play):
+    """``(human_seat, human_deck, opponent_deck)`` on the ENGINE's seats for a
+    resolved play session (``human_seat`` / ``opponent_spec`` from
+    :func:`resolve_play_seats`, ``deck_a`` / ``deck_b`` the --deck-a/-b
+    values), with the ``on_the_play`` side ('A' or 'B') on seat A."""
+    a, _b, deck_a, deck_b = order_play_sides(
+        *play_seat_specs(human_seat, opponent_spec), deck_a, deck_b,
+        on_the_play)
+    human_seat = "A" if is_human_spec(a) else "B"
+    return ((human_seat, deck_a, deck_b) if human_seat == "A"
+            else (human_seat, deck_b, deck_a))
+
+
+def on_the_play_note(choice, on_the_play, human_seat, opponent_spec,
+                     human_deck, opponent_deck):
+    """One line saying which side is on the play in game 1 (--on-the-play
+    ``choice`` resolved to ``on_the_play``), for a session already on the
+    engine's seats (:func:`seat_play_sides`), whose seat A starts."""
+    who, deck = (("you", human_deck) if human_seat == "A"
+                 else (opponent_spec, opponent_deck))
+    how = " (coin flip)" if str(choice).lower() == "random" else ""
+    line = (f"On the play in game 1{how}: player {on_the_play}'s side "
+            f"({who}, {deck})")
+    if on_the_play == "B":
+        line += (" — the sides are swapped, so the board labels it Player A "
+                 "(the engine's first seat)")
+    return line
 
 # The harness seat default: pass priority / take the first choice at every
 # decision the --play/--actions script does not make.

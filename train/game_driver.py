@@ -220,6 +220,13 @@ def token_pt(p):
     return (None, None)
 
 
+def seat_label(seat):
+    """A board's seat label: "Player A" is marked as on the play (the engine
+    always starts its seat A in game 1)."""
+    return (f"Player {seat}, on the play" if seat == "A"
+            else f"Player {seat}")
+
+
 def menu_label(a, opp_is_a):
     """Action description for the menu, tagging player choices SELF/OPPONENT.
 

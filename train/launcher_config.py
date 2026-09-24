@@ -20,7 +20,8 @@ import json
 import os
 
 from cli_spec import (ANALYSIS_BROWSE_SUB, PLAY_TOOL, arg_default, iter_args,
-                      resolve_play_seats, DEFAULT_PLAY_OPPONENT, HUMAN_SPEC)
+                      play_seat_specs, resolve_play_seats,
+                      DEFAULT_PLAY_OPPONENT)
 
 LAUNCHER_CONFIG = os.path.join(os.path.expanduser("~"), ".robomage",
                                "gui_launcher.json")
@@ -39,7 +40,7 @@ ANALYSIS_SECTION = "analysis"
 # dialog does NOT offer is listed in *_CLI_ONLY with the reason, so the table
 # accounts for the whole Sub (test_cli_spec checks both directions).
 PLAY_FIELDS = (
-    "player_a", "player_b", "deck_a", "deck_b", "format",
+    "player_a", "player_b", "deck_a", "deck_b", "on_the_play", "format",
     "human_clock", "hard_timeout", "record_shards",
     "sims", "worlds", "think_time", "search_procs", "match_clock",
     "search_device", "search_xw", "paced",
@@ -85,10 +86,8 @@ def section_defaults(section):
     out = {dest: arg_default(a) for dest, a in section_args(section).items()}
     if section == PLAY_SECTION:
         human, opponent = resolve_play_seats(out["player_a"], out["player_b"])
-        opponent = opponent or DEFAULT_PLAY_OPPONENT
-        out["player_a"], out["player_b"] = ((HUMAN_SPEC, opponent)
-                                            if human == "A"
-                                            else (opponent, HUMAN_SPEC))
+        out["player_a"], out["player_b"] = play_seat_specs(
+            human, opponent or DEFAULT_PLAY_OPPONENT)
     return out
 
 

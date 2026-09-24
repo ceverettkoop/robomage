@@ -35,7 +35,7 @@ import decode
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, action_zone, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
-                         _STEP_ABBR, stack_item_label)
+                         seat_label, _STEP_ABBR, stack_item_label)
 
 # The card-inspect ("hold Q") banner auto-hides this many seconds after the last
 # 'q'. A terminal has no key-up event, so "hold" is emulated: OS key auto-repeat
@@ -393,8 +393,9 @@ class GameApp(App):
         opp_seat = "A" if self._opp_is_a else "B"
         fmt = "Best of 3" if self._bo3 else "Single game"
         self.title = f"RoboMage · {fmt}"
-        self.sub_title = (f"You (Player {human_seat}, {self._human_deck})  vs  "
-                          f"{self._opp_label} (Player {opp_seat}, {self._opp_deck})")
+        self.sub_title = (f"You ({seat_label(human_seat)}, {self._human_deck})"
+                          f"  vs  {self._opp_label} ({seat_label(opp_seat)}, "
+                          f"{self._opp_deck})")
         self._log("[b]Game starting…[/b]  Click a card or pick a numbered action. "
                   "Keys: digits = pick, space = pass, p = autopass, "
                   "hold q or right-click a card = show oracle text, "

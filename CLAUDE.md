@@ -648,7 +648,11 @@ league runs, observing, launching play) — separate from the game boards below.
 back to `tui` with a printed notice when PySide6 is missing). Seats are `--player-a`/`--player-b`,
 exactly one of them the spec `human` (default: human on A vs `az:gen` on B; e.g.
 `--player-a az:gen --player-b human` to be on the draw); decks `--deck-a`/`--deck-b` (default
-`league/bug` vs `league/ur_delver`). Every flag works on every board that can honour it and
+`league/bug` vs `league/ur_delver`). Player A is on the play in game 1; `--on-the-play a|b|random`
+(default `a`; a Play-dialog field too) puts player B's side there instead by swapping the two
+(agent, deck) pairs onto the other engine seats before the session is built (`random` = a coin
+flip, seeded by `--seed` when given; `cli_spec.resolve_on_the_play`/`seat_play_sides`), so the
+board then labels that side Player A. Every flag works on every board that can honour it and
 errors on one that cannot (`--analysis*` are GUI-only; `--human-clock`/`--hard-timeout`/
 `--record-shards` need a GameDriver board, gui or tui; `--seed` works everywhere). The GameDriver
 boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a worker

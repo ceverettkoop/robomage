@@ -168,7 +168,9 @@ pane, and File ▸ New Session ▸ Play… opens the launcher dialog. **The dial
 command line as a form**: every field is a `play.py` flag with the same name and default —
 player A and player B (`--player-a`/`--player-b`: `Human (you)` on one seat, the opponent —
 `gen`, a scripted tier, or an `az:`/`azraw:`/`mcts:` search spec — on the other), their decks,
-`--format`, your own clock, shard recording, the search-opponent knobs (`--sims`, `--worlds`,
+which side is on the play in game 1 (`--on-the-play a|b|random`, default `a`: player A; `b`
+swaps the two sides so the board labels player B's side Player A; `random` flips a coin, seeded
+by `--seed` when given), `--format`, your own clock, shard recording, the search-opponent knobs (`--sims`, `--worlds`,
 `--think-time`, `--search-procs`, `--match-clock`, `--search-device`, `--search-xw`,
 `--paced`; shown for an `az:`/`mcts:` opponent) and the analysis window (`--analysis`,
 `--analysis-evaluator/-worlds/-procs/-cap/-device/-xw/-auto`). The shipped defaults are one
