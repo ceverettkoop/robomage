@@ -422,7 +422,7 @@ def run_script(*argv):
 def test_scripts():
     print("scripts reject --bo1/--bo3 with the hint and hide them from --help")
     cases = [
-        ("train/test_harness.py",), ("train/fuzz_campaign.py",),
+        ("train/test_harness.py",),
         ("train/train.py", "observe"), ("train/train.py", "league"),
         ("train/play.py",),
     ]
@@ -486,7 +486,7 @@ def test_scripts():
          "--c was removed; use --c-puct"),
         (("train/eval_search_gate.py", "--checkpoint", "gen", "--deck-a", "d",
           "--c", "2"), "--c was removed; use --c-puct"),
-        (("train/bench_engine.py", "--n-games", "3"),
+        (("train/train.py", "observe", "--n-games", "3"),
          "--n-games was removed; use --games"),
     ]
     for argv, needle in vocab_cases:
@@ -669,6 +669,31 @@ def test_play_boards():
               f"{out[-600:]}")
 
 
+def test_observe_fuzz_bench():
+    print("observe carries the fuzz/bench flags; the old scripts point at it")
+    sub = next(s for _, s in all_subs() if (s.tool, s.name) == ("train", "observe"))
+    args = build(sub).parse_args(
+        ["--player-a", "explore", "--player-b", "explore:patient", "--out", "f.txt",
+         "--max-decisions", "50", "--quiet", "--timing"])
+    check((args.player_a, args.player_b, args.out, args.max_decisions,
+           args.quiet, args.timing)
+          == ("explore", "explore:patient", "f.txt", 50, True, True),
+          f"observe fuzz/bench flags parse ({args})")
+    args = build(sub).parse_args([])
+    check((args.out, args.max_decisions, args.quiet, args.timing, args.seed)
+          == (None, None, False, False, 1),
+          f"observe fuzz/bench flag defaults ({args})")
+    rc, out = run_script("train/train.py", "observe", "--verbose", "--quiet")
+    check(rc == 2 and "--verbose and --quiet are mutually exclusive" in out,
+          f"observe --verbose --quiet should error (rc={rc}):\n{out[-600:]}")
+    for script, needle in (
+            ("train/fuzz_campaign.py", "use `train.py observe --player-a explore"),
+            ("train/bench_engine.py", "--quiet --timing")):
+        rc, out = run_script(script, "--games", "3")
+        check(rc == 1 and "was removed" in out and needle in out,
+              f"{script} should exit 1 naming observe (rc={rc}):\n{out[-600:]}")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -683,6 +708,7 @@ def main():
     test_launcher_mirror()
     test_search_knobs()
     test_scripts()
+    test_observe_fuzz_bench()
     test_play_boards()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")

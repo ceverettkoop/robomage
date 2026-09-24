@@ -23,10 +23,12 @@ Usage:
 """
 
 import argparse
+import contextlib
 import datetime
 import json
 import os
 import sys
+import time
 from collections import deque
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
@@ -2190,18 +2192,31 @@ def observe(binary_path: str,
             player_a: str = "scripted", player_b: str = "scripted",
             deck_a: str | None = None, deck_b: str | None = None,
             n_games: int = 1, bo3: bool = False,
-            seed: int | None = None, verbose: bool = False):
+            seed: int | None = None, verbose: bool = False,
+            quiet: bool = False, out: str | None = None,
+            max_decisions: int | None = None, timing: bool = False):
     """Observe one or more games between any pair of agent controllers.
 
     ``player_a``/``player_b`` are ``opponents.make_controller`` specs: "scripted"
-    (or a "scripted:*" variant), a model checkpoint (.zip path or shorthand),
-    an az:/azraw:/mcts: spec, or a "play:<specs>" semantic action script (see
-    ``action_spec``) — handy for driving one seat through a fixed line while
-    watching the other.  ``deck_a``/``deck_b`` set each side's deck.
+    (or a "scripted:*" variant), the "explore"/"explore:patient" coverage fuzzer,
+    a model checkpoint (.zip path or shorthand), an az:/azraw:/mcts: spec, or a
+    "play:<specs>" semantic action script (see ``action_spec``) — handy for
+    driving one seat through a fixed line while watching the other. Each seat
+    gets its own controller object (an explore seat keeps its own novelty set).
+    ``deck_a``/``deck_b`` set each side's deck; game i uses seed ``seed + i``.
     Every decision by each agent is logged; ``--verbose`` additionally dumps the
     full board state and the legal action menu at each decision (the same
-    transcript format the test harness prints).  With ``n_games > 1`` a per-game
-    result line and a final W/L/D summary are printed.
+    transcript format the test harness prints), ``--quiet`` prints none of it,
+    only a one-line W/L/D summary.
+    With ``n_games > 1`` a per-game result line and a final W/L/D summary are
+    printed.
+
+    ``out`` sends everything above to that file and prints one W/L/D summary
+    line to stdout instead (a fuzz campaign: explore on both seats, verbose,
+    one file per matchup for review; a draw is a finding and is also saved to
+    draw_<stamp>.txt). ``timing`` prints the engine throughput line after the
+    run; with ``quiet`` too the engine runs without narrative (the lean
+    benchmark path). ``max_decisions`` caps each game/match.
 
     This is a thin wrapper: the actual game-driving loop lives in
     ``runner.run_games`` (shared with the test harness).
@@ -2209,24 +2224,47 @@ def observe(binary_path: str,
     from opponents import make_controller, is_scripted_spec, PlayController
     import runner
 
+    player_a, player_b = player_a or "scripted", player_b or "scripted"
     # Observation is a fixed replay, so use deterministic model predictions.
-    ctrl_a = make_controller(player_a or "scripted",
-                             checkpoint_resolver=_resolve_model, deterministic=True)
-    ctrl_b = make_controller(player_b or "scripted",
-                             checkpoint_resolver=_resolve_model, deterministic=True)
+    ctrl_a = make_controller(player_a, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
+    ctrl_b = make_controller(player_b, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
     label_a, label_b = (
         "Play" if isinstance(ctrl, PlayController)
-        else "Scripted" if is_scripted_spec(spec or "scripted") else "Model"
+        else "Scripted" if is_scripted_spec(spec) else "Model"
         for ctrl, spec in ((ctrl_a, player_a), (ctrl_b, player_b)))
+    transcript = "quiet" if quiet else ("verbose" if verbose else "compact")
+    unit = f"{'match' if bo3 else 'game'}{'es' if bo3 else 's'}"
+    records = []
 
-    unit = "match" if bo3 else "game"
-    print(f"=== {label_a}/A ({deck_a or 'default'} deck) vs "
-          f"{label_b}/B ({deck_b or 'default'} deck) — "
-          f"{n_games} {unit}{'es' if bo3 else 's'} ===\n", flush=True)
+    def run():
+        if not quiet:
+            print(f"=== {label_a}/A [{player_a}] ({deck_a or 'default'} deck) vs "
+                  f"{label_b}/B [{player_b}] ({deck_b or 'default'} deck) — "
+                  f"{n_games} {unit} ===\n", flush=True)
+        return runner.run_games(
+            ctrl_a, ctrl_b, label_a=label_a, label_b=label_b,
+            binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
+            n_games=n_games, bo3=bo3, seed=seed, transcript=transcript,
+            max_decisions=max_decisions, on_game_end=records.append,
+            narrative=not (timing and quiet))
 
-    runner.run_games(ctrl_a, ctrl_b, label_a=label_a, label_b=label_b,
-                     binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                     n_games=n_games, bo3=bo3, seed=seed, verbose=verbose)
+    t0 = time.perf_counter()
+    if out:
+        with open(out, "w") as fh, contextlib.redirect_stdout(fh):
+            wins, losses, draws = run()
+    else:
+        wins, losses, draws = run()
+    wall = time.perf_counter() - t0
+
+    if out or quiet:
+        print(f"{deck_a} vs {deck_b or deck_a} [{player_a} vs {player_b}] "
+              f"{n_games} {unit}: {wins}W / {losses}L / {draws}D "
+              f"(completed {wins + losses + draws})"
+              f"{f' -> {out}' if out else ''}", flush=True)
+    if timing:
+        print(runner.format_timing(records, wall, bo3=bo3), flush=True)
 
 
 # _CAT_NAMES / _STEP_NAMES are imported from _enums at the top of this module.
@@ -2427,10 +2465,13 @@ if __name__ == "__main__":
                         n_envs_override=args.n_envs,
                         no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "observe":
+        if args.verbose and args.quiet:
+            parser.error("observe: --verbose and --quiet are mutually exclusive")
         observe(args.binary, player_a=args.player_a, player_b=args.player_b,
                 deck_a=args.deck_a, deck_b=args.deck_b,
                 n_games=args.games, bo3=is_bo3(args), seed=args.seed,
-                verbose=args.verbose)
+                verbose=args.verbose, quiet=args.quiet, out=args.out,
+                max_decisions=args.max_decisions, timing=args.timing)
     elif args.command == "baseline":
         import az_baseline
         az_baseline.run(args, python_sweep=baseline_sweep,

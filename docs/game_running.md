@@ -148,8 +148,8 @@ through to `run_games` (same kwargs the test harness uses).
 For custom instrumentation, drop one layer to `runner.drive_game(env, obs,
 ctrl_a, ctrl_b, on_query=..., on_action=..., max_decisions=...)` — the hooks
 receive a `Decision` context (obs, num_choices, priority seat, lazily-decoded
-menu). This is how `analysis.py` records traces and `bench_engine.py`
-benchmarks; there is no other decision loop in the tree.
+menu). This is how `analysis.py` records traces; there is no other decision
+loop in the tree.
 
 ## The tools and where they sit
 
@@ -158,8 +158,8 @@ Every Python tool that plays games takes the same match-format flag,
 error with a pointer to it). A game/match count is always `--games` (whole
 matches under bo3; each tool's help says what it counts), the PUCT constant is
 always `--c-puct`, and `--seed` defaults to **1** on every test, eval and
-inspection tool (observe, baseline, az-eval, analysis, the harness, fuzz,
-benches, az_inspect) but to a **random, printed** seed on long training runs
+inspection tool (observe, baseline, az-eval, analysis, the harness, benches,
+az_inspect) but to a **random, printed** seed on long training runs
 (az-selfplay, az-train, az, az-league).
 
 - **`test_harness.py`** — state sculpting (hands/zones/scenarios); a global
@@ -169,7 +169,19 @@ benches, az_inspect) but to a **random, printed** seed on long training runs
   want one).
 - **`train.py observe`** — per-seat agent specs (`--player-a/-b`, including
   `play:<specs>` scripts) and decks (`--deck-a/-b`), any matchup. bo3 by
-  default; `--format bo1` for single games.
+  default; `--format bo1` for single games; game i uses seed `--seed`+i.
+  Transcript level `--verbose` / default compact / `--quiet` (one-line W/L/D
+  summary only); `--out FILE` sends the transcript to FILE with the summary on
+  stdout; `--max-decisions N` caps each game. Two named forms:
+  - **fuzz campaign** — `--player-a explore --player-b explore` (or
+    `explore:patient`, the big-mana mode; each seat its own novelty state)
+    `--verbose --out FILE`: verbose transcript per matchup for bug review, any
+    draw is a finding (also saved to `draw_<stamp>.txt`).
+  - **throughput benchmark** — `--timing` prints games, decisions, wall,
+    games/s, decisions/s and ms/decision (plus `matches=` under bo3); with
+    `--quiet` the engine also runs without narrative, the lean path
+    (`--format bo1 --games 40 --max-decisions 4000 --quiet --timing`, scripted
+    vs scripted on the delver mirror by default).
 - **`train.py baseline`** — the AZ generalist (`az:gen` = `gen__azfinal.pt`)
   under the full league search budget (1028 sims × 8 worlds) vs scripted
   **HARD** over the whole league grid (every deck piloted vs every deck, mirrors
@@ -190,13 +202,10 @@ benches, az_inspect) but to a **random, printed** seed on long training runs
   with `--deck-a`/`--deck-b`. `--board text` = `run_games` with a
   `HumanController` seat (semantic input) vs `make_controller(opponent)`;
   `--board tui|gui` (default gui) = the GameDriver boards.
-- **`fuzz_campaign.py`** — explore-tier fuzz sweeps for one matchup;
-  `run_games` verbose transcripts to a file.
 - **`ci_check.py`** — the `make check` gate; league smoke + fuzz tiers run
   through `run_games`, replay corpus through the engine's `--replay`.
 - **`analysis.py`** — trace collection / counterfactual rollouts on
   `drive_game` hooks; replays via recorded engine seed + action log.
-- **`bench_engine.py`** — throughput benchmark on `drive_game`.
 
 The torch training loop (`train.py train/league/sweep`, the vectorized env
 wrappers `ModelVsScriptedEnv`/`SelfPlayEnv`/`FixedModelEnv`) is a separate

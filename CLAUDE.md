@@ -113,7 +113,8 @@ background** and make the live output inspectable by the user:
  vocab coverage, byte-identical replay corpus, deterministic league smoke, short fuzz). It
  must pass before pushing, and CI runs exactly it. See [`docs/ci.md`](docs/ci.md) for the
  tiers, how to reproduce a CI failure, and how to intentionally re-record the replay corpus /
- regenerate the codegen. `train/fuzz_campaign.py` remains the manual exploratory fuzz tool.
+ regenerate the codegen. `train.py observe --player-a explore --player-b explore --verbose
+ --out FILE` is the manual exploratory fuzz campaign (see observe below).
 -Don't use sed or cat - if possible don't pipe a bunch of commands together in a way that will require asking my permission, run build and test tasks as simply as possible
 -Non fatal errors are not acceptable
 -Draws are not acceptable
@@ -129,6 +130,14 @@ background** and make the live output inspectable by the user:
  `--verbose` for the full per-decision transcript (board state + action menu + narrative),
  and supply `--deck-a`/`--deck-b` to test cards/decks relevant to recently implemented features.
  **observe defaults to bo3 matches**; pass `--format bo1` for single games.
+ Game i uses seed `--seed`+i. `--out FILE` writes the transcript to FILE and prints a one-line
+ W/L/D summary; `--quiet` prints only that summary; `--max-decisions N` caps each game.
+ **Fuzz campaign** (one matchup, the `explore` coverage fuzzer on both seats, any draw is a
+ finding, also saved to `draw_<stamp>.txt`): `observe --player-a explore --player-b explore
+ --deck-a league/ur_delver --deck-b league/gw_maverick --games 100 --verbose --out out.txt`
+ (`explore:patient` = big-mana mode). **Engine throughput benchmark**: `observe --format bo1
+ --games 40 --max-decisions 4000 --quiet --timing` (games/s, decisions/s, ms/decision; with
+ `--quiet` the engine runs without narrative).
 -**Running games programmatically: `runner.run_match`.** `runner.run_match(agent_a, agent_b,
  deck_a=…, deck_b=…, games=, bo3=True, seed=1, transcript="compact|verbose|narrative|quiet",
  out=…)` — agent specs are scripted tiers ("scripted"/"hard", "easy", "random", "explore"),
@@ -727,7 +736,7 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
 ### Key files
 
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper. Lazily re-exports `scripted_action` for back-compat callers; the real rule-based agent logic lives in `train/scripted_agent.py`.
-- `train/scripted_agent.py` — the rule-based `ScriptedAgent`/`scripted_action` implementation (smart mulligan, combat simulation, evaluation-based targeting, deck-specific combo lines); imported by `opponents.py`, `train.py`, `bench_engine.py`, `analysis.py`, and re-exported from `env.py`
+- `train/scripted_agent.py` — the rule-based `ScriptedAgent`/`scripted_action` implementation (smart mulligan, combat simulation, evaluation-based targeting, deck-specific combo lines); imported by `opponents.py`, `train.py`, `analysis.py`, and re-exported from `env.py`
 - `train/runner.py` — THE game-running module: `drive_game` (the single decision loop, with per-decision hooks), `run_games` (env-per-game orchestration + transcripts), `run_match` (spec-based front door for scripting: agents/decks/bo3/seed/output as parameters). See `docs/game_running.md`.
 - `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools, and THE
   model-spec resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator`,
@@ -810,11 +819,12 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   trainable 32-dim embedding carries only the behavioral residual. DFC-face aware and token-band
   aware (token rows parse `bin/resources/tokenscripts/`).
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
-- `train/fuzz_campaign.py` — batch fuzz driver: runs N scripted games for ONE matchup (both seats
-  driven by the `explore` fuzzer), dumping the verbose transcript to a file for bug review. Modes
-  `--mode explore` (default) / `explore:patient` (big-mana). Example: `fuzz_campaign.py --deck-a
-  league/ur_delver --deck-b league/gw_maverick --mode explore --games 100 --seed 1 --out out.txt`
-  (decks relative to `bin/resources/decks/`; W/L/D to stdout, any draw is a finding).
+- `train.py observe` as the batch fuzz driver: N games of ONE matchup with both seats driven
+  by the `explore` fuzzer (`--player-a/-b explore`, or `explore:patient` for big-mana), the
+  verbose transcript dumped to a file for bug review. Example: `train.py observe --player-a
+  explore --player-b explore --deck-a league/ur_delver --deck-b league/gw_maverick --games 100
+  --seed 1 --verbose --out out.txt` (decks relative to `bin/resources/decks/`; W/L/D to stdout,
+  any draw is a finding).
 - `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, a `play:<specs>` agent spec such as `observe --player-a "play:…"`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `train/card_props.py` — auto-generated frozen card-property matrix (do not edit manually)

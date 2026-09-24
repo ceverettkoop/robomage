@@ -2,7 +2,7 @@
 """Standardized engine test gate — the single command CI and developers run.
 
 Replaces the disparate ad-hoc harness invocations (test_harness scenarios,
-fuzz_campaign transcript dumps, replay_diff, engine-sanity-check greps) with one
+observe fuzz transcript dumps, replay_diff, engine-sanity-check greps) with one
 entry point that runs a fixed set of tiers and exits nonzero on any finding.
 ``make check`` wraps this; CI runs the same command.
 

@@ -140,5 +140,6 @@ review and commit the changed files. Prefer it over the individual steps below
   checkout`, which bumps their mtimes past the C++ inputs, so the incremental
   `pygen` file targets can report "nothing to be done" on stale content.
 
-`train/fuzz_campaign.py` remains the manual, exploratory fuzz-campaign tool (dumps
-a transcript for review; always exits 0). `ci_check.py` is the gating wrapper.
+`train.py observe --player-a explore --player-b explore --verbose --out FILE` is
+the manual, exploratory fuzz-campaign tool (dumps a transcript for review;
+always exits 0). `ci_check.py` is the gating wrapper.

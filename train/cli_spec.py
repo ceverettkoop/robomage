@@ -1577,10 +1577,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("observe",
-        "Observe game(s) between any pair of {scripted | model} controllers "
-        "(replaces the old watch/diag/observe commands)", items=[
+        "Observe game(s) between any pair of {scripted | model} controllers; "
+        "also the fuzz campaign (--player-a/-b explore --verbose --out FILE) "
+        "and the engine throughput benchmark (--quiet --timing)", items=[
         Arg("--player-a", "str", default="scripted", suggest="agent",
-            help="Player A controller: 'scripted' (or 'scripted:*'), 'gen', a model "
+            help="Player A controller: 'scripted' (or 'scripted:*'), the "
+                 "'explore' / 'explore:patient' coverage fuzzer, 'gen', a model "
                  ".zip path, az:gen/azraw:gen/mcts:gen, or a semantic action "
                  "script \"play:cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" "
                  "(action_spec.py grammar; passes / first choice once it runs "
@@ -1596,6 +1598,22 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Base RNG seed (game N uses seed+N; default: 1)"),
         Arg("--verbose", "flag",
             help="Dump full board state (battlefield, hands, mana, stack, graveyards) at each decision"),
+        Arg("--quiet", "flag",
+            help="Print no transcript, only a one-line W/L/D summary (a draw "
+                 "is still announced and its log saved to draw_<stamp>.txt)"),
+        Arg("--out", "str", default=None, metavar="FILE",
+            help="Write the transcript (per-game results and W/L/D summary "
+                 "included) to FILE and print a one-line W/L/D summary to "
+                 "stdout — the fuzz-campaign form: --player-a explore "
+                 "--player-b explore --verbose --out FILE"),
+        Arg("--max-decisions", "int", default=None, metavar="N",
+            help="Stop each game/match after N decisions (reported as "
+                 "incomplete; default: run to completion)"),
+        Arg("--timing", "flag",
+            help="Print engine throughput after the run (games, decisions, "
+                 "wall time, games/s, decisions/s, ms/decision). With --quiet "
+                 "the engine also runs without narrative — the lean "
+                 "benchmark path"),
         *common_args(),
     ]),
     Sub("baseline",
