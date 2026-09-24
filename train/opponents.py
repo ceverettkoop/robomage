@@ -173,7 +173,8 @@ def resolve_checkpoint(path: Optional[str],
       - the reserved stem ``'gen'`` → the newest ``gen`` snapshot
         (``gen__final.zip``, else the newest ``gen__v*.zip``; the ``gen__final``
         path is returned even if it does not exist yet so callers can test it)
-      - an explicit ``<name>.zip`` / ``<name>_final.zip`` sitting in the checkpoint dir
+      - a file name, or an explicit ``<name>.zip`` / ``<name>_final.zip``,
+        sitting in the checkpoint dir
 
     A bare token that is none of the above used to be a per-deck shorthand
     (``delver`` → ``delver__final.zip``). That naming is gone: the model is the
@@ -186,16 +187,16 @@ def resolve_checkpoint(path: Optional[str],
         return path
     if path.strip().lower() == GEN_STEM:
         return latest_gen_snapshot(checkpoint_dir) or gen_final_path(checkpoint_dir)
-    for candidate in (os.path.join(checkpoint_dir, f"{path}.zip"),
+    for candidate in (os.path.join(checkpoint_dir, path),
+                      os.path.join(checkpoint_dir, f"{path}.zip"),
                       os.path.join(checkpoint_dir, f"{path}_final.zip")):
-        if os.path.exists(candidate):
+        if os.path.isfile(candidate):
             return candidate
     raise ValueError(
         f"cannot resolve model spec {path!r}. Models are now ONE generalist with "
         f"stem '{GEN_STEM}' — pass '{GEN_STEM}' (or an explicit .zip path) as the "
-        f"model, and give the deck it pilots as a SEPARATE parameter (baseline's "
-        f"--deck, observe's --deck/--opponent, analysis's --deck-a/--deck-b, "
-        f"play's --model-deck).")
+        f"model, and give the deck it pilots as a SEPARATE parameter (the "
+        f"seat's --deck-a/--deck-b).")
 
 # Pool token standing for a random generalist snapshot (the opponent deck it
 # pilots is chosen independently by the pool/episode, no longer by the model's
@@ -1078,15 +1079,68 @@ class SearchController:
         return chosen
 
 
-class ActionListController:
+class _ScriptedLine:
+    """Base for the global both-seat scripts (``--actions`` / ``--play``).
+
+    A script may be installed as BOTH seats' controller; every decision it does
+    not make itself — once it has run out, or (``PlayController``) a mandatory
+    choice for the seat its next keyed spec is not for — goes to the priority
+    seat's *player* (``players=(ctrl_a, ctrl_b)``, default auto-pass: action 0,
+    pass / first choice). The runner's duck-typed per-game hooks are forwarded
+    to the players so any controller spec can sit behind a script.
+    """
+
+    def __init__(self, players=None):
+        if players is None:
+            auto = AutoPassController()
+            players = (auto, auto)
+        self._players = tuple(players)
+
+    def _player_for(self, obs):
+        return self._players[0 if obs[_SELF_IS_A_IDX] > 0.5 else 1]
+
+    def _distinct_players(self):
+        seen = []
+        for p in self._players:
+            if not any(p is q for q in seen):
+                seen.append(p)
+        return seen
+
+    def _forward(self, hook, *args):
+        for p in self._distinct_players():
+            fn = getattr(p, hook, None)
+            if fn is not None:
+                fn(*args)
+
+    @property
+    def wants_decoded(self) -> bool:
+        return any(getattr(p, "wants_decoded", False) for p in self._players)
+
+    @property
+    def wants_search_env(self) -> bool:
+        return any(getattr(p, "wants_search_env", False) for p in self._players)
+
+    def set_deck_names(self, deck_a, deck_b):
+        self._forward("set_deck_names", deck_a, deck_b)
+
+    def bind_env(self, env):
+        self._forward("bind_env", env)
+
+    def new_game(self):
+        self._forward("new_game")
+
+
+class ActionListController(_ScriptedLine):
     """Plays a fixed sequence of action indices (test harness ``--actions``).
 
     Consumes one index per decision regardless of which side has priority (the
-    sequence is global, matching the harness convention); once exhausted it
-    falls back to action 0 (pass / first choice).
+    sequence is global, matching the harness convention); once exhausted the
+    priority seat's player decides (default: action 0, pass / first choice).
     """
 
-    def __init__(self, actions: Sequence[int], label: str = "Actions"):
+    def __init__(self, actions: Sequence[int], label: str = "Actions",
+                 players=None):
+        super().__init__(players)
         self._actions = [int(a) for a in actions]
         self._i = 0
         self.label = label
@@ -1096,18 +1150,21 @@ class ActionListController:
             a = self._actions[self._i]
             self._i += 1
             return a
-        return 0
+        return self._player_for(obs).choose(obs, num_choices,
+                                            action_masks=action_masks,
+                                            decoded_actions=decoded_actions)
 
 
-class PlayController:
+class PlayController(_ScriptedLine):
     """Plays a fixed sequence of semantic action specs (``--play``).
 
     Each spec (``cast:Lightning Bolt``, ``target:Grizzly Bears@opp``, ``pass``,
     ``#7`` …) is resolved against *this* decision's decoded menu via
     :mod:`action_spec`, so the sequence is robust to dynamic index reordering.
-    The sequence is global (one spec consumed per decision); once exhausted it
-    falls back to action ``0`` (pass / first choice — always legal) so the game
-    keeps advancing to its conclusion or the decision cap.
+    The sequence is global (one spec consumed per decision); once exhausted the
+    priority seat's player decides (``players``; default action ``0``, pass /
+    first choice — always legal) so the game keeps advancing to its conclusion
+    or the decision cap.
 
     **Seat keys.** When the SAME controller drives both seats (the test harness's
     dual-seat ``--play`` mode), sequencing the priority hand-offs between the two
@@ -1116,9 +1173,14 @@ class PlayController:
     spec this controller checks the seat that currently holds priority
     (``obs[_SELF_IS_A_IDX]`` — true = Player A): if the next spec is keyed to the *other*
     seat, the current priority holder passes (the spec is **not** consumed) and
-    play advances until the keyed seat is on the clock. Unkeyed specs are applied
-    to whoever has priority (the legacy behaviour), so existing scripts are
-    unaffected.
+    play advances until the keyed seat is on the clock. When that holder faces a
+    mandatory choice instead (no pass on the menu, e.g. its cleanup discard), the
+    choice is not the script's to make and goes to the holder's player. Unkeyed
+    specs are applied to whoever has priority.
+
+    The engine never asks a seat whose only legal action is a pass, so a keyed
+    ``pass`` is only needed where that seat could do something else; one written
+    for a skipped window waits for the seat's next real decision.
 
     A keyed spec also **passes the keyed seat forward through its own priority
     windows** until the action becomes legal: e.g. ``A:attack:Voice`` given while A
@@ -1145,7 +1207,8 @@ class PlayController:
     # take) fails loudly instead of silently passing the rest of the game away.
     _MAX_WAIT = 200
 
-    def __init__(self, specs, label: str = "Play"):
+    def __init__(self, specs, label: str = "Play", players=None):
+        super().__init__(players)
         import action_spec
         self._action_spec = action_spec
         self._specs = action_spec.parse_spec_list(specs)
@@ -1154,24 +1217,36 @@ class PlayController:
         self.label = label
         self.resolved: list[int] = []
 
+    def _player_choice(self, obs, num_choices, action_masks, decoded_actions) -> int:
+        """A decision the script does not make: the priority seat's player's."""
+        idx = self._player_for(obs).choose(obs, num_choices,
+                                           action_masks=action_masks,
+                                           decoded_actions=decoded_actions)
+        self.resolved.append(idx)
+        return idx
+
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         if decoded_actions is None:
             raise RuntimeError("PlayController requires decoded_actions; drive it "
                                "through runner.run_games (which supplies the menu).")
-        # Specs exhausted: auto-advance with action 0 (always legal), like
-        # AutoPassController, so the game runs to its end / the decision cap.
+        # Specs exhausted: the seats' players take over (default action 0),
+        # so the game runs to its end / the decision cap.
         if self._i >= len(self._specs):
-            self.resolved.append(0)
-            return 0
+            return self._player_choice(obs, num_choices, action_masks, decoded_actions)
         spec = self._specs[self._i]
         # Seat-keyed spec for the seat that is NOT on the clock: the current
         # priority holder passes (spec left for later) so we advance to the keyed
-        # seat's decision instead of mis-applying its action to this player.
+        # seat's decision instead of mis-applying its action to this player. A
+        # holder with no pass on the menu faces a mandatory choice of its own,
+        # which its player makes.
         seat = self._action_spec.spec_seat(spec)
         if seat is not None and seat != ("A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"):
-            idx = self._action_spec.resolve_to_index("pass", decoded_actions)
-            self.resolved.append(idx)
-            return idx
+            pass_r = self._action_spec.resolve("pass", decoded_actions)
+            if not pass_r.ok:
+                return self._player_choice(obs, num_choices, action_masks,
+                                           decoded_actions)
+            self.resolved.append(pass_r.index)
+            return pass_r.index
 
         r = self._action_spec.resolve(spec, decoded_actions)
         if r.ok:
@@ -1194,25 +1269,11 @@ class PlayController:
                 self.resolved.append(pass_r.index)
                 return pass_r.index
 
+        if r.kind == "no_match" and self._action_spec.parse_spec(spec).verb == "pass":
+            r.reason += (" — this is a mandatory choice, not a priority window. The "
+                         "engine never asks a seat whose only legal action is a pass, "
+                         "so a pass written for such a window is not needed (drop it)")
         raise self._action_spec.PlayResolveError(r, decoded_actions)
-
-
-class InteractiveController:
-    """Prompts stdin for an action index each decision (test harness ``--interactive``)."""
-
-    def __init__(self, label: str = "Human"):
-        self.label = label
-
-    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
-        while True:
-            try:
-                raw = input("  >> Enter action index: ").strip()
-                c = int(raw)
-                if 0 <= c < num_choices:
-                    return c
-                print(f"     Invalid: must be 0-{num_choices - 1}")
-            except (ValueError, EOFError):
-                print("     Enter a valid integer")
 
 
 class AutoPassController:
@@ -1653,16 +1714,17 @@ def load_az_evaluator(base: str, *, ppo_resolver=None, on_warm_start=None,
 
     ``ppo_resolver`` maps a PPO spec to a checkpoint path for the warm-start
     rung; it defaults to :func:`resolve_checkpoint` (strict — raises on a bare
-    deck shorthand). analysis.py injects its own LENIENT ``_resolve_model_path``
-    instead, which is why this is a parameter rather than a hardcoded call.
+    deck shorthand). It is a parameter so ``make_controller``'s
+    ``checkpoint_resolver`` reaches the warm-start rung too.
     ``on_warm_start(base, ppo_path)`` is a notification hook fired just before
     the warm-start (the sites that want a "no AZ checkpoint; warm-starting…"
     line pass a printer); this function itself never prints.
 
-    Shared by opponents' ``az:``/``azraw:`` factories, analysis.py
-    (``_load_az_analysis_model`` / ``_build_search_evaluator``),
-    ``analysis_session.load_analysis_evaluator`` and
-    ``shard_probes.load_probe_net``. NOT used by the trainer-side net
+    Shared by opponents' ``az:``/``azraw:`` factories and every loader of the
+    model-spec resolver (:func:`load_spec_evaluator`, :func:`load_spec_net`,
+    and through them analysis.py, the analysis window, the browsers' probes
+    and tree rebuilds); ``az_inspect.load_net`` follows the same resolution
+    via :func:`resolve_model_checkpoint`. NOT used by the trainer-side net
     resolvers (``az_selfplay.resolve_source``/``_build_net``,
     ``az_train._init_net``) — see the cross-reference comments there.
 
@@ -1693,6 +1755,191 @@ def load_az_evaluator(base: str, *, ppo_resolver=None, on_warm_start=None,
 
 # Back-compat alias for the pre-promotion private name.
 _load_az_evaluator = load_az_evaluator
+
+
+# ── The model-spec resolver ──────────────────────────────────────────────────
+#
+# ONE rule for which NET a model spec names, shared by every consumer that
+# looks at a net without playing a seat through make_controller: the search
+# evaluator (analysis window, replay search, tree rebuild), the value model behind V(s) plots, and the AZNet the net probes
+# read. The rule: a spec names the net its make_controller SEAT plays with, and
+# every view of that spec reads that one checkpoint.
+#
+#   spec                          kind      net
+#   ----------------------------  --------  ---------------------------------
+#   uniform / mcts:uniform        uniform   none (UniformEvaluator)
+#   mcts:<base> / bare <base>     ppo       the PPO checkpoint
+#                                           resolve_checkpoint(<base>)
+#   az:<base> / azraw:<base>      az        the load_az_evaluator ladder (AZ
+#                                           checkpoint, else PPO warm-start)
+#   any <base> ending in .pt      az        that AZ checkpoint
+#   scripted / human / play: ...  agent     none (not a model)
+#
+# ``?knob`` queries are dropped (strip_spec_knobs); prefixes match case-
+# insensitively; an empty base means "gen". So an ``mcts:`` spec is a PPO net
+# everywhere — its search evaluator is the PPOEvaluator the seat plays with,
+# its V(s) is that PPO critic, and the probes read the SAME weights through
+# az_net.from_ppo (the AZNet transcription of the PPO checkpoint, NOT the
+# newest AZ checkpoint). Within one browser/session, V(s), probes and search
+# therefore always describe the same checkpoint.
+
+MODEL_KIND_UNIFORM = "uniform"
+MODEL_KIND_PPO = "ppo"
+MODEL_KIND_AZ = "az"
+MODEL_KIND_AGENT = "agent"
+
+_AGENT_PREFIXES = ("play:", "actions:")
+_AGENT_NAMES = frozenset({"auto", "autopass", "human"})
+
+
+def strip_spec_knobs(spec: str) -> str:
+    """A controller spec with its ``?k=v&...`` knob query removed (THE knob
+    stripper — :func:`_parse_spec_query` splits the same way)."""
+    return _parse_spec_query(spec or "")[0]
+
+
+@dataclass(frozen=True)
+class ModelSpec:
+    """A parsed model spec (see the resolver table above).
+
+    ``prefix`` is the lower-cased wrapper ("mcts", "az", "azraw" or ""),
+    ``base`` the knob-free checkpoint token, ``kind`` which net it names, and
+    ``search`` whether its seat plays by search (mcts:/az:)."""
+
+    spec: str
+    prefix: str
+    base: str
+    kind: str
+
+    @property
+    def search(self) -> bool:
+        return self.prefix in ("mcts", "az")
+
+    @property
+    def has_net(self) -> bool:
+        return self.kind in (MODEL_KIND_PPO, MODEL_KIND_AZ)
+
+    @property
+    def evaluator_spec(self) -> str:
+        """The canonical knob-free spec naming this net as a search evaluator:
+        ``uniform``, ``mcts:<base>`` (PPO) or ``az:<base>`` (AZ)."""
+        if self.kind == MODEL_KIND_UNIFORM:
+            return "uniform"
+        if self.kind == MODEL_KIND_PPO:
+            return f"mcts:{self.base}"
+        if self.kind == MODEL_KIND_AZ:
+            return f"az:{self.base}"
+        return self.base
+
+    def with_base(self, base: str) -> "ModelSpec":
+        """The same kind of net, loaded from ``base`` (e.g. a resolved path)."""
+        from dataclasses import replace
+        return replace(self, base=base)
+
+
+def parse_model_spec(spec: Optional[str], default: str = GEN_STEM) -> ModelSpec:
+    """Parse a spec once into a :class:`ModelSpec` (torch-free; no file I/O).
+
+    ``default`` is the base an empty spec / empty base stands for."""
+    raw = (spec or "").strip()
+    stripped = strip_spec_knobs(raw)
+    low = stripped.lower()
+    if is_scripted_spec(stripped) or low in _AGENT_NAMES \
+            or raw.lower().startswith(_AGENT_PREFIXES):
+        return ModelSpec(spec=raw, prefix="", base=raw, kind=MODEL_KIND_AGENT)
+    prefix, base = "", stripped
+    for pfx in ("mcts", "azraw", "az"):
+        if low.startswith(pfx + ":"):
+            prefix, base = pfx, stripped[len(pfx) + 1:].strip()
+            break
+    base = base or default
+    if base.lower() == "uniform":
+        kind = MODEL_KIND_UNIFORM
+    elif prefix in ("az", "azraw") or base.lower().endswith(".pt"):
+        kind = MODEL_KIND_AZ
+    else:
+        kind = MODEL_KIND_PPO
+    return ModelSpec(spec=raw, prefix=prefix, base=base, kind=kind)
+
+
+def _require_net(ms: ModelSpec, what: str) -> None:
+    if not ms.has_net:
+        raise ValueError(f"model spec {ms.spec!r} names no net — cannot load "
+                         f"{what} (want gen, a checkpoint path, or an "
+                         f"mcts:/az:/azraw: spec)")
+
+
+def resolve_model_checkpoint(spec, *, on_warm_start=None) -> Optional[str]:
+    """The checkpoint path a spec's net loads from (None for uniform/agent).
+
+    PPO: :func:`resolve_checkpoint`. AZ: the AZ checkpoint when one exists,
+    else the PPO checkpoint the warm-start reads. Imports az_net (torch) only
+    for an AZ spec."""
+    ms = spec if isinstance(spec, ModelSpec) else parse_model_spec(spec)
+    if ms.kind == MODEL_KIND_PPO:
+        return resolve_checkpoint(ms.base)
+    if ms.kind != MODEL_KIND_AZ:
+        return None
+    from az_net import resolve_az_checkpoint
+    az = resolve_az_checkpoint(ms.base)
+    if az:
+        return az
+    if ms.base.endswith(".pt"):
+        return ms.base
+    ppo = resolve_checkpoint(ms.base)
+    if on_warm_start is not None:
+        on_warm_start(ms.base, ppo)
+    return ppo
+
+
+def load_spec_evaluator(spec, *, device: Optional[str] = None,
+                        on_warm_start=None, default: str = GEN_STEM):
+    """``(evaluator, label)`` — the search evaluator a spec names:
+    UniformEvaluator, a PPOEvaluator over the PPO checkpoint (``vscale=`` knob
+    honoured, like the mcts: seat), or the AZ ladder's AZEvaluator (``device``
+    applies to the AZ rung only)."""
+    ms = spec if isinstance(spec, ModelSpec) else parse_model_spec(spec, default)
+    if ms.kind == MODEL_KIND_UNIFORM:
+        from mcts import UniformEvaluator
+        return UniformEvaluator(), "uniform"
+    _require_net(ms, "a search evaluator")
+    if ms.kind == MODEL_KIND_PPO:
+        from mcts import PPOEvaluator
+        _base, params = _parse_spec_query(ms.spec)
+        v_scale = _spec_knob(params, "vscale", 1.0, float, ms.spec)
+        model = _load_model(resolve_checkpoint(ms.base))
+        return PPOEvaluator(model, v_scale=v_scale), f"mcts:{ms.base}"
+    evaluator, resolved = load_az_evaluator(ms.base, device=device,
+                                            on_warm_start=on_warm_start)
+    return evaluator, f"az:{resolved}"
+
+
+def load_spec_net(spec, *, on_warm_start=None, default: str = GEN_STEM):
+    """``(AZNet, label)`` — the spec's net in AZNet form, for the net probes:
+    the AZ ladder's net for an AZ spec, ``az_net.from_ppo`` of the PPO
+    checkpoint for a PPO spec (the same weights the mcts:/bare seat plays)."""
+    ms = spec if isinstance(spec, ModelSpec) else parse_model_spec(spec, default)
+    _require_net(ms, "a net")
+    if ms.kind == MODEL_KIND_PPO:
+        from az_net import from_ppo
+        path = resolve_checkpoint(ms.base)
+        return from_ppo(path), f"{path} (PPO, via from_ppo)"
+    evaluator, resolved = load_az_evaluator(ms.base,
+                                            on_warm_start=on_warm_start)
+    return evaluator._net, str(resolved)
+
+
+def load_spec_value_model(spec, *, on_warm_start=None, default: str = GEN_STEM):
+    """``(model, kind)`` for V(s): the MaskablePPO checkpoint (its own critic)
+    for a PPO spec, or the AZNet (``kind == 'az'``) for an AZ spec. Callers
+    that need one ``policy.predict_values`` surface wrap the AZNet (see
+    analysis.load_inspection_model)."""
+    ms = spec if isinstance(spec, ModelSpec) else parse_model_spec(spec, default)
+    _require_net(ms, "a value model")
+    if ms.kind == MODEL_KIND_PPO:
+        return _load_model(resolve_checkpoint(ms.base)), MODEL_KIND_PPO
+    net, _label = load_spec_net(ms, on_warm_start=on_warm_start)
+    return net, MODEL_KIND_AZ
 
 
 def _make_az_controller(spec: str, *, search: bool, checkpoint_resolver=None):

@@ -10,6 +10,7 @@ or change a flag in one place and both stay in sync.
 """
 
 import os
+import random
 from dataclasses import dataclass, field, replace
 
 from archetypes import ARCHETYPES
@@ -109,12 +110,12 @@ DEFAULT_SB_LOSS_COEF = 1.0
 # ── AZ pipeline defaults ────────────────────────────────────────────────────
 # One home for every tunable the AZ subcommands share, same one-home rule as
 # the sb_* knobs above: the az-selfplay / az-train / az-eval / az / az-league
-# CLI args AND the az_train.py / az_selfplay.py function + argparse defaults
-# MUST reference these constants, not literals — argparse always supplies the
-# CLI default, so a drifted literal silently overrides the constant.
+# CLI args AND the az_train.py / az_selfplay.py function defaults MUST
+# reference these constants, not literals — argparse always supplies the CLI
+# default, so a drifted literal silently overrides the constant.
 
 # Self-play generation.
-DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and standalone az-selfplay)
+DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and az-selfplay)
 DEFAULT_AZ_SIMS = 1028       # in-game PUCT sims, TOTAL across worlds (the 8_20 run budget)
 DEFAULT_AZ_WORLDS = 8        # determinized worlds per search (the 8_20 run budget)
 # Playout-cap randomization (KataGo-style), the anti-memorization lever: each
@@ -254,6 +255,7 @@ DEFAULT_AZ_EVAL_WORLDS = DEFAULT_AZ_WORLDS
 # actor with 48 legs in flight (the engines are CPU-bound; more clients only
 # fill GPU batches, they do not add throughput).
 DEFAULT_BASELINE_MODEL = "az:gen"
+DEFAULT_BASELINE_OPPONENT = "scripted:hard"
 DEFAULT_BASELINE_GAMES = 10
 DEFAULT_BASELINE_WORKERS = 48
 DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55   # SPRT's H1; H0 is its mirror, 0.45
@@ -470,6 +472,464 @@ def shard_tag(spec):
     return f".shard{parsed[0]}of{parsed[1]}"
 
 
+# ── Match format (--format bo1|bo3) ──────────────────────────────────────────
+
+FORMAT_BO1 = "bo1"
+FORMAT_BO3 = "bo3"
+FORMAT_CHOICES = (FORMAT_BO3, FORMAT_BO1)
+DEFAULT_FORMAT = FORMAT_BO3
+
+
+def is_bo3(args) -> bool:
+    """True if a parsed namespace (or opts dict) selects best-of-three.
+
+    Reads the ``format`` dest every ``--format`` flag writes; a namespace that
+    carries none (a hand-built one) gets the default format."""
+    fmt = (args.get("format") if isinstance(args, dict)
+           else getattr(args, "format", None))
+    return (fmt or DEFAULT_FORMAT) == FORMAT_BO3
+
+
+def format_name(bo3: bool) -> str:
+    """The ``--format`` value for a bo3 boolean (the inverse of ``is_bo3``)."""
+    return FORMAT_BO3 if bo3 else FORMAT_BO1
+
+
+# ── Interactive play (play.py and the GUI launcher) ──────────────────────────
+#
+# play.py's flags and the GUI's New Play Session dialog share these defaults
+# (the dialog's fields are the PLAY_TOOL flags, keyed by dest; see
+# launcher_config.py). The shipped matchup is the release's recommended one: a
+# league deck on both seats against the AZ net searching on a 25-minute bo3
+# match clock, with the analysis window open on the GUI board.
+
+BOARD_GUI = "gui"
+BOARD_TUI = "tui"
+BOARD_TEXT = "text"
+BOARD_CHOICES = (BOARD_GUI, BOARD_TUI, BOARD_TEXT)
+DEFAULT_BOARD = BOARD_GUI
+DEFAULT_PLAY_OPPONENT = "az:gen"
+DEFAULT_PLAY_DECK_A = "league/bug"
+DEFAULT_PLAY_DECK_B = "league/ur_delver"
+# --on-the-play: which side (agent + deck) is on the play in game 1. The engine
+# always starts player A, so 'b' swaps the two sides onto the other seats.
+ON_THE_PLAY_CHOICES = ("a", "b", "random")
+DEFAULT_ON_THE_PLAY = "a"
+DEFAULT_PLAY_WORLDS = 8
+DEFAULT_PLAY_MATCH_CLOCK = 1500.0       # 25 min of thinking for the whole bo3
+# The analysis window (GUI board only): --analysis/--no-analysis defaults to
+# None = on for the GUI board (the other boards have no analysis window).
+DEFAULT_ANALYSIS_EVALUATOR = "az:gen"
+DEFAULT_ANALYSIS_WORLDS = 4
+DEFAULT_ANALYSIS_CAP = 2000
+# Evaluator torch devices a search / analysis net may run on (unset = the
+# ROBOMAGE_EVAL_DEVICE environment variable, else cpu).
+EVAL_DEVICE_CHOICES = ("cpu", "cuda")
+# bench-actor's --player-b value for pure self-play (the net on both seats).
+BENCH_PLAYER_SELF = "self"
+# The analysis browser's (analysis.py browse / the GUI's New Analysis Session)
+# default inspected deck.
+DEFAULT_BROWSE_DECK_A = "league/ur_delver"
+
+
+def resolve_board(board):
+    """The board to run: ``board``, except gui falls back to tui (with a
+    printed notice) when PySide6 is not installed. Shared by play.py and
+    analysis.py browse."""
+    if board != BOARD_GUI:
+        return board
+    try:
+        import PySide6  # noqa: F401
+    except ImportError:
+        print("PySide6 not installed — falling back to the TUI board "
+              "(pip install -r train/requirements-gui.txt for the GUI).",
+              flush=True)
+        return BOARD_TUI
+    return BOARD_GUI
+
+
+# ── Analysis browser source (analysis.py browse --source) ────────────────────
+#
+# The browser's one input selects what it pages through:
+#   simulate (the default)   simulate --games games of --player-a (the
+#                            inspected model) vs --player-b on --deck-a/-b
+#   a directory              recorded shards (shard_*.npz — AZ self-play, a GUI
+#                            recording): --player-a is the V(s) net, --seat
+#                            the viewpoint, --no-net keeps the recorded z
+#   a .rmtrace file          a saved analysis session: --player-a is the net
+#                            for the replay search / probes
+# Each browse flag applies to the source kinds in BROWSE_SOURCE_DESTS; setting
+# one on another kind is an error (browse_inapplicable_dests).
+
+BROWSE_SOURCE_SIMULATE = "simulate"
+BROWSE_KIND_SIMULATE = "simulate"
+BROWSE_KIND_SHARDS = "shards"
+BROWSE_KIND_TRACE = "trace"
+BROWSE_BOARD_CHOICES = (BOARD_TUI, BOARD_GUI)
+DEFAULT_BROWSE_BOARD = BOARD_TUI
+TRACE_EXT = ".rmtrace"               # a saved analysis session (gui_session_io)
+SHARD_GLOB = "shard_*.npz"
+
+_SIM_ONLY = (BROWSE_KIND_SIMULATE,)
+BROWSE_SOURCE_DESTS = {
+    "player_b": _SIM_ONLY, "deck_a": _SIM_ONLY, "deck_b": _SIM_ONLY,
+    "seed": _SIM_ONLY, "format": _SIM_ONLY,
+    "sims": _SIM_ONLY, "worlds": _SIM_ONLY, "think_time": _SIM_ONLY,
+    "search_procs": _SIM_ONLY, "match_clock": _SIM_ONLY,
+    "search_device": _SIM_ONLY, "search_xw": _SIM_ONLY,
+    "games": (BROWSE_KIND_SIMULATE, BROWSE_KIND_SHARDS),
+    "seat": (BROWSE_KIND_SHARDS,), "no_net": (BROWSE_KIND_SHARDS,),
+}
+
+
+def browse_source_kind(source):
+    """``simulate`` | ``shards`` | ``trace`` for a browse ``--source`` value
+    (None = simulate). Raises ValueError naming what a source may be."""
+    import glob
+    if source in (None, "", BROWSE_SOURCE_SIMULATE):
+        return BROWSE_KIND_SIMULATE
+    if source.lower().endswith(TRACE_EXT):
+        if not os.path.isfile(source):
+            raise ValueError(f"--source {source}: no such {TRACE_EXT} file")
+        return BROWSE_KIND_TRACE
+    if os.path.isdir(source):
+        if not glob.glob(os.path.join(source, SHARD_GLOB)):
+            raise ValueError(f"--source {source}: the directory holds no "
+                             f"{SHARD_GLOB} files")
+        return BROWSE_KIND_SHARDS
+    raise ValueError(f"--source {source!r} is not '{BROWSE_SOURCE_SIMULATE}', "
+                     f"a shard/recording directory, or a {TRACE_EXT} file "
+                     "(the model to inspect is --player-a)")
+
+
+def browse_inapplicable_dests(kind, explicit):
+    """The explicitly-set browse dests that do not apply to source ``kind``,
+    in a stable order."""
+    return sorted(d for d in explicit
+                  if d in BROWSE_SOURCE_DESTS and kind not in BROWSE_SOURCE_DESTS[d])
+
+
+# ── Removed flags / env vars ──────────────────────────────────────────────────
+#
+# A flag that was renamed or folded into another must ERROR with a pointer to
+# its replacement rather than vanish (argparse's "unrecognized arguments" says
+# nothing about where the knob went) or silently alias. Each entry names the old
+# flag, the hint appended to "`--old` was removed; ", and the scopes it applies
+# to: () = every parser; otherwise tool keys ("train", "play", "harness", …) or
+# "tool/sub" ("train/observe") — scope a removal when the same spelling is still
+# a live flag somewhere else. Every parser built through ``apply_to_parser``
+# registers the entries in its scope as hidden (help-suppressed) options; a
+# standalone parser calls ``add_removed_flags(parser, scope)`` itself. The table
+# is separate from the Tool specs, so removed flags never render in the TUI.
+# When a scoped entry and an unscoped one name the same flag, the scoped entry
+# wins in its scope (a different hint where the flag meant something else). An
+# entry whose name has no leading dashes is a removed POSITIONAL: the parser
+# gets a hidden optional positional that errors if anything fills it.
+
+@dataclass(frozen=True)
+class RemovedFlag:
+    flag: str
+    hint: str
+    scopes: tuple = ()
+
+    @property
+    def is_positional(self) -> bool:
+        return not self.flag.startswith("-")
+
+
+# Seat vocabulary: every single-seat deck is --deck-a / --deck-b and every seat
+# agent (an opponents.make_controller spec) is --player-a / --player-b.
+REMOVED_FLAGS = (
+    RemovedFlag("--bo1", "use --format bo1"),
+    RemovedFlag("--bo3", "use --format bo3 (the default)"),
+    RemovedFlag("--deck", "use --deck-a (player A's deck; --deck-b is player B's)"),
+    RemovedFlag("--deck", "use --decks (the comma-separated focus deck pool)",
+                scopes=("train/az",)),
+    RemovedFlag("--deck", "az-train fits the one generalist on the pooled "
+                          "az_data/gen shard window and takes no deck",
+                scopes=("train/az-train",)),
+    RemovedFlag("--opponent", "use --deck-b (player B's deck)"),
+    RemovedFlag("--opponent", "use --player-b (the opponent agent spec)",
+                scopes=("analysis",)),
+    RemovedFlag("--opponent", "use --opponents (the comma-separated opponent "
+                              "deck pool)",
+                scopes=("train/sweep", "train/az")),
+    RemovedFlag("--human-deck", "use --deck-a (with --player-a human)"),
+    RemovedFlag("--model-deck", "use --deck-b (the deck --player-b pilots)"),
+    RemovedFlag("--model", "use --player-b SPEC (the opponent seat; "
+                           "--player-a is human by default)", scopes=("play",)),
+    RemovedFlag("--scripted", "use --player-b scripted", scopes=("play",)),
+    RemovedFlag("--player", "use --player-a human or --player-b human",
+                scopes=("play",)),
+    RemovedFlag("--gui", "use --board gui (the default)", scopes=("play",)),
+    RemovedFlag("--tui", "use --board tui", scopes=("play",)),
+    RemovedFlag("model", "use --player-a SPEC",
+                scopes=("analysis", "train/baseline")),
+    # The harness's seat agents are --player-a / --player-b; --play / --actions
+    # stay as the both-seat script that runs before them.
+    RemovedFlag("--scripted", "use --player-a scripted --player-b scripted",
+                scopes=("harness",)),
+    RemovedFlag("--scripted-spec", "use --player-a / --player-b with the tier "
+                                   "spec (e.g. scripted:easy, explore)",
+                scopes=("harness",)),
+    RemovedFlag("--interactive", "use --player-a human (and/or --player-b human)",
+                scopes=("harness",)),
+    RemovedFlag("--play-a", "use --player-a \"play:<spec,spec,...>\"",
+                scopes=("train/observe",)),
+    RemovedFlag("--play-b", "use --player-b \"play:<spec,spec,...>\"",
+                scopes=("train/observe",)),
+    # Every game/match count is --games; the PUCT constant is --c-puct.
+    RemovedFlag("--n-games", "use --games"),
+    # The bench scripts' flags, renamed to the az-* / training vocabulary.
+    RemovedFlag("--scripted", "use --player-b scripted",
+                scopes=("train/bench-actor",)),
+    RemovedFlag("--device", "use --actor-device", scopes=("train/bench-actor",)),
+    RemovedFlag("--cross", "the cross-world leg runs by default "
+                           "(--no-cross-world skips it)",
+                scopes=("train/bench-actor",)),
+    RemovedFlag("--counts", "use --workers (comma-separated worker counts)",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--repeats", "use --exhaustive-repeats",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--train-window", "use --window", scopes=("train/bench-workers",)),
+    RemovedFlag("--train-batches", "use --batches",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--train-deck", "use --deck-a (the az-eval leg's deck)",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--envs", "use --n-envs (comma-separated n_envs values)",
+                scopes=("train/bench-nenvs",)),
+    # az_inspect: one --shards DIR (absent = weights only), one long name per
+    # count, and the folded az_embed_viz / sb_shard_report flags.
+    RemovedFlag("--with-shards", "use --shards DIR (e.g. train/az_data/gen)",
+                scopes=("az-inspect",)),
+    RemovedFlag("--no-shards", "omit --shards (absent = weights only)",
+                scopes=("az-inspect",)),
+    RemovedFlag("--with-counts", "use --shards DIR (occurrence counts come "
+                                 "from that shard directory)",
+                scopes=("az-inspect",)),
+    RemovedFlag("-k", "use --neighbors", scopes=("az-inspect/neighbors",)),
+    RemovedFlag("-k", "use --knn", scopes=("az-inspect/structure",)),
+    RemovedFlag("-k", "use --clusters", scopes=("az-inspect/clusters",)),
+    RemovedFlag("--cluster-seed", "use --seed", scopes=("az-inspect/clusters",)),
+    RemovedFlag("--rows", "use --block-rows", scopes=("az-inspect/blocks",)),
+    RemovedFlag("--max-rows", "the embedding views sample --count-rows states "
+                              "for their occurrence counts",
+                scopes=tuple(f"az-inspect/{s}" for s in
+                             ("neighbors", "structure", "clusters", "project",
+                              "occur"))),
+    RemovedFlag("--map-top", "use --top", scopes=("az-inspect/drift",)),
+    RemovedFlag("--dir", "use --shards", scopes=("az-inspect/sbreport",)),
+    RemovedFlag("--last", "use --window", scopes=("az-inspect/sbreport",)),
+    # baseline: the full league grid is the default without deck flags.
+    RemovedFlag("--all", "omit --deck-a/--deck-b (the full league grid is "
+                         "the default without them)",
+                scopes=("train/baseline",)),
+    # analysis.py browse: one --source picks simulate / shards / a saved trace.
+    RemovedFlag("--shards", "use --source DIR (the shard or recording "
+                            "directory to browse)",
+                scopes=("analysis/browse",)),
+)
+
+# Subcommands that were folded into another: (tool key, name) -> hint appended
+# to "`name` was removed; ". ``add_removed_subcommands`` registers each on its
+# tool's argparse subparsers as a hidden command that errors with the hint.
+REMOVED_SUBCOMMANDS = {
+    ("analysis", "interactive"): "use `analysis.py browse` (its analyses menu "
+                                 "has every former REPL view, the chart "
+                                 "PNGs and the text transcript)",
+    ("analysis", "search"): "use `analysis.py report --player-a az:gen "
+                            "[--workers N]` (search-vs-net sections of the "
+                            "HTML report) or `analysis.py browse` with a "
+                            "search --player-a (its `net KL` / `net V vs "
+                            "search` probes); --sims/--worlds are flags, "
+                            "c-puct and the sideboard budget are spec knobs "
+                            "(az:gen?c=1.5&sb_branches=4)",
+}
+
+# Environment variables that duplicated a flag: name -> hint appended to
+# "environment variable NAME was removed; ".
+REMOVED_ENV_VARS = {
+    "ROBOMAGE_GUI_SMOKE": "use ROBOMAGE_SMOKE=play:N",
+    "ROBOMAGE_ANALYSIS_SMOKE": "use ROBOMAGE_SMOKE=play:N,analysis",
+    "ROBOMAGE_GUI_SESSION_SMOKE": "use ROBOMAGE_SMOKE=session",
+    "ROBOMAGE_GUI_TRACE_SMOKE": "use ROBOMAGE_SMOKE=trace",
+    "ROBOMAGE_BROWSER_SMOKE": "use ROBOMAGE_SMOKE=browser[:DIR]",
+    "ROBOMAGE_BROWSER_SMOKE_SHARDS": "use ROBOMAGE_SMOKE=browser:DIR "
+                                     "(or tree:DIR)",
+    "ROBOMAGE_TREE_SMOKE": "use ROBOMAGE_SMOKE=tree:DIR",
+    "ROBOMAGE_POPART": "use --popart / --no-popart (PopArt is on by default)",
+    "ROBOMAGE_PER_ACTION_HEAD": "use --stock-head for the stock MlpPolicy "
+                                "head (the per-action head is the default)",
+}
+
+
+def _scope_matches(entry_scopes, scopes) -> bool:
+    return not entry_scopes or any(s in entry_scopes for s in scopes)
+
+
+def removed_flags_for(*scopes):
+    """The ``RemovedFlag`` entries that apply to any of ``scopes`` — a scoped
+    entry shadows an unscoped one for the same flag."""
+    hits = [r for r in REMOVED_FLAGS if _scope_matches(r.scopes, scopes)]
+    scoped = {r.flag for r in hits if r.scopes}
+    return [r for r in hits if r.scopes or r.flag not in scoped]
+
+
+def removed_flag_message(r: RemovedFlag) -> str:
+    if r.is_positional:
+        return f"the positional {r.flag.upper()} argument was removed; {r.hint}"
+    return f"{r.flag} was removed; {r.hint}"
+
+
+def removed_flag_hint(flag: str, *scopes):
+    """The error message for ``flag`` if it is a removed flag in ``scopes``,
+    else None (lets non-argparse consumers — curriculum plans — say the same
+    thing the CLI does)."""
+    for r in removed_flags_for(*scopes):
+        if r.flag == flag:
+            return removed_flag_message(r)
+    return None
+
+
+def _removed_flag_action(entry: RemovedFlag):
+    import argparse
+
+    class _Removed(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            # An absent optional positional is "called" with its default.
+            if entry.is_positional and values is None:
+                setattr(namespace, self.dest, None)
+                return
+            parser.error(removed_flag_message(entry))
+    return _Removed
+
+
+def add_removed_flags(parser, *scopes) -> None:
+    """Register every removed flag in ``scopes`` (plus the global ones) on
+    ``parser`` as a hidden option whose use errors with the replacement hint,
+    and fail at startup on any removed environment variable that is set."""
+    import argparse
+    check_removed_env(parser)
+    for r in removed_flags_for(*scopes):
+        dest = f"_removed_{r.flag.lstrip('-').replace('-', '_')}"
+        if r.is_positional:
+            parser.add_argument(dest, nargs="?", default=None,
+                                help=argparse.SUPPRESS,
+                                action=_removed_flag_action(r))
+        else:
+            parser.add_argument(r.flag, nargs="?", help=argparse.SUPPRESS,
+                                dest=dest, action=_removed_flag_action(r))
+
+
+def removed_subcommand_message(tool_key, name):
+    """The error for removed subcommand ``name`` of ``tool_key``, else None."""
+    hint = REMOVED_SUBCOMMANDS.get((tool_key, name))
+    return None if hint is None else f"`{name}` was removed; {hint}"
+
+
+def add_removed_subcommands(subparsers, tool_key) -> None:
+    """Register ``tool_key``'s removed subcommands on an argparse subparsers
+    action (after the live ones): each is a hidden command that errors with
+    its hint whatever follows it. The usage line keeps listing only the live
+    subcommands."""
+    import argparse
+    live = list(subparsers.choices)
+    for (key, name), _hint in REMOVED_SUBCOMMANDS.items():
+        if key != tool_key:
+            continue
+        msg = removed_subcommand_message(key, name)
+
+        class _Removed(argparse.Action):
+            def __call__(self, parser, namespace, values, option_string=None,
+                         _msg=msg):
+                parser.error(_msg)
+
+        sp = subparsers.add_parser(name, add_help=False)
+        sp.add_argument("_removed_rest", nargs=argparse.REMAINDER,
+                        action=_Removed)
+    subparsers.metavar = "{" + ",".join(live) + "}"
+
+
+def check_removed_env(parser=None, environ=None) -> None:
+    """Exit with an error naming the replacement if any removed environment
+    variable is set. Through ``parser.error`` when a parser is given."""
+    environ = os.environ if environ is None else environ
+    for name, hint in REMOVED_ENV_VARS.items():
+        if name in environ:
+            msg = f"environment variable {name} was removed; {hint}"
+            if parser is not None:
+                parser.error(msg)
+            raise SystemExit(f"error: {msg}")
+
+
+# ── Headless GUI smokes ───────────────────────────────────────────────────────
+# ROBOMAGE_SMOKE is a comma list of smoke legs, each ``name`` or
+# ``name:value`` (split on the first colon, so a value may itself hold one):
+#   play[:N]       auto-play N human decisions on the play board, then quit
+#                  (N=1, the default, quits right after the first render)
+#   analysis       force the analysis window on (torch-free uniform evaluator)
+#                  and fail unless it delivered stats — pair with play:N
+#   session        play-session save -> reopen replay round-trip (gui_main)
+#   trace          synthetic .rmtrace opened into the analysis browser (gui_main)
+#   browser[:DIR]  the analysis browser's own auto-drive; from the bare
+#                  gui_main shell it opens DIR (a recording, or a record base
+#                  holding rec_* dirs) as a shard-mode session
+#   tree:DIR       rebuild + expand the first searched decision's tree of the
+#                  search-opponent recording at DIR (gui_main)
+# Any leg also turns modal dialogs into stderr lines, and a --record-shards
+# play session fails unless it recorded a shard.
+SMOKE_ENV = "ROBOMAGE_SMOKE"
+SMOKE_LEGS = ("play", "analysis", "session", "trace", "browser", "tree")
+_SMOKE_VALUED = {"play", "browser", "tree"}
+
+
+def parse_smoke(value):
+    """``{leg: value}`` from a ROBOMAGE_SMOKE string (a valueless leg maps to
+    True; ``play`` maps to its int decision count). ValueError on an unknown
+    leg, a value on a leg that takes none, or a non-positive play count."""
+    legs = {}
+    for item in (value or "").split(","):
+        item = item.strip()
+        if not item:
+            continue
+        name, sep, val = item.partition(":")
+        name = name.strip()
+        if name not in SMOKE_LEGS:
+            raise ValueError(f"unknown smoke leg {name!r} (legs: "
+                             f"{', '.join(SMOKE_LEGS)})")
+        if sep and name not in _SMOKE_VALUED:
+            raise ValueError(f"smoke leg {name!r} takes no value")
+        if name == "play":
+            try:
+                n = int(val) if sep else 1
+            except ValueError:
+                n = 0
+            if n < 1:
+                raise ValueError(f"play:N needs a positive decision count, "
+                                 f"got {val!r}")
+            legs[name] = n
+        else:
+            legs[name] = val if sep else True
+    return legs
+
+
+def smoke_legs(environ=None):
+    """The parsed ROBOMAGE_SMOKE legs of ``environ`` (os.environ by default);
+    {} when unset. Exits with an error on a removed smoke variable or a
+    malformed list."""
+    environ = os.environ if environ is None else environ
+    check_removed_env(environ=environ)
+    try:
+        return parse_smoke(environ.get(SMOKE_ENV, ""))
+    except ValueError as e:
+        raise SystemExit(f"error: {SMOKE_ENV}: {e}")
+
+
+def smoke_leg(name, environ=None):
+    """One leg's value from ROBOMAGE_SMOKE (None when the leg is absent)."""
+    return smoke_legs(environ).get(name)
+
+
 # ── Spec dataclasses ──────────────────────────────────────────────────────────
 
 @dataclass
@@ -477,8 +937,9 @@ class Arg:
     """One CLI argument.
 
     ``name`` with a leading ``--`` is an optional flag; otherwise it is a
-    positional.  ``kind`` is one of ``str``, ``int``, ``flag`` (store_true), or
-    ``choice`` (requires ``choices``).
+    positional.  ``kind`` is one of ``str``, ``int``, ``float``, ``flag``
+    (store_true), ``bool`` (a ``--name`` / ``--no-name`` pair; default True,
+    False, or None = unset), or ``choice`` (requires ``choices``).
     """
     name: str
     kind: str = "str"
@@ -522,6 +983,14 @@ class Sub:
     help: str = ""
     items: list = field(default_factory=list)
     mode: str = "capture"
+    tool: str = None     # owning Tool.key, set by Tool (removed-flag scoping)
+
+    @property
+    def scopes(self) -> tuple:
+        """Removed-flag scopes this subcommand's parser answers to."""
+        if self.tool is None:
+            return ()
+        return (self.tool, f"{self.tool}/{self.name}")
 
 
 @dataclass
@@ -534,11 +1003,25 @@ class Tool:
     flat: bool = False   # True when the script has a flat parser (no subcommand
                          # token in argv, e.g. play.py / test_harness.py)
 
+    def __post_init__(self):
+        for s in self.subs:
+            s.tool = self.key
+
 
 # ── Reusable argument groups (mirror the helper functions in the scripts) ─────
 
+def format_arg(help_extra: str = "") -> Arg:
+    """--format bo1|bo3: the match format, shared by every tool that plays
+    games. Default bo3 everywhere; read it back with ``is_bo3(args)``."""
+    return Arg("--format", "choice", choices=FORMAT_CHOICES,
+               default=DEFAULT_FORMAT,
+               help="Match format: bo3 = best-of-three matches (deck swap + "
+                    "sideboarding between games), bo1 = single games "
+                    f"(default {DEFAULT_FORMAT})" + help_extra)
+
+
 def common_args(binary_default=BINARY):
-    """Args shared by every train.py subcommand (was train.py _add_common).
+    """Args shared by every train.py subcommand.
 
     ``binary_default`` lets a subcommand override the engine binary default —
     PPO training subcommands pass ``INTERACTIVE_BINARY`` (release-by-default;
@@ -548,13 +1031,29 @@ def common_args(binary_default=BINARY):
     engine while iterating on a card/rule."""
     return [
         Arg("--binary", "str", default=binary_default, help="Path to robomage binary"),
-        Arg("--bo3", "flag",
-            help="Best-of-three match mode (deck swap + sideboarding between games)"),
+        format_arg(),
     ]
 
 
+def resolve_popart(args, parser=None) -> bool:
+    """The session's effective PopArt setting from a training namespace:
+    ``--popart`` / ``--no-popart`` when given, else ON unless ``--stock-head``
+    (the stock head has no multi-head critic for PopArt to normalize).
+    Explicit ``--popart`` with ``--stock-head`` is an error (through
+    ``parser.error`` when a parser is given)."""
+    popart = getattr(args, "popart", None)
+    stock = bool(getattr(args, "stock_head", False))
+    if popart and stock:
+        msg = ("--popart requires the multi-head critic policy; it cannot be "
+               "combined with --stock-head")
+        if parser is not None:
+            parser.error(msg)
+        raise SystemExit(f"error: {msg}")
+    return (not stock) if popart is None else bool(popart)
+
+
 def train_opts():
-    """Args shared by training subcommands (was train.py _add_train_opts)."""
+    """Args shared by training subcommands."""
     return [
         Arg("--total-timesteps", "int", default=TOTAL_TIMESTEPS,
             help="Total training timesteps"),
@@ -580,15 +1079,18 @@ def train_opts():
                  "checkpoint-compatible; resuming always keeps the checkpoint's "
                  "own head, so this only affects fresh (--fresh / first-time) "
                  "models."),
-        Arg("--popart", "flag",
-            help="Per-archetype-bucket PopArt value normalization (default OFF). "
-                 "The multi-head critic already isolates each matchup class in the "
-                 "last layer; PopArt additionally keeps a running (mu, sigma) of "
-                 "each bucket's returns and predicts normalized values, so a "
-                 "high-variance matchup can't dominate the SHARED torso's value "
-                 "gradients. Output-preserving (the head column is rescaled on "
-                 "every stats update), so it is safe to switch on mid-run. "
-                 "Incompatible with --stock-head and with clip_range_vf."),
+        Arg("--popart", "bool", default=None,
+            help="Per-archetype-bucket PopArt value normalization (default ON; "
+                 "--no-popart turns it off, and --stock-head implies "
+                 "--no-popart). The multi-head critic already isolates each "
+                 "matchup class in the last layer; PopArt additionally keeps a "
+                 "running (mu, sigma) of each bucket's returns and predicts "
+                 "normalized values, so a high-variance matchup can't dominate "
+                 "the SHARED torso's value gradients. Output-preserving (the "
+                 "head column is rescaled on every stats update), so a "
+                 "checkpoint trained either way resumes safely under either "
+                 "setting. Incompatible with --stock-head and with "
+                 "clip_range_vf."),
         Arg("--n-epochs", "int", default=N_EPOCHS,
             help="PPO optimization epochs per update (default: %d). Applies to "
                  "fresh models AND overrides whatever a resumed checkpoint was "
@@ -608,6 +1110,27 @@ def train_opts_except(*dests):
     ``--total-timesteps`` rather than offering two budget flags)."""
     skip = set(dests)
     return [a for a in train_opts() if a.dest not in skip]
+
+
+def train_opts_only(*dests):
+    """The named ``train_opts()`` args — lets bench-nenvs build its throwaway
+    model with the same knobs (and defaults) a training run takes."""
+    keep = set(dests)
+    return [a for a in train_opts() if a.dest in keep]
+
+
+def parse_int_list(text, flag: str) -> list:
+    """A bench sweep's comma-separated positive ints -> list. Exits with an
+    error naming ``flag`` when the list is empty or holds a bad value."""
+    try:
+        values = [int(t) for t in str(text).split(",") if t.strip()]
+    except ValueError:
+        raise SystemExit(f"error: {flag}: expected comma-separated integers, "
+                         f"got {text!r}")
+    if not values or any(v < 1 for v in values):
+        raise SystemExit(f"error: {flag}: expected one or more integers >= 1, "
+                         f"got {text!r}")
+    return values
 
 
 def _opponent_mode():
@@ -843,34 +1366,193 @@ def append_spec_knob(spec: str, key, value) -> str:
     return spec + ("&" if "?" in spec else "?") + f"{key}={value}"
 
 
-def search_budget_args():
-    """--think-time / --match-clock convenience flags for the analysis sim args.
+# ── Search knobs (flags folded into an az:/mcts: spec's ?query) ───────────────
+#
+# One home for the search-seat convenience flags every interactive front end
+# offers — play.py, the analysis browser, and the GUI dialogs that mirror them.
+# Each flag dest maps to the spec-query key make_controller parses; the fold is
+# ``apply_search_knobs``. A flag applies to EVERY seat whose spec is a search
+# spec, appended last so it overrides the same key already in the spec (put the
+# knobs in the specs themselves for per-seat budgets).
 
-    Mirror play.py's flags of the same names, but where play.py has one search
-    seat these apply to EVERY seat whose spec is a search spec (az:/mcts: model
-    or --opponent), appended last so they override any time=/clock= knob already
-    in the spec. For per-seat budgets, put the knobs in the specs directly and
-    skip the flags."""
-    return [
+# flag dest -> spec query key, in the order the knobs are appended.
+SEARCH_KNOB_KEYS = (("sims", "sims"), ("worlds", "worlds"),
+                    ("think_time", "time"), ("search_procs", "procs"),
+                    ("match_clock", "clock"), ("search_xw", "xw"),
+                    ("search_device", "device"), ("paced", "paced"))
+SEARCH_SPEC_PREFIXES = ("az:", "mcts:")
+
+
+def is_search_spec(spec) -> bool:
+    """True for an agent spec that runs a tree search (az:/mcts:), which is
+    what the search knobs apply to. azraw: is the raw AZ policy (no search),
+    so it — like scripted tiers and PPO models — takes no search knobs."""
+    return isinstance(spec, str) and spec.strip().lower().startswith(
+        SEARCH_SPEC_PREFIXES)
+
+
+def search_knob_args(*, worlds=None, match_clock=None, paced=False):
+    """The search-knob flags. ``worlds`` / ``match_clock`` are the tool's
+    defaults for those two (play's shipped matchup sets both); ``paced`` adds
+    --paced/--no-paced (human-facing play only). --search-procs unset means
+    AUTO (half the visible cores, capped at the world count) wherever the flag
+    is offered."""
+    budget = [
         Arg("--think-time", "float", default=None,
-            help="Search seats only (az:/mcts: model or --opponent): wall-clock "
-                 "seconds per decision — the search runs as many simulations as "
-                 "fit in this budget. Applied to every search-spec seat, "
-                 "overriding any time= already in the spec (put time= knobs in "
-                 "the specs instead for per-seat budgets)."),
-        Arg("--match-clock", "float", default=None,
+            help="Search seats only (an az:/mcts: player spec): wall-clock "
+                 "seconds per decision — the search runs as many simulations "
+                 "as fit in this budget (more time = stronger play), "
+                 "overriding sims as the terminator"),
+        Arg("--match-clock", "float", default=match_clock,
             help="Search seats only: whole-match chess-clock bank in seconds "
                  "(1500 = 25 min for a bo3); each decision draws a variable "
-                 "budget from it. Applied to every search-spec seat, overriding "
-                 "any clock= already in the spec (put clock= knobs in the specs "
-                 "instead for per-seat clocks)."),
+                 "budget from it — harder decisions earn more time, obvious "
+                 "ones stop early; 0 = no clock. Mutually exclusive with "
+                 "--sims"
+                 + (f" (default {match_clock:g}; an explicit --sims drops it)"
+                    if match_clock is not None else "")),
     ]
+    args = [
+        Arg("--sims", "int", default=None,
+            help="Search seats only: MCTS simulations per decision"),
+        Arg("--worlds", "int", default=worlds,
+            help="Search seats only: determinized worlds per decision (sims "
+                 "are split across them; default "
+                 + (f"{worlds}" if worlds is not None
+                    else "the spec's own, 4") + ")"),
+        budget[0],
+        Arg("--search-procs", "int", default=None,
+            help="Search seats only: engine processes to fan the determinized "
+                 "worlds across (world-parallel; more procs = more sims per "
+                 "decision in the same wall-clock). Default AUTO: half the "
+                 "visible cores, capped at the world count"),
+        budget[1],
+        Arg("--search-xw", "bool", default=True,
+            help="Search seats only: cross-world batched leaf evaluation — one "
+                 "net forward per round over every world's leaf. Visit counts "
+                 "are identical to the sequential search (pure speed); "
+                 "--no-search-xw only to debug"),
+        Arg("--search-device", "choice", choices=EVAL_DEVICE_CHOICES,
+            default=None,
+            help="Search seats only: torch device for the search net's "
+                 "forwards — cpu, or cuda (the Radeon under the ROCm torch "
+                 "build). Unset = ROBOMAGE_EVAL_DEVICE, else cpu. The GPU pays "
+                 "together with cross-world batching and higher world counts"),
+    ]
+    if paced:
+        args.append(Arg(
+            "--paced", "bool", default=None,
+            help="Search opponent only: mask response-timing tells — a small "
+                 "jittered (~0.02-0.05s) floor on every decision plus "
+                 "occasional 0.2-0.5s fake-think pauses when the opponent was "
+                 "never even offered a decision. Unset = on whenever the "
+                 "search has a variable budget (--match-clock/--think-time); "
+                 "--no-paced forces instant obvious decisions"))
+    return args
+
+
+def search_knob_pairs(values, *, auto_procs=True):
+    """``[(query_key, value)]`` for a dict of search-knob dests (see
+    ``SEARCH_KNOB_KEYS``; absent / None dests are omitted).
+
+    ``auto_procs``: an unset ``search_procs`` becomes AUTO — half the visible
+    cores, capped at the world count in effect (the spec grammar's own default
+    stays procs=1 so gates/eval stay reproducible). ``search_xw`` appends only
+    its off position (the controller batches by default). ``paced`` is folded
+    only when the dict carries the key: True/False wins, None turns pacing on
+    whenever the search has a variable time budget (think time / clock). A
+    ``match_clock`` of 0 is no clock."""
+    values = dict(values)
+    if not values.get("match_clock"):
+        values["match_clock"] = None
+    if auto_procs and values.get("search_procs") is None:
+        from opponents import default_search_procs, DEFAULT_SEARCH_WORLDS
+        worlds = values.get("worlds")
+        values["search_procs"] = default_search_procs(
+            worlds if worlds is not None else DEFAULT_SEARCH_WORLDS)
+    xw = values.get("search_xw")
+    values["search_xw"] = 0 if xw is False else None
+    if "paced" in values:
+        paced = values["paced"]
+        if paced is None:
+            paced = (values.get("think_time") is not None
+                     or values.get("match_clock") is not None)
+        values["paced"] = int(bool(paced))
+    return [(key, values[dest]) for dest, key in SEARCH_KNOB_KEYS
+            if values.get(dest) is not None]
+
+
+def with_spec_query(spec: str, pairs) -> str:
+    """Append ``pairs`` to a controller spec's ``?k=v&…`` query (later keys
+    win in make_controller's parser, so appending is always safe)."""
+    for key, value in pairs:
+        spec = append_spec_knob(spec, key, value)
+    return spec
+
+
+def apply_search_knobs(spec, values, *, auto_procs=True):
+    """``spec`` with the search-knob ``values`` folded into its query when it
+    is a search spec; any other spec is returned unchanged."""
+    if not is_search_spec(spec):
+        return spec
+    return with_spec_query(spec, search_knob_pairs(values,
+                                                   auto_procs=auto_procs))
+
+
+def spec_query_keys(spec) -> set:
+    """The knob keys a controller spec's ``?k=v&…`` query already carries."""
+    if not isinstance(spec, str) or "?" not in spec:
+        return set()
+    query = spec.split("?", 1)[1]
+    return {part.split("=", 1)[0].strip().lower()
+            for part in query.split("&") if part.strip()}
+
+
+# ── Deck scan (the "deck" suggestion source) ─────────────────────────────────
+
+DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
+# Deck subfolders hidden from deck pickers: temp/ holds auto-generated test
+# decks (see test_harness.py), not_used/ parked development stubs.
+DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
+# League decks live in their own folder so the league roster is curated
+# separately from the top-level training decks. A deck here is referenced as
+# 'league/<stem>' (a path relative to decks/), which the engine resolves to
+# decks/league/<stem>.dk.
+LEAGUE_DECKS_DIR = os.path.join(DECKS_DIR, "league")
+
+
+def league_decks():
+    """The league roster: every decks/league/*.dk as 'league/<stem>', sorted
+    (empty when the folder is missing). The one default roster the PPO league,
+    exploiter, baseline sweep, az self-play and the TUI deck picker share."""
+    if not os.path.isdir(LEAGUE_DECKS_DIR):
+        return []
+    return sorted("league/" + os.path.splitext(p)[0]
+                  for p in os.listdir(LEAGUE_DECKS_DIR) if p.endswith(".dk"))
+
+
+def scan_decks():
+    """All .dk decks under decks/ (recursive), as decks/-relative stems.
+
+    Subfolder decks are offered in the 'league/ur_delver' path-relative form
+    that train.py and the engine accept alongside top-level stems like
+    'delver'. temp/ and not_used/ are excluded. Sorted top-level first, then
+    grouped by subfolder, alphabetical within each group. Shared by the TUI
+    form and the GUI dialogs so both offer the same decks."""
+    out = []
+    for root, dirs, files in os.walk(DECKS_DIR):
+        dirs[:] = sorted(d for d in dirs if d not in DECK_SCAN_EXCLUDE)
+        rel_dir = os.path.relpath(root, DECKS_DIR).replace(os.sep, "/")
+        for fname in files:
+            if fname.endswith(".dk"):
+                stem = os.path.splitext(fname)[0]
+                out.append(stem if rel_dir == "." else f"{rel_dir}/{stem}")
+    return sorted(out, key=lambda rel: (rel.count("/"), rel))
 
 
 def sb_search_args():
     """The bo3 sideboard plan-search budget flags, shared verbatim by every Sub
-    that runs searches over bo3 matches (az-selfplay / az / az-league / the
-    analysis `search` report). One home — the defaults are the DEFAULT_SB_*
+    that runs searches over bo3 matches (az-selfplay / az / az-league). One home — the defaults are the DEFAULT_SB_*
     constants above; see their comment block for the design."""
     return [
         Arg("--sb-branches", "int", default=DEFAULT_SB_BRANCHES,
@@ -923,30 +1605,39 @@ def sb_train_args():
 
 
 def sim_args():
-    """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
+    """Common simulation args for analysis.py (was analysis.py _add_sim_args).
+
+    Player A is the INSPECTED model (its value/probs/SHAP fill every view) and
+    player B its opponent. The physical seat still alternates per simulated
+    game; --deck-a always travels with --player-a."""
     return [
-        Arg("model", "str", required=True, suggest="agent",
-            help="Model to analyze: 'gen', a .zip path, or az:gen/azraw:gen "
-                 "for the generalist AlphaZero net. A SEARCH spec (az:/mcts: "
-                 "prefix, e.g. az:gen?sims=128&worlds=4) makes the simulated "
-                 "trace games be PLAYED by the real MCTS controller, so the "
-                 "browser inspects states arising from search-quality play "
-                 "(slow); azraw:gen and a bare PPO spec keep raw-policy traces. "
-                 "The inspection net (value/probs/SHAP) is the same either way."),
-        Arg("--opponent", "str", default="scripted", suggest="agent",
-            help="Opponent controller: 'gen', a model .zip path, az:gen/azraw:gen, "
-                 "or 'scripted' for the rule-based agent piloting the opponent deck "
+        Arg("--player-a", "str", required=True, suggest="agent",
+            help="The model to analyze (player A): 'gen', a .zip path, or "
+                 "az:gen/azraw:gen for the generalist AlphaZero net. A SEARCH "
+                 "spec (az:/mcts: prefix, e.g. az:gen?sims=128&worlds=4) makes "
+                 "the simulated trace games be PLAYED by the real MCTS "
+                 "controller, so the browser inspects states arising from "
+                 "search-quality play (slow); azraw:gen and a bare PPO spec keep "
+                 "raw-policy traces. The inspection net (value/probs/SHAP) is "
+                 "the same either way."),
+        Arg("--player-b", "str", default="scripted", suggest="agent",
+            help="Opponent (player B): 'gen', a model .zip path, az:gen/azraw:gen, "
+                 "or 'scripted' for the rule-based agent piloting --deck-b "
                  "(the default)"),
         Arg("--deck-a", "str", default=None, suggest="deck",
-            help="Model's deck (.dk stem) — the deck it pilots. REQUIRED for a "
-                 "model seat: the one generalist encodes no deck in its filename."),
+            help="Player A's deck (.dk stem) — the deck the inspected model "
+                 "pilots. REQUIRED for a model seat: the one generalist encodes "
+                 "no deck in its filename."),
         Arg("--deck-b", "str", default=None, suggest="deck",
-            help="Opponent's deck (.dk stem). REQUIRED for a model opponent (the "
+            help="Player B's deck (.dk stem). REQUIRED for a model opponent (the "
                  "generalist encodes no deck); a scripted opponent defaults to a "
                  "mirror match (--deck-a)."),
         Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
-        Arg("--bo3", "flag",
-            help="Run best-of-three matches (decks must include SIDEBOARD entries)"),
+        format_arg(),
+        Arg("--seed", "int", default=1,
+            help="Base seed: simulated game N (counted from 0 over the "
+                 "session) plays engine --seed seed+N, so a run is "
+                 "reproducible (default: 1)"),
         Arg("--out", "str", default=None,
             help="Directory for saved charts/reports (default: train/analysis_out/)"),
         Arg("--show", "flag",
@@ -958,12 +1649,12 @@ def sim_args():
 
 TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     Sub("train", "Train the one generalist model (default command)", items=[
-        Arg("--deck", "str", default="delver", suggest="deck",
-            help="Deck the generalist plays this session (.dk stem, default: "
-                 "delver). Always saved to the single gen__final.zip; sessions on "
-                 "any deck/opponent accumulate onto that one generalist."),
-        Arg("--opponent", "str", required=True, suggest="deck",
-            help="Opponent deck this session trains against (.dk stem). The model "
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Deck the generalist (player A) plays this session (.dk stem, "
+                 "default: delver). Always saved to the single gen__final.zip; "
+                 "sessions on any deck/opponent accumulate onto that one generalist."),
+        Arg("--deck-b", "str", required=True, suggest="deck",
+            help="Opponent deck (player B) this session trains against (.dk stem). The model "
                  "stays one generalist — training continues the same gen__final.zip "
                  "rather than forging a per-deck or matchup-specific model."),
         Arg("--load", "str", default=None, suggest="checkpoint",
@@ -1131,16 +1822,16 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "check a plan's composed argv before spending GPU-days on it."),
     ]),
     Sub("sweep", "PFSP sweep: train the generalist on one deck vs a pool of the other decks", items=[
-        Arg("--deck", "str", required=True, suggest="deck",
+        Arg("--deck-a", "str", required=True, suggest="deck",
             help="Deck to train on (.dk stem). Always saved to gen__final.zip; this "
                  "session accumulates onto the one generalist, same as 'train'."),
         Arg("--opponents", "str", default=None, suggest="deck", multi=True,
             help="Comma-separated pool of opponent decks to sample from via PFSP "
                  "(default: every other deck in bin/resources/decks/). Like league's "
-                 "roster, but this pool is opponents only — --deck is never rotated "
+                 "roster, but this pool is opponents only — --deck-a is never rotated "
                  "into training and never part of the pool."),
         Arg("--self-play-frac", "float", default=LEAGUE_SELF_PLAY_FRAC,
-            help="Probability of facing the latest snapshot of --deck itself (the "
+            help="Probability of facing the latest snapshot of --deck-a itself (the "
                  "'play the latest self' slot; default %.2f). Auto-ramped down while "
                  "few snapshots exist." % LEAGUE_SELF_PLAY_FRAC),
         Arg("--scripted-anchor-frac", "float", default=LEAGUE_SCRIPTED_ANCHOR_FRAC,
@@ -1157,7 +1848,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Save a frozen gen__v{steps}.zip snapshot every N steps "
                  "(default %d)." % LEAGUE_SNAPSHOT_EVERY),
         Arg("--promote-margin", "float", default=LEAGUE_PROMOTE_MARGIN,
-            help="Only keep a snapshot when --deck's recent-window win-rate "
+            help="Only keep a snapshot when --deck-a's recent-window win-rate "
                  ">= 0.5 + margin (negative gates below 0.5, e.g. -0.1 -> 0.40; the "
                  "first snapshot is exempt so self-play can bootstrap; 0 disables "
                  "the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
@@ -1167,90 +1858,115 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *train_opts(),
         *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
-    Sub("fixed-model", "Train --deck vs a fixed (never-reloaded) opponent model", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck the model plays (.dk stem)"),
-        Arg("--opponent", "str", required=True, suggest="deck", help="Opponent deck (.dk stem)"),
+    Sub("fixed-model", "Train --deck-a vs a fixed (never-reloaded) opponent model", items=[
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Deck the trained model (player A) plays (.dk stem)"),
+        Arg("--deck-b", "str", required=True, suggest="deck",
+            help="Deck the frozen opponent model (player B) plays (.dk stem)"),
         Arg("--load", "str", default=None, suggest="checkpoint",
             help="Resume from checkpoint .zip ('gen' or a path)"),
         *train_opts(),
         *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("alternate", "Swap which side is trained every N timesteps", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="First deck (.dk stem)"),
-        Arg("--opponent", "str", required=True, suggest="deck", help="Second deck (.dk stem)"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Player A's deck (.dk stem; trained first)"),
+        Arg("--deck-b", "str", required=True, suggest="deck",
+            help="Player B's deck (.dk stem)"),
         Arg("--every", "int", required=True, metavar="N",
             help="Swap the trained side every N timesteps"),
         *train_opts(),
         *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("observe",
-        "Observe game(s) between any pair of {scripted | model} controllers "
-        "(replaces the old watch/diag/observe commands)", items=[
+        "Observe game(s) between any pair of {scripted | model} controllers; "
+        "also the fuzz campaign (--player-a/-b explore --verbose --out FILE) "
+        "and the engine throughput benchmark (--quiet --timing)", items=[
         Arg("--player-a", "str", default="scripted", suggest="agent",
-            help="Player A controller: 'scripted' (or 'scripted:*'), 'gen', a model "
-                 ".zip path, or az:gen/azraw:gen/mcts:gen (default: scripted)"),
+            help="Player A controller: 'scripted' (or 'scripted:*'), the "
+                 "'explore' / 'explore:patient' coverage fuzzer, 'gen', a model "
+                 ".zip path, az:gen/azraw:gen/mcts:gen, or a semantic action "
+                 "script \"play:cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" "
+                 "(action_spec.py grammar; passes / first choice once it runs "
+                 "out) (default: scripted)"),
         Arg("--player-b", "str", default="scripted", suggest="agent",
-            help="Player B controller: 'scripted' (or 'scripted:*'), 'gen', a model "
-                 ".zip path, or az:gen/azraw:gen/mcts:gen (default: scripted)"),
-        Arg("--play-a", "str", default=None,
-            help="Drive Player A by semantic action specs instead of --player-a, e.g. "
-                 "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" (see action_spec.py grammar)"),
-        Arg("--play-b", "str", default=None,
-            help="Drive Player B by semantic action specs instead of --player-b (see --play-a)"),
-        Arg("--deck", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
-        Arg("--opponent", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
+            help="Player B controller (see --player-a; default: scripted)"),
+        Arg("--deck-a", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
+        Arg("--deck-b", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
         Arg("--games", "int", default=1,
-            help="Number of games/matches to run (default: 1). >1 prints per-game results and a W/L/D summary"),
-        Arg("--seed", "int", default=None,
-            help="RNG seed for reproducible games (game N uses seed+N; default: random)"),
+            help="Matches to run — single games under --format bo1 (default: 1). "
+                 ">1 prints per-match results and a W/L/D summary"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (game N uses seed+N; default: 1)"),
         Arg("--verbose", "flag",
             help="Dump full board state (battlefield, hands, mana, stack, graveyards) at each decision"),
-        Arg("--bo1", "flag",
-            help="Single-game mode. observe defaults to bo3 matches; this opts back "
-                 "into one-off games (--bo3 is a redundant no-op here)"),
+        Arg("--quiet", "flag",
+            help="Print no transcript, only a one-line W/L/D summary (a draw "
+                 "is still announced and its log saved to draw_<stamp>.txt)"),
+        Arg("--out", "str", default=None, metavar="FILE",
+            help="Write the transcript (per-game results and W/L/D summary "
+                 "included) to FILE and print a one-line W/L/D summary to "
+                 "stdout — the fuzz-campaign form: --player-a explore "
+                 "--player-b explore --verbose --out FILE"),
+        Arg("--max-decisions", "int", default=None, metavar="N",
+            help="Stop each game/match after N decisions (reported as "
+                 "incomplete; default: run to completion)"),
+        Arg("--timing", "flag",
+            help="Print engine throughput after the run (games, decisions, "
+                 "wall time, games/s, decisions/s, ms/decision). With --quiet "
+                 "the engine also runs without narrative — the lean "
+                 "benchmark path"),
         *common_args(),
     ]),
     Sub("baseline",
-        "Evaluate the AZ generalist (full search, C++ actor) vs scripted:hard over "
-        "the league matchup grid; report appended to checkpoints/baseline_report.log",
+        "Evaluate --player-a vs --player-b (default: the AZ generalist under full "
+        "search, C++ actor, vs scripted:hard) over the league matchup grid or one "
+        "--deck-a/--deck-b cell; report appended to checkpoints/baseline_report.log",
         items=[
-        Arg("model", "str", required=False, suggest="agent",
-            help=f"Model to evaluate (default {DEFAULT_BASELINE_MODEL} = the "
-                 "incumbent gen__azfinal.pt under search). An 'az:' spec or a .pt "
-                 "path runs on the C++ actor; its ?sims=&worlds=&c=&sb_* knobs "
-                 "override the --sims/--worlds/--c-puct/--sb-* flags. 'gen' (the "
-                 "PPO generalist), a .zip path, or an 'mcts:'/'azraw:' spec runs on "
-                 "the Python backend instead"),
+        Arg("--player-a", "str", default=DEFAULT_BASELINE_MODEL, suggest="agent",
+            help="Agent under test — player A (the two players alternate "
+                 f"physical seats). Default {DEFAULT_BASELINE_MODEL} = the "
+                 "incumbent gen__azfinal.pt under search. An 'az:' spec or a .pt "
+                 "path runs on the C++ actor when --player-b is scripted:hard; "
+                 "any other pair (a PPO 'gen'/.zip, an 'mcts:'/'azraw:' spec, "
+                 "or a non-scripted --player-b) runs on the Python backend"),
+        Arg("--player-b", "str", default=DEFAULT_BASELINE_OPPONENT, suggest="agent",
+            help="The reference agent — player B (default "
+                 f"{DEFAULT_BASELINE_OPPONENT}). Any agent spec: e.g. --player-a "
+                 "mcts:gen --player-b gen measures what search adds over the "
+                 "raw policy (the search A/B gate)"),
         Arg("--games", "int", default=DEFAULT_BASELINE_GAMES,
-            help=f"Matches per matchup (default {DEFAULT_BASELINE_GAMES}); seats "
-                 "alternate within each matchup (net in seat A for the first "
-                 "half, rounded up)"),
-        Arg("--deck", "str", default=None, suggest="deck",
-            help="Restrict the grid to this piloted deck (a mirror match unless "
-                 "--opponent names the scripted deck). Default: every league "
-                 "deck piloted vs every league deck — the full N×N grid, mirrors "
-                 "included"),
-        Arg("--opponent", "str", default=None, suggest="deck",
-            help="Restrict the scripted:hard side to this deck (alone: every "
-                 "league deck vs it; with --deck: that one cell)"),
-        Arg("--all", "flag",
-            help="Force the full league grid even when --deck/--opponent are "
-                 "given (the grid is already the default without them)"),
+            help=f"Matches per matchup — single games under --format bo1 "
+                 f"(default {DEFAULT_BASELINE_GAMES}); seats "
+                 "alternate within each matchup (player A in seat A for the "
+                 "first half, rounded up)"),
+        Arg("--deck-a", "str", default=None, suggest="deck",
+            help="Restrict the grid to this deck piloted by --player-a (a "
+                 "mirror match unless --deck-b names player B's deck). "
+                 "Default: every league deck piloted vs every league deck — the "
+                 "full N×N grid, mirrors included"),
+        Arg("--deck-b", "str", default=None, suggest="deck",
+            help="Restrict player B to this deck (alone: every league deck vs "
+                 "it; with --deck-a: that one cell)"),
         Arg("--mirrors", "flag",
-            help="Only the grid's diagonal: every league deck piloted vs "
-                 "scripted:hard on the same deck (one leg per deck, all sharing "
-                 "the run's single eval server)"),
+            help="Only the grid's diagonal: every league deck piloted by both "
+                 "players (one leg per deck, all sharing the run's single eval "
+                 "server)"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help=f"PUCT simulations per decision, TOTAL across --worlds (default "
-                 f"{DEFAULT_AZ_SIMS}, the league budget)"),
+                 f"{DEFAULT_AZ_SIMS}, the league budget). This and --worlds / "
+                 "--c-puct / --sb-* apply to every search seat (az:/mcts:/.pt) "
+                 "whose spec does not carry that ?knob itself"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS,
             help=f"Determinized worlds per search (default {DEFAULT_AZ_WORLDS})"),
         _c_puct(),
         *sb_search_args(),
         Arg("--workers", "int", default=DEFAULT_BASELINE_WORKERS,
             help="Actor legs (each one engine + search process) or Python "
-                 f"matchup workers in flight at once (default "
-                 f"{DEFAULT_BASELINE_WORKERS})"),
+                 "workers in flight at once (default "
+                 f"{DEFAULT_BASELINE_WORKERS}). The Python backend splits a "
+                 "matchup into contiguous game chunks when there are fewer "
+                 "matchups than workers"),
         Arg("--log", "str", default=None,
             help="Report file (default: checkpoints/baseline_report.log, appended)"),
         Arg("--record-dir", "str", default=None,
@@ -1262,12 +1978,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--no-record", "flag", help="Do not record shards"),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N,
             help="n-step TD horizon stored in the recorded shards"),
-        Arg("--seed", "int", default=None,
-            help="Base RNG seed (matchup i uses seed + i*100003; default: randomly "
-                 "drawn and printed)"),
-        Arg("--bo1", "flag",
-            help="Single-game mode. baseline defaults to bo3 matches; this opts back "
-                 "into one-off games (--bo3 is a redundant no-op here)"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (matchup i uses seed + i*100003; default: 1)"),
+        format_arg(),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
@@ -1276,11 +1989,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     # ── AlphaZero (Phase C) ───────────────────────────────────────────────────
     Sub("az-selfplay",
-        "Generate AlphaZero self-play data (focus deck vs mirror + roster, bo1)", items=[
-        Arg("--deck", "str", default="delver", suggest="deck",
-            help="Focus deck (.dk stem); its opponent is a mirror with "
+        "Generate AlphaZero self-play data (focus deck vs mirror + roster)", items=[
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Focus deck the learner pilots (.dk stem); its opponent is a "
+                 "mirror with "
                  "P=--mirror-frac, else a uniform league-roster draw"),
-        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Games to generate"),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES,
+            help="Matches to generate — single games under --format bo1 "
+                 f"(default {DEFAULT_AZ_GAMES})"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
@@ -1314,10 +2030,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--seed", "int", default=None,
             help="Base RNG seed (default: randomly drawn at launch and "
                  "printed, so the run stays reproducible after the fact)"),
+        format_arg(" — the pooled az_data/gen window is bo3, so write bo1 "
+                   "shards to a separate --out"),
         Arg("--expert", "flag",
             help="Write EXPERT demonstration shards instead of self-play: "
                  "scripted:hard pilots both seats and pi is a one-hot on the "
-                 "expert's action (always bo3 to match the pooled shard window; "
+                 "expert's action (always bo3 to match the pooled shard window, so "
+                 "--format bo1 is rejected; "
                  "sims/worlds/checkpoint are ignored)"),
         Arg("--expert-opponent", "str", default=None,
             help="Expert mode only: scripted-agent spec for the OPPONENT seat "
@@ -1325,13 +2044,15 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
                  "wins. Default: hard both seats, both recorded"),
+        Arg("--merge-dupes", "int", default=1,
+            help="Merge interchangeable duplicate menu actions into one search "
+                 "edge (decode.menu_merge_reps; default 1, 0 = one edge per copy)"),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
         _no_cross_world(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
         Arg("--batches", "int", default=DEFAULT_AZ_TRAIN_BATCHES, help="Optimizer updates"),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
@@ -1346,12 +2067,15 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--fresh", "flag", help="Start from random init"),
         Arg("--snapshot-every", "int", default=0,
             help="Also save an intermediate gen__azv{steps}.pt every N batches (0=off)"),
-        Arg("--seed", "int", default=0),
+        Arg("--seed", "int", default=None,
+            help="Init / batch-sampling seed (default: randomly drawn at "
+                 "launch and printed)"),
         *sb_train_args(),
     ]),
     Sub("az-eval", "Gate a candidate AZNet vs the incumbent (sequential test, "
                    "MCTS at the training sim budget)", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Focus deck (.dk stem) added to the gate's roster-wide panel"),
         Arg("--candidate", "str", required=True, suggest="az_checkpoint",
             help="Candidate AZ .pt ('gen' or a path)"),
         Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
@@ -1399,10 +2123,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "every one of those candidate-vs-incumbent games becomes "
                  "training data — the cross-net signal pure self-play lacks"),
         _c_puct(),
-        Arg("--seed", "int", default=1),
-        Arg("--bo1", "flag",
-            help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
-                 "opts back into one-off games"),
+        Arg("--seed", "int", default=1,
+            help="Base gate seed (every round's and matchup's seeds derive "
+                 "from it; default: 1)"),
+        format_arg(" — the gate's win rate is per match in bo3"),
         Arg("--workers", "int", default=None,
             help="Process-pool fan-out over the gate's matchup panel (default "
                  "max(1, cpu-1), capped at the panel size; 1 = serial). "
@@ -1419,10 +2143,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("az",
         "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "
-        "opponent matrix (default: whole league; pass one --deck to fix a focus). "
-        "bo3 by default (per-game value target); --bo1 to opt out",
+        "opponent matrix (default: whole league; pass one deck in --decks to fix "
+        "a focus). "
+        "bo3 by default (per-game value target); --format bo1 to opt out",
         items=[
-        Arg("--deck", "str", default=None, suggest="league_deck", multi=True,
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated FOCUS deck pool the generalist pilots "
                  "(default: every deck in decks/league/). Pass a single deck to "
                  "fix one focus (the classic single-deck cycle)."),
@@ -1431,7 +2156,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "(default: every deck in decks/league/). Each focus deck plays "
                  "each; per game the opponent is the mirror with P=--mirror-frac, "
                  "else a uniform draw from this pool."),
-        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Self-play games this cycle"),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES,
+            help="Self-play matches this cycle — single games under --format "
+                 f"bo1 (default {DEFAULT_AZ_GAMES})"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="Self-play PUCT sims, TOTAL across --worlds "
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
@@ -1553,9 +2280,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "net+MCTS pilots the focus seat (only the net seat's decisions "
                  "become training samples). Forces the Python backend; 1.0 = "
                  "every game vs scripted hard. Default 0 = pure self-play."),
-        Arg("--bo1", "flag",
-            help="Run bo1 self-play + gate. The az cycle defaults to bo3 matches "
-                 "with a per-game value target; this opts back into single games"),
+        format_arg(" — self-play + gate; the value target is per game either way"),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
@@ -1563,7 +2288,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
-        "decks/league/ roster (bo3 by default; --bo1 to opt out)", items=[
+        "decks/league/ roster (bo3 by default; --format bo1 to opt out)", items=[
         Arg("--resume", "flag",
             help="Resume an interrupted az-league run from its saved progress "
                  "(checkpoints/_az_league_progress.json, rewritten after each deck "
@@ -1578,7 +2303,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "interrupted; still resumable via --resume)"),
         Arg("--cycles-per-deck", "int", default=1,
             help="az cycles to run per deck per rotation"),
-        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Self-play games per cycle"),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES,
+            help="Self-play matches per cycle — single games under --format "
+                 f"bo1 (default {DEFAULT_AZ_GAMES})"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="Self-play PUCT sims, TOTAL across --worlds "
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
@@ -1723,269 +2450,868 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "become training samples). Forces the Python backend; 1.0 = "
                  "every game vs scripted hard. Default 0 = pure self-play "
                  "(persisted in the resume sidecar)."),
-        Arg("--bo1", "flag",
-            help="Run bo1 self-play + gate for every slot. The league defaults to "
-                 "bo3 matches with a per-game value target; this opts back into "
-                 "single games (persisted in the resume sidecar)"),
+        format_arg(" — every slot's self-play + gate; the value target is per "
+                   "game either way (persisted in the resume sidecar)"),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
         _no_cross_world(),
     ]),
+    # ── Throughput benchmarks ─────────────────────────────────────────────────
+    Sub("bench-actor",
+        "Benchmark AZ self-play: the C++ az_actor legs (batch sweep, "
+        "cross-world, central eval server) vs the in-process Python "
+        "az_selfplay leg on the same net and workload", items=[
+        Arg("--deck-a", "str", default="league/ur_delver", suggest="deck",
+            help="Player A deck (default league/ur_delver)"),
+        Arg("--deck-b", "str", default=None, suggest="deck",
+            help="Player B deck (default: mirror = --deck-a)"),
+        Arg("--player-b", "choice", default=BENCH_PLAYER_SELF,
+            choices=(BENCH_PLAYER_SELF, "scripted"),
+            help=f"Player B: '{BENCH_PLAYER_SELF}' (default) = pure self-play, "
+                 "the net+MCTS on both seats; 'scripted' = scripted:hard on "
+                 "seat B (the C++ legs via the scripted oracle, the Python leg "
+                 "in-process) with the net+MCTS on seat A — both legs the same "
+                 "workload"),
+        Arg("--games", "int", default=4,
+            help="Matches per leg (per actor process with --fleet; default 4)"),
+        Arg("--sims", "int", default=DEFAULT_AZ_FAST_SIMS,
+            help="PUCT simulations per decision, TOTAL across --worlds "
+                 f"(default {DEFAULT_AZ_FAST_SIMS}, the fast budget — the "
+                 "Python leg makes the league budget impractically slow)"),
+        Arg("--worlds", "int", default=4,
+            help="Determinized worlds per search (default 4)"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (actor process i uses seed + i*100000; "
+                 "default 1)"),
+        Arg("--batch", "str", default="1", metavar="K[,K...]",
+            help="Comma-separated actor --batch values, one C++ leg each "
+                 "(K>1 = virtual-loss batched leaf evaluation; default 1)"),
+        _no_cross_world(),
+        Arg("--no-python", "flag",
+            help="Skip the Python az_selfplay leg (C++ legs only)"),
+        _actor_device(),
+        _eval_server(),
+        Arg("--eval-server-device", "choice", default=None,
+            choices=EVAL_DEVICE_CHOICES,
+            help="Device of the eval-server leg's az_eval_server (default: "
+                 "--actor-device, cpu -> cuda, as the az-* commands start it; "
+                 "cpu exercises the Stage C socket path without a GPU)"),
+        Arg("--fleet", "int", default=1,
+            help="Concurrent actor processes per C++ leg (each plays --games "
+                 "matches on a disjoint seed range); with the eval server this "
+                 "measures the fleet-wide batching the server exists for "
+                 "(default 1)"),
+    ]),
+    Sub("bench-workers",
+        "Benchmark AZ self-play throughput across worker counts (bo3, shards "
+        "pooled for the next az-train; optional az-train + az-eval legs)",
+        items=[
+        Arg("--workers", "str", default="32,48,64,74", metavar="N[,N...]",
+            help="Comma-separated worker counts, one self-play leg each "
+                 "(default 32,48,64,74)"),
+        Arg("--random-draw", "flag",
+            help="Use the random --mirror-frac draw schedule of --games "
+                 "matches instead of the default --exhaustive-selfplay matrix "
+                 "(what the az-league curriculum slots run)"),
+        Arg("--exhaustive-repeats", "int", default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+            help="Exhaustive mode: play every self-play cell N times per leg "
+                 f"(default {DEFAULT_AZ_EXHAUSTIVE_REPEATS})"),
+        Arg("--scripted-cells", "int", default=DEFAULT_AZ_SCRIPTED_CELLS,
+            help="Exhaustive mode: rotating vs-scripted:hard cells per leg "
+                 f"(default {DEFAULT_AZ_SCRIPTED_CELLS}); the slot index "
+                 "advances per leg so legs tile different cells"),
+        Arg("--slot-base", "int", default=0,
+            help="Exhaustive mode: slot index of the FIRST leg for the "
+                 "rotating scripted-cell slice (leg i uses slot-base+i)"),
+        Arg("--games", "int", default=148,
+            help="Matches per leg under --random-draw (default 148; keep it >= "
+                 "the largest worker count or generate() clamps workers down "
+                 "to it). Ignored by the exhaustive matrix, which fixes the "
+                 "count itself"),
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated focus-deck pool (default: every deck in "
+                 "decks/league/ — the most distinct actor matchup groups, so "
+                 "high worker counts can bind)"),
+        Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
+            help="PUCT simulations per decision, TOTAL across --worlds "
+                 f"(default {DEFAULT_AZ_SIMS})"),
+        Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS,
+            help=f"Determinized worlds per search (default {DEFAULT_AZ_WORLDS})"),
+        _c_puct(),
+        Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
+            help="--random-draw only: P(opponent deck == focus deck) per match "
+                 f"(default {DEFAULT_AZ_MIRROR_FRAC})"),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
+        Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
+            help="AZ (.pt) / PPO (.zip) ckpt or 'gen' (default: generalist AZ "
+                 "ckpt, else gen PPO warm-start)"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed; leg i uses seed + i*1000003 so every leg "
+                 "plays fresh games (default 1)"),
+        Arg("--out", "str", default=None,
+            help="Shard output dir (default: the az_data/gen training pool, "
+                 "so the next az-train incorporates the shards; point elsewhere "
+                 "to keep the bench data OUT of the pool)"),
+        _actor_mode(),
+        _actor_device(),
+        _eval_server(),
+        _no_cross_world(),
+        Arg("--train", "flag",
+            help="After all legs, run `train.py az-train` over the fresh shards "
+                 f"(AUTO batches: --epoch-frac {DEFAULT_AZ_EPOCH_FRAC}, "
+                 f"--q-mix {DEFAULT_AZ_Q_MIX} — the az-train defaults), then "
+                 "`train.py az-eval` gating the candidate at the training "
+                 "budget with one panel round"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="The az-eval leg's --deck-a (default delver; the az-train "
+                 "shard pool is deck-agnostic)"),
+        Arg("--window", "int", default=0,
+            help="az-train --window (default 0 = AUTO: this benchmark's shards "
+                 "PLUS --pool-extra shards, else 2x the bench shards)"),
+        Arg("--pool-extra", "str", default="auto",
+            help="Pre-existing pool shards the AUTO --window also covers. "
+                 "'auto' (default) counts the most recent az-league run's "
+                 "shards (its completed slots from the league progress "
+                 "sidecar, plus the pooled gate shards and an interrupted "
+                 "slot's partial shards); an integer sets the count; 0 "
+                 "disables"),
+        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
+            help=f"az-train --batches (default {DEFAULT_AZ_CYCLE_BATCHES} = "
+                 "AUTO, as in the az cycle)"),
+        Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
+            help=f"az-eval --games (default {DEFAULT_AZ_EVAL_GAMES})"),
+        Arg("--no-eval", "flag", help="With --train: skip the az-eval leg"),
+        Arg("--no-promote", "flag",
+            help="Do NOT pass --promote to az-eval (default passes it, like the "
+                 "az cycle's gate; the sequential test + floor still decide)"),
+        _no_gate_shards(),
+        Arg("--dry-run", "flag",
+            help="Print each leg's plan (schedule size, distinct matchup "
+                 "groups, effective concurrency cap) and the train/eval argv, "
+                 "then exit without playing anything"),
+    ]),
+    Sub("bench-nenvs",
+        "Benchmark PPO training throughput vs --n-envs to size it for this "
+        "machine (steps/s, per-env steps/s, peak RAM; nothing is saved)",
+        items=[
+        Arg("--mode", "choice", default="self-play",
+            choices=("league", "self-play", "scripted"),
+            help="Training path to benchmark: league (the PFSP league pool, "
+                 "mixed self-deck — what 'train.py league' runs), self-play "
+                 "(default; needs a gen checkpoint, else it silently measures "
+                 "the scripted fallback) or scripted"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Deck the learner pilots (ignored by --mode league)"),
+        Arg("--deck-b", "str", default=None, suggest="deck",
+            help="Opponent deck (default: mirror = --deck-a; ignored by "
+                 "--mode league)"),
+        Arg("--n-envs", "str", default=None, metavar="N[,N...]",
+            help="Comma-separated n_envs values to sweep (default: derived "
+                 "from the CPU count)"),
+        Arg("--timesteps", "int", default=250_000,
+            help="Env steps in the timed phase per n_envs point, after a "
+                 "1-rollout warmup (rounded up to whole rollouts; default "
+                 "250000)"),
+        *train_opts_only("embed_dim", "popart"),
+        Arg("--ram-budget-gb", "float", default=None,
+            help="Recommend the fastest n_envs whose peak RAM stays under this"),
+        *common_args(INTERACTIVE_BINARY),
+    ]),
 ])
 
 # analysis.py — every command loads a trained model and simulates games (the
 # .rmrec recording-file commands were removed; the live model-sim path is the
-# single source). Two commands remain: 'report' is capture-mode (emits a
-# self-contained HTML battery and exits), while 'interactive' opens the REPL
-# (TUI hands over the terminal) — the REPL supersets every per-analysis view
-# (cardvalue, shap, value-swings, regret, entropy, consistency, targeting,
-# calibration, turning, clusters, whatif, …) and is the only mode with a live
-# env for `run`/`whatif`. The former standalone analysis subcommands were thin
-# wrappers over those same REPL views and were dropped.
-ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
-    Sub("report", "Run the standard battery and emit a single HTML report", items=[
-        *sim_args(),
-        *search_budget_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
-    ]),
-    Sub("interactive",
-        "Interactive session: simulate games then inspect replays, board states, "
-        "value charts, SHAP, counterfactual whatif, and more", mode="interactive", items=[
-            *sim_args(),
-            *search_budget_args(),
-            Arg("--n-games", "int", default=20,
-                help="Games to pre-simulate before entering session (default: 20; 0 = skip)"),
-            Arg("--n-samples", "int", default=200, help="SHAP sample count (default: 200)"),
-            Arg("--n-background", "int", default=50, help="SHAP background size (default: 50)"),
-        ]),
-    Sub("search",
-        "Search-vs-raw comparison: per searched decision, net priors vs MCTS "
-        "visit distribution and net value vs search root value (AZ or PPO ckpt)",
-        items=[
-            *sim_args(),
-            Arg("--n-games", "int", default=4,
-                help="Games to drive with the MCTS controller (default: 4)"),
-            Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
-            Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
-            *sb_search_args(),
-            Arg("--c", "float", default=DEFAULT_AZ_C_PUCT,
-                help=f"PUCT exploration constant c_puct (default {DEFAULT_AZ_C_PUCT})"),
-            Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
-            Arg("--top", "int", default=8,
-                help="Biggest prior-vs-visit disagreement decisions to decode (default: 8)"),
-            Arg("--workers", "int", default=1,
-                help="Parallel worker processes (default: 1 = sequential). Splits "
-                     "--n-games evenly across processes, each with its own "
-                     "evaluator/controller; results are merged before reporting."),
-        ]),
-])
-
-# tui_analysis.py — the analysis REPL as a full-screen Textual app: game list,
+# single source; 'browse' also pages recorded shards and saved traces).
+# 'report' is capture-mode (emits a self-contained HTML battery and exits).
+#
+# analysis.py browse — the full-screen analysis browser: game list,
 # board-state pager (one decision step at a time), a clickable V(s) histogram
-# for seeking, and every REPL analysis view. Same sim args as analysis.py minus
-# the chart-output flags (charts stay in analysis.py's report/interactive).
-ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, subs=[
-    Sub("browse",
-        "Full-screen analysis browser: page through board states with a "
-        "clickable V(s) histogram, plus every analysis view", mode="interactive",
-        items=[
-            # The model positional doubles as the shard mode's value-net spec,
-            # so it gets a 'gen' default (live mode resolves that to the one
-            # generalist anyway).
-            *[replace(a, required=False, default="gen") if a.name == "model"
-              else a
-              for a in sim_args() if a.name not in ("--out", "--show")],
-            *search_budget_args(),
-            Arg("--n-games", "int", default=20,
-                help="Games to simulate on startup (default: 20); in --shards "
-                     "mode, the max recorded matches to load"),
-            Arg("--shards", "str", default=None,
-                help="Browse recorded AZ self-play instead of simulating: "
-                     "directory of shard_*.npz files (e.g. train/az_data/gen). "
-                     "Steps are the searched decision roots; pi (the search's "
-                     "visit posterior) fills the policy column, and the model "
-                     "spec is loaded as the V(s) net. whatif/run need a live "
-                     "env and stay disabled."),
-            Arg("--seat", "choice", choices=("A", "B"), default="A",
-                help="Shard mode: viewpoint seat — that seat's searched "
-                     "decisions are the browsable steps, the other seat's are "
-                     "summarized as opponent actions (default: A)"),
-            Arg("--no-net", "flag",
-                help="Shard mode: skip loading the value net; V(s) falls back "
-                     "to each step's recorded game outcome z (torch-free)"),
-        ]),
+# for seeking, every analysis view (text analyses, per-game transcripts, saved
+# PNG charts, counterfactual whatif), on the Textual board (tui_analysis)
+# or the PySide6 app (gui_browser). ONE --source picks what it browses (see
+# BROWSE_SOURCE_DESTS). Same sim args as the other analysis commands minus the
+# chart-output flags. The GUI's New Analysis Session dialog mirrors these flags
+# (see launcher_config.py).
+ANALYSIS_BROWSE_SUB = Sub(
+    "browse",
+    "Full-screen analysis browser: page through board states with a "
+    "clickable V(s) histogram, plus every analysis view — over simulated "
+    "games, recorded shards, or a saved .rmtrace session", mode="interactive",
+    items=[
+        Arg("--source", "str", default=BROWSE_SOURCE_SIMULATE,
+            help=f"What to browse: '{BROWSE_SOURCE_SIMULATE}' (the default) "
+                 "simulates --games games of --player-a vs --player-b; a "
+                 f"directory of {SHARD_GLOB} files (recorded AZ self-play, e.g. "
+                 "train/az_data/gen, or a GUI recording under "
+                 "train/az_data/recorded/) replays those decisions — pi (the "
+                 "search's visit posterior) fills the policy column and whatif/"
+                 f"run stay disabled without a live env; a {TRACE_EXT} file "
+                 "opens a saved analysis session. Flags that do not apply to "
+                 "the chosen source are errors"),
+        Arg("--board", "choice", choices=BROWSE_BOARD_CHOICES,
+            default=DEFAULT_BROWSE_BOARD,
+            help="Browser front end: tui (the Textual terminal browser) or gui "
+                 "(the PySide6 app's analysis pane — falls back to tui when "
+                 f"PySide6 is missing) (default {DEFAULT_BROWSE_BOARD})"),
+        # --player-a (the inspected model) doubles as the shard/trace sources'
+        # value / replay-search net, so it gets a 'gen' default (simulate
+        # resolves that to the one generalist anyway); --deck-a defaults to a
+        # league deck so a bare launch simulates straight away.
+        *[replace(a, required=False, default="gen",
+                  help=a.help + " With a shard or .rmtrace --source: the net "
+                                "for V(s), the probes and the replay search "
+                                "(default gen)")
+          if a.name == "--player-a" else
+          replace(a, default=DEFAULT_BROWSE_DECK_A,
+                  help=a.help + f" (default {DEFAULT_BROWSE_DECK_A})")
+          if a.name == "--deck-a" else a
+          for a in sim_args() if a.name not in ("--out", "--show")],
+        *search_knob_args(),
+        Arg("--games", "int", default=20,
+            help="Games to simulate on startup — each a whole match under "
+                 "--format bo3 (default: 20). With a shard --source: the "
+                 "first N recorded bo3 matches (oldest first) to load, reading "
+                 "only the shards they need (0 = every match; refused for a "
+                 "directory over 2 GiB of shards, e.g. a training pool)"),
+        Arg("--seat", "choice", choices=("A", "B"), default="A",
+            help="Shard --source: viewpoint seat — that seat's searched "
+                 "decisions are the browsable steps, the other seat's are "
+                 "summarized as opponent actions (default: A)"),
+        Arg("--no-net", "flag",
+            help="Shard --source: skip loading the value net; V(s) falls back "
+                 "to each step's recorded game outcome z (torch-free)"),
+    ])
+
+ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
+    ANALYSIS_BROWSE_SUB,
+    Sub("report", "Run the standard battery and emit a single HTML report "
+        "(a search --player-a adds the search-vs-net sections)", items=[
+        *sim_args(),
+        *search_knob_args(),
+        Arg("--games", "int", default=50,
+            help="Games to simulate — each a whole match under --format bo3 "
+                 "(default: 50)"),
+        Arg("--workers", "int", default=1,
+            help="Parallel worker processes simulating the --games (default: "
+                 "1 = in-process). Each rebuilds its own model/engine and "
+                 "plays a contiguous slice of the seeds, so the engine seeds "
+                 "and seats are the same whatever the count (a search seat's "
+                 "own RNG stream restarts per worker); an unset "
+                 "--search-procs is 1 per worker"),
+    ]),
 ])
 
-# play.py — interactive game; the TUI path delegates to tui_game.py (placeholder).
+# play.py — interactive human-vs-opponent play on one of three boards: the
+# PySide6 GUI (gui_main.py), the Textual TUI (tui_game.py), or plain text on
+# the shared runner loop. The GUI's New Play Session dialog mirrors these flags
+# field for field (same dests, same defaults; see launcher_config.py).
 PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
     Sub("play", "Play interactively against a trained model", mode="interactive", items=[
-        Arg("--human-deck", "str", required=True, suggest="deck",
-            help="Deck the human plays (stem of .dk file)"),
-        Arg("--model-deck", "str", required=True, suggest="deck",
-            help="Deck the model plays (stem of .dk file). The default opponent is "
-                 "the one generalist (gen__final.zip, else the newest gen__v*.zip) "
-                 "piloting this deck."),
-        Arg("--model", "str", default=None, suggest="agent",
-            help="Override: explicit path to trained model .zip, or any "
-                 "opponents.make_controller spec — az:gen (MCTS+AZNet), "
-                 "azraw:gen (raw AZ policy), mcts:gen, scripted:<tier> "
-                 "(default: the generalist gen__final.zip)"),
-        Arg("--sims", "int", default=None,
-            help="Search opponent only (az:/mcts: --model): MCTS simulations "
-                 "per decision; overrides any sims= already in the spec (TUI only)"),
-        Arg("--worlds", "int", default=None,
-            help="Search opponent only: determinized worlds per decision "
-                 "(sims are split across worlds); overrides the spec's worlds= (TUI only)"),
-        Arg("--think-time", "float", default=None,
-            help="Search opponent only (az:/mcts: --model): wall-clock seconds "
-                 "per decision — the search runs as many simulations as fit in "
-                 "this budget (more time = stronger play); overrides sims= as the "
-                 "terminator (TUI only)"),
-        Arg("--search-procs", "int", default=None,
-            help="Search opponent only (az:/mcts: --model): number of engine "
-                 "processes to fan the determinized worlds across for a faster "
-                 "search (world-parallel; more procs = more sims/decision in the "
-                 "same wall-clock). Default for interactive play is AUTO — half "
-                 "the visible cores, capped at the world count (TUI only)"),
-        Arg("--match-clock", "float", default=None,
-            help="Search opponent only: total wall-clock thinking bank in "
-                 "seconds for the WHOLE match (chess clock; 1500 = 25 min for "
-                 "a bo3). Each decision draws a variable budget from the bank "
-                 "— harder decisions earn more time, obvious ones stop early. "
-                 "Appends clock= to the spec (TUI only)"),
+        Arg("--board", "choice", choices=BOARD_CHOICES, default=DEFAULT_BOARD,
+            help="Game board: gui (PySide6 desktop board — falls back to the "
+                 "TUI with a notice when PySide6 is missing), tui (Textual "
+                 "terminal board), or text (plain transcript with typed "
+                 "actions). --board gui with no --player-a/-b or --deck-a/-b "
+                 f"opens the GUI app on its welcome pane (default {DEFAULT_BOARD})"),
+        Arg("--player-a", "str", default=None, suggest="agent",
+            help="Player A (on the play in game 1 unless --on-the-play says "
+                 "otherwise): 'human' for you, or any "
+                 "opponents.make_controller spec for the opponent — 'gen', a "
+                 "model .zip path, az:gen (MCTS+AZNet), azraw:gen (raw AZ "
+                 "policy), mcts:gen, scripted:<tier>. Exactly one seat is "
+                 "'human'; an omitted seat is the human when the other names "
+                 "the opponent, else the default opponent "
+                 f"({DEFAULT_PLAY_OPPONENT}). Default: human"),
+        Arg("--player-b", "str", default=None, suggest="agent",
+            help="Player B: 'human' or an opponent spec, as for --player-a "
+                 f"(default: {DEFAULT_PLAY_OPPONENT}, or the human when "
+                 "--player-a names the opponent)"),
+        Arg("--deck-a", "str", default=DEFAULT_PLAY_DECK_A, suggest="deck",
+            help=f"Player A's deck (.dk stem; default {DEFAULT_PLAY_DECK_A})"),
+        Arg("--deck-b", "str", default=DEFAULT_PLAY_DECK_B, suggest="deck",
+            help=f"Player B's deck (.dk stem; default {DEFAULT_PLAY_DECK_B})"),
+        Arg("--on-the-play", "choice", choices=ON_THE_PLAY_CHOICES,
+            default=DEFAULT_ON_THE_PLAY,
+            help="Which side is on the play in game 1: a (player A), b (player "
+                 "B's agent and deck move to the engine's first seat, so the "
+                 "board labels that side Player A), or random (a coin flip — "
+                 "seeded by --seed when given, so a seeded session is "
+                 f"reproducible). Default {DEFAULT_ON_THE_PLAY}"),
+        format_arg(),
         Arg("--human-clock", "float", default=None,
             help="Arm YOUR OWN chess clock: total wall-clock thinking bank in "
                  "seconds for the whole match, debited by the time you spend "
                  "on each of your decisions (the opponent's bank is the "
                  "separate --match-clock). Unset = untimed. On its own the "
                  "bank is only a readout; add --hard-timeout to make it "
-                 "decisive (TUI/GUI only)"),
+                 "decisive (gui/tui boards)"),
         Arg("--hard-timeout", "flag",
             help="Losing on time is real: a seat that reaches its own decision "
                  "with an empty bank concedes the match (CR 104.3a). Applies to "
                  "both your --human-clock and a search opponent's --match-clock, "
-                 "whose bank is otherwise SOFT (it just thinks faster). "
-                 "TUI/GUI only"),
-        Arg("--paced", "flag",
-            help="Mask opponent response-timing tells: a small jittered "
-                 "(~0.02-0.05s) floor on every decision, plus occasional "
-                 "0.2-0.5s fake-think pauses when the opponent was never even "
-                 "offered a decision (default ON for a search opponent with "
-                 "--match-clock/--think-time; TUI only)"),
-        Arg("--no-paced", "flag",
-            help="Disable the paced-response floor (instant obvious decisions)"),
-        Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
-        Arg("--gui", "flag",
-            help="Launch the PySide6 desktop game board (train/gui_game.py). "
-                 "Takes precedence over --tui. Needs PySide6 (pip install -r "
-                 "train/requirements-gui.txt); if it is missing, falls back to "
-                 "the TUI when --tui is also set, else errors with the install hint."),
-        Arg("--analysis", "flag",
-            help="GUI only: open the analysis window (live MCTS evaluation of "
-                 "your decisions on a detached engine copy; default evaluator "
-                 "az:gen). The no-args GUI launcher has its own checkbox for this."),
+                 "whose bank is otherwise SOFT (it just thinks faster) "
+                 "(gui/tui boards)"),
+        *search_knob_args(worlds=DEFAULT_PLAY_WORLDS,
+                          match_clock=DEFAULT_PLAY_MATCH_CLOCK, paced=True),
         Arg("--record-shards", "flag",
-            help="GUI only: record every decision of the session into "
-                 "trainer-schema shard files under train/az_data/recorded/ — "
-                 "a search opponent's searched decisions with their full "
-                 "visit posterior, everything else as one-hot rows. Browse "
-                 "them live via View ▸ Analyze Recording… (F10), or later "
-                 "with the analysis browser / az-inspect / tui_analysis "
-                 "pointed at the directory. The launcher dialog has its own "
-                 "checkbox for this."),
-        Arg("--scripted", "flag",
-            help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
-        Arg("--bo1", "flag",
-            help="Play a single game instead of the default best-of-three match (TUI only)"),
-        Arg("--player", "choice", choices=("A", "B"), default=None,
-            help="Which player the human controls, in CLI text mode (default: random)"),
+            help="Record every decision of the session into trainer-schema "
+                 "shard files under train/az_data/recorded/ — a search "
+                 "opponent's searched decisions with their full visit "
+                 "posterior, everything else as one-hot rows. Browse them "
+                 "with `analysis.py browse --source DIR` or az-inspect "
+                 "--shards DIR (on the GUI board also live via "
+                 "View ▸ Analyze Recording…, F10) (gui/tui boards)"),
+        Arg("--analysis", "bool", default=None,
+            help="The analysis window: live MCTS evaluation of your "
+                 "decisions on a detached engine copy (F9 toggles it). GUI "
+                 "board only; unset = on for the GUI board"),
+        Arg("--analysis-evaluator", "str", default=DEFAULT_ANALYSIS_EVALUATOR,
+            help="Analysis window evaluator: az:gen (AZ net, calibrated win rate), "
+                 "mcts:gen (PPO heads), uniform (no model), or a checkpoint "
+                 f"path (default {DEFAULT_ANALYSIS_EVALUATOR})"),
+        Arg("--analysis-worlds", "int", default=DEFAULT_ANALYSIS_WORLDS,
+            help="Analysis window: determinized worlds per analysis run "
+                 f"(default {DEFAULT_ANALYSIS_WORLDS})"),
+        Arg("--analysis-procs", "int", default=None,
+            help="Analysis window: detached engines to fan the worlds across "
+                 "(default AUTO: half the visible cores, capped at the world "
+                 "count; the merged result is the same, just faster)"),
+        Arg("--analysis-cap", "int", default=DEFAULT_ANALYSIS_CAP,
+            help="Analysis window: simulation cap per analysis run (0 = run "
+                 f"until stopped; default {DEFAULT_ANALYSIS_CAP})"),
+        Arg("--analysis-auto", "bool", default=True,
+            help="Analysis window: start a run at every new analyzable "
+                 "decision (default on; --no-analysis-auto = only on F5)"),
+        Arg("--analysis-xw", "bool", default=True,
+            help="Analysis window: cross-world batched leaf evaluation "
+                 "(identical visits, faster chunks; default on — "
+                 "--no-analysis-xw only to debug)"),
+        Arg("--analysis-device", "choice", choices=EVAL_DEVICE_CHOICES,
+            default=None,
+            help="Analysis window: torch device for the evaluator's forwards "
+                 "(az:/checkpoint specs; uniform and mcts: stay on cpu). "
+                 "Unset = ROBOMAGE_EVAL_DEVICE, else cpu"),
         Arg("--seed", "int", default=None,
-            help="Engine RNG seed for a reproducible game (CLI text mode; default: random)"),
+            help="Engine RNG seed for a reproducible game (default: random)"),
         Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
     ]),
 ])
 
+# play.py's dests that name the session (seats / decks): a --board gui launch
+# with none of them opens the GUI app's welcome pane instead of a game.
+PLAY_SESSION_DESTS = frozenset({"player_a", "player_b", "deck_a", "deck_b"})
+# The analysis-window dests (GUI board only), minus the on/off switch itself.
+PLAY_ANALYSIS_DESTS = ("analysis_evaluator", "analysis_worlds", "analysis_procs",
+                       "analysis_cap", "analysis_auto", "analysis_xw",
+                       "analysis_device")
+
+
+HUMAN_SPEC = "human"
+
+
+def is_human_spec(spec) -> bool:
+    """True for the agent spec that seats the interactive human."""
+    return isinstance(spec, str) and spec.strip().lower() == HUMAN_SPEC
+
+
+def resolve_play_seats(player_a, player_b):
+    """``(human_seat, opponent_spec)`` for play's --player-a / --player-b.
+
+    Exactly one seat is the spec ``human``. An omitted (None) seat fills in:
+    the default opponent when the other seat is human, else the human. With
+    neither given the human is player A. ``opponent_spec`` None means the
+    default opponent (the generalist). Raises ValueError unless exactly one
+    seat ends up human."""
+    a, b = player_a, player_b
+    if a is None and b is None:
+        a = HUMAN_SPEC
+    elif a is None:
+        a = None if is_human_spec(b) else HUMAN_SPEC
+    elif b is None:
+        b = None if is_human_spec(a) else HUMAN_SPEC
+    if is_human_spec(a) and is_human_spec(b):
+        raise ValueError("--player-a and --player-b are both 'human'; one "
+                         "seat must be the opponent")
+    if not (is_human_spec(a) or is_human_spec(b)):
+        raise ValueError("exactly one of --player-a / --player-b must be "
+                         f"'{HUMAN_SPEC}' (got {a!r} and {b!r})")
+    return ("A", b) if is_human_spec(a) else ("B", a)
+
+
+def play_seat_specs(human_seat, opponent_spec):
+    """``(player_a, player_b)`` specs for a resolved ``(human_seat,
+    opponent_spec)``: 'human' on the human's seat, the opponent on the other."""
+    return ((HUMAN_SPEC, opponent_spec) if human_seat == "A"
+            else (opponent_spec, HUMAN_SPEC))
+
+
+def resolve_on_the_play(choice, seed=None):
+    """The side ('A' or 'B') that --on-the-play ``choice`` puts on the play.
+
+    'random' is a coin flip: seeded from ``seed`` when one is given (the same
+    seed always picks the same side), else from the OS entropy source. Raises
+    ValueError on anything but a/b/random (case-insensitive)."""
+    key = (DEFAULT_ON_THE_PLAY if choice is None else str(choice)).lower()
+    if key not in ON_THE_PLAY_CHOICES:
+        raise ValueError(f"--on-the-play must be one of "
+                         f"{'/'.join(ON_THE_PLAY_CHOICES)} (got {choice!r})")
+    if key != "random":
+        return key.upper()
+    rng = (random.SystemRandom() if seed is None
+           else random.Random(f"on-the-play:{seed}"))
+    return rng.choice("AB")
+
+
+def order_play_sides(player_a, player_b, deck_a, deck_b, on_the_play):
+    """``(player_a, player_b, deck_a, deck_b)`` with the ``on_the_play`` side
+    ('A' or 'B', from :func:`resolve_on_the_play`) on the engine's seat A.
+
+    The engine always starts player A, so putting player B on the play swaps
+    the two (agent, deck) pairs between the seats."""
+    if on_the_play == "B":
+        return player_b, player_a, deck_b, deck_a
+    return player_a, player_b, deck_a, deck_b
+
+
+def seat_play_sides(human_seat, opponent_spec, deck_a, deck_b, on_the_play):
+    """``(human_seat, human_deck, opponent_deck)`` on the ENGINE's seats for a
+    resolved play session (``human_seat`` / ``opponent_spec`` from
+    :func:`resolve_play_seats`, ``deck_a`` / ``deck_b`` the --deck-a/-b
+    values), with the ``on_the_play`` side ('A' or 'B') on seat A."""
+    a, _b, deck_a, deck_b = order_play_sides(
+        *play_seat_specs(human_seat, opponent_spec), deck_a, deck_b,
+        on_the_play)
+    human_seat = "A" if is_human_spec(a) else "B"
+    return ((human_seat, deck_a, deck_b) if human_seat == "A"
+            else (human_seat, deck_b, deck_a))
+
+
+def on_the_play_note(choice, on_the_play, human_seat, opponent_spec,
+                     human_deck, opponent_deck):
+    """One line saying which side is on the play in game 1 (--on-the-play
+    ``choice`` resolved to ``on_the_play``), for a session already on the
+    engine's seats (:func:`seat_play_sides`), whose seat A starts."""
+    who, deck = (("you", human_deck) if human_seat == "A"
+                 else (opponent_spec, opponent_deck))
+    how = " (coin flip)" if str(choice).lower() == "random" else ""
+    line = (f"On the play in game 1{how}: player {on_the_play}'s side "
+            f"({who}, {deck})")
+    if on_the_play == "B":
+        line += (" — the sides are swapped, so the board labels it Player A "
+                 "(the engine's first seat)")
+    return line
+
+# The harness seat default: pass priority / take the first choice at every
+# decision the --play/--actions script does not make.
+HARNESS_DEFAULT_PLAYER = "auto"
+
 # test_harness.py — card-behaviour test harness (flat parser, no subcommand).
-# Mirrors the argparse in test_harness.main(); the launcher composes a command
-# and runs it in the real terminal (so --interactive's stdin prompts work).
+# test_harness.main() builds its parser from this Sub; the launcher composes a
+# command and runs it in the real terminal (so a 'human' seat's prompts work).
 HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
     Sub("harness", "Run a card-behaviour scenario through the engine",
         mode="interactive", items=[
-        Arg("--scenario", "str", help="Path to a JSON scenario file (supplies hands/library/etc.)"),
-        Arg("--hand-a", "str", help="Player A starting hand (comma-separated card names)"),
-        Arg("--library-a", "str", help="Player A library after the hand (comma-separated)"),
-        Arg("--hand-b", "str", help="Player B starting hand (comma-separated card names)"),
-        Arg("--library-b", "str", help="Player B library after the hand (comma-separated)"),
-        Arg("--deck-a", "str", suggest="deck", help="Use an existing deck file for Player A (stem, not path)"),
-        Arg("--deck-b", "str", suggest="deck", help="Use an existing deck file for Player B (stem, not path)"),
-        Arg("--battlefield-a", "str", help="Cards pre-placed on Player A's battlefield (comma-separated)"),
-        Arg("--battlefield-b", "str", help="Cards pre-placed on Player B's battlefield (comma-separated)"),
-        Arg("--actions", "str", help="Comma-separated action indices to play (e.g. 9,0,7,0,8)"),
-        Arg("--interactive", "flag", help="Prompt for an action index at each decision"),
-        Arg("--scripted", "flag", help="Drive both sides with the rule-based scripted agent"),
+        Arg("--scenario", "str",
+            help="Path to a JSON scenario file (hand_a/library_a/battlefield_a/"
+                 "…, life_a/b, actions or play, seed, max_decisions); a flag "
+                 "given on the command line overrides the scenario's value"),
+        Arg("--hand-a", "str",
+            help="Player A starting hand (comma-separated card names; builds a "
+                 "stacked temp deck, implies --no-shuffle)"),
+        Arg("--library-a", "str",
+            help="Player A library after the hand (comma-separated; padded to a "
+                 "15-card deck)"),
+        Arg("--hand-b", "str", help="Player B starting hand (see --hand-a)"),
+        Arg("--library-b", "str", help="Player B library after the hand (see --library-a)"),
+        Arg("--deck-a", "str", suggest="deck",
+            help="Existing deck file for Player A (stem relative to decks/, "
+                 "not a path; default: delver). Ignored when --hand-a is given"),
+        Arg("--deck-b", "str", suggest="deck",
+            help="Existing deck file for Player B (see --deck-a)"),
+        Arg("--battlefield-a", "str",
+            help="Cards starting on Player A's battlefield (comma-separated; "
+                 "no summoning sickness)"),
+        Arg("--battlefield-b", "str", help="Cards starting on Player B's battlefield"),
+        Arg("--graveyard-a", "str", help="Cards starting in Player A's graveyard (comma-separated)"),
+        Arg("--graveyard-b", "str", help="Cards starting in Player B's graveyard"),
+        Arg("--exile-a", "str", help="Cards starting in Player A's exile (comma-separated)"),
+        Arg("--exile-b", "str", help="Cards starting in Player B's exile"),
+        Arg("--sideboard-a", "str",
+            help="Cards starting in Player A's sideboard / 'outside the game' "
+                 "(comma-separated)"),
+        Arg("--sideboard-b", "str", help="Cards starting in Player B's sideboard"),
+        Arg("--life-a", "int", default=None,
+            help="Player A's starting life total (default 20) — exercises "
+                 "life-payment costs at a chosen life"),
+        Arg("--life-b", "int", default=None, help="Player B's starting life total (default 20)"),
+        Arg("--play", "str",
+            help="Semantic action script for BOTH seats (one spec per decision, "
+                 "comma-separated), resolved against the live menu, e.g. "
+                 "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" "
+                 "(grammar: action_spec.py). Prefix a spec with A:/B: to pin it "
+                 "to a seat — the other seat auto-passes until the keyed seat is "
+                 "on the clock. An unmatched/ambiguous spec fails loudly with the "
+                 "legal menu. Once the script runs out, --player-a/--player-b "
+                 "make the remaining decisions"),
+        Arg("--actions", "str",
+            help="Positional action-index script for BOTH seats (e.g. 9,0,7,0,8; "
+                 "fragile — prefer --play). Once it runs out, "
+                 "--player-a/--player-b make the remaining decisions"),
+        Arg("--player-a", "str", default=HARNESS_DEFAULT_PLAYER, suggest="agent",
+            help="Player A's agent for every decision the --play/--actions "
+                 "script does not make: any opponents.make_controller spec — "
+                 "'auto' (pass / first choice), 'scripted' (hard tier), "
+                 "'scripted:easy', 'scripted:random', 'explore' / "
+                 "'explore:patient' (coverage fuzzer; vary --seed), "
+                 "'human' (prompt at the terminal — needs a TTY), 'gen', "
+                 f"az:gen, … (default: {HARNESS_DEFAULT_PLAYER})"),
+        Arg("--player-b", "str", default=HARNESS_DEFAULT_PLAYER, suggest="agent",
+            help=f"Player B's agent (see --player-a; default: {HARNESS_DEFAULT_PLAYER})"),
+        format_arg(
+            ". A bo3 match: loser goes first next game; both players sideboard "
+            "between games; the default --max-decisions is 1500 (up to 3 games "
+            "+ sideboard decisions) vs 500 for bo1. Sculpted scenarios usually "
+            "want --format bo1"),
+        Arg("--merge-sideboard", "flag",
+            help="Fold each deck's SIDEBOARD: section into its mainboard "
+                 "(quantities summed) and run from a merged temp deck with NO "
+                 "sideboard — lets single-game fuzzing reach sideboard-only "
+                 "cards. Requires --deck-a and --deck-b (not inline "
+                 "--hand/--library seats) and --format bo1. Merged decks still "
+                 "shuffle"),
         Arg("--no-shuffle", "flag",
-            help="Don't shuffle libraries — deck-file order = draw order (implied by --hand-a/--hand-b)"),
-        Arg("--seed", "int", default=None, help="RNG seed (default: 1, or the scenario's seed)"),
-        Arg("--max-decisions", "int", default=None, help="Stop after N decisions (default: 500)"),
+            help="Don't shuffle libraries — deck-file order = draw order (first "
+                 "7 cards = opening hand). Implied by --hand-a/--hand-b; without "
+                 "it libraries shuffle with the seeded RNG"),
+        Arg("--coverage-json", "str", metavar="PATH",
+            help="Accumulate per-action-category and per-card offered/taken "
+                 "counters and write them as JSON to PATH at exit (with a "
+                 "never_offered list of deck cards). Read-only observation — "
+                 "play and RNG are unchanged. Combine per-game JSONs with "
+                 "train/coverage_report.py merge/summarize"),
+        Arg("--log-decisions", "flag",
+            help="Have the engine write its self-contained RMLOG v2 decision "
+                 "log (bin/resources/logs/game_<seed>.log), replayable with "
+                 "--replay alone. Off by default in machine mode"),
+        Arg("--seed", "int", default=None,
+            help="RNG seed (default: 1, or the scenario's seed)"),
+        Arg("--max-decisions", "int", default=None,
+            help="Stop after N decisions (default: 500 for bo1 / 1500 for bo3, "
+                 "or the scenario's max_decisions)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
     ]),
 ])
 
-# tui_az_inspect.py — static AZ checkpoint inspector (flat parser, no
-# subcommand). Mirrors tui_az_inspect.build_parser(); the individual views are
-# also available non-interactively as az_inspect.py subcommands.
-AZ_INSPECT_TOOL = Tool("az-inspect", "train/tui_az_inspect.py", flat=True, subs=[
-    Sub("inspect",
-        "Inspect an AZ checkpoint's weights and recorded self-play — card "
-        "embedding space, the per-matchup critic, and per-decision probes. "
-        "No games are played",
-        mode="interactive", items=[
-        Arg("--model", "str", default="gen", suggest="az_checkpoint",
-            help="AZ checkpoint: 'gen' (the generalist), a snapshot stem "
-                 "(gen__azv384000), or a path"),
-        Arg("--with-shards", "flag",
-            help="Also load recorded self-play, adding the views that need it: "
-                 "occurrences, value calibration, priors-vs-search divergence "
-                 "and the whole Probes pane. Off by default — the weights-only "
-                 "views load in a second and need no shard pool"),
-        Arg("--shards", "str", default=None,
-            help="Directory of recorded self-play shard_*.npz to use with "
-                 "--with-shards, which it implies "
-                 "(default: train/az_data/gen)"),
-        Arg("--max-rows", "int", default=3000,
-            help="Recorded decisions to sample (default: 3000)"),
-        Arg("--count-rows", "int", default=800,
-            help="States decoded for per-card occurrence counts (default: 800)"),
-        Arg("--window", "int", default=None,
-            help="Use only the newest N shards"),
-        Arg("--seed", "int", default=0, help="Sampling seed"),
-        Arg("--min-seen", "int", default=0,
-            help="Drop cards seen fewer than N times from the embedding views "
-                 "(their rows never trained)"),
-        Arg("--neighbors", "int", default=20, help="Neighbours listed per card"),
-        Arg("--knn", "int", default=10, help="k for the label-purity view"),
-        Arg("--clusters", "int", default=8, help="k for k-means"),
-        Arg("--mark", "choice", choices=("color", "type", "cmc", "land"),
-            default="color", help="Marker label for the PCA scatter"),
-        Arg("--top", "int", default=25,
-            help="Rows in the occurrence / divergence / probe tables"),
-        Arg("--block-rows", "int", default=120,
-            help="States averaged by the mean block-attribution probe"),
-        Arg("--donors", "int", default=3,
-            help="Donor states per block in that average"),
+# az_inspect.py — static AZ checkpoint inspector: one subcommand per view (each
+# prints its lines to the terminal), plus `tui`, the Textual front end
+# (tui_az_inspect.InspectApp) over the same views. No games are played.
+
+AZI_LABEL_KINDS = ("color", "type", "cmc", "land")
+AZI_CARD_SPACES = ("identity", "props", "full")
+# Shared shard-sample sizes (one default each, CLI views and the TUI alike).
+DEFAULT_AZI_MAX_ROWS = 4000
+DEFAULT_AZI_COUNT_ROWS = 1500
+DEFAULT_AZI_BLOCK_ROWS = 150
+DEFAULT_AZI_DONORS = 3
+DEFAULT_AZI_NEIGHBORS = 20
+DEFAULT_AZI_KNN = 10
+DEFAULT_AZI_CLUSTERS = 8
+
+
+def _azi_model():
+    return Arg("--model", "str", default="gen", suggest="az_checkpoint",
+               help="Checkpoint to inspect (an opponents.parse_model_spec "
+                    "spec): 'gen' / az:gen (the AZ generalist, else the AZNet "
+                    "warm-started from the PPO gen), a snapshot stem "
+                    "(gen__azv384000), an AZ .pt path, or mcts:gen / a PPO "
+                    ".zip (default: gen)")
+
+
+def _azi_shards(optional):
+    """--shards DIR. ``optional``: the view runs weights-only without it (and
+    adds the shard-backed parts with it); otherwise the view needs recorded
+    self-play and an absent --shards reads train/az_data/gen."""
+    what = ("Recorded self-play shard directory (shard_*.npz) — or one or more "
+            "comma-separated .npz files — ")
+    if optional:
+        return Arg("--shards", "str", default=None,
+                   help=what + "adding the shard-backed views/annotations. "
+                               "Absent = weights only")
+    return Arg("--shards", "str", default=None,
+               help=what + "to sample (default: train/az_data/gen)")
+
+
+def _azi_window():
+    return Arg("--window", "int", default=None,
+               help="Use only the newest N shards (default: all)")
+
+
+def _azi_seed():
+    return Arg("--seed", "int", default=1,
+               help="Sampling / k-means / t-SNE seed (default: 1)")
+
+
+def _azi_sample_args(optional=False):
+    """The shard-sample args of a view that reads a random row sample."""
+    return [_azi_shards(optional),
+            Arg("--max-rows", "int", default=DEFAULT_AZI_MAX_ROWS,
+                help=f"Recorded decisions to sample (default: "
+                     f"{DEFAULT_AZI_MAX_ROWS})"),
+            _azi_window(), _azi_seed()]
+
+
+def _azi_count_rows():
+    return Arg("--count-rows", "int", default=DEFAULT_AZI_COUNT_ROWS,
+               help="States decoded for per-card occurrence counts (default: "
+                    f"{DEFAULT_AZI_COUNT_ROWS})")
+
+
+def _azi_embedding_args():
+    """An embedding view: weights-only, annotated/filtered by occurrence
+    counts from --shards when given, else by the weights-only exposure."""
+    return [_azi_model(), _azi_shards(True), _azi_window(), _azi_seed(),
+            _azi_count_rows(),
+            Arg("--min-seen", "int", default=0,
+                help="Drop cards seen fewer than N times (occurrence counts "
+                     "with --shards, else 1 = the row ever trained)"),
+            Arg("--space", "choice", choices=AZI_CARD_SPACES,
+                default="identity",
+                help="Card space to measure: the trainable identity table "
+                     "(default), the frozen printed-property block, or the "
+                     "full concatenation")]
+
+
+def _azi_mark(help_extra=""):
+    return Arg("--mark", "choice", choices=AZI_LABEL_KINDS, default="color",
+               help="Card label used as the scatter marker / chart color "
+                    "(default: color)" + help_extra)
+
+
+def _azi_top(default, what="Rows shown"):
+    return Arg("--top", "int", default=default,
+               help=f"{what} (default: {default})")
+
+
+def _azi_row():
+    return Arg("--row", "int", default=0,
+               help="Which sampled decision (default: 0)")
+
+
+def _azi_baseline(help_text):
+    return Arg("--baseline", "str", default=None, help=help_text)
+
+
+def _azi_chart_args(what):
+    return [Arg("--chart", "flag",
+                help=f"Also save {what} as a PNG chart (matplotlib, "
+                     "headless-safe) under --out"),
+            Arg("--out", "str", default=None,
+                help="Directory for saved charts (default: train/analysis_out/)"),
+            Arg("--show", "flag",
+                help="With --chart: also open the chart in a GUI window (needs "
+                     "a local display)")]
+
+
+_AZI_ORIGIN_HELP = ("Checkpoint to measure against (default: the PPO gen "
+                    "warm-start, else the oldest gen__azv* snapshot; 'init' = "
+                    "a fresh untrained seed-0 net)")
+
+
+def _azi_weights_sub(name, help_text, *items):
+    """A weight-space view: reads an AZ .pt or a PPO .zip, never shards."""
+    return Sub(name, help_text, items=[_azi_model(), *items])
+
+
+AZ_INSPECT_TOOL = Tool("az-inspect", "train/az_inspect.py", subs=[
+    Sub("tui",
+        "Full-screen inspector (Textual): card embedding space with a "
+        "clickable drill-down, the per-matchup critic, the weight-space views "
+        "and — with --shards — per-decision probes. Opens weights-only in "
+        "about a second", mode="interactive", items=[
+            _azi_model(), *_azi_sample_args(optional=True), _azi_count_rows(),
+            Arg("--min-seen", "int", default=0,
+                help="Drop cards seen fewer than N times from the embedding "
+                     "views (their rows never trained)"),
+            Arg("--neighbors", "int", default=DEFAULT_AZI_NEIGHBORS,
+                help=f"Neighbours listed per card (default: "
+                     f"{DEFAULT_AZI_NEIGHBORS})"),
+            Arg("--knn", "int", default=DEFAULT_AZI_KNN,
+                help=f"k for the label-purity view (default: {DEFAULT_AZI_KNN})"),
+            Arg("--clusters", "int", default=DEFAULT_AZI_CLUSTERS,
+                help=f"k for k-means (default: {DEFAULT_AZI_CLUSTERS})"),
+            _azi_mark(),
+            _azi_top(25, "Rows in the occurrence / divergence / probe tables"),
+            Arg("--block-rows", "int", default=DEFAULT_AZI_BLOCK_ROWS,
+                help="States averaged by the mean block-attribution probe "
+                     f"(default: {DEFAULT_AZI_BLOCK_ROWS})"),
+            Arg("--donors", "int", default=DEFAULT_AZI_DONORS,
+                help=f"Donor states per block (default: {DEFAULT_AZI_DONORS})"),
+        ]),
+    Sub("overview", "Checkpoint meta + critic coverage (+ shard status with "
+                    "--shards)",
+        items=[_azi_model(), *_azi_sample_args(optional=True)]),
+    Sub("neighbors", "Nearest cards in embedding space", items=[
+        Arg("card", "str", required=True,
+            help="Card name (exact or unique substring)"),
+        Arg("--neighbors", "int", default=DEFAULT_AZI_NEIGHBORS,
+            help=f"Neighbours to show (default: {DEFAULT_AZI_NEIGHBORS})"),
+        *_azi_embedding_args()]),
+    Sub("structure", "kNN label purity of the embedding", items=[
+        Arg("--knn", "int", default=DEFAULT_AZI_KNN,
+            help=f"Neighbours per card (default: {DEFAULT_AZI_KNN})"),
+        *_azi_embedding_args()]),
+    Sub("clusters", "k-means over the card embedding", items=[
+        Arg("--clusters", "int", default=DEFAULT_AZI_CLUSTERS,
+            help=f"Number of clusters (default: {DEFAULT_AZI_CLUSTERS})"),
+        *_azi_embedding_args()]),
+    Sub("project", "PCA-to-2D terminal scatter; --chart saves a PCA/t-SNE "
+                   "chart of the TRAINED rows only", items=[
+        _azi_mark(),
+        Arg("--width", "int", default=78, help="Terminal scatter width (default: 78)"),
+        Arg("--height", "int", default=24, help="Terminal scatter height (default: 24)"),
+        *_azi_embedding_args(),
+        *_azi_chart_args("the 2D projection of every card whose row ever "
+                         "trained (size = movement since --baseline)"),
+        Arg("--method", "choice", choices=("pca", "tsne"), default="pca",
+            help="Chart projection (default: pca)"),
+        Arg("--perplexity", "float", default=30.0,
+            help="Chart t-SNE perplexity (auto-capped for small sets; "
+                 "default: 30)"),
+        Arg("--label-top", "int", default=30,
+            help="Chart: annotate the N most-moved cards (default: 30)"),
+        _azi_baseline("Chart: checkpoint 'ever trained' is measured against "
+                      "(default: the PPO gen warm-start, else the oldest "
+                      "gen__azv* snapshot)"),
     ]),
+    Sub("occur", "How often each card appears in recorded self-play", items=[
+        _azi_model(), _azi_shards(False), _azi_window(), _azi_seed(),
+        _azi_count_rows(), _azi_top(25)]),
+    Sub("exposure", "Which embedding rows / critic columns actually trained "
+                    "(weights only)", items=[
+        _azi_model(),
+        _azi_baseline("Checkpoint to measure against (default: the previous "
+                      "gen__azv* snapshot, else the PPO gen warm-start)"),
+        _azi_top(20)]),
+    Sub("drift", "Signed per-dimension embedding movement since the origin; "
+                 "all cards ranked by total |shift|; --chart maps it across "
+                 "the movement matrix's own PCs", items=[
+        _azi_model(), _azi_baseline(_AZI_ORIGIN_HELP),
+        _azi_top(0, "Cards listed / charted (0 = all)"),
+        *_azi_chart_args("a per-card heatmap of |movement| along each "
+                         "movement-PC (with the per-PC energy scree)")]),
+    Sub("catemb", "Action-category embedding neighbours", items=[_azi_model()]),
+    Sub("buckets", "Per-matchup critic column map (+ the sampled-bucket census "
+                   "with --shards)",
+        items=[_azi_model(), *_azi_sample_args(optional=True)]),
+    Sub("calib", "Per-bucket value calibration vs recorded outcomes",
+        items=[_azi_model(), *_azi_sample_args()]),
+    Sub("divergence", "Net priors vs the search posterior, by action category",
+        items=[_azi_model(), *_azi_sample_args(), _azi_top(12)]),
+    Sub("sbreport", "Between-games sideboarding sessions in recorded shards: "
+                    "average cards brought in / cut per session, by matchup "
+                    "(fetchlands fungible)", items=[
+        _azi_shards(False), _azi_window(),
+        Arg("--mtime-after", "str", default=None, metavar="'YYYY-mm-dd HH:MM'",
+            help="Only shards modified at or after this time"),
+        Arg("--mtime-before", "str", default=None, metavar="'YYYY-mm-dd HH:MM'",
+            help="Only shards modified before this time"),
+        Arg("--min-sessions", "int", default=1,
+            help="Hide matchups with fewer sessions than this (default: 1)"),
+        Arg("--label", "str", default="", help="Report title suffix"),
+        Arg("--json", "str", default=None, metavar="PATH",
+            help="Also write the report as JSON to PATH"),
+    ]),
+    Sub("diff", "Compare two checkpoints (either family)", items=[
+        Arg("other", "str", required=True,
+            help="Second checkpoint spec/path (B); --model is A"),
+        _azi_model(), _azi_top(15)]),
+    Sub("state", "Browse one recorded decision", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(), _azi_top(12)]),
+    Sub("blocks", "Permutation importance of obs blocks", items=[
+        _azi_model(), *_azi_sample_args(),
+        Arg("--row", "int", default=None,
+            help="Attribute ONE recorded decision instead of the mean over "
+                 "--block-rows states"),
+        Arg("--block-rows", "int", default=DEFAULT_AZI_BLOCK_ROWS,
+            help="States averaged when --row is not given (default: "
+                 f"{DEFAULT_AZI_BLOCK_ROWS})"),
+        Arg("--donors", "int", default=DEFAULT_AZI_DONORS,
+            help=f"Donor states per block (default: {DEFAULT_AZI_DONORS})"),
+        Arg("--only-active", "str", default=None, metavar="BLOCK",
+            help="Restrict states and donors to those where BLOCK (name or "
+                 "unique substring) is non-empty — scores a sparse block on "
+                 "the states where it exists"),
+        Arg("--sort", "choice", choices=("v", "pi"), default="v",
+            help="Rank by value shift (v) or policy shift (pi)"),
+        _azi_top(20)]),
+    Sub("readout", "One state's V under every matchup critic column", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(),
+        Arg("--top", "int", default=None,
+            help="Show only the top-N columns by V (default: all)")]),
+    Sub("swap", "Per-slot card valuation by identity swap", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(),
+        Arg("--site", "int", default=None,
+            help="Index into the state's card-identity sites (omit to list "
+                 "them)"),
+        _azi_top(12)]),
+    Sub("sweep", "V across single scalars (life, hand, turn)", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(),
+        Arg("--field", "str", default=None,
+            help="One field (default: every sweepable field)")]),
+    _azi_weights_sub("firstlayer", "First-layer input-column attribution per "
+                                   "encoder",
+                     Arg("--encoder", "str", default=None,
+                         help="One encoder (e.g. perm_encoder; default: all)"),
+                     _azi_top(10, "Named columns shown per encoder")),
+    _azi_weights_sub("bodylayer", "Policy/value body first-layer attribution "
+                                  "(arch one-hots + decklist aggregates)",
+                     Arg("--top-arch", "int", default=16,
+                         help="Archetype columns to name (default: 16)")),
+    _azi_weights_sub("unit", "One hidden unit's signed input-variable profile",
+                     Arg("layer", "str", required=True,
+                         help="Layer name: perm_encoder, stack_encoder, "
+                              "entity_encoder, decklist_encoder, "
+                              "revealed_encoder, action_encoder, policy_body, "
+                              "value_body"),
+                     Arg("unit", "int", required=True,
+                         help="Unit (row) index in that layer"),
+                     _azi_top(12, "Inputs shown per sign")),
+    _azi_weights_sub("pathto", "Weights-only input connectivity of one value "
+                               "bucket's head column",
+                     Arg("bucket", "str", required=True,
+                         help="Bucket index or name substring "
+                              "(e.g. doomsday_vs_burn)"),
+                     _azi_top(15, "Widest individual input columns shown")),
+    _azi_weights_sub("spectra", "Singular-value spectrum / effective rank per "
+                                "weight matrix"),
+    _azi_weights_sub("popart", "PPO PopArt per-bucket value statistics "
+                               "(PPO .zip)"),
+    _azi_weights_sub("valuegeom", "Value-head row geometry (which matchups "
+                                  "share a value direction)", _azi_top(12)),
+    _azi_weights_sub("zoneemb", "Zone-ref embedding neighbours"),
+    _azi_weights_sub("cardsel", "Entity-encoder units ranked by card "
+                                "selectivity",
+                     Arg("--units", "int", default=12,
+                         help="Units to show (default: 12)"),
+                     Arg("--cards", "int", default=6,
+                         help="Top cards listed per unit (default: 6)")),
 ])
 
-ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, ANALYSIS_TUI_TOOL, AZ_INSPECT_TOOL,
+ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, AZ_INSPECT_TOOL,
              PLAY_TOOL, HARNESS_TOOL]
 
 
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────
 
 def _add_one(target, a: Arg):
+    import argparse
     if a.kind == "flag":
         target.add_argument(a.name, action="store_true", help=a.help)
+        return
+    if a.kind == "bool":
+        target.add_argument(a.name, action=argparse.BooleanOptionalAction,
+                            default=a.default, help=a.help)
         return
     kwargs = {"help": a.help}
     if a.metavar is not None:
@@ -2009,8 +3335,15 @@ def _add_one(target, a: Arg):
         target.add_argument(a.name, **kwargs)
 
 
+def add_args(parser, *args):
+    """Add individual cli_spec Args to a standalone argparse parser."""
+    for a in args:
+        _add_one(parser, a)
+
+
 def apply_to_parser(parser, sub: Sub):
-    """Populate an argparse (sub)parser from a Sub spec."""
+    """Populate an argparse (sub)parser from a Sub spec, plus the hidden
+    removed-flag options in the Sub's scope (see ``REMOVED_FLAGS``)."""
     for item in sub.items:
         if isinstance(item, MutexGroup):
             group = parser.add_mutually_exclusive_group(required=item.required)
@@ -2018,6 +3351,7 @@ def apply_to_parser(parser, sub: Sub):
                 _add_one(group, a)
         else:
             _add_one(parser, item)
+    add_removed_flags(parser, *sub.scopes)
 
 
 def iter_args(sub: Sub):
@@ -2027,3 +3361,37 @@ def iter_args(sub: Sub):
             yield from item.args
         else:
             yield item
+
+
+def sub_defaults(sub: Sub) -> dict:
+    """``{dest: default}`` for every Arg in a Sub (the values a bare
+    invocation parses to — a store_true flag's is False)."""
+    return {a.dest: arg_default(a) for a in iter_args(sub)}
+
+
+def arg_default(a: Arg):
+    """The value an Arg parses to when it is not given."""
+    return bool(a.default) if a.kind == "flag" else a.default
+
+
+def explicit_dests(parser, argv=None) -> set:
+    """The dests ``argv`` sets on the command line (as opposed to leaving at
+    their defaults) — re-parses with every default swapped for a marker. A
+    removed optional positional keeps its None default (argparse hands it the
+    default when nothing fills it, and anything else is the removal error)."""
+    import argparse
+    marker = object()
+    saved = {}
+    for act in parser._actions:
+        if act.dest.startswith("_removed_"):
+            continue
+        if act.dest != argparse.SUPPRESS and act.default is not argparse.SUPPRESS:
+            saved[act] = act.default
+            act.default = marker
+    try:
+        ns, _extra = parser.parse_known_args(argv)
+    finally:
+        for act, default in saved.items():
+            act.default = default
+    return {k for k, v in vars(ns).items()
+            if v is not marker and not k.startswith("_removed_")}

@@ -2,7 +2,7 @@
 """Standardized engine test gate — the single command CI and developers run.
 
 Replaces the disparate ad-hoc harness invocations (test_harness scenarios,
-fuzz_campaign transcript dumps, replay_diff, engine-sanity-check greps) with one
+observe fuzz transcript dumps, replay_diff, engine-sanity-check greps) with one
 entry point that runs a fixed set of tiers and exits nonzero on any finding.
 ``make check`` wraps this; CI runs the same command.
 
@@ -26,6 +26,12 @@ fails, so one invocation reports every finding):
   curriculum The curriculum plan schema and the argv each phase kind composes
           for its train.py subcommand, the resume argv forms, and the plan-hash
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
+  clispec The shared CLI vocabulary (train/test_cli_spec.py): removed flags
+          error with their replacement hint and stay out of --help and the
+          TUI forms; --format defaults to bo3 on every tool; the GUI
+          launcher dialogs' fields mirror the play.py / browser flags (same
+          dests and defaults); play's search-knob fold and per-board option
+          errors. Torch-free.
   gatesprt The AZ promotion gate's sequential test (train/gate_sprt.py): the
           hypotheses are symmetric about 0.5, draws score half/half, the
           verdict is monotone and mirror-symmetric, the round cap's tie-break
@@ -38,8 +44,11 @@ fails, so one invocation reports every finding):
           match's searched + one-hot rows write trainer-schema shards, a
           MID-GAME flush is already a valid shard whose unfinished-game rows
           price z=0, game-boundary rewrites never duplicate, z backfill is
-          per-game per-mover, and both readers (shard_replay records,
-          az_inspect samples) round-trip it (train/test_shard_record.py).
+          per-game per-mover, both readers (shard_replay records,
+          az_inspect samples) round-trip it, the browser net probes and
+          az_inspect's π views take π from the search posterior only, and
+          the shared search-vs-net divergence folds duplicate menu actions
+          and measures KL(search||net) (train/test_shard_record.py).
           Torch-free, engine-free, instant.
   treecache The rebuilt-search-tree cache (train/tree_cache.py behind the
           recording browser's Tree tab): synthetic per-world MCTS trees
@@ -47,6 +56,20 @@ fails, so one invocation reports every finding):
           node-for-node — P/N/W/rep/sel_mask/children exact, argmax-visit PV
           descent identical — and a bad format version is refused
           (train/test_tree_cache.py). Torch-free, engine-free, instant.
+  browser The Textual analysis browser (train/tui_analysis.py, `analysis.py
+          browse --board tui`) driven headlessly over a synthetic saved
+          session: the .rmtrace source loads through the shared engine
+          worker, ctrl+s saves a .rmtrace that reloads identically, a net
+          probe runs on the analysis worker, the Tree tab installs a rebuilt
+          tree's roots, submits node expansions and renders the walked board
+          as text, and live-streamed events grow/follow/finalize a LIVE row
+          (train/test_tui_browser.py). Torch-free; needs bin/robomage; ~3s.
+  modelspec The model-spec resolver (opponents.parse_model_spec + loaders):
+          the kind/prefix/base/canonical-evaluator table for every spec
+          family, knob stripping, tree_rebuild's recorded-evaluator mapping,
+          and — loaders stubbed — that one spec's search evaluator, V(s) model
+          and probe net read the SAME checkpoint through every consumer
+          (train/test_model_spec.py). Torch-free, engine-free, instant.
   concede The CR 104.3a concession sentinels (CONCEDE_GAME -2 / CONCEDE_MATCH
           -3, accepted wherever the engine reads a decision): a bo1 concede
           loses for the conceding seat, a bo3 game concede is an ordinary game
@@ -127,7 +150,7 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           sideboard boundary by delta replay, rewinds to an already-played
           decision by respawn, and a cross-thread stop event cancels within one
           chunk (train/test_analysis_session.py). Also the shard-replay
-          reconstruction behind tui_analysis --shards: recorded scripted
+          reconstruction behind analysis.py browse --source DIR: recorded scripted
           matches round-trip through synthetic shard_*.npz files into
           browsable match records (train/test_shard_replay.py).
           Torch-free; needs bin/robomage.
@@ -140,12 +163,13 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           along the PV return boards, and a tree-followed row resolves to its
           origin search (train/test_tree_rebuild.py). Torch-free; needs
           bin/robomage.
-  azinspect The AZ checkpoint inspector (az_inspect.py / tui_az_inspect.py):
+  azinspect The AZ checkpoint inspector (az_inspect.py, incl. its tui view):
           every view computed against a FRESH AZNet and synthetic shards, so it
           needs neither a trained checkpoint nor recorded self-play. Pins the
           views to the real observation layout — the block partition covers
           [0, OBS_SIZE), the card embedding's padding offset, the swap probe's
           swap-for-itself-is-zero invariant, the sweep normalizers — plus the
+          folded chart / sbreport views, the removed-flag errors and the
           ./tui.sh spec wiring (train/test_az_inspect.py). Needs torch (self-
           skips without it); no engine binary.
 
@@ -192,8 +216,8 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "treecache",
-             "concede", "obsinv",
+ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
+             "browser", "modelspec", "concede", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
@@ -368,6 +392,19 @@ def tier_curriculum(rep):
                                 f"{r.stdout}{r.stderr}")
 
 
+def tier_clispec(rep):
+    """Shared CLI vocabulary regression (train/test_cli_spec.py): the removed-
+    flag table errors with its hint on every parser, hides from --help and the
+    TUI forms, and --format defaults to bo3 everywhere. Torch-free."""
+    r = subprocess.run([sys.executable, "train/test_cli_spec.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("clispec", "CLI vocabulary violation "
+                             f"(test_cli_spec.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
+
+
 def tier_gatesprt(rep):
     """AZ promotion-gate sequential-test regression (train/gate_sprt.py).
 
@@ -419,6 +456,22 @@ def tier_treecache(rep):
     per-world trees round-trip node-for-node (see train/test_tree_cache.py).
     Torch-free, engine-free."""
     _run_test_script(rep, "treecache", "train/test_tree_cache.py", "tree-cache")
+
+
+def tier_browser(rep):
+    """Textual analysis-browser regression (tui_analysis): trace-source load,
+    .rmtrace save round trip, probe / tree / live-stream glue over the shared
+    browse_session core (see train/test_tui_browser.py). Torch-free."""
+    _run_test_script(rep, "browser", "train/test_tui_browser.py",
+                     "tui-browser")
+
+
+def tier_modelspec(rep):
+    """Model-spec resolver regression (opponents.parse_model_spec): the
+    resolver table and one-net-per-spec across every consumer (see
+    train/test_model_spec.py). Torch-free, engine-free."""
+    _run_test_script(rep, "modelspec", "train/test_model_spec.py",
+                     "model-spec resolver")
 
 
 def tier_treerebuild(rep):
@@ -578,7 +631,7 @@ def tier_analysis(rep):
         rep.error("analysis", "analysis-session violation "
                               f"(test_analysis_session.py exit {r.returncode}):\n"
                               f"{r.stdout}{r.stderr}")
-    # Shard-replay reconstruction (tui_analysis --shards): recorded scripted
+    # Shard-replay reconstruction (analysis.py browse --source DIR): recorded scripted
     # matches round-trip through synthetic shards into browsable match records.
     # Torch-free; needs bin/robomage.
     r = subprocess.run([sys.executable, "train/test_shard_replay.py"],
@@ -617,7 +670,7 @@ def tier_gui(rep):
     play session (--record-shards writes ≥1 valid shard into a scratch dir),
     the live-analysis window, the play-session save→reopen replay round-trip,
     the synthetic .rmtrace open into the analysis browser, the shard-mode
-    browser (self-skips without recorded shards), and a search-opponent
+    browser over the record-shards leg's recording, and a search-opponent
     recording opened in the browser with its first searched decision's tree
     rebuilt and expanded (torch-free mcts:uniform). Self-skips without
     PySide6."""
@@ -631,33 +684,35 @@ def tier_gui(rep):
     tree_rec_dir = tempfile.mkdtemp(prefix="ci_tree_smoke_")
     legs = [
         ("play smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8"),
-         [sys.executable, "train/play.py", "--gui",
-          "--human-deck", "league/ur_delver",
-          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+         dict(env, ROBOMAGE_SMOKE="play:8"),
+         [sys.executable, "train/play.py", "--no-analysis",
+          "--deck-a", "league/ur_delver",
+          "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1"]),
         # Recording leg: the driver step-observer records every >1-choice
         # decision as a one-hot shard row (a scripted opponent never searches,
         # so this exercises the recorder without torch); gui_main.run's
         # RECORD SMOKE check fails the leg when no shard was written.
         ("record-shards smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=rec_dir),
-         [sys.executable, "train/play.py", "--gui",
-          "--human-deck", "league/ur_delver",
-          "--model-deck", "league/gw_maverick", "--scripted", "--bo1",
+         dict(env, ROBOMAGE_SMOKE="play:8", ROBOMAGE_RECORD_DIR=rec_dir),
+         [sys.executable, "train/play.py", "--no-analysis",
+          "--deck-a", "league/ur_delver",
+          "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1",
           "--record-shards"]),
         ("analysis-window smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_ANALYSIS_SMOKE="1"),
-         [sys.executable, "train/play.py", "--gui", "--analysis",
-          "--human-deck", "league/ur_delver",
-          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+         dict(env, ROBOMAGE_SMOKE="play:8,analysis"),
+         [sys.executable, "train/play.py", "--analysis",
+          "--deck-a", "league/ur_delver",
+          "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1"]),
         ("session save/reopen smoke",
-         dict(env, ROBOMAGE_GUI_SESSION_SMOKE="1"),
-         [sys.executable, "train/gui_main.py"]),
+         dict(env, ROBOMAGE_SMOKE="session"),
+         [sys.executable, "train/play.py"]),
         ("trace open smoke",
-         dict(env, ROBOMAGE_GUI_TRACE_SMOKE="1"),
+         dict(env, ROBOMAGE_SMOKE="trace"),
          [sys.executable, "train/gui_main.py"]),
+        # Browses the record-shards leg's small recording (never a training
+        # pool: the smoke fails without a browser:DIR recording).
         ("browser shard smoke",
-         dict(env, ROBOMAGE_BROWSER_SMOKE="1"),
+         dict(env, ROBOMAGE_SMOKE=f"browser:{rec_dir}"),
          [sys.executable, "train/gui_main.py"]),
         # Search-opponent recording leg: a torch-free mcts:uniform opponent
         # records its own searched decisions WITH diagnostics (seeds, sims,
@@ -666,15 +721,14 @@ def tier_gui(rep):
         # decision's tree bit-for-bit (verified against the recorded
         # visits) and expands one root action on the engine.
         ("record-search smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=tree_rec_dir),
-         [sys.executable, "train/play.py", "--gui",
-          "--human-deck", "league/ur_delver",
-          "--model-deck", "league/gw_maverick",
-          "--model", "mcts:uniform?sims=32&worlds=2", "--search-procs", "1",
-          "--bo1", "--record-shards"]),
+         dict(env, ROBOMAGE_SMOKE="play:8", ROBOMAGE_RECORD_DIR=tree_rec_dir),
+         [sys.executable, "train/play.py", "--no-analysis",
+          "--deck-a", "league/ur_delver",
+          "--deck-b", "league/gw_maverick",
+          "--player-b", "mcts:uniform?sims=32&worlds=2", "--search-procs", "1",
+          "--format", "bo1", "--record-shards"]),
         ("tree smoke",
-         dict(env, ROBOMAGE_TREE_SMOKE="1",
-              ROBOMAGE_BROWSER_SMOKE_SHARDS=tree_rec_dir),
+         dict(env, ROBOMAGE_SMOKE=f"tree:{tree_rec_dir}"),
          [sys.executable, "train/gui_main.py"]),
     ]
     try:
@@ -1043,12 +1097,18 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "curriculum":
             tier_curriculum(rep)
+        elif t == "clispec":
+            tier_clispec(rep)
         elif t == "gatesprt":
             tier_gatesprt(rep)
         elif t == "shardrec":
             tier_shardrec(rep)
         elif t == "treecache":
             tier_treecache(rep)
+        elif t == "browser":
+            tier_browser(rep)
+        elif t == "modelspec":
+            tier_modelspec(rep)
         elif t == "treerebuild":
             tier_treerebuild(rep)
         elif t == "concede":

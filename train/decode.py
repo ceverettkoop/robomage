@@ -182,6 +182,22 @@ def card_index_to_name(idx):
     return f"?({idx})"
 
 
+# Sideboard reports pool every fetchland into one fungible card class: swapping
+# one fetch for another is mana-base tuning, not a card-choice signal. Shared
+# by analysis.py's sbvalue net-impact table and az_inspect's sbreport view.
+FETCHLAND_NAMES = frozenset({
+    "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills",
+    "Misty Rainforest", "Windswept Heath", "Bloodstained Mire",
+    "Verdant Catacombs", "Arid Mesa", "Marsh Flats", "Prismatic Vista",
+})
+FETCHLAND_CLASS = "Fetchland (any)"
+
+
+def sb_card_class(name):
+    """The sideboard-report class of a card name (fetchlands pooled)."""
+    return FETCHLAND_CLASS if name in FETCHLAND_NAMES else name
+
+
 # ── Oracle-text lookup (for the TUI card-inspect popup) ────────────────────────
 
 import os  # noqa: E402
@@ -1357,6 +1373,50 @@ def menu_merge_reps(obs, num_choices):
     return rep
 
 
+def fold_onto_reps(dist, obs, num_choices):
+    """A menu distribution with each duplicate group's mass moved onto its
+    representative (:func:`menu_merge_reps`), in the ascending order
+    mcts.Node.set_rep folds P. Returns a float64 copy of length
+    ``num_choices``; non-representatives hold 0. Idempotent, so an already
+    merged search posterior passes through unchanged."""
+    n = int(num_choices)
+    out = np.array(np.asarray(dist, dtype=np.float64).reshape(-1)[:n],
+                   copy=True)
+    rep = menu_merge_reps(obs, n)
+    for i in range(1, n):
+        j = int(rep[i])
+        if j != i:
+            out[j] += out[i]
+            out[i] = 0.0
+    return out
+
+
+def search_net_divergence(search_pi, net_priors, obs, num_choices, eps=1e-9):
+    """KL(search ‖ net) and top-1 agreement at one decision root — the single
+    definition every search-vs-raw-net report uses.
+
+    Search merges duplicate menu edges (its visit mass sits on each group's
+    representative), so both distributions are folded onto the
+    representatives (:func:`fold_onto_reps`) before comparing; otherwise a
+    duplicate-heavy root would report inflated KL and a spurious top-1 miss
+    (the net's max prior on a copy search never visits). The net side is
+    clipped at ``eps`` and renormalized so an action the net all but rules
+    out stays finite. Returns ``(kl, agree, top)``: ``agree`` is whether the
+    folded argmaxes coincide, ``top`` the search's folded argmax. None when
+    the search posterior carries no mass."""
+    p = fold_onto_reps(search_pi, obs, num_choices)
+    s = float(p.sum())
+    if s <= 0.0:
+        return None
+    p /= s
+    q = np.maximum(fold_onto_reps(net_priors, obs, num_choices), eps)
+    q /= q.sum()
+    nz = p > 0
+    kl = float(np.sum(p[nz] * np.log(p[nz] / q[nz])))
+    top = int(np.argmax(p))
+    return kl, top == int(np.argmax(q)), top
+
+
 # ── Formatting helpers ────────────────────────────────────────────────────────
 
 def fmt_mana(mana):
@@ -1462,13 +1522,17 @@ def format_state_lines(gs):
     return lines
 
 
+def action_text(a):
+    """A decoded action's description plus its option_ordinal suffix ("[#2]")
+    — the suffix tells apart modal / X-value / top-of-library-depth choices
+    the other metadata can't."""
+    ordv = a.get("option_ordinal", -1)
+    return a["description"] + (f"  [#{ordv}]" if ordv >= 0 else "")
+
+
 def format_action_lines(actions):
     """Enumerated legal-action lines (the 'Actions:' menu, shared transcript)."""
-    def _line(a):
-        ordv = a.get("option_ordinal", -1)
-        suffix = f"  [#{ordv}]" if ordv >= 0 else ""
-        return f"  {a['index']:>2}: {a['description']}{suffix}"
-    return [_line(a) for a in actions]
+    return [f"  {a['index']:>2}: {action_text(a)}" for a in actions]
 
 
 def format_decision_block(decision_idx, gs, actions):

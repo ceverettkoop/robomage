@@ -6,7 +6,8 @@ The cross-language contract (the C++ twin in src/actor/menu_merge.h producing
 the same partition, hence bit-identical visits) is covered by
 train/test_mcts_parity.py; this file pins the Python-side semantics.
 
-Run standalone (not wired into a ci_check tier, matching test_trivial_menu.py):
+Run standalone (the search-vs-net divergence check also runs from
+test_shard_record.py, ci_check tier shardrec):
     train/.venv/bin/python train/test_menu_merge.py
 """
 
@@ -24,7 +25,7 @@ from _enums import (REF_ZONE_MAX, OPTION_ORDINAL_MAX, CAT_CAST_SPELL,
                     CAT_DISCARD, CAT_BOTTOM_DECK_CARD, CAT_PAYING_COSTS,
                     CAT_CHOOSE_CARD, CAT_EXILE_FROM_YARD)
 from card_costs import N_CARD_TYPES
-from decode import menu_merge_reps
+from decode import fold_onto_reps, menu_merge_reps, search_net_divergence
 from mcts import _Node, walk_reuse_root
 
 FAILURES: list[str] = []
@@ -174,10 +175,47 @@ def test_walk_canonicalization() -> None:
           "menu-size mismatch must still fail the walk")
 
 
+def test_search_net_divergence() -> None:
+    """decode.search_net_divergence: net priors fold over duplicate menu
+    actions like the search's merged edges, and the KL direction is
+    KL(search ‖ net)."""
+    cast7 = {"cat": CAT_CAST_SPELL, "id": 7, "zone": Z_SELF_HAND, "ord": 0}
+    menu = [{"cat": CAT_PASS_PRIORITY}, cast7, cast7,
+            {"cat": CAT_CAST_SPELL, "id": 9, "zone": Z_SELF_HAND, "ord": 0}]
+    obs = make_obs(menu)
+    net = np.array([0.1, 0.25, 0.25, 0.4])
+    check(np.allclose(fold_onto_reps(net, obs, 4), [0.1, 0.5, 0.0, 0.4]),
+          "fold_onto_reps moves duplicate mass onto the representative")
+
+    # Search put all its mass on the merged cast. Unfolded, the net's argmax
+    # is index 3 and the cast carries only 0.25; folded it is 0.5 and agrees.
+    kl, agree, top = search_net_divergence([0, 1, 0, 0], net, obs, 4)
+    check(top == 1 and agree, f"folded top-1 agrees (top={top}, {agree})")
+    check(abs(kl - np.log(2.0)) < 1e-6, f"KL uses the folded prior: {kl}")
+    # An unmerged search posterior over the same duplicates folds identically.
+    kl2, agree2, _ = search_net_divergence([0, 0.5, 0.5, 0], net, obs, 4)
+    check(abs(kl2 - kl) < 1e-9 and agree2, "unmerged search π folds the same")
+
+    # Direction: KL(search ‖ net), not KL(net ‖ search).
+    obs3 = make_obs([{"cat": CAT_PASS_PRIORITY},
+                     {"cat": CAT_CAST_SPELL, "id": 7, "zone": Z_SELF_HAND},
+                     {"cat": CAT_CAST_SPELL, "id": 9, "zone": Z_SELF_HAND}])
+    p = np.array([0.9, 0.05, 0.05])
+    q = np.array([0.2, 0.4, 0.4])
+    kl, agree, top = search_net_divergence(p, q, obs3, 3)
+    want = float(np.sum(p * np.log(p / q)))
+    check(abs(kl - want) < 1e-9 and abs(kl - float(np.sum(q * np.log(q / p))))
+          > 1e-3, f"direction is KL(search||net): {kl} vs {want}")
+    check(not agree and top == 0, "top-1 disagreement reported")
+    check(search_net_divergence([0, 0, 0], q, obs3, 3) is None,
+          "a massless search posterior yields None")
+
+
 def main() -> int:
     test_partition()
     test_node_fold_and_select()
     test_walk_canonicalization()
+    test_search_net_divergence()
     if FAILURES:
         print(f"\n{len(FAILURES)} check(s) FAILED", file=sys.stderr)
         return 1

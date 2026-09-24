@@ -7,60 +7,26 @@ the resulting per-decision traces (full observations, value estimates V(s), and
 policy probabilities). The older offline .rmrec recording-file commands were
 removed; this live model-sim path is now the single source.
 
-There are two commands:
-    python analysis.py report <model.zip> --opponent scripted [--n-games 50]
+Commands:
+    python analysis.py browse [--source simulate|<shard dir>|<file.rmtrace>] \
+            [--board tui|gui] --player-a <model> --player-b scripted --deck-a <deck>
+        The full-screen analysis browser (board-state pager, clickable V(s)
+        histogram, every analysis view, saved charts and text transcripts) on
+        the Textual board (default) or the PySide6 app. --source picks what it browses: simulated games (the
+        default), a directory of recorded shards, or a saved .rmtrace session.
+    python analysis.py report --player-a <model.zip> --player-b scripted --deck-a <deck> [--games 50]
         Run the standard battery once and emit a single self-contained HTML
         report (headless, non-interactive — for CI / sharing). Exits when done.
-    python analysis.py interactive <model.zip> --opponent scripted [--n-games 20]
-        Simulate games, then open the REPL below. This is the only mode with a
-        live env, so 'run' and 'whatif' work only here. The REPL supersets every
-        per-analysis view (cardvalue, shap, regret, entropy, consistency, …), so
-        the former standalone analysis subcommands were folded into it.
 
 Charts save as PNGs under --out (default train/analysis_out/) so the tool works
-headless; pass --show to also open a GUI window. The REPL also prints terminal
-sparklines/bars so the common views need no display at all.
-
-Interactive session commands (via 'interactive'):
-    list                  list all games
-    replay <N> [-v]       per-decision trace for game N; -v adds zones, chosen
-                          action, and interleaved opponent actions
-    boardstate <N> [step] full board + decision detail; enters GDB-style stepping mode
-    summary               win/loss/draw stats
-    cardvalue [N]         rank cards by importance (ΔV, priority, win-rate)
-    swings [N]            top N in-game value-function swings (bo3 boundaries excluded)
-    boundaries            V(s) across bo3 game transitions (result-pricing vs re-anchoring)
-    matchcal              per match/game: V at game start vs empirical remaining return by score
-    shap                  run SHAP analysis on collected data
-    regret [N]            policy regret analysis (top N high-regret decisions)
-    entropy               policy entropy by game phase and board state
-    consistency [N]       decision consistency for similar states (top N pairs)
-    targeting             self vs opp targeting, hold vs cast analysis
-    sideboard             sideboard decisions by each agent (bo3)
-    sbvalue               sideboard preference: take-rate, confidence, ΔV, ΔWR per card,
-                          + net post-board game-WR impact, fetchlands fungible (bo3)
-    whatif <N> <step> [k] counterfactual: branch chosen + top-k actions from the
-                          same seed, roll each to the end, compare result/V(s)
-    calibration           V(s) at game start vs actual win rate
-    turning               find the permanent zero-crossing ('point of no return')
-    clusters              classify games by V(s) curve shape (archetypes)
-    chart <N>             value curve plot for game N
-    chart swings [N]      value curve plots for top N swing games
-    chart cardvalue [N]   diverging bar chart of per-card ΔV
-    chart sbvalue [N]     sideboard swap preference + net ΔWR bars (bo3)
-    chart shap            SHAP summary plot
-    chart calibration     calibration curve plot
-    chart turning         turning point distribution plot
-    chart clusters        overlay V(s) curves by archetype
-    run <N>               simulate N more games (interactive command only)
-    quit                  exit
+headless; pass --show to also open a GUI window. The browser's "chart" entries
+save the same PNGs under train/analysis_out/ and report the path.
 """
 
 import argparse
-import glob
-import re
 import sys
 import os
+import random
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -75,15 +41,18 @@ from _enums import (
     CAT_PLAY_LAND, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
+import tree_rebuild
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
-from cli_spec import (ANALYSIS_TOOL, append_spec_knob, apply_to_parser,
-                      DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
-                      DEFAULT_SB_ROLLOUT_TURNS)
+from cli_spec import (ANALYSIS_TOOL, SEARCH_KNOB_KEYS, search_knob_pairs,
+                      with_spec_query, apply_to_parser, add_removed_subcommands,
+                      BOARD_GUI, is_search_spec,
+                      browse_inapplicable_dests, browse_source_kind,
+                      explicit_dests, resolve_board, is_bo3)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
-                 _HAND_START, _MATCH_CTX_START, _IS_SIDEBOARD_IDX, _LIBRARY_CTX_START,
+                 _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
                  _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
                  _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
@@ -338,40 +307,6 @@ def _extract_interpretable(obs):
     return f
 
 
-_CHECKPOINTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
-_SNAPSHOT_VER_RE = re.compile(r"__v(\d+)\.zip$")
-
-
-def _resolve_model_path(path):
-    """Resolve a model argument to a checkpoint path.
-
-    Accepts an explicit path, the literal ``scripted``, or the generalist stem
-    ``gen`` (→ ``checkpoints/gen__final.zip``, else the newest
-    ``checkpoints/gen__v{steps}.zip`` snapshot). The deck a model pilots is
-    supplied separately via ``--deck-a``/``--deck-b``, never inferred here.
-    Mirrors train.py's ``_resolve_model``.
-    """
-    if path == "scripted" or os.path.exists(path):
-        return path
-    # 'gen' → 'gen__final.zip' or newest 'gen__v*.zip'.
-    final = os.path.join(_CHECKPOINTS_DIR, f"{path}__final.zip")
-    if os.path.exists(final):
-        return final
-    snaps = glob.glob(os.path.join(_CHECKPOINTS_DIR, f"{path}__v*.zip"))
-    if snaps:
-        def _ver(p):
-            m = _SNAPSHOT_VER_RE.search(p)
-            return int(m.group(1)) if m else -1
-        return max(snaps, key=_ver)
-    # Legacy fallbacks.
-    for cand in (os.path.join(_CHECKPOINTS_DIR, path),
-                 os.path.join(_CHECKPOINTS_DIR, f"{path}.zip"),
-                 os.path.join(_CHECKPOINTS_DIR, f"{path}_final.zip")):
-        if os.path.exists(cand):
-            return cand
-    return path  # let the loader raise a meaningful error
-
-
 # ── AlphaZero (AZNet) checkpoint support ──────────────────────────────────────
 #
 # analysis.py only ever touches a model through three surfaces: the value head
@@ -387,239 +322,62 @@ def _resolve_model_path(path):
 # critic, so absolute V(s) magnitudes are not directly comparable across the two.
 
 
-def _is_az_model_spec(spec):
-    """True if ``spec`` names an AZNet checkpoint rather than a PPO ``.zip``.
-
-    Recognizes an explicit ``az:``/``azraw:`` prefix, a bare ``.pt`` path, or a
-    deck shorthand that (a) does NOT resolve to a PPO checkpoint and (b) DOES
-    resolve to an AZ checkpoint under checkpoints/az/. The PPO-first ordering
-    keeps normal checkpoints on the unchanged path (and avoids importing az_net
-    for them)."""
-    if not isinstance(spec, str):
-        return False
-    s = spec.strip()
-    low = s.lower()
-    if low.startswith("az:") or low.startswith("azraw:"):
-        return True
-    if s.endswith(".pt"):
-        return True
-    if _resolve_model_path(s) != s:  # a PPO checkpoint resolved — not AZ
-        return False
-    try:
-        from az_net import resolve_az_checkpoint
-    except Exception:
-        return False
-    return resolve_az_checkpoint(s) is not None
+def _note_warm_start(base, ppo_path):
+    print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo_path}")
 
 
-def _is_search_spec(spec) -> bool:
-    """True if ``spec`` is a search spec (``az:`` / ``mcts:`` prefix) whose trace
-    games should be PLAYED by the real MCTS SearchController.
-
-    ``azraw:`` is deliberately NOT a search spec (it is the raw AZNet policy) —
-    ``"az:"`` requires the colon in the third position, so ``"azraw:gen"`` (an
-    ``r`` there) does not match. Bare PPO specs and ``.pt`` paths are likewise
-    raw-policy. The prefix is the only lever: no new CLI flag."""
-    return (isinstance(spec, str)
-            and spec.strip().lower().startswith(("az:", "mcts:")))
-
-
-def _effective_bo3(args) -> bool:
-    """Whether to simulate in bo3. AZ/MCTS models are trained and gated in bo3
-    (Phase 1a), so analysing one defaults to bo3 even without ``--bo3``; a
-    scripted/PPO model keeps ``--bo3`` opt-in. The explicit flag always forces
-    bo3 on."""
-    if getattr(args, "bo3", False):
-        return True
-    model = getattr(args, "model", None)
-    if isinstance(model, str) and model.strip().lower().startswith("mcts:"):
-        return True
-    return _is_az_model_spec(model)
+def load_inspection_model(spec):
+    """The INSPECTION model (value / probs / SHAP) for a model spec: the net
+    ``opponents.parse_model_spec`` says the spec names, never a search. The
+    MaskablePPO checkpoint for a PPO spec (bare / ``mcts:``), else the AZ
+    ladder's AZNet wrapped in :class:`_AZModelAdapter` (``az:`` / ``azraw:`` /
+    ``.pt``; a missing AZ checkpoint warm-starts from PPO, with a notice).
+    Both expose ``policy.predict_values`` / ``policy.get_distribution``."""
+    from opponents import MODEL_KIND_AZ, load_spec_value_model
+    model, kind = load_spec_value_model(spec, on_warm_start=_note_warm_start)
+    return _AZModelAdapter(model) if kind == MODEL_KIND_AZ else model
 
 
-def _az_spec_base(spec):
-    """Strip an ``az:``/``azraw:`` prefix from a model spec (else return it)."""
-    s = spec.strip()
-    for pfx in ("az:", "azraw:"):
-        if s.lower().startswith(pfx):
-            return s[len(pfx):].strip()
-    return s
-
-
-def _inspection_spec(spec):
-    """Map a play spec to the spec that loads the INSPECTION net (value/probs/
-    SHAP), which never runs a search: drop any ``?query`` knobs (they configure
-    the SearchController, not the net / checkpoint path), and reduce an ``mcts:``
-    search spec to its base checkpoint — the search's PPO evaluator net. ``az:`` /
-    ``azraw:`` keep their prefix so ``_load_az_analysis_model`` loads an AZNet."""
-    if not isinstance(spec, str):
-        return spec
-    base = spec.split("?", 1)[0].strip()
-    if base.lower().startswith("mcts:"):
-        return base[len("mcts:"):].strip()
-    return base
-
-
-def _resolve_any_path(spec):
-    """Resolve a model spec to a checkpoint path, AZ-aware (for deck inference /
-    display). AZ specs resolve via resolve_az_checkpoint (falling back to the PPO
-    checkpoint used for a warm-start); everything else via _resolve_model_path."""
-    if _is_az_model_spec(spec):
-        from az_net import resolve_az_checkpoint
-        base = _az_spec_base(spec)
-        return resolve_az_checkpoint(base) or _resolve_model_path(base)
-    return _resolve_model_path(spec)
-
-
-class _AZDistribution:
-    """Stand-in for an sb3 action distribution: exposes ``.probs`` like
-    MaskableCategorical so ``_get_policy_probs`` reads it unchanged."""
-
-    def __init__(self, probs):
-        self.probs = probs
-
-
-class _AZDistributionWrap:
-    """Mirror of ``get_distribution``'s return: a ``.distribution`` with ``.probs``."""
-
-    def __init__(self, probs):
-        self.distribution = _AZDistribution(probs)
-
-
-class _AZPolicyAdapter:
-    """Adapts an AZNet to the sb3 ``policy`` subset analysis.py calls, both taking
-    a torch batch tensor: ``predict_values(obs_t)`` and
-    ``get_distribution(obs_t, action_masks=)``."""
-
-    def __init__(self, net):
-        import torch
-        self._torch = torch
-        self._net = net.eval()
-
-    def predict_values(self, obs_t):
-        torch = self._torch
-        b = obs_t.shape[0]
-        mask = torch.ones(b, MAX_ACTIONS, dtype=torch.bool)
-        with torch.no_grad():
-            _, value = self._net(obs_t, mask)
-        return value.reshape(-1, 1)  # so .item() works for a batch of 1
-
-    def get_distribution(self, obs_t, action_masks=None):
-        torch = self._torch
-        b = obs_t.shape[0]
-        if action_masks is None:
-            mask = torch.ones(b, MAX_ACTIONS, dtype=torch.bool)
-        else:
-            mask = torch.as_tensor(np.asarray(action_masks, dtype=bool))
-            if mask.ndim == 1:
-                mask = mask.unsqueeze(0)
-        with torch.no_grad():
-            logits, _ = self._net(obs_t, mask)
-            probs = torch.softmax(logits, dim=-1)
-        return _AZDistributionWrap(probs)
-
-
-class _AZModelAdapter:
-    """Drop-in for a MaskablePPO model across analysis.py: a ``.policy`` with
-    predict_values/get_distribution and a ``.predict`` for ModelController.
-
-    The value is the AZ tanh outcome estimate in [-1, 1] (a bounded game-result
-    prediction), NOT the PPO shaped-return critic."""
-
-    is_az = True
-
-    def __init__(self, net):
-        self._net = net
-        self.policy = _AZPolicyAdapter(net)
-
-    def predict(self, obs, action_masks=None, deterministic=True):
-        import torch
-        obs_t = torch.as_tensor(np.asarray(obs, dtype=np.float32)).unsqueeze(0)
-        if action_masks is None:
-            mask = torch.ones(1, MAX_ACTIONS, dtype=torch.bool)
-        else:
-            mask = torch.as_tensor(np.asarray(action_masks, dtype=bool)).unsqueeze(0)
-        with torch.no_grad():
-            logits, _ = self._net(obs_t, mask)
-            action = int(torch.argmax(logits[0]).item())
-        return action, None
-
-
-def _load_az_analysis_model(spec):
-    """Load an AZNet for analysis from a model spec. Returns (adapter, path).
-
-    Resolves an AZ checkpoint (az:/azraw: prefix, ``.pt`` path, or deck shorthand)
-    via resolve_az_checkpoint; when only a PPO checkpoint exists it warm-starts an
-    AZNet from it (``from_ppo``) so an ``az:`` spec still yields an AZNet-shaped
-    model.
-
-    Delegates to the shared ladder ``opponents.load_az_evaluator``, injecting
-    analysis's own LENIENT ``_resolve_model_path`` (Decision 5: analysis does not
-    adopt the strict ``resolve_checkpoint``) and a printer for the warm-start
-    notice. The warm-start rung reports the PPO path, so the callback captures
-    it."""
-    from opponents import load_az_evaluator
-    base = _az_spec_base(spec)
-    warm: list = []
-
-    def _note(b, ppo_path):
-        warm.append(ppo_path)
-        print(f"No AZ checkpoint for {b!r}; warm-starting an AZNet from PPO {ppo_path}")
-
-    evaluator, resolved = load_az_evaluator(
-        base, ppo_resolver=_resolve_model_path, on_warm_start=_note)
-    return _AZModelAdapter(evaluator._net), (warm[0] if warm else resolved)
-
-
-def _apply_search_budget_flags(args):
-    """Fold the --think-time / --match-clock convenience flags into the specs.
+def _apply_search_knob_flags(args):
+    """Fold the search-knob flags (cli_spec.search_knob_args: --think-time /
+    --match-clock, and on the browser also --sims / --worlds / --search-procs /
+    --search-xw / --search-device) into the specs.
 
     Mirrors play.py's flags of the same names, but applies to EVERY seat whose
-    spec is a search spec (az:/mcts: model or --opponent) — appended last so
-    they override any time=/clock= knob already in the spec. Rewrites
-    ``args.model`` / ``args.opponent`` in place (and clears the flags, so a
-    second call — e.g. an args namespace reused across a re-simulate — is a
-    no-op instead of appending the knobs again)."""
-    think_time = getattr(args, "think_time", None)
-    match_clock = getattr(args, "match_clock", None)
-    if think_time is None and match_clock is None:
+    spec is a search spec (an az:/mcts: --player-a or --player-b) — appended
+    last so they override the same knob already in the spec. A tool that
+    offers --search-procs defaults it to AUTO (cli_spec.search_knob_pairs).
+    Rewrites ``args.player_a`` / ``args.player_b`` in place and marks the
+    namespace folded, so a second call — e.g. an args namespace reused across
+    a re-simulate — is a no-op instead of appending the knobs again."""
+    if getattr(args, "_search_knobs_folded", False):
         return
-    seats = [s for s in ("model", "opponent") if _is_search_spec(getattr(args, s))]
-    if not seats:
-        print("--think-time/--match-clock only apply to a search seat "
-              "(an az:/mcts: model or --opponent spec).", file=sys.stderr)
+    values = {dest: getattr(args, dest) for dest, _key in SEARCH_KNOB_KEYS
+              if hasattr(args, dest)}
+    set_knobs = [d for d, v in values.items()
+                 if v is not None and not (d == "search_xw" and v is True)]
+    auto_procs = "search_procs" in values
+    seats = [s for s in ("player_a", "player_b") if is_search_spec(getattr(args, s))]
+    if set_knobs and not seats:
+        flags = "/".join("--" + d.replace("_", "-") for d in set_knobs)
+        print(f"{flags} only apply to a search seat "
+              "(an az:/mcts: --player-a or --player-b spec).", file=sys.stderr)
         sys.exit(1)
+    if not set_knobs and not (auto_procs and seats):
+        return
     for seat in seats:
-        spec = getattr(args, seat)
-        if think_time is not None:
-            spec = append_spec_knob(spec, "time", think_time)
-        if match_clock is not None:
-            spec = append_spec_knob(spec, "clock", match_clock)
+        spec = with_spec_query(getattr(args, seat),
+                               search_knob_pairs(values, auto_procs=auto_procs))
         setattr(args, seat, spec)
-        print(f"  {seat} search budget: {spec}")
-    args.think_time = args.match_clock = None
+        print(f"  {seat} search knobs: {spec}")
+    args._search_knobs_folded = True
 
 
-def _load_model_and_env(args):
-    """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
-    try:
-        from sb3_contrib import MaskablePPO
-    except ImportError:
-        from stable_baselines3 import PPO as MaskablePPO
-
+def _resolve_sim_decks(args):
+    """Resolve ``args.deck_a`` / ``args.deck_b`` for a simulation, in place
+    (exits with a message when a required deck is missing)."""
     from opponents import is_scripted_spec
-
-    _apply_search_budget_flags(args)
-    binary = getattr(args, "binary", BINARY)
-
-    # The INSPECTION net loads from the search-prefix/query-stripped spec (an
-    # mcts: search plays with a PPO net, so inspect that PPO net; az: inspects
-    # the AZNet). The FULL original spec (with knobs) travels as _play_spec below
-    # so the trace loop can build the matching SearchController.
-    insp_model_spec = _inspection_spec(args.model)
-    insp_opp_spec = _inspection_spec(args.opponent)
-    opp_scripted = is_scripted_spec(insp_opp_spec)
-    model_path = _resolve_any_path(insp_model_spec)
+    opp_scripted = is_scripted_spec(args.player_b)
 
     # Deck resolution. A checkpoint no longer encodes a deck — there is one
     # generalist that pilots whatever deck it is told to. So the model's deck
@@ -646,38 +404,50 @@ def _load_model_and_env(args):
     # title) see the actual decks even when they were inferred, not just given.
     args.deck_a, args.deck_b = deck_a, deck_b
 
-    if _is_az_model_spec(insp_model_spec):
-        model, _ = _load_az_analysis_model(insp_model_spec)
-    else:
-        model = MaskablePPO.load(model_path)
+
+def _load_model_and_env(args):
+    """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
+    from opponents import is_scripted_spec
+
+    _apply_search_knob_flags(args)
+    binary = getattr(args, "binary", BINARY)
+
+    # The INSPECTION net is the net the spec names (opponents.parse_model_spec:
+    # an mcts: search plays with a PPO net, so inspect that PPO net; az:
+    # inspects the AZNet). The FULL original spec (with knobs) travels as
+    # _play_spec below so the trace loop can build the matching SearchController.
+    opp_scripted = is_scripted_spec(args.player_b)
+
+    _resolve_sim_decks(args)
+    deck_a, deck_b = args.deck_a, args.deck_b
+
+    model = load_inspection_model(args.player_a)
     # Remember the ORIGINAL spec on the loaded (inspection) model so the trace
     # loop can decide HOW to play the games (raw policy vs MCTS) — the model
     # object here is always the inspection net (SHAP/value/probs); a search spec
     # additionally spins up a SearchController that plays via make_controller.
-    model._play_spec = args.model
+    model._play_spec = args.player_a
     # A scripted opponent never loads a checkpoint; remember its tier spec
     # (e.g. "scripted:easy") so _controllers_for builds the matching agent.
-    model._scripted_opp_spec = args.opponent if opp_scripted else None
+    model._scripted_opp_spec = args.player_b if opp_scripted else None
     opp_model = None
     if not opp_scripted:
-        if _is_az_model_spec(insp_opp_spec):
-            opp_model, _ = _load_az_analysis_model(insp_opp_spec)
-        else:
-            opp_model = MaskablePPO.load(_resolve_model_path(insp_opp_spec))
-        opp_model._play_spec = args.opponent
+        opp_model = load_inspection_model(args.player_b)
+        opp_model._play_spec = args.player_b
 
     # A search spec (az:/mcts:) plays its trace games with a real MCTS
     # SearchController, which needs the engine's --search-server protocol and a
     # search-capable env. Mirror runner.py's duck-typed env swap.
-    search_play = (_is_search_spec(args.model)
-                   or (opp_model is not None and _is_search_spec(args.opponent)))
+    search_play = (is_search_spec(args.player_a)
+                   or (opp_model is not None and is_search_spec(args.player_b)))
     if search_play:
         from search_env import SearchRoboMageEnv
         env_cls = SearchRoboMageEnv
     else:
         env_cls = RoboMageEnv
     env = env_cls(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
-                  bo3=_effective_bo3(args))
+                  bo3=is_bo3(args))
+    _attach_sim_seed(env, getattr(args, "seed", None))
     return model, env, opp_model
 
 
@@ -698,6 +468,27 @@ def _get_policy_probs(model, obs, num_choices):
         dist = model.policy.get_distribution(obs_t, action_masks=mask)
         probs = dist.distribution.probs[0].cpu().numpy()
     return probs[:num_choices].astype(np.float64)
+
+
+def _attach_sim_seed(env, seed):
+    """Make every game later simulated on ``env`` reproducible from ``seed``:
+    the session's Nth game (counted across every _collect_game_traces call on
+    this env) plays engine seed ``seed + N`` with its model seat drawn from
+    that seed. ``seed`` None leaves the env unseeded (random seats/seeds)."""
+    env._sim_seed_base = seed
+    env._sim_seed_next = 0
+
+
+def _next_sim_game(env):
+    """``(model_is_a, engine_seed)`` for the next simulated game on ``env``:
+    derived from the seed _attach_sim_seed stored, else a random seat with
+    ``engine_seed`` None (the env draws its own)."""
+    base = getattr(env, "_sim_seed_base", None)
+    if base is None:
+        return bool(np.random.random() < 0.5), None
+    engine_seed = base + env._sim_seed_next
+    env._sim_seed_next += 1
+    return bool(np.random.default_rng(engine_seed).random() < 0.5), engine_seed
 
 
 def _reset_for_game(env, model_is_a, engine_seed=None):
@@ -741,7 +532,7 @@ def _playing_controller(model, label, env):
     """
     from opponents import ModelController, make_controller
     spec = getattr(model, "_play_spec", None)
-    if _is_search_spec(spec):
+    if is_search_spec(spec):
         ctrl = getattr(model, "_search_ctrl", None)
         if ctrl is None:
             ctrl = make_controller(spec, deterministic=True)
@@ -852,7 +643,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
     opponent actions after the model's last decision).
 
     `engine_seed` + `full_actions` + `prefix_len` make each game exactly
-    replayable (see _replay_to_step / the interactive `whatif` command): reset
+    replayable (see _replay_to_step / the browser's `whatif` entry): reset
     with the recorded seed and feed full_actions[:prefix_len[step]] to land back
     in the state where the model made decision `step`.
 
@@ -886,8 +677,12 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
     for g in range(n_games):
         if should_stop is not None and should_stop():
             break
-        model_is_a = bool(np.random.random() < 0.5)
-        obs, engine_seed = _reset_for_game(env, model_is_a)
+        model_is_a, engine_seed = _next_sim_game(env)
+        obs, engine_seed = _reset_for_game(env, model_is_a, engine_seed)
+        if getattr(env, "_sim_seed_base", None) is not None:
+            # Scripted tie-breaks draw from Python's global RNG; seed it with
+            # the engine seed, as runner.run_games does.
+            random.seed(engine_seed)
         if progress is not None:
             progress({"kind": "game_start", "model_is_a": model_is_a,
                       "engine_seed": engine_seed})
@@ -1016,7 +811,7 @@ def _search_play_notes(model, opp_model):
     lines = []
     for who, m in (("model", model), ("opponent", opp_model)):
         spec = getattr(m, "_play_spec", None) if m is not None else None
-        if _is_search_spec(spec):
+        if is_search_spec(spec):
             lines.append(f"  {who} trace games played by MCTS ({spec}) — slow "
                          f"(~sims/decision); use azraw:/bare spec for "
                          f"raw-policy traces")
@@ -1054,42 +849,26 @@ def _report_search_stats(model, opp_model):
         print(line, flush=True)
 
 
-def _game_is_replayable(game):
-    """True if a game trace carries the seed + action log needed for replay."""
-    return (game.get("engine_seed") is not None
-            and game.get("full_actions") is not None
-            and game.get("prefix_len") is not None)
-
-
 def _replay_to_step(env, game, step):
     """Re-run `game` in `env` up to (not including) model decision `step`.
 
     Resets with the game's recorded engine seed and deck arrangement, then feeds
-    the recorded interleaved action log until the model is on the clock for
-    decision `step`. Returns (obs, ok, prefix_reward): `ok` is False (with a
-    printed warning) if replay diverged from the stored observation, so callers
-    never present a counterfactual built on a desynced state. `prefix_reward` is
-    the cumulative Player-A reward accrued during the prefix — nonzero when the
-    branch point is in game 2+ of a bo3 match (the ±1.0 per-game results from
-    earlier games land here, not after the branch).
+    the recorded interleaved action log (`tree_rebuild.feed_prefix`) until the
+    model is on the clock for decision `step`. Returns (obs, ok, prefix_reward):
+    `ok` is False (with a printed warning) if the replay ended early or diverged
+    from the stored observation, so callers never present a counterfactual built
+    on a desynced state. `prefix_reward` is the cumulative Player-A reward
+    accrued during the prefix — nonzero when the branch point is in game 2+ of
+    a bo3 match (the ±1.0 per-game results from earlier games land here, not
+    after the branch).
     """
-    engine_seed = game["engine_seed"]
-    model_is_a = game["model_is_a"]
-    prefix = game["prefix_len"][step]
-    full_actions = game["full_actions"]
-
-    obs, _ = _reset_for_game(env, model_is_a, engine_seed)
-    prefix_reward = 0.0
-    for a in full_actions[:prefix]:
-        obs, r, terminated, truncated, _ = env.step(a)
-        prefix_reward += r
-        if terminated or truncated:
-            print(f"  Replay ended early at prefix action; cannot reach step {step}.")
-            return obs, False, prefix_reward
-
-    expected = game["observations"][step]
-    if not np.allclose(obs, expected, atol=1e-4):
-        n_diff = int(np.sum(~np.isclose(obs, expected, atol=1e-4)))
+    obs, _ = _reset_for_game(env, game["model_is_a"], game["engine_seed"])
+    try:
+        obs, prefix_reward, n_diff = tree_rebuild.feed_prefix(env, game, step, obs)
+    except tree_rebuild.RebuildError as exc:
+        print(f"  Cannot reach step {step}: {exc}.")
+        return obs, False, 0.0
+    if n_diff:
         print(f"  WARNING: replay diverged from recorded state at step {step} "
               f"({n_diff} obs floats differ). Engine nondeterminism? "
               f"Counterfactual results may be unreliable.")
@@ -1201,7 +980,8 @@ def _assemble_branch_trace(game, game_idx, step, branch, t):
         "interp_features": list(game["interp_features"][:n_pre]) + t["interp"],
         "actions": list(game["actions"][:step]) + [branch["action"]] + t["actions"],
         "num_choices": list(game["num_choices"][:n_pre]) + t["num_choices"],
-        "action_probs": list(game["action_probs"][:n_pre]) + t["probs"],
+        "action_probs": (_trace_probs(game)
+                         + [None] * n_pre)[:n_pre] + t["probs"],
         "opp_actions": opp_actions,
         "engine_seed": game["engine_seed"],
         "full_actions": list(game["full_actions"][:prefix]) + t["full_actions"],
@@ -1230,12 +1010,13 @@ def _run_whatif(model, env, opp_model, game, game_idx, step, k,
     re-branched like any simulated game. The chosen branch gets no trace: its
     line IS the source game.
     """
-    if not _game_is_replayable(game):
+    if not tree_rebuild.game_is_replayable(game):
         print("  This game has no recorded seed/action log — it predates the "
-              "replay-enabled collector. Re-collect (or 'run <N>') to enable whatif.")
+              "replay-enabled collector. Re-collect (or run more games) to enable whatif.")
         return None
     if env is None or model is None:
-        print("  No live env available. Use the 'interactive' command to enable whatif.")
+        print("  No live env available — whatif needs a simulate session "
+              "(analysis.py browse).")
         return None
 
     n_steps = len(game["observations"])
@@ -1323,9 +1104,14 @@ def _action_desc(obs, i):
     ("Cast Lightning Bolt", "Target Wasteland (opp)"), including the
     option_ordinal suffix ("[#2]") that distinguishes modal / X-value /
     top-of-library-depth choices the other metadata can't tell apart."""
-    a = decode.decode_actions_from_obs(obs, i + 1)[i]
-    ordv = a["option_ordinal"]
-    return a["description"] + (f"  [#{ordv}]" if ordv >= 0 else "")
+    return decode.action_text(decode.decode_actions_from_obs(obs, i + 1)[i])
+
+
+def _trace_probs(game):
+    """A trace's per-step action-probability list, never None: a shard record
+    or an .rmtrace load without probs carries ``action_probs=None`` (and a
+    loaded list can hold None steps, which callers skip)."""
+    return game.get("action_probs") or []
 
 
 def _decode_legal_actions(obs, num_choices, chosen_action):
@@ -1335,8 +1121,6 @@ def _decode_legal_actions(obs, num_choices, chosen_action):
         marker = " <-- chosen" if i == chosen_action else ""
         lines.append(f"    [{i}] {_action_desc(obs, i)}{marker}")
     return lines
-
-
 
 
 _INTERP_STEP_NAMES = [
@@ -1900,7 +1684,7 @@ def _obs_ctrl_flag(obs, i):
 
 
 def _sim_targeting(games):
-    """Targeting analysis over interactive-mode game traces."""
+    """Targeting analysis over simulated game traces."""
     if not games:
         print("  No games in memory.")
         return
@@ -2198,19 +1982,10 @@ def _sim_sideboard_report(games):
 
 _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE
 
-# Fungible card classes for the NET sideboard-impact table: swapping one
-# fetchland for another is mana-base tuning, not a card-choice signal, so all
-# fetches pool into one class (a fetch-for-fetch swap nets to zero). Applies
-# only to the net-impact section of sbvalue — the per-swap preference tables
-# above it stay per-name.
-_SB_FUNGIBLE = {
-    name: "Fetchland (any)"
-    for name in (
-        "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills",
-        "Misty Rainforest", "Windswept Heath", "Bloodstained Mire",
-        "Verdant Catacombs", "Arid Mesa", "Marsh Flats", "Prismatic Vista",
-    )
-}
+# The NET sideboard-impact table pools card classes through
+# decode.sb_card_class (every fetchland is one fungible class, so a
+# fetch-for-fetch swap nets to zero). Applies only to the net-impact section of
+# sbvalue — the per-swap preference tables above it stay per-name.
 
 
 def _analyze_sbvalue(games, verbose=True):
@@ -2235,7 +2010,7 @@ def _analyze_sbvalue(games, verbose=True):
     A final NET-impact table works at GAME granularity: every post-board game
     is bucketed, per card class, by the class's cumulative net copies in the
     deck for that game (boarded in minus out over the phases played so far in
-    the match; fetchlands pooled as one fungible class per `_SB_FUNGIBLE`),
+    the match; fetchlands pooled as one fungible class per `decode.sb_card_class`),
     and compares the post-board GAME win rate when the card was net-in vs
     net-out vs net-zero. Per-game outcomes are reconstructed from the match
     win counters at each game's first decision (the match winner takes the
@@ -2257,7 +2032,7 @@ def _analyze_sbvalue(games, verbose=True):
         obs_list = g["observations"]
         actions = g["actions"]
         vals = g.get("values", [])
-        probs_list = g.get("action_probs", [])
+        probs_list = _trace_probs(g)
         ncs = g["num_choices"]
         in_phase = False
         phase_id = -1
@@ -2294,7 +2069,7 @@ def _analyze_sbvalue(games, verbose=True):
                         key = (cat, name)
                         p = float(probs[k]) if probs is not None and k < len(probs) else 0.0
                         dec_mass[key] = dec_mass.get(key, 0.0) + p
-                        offered_cls.setdefault(_SB_FUNGIBLE.get(name, name), set()).add(gi)
+                        offered_cls.setdefault(decode.sb_card_class(name), set()).add(gi)
             # P(done) at the phase's first decision = confidence in the current 60.
             if probs is not None and (si == 0 or not _match_meta(obs_list[si - 1])[3]):
                 for k in range(ncs[si]):
@@ -2321,7 +2096,7 @@ def _analyze_sbvalue(games, verbose=True):
                     phase_swaps += 1
                     if si + 1 < len(vals):
                         dv.setdefault(key, []).append(vals[si + 1] - vals[si])
-                    cls = _SB_FUNGIBLE.get(name, name)
+                    cls = decode.sb_card_class(name)
                     swap_events.append((meta[0], cls,
                                         1 if cat == _CAT_SB_IN else -1))
         if in_phase:  # trace ended inside a sideboard phase
@@ -2455,683 +2230,6 @@ def _analyze_sbvalue(games, verbose=True):
     return result
 
 
-def _interactive_session(ctx):
-    """Interactive REPL for inspecting simulation results.
-
-    ctx keys: games, swing_data, shap_values, shap_samples,
-              model, env, opp_model, args
-    """
-    try:
-        import readline
-        readline.set_history_length(500)
-    except ImportError:
-        pass
-
-    games = ctx["games"]
-    args  = ctx.get("args")
-
-    def _banner():
-        can_run = ctx.get("env") is not None
-        print("\n" + "=" * 60)
-        print(f"Interactive session — {len(games)} games in memory.")
-        cmds = ["list", "replay <N> [-v]", "boardstate <N> <step>", "summary",
-                "cardvalue [N]", "targeting", "sideboard", "sbvalue",
-                "swings [N]", "boundaries", "matchcal",
-                "shap", "regret [N]", "entropy", "consistency [N]",
-                "calibration", "turning", "clusters", "whatif <N> <step> [k]",
-                "chart <N>", "chart swings [N]", "chart cardvalue [N]",
-                "chart sbvalue [N]", "chart shap",
-                "chart calibration", "chart turning", "chart clusters", "chart whatif"]
-        if can_run:
-            cmds.append("run <N>")
-        cmds += ["help", "quit"]
-        print("Commands: " + ", ".join(cmds))
-        print("=" * 60)
-
-    _banner()
-
-    while True:
-        try:
-            line = input("\n> ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print()
-            break
-        if not line:
-            continue
-
-        parts = line.split()
-        cmd = parts[0].lower()
-
-        if cmd in ("quit", "exit", "q"):
-            break
-
-        elif cmd in ("help", "?", "h"):
-            can_run = ctx.get("env") is not None
-            print("  list / games              — list all games with result/decisions/side")
-            print("  replay <N> [-v]           — one-line-per-decision trace for game N; -v adds")
-            print("                              zones (battlefields/hand/GYs/stack), chosen action,")
-            print("                              and interleaved opponent actions")
-            print("  boardstate <N> [step]     — full board + decision at step in game N (default 0)")
-            print("  bs <N> [step]             — alias; enters GDB-style stepping mode")
-            print("  summary                   — win/loss/draw stats for all simulated games")
-            print("  swings [N]                — show top N in-game value-function swings (default 10;")
-            print("                              same bo3 game, sideboard steps excluded)")
-            print("  boundaries                — V(s) across bo3 game transitions: result-pricing vs")
-            print("                              board re-anchoring components per boundary")
-            print("  matchcal                  — per match/game: V at each game's first decision vs the")
-            print("                              empirical remaining return for that match score")
-            print("  shap [n_bg N] [n_smp N]   — run SHAP analysis on collected game data")
-            print("  regret [N]                — policy regret analysis (top N high-regret decisions)")
-            print("  entropy                   — policy entropy by phase and board state")
-            print("  consistency [N]           — find similar states with different actions (top N pairs)")
-            print("  cardvalue [N]             — rank cards by importance (ΔV, priority, win-rate lift)")
-            print("  targeting                 — self vs opp targeting, hold vs cast analysis")
-            print("  sideboard                 — sideboard decisions by each agent (bo3)")
-            print("  sbvalue                   — sideboard preference: take-rate, policy confidence,")
-            print("                              ΔV and win-rate lift per boarded-in/out card, plus")
-            print("                              NET impact on post-board GAME win rate with")
-            print("                              fetchlands pooled as one fungible class (bo3)")
-            print("  whatif <N> <step> [k]     — counterfactual: branch the chosen action + top-k")
-            print("                              alternatives from the same seed, roll each to the end,")
-            print("                              and compare final result / V(s) (k default 3)")
-            print("  calibration               — V(s) at game start vs actual win rate (is model biased?)")
-            print("  turning                   — find the 'point of no return' in each game")
-            print("  clusters                  — classify games by V(s) curve shape (archetypes)")
-            print("  chart <N>                 — value curve plot for game N")
-            print("  chart swings [N]          — value curve plots for top N swing games")
-            print("  chart cardvalue [N]       — diverging bar chart of per-card ΔV")
-            print("  chart sbvalue [N]         — sideboard swap preference + net ΔWR bars")
-            print("  chart shap                — SHAP summary plot (requires shap run first)")
-            print("  chart calibration         — calibration curve plot")
-            print("  chart turning             — turning point distribution plot")
-            print("  chart clusters            — overlay V(s) curves by archetype")
-            print("  chart whatif              — overlay branch V(s) curves from the last whatif")
-            if can_run:
-                print("  run <N>                   — simulate N more games and add to pool")
-            print("  quit / exit               — leave interactive session")
-
-        elif cmd in ("list", "games", "ls"):
-            print(f"  {'Game':<6} {'Result':<8} {'Score':<7} {'Decisions':<12} {'Side'}")
-            print(f"  {'-'*6} {'-'*8} {'-'*7} {'-'*12} {'-'*4}")
-            for i, g in enumerate(games):
-                r = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
-                sc = _match_score(g)
-                sc_str = f"{sc[0]}-{sc[1]}" if sc is not None else "—"
-                side = "A" if g["model_is_a"] else "B"
-                print(f"  {i:<6} {r:<8} {sc_str:<7} {len(g['values']):<12} {side}")
-
-        elif cmd == "summary":
-            _sim_summary(games)
-
-        elif cmd == "replay":
-            if len(parts) < 2:
-                print("  Usage: replay <game_index> [-v]")
-                continue
-            flags = [p for p in parts[1:] if p in ("-v", "v", "verbose", "full")]
-            args_ = [p for p in parts[1:] if p not in flags]
-            if not args_:
-                print("  Usage: replay <game_index> [-v]")
-                continue
-            try:
-                n = int(args_[0])
-            except ValueError:
-                print("  Expected an integer game index.")
-                continue
-            if n < 0 or n >= len(games):
-                print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
-                continue
-            _replay_sim_game(games[n], n, verbose=bool(flags))
-
-        elif cmd in ("boardstate", "bs"):
-            if len(parts) < 2:
-                print("  Usage: boardstate <game_index> [decision_step]")
-                continue
-            try:
-                gn = int(parts[1])
-                step = int(parts[2]) if len(parts) >= 3 else 0
-            except ValueError:
-                print("  Expected integer game_index and optional decision_step.")
-                continue
-            if gn < 0 or gn >= len(games):
-                print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
-                continue
-
-            def _opp_actions_before(g, step):
-                # Opponent actions that occurred between model decision step-1 and
-                # model decision `step` (before_model_step == step), with runs of
-                # identical consecutive actions collapsed ("PASS (x19)").
-                descs = [oa["desc"] for oa in g.get("opp_actions", [])
-                         if oa["before_model_step"] == step]
-                if not descs:
-                    return
-                print(f"  Opponent actions since decision {step - 1}:")
-                run_desc, run_len = None, 0
-                def flush():
-                    if run_len == 1:
-                        print(f"        opp --> {run_desc}")
-                    elif run_len > 1:
-                        print(f"        opp --> {run_desc} (x{run_len})")
-                for desc in descs:
-                    if desc == run_desc:
-                        run_len += 1
-                    else:
-                        flush()
-                        run_desc, run_len = desc, 1
-                flush()
-
-            def _show_step(g, gn, step):
-                n_obs = len(g["observations"])
-                obs = g["observations"][step]
-                val = g["values"][step] if step < len(g["values"]) else None
-                result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
-                print(f"\nGame {gn} [{result_str}]  —  decision {step}/{n_obs - 1}")
-                _opp_actions_before(g, step)
-
-                # Model's decision at this step
-                has_action = "actions" in g and step < len(g["actions"])
-                if has_action:
-                    action_idx  = g["actions"][step]
-                    num_ch      = g["num_choices"][step]
-                    action_lines = _decode_legal_actions(obs, num_ch, action_idx)
-                    print(f"  Legal actions ({num_ch}):")
-                    for ln in action_lines:
-                        print(ln)
-                print()
-                _decode_board_state(obs, value=val)
-
-            g = games[gn]
-            n_obs = len(g["observations"])
-            if step < 0 or step >= n_obs:
-                print(f"  Step out of range for game {gn}. Valid range: 0–{n_obs - 1}")
-                continue
-            _show_step(g, gn, step)
-
-            # GDB-style stepping sub-loop
-            last_step_cmd = "n"
-            print("  Stepping mode: n/Enter=next  p=prev  g <N>=go to step  q=quit stepping")
-            while True:
-                try:
-                    raw = input(f"(g{gn}:{step}) ").strip()
-                except (EOFError, KeyboardInterrupt):
-                    print()
-                    break
-                sc = raw.lower() if raw else last_step_cmd
-                sp2 = sc.split()
-                scmd = sp2[0] if sp2 else last_step_cmd
-
-                if scmd in ("n", "next", ""):
-                    last_step_cmd = "n"
-                    if step < n_obs - 1:
-                        step += 1
-                        _show_step(g, gn, step)
-                    else:
-                        print("  End of game.")
-                elif scmd in ("p", "prev", "previous", "b", "back"):
-                    last_step_cmd = "p"
-                    if step > 0:
-                        step -= 1
-                        _show_step(g, gn, step)
-                    else:
-                        print("  Beginning of game.")
-                elif scmd == "g":
-                    if len(sp2) < 2:
-                        print("  Usage: g <step>")
-                        continue
-                    try:
-                        target = int(sp2[1])
-                    except ValueError:
-                        print("  Expected an integer step.")
-                        continue
-                    if target < 0 or target >= n_obs:
-                        print(f"  Step out of range. Valid range: 0–{n_obs - 1}")
-                        continue
-                    step = target
-                    _show_step(g, gn, step)
-                elif scmd in ("q", "quit", "exit"):
-                    break
-                else:
-                    print("  n/Enter=next  p=prev  g <N>=go to step  q=quit stepping")
-
-        elif cmd == "swings":
-            top_n = 10
-            if len(parts) >= 2:
-                try:
-                    top_n = int(parts[1])
-                except ValueError:
-                    pass
-            if ctx["swing_data"] is None:
-                print("  Computing value swings...")
-                ctx["swing_data"] = _compute_swings(games)
-            top = ctx["swing_data"][:top_n]
-            print(f"\nTop {min(top_n, len(top))} value swings (in-game only; "
-                  f"see 'boundaries' for bo3 game transitions):")
-            _print_swing_table(top)
-
-        elif cmd in ("boundaries", "boundary"):
-            _print_boundaries(_compute_boundaries(games))
-
-        elif cmd == "matchcal":
-            _print_match_calibration(games)
-
-        elif cmd == "shap":
-            n_background = 50
-            n_samples    = 200
-            for j in range(1, len(parts) - 1, 2):
-                if parts[j] == "n_bg":
-                    try: n_background = int(parts[j + 1])
-                    except ValueError: pass
-                elif parts[j] == "n_smp":
-                    try: n_samples = int(parts[j + 1])
-                    except ValueError: pass
-            if args is not None:
-                n_background = getattr(args, "n_background", n_background)
-                n_samples    = getattr(args, "n_samples", n_samples)
-            try:
-                import shap
-                from sklearn.ensemble import GradientBoostingRegressor
-                all_interp = np.array([f for g in games for f in g["interp_features"]])
-                all_vals   = np.array([v for g in games for v in g["values"]])
-                print(f"\nFitting surrogate on {len(all_interp)} points...")
-                surrogate = GradientBoostingRegressor(
-                    n_estimators=200, max_depth=5, learning_rate=0.1, subsample=0.8)
-                surrogate.fit(all_interp, all_vals)
-                r2 = surrogate.score(all_interp, all_vals)
-                print(f"Surrogate R^2: {r2:.4f}")
-                bg_idx  = np.random.choice(len(all_interp),
-                                           size=min(n_background, len(all_interp)), replace=False)
-                smp_idx = np.random.choice(len(all_interp),
-                                           size=min(n_samples, len(all_interp)), replace=False)
-                print(f"Running SHAP ({n_background} background, {len(smp_idx)} samples)...")
-                explainer  = shap.KernelExplainer(surrogate.predict, all_interp[bg_idx])
-                shap_vals  = explainer.shap_values(all_interp[smp_idx])
-                ctx["shap_values"]  = shap_vals
-                ctx["shap_samples"] = all_interp[smp_idx]
-                mean_abs = np.abs(shap_vals).mean(axis=0)
-                sidx = np.argsort(-mean_abs)
-                print(f"\n{'Feature':<25} {'Mean |SHAP|':>12}")
-                print("-" * 40)
-                for idx in sidx:
-                    print(f"  {_INTERP_FEATURE_NAMES[idx]:<23} {mean_abs[idx]:12.4f}")
-            except ImportError as e:
-                print(f"  Missing dependency: {e}")
-            except Exception as e:
-                print(f"  Error running SHAP: {e}")
-
-        elif cmd == "chart":
-            sub = parts[1].lower() if len(parts) >= 2 else ""
-            plt = viz.pyplot(show=viz.want_show(args))
-            if plt is None:
-                print("  matplotlib unavailable.")
-                continue
-
-            if sub == "cardvalue":
-                top_n = 20
-                if len(parts) >= 3:
-                    try: top_n = int(parts[2])
-                    except ValueError: pass
-                rows = ctx.get("cardvalue_rows")
-                if rows is None:
-                    rows = _analyze_cardvalue(games, verbose=False)
-                    ctx["cardvalue_rows"] = rows
-                _chart_cardvalue(rows, args=args, top_n=top_n)
-
-            elif sub == "sbvalue":
-                top_n = 20
-                if len(parts) >= 3:
-                    try: top_n = int(parts[2])
-                    except ValueError: pass
-                sbrows = ctx.get("sbvalue_rows")
-                if sbrows is None:
-                    sbrows = _analyze_sbvalue(games, verbose=False)
-                    ctx["sbvalue_rows"] = sbrows
-                _chart_sbvalue(sbrows, args=args, top_n=top_n)
-
-            elif sub == "shap":
-                if ctx["shap_values"] is None or ctx["shap_samples"] is None:
-                    print("  Run 'shap' first to generate SHAP values.")
-                    continue
-                try:
-                    import shap
-                    shap.summary_plot(ctx["shap_values"], ctx["shap_samples"],
-                                      feature_names=_INTERP_FEATURE_NAMES, show=False)
-                    plt.tight_layout()
-                    viz.save_or_show(plt, plt.gcf(), "shap_summary", args)
-                except Exception as e:
-                    print(f"  SHAP plot error: {e}")
-
-            elif sub == "swings":
-                top_n = 5
-                if len(parts) >= 3:
-                    try: top_n = int(parts[2])
-                    except ValueError: pass
-                if ctx["swing_data"] is None:
-                    ctx["swing_data"] = _compute_swings(games)
-                top = ctx["swing_data"][:top_n]
-                if not top:
-                    print("  No swing data.")
-                    continue
-                fig, axes = plt.subplots(len(top), 1, figsize=(10, 3 * len(top)), squeeze=False)
-                for i, s in enumerate(top):
-                    ax = games[s["game_idx"]]
-                    vals = ax["values"]
-                    result_str = "WIN" if ax["result"] > 0 else ("LOSS" if ax["result"] < 0 else "DRAW")
-                    a = axes[i, 0]
-                    a.plot(vals, color="steelblue", linewidth=1.2)
-                    a.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-                    a.axvline(s["swing_step"], color="red", linewidth=1, linestyle="--",
-                              label=f"swing ({s['swing_to'] - s['swing_from']:+.2f})")
-                    a.set_ylabel("V(s)")
-                    a.set_title(f"Game {s['game_idx']} ({result_str})")
-                    a.legend(loc="upper right", fontsize=8)
-                    a.grid(True, alpha=0.3)
-                axes[-1, 0].set_xlabel("Decision step")
-                viz.save_or_show(plt, fig, "swings", args)
-
-            elif sub == "calibration":
-                cal = ctx.get("calibration_data")
-                if cal is None:
-                    print("  Computing calibration...")
-                    cal = _analyze_calibration(games, verbose=False)
-                    ctx["calibration_data"] = cal
-                if not cal:
-                    print("  No calibration data.")
-                    continue
-                fig, ax = plt.subplots(figsize=(8, 6))
-                mean_vs = [b["mean_v"] for b in cal]
-                win_rates = [b["win_rate"] for b in cal]
-                counts = [b["n"] for b in cal]
-                labels = [b["label"] for b in cal]
-                # Scatter with size proportional to count
-                sizes = [max(40, min(300, c * 5)) for c in counts]
-                ax.scatter(mean_vs, win_rates, s=sizes, c="steelblue",
-                           alpha=0.7, edgecolors="navy", zorder=3)
-                for i, lab in enumerate(labels):
-                    ax.annotate(f"{lab}\n(n={counts[i]})",
-                                (mean_vs[i], win_rates[i]),
-                                textcoords="offset points", xytext=(8, 8),
-                                fontsize=7)
-                # Perfect calibration line: V(s) maps to win rate as (V+1)/2
-                xs = np.linspace(-1, 1, 50)
-                ax.plot(xs, (xs + 1) / 2, color="gray", linestyle="--",
-                        linewidth=1, label="Perfect calibration", alpha=0.6)
-                ax.set_xlabel("Mean V(s) at game start")
-                ax.set_ylabel("Actual win rate")
-                ax.set_title("Value Function Calibration")
-                ax.legend(loc="upper left", fontsize=8)
-                ax.grid(True, alpha=0.3)
-                ax.set_xlim(-1.1, 1.1)
-                ax.set_ylim(-0.05, 1.05)
-                viz.save_or_show(plt, fig, "calibration", args)
-
-            elif sub == "turning":
-                tp_data = ctx.get("turning_data")
-                if tp_data is None:
-                    print("  Computing turning points...")
-                    tp_data = _analyze_turning_points(games, verbose=False)
-                    ctx["turning_data"] = tp_data
-                if not tp_data:
-                    print("  No turning points found.")
-                    continue
-                fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-                # Histogram of turning point timing
-                ax = axes[0]
-                win_fracs = [t["frac"] for t in tp_data if t["result"] > 0]
-                loss_fracs = [t["frac"] for t in tp_data if t["result"] < 0]
-                bins_hist = np.linspace(0, 1, 15)
-                if win_fracs:
-                    ax.hist(win_fracs, bins=bins_hist, alpha=0.6,
-                            color="green", label=f"Wins ({len(win_fracs)})")
-                if loss_fracs:
-                    ax.hist(loss_fracs, bins=bins_hist, alpha=0.6,
-                            color="red", label=f"Losses ({len(loss_fracs)})")
-                ax.set_xlabel("Fraction of game elapsed")
-                ax.set_ylabel("Count")
-                ax.set_title("When Turning Points Occur")
-                ax.legend(fontsize=8)
-                ax.grid(True, alpha=0.3)
-
-                # V(s) curves for a few games with turning points marked
-                ax = axes[1]
-                n_show = min(8, len(tp_data))
-                colors_win = plt.cm.Greens(np.linspace(0.4, 0.9, n_show))
-                colors_loss = plt.cm.Reds(np.linspace(0.4, 0.9, n_show))
-                ci_w = 0
-                ci_l = 0
-                for t in tp_data[:n_show]:
-                    g = games[t["game_idx"]]
-                    vals = g["values"]
-                    won = t["result"] > 0
-                    if won:
-                        c = colors_win[ci_w % len(colors_win)]
-                        ci_w += 1
-                    else:
-                        c = colors_loss[ci_l % len(colors_loss)]
-                        ci_l += 1
-                    xs = np.linspace(0, 1, len(vals))
-                    ax.plot(xs, vals, color=c, alpha=0.5, linewidth=1)
-                    ax.axvline(t["frac"], color=c, linestyle=":",
-                               linewidth=0.8, alpha=0.6)
-                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-                ax.set_xlabel("Fraction of game elapsed")
-                ax.set_ylabel("V(s)")
-                ax.set_title(f"V(s) Curves with Turning Points ({n_show} games)")
-                ax.grid(True, alpha=0.3)
-
-                viz.save_or_show(plt, fig, "turning", args)
-
-            elif sub == "clusters":
-                clust = ctx.get("cluster_data")
-                if clust is None:
-                    print("  Computing clusters...")
-                    clust = _analyze_clusters(games, verbose=False)
-                    ctx["cluster_data"] = clust
-                archetype_colors = {
-                    "early_lead_held": "green",
-                    "slow_grind": "steelblue",
-                    "comeback": "orange",
-                    "lead_blown": "red",
-                    "volatile": "purple",
-                }
-                nonempty = {k: v for k, v in clust.items() if v}
-                if not nonempty:
-                    print("  No cluster data.")
-                    continue
-                n_types = len(nonempty)
-                fig, axes = plt.subplots(1, n_types, figsize=(5 * n_types, 4),
-                                         squeeze=False)
-                for col, (label, indices) in enumerate(nonempty.items()):
-                    ax = axes[0, col]
-                    n_plot = min(15, len(indices))
-                    for i in indices[:n_plot]:
-                        g = games[i]
-                        vals = g["values"]
-                        xs = np.linspace(0, 1, len(vals))
-                        won = g["result"] > 0
-                        ax.plot(xs, vals, color=archetype_colors.get(label, "gray"),
-                                alpha=0.3, linewidth=1)
-                    # Plot mean curve
-                    if indices:
-                        max_len = max(len(games[i]["values"]) for i in indices)
-                        interp_vals = []
-                        for i in indices:
-                            v = games[i]["values"]
-                            xs_orig = np.linspace(0, 1, len(v))
-                            xs_new = np.linspace(0, 1, max_len)
-                            interp_vals.append(np.interp(xs_new, xs_orig, v))
-                        mean_curve = np.mean(interp_vals, axis=0)
-                        xs_mean = np.linspace(0, 1, max_len)
-                        ax.plot(xs_mean, mean_curve,
-                                color=archetype_colors.get(label, "gray"),
-                                linewidth=2.5, label="mean")
-                    ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-                    w = sum(1 for i in indices if games[i]["result"] > 0)
-                    ax.set_title(f"{label}\n({len(indices)} games, "
-                                 f"{w}/{len(indices)} wins)")
-                    ax.set_xlabel("Game progress")
-                    ax.set_ylabel("V(s)")
-                    ax.grid(True, alpha=0.3)
-                    ax.set_ylim(-1.1, 1.1)
-                viz.save_or_show(plt, fig, "clusters", args)
-
-            elif sub == "whatif":
-                wf = ctx.get("whatif_data")
-                if not wf:
-                    print("  Run 'whatif <game> <step> [k]' first to generate branches.")
-                    continue
-                gn, step, branches = wf["game_idx"], wf["step"], wf["branches"]
-                g = games[gn]
-                actual_vals = g["values"]
-                fig, ax = plt.subplots(figsize=(11, 5))
-                # Actual game V(s) up to and including the branch point.
-                xs_actual = list(range(len(actual_vals)))
-                ax.plot(xs_actual, actual_vals, color="black", linewidth=1.4,
-                        alpha=0.5, label="actual game")
-                ax.axvline(step, color="gray", linestyle="--", linewidth=1,
-                           label=f"branch @ step {step}")
-                for b in branches:
-                    # Each branch's V(s) trajectory starts at the decision after
-                    # the branch, so offset the x-axis to step+1.
-                    bx = list(range(step + 1, step + 1 + len(b["values"])))
-                    res = b["result"]
-                    rstr = "W" if res > 0 else ("L" if res < 0 else "D")
-                    lab = ("[chosen] " if b["is_chosen"] else "") + f"{b['desc']} → {rstr}"
-                    lw = 2.0 if b["is_chosen"] else 1.1
-                    ax.plot(bx, b["values"], linewidth=lw, alpha=0.85,
-                            label=(lab[:40] + "…") if len(lab) > 41 else lab)
-                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-                ax.set_xlabel("Model decision step")
-                ax.set_ylabel("V(s)")
-                ax.set_title(f"Whatif — game {gn}, branch at step {step}")
-                ax.legend(loc="best", fontsize=7)
-                ax.grid(True, alpha=0.3)
-                viz.save_or_show(plt, fig, f"whatif_g{gn}_s{step}", args)
-
-            else:
-                # chart <N> — value curve for a single game
-                try:
-                    gn = int(sub)
-                except ValueError:
-                    print("  Usage: chart <game_index> | chart swings [N] | chart cardvalue [N] "
-                          "| chart sbvalue [N] | chart shap | chart calibration | chart turning "
-                          "| chart clusters | chart whatif")
-                    continue
-                if gn < 0 or gn >= len(games):
-                    print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
-                    continue
-                g = games[gn]
-                vals = g["values"]
-                result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
-                side = "A" if g["model_is_a"] else "B"
-                fig, ax = plt.subplots(figsize=(10, 4))
-                ax.plot(vals, color="steelblue", linewidth=1.2)
-                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-                ax.set_xlabel("Decision step")
-                ax.set_ylabel("V(s)")
-                ax.set_title(f"Game {gn} — Model={side}, {result_str}")
-                ax.grid(True, alpha=0.3)
-                viz.save_or_show(plt, fig, f"game{gn}", args)
-
-        elif cmd == "regret":
-            top_n = 20
-            if len(parts) >= 2:
-                try: top_n = int(parts[1])
-                except ValueError: pass
-            has_probs = any(g.get("action_probs") for g in games)
-            if not has_probs:
-                print("  No action probability data. Re-collect games with a model to enable regret analysis.")
-            else:
-                _analyze_regret(games, top_n=top_n)
-
-        elif cmd == "entropy":
-            has_probs = any(g.get("action_probs") for g in games)
-            if not has_probs:
-                print("  No action probability data. Re-collect games with a model to enable entropy analysis.")
-            else:
-                _analyze_entropy(games)
-
-        elif cmd == "consistency":
-            top_n = 20
-            if len(parts) >= 2:
-                try: top_n = int(parts[1])
-                except ValueError: pass
-            _analyze_consistency(games, top_n=top_n)
-
-        elif cmd == "calibration":
-            ctx["calibration_data"] = _analyze_calibration(games)
-
-        elif cmd == "turning":
-            ctx["turning_data"] = _analyze_turning_points(games)
-
-        elif cmd == "clusters":
-            ctx["cluster_data"] = _analyze_clusters(games)
-
-        elif cmd == "cardvalue":
-            top_n = 30
-            if len(parts) >= 2:
-                try: top_n = int(parts[1])
-                except ValueError: pass
-            has_probs = any(g.get("action_probs") for g in games)
-            if not has_probs:
-                print("  Note: no policy probabilities in these traces — "
-                      "'prio' column will be blank.")
-            ctx["cardvalue_rows"] = _analyze_cardvalue(games, top_n=top_n)
-
-        elif cmd == "targeting":
-            _sim_targeting(games)
-
-        elif cmd == "sideboard":
-            _sim_sideboard_report(games)
-
-        elif cmd == "sbvalue":
-            ctx["sbvalue_rows"] = _analyze_sbvalue(games)
-
-        elif cmd == "whatif":
-            if len(parts) < 3:
-                print("  Usage: whatif <game_index> <step> [k]   "
-                      "(k = # of alternative actions, default 3)")
-                continue
-            try:
-                gn = int(parts[1])
-                step = int(parts[2])
-                k = int(parts[3]) if len(parts) >= 4 else 3
-            except ValueError:
-                print("  Expected integer game_index, step, and optional k.")
-                continue
-            if gn < 0 or gn >= len(games):
-                print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
-                continue
-            branches = _run_whatif(ctx.get("model"), ctx.get("env"),
-                                   ctx.get("opp_model"), games[gn], gn, step, k)
-            if branches:
-                ctx["whatif_data"] = {"game_idx": gn, "step": step, "branches": branches}
-
-        elif cmd == "run":
-            if ctx.get("env") is None or ctx.get("model") is None:
-                print("  No live env available. Use the 'interactive' command to enable 'run'.")
-                continue
-            try:
-                n = int(parts[1]) if len(parts) >= 2 else 10
-            except ValueError:
-                print("  Usage: run <N>")
-                continue
-            print(f"  Simulating {n} more games...")
-            new_games = _collect_game_traces(ctx["model"], ctx["env"],
-                                             ctx.get("opp_model"), n)
-            games.extend(new_games)
-            ctx["swing_data"] = None  # invalidate cached data
-            ctx["calibration_data"] = None
-            ctx["turning_data"] = None
-            ctx["cluster_data"] = None
-            ctx["whatif_data"] = None
-            print(f"  Pool now has {len(games)} games.")
-
-        else:
-            print(f"  Unknown command: {cmd!r}. Type 'help' for available commands.")
-
-
-
-
 def _board_bucket_from_feat(feat):
     """Categorize board state from interpretable features into (life_bucket, board_bucket, timing_bucket)."""
     life_diff = feat[_FEAT["life_diff"]]
@@ -3179,12 +2277,14 @@ def _analyze_regret(games, top_n=20, verbose=True):
     """
     entries = []
     for g_idx, game in enumerate(games):
-        probs_list = game.get("action_probs", [])
+        probs_list = _trace_probs(game)
         if not probs_list:
             continue
         for step, (probs, action, nc, obs, feat) in enumerate(zip(
                 probs_list, game["actions"], game["num_choices"],
                 game["observations"], game["interp_features"])):
+            if probs is None:
+                continue
             chosen_prob = probs[action]
             sorted_probs = np.sort(probs)[::-1]
             second_best = sorted_probs[1] if len(sorted_probs) > 1 else 0.0
@@ -3342,11 +2442,13 @@ def _analyze_entropy(games, verbose=True):
     """
     records = []
     for g_idx, game in enumerate(games):
-        probs_list = game.get("action_probs", [])
+        probs_list = _trace_probs(game)
         if not probs_list:
             continue
         for step, (probs, nc, feat) in enumerate(zip(
                 probs_list, game["num_choices"], game["interp_features"])):
+            if probs is None:
+                continue
             # Entropy: -sum(p * ln(p)), skip zero-probability actions
             p = probs[:nc]
             p_safe = p[p > 1e-10]
@@ -3966,7 +3068,7 @@ def _analyze_cardvalue(games, top_n=30, verbose=True):
         obs_list = g["observations"]
         actions = g["actions"]
         vals = g.get("values", [])
-        probs_list = g.get("action_probs", [])
+        probs_list = _trace_probs(g)
         ncs = g["num_choices"]
         for si in range(len(obs_list)):
             obs = obs_list[si]
@@ -4070,9 +3172,8 @@ def _chart_cardvalue(rows, args=None, top_n=20):
     if not graded:
         print("  No cards with enough cast samples to chart.")
         return None
-    plt = viz.pyplot(show=viz.want_show(args))
+    plt = _chart_pyplot(args)
     if plt is None:
-        print("  matplotlib unavailable; skipping chart.")
         return None
     graded = list(reversed(graded))  # barh plots bottom-up
     names = [r["card"][:28] for r in graded]
@@ -4108,9 +3209,8 @@ def _chart_sbvalue(sbrows, args=None, top_n=20):
     if not panels and not net:
         print("  No sideboard swaps to chart.")
         return None
-    plt = viz.pyplot(show=viz.want_show(args))
+    plt = _chart_pyplot(args)
     if plt is None:
-        print("  matplotlib unavailable; skipping chart.")
         return None
 
     n_rows = len(panels) + (1 if net else 0)
@@ -4186,66 +3286,285 @@ def _chart_value_overview(games, args=None):
     return viz.save_or_show(plt, fig, "value_overview", args)
 
 
+def _chart_pyplot(args=None):
+    """viz.pyplot for one chart, printing the terminal note when matplotlib is
+    missing (the caller then returns None)."""
+    plt = viz.pyplot(show=viz.want_show(args))
+    if plt is None:
+        print("  matplotlib unavailable; skipping chart.")
+    return plt
 
 
-def _capture(fn, *a, **k):
-    """Run a verbose analyzer, returning its printed text instead of stdout."""
-    import io
-    from contextlib import redirect_stdout
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        fn(*a, **k)
-    return buf.getvalue()
+def _chart_game(game, game_idx, args=None):
+    """V(s) curve of one game."""
+    vals = game.get("values") or []
+    if not vals:
+        print(f"  Game {game_idx} has no decisions to chart.")
+        return None
+    plt = _chart_pyplot(args)
+    if plt is None:
+        return None
+    result_str = "WIN" if game["result"] > 0 else ("LOSS" if game["result"] < 0 else "DRAW")
+    side = "A" if game["model_is_a"] else "B"
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(vals, color="steelblue", linewidth=1.2)
+    ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+    ax.set_xlabel("Decision step")
+    ax.set_ylabel("V(s)")
+    ax.set_title(f"Game {game_idx} — Model={side}, {result_str}")
+    ax.grid(True, alpha=0.3)
+    return viz.save_or_show(plt, fig, f"game{game_idx}", args)
+
+
+def _chart_swings(games, top_n=5, args=None):
+    """One V(s) panel per game holding a top-``top_n`` in-game swing, the
+    swing step marked."""
+    top = _compute_swings(games)[:top_n]
+    if not top:
+        print("  No swing data.")
+        return None
+    plt = _chart_pyplot(args)
+    if plt is None:
+        return None
+    fig, axes = plt.subplots(len(top), 1, figsize=(10, 3 * len(top)), squeeze=False)
+    for i, s in enumerate(top):
+        g = games[s["game_idx"]]
+        result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+        a = axes[i, 0]
+        a.plot(g["values"], color="steelblue", linewidth=1.2)
+        a.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+        a.axvline(s["swing_step"], color="red", linewidth=1, linestyle="--",
+                  label=f"swing ({s['swing_to'] - s['swing_from']:+.2f})")
+        a.set_ylabel("V(s)")
+        a.set_title(f"Game {s['game_idx']} ({result_str})")
+        a.legend(loc="upper right", fontsize=8)
+        a.grid(True, alpha=0.3)
+    axes[-1, 0].set_xlabel("Decision step")
+    return viz.save_or_show(plt, fig, "swings", args)
+
+
+def _chart_shap(shap_vals, samples, args=None):
+    """SHAP summary plot of a surrogate fit's values over ``samples``."""
+    plt = _chart_pyplot(args)
+    if plt is None:
+        return None
+    import shap
+    shap.summary_plot(shap_vals, samples, feature_names=_INTERP_FEATURE_NAMES,
+                      show=False)
+    plt.tight_layout()
+    return viz.save_or_show(plt, plt.gcf(), "shap_summary", args)
+
+
+def _chart_calibration(games, args=None):
+    """Mean start-of-game V(s) per bucket vs its actual win rate, against the
+    perfect-calibration line."""
+    cal = _analyze_calibration(games, verbose=False)
+    if not cal:
+        print("  No calibration data.")
+        return None
+    plt = _chart_pyplot(args)
+    if plt is None:
+        return None
+    fig, ax = plt.subplots(figsize=(8, 6))
+    mean_vs = [b["mean_v"] for b in cal]
+    win_rates = [b["win_rate"] for b in cal]
+    counts = [b["n"] for b in cal]
+    # Scatter with size proportional to count
+    sizes = [max(40, min(300, c * 5)) for c in counts]
+    ax.scatter(mean_vs, win_rates, s=sizes, c="steelblue",
+               alpha=0.7, edgecolors="navy", zorder=3)
+    for i, b in enumerate(cal):
+        ax.annotate(f"{b['label']}\n(n={counts[i]})", (mean_vs[i], win_rates[i]),
+                    textcoords="offset points", xytext=(8, 8), fontsize=7)
+    # Perfect calibration line: V(s) maps to win rate as (V+1)/2
+    xs = np.linspace(-1, 1, 50)
+    ax.plot(xs, (xs + 1) / 2, color="gray", linestyle="--",
+            linewidth=1, label="Perfect calibration", alpha=0.6)
+    ax.set_xlabel("Mean V(s) at game start")
+    ax.set_ylabel("Actual win rate")
+    ax.set_title("Value Function Calibration")
+    ax.legend(loc="upper left", fontsize=8)
+    ax.grid(True, alpha=0.3)
+    ax.set_xlim(-1.1, 1.1)
+    ax.set_ylim(-0.05, 1.05)
+    return viz.save_or_show(plt, fig, "calibration", args)
+
+
+def _chart_turning(games, args=None):
+    """Turning-point timing histogram (wins vs losses) beside a few V(s)
+    curves with their turning points marked."""
+    tp_data = _analyze_turning_points(games, verbose=False)
+    if not tp_data:
+        print("  No turning points found.")
+        return None
+    plt = _chart_pyplot(args)
+    if plt is None:
+        return None
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # Histogram of turning point timing
+    ax = axes[0]
+    win_fracs = [t["frac"] for t in tp_data if t["result"] > 0]
+    loss_fracs = [t["frac"] for t in tp_data if t["result"] < 0]
+    bins_hist = np.linspace(0, 1, 15)
+    if win_fracs:
+        ax.hist(win_fracs, bins=bins_hist, alpha=0.6,
+                color="green", label=f"Wins ({len(win_fracs)})")
+    if loss_fracs:
+        ax.hist(loss_fracs, bins=bins_hist, alpha=0.6,
+                color="red", label=f"Losses ({len(loss_fracs)})")
+    ax.set_xlabel("Fraction of game elapsed")
+    ax.set_ylabel("Count")
+    ax.set_title("When Turning Points Occur")
+    ax.legend(fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+    # V(s) curves for a few games with turning points marked
+    ax = axes[1]
+    n_show = min(8, len(tp_data))
+    colors_win = plt.cm.Greens(np.linspace(0.4, 0.9, n_show))
+    colors_loss = plt.cm.Reds(np.linspace(0.4, 0.9, n_show))
+    ci_w = 0
+    ci_l = 0
+    for t in tp_data[:n_show]:
+        vals = games[t["game_idx"]]["values"]
+        if t["result"] > 0:
+            c = colors_win[ci_w % len(colors_win)]
+            ci_w += 1
+        else:
+            c = colors_loss[ci_l % len(colors_loss)]
+            ci_l += 1
+        ax.plot(np.linspace(0, 1, len(vals)), vals, color=c, alpha=0.5, linewidth=1)
+        ax.axvline(t["frac"], color=c, linestyle=":", linewidth=0.8, alpha=0.6)
+    ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+    ax.set_xlabel("Fraction of game elapsed")
+    ax.set_ylabel("V(s)")
+    ax.set_title(f"V(s) Curves with Turning Points ({n_show} games)")
+    ax.grid(True, alpha=0.3)
+    return viz.save_or_show(plt, fig, "turning", args)
+
+
+_ARCHETYPE_COLORS = {
+    "early_lead_held": "green",
+    "slow_grind": "steelblue",
+    "comeback": "orange",
+    "lead_blown": "red",
+    "volatile": "purple",
+}
+
+
+def _chart_clusters(games, args=None):
+    """One panel per V(s)-curve archetype: its games' curves plus the mean."""
+    clust = _analyze_clusters(games, verbose=False)
+    nonempty = {k: v for k, v in clust.items() if v}
+    if not nonempty:
+        print("  No cluster data.")
+        return None
+    plt = _chart_pyplot(args)
+    if plt is None:
+        return None
+    fig, axes = plt.subplots(1, len(nonempty), figsize=(5 * len(nonempty), 4),
+                             squeeze=False)
+    for col, (label, indices) in enumerate(nonempty.items()):
+        ax = axes[0, col]
+        color = _ARCHETYPE_COLORS.get(label, "gray")
+        for i in indices[:15]:
+            vals = games[i]["values"]
+            ax.plot(np.linspace(0, 1, len(vals)), vals, color=color,
+                    alpha=0.3, linewidth=1)
+        # Plot mean curve
+        max_len = max(len(games[i]["values"]) for i in indices)
+        xs_new = np.linspace(0, 1, max_len)
+        interp_vals = [np.interp(xs_new, np.linspace(0, 1, len(games[i]["values"])),
+                                 games[i]["values"]) for i in indices]
+        ax.plot(xs_new, np.mean(interp_vals, axis=0), color=color,
+                linewidth=2.5, label="mean")
+        ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+        w = sum(1 for i in indices if games[i]["result"] > 0)
+        ax.set_title(f"{label}\n({len(indices)} games, {w}/{len(indices)} wins)")
+        ax.set_xlabel("Game progress")
+        ax.set_ylabel("V(s)")
+        ax.grid(True, alpha=0.3)
+        ax.set_ylim(-1.1, 1.1)
+    return viz.save_or_show(plt, fig, "clusters", args)
+
+
+def _chart_whatif(game, game_idx, branches, args=None):
+    """The source game's V(s) with each whatif branch's V(s) overlaid from its
+    branch point on. ``branches`` are branch traces (`_assemble_branch_trace`
+    dicts, whose ``"whatif"`` key names the branch step and action)."""
+    if not branches:
+        print(f"  Game {game_idx} has no whatif branches — branch one first "
+              "(whatif / w).")
+        return None
+    plt = _chart_pyplot(args)
+    if plt is None:
+        return None
+    fig, ax = plt.subplots(figsize=(11, 5))
+    ax.plot(range(len(game["values"])), game["values"], color="black",
+            linewidth=1.4, alpha=0.5, label="actual game")
+    for step in sorted({b["whatif"]["step"] for b in branches}):
+        ax.axvline(step, color="gray", linestyle="--", linewidth=1)
+    for b in branches:
+        step = b["whatif"]["step"]
+        # A branch trace's prefix (decisions 0..step) is the source game's.
+        vals = b["values"][step:]
+        rstr = "W" if b["result"] > 0 else ("L" if b["result"] < 0 else "D")
+        lab = f"@{step} {b['whatif']['desc']} → {rstr}"
+        ax.plot(range(step, step + len(vals)), vals, linewidth=1.1,
+                alpha=0.85, label=(lab[:40] + "…") if len(lab) > 41 else lab)
+    ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+    ax.set_xlabel("Model decision step")
+    ax.set_ylabel("V(s)")
+    ax.set_title(f"Whatif — game {game_idx} (dashed lines = branch points)")
+    ax.legend(loc="best", fontsize=7)
+    ax.grid(True, alpha=0.3)
+    return viz.save_or_show(plt, fig, f"whatif_g{game_idx}", args)
 
 
 def cmd_report(args):
     """Run the standard battery once and emit a single self-contained HTML report."""
     import html as _html
 
-    model, env, opp_model = _load_model_and_env(args)
-    if getattr(model, "is_az", False):
-        print("[report] AZ checkpoint: V(s) is the AZNet tanh outcome estimate in "
-              "[-1, 1] (a bounded game-result prediction, not the PPO shaped-return "
-              "critic). All battery analyses apply; only absolute value magnitudes "
-              "differ in scale from PPO reports.")
-    print(f"\nCollecting {args.n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, args.n_games)
-    env.close()
+    from browse_session import capture
+
+    games = _collect_report_traces(args)
 
     out = viz.out_dir(args)
     deck_a = getattr(args, "deck_a", None) or "?"
-    deck_b = getattr(args, "deck_b", None) or args.opponent
+    deck_b = getattr(args, "deck_b", None) or args.player_b
 
     # Text sections (captured from the verbose analyzers). Bo3-only analyzers
     # (sideboard, boundaries, match calibration) print a one-line "no data"
     # note on bo1 traces, so they are safe to include unconditionally.
-    is_bo3 = any(_match_score(g) is not None for g in games)
+    traces_bo3 = any(_match_score(g) is not None for g in games)
     sections = [
-        ("Summary", _capture(_sim_summary, games)),
-        ("Card importance", _capture(_analyze_cardvalue, games, args.top if hasattr(args, "top") else 30)),
-        ("Targeting / hold-vs-cast", _capture(_sim_targeting, games)),
-        ("Value calibration", _capture(_analyze_calibration, games)),
-        ("Turning points", _capture(_analyze_turning_points, games)),
-        ("Trajectory archetypes", _capture(_analyze_clusters, games)),
-        ("Top value swings", _capture(lambda g: _print_swing_table(_compute_swings(g)[:10]), games)),
-        ("Policy regret", _capture(_analyze_regret, games, 20)),
-        ("Policy entropy", _capture(_analyze_entropy, games)),
-        ("Decision consistency", _capture(_analyze_consistency, games, 10)),
+        ("Summary", capture(_sim_summary, games)),
+        ("Card importance", capture(_analyze_cardvalue, games, 30)),
+        ("Targeting / hold-vs-cast", capture(_sim_targeting, games)),
+        ("Value calibration", capture(_analyze_calibration, games)),
+        ("Turning points", capture(_analyze_turning_points, games)),
+        ("Trajectory archetypes", capture(_analyze_clusters, games)),
+        ("Top value swings", capture(lambda g: _print_swing_table(_compute_swings(g)[:10]), games)),
+        ("Policy regret", capture(_analyze_regret, games, 20)),
+        ("Policy entropy", capture(_analyze_entropy, games)),
+        ("Decision consistency", capture(_analyze_consistency, games, 10)),
     ]
-    if is_bo3:
+    if traces_bo3:
         sections[2:2] = [
-            ("Sideboard decisions", _capture(_sim_sideboard_report, games)),
-            ("Sideboard preference & net impact", _capture(_analyze_sbvalue, games)),
+            ("Sideboard decisions", capture(_sim_sideboard_report, games)),
+            ("Sideboard preference & net impact", capture(_analyze_sbvalue, games)),
             ("Match boundaries (V(s) across games)",
-             _capture(lambda g: _print_boundaries(_compute_boundaries(g)), games)),
-            ("Match-score calibration", _capture(_print_match_calibration, games)),
+             capture(lambda g: _print_boundaries(_compute_boundaries(g)), games)),
+            ("Match-score calibration", capture(_print_match_calibration, games)),
         ]
+    sections += _search_net_sections(args, games)
 
     # Charts (saved as PNGs alongside the report; referenced by basename).
     rows = _analyze_cardvalue(games, verbose=False)
     chart_paths = [_chart_cardvalue(rows, args=args),
                    _chart_value_overview(games, args=args)]
-    if is_bo3:
+    if traces_bo3:
         chart_paths.append(_chart_sbvalue(_analyze_sbvalue(games, verbose=False),
                                           args=args))
     imgs = [os.path.basename(p) for p in chart_paths if p]
@@ -4257,7 +3576,7 @@ def cmd_report(args):
              "h2{font-size:1.1rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}</style>",
              f"<h1>RoboMage analysis — {_html.escape(deck_a)} vs {_html.escape(deck_b)}</h1>",
              f"<p>{len(games)} simulated games · model "
-             f"<code>{_html.escape(os.path.basename(args.model))}</code></p>"]
+             f"<code>{_html.escape(os.path.basename(args.player_a))}</code></p>"]
     for name in imgs:
         parts.append(f"<img src='{_html.escape(name)}' alt='{_html.escape(name)}'>")
     for title, text in sections:
@@ -4269,314 +3588,65 @@ def cmd_report(args):
     print(f"\n[report] wrote {report_path}")
 
 
+def _note_az_value(spec):
+    """The report's one-time notice that an AZ inspection net's V(s) is the
+    tanh outcome estimate, not the PPO critic."""
+    from opponents import MODEL_KIND_AZ, parse_model_spec
+    if parse_model_spec(spec).kind == MODEL_KIND_AZ:
+        print("[report] AZ checkpoint: V(s) is the AZNet tanh outcome estimate in "
+              "[-1, 1] (a bounded game-result prediction, not the PPO shaped-return "
+              "critic). All battery analyses apply; only absolute value magnitudes "
+              "differ in scale from PPO reports.")
 
 
-
-
-
-
-def cmd_interactive(args):
-    """Load model, simulate games, then enter the interactive session."""
-    model, env, opp_model = _load_model_and_env(args)
-
-    games = []
-    if args.n_games > 0:
-        print(f"\nSimulating {args.n_games} games...")
-        games = _collect_game_traces(model, env, opp_model, args.n_games)
-
-    ctx = {
-        "games": games,
-        "swing_data": None,
-        "shap_values": None,
-        "shap_samples": None,
-        "calibration_data": None,
-        "turning_data": None,
-        "cluster_data": None,
-        "whatif_data": None,
-        "model": model,
-        "env": env,
-        "opp_model": opp_model,
-        "args": args,
-    }
-
-    try:
-        _interactive_session(ctx)
-    finally:
+def _collect_report_traces(args):
+    """The report's game traces: in-process for ``--workers 1``, else split
+    across worker processes (:func:`_collect_trace_batch`) by contiguous seed
+    slices and concatenated in seed order — the same engine seeds and seats
+    either way (a search seat's RNG stream restarts in each worker)."""
+    n_workers = max(1, min(int(getattr(args, "workers", 1) or 1), args.games))
+    if (n_workers > 1 and getattr(args, "search_procs", None) is None
+            and (is_search_spec(args.player_a)
+                 or is_search_spec(args.player_b))):
+        # Games are the parallel axis; AUTO world-procs per worker would
+        # oversubscribe the cores.
+        args.search_procs = 1
+    _apply_search_knob_flags(args)
+    _resolve_sim_decks(args)
+    _note_az_value(args.player_a)
+    if n_workers == 1:
+        model, env, opp_model = _load_model_and_env(args)
+        print(f"\nCollecting {args.games} game traces...")
+        games = _collect_game_traces(model, env, opp_model, args.games)
         env.close()
+        return games
 
-
-# ── Search vs raw comparison (AZ / PPO evaluator + MCTS) ──────────────────────
-#
-# Per searched (loop-safe) root, compare what the NET alone says (softmax priors,
-# leaf value) against what SEARCH concludes (MCTS visit distribution, root value):
-#   * how far the visit distribution moved off the prior (mean KL(priors||visits)),
-#   * how often search's top move disagrees with the net's greedy move,
-#   * how well the net's leaf value tracks the search's root value (MAE + corr).
-# Search is where an AZ/PPO checkpoint's play differs from its raw policy, so this
-# is the natural search-aware analysis view.
-
-
-def _build_search_evaluator(spec):
-    """(evaluator, None) for the search-compare tool.
-
-    The second element is always ``None`` — a checkpoint no longer encodes a deck
-    (one generalist), so the deck is supplied explicitly via --deck-a/--deck-b.
-    An AZ spec -> AZEvaluator (falling back to a PPO warm-start); a PPO spec ->
-    PPOEvaluator; ``uniform`` / ``mcts:uniform`` -> the torch-free UniformEvaluator."""
-    from mcts import PPOEvaluator, UniformEvaluator
-    base = _az_spec_base(spec)
-    if base.lower() in ("uniform", "mcts:uniform"):
-        return UniformEvaluator(), None
-    if _is_az_model_spec(spec):
-        # Only the AZ rung is shared (opponents.load_az_evaluator); the uniform
-        # and PPOEvaluator rungs above/below are this tool's own.
-        from opponents import load_az_evaluator
-
-        def _note(b, ppo):
-            print(f"No AZ checkpoint for {b!r}; warm-starting an AZNet from PPO {ppo}")
-
-        evaluator, _ = load_az_evaluator(
-            base, ppo_resolver=_resolve_model_path, on_warm_start=_note)
-        return evaluator, None
-    from opponents import _load_model
-    path = _resolve_model_path(base)
-    return PPOEvaluator(_load_model(path)), None
-
-
-def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed,
-                                    sb_branches=DEFAULT_SB_BRANCHES,
-                                    sb_worlds=DEFAULT_SB_WORLDS,
-                                    sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS):
-    """A SearchController that also RECORDS (priors, visit_dist, net_value,
-    root_value, obs) for every searched root, for the search-vs-raw report."""
-    from opponents import SearchController
-
-    class _SearchCompareController(SearchController):
-        """Records every searched root, by OVERRIDING ``choose`` outright rather
-        than hooking the base controller's ``_choose_impl``.
-
-        That is deliberate: this controller is a MEASUREMENT instrument for
-        "raw search vs raw net at every safe root", not a model of production
-        play. Routing it through the base implementation would let the base's
-        play-policy machinery decide *which* roots get recorded, silently
-        changing what the report means. So it omits, on purpose:
-
-          * the clock / pacing budget (every root gets the full sim budget,
-            so the KL and value-error stats are comparable root to root);
-          * the trivial-decision skip (a root the play policy would shortcut
-            is still a root the net has an opinion about — we want it);
-          * tree-following / root reuse across decisions (each root is searched
-            fresh, so no root inherits another's visit statistics);
-          * sideboard boundary memo — the plan search has no tree persistence,
-            so each sideboard root is searched fresh (only the sideboard
-            branches/worlds/rollout budget is honored, below);
-          * the mirror-engine pool and the ``on_result`` tap (nothing else
-            consumes these results; ``self.records`` IS the output).
-
-        It does keep the base's ``stats`` counters and ``self._env``/rng, and
-        the sideboard budget split, so the printed decision counts still line up
-        with a normal search controller's."""
-
-        def __init__(self):
-            super().__init__(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-                             temperature=0.0, label="search-compare", rng_seed=rng_seed,
-                             sb_branches=sb_branches, sb_worlds=sb_worlds,
-                             sb_rollout_turns=sb_rollout_turns)
-            self.records = []
-
-        def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
-            from mcts import run_search, run_plan_search
-            env = self._env
-            searchable = (env is not None
-                          and getattr(env, "last_search_safe", None)
-                          and num_choices > 1)
-            priors, net_value = self._evaluator.evaluate(obs, num_choices)
-            if not searchable:
-                self.stats["fallback"] += 1
-                return int(np.argmax(priors))
-            # bo3 sideboard root -> flat plan search under the sideboard
-            # branches/worlds/rollout budget (game-long horizon); in-game roots
-            # keep run_search's default max_depth (60).
-            # merge_dupes=True is run_search's default, but it is spelled out
-            # here because the report DEPENDS on it: _report_search_compare
-            # folds the raw priors through decode.menu_merge_reps to match the
-            # merged visit distribution. If these searches ever stopped merging
-            # duplicate edges, that fold would double-count and the reported KL
-            # / argmax agreement would be wrong.
-            if obs[_IS_SIDEBOARD_IDX] > 0.5:
-                result = run_plan_search(env, self._evaluator,
-                                         worlds=self._sb_worlds,
-                                         branches=self._sb_branches,
-                                         rollout_turns=self._sb_rollout_turns,
-                                         rng=self._rng)
-                self.stats["sb_searched"] += 1
-            else:
-                result = run_search(env, self._evaluator, sims=self._sims,
-                                    worlds=self._worlds, c_puct=self._c_puct,
-                                    rng=self._rng, merge_dupes=True)
-            self.stats["searched"] += 1
-            self.stats["sims"] += result.sims_run
-            self.stats["sim_steps"] += result.sim_steps
-            visits = result.visits.astype(np.float64)
-            tot = visits.sum()
-            visit_dist = (visits / tot if tot > 0
-                          else np.full(num_choices, 1.0 / num_choices))
-            self.records.append({
-                "obs": np.asarray(obs, dtype=np.float32).copy(),
-                "num_choices": int(num_choices),
-                "priors": np.asarray(priors, dtype=np.float64).copy(),
-                "visit_dist": visit_dist,
-                "net_value": float(net_value),
-                "root_value": float(result.root_value),
-            })
-            return result.best_action()
-
-    return _SearchCompareController()
-
-
-def _kl(p, q):
-    """KL(p || q) over a menu, smoothing q off zero so an unvisited action
-    doesn't blow up (p is a softmax prior, strictly positive)."""
-    p = np.asarray(p, dtype=np.float64)
-    q = np.maximum(np.asarray(q, dtype=np.float64), 1e-12)
-    q = q / q.sum()
-    nz = p > 0
-    return float(np.sum(p[nz] * np.log(p[nz] / q[nz])))
-
-
-def _report_search_compare(ctrl, args):
-    """Print the search-vs-raw summary from a recording controller's records."""
-    recs = ctrl.records
-    st = ctrl.stats
-    total = st["searched"] + st["fallback"]
-    print("\n" + "=" * 68)
-    print("Search vs raw-net comparison")
-    print("=" * 68)
-    print(f"  Decisions: {st['searched']} searched "
-          f"({st.get('sb_searched', 0)} at bo3 sideboard roots), "
-          f"{st['fallback']} fallback "
-          f"(safe fraction {st['searched'] / max(1, total):.1%}); "
-          f"{st['sims']} sims, {st['sim_steps']} sim steps.")
-    if not recs:
-        print("  No searched roots recorded (all decisions fell back to the raw "
-              "policy — try a deck/opponent with more loop-safe priority windows).")
-        return
-
-    # The search merges duplicate edges (visit mass sits on each group's
-    # representative — see the explicit merge_dupes=True on the run_search calls
-    # in _SearchCompareController), so fold the raw priors the same way before
-    # comparing —
-    # otherwise duplicate-heavy roots would report inflated KL and spurious
-    # argmax disagreement (net's max prior on a copy search never visits).
-    def _folded_priors(r):
-        from decode import menu_merge_reps
-        p = r["priors"].copy()
-        rep = menu_merge_reps(r["obs"], r["num_choices"])
-        for i in range(1, r["num_choices"]):
-            j = int(rep[i])
-            if j != i:
-                p[j] += p[i]
-                p[i] = 0.0
-        return p
-
-    folded = [_folded_priors(r) for r in recs]
-    kls = np.array([_kl(p, r["visit_dist"]) for p, r in zip(folded, recs)])
-    agree = np.array([int(np.argmax(p) == np.argmax(r["visit_dist"]))
-                      for p, r in zip(folded, recs)])
-    net_v = np.array([r["net_value"] for r in recs])
-    root_v = np.array([r["root_value"] for r in recs])
-    vmae = float(np.mean(np.abs(net_v - root_v)))
-    if len(recs) > 1 and net_v.std() > 1e-9 and root_v.std() > 1e-9:
-        vcorr = float(np.corrcoef(net_v, root_v)[0, 1])
-        vcorr_s = f"{vcorr:+.3f}"
-    else:
-        vcorr_s = "n/a"
-
-    print(f"  Roots analyzed: {len(recs)}")
-    print(f"  mean KL(priors || visits): {kls.mean():.4f}  "
-          f"(median {np.median(kls):.4f}, max {kls.max():.4f})")
-    print(f"  argmax agreement (net greedy == search pick): {agree.mean():.1%}")
-    print(f"  value net-vs-search:  MAE {vmae:.4f}   corr {vcorr_s}")
-
-    top_n = max(0, int(getattr(args, "top", 8)))
-    if top_n:
-        order = np.argsort(-kls)[:top_n]
-        print(f"\n  Top {len(order)} biggest prior-vs-visit disagreements:")
-        for rank, i in enumerate(order):
-            r = recs[i]
-            obs = r["obs"]
-            feat = _extract_interpretable(obs)
-            step = _step_name_from_feat(feat)
-            turn_no = 1 + int(round(feat[_FEAT["turn"]]))
-            pa = int(np.argmax(r["priors"]))
-            va = int(np.argmax(r["visit_dist"]))
-            print(f"   [{rank}] T{turn_no} {step:<12} "
-                  f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}"
-                  f"  KL={kls[i]:.3f}  Vnet={r['net_value']:+.3f} "
-                  f"Vsearch={r['root_value']:+.3f}")
-            print(f"        net greedy : {_action_desc(obs, pa)}  "
-                  f"(P={r['priors'][pa]:.2f}, visits={r['visit_dist'][pa]:.2f})")
-            if va != pa:
-                print(f"        search pick: {_action_desc(obs, va)}  "
-                      f"(P={r['priors'][va]:.2f}, visits={r['visit_dist'][va]:.2f})")
-            else:
-                print(f"        search pick: (same action, visit mass shifted)")
-
-
-class _MergedSearchStats:
-    """Duck-types the bits of ``_SearchCompareController`` that
-    ``_report_search_compare`` reads (``records``/``stats``), so results
-    gathered from parallel worker batches can be reported the same way as a
-    single in-process controller."""
-
-    def __init__(self):
-        self.records = []
-        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0,
-                      "sb_searched": 0}
-
-    def absorb(self, records, stats):
-        self.records.extend(records)
-        for k in self.stats:
-            self.stats[k] += stats.get(k, 0)
-
-
-def _run_search_compare_batch(payload):
-    """Worker entry point (one process per batch): rebuild the evaluator/
-    controller from scratch — a loaded model isn't picklable across the
-    process boundary — and drive this batch's games. Returns
-    ``(batch_id, n_games, records, stats, elapsed)``."""
-    (batch_id, model_spec, opponent_spec, deck_a, deck_b, n_games, seed,
-     sims, worlds, c_puct, binary_path, bo3,
-     sb_branches, sb_worlds, sb_rollout_turns) = payload
+    if args.seed is None:
+        args.seed = random.SystemRandom().randrange(1 << 30)
+    batches = _split_batches(args.games, n_workers)
+    print(f"\nCollecting {args.games} game traces across {len(batches)} "
+          f"workers (seeds {args.seed}..{args.seed + args.games - 1})...")
+    results = {}
     t0 = time.time()
-    try:
-        import torch
-        torch.set_num_threads(1)
-    except ImportError:
-        pass
-    import runner
-    from opponents import make_controller
-
-    evaluator, _ = _build_search_evaluator(model_spec)
-    ctrl_model = _make_search_compare_controller(
-        evaluator, sims=sims, worlds=worlds, c_puct=c_puct, rng_seed=seed,
-        sb_branches=sb_branches, sb_worlds=sb_worlds,
-        sb_rollout_turns=sb_rollout_turns)
-    ctrl_opp = make_controller(opponent_spec)
-    runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
-                     binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                     n_games=n_games, bo3=bo3, seed=seed, transcript="quiet")
-    return batch_id, n_games, ctrl_model.records, dict(ctrl_model.stats), time.time() - t0
+    done = 0
+    with ProcessPoolExecutor(max_workers=len(batches)) as ex:
+        futs = {ex.submit(_collect_trace_batch, args, start, count): start
+                for start, count in batches}
+        for fut in as_completed(futs):
+            start = futs[fut]
+            results[start] = fut.result()
+            done += len(results[start])
+            print(f"  [seeds {args.seed + start}..] {len(results[start])} "
+                  f"game(s) -> {done}/{args.games} done  elapsed "
+                  f"{time.time() - t0:.1f}s", flush=True)
+    return [g for start in sorted(results) for g in results[start]]
 
 
-def _split_batches(n_games, n_workers, seed):
-    """Contiguous, seed-disjoint batches: batch i's local seed+j lines up
-    with the sequential run's seed+(global index), so results are the same
-    set of (deck, seed) games regardless of worker count."""
-    n_workers = max(1, min(n_workers, n_games))
+def _split_batches(n_games, n_workers):
+    """``[(start, count)]``: contiguous slices of the ``n_games`` game indices,
+    one per worker (sizes differ by at most one)."""
     base, extra = divmod(n_games, n_workers)
-    batches = []
-    start = 0
+    batches, start = [], 0
     for i in range(n_workers):
         count = base + (1 if i < extra else 0)
         if count:
@@ -4585,113 +3655,93 @@ def _split_batches(n_games, n_workers, seed):
     return batches
 
 
-def cmd_search_compare(args):
-    """Drive N games with an MCTS controller and report, per searched decision,
-    net priors vs MCTS visits and net value vs search root value."""
-    deck_a = getattr(args, "deck_a", None)
-    if not deck_a:
-        print("Model deck is required — a checkpoint no longer encodes a deck; "
-              "pass --deck-a", file=sys.stderr)
-        sys.exit(1)
-    deck_b = getattr(args, "deck_b", None)
-    if not deck_b:
-        # A model opponent no longer encodes a deck either; mirror by default.
-        deck_b = deck_a
-    args.deck_a, args.deck_b = deck_a, deck_b
+def _collect_trace_batch(args, start, count):
+    """Worker entry point: rebuild the model / engine from ``args`` (a loaded
+    model can't cross the process boundary) and collect games ``start`` ..
+    ``start + count - 1`` of the run — engine seeds ``args.seed + start``
+    onward, the seeds and seats an in-process run plays at those indices."""
+    try:
+        import torch
+        torch.set_num_threads(1)
+    except ImportError:
+        pass
+    args.seed += start
+    model, env, opp_model = _load_model_and_env(args)
+    try:
+        return _collect_game_traces(model, env, opp_model, count, verbose=False)
+    finally:
+        env.close()
 
-    n_workers = max(1, getattr(args, "workers", 1) or 1)
-    bo3 = _effective_bo3(args)
 
-    if n_workers <= 1:
-        import runner
-        from opponents import make_controller
+def _search_net_sections(args, games):
+    """The report's search-vs-net sections for a search ``--player-a``: the
+    browsers' ``probe_kl`` (KL(search‖net), top-1 agreement by action
+    category, the biggest disagreements decoded) and ``probe_value`` (net V
+    vs search root value, the search tally) over every searched decision.
+    Empty for a raw-policy seat."""
+    if not is_search_spec(args.player_a):
+        return []
+    import shard_probes
+    try:
+        net, _label = shard_probes.load_probe_net(args.player_a)
+    except Exception as exc:  # no net behind the spec (mcts:uniform), torch
+        return [("Search vs net", f"no probe net for {args.player_a}: {exc}")]
+    snap = shard_probes.snapshot(games)
+    return [(f"Search vs net — {title}",
+             "\n".join(shard_probes.run_probe(key, net, snap, limit=None)))
+            for key, title in (("probe_kl", "policy"),
+                               ("probe_value", "value"))]
 
-        evaluator, _ = _build_search_evaluator(args.model)
-        ctrl_model = _make_search_compare_controller(
-            evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
-            rng_seed=args.seed, sb_branches=args.sb_branches,
-            sb_worlds=args.sb_worlds,
-            sb_rollout_turns=args.sb_rollout_turns)
-        ctrl_opp = make_controller(args.opponent)
 
-        print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
-              f"vs {args.opponent} [{deck_b}] over {args.n_games} game(s)...")
+# ── Browse ───────────────────────────────────────────────────────────────────
 
-        t0 = time.time()
-        done = 0
-
-        def _progress(record):
-            nonlocal done
-            done += 1
-            elapsed = time.time() - t0
-            rate = done / elapsed if elapsed > 0 else 0.0
-            eta = (args.n_games - done) / rate if rate > 0 else float("inf")
-            st = ctrl_model.stats
-            print(f"  game {done}/{args.n_games}  "
-                  f"(searched {st['searched']}, fallback {st['fallback']})  "
-                  f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
-
-        runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
-                         binary_path=args.binary, deck_a=deck_a, deck_b=deck_b,
-                         n_games=args.n_games, bo3=bo3,
-                         seed=args.seed, transcript="quiet", on_game_end=_progress)
-        _report_search_compare(ctrl_model, args)
-        return
-
-    # Parallel: split n_games across worker processes, each rebuilding its own
-    # evaluator/controller (a loaded model can't cross the process boundary),
-    # then merge every batch's records/stats before reporting.
-    batches = _split_batches(args.n_games, n_workers, args.seed)
-    payloads = [
-        (i, args.model, args.opponent, deck_a, deck_b, count, args.seed + start,
-         args.sims, args.worlds, args.c, args.binary, bo3,
-         args.sb_branches, args.sb_worlds, args.sb_rollout_turns)
-        for i, (start, count) in enumerate(batches)
-    ]
-    print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "
-          f"c={args.c}) vs {args.opponent} [{deck_b}] over {args.n_games} game(s) "
-          f"across {len(payloads)} worker(s)...")
-
-    merged = _MergedSearchStats()
-    t0 = time.time()
-    done_games = 0
-    with ProcessPoolExecutor(max_workers=len(payloads)) as ex:
-        futs = {ex.submit(_run_search_compare_batch, p): p[0] for p in payloads}
-        for fut in as_completed(futs):
-            batch_id, n, records, stats, dt = fut.result()
-            merged.absorb(records, stats)
-            done_games += n
-            elapsed = time.time() - t0
-            rate = done_games / elapsed if elapsed > 0 else 0.0
-            eta = (args.n_games - done_games) / rate if rate > 0 else float("inf")
-            print(f"  [batch {batch_id}] {n} game(s) in {dt:.1f}s -> "
-                  f"{done_games}/{args.n_games} done "
-                  f"({100 * done_games / args.n_games:.0f}%)  "
-                  f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
-
-    _report_search_compare(merged, args)
+def cmd_browse(parser, args, explicit):
+    """analysis.py browse: the full-screen analysis browser over ``--source``
+    (simulated games, a shard directory, or a saved .rmtrace session) on the
+    ``--board`` front end. ``explicit`` is the set of dests the command line
+    set; one that does not apply to the source kind is an error."""
+    try:
+        kind = browse_source_kind(args.source)
+    except ValueError as exc:
+        parser.error(str(exc))
+    bad = browse_inapplicable_dests(kind, explicit)
+    if bad:
+        flags = "/".join("--" + d.replace("_", "-") for d in bad)
+        parser.error(f"{flags} do not apply to a {kind} --source (see "
+                     "`analysis.py browse --help`)")
+    if resolve_board(args.board) == BOARD_GUI:
+        import gui_main
+        return gui_main.run_browser(vars(args))
+    from tui_analysis import AnalysisApp
+    AnalysisApp(args).run()
+    return 0
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
-def main():
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else list(argv)
     parser = argparse.ArgumentParser(
         description="Analyze a trained RoboMage model by simulating games")
     sub = parser.add_subparsers(dest="command", required=True)
 
     # All subcommands and their flags come from cli_spec.ANALYSIS_TOOL (single
     # source shared with the TUI). Dispatch below stays hand-written.
+    subparsers = {}
     for s in ANALYSIS_TOOL.subs:
         sp = sub.add_parser(s.name, help=s.help)
         apply_to_parser(sp, s)
+        subparsers[s.name] = sp
+    add_removed_subcommands(sub, ANALYSIS_TOOL.key)
 
-    args = parser.parse_args()
-    {
-        "report": cmd_report,
-        "interactive": cmd_interactive,
-        "search": cmd_search_compare,
-    }[args.command](args)
+    args = parser.parse_args(argv)
+    if args.command == "browse":
+        rest = argv[argv.index("browse") + 1:]
+        return cmd_browse(subparsers["browse"], args,
+                          explicit_dests(subparsers["browse"], rest))
+    cmd_report(args)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -49,48 +49,12 @@ from cli_spec import (DEFAULT_AZ_C_PUCT, DEFAULT_SB_BRANCHES,
                       DEFAULT_SB_ROLLOUT_TURNS)
 from env import _IS_SIDEBOARD_IDX
 from mcts import (IncrementalPlanSearch, IncrementalSearch, LiveStats,
-                  UniformEvaluator, _LockedEvaluator, _merge_root_stats)
+                  _LockedEvaluator, _merge_root_stats)
+from opponents import load_spec_evaluator
 
 
 class AnalysisError(RuntimeError):
     """A refused or failed analysis request (reason in str(e))."""
-
-
-def load_analysis_evaluator(spec: str, device: str | None = None):
-    """Build the evaluator behind an analysis-window spec. Returns
-    (evaluator, label).
-
-      - "uniform"          -> UniformEvaluator (torch-free; tests/fallback)
-      - "az:<base>" / bare -> AZ net via opponents.load_az_evaluator (THE shared
-                              evaluator ladder): the AZ checkpoint when one
-                              exists, else an AZNet warm-started from the PPO
-                              checkpoint. Default base is "gen" (the one
-                              generalist).
-      - "mcts:<base>"      -> PPOEvaluator over the MaskablePPO checkpoint.
-
-    ``device`` (AZ rung only; the uniform/PPO rungs stay CPU): the torch
-    device for the AZNet forward — an explicit value wins, else the
-    ``ROBOMAGE_EVAL_DEVICE`` environment variable, else cpu (see
-    ``opponents.load_az_evaluator``).
-    """
-    spec = (spec or "az:gen").strip()
-    if spec.lower() == "uniform":
-        return UniformEvaluator(), "uniform"
-    # Deliberate divergence from the other spec grammars: the "mcts:"/"az:"
-    # prefixes are matched CASE-SENSITIVELY here (only "uniform" is folded), so
-    # e.g. "MCTS:gen" falls through to the AZ rung. Kept as-is — these specs
-    # come from the analysis window's own config, not from user-typed CLI text.
-    if spec.startswith("mcts:"):
-        from mcts import PPOEvaluator
-        from opponents import _load_model, resolve_checkpoint
-
-        base = spec.split(":", 1)[1] or "gen"
-        return PPOEvaluator(_load_model(resolve_checkpoint(base))), f"mcts:{base}"
-    from opponents import load_az_evaluator
-
-    base = spec.split(":", 1)[1] if spec.startswith("az:") else spec
-    evaluator, resolved = load_az_evaluator(base or "gen", device=device)
-    return evaluator, f"az:{resolved}"
 
 
 @dataclass
@@ -376,8 +340,9 @@ class AnalysisSession:
 
     def _ensure_evaluator(self):
         if self._evaluator is None:
-            self._evaluator, self.evaluator_label = load_analysis_evaluator(
-                self.cfg.evaluator_spec, device=self.cfg.device or None)
+            self._evaluator, self.evaluator_label = load_spec_evaluator(
+                self.cfg.evaluator_spec or "az:gen",
+                device=self.cfg.device or None)
         return self._evaluator
 
     def analyze(self, req: AnalysisRequest, *,

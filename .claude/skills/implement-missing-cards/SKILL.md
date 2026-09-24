@@ -83,7 +83,7 @@ implementation; ask to clarify behavior, not to find an exit.
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after editing
   the vocab. Normally unnecessary to call directly: a plain `make` regenerates it via `pygen`.
 - `train/test_harness.py` — exercise a card's exact behavior (see `CLAUDE.md` for full usage).
-  Drive a precise line with semantic `--play` specs; **never `--interactive`** (no TTY). This is
+  Drive a precise line with semantic `--play` specs; **never `--player-a human`** (no TTY). This is
   the isolation-test tool — it targets one card's modes/triggers, which the generic CI tiers below
   don't check for a brand-new card.
 - **`make check`** (equivalently `train/.venv/bin/python train/ci_check.py`) — the project's CI

@@ -9,10 +9,11 @@ sits on top of it:
   a checkpoint path / deck shorthand, or a prebuilt Controller), pick bo1/bo3
   (bo3 is the default) and an output mode, get a :class:`MatchResult` back.
 - :func:`run_games` — the mid-level orchestrator used by the test harness,
-  ``train.py observe``, ``fuzz_campaign`` and ``ci_check``: builds a
-  NarrativeEnv per game, renders the unified transcript, tallies results.
+  ``train.py observe`` (incl. its fuzz ``--out`` and ``--timing`` benchmark
+  forms) and ``ci_check``: builds a NarrativeEnv per game, renders the unified
+  transcript, tallies results.
 - :func:`drive_game` — the core loop itself, for callers that manage their own
-  env and need per-decision hooks (``analysis.py`` traces, ``bench_engine``).
+  env and need per-decision hooks (``analysis.py`` traces).
 
 Callers supply :class:`opponents.Controller` objects (scripted / model /
 action-list / interactive / human / auto-pass) or spec strings; the seat with
@@ -273,6 +274,26 @@ def format_per_game_split(per_game, subject="Player A"):
     ]
 
 
+def format_timing(records, wall, bo3=False):
+    """One-line engine throughput summary over ``records`` (the GameRecords of
+    a run) and its ``wall`` seconds. ``games`` counts engine games — under bo3
+    each match record contributes its played games, and ``matches`` is added.
+    ``completed`` counts records not stopped by ``max_decisions``."""
+    decisions = sum(r.decisions for r in records)
+    completed = sum(1 for r in records if not r.capped)
+    if bo3:
+        games = sum(len(r.game_results) for r in records)
+        head = f"matches={len(records)} games={games}"
+    else:
+        games = len(records)
+        head = f"games={games}"
+    wall = max(wall, 1e-9)
+    return (f"{head} completed={completed} decisions={decisions} "
+            f"wall={wall:.3f}s games/s={games / wall:.2f} "
+            f"decisions/s={decisions / wall:.0f} "
+            f"ms/decision={1000 * wall / max(1, decisions):.3f}")
+
+
 def _compact_line(decision, player, label, step_name, cats, action):
     """One-line RL-debug summary of a decision (the non-verbose default)."""
     chosen_cat = _CAT_NAMES.get(int(cats[action]), str(cats[action]))
@@ -292,7 +313,8 @@ def run_games(controller_a, controller_b, *,
               sideboard_a=None, sideboard_b=None, no_shuffle=False,
               life_a=None, life_b=None,
               max_decisions=None, log_decisions=False, coverage=None,
-              on_query=None, on_action=None, on_game_end=None):
+              on_query=None, on_action=None, on_game_end=None,
+              narrative=True):
     """Run ``n_games`` between two controllers and render the transcript.
 
     ``controller_a``/``controller_b`` are :class:`opponents.Controller` objects;
@@ -317,6 +339,10 @@ def run_games(controller_a, controller_b, *,
     ``on_query`` / ``on_action`` are forwarded to :func:`drive_game` (called
     after the runner's own transcript hooks); ``on_game_end(record)`` fires
     after each game with its :class:`GameRecord`.
+
+    ``narrative=False`` runs the engine without its game log / per-action
+    descriptions (the lean path a throughput benchmark wants); only sensible
+    with ``transcript="quiet"``, and a draw's saved log is then empty.
 
     Returns ``(wins, losses, draws)`` from Player A's perspective. A game that
     ends with no winner (e.g. the engine's step cap — a stall) counts as a draw
@@ -366,7 +392,8 @@ def run_games(controller_a, controller_b, *,
                       exile_a=exile_a, exile_b=exile_b,
                       sideboard_a=sideboard_a, sideboard_b=sideboard_b,
                       life_a=life_a, life_b=life_b,
-                      no_shuffle=no_shuffle, log_decisions=log_decisions)
+                      no_shuffle=no_shuffle, log_decisions=log_decisions,
+                      narrative=narrative)
         # Hand search controllers the live env (per game — a fresh env/process
         # is created for each one). Duck-typed like new_game below.
         for ctrl in (controller_a, controller_b):

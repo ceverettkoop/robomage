@@ -18,15 +18,14 @@ AnalysisSession (and therefore the analysis engine + evaluator); the UI talks
 to it through a command queue + a stop event, and results come back through
 queued Qt signals (`AnalysisBridge`), mirroring the DriverBridge pattern.
 
-Headless smoke: ``ROBOMAGE_ANALYSIS_SMOKE=1`` (with the GUI smoke driver, see
-gui_game.py) forces a uniform evaluator, auto-analyzes the first analyzable
+Headless smoke: the ``analysis`` leg of ``ROBOMAGE_SMOKE`` (with the ``play``
+smoke driver, see gui_game.py) forces a uniform evaluator, auto-analyzes the first analyzable
 human decision, and records success once a chunk of stats arrives — gui_game's
 smoke exit path checks it.
 """
 
 from __future__ import annotations
 
-import os
 import queue
 import threading
 import time
@@ -45,6 +44,7 @@ from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QHeaderView, QLabel,
 import decode
 from analysis_session import (AnalysisError, AnalysisRequest, AnalysisSession,
                               analyze_refusal)
+from cli_spec import smoke_leg
 from env import STATE_SIZE, _SELF_IS_A_IDX
 from game_driver import decode_human_frame, menu_label
 
@@ -496,9 +496,9 @@ class AnalysisWindow(QMainWindow):
         self._running = False
         self._last_stats_time = None
         self._last_sims = 0
-        self.smoke_ok = False        # ROBOMAGE_ANALYSIS_SMOKE: first stats seen
+        self.smoke_ok = False        # analysis smoke leg: first stats seen
         self.smoke_review_ok = False  # …and the opponent-review rewind ran
-        self._smoke = bool(os.environ.get("ROBOMAGE_ANALYSIS_SMOKE"))
+        self._smoke = bool(smoke_leg("analysis"))
         self._smoke_reviewed = False
         # Branch lines / PV walk state (phase 3).
         self._branches = []          # [BranchSeries] for the last finished run

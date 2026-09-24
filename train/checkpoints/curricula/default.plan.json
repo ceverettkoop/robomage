@@ -12,7 +12,7 @@
         "promote_margin": 0.0,
         "n_envs": 64,
         "popart": true,
-        "bo3": true
+        "format": "bo3"
       }
     },
     {

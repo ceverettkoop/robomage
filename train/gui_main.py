@@ -17,17 +17,20 @@ env.close(), then the pane is removed.
 
 Entry points:
 
-* ``run(...)``          — play.py --gui: build a play session directly.
-* ``run_launcher(...)`` — gui.sh / no arguments: welcome pane with the menus
-                          live (File ▸ New Session to begin; no dialog is
-                          auto-opened).
+* ``run(...)``          — play.py --board gui with seats/decks: build a play
+                          session directly.
+* ``run_launcher(...)`` — gui.sh / play.py --board gui with no seat or deck
+                          flags: welcome pane with the menus live (File ▸ New
+                          Session to begin; no dialog is auto-opened).
+* ``run_browser(...)``  — analysis.py browse --board gui: an analysis session
+                          on the command line's --source, built directly.
 
-Smokes: ``ROBOMAGE_GUI_SMOKE`` / ``ROBOMAGE_ANALYSIS_SMOKE`` keep their
-gui_game semantics — the pane auto-plays and emits session_finished, which
-(under smoke only) tears the session down and quits the app; the analysis
-smoke's exit-1 check lives in ``run``. All confirm/critical dialogs are
-suppressed (printed to stderr) while any smoke env var is set so headless
-runs can never block on a modal.
+Smokes (``ROBOMAGE_SMOKE``, parsed by ``cli_spec.smoke_legs``): the ``play``
+/ ``analysis`` legs keep their gui_game semantics — the pane auto-plays and
+emits session_finished, which (under smoke only) tears the session down and
+quits the app; the analysis smoke's exit-1 check lives in ``run``. All
+confirm/critical dialogs are suppressed (printed to stderr) while any smoke
+leg is set so headless runs can never block on a modal.
 """
 
 import os
@@ -42,48 +45,24 @@ from PySide6.QtCore import Qt, QObject, QTimer
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                                QVBoxLayout, QHBoxLayout, QStackedWidget,
-                               QDialog, QComboBox, QFormLayout,
+                               QDialog, QFormLayout,
                                QDialogButtonBox, QMessageBox, QGroupBox,
-                               QSpinBox, QCheckBox, QLineEdit, QToolButton,
+                               QLineEdit, QToolButton,
                                QFileDialog)
 
 import gui_session_io
-from game_driver import build_session
-from gui_game import (PlayPane, NewPlaySessionDialog, _ensure_app,
-                      _analysis_cfg_from, _smoke_n_from_env, _scan_decks,
-                      _OPPONENT_PRESETS, _load_launcher_config,
-                      _save_launcher_config, _resolve_opponent_spec,
-                      is_search_spec, sync_clock_sims_exclusivity,
-                      search_knob_pairs, with_spec_query)
-
-# Where the analysis-session dialog remembers its last-used options.
-_ANALYSIS_LAUNCHER_CONFIG = os.path.join(
-    os.path.expanduser("~"), ".robomage", "gui_analysis_launcher.json")
-
-_ANALYSIS_DEFAULTS = {
-    "model": "gen",
-    "opponent": "scripted:hard",
-    "deck_a": "league/ur_delver",
-    "deck_b": "",
-    "n_games": 20,
-    "bo3": True,
-    # Search settings (az:/mcts: seats only; None = "(default)" = omit the knob).
-    "sims": None,
-    "worlds": None,
-    "think_time": None,
-    "search_procs": None,                    # auto: half the cores, capped at worlds
-    "match_clock": None,
-    "search_xw": True,                       # cross-world batched leaf eval
-    "search_device": "",                     # "" = CPU; "cuda" = GPU
-    "shards_on": False,
-    "shards": "",
-    "shard_limit": 0,
-    "seat": "A",
-    "no_net": False,
-}
+import launcher_config
+from cli_spec import (BROWSE_KIND_TRACE, BROWSE_SOURCE_SIMULATE, TRACE_EXT,
+                      SEARCH_KNOB_KEYS, browse_source_kind, format_name,
+                      is_search_spec, scan_decks, smoke_leg, smoke_legs)
+from game_driver import build_session, resolve_opponent_spec
+from gui_game import (PlayPane, NewPlaySessionDialog, LauncherDialog,
+                      _ensure_app, _analysis_cfg_from, _smoke_n_from_env,
+                      _OPPONENT_PRESETS, sync_clock_sims_exclusivity)
 
 # Model (value-net) presets for the analysis dialog's editable combo.
-_ANALYSIS_MODEL_PRESETS = ["gen", "az:gen", "azraw:gen", "mcts:gen"]
+_ANALYSIS_MODEL_PRESETS = [(spec, spec) for spec in
+                           ("gen", "az:gen", "azraw:gen", "mcts:gen")]
 
 _KEYS_TEXT = """Game board:
   digits          pick the numbered action
@@ -112,12 +91,9 @@ Application:
 
 
 def _smoke_active():
-    """True when any headless smoke env var is set — modal dialogs must be
+    """True when any ROBOMAGE_SMOKE leg is set — modal dialogs must be
     suppressed (a modal under offscreen has nothing to dismiss it)."""
-    return any(os.environ.get(v) for v in (
-        "ROBOMAGE_GUI_SMOKE", "ROBOMAGE_ANALYSIS_SMOKE",
-        "ROBOMAGE_GUI_SESSION_SMOKE", "ROBOMAGE_GUI_TRACE_SMOKE",
-        "ROBOMAGE_TREE_SMOKE"))
+    return bool(smoke_legs())
 
 
 def _critical(parent, title, text):
@@ -150,127 +126,84 @@ class WelcomePane(QWidget):
 
 # ── New Analysis Session dialog ───────────────────────────────────────────────
 
-class NewAnalysisSessionDialog(QDialog):
-    """File ▸ New Session ▸ Analysis…: configure a simulated-games analysis
-    session (model/opponent/decks/games/clock knobs), or tick "Browse recorded
-    shards instead" to load recorded AZ self-play with no live engine.
+class NewAnalysisSessionDialog(LauncherDialog):
+    """File ▸ New Session ▸ Analysis…: the analysis browser's command line
+    (analysis.py browse; launcher_config.ANALYSIS_FIELDS) as a form —
+    configure a simulated-games analysis session (model/opponent/decks/games/
+    search knobs), or tick "Browse recorded shards or a saved session
+    instead" (the --source flag: a shard directory or a .rmtrace file) to
+    load recorded AZ self-play or a saved session with no live engine.
 
     ``options()`` computes the opts dict live (callable without exec — the
     smoke constructs the dialog programmatically); OK validates, persists the
-    fields to ~/.robomage/gui_analysis_launcher.json, and accepts."""
+    fields to the analysis section of ~/.robomage/gui_launcher.json, and
+    accepts."""
+
+    SECTION = launcher_config.ANALYSIS_SECTION
 
     def __init__(self, binary_path, parent=None):
-        super().__init__(parent)
+        super().__init__(binary_path, parent)
         self.setWindowTitle("RoboMage — New Analysis Session")
-        self.setModal(True)
-        self._binary = binary_path
-        cfg = _load_launcher_config(_ANALYSIS_LAUNCHER_CONFIG)
-        decks = _scan_decks()
-
-        def get(key):
-            return cfg[key] if key in cfg else _ANALYSIS_DEFAULTS[key]
+        decks = scan_decks()
 
         # -- simulate group --------------------------------------------------
         form = QFormLayout()
         form.setSpacing(8)
-
-        self._model = QComboBox()
-        self._model.setEditable(True)
-        self._model.addItems(_ANALYSIS_MODEL_PRESETS)
-        self._model.setEditText(get("model") or "gen")
-        self._model.setToolTip(
-            "The model whose play is analyzed: 'gen' (the generalist's raw "
-            "policy, no search), 'az:gen' / 'mcts:gen' (the same nets driving a "
-            "real MCTS search — the Search settings below apply), 'azraw:gen' "
-            "(the raw AZ policy), or a checkpoint path. In shard mode this is "
-            "the V(s) net (unless 'no net').")
-        form.addRow("Model", self._model)
-
-        self._opponent = QComboBox()
-        self._opponent.setEditable(True)
-        for label, spec in _OPPONENT_PRESETS:
-            self._opponent.addItem(label, spec)
-        NewPlaySessionDialog._set_combo_spec(self._opponent, get("opponent"))
-        self._opponent.setToolTip(
-            "Opponent controller for the simulated games: a scripted tier, "
-            "'gen', a search spec, or a checkpoint path.")
-        form.addRow("Opponent", self._opponent)
-
-        self._deck_a = NewPlaySessionDialog._deck_combo(decks, get("deck_a"))
-        self._deck_a.setToolTip("The model's deck.")
-        form.addRow("Model deck", self._deck_a)
-
-        self._deck_b = QComboBox()
-        self._deck_b.setEditable(True)
-        self._deck_b.addItem("")                 # blank = mirror the model deck
-        self._deck_b.addItems(decks)
-        cur_b = get("deck_b") or ""
-        idx = self._deck_b.findText(cur_b)
-        if idx >= 0:
-            self._deck_b.setCurrentIndex(idx)
-        else:
-            self._deck_b.setEditText(cur_b)
-        self._deck_b.setToolTip(
-            "The opponent's deck; leave blank to mirror the model deck.")
-        form.addRow("Opponent deck", self._deck_b)
-
-        self._n_games = QSpinBox()
-        self._n_games.setRange(0, 500)
-        self._n_games.setValue(int(get("n_games") or 0))
-        self._n_games.setToolTip("Games to simulate on startup.")
-        form.addRow("Games", self._n_games)
-
-        self._bo3 = QCheckBox("Best of three (with sideboarding)")
-        self._bo3.setChecked(bool(get("bo3")))
-        form.addRow(self._bo3)
-
+        self._model = self._spec("player_a", _ANALYSIS_MODEL_PRESETS)
+        self._opponent = self._spec("player_b", _OPPONENT_PRESETS)
+        form.addRow("Player A (model)", self._model)
+        form.addRow("Player B (opponent)", self._opponent)
+        form.addRow("Player A deck", self._deck("deck_a", decks))
+        form.addRow("Player B deck", self._deck("deck_b", decks, blank=True))
+        form.addRow("Seed", self._spin("seed", maximum=2**31 - 1))
+        form.addRow("Match format", self._format())
         self._sim_box = QGroupBox("Simulate games")
         self._sim_box.setLayout(form)
 
         # -- search settings group (az:/mcts: seats only) ---------------------
-        self._search_box = self._build_search_box(get)
+        self._search_box = self._build_search_box()
         self._model.currentTextChanged.connect(self._update_search_visibility)
         self._opponent.currentTextChanged.connect(self._update_search_visibility)
 
-        # -- shards group ----------------------------------------------------
-        self._shards_box = QGroupBox("Browse recorded shards instead")
-        self._shards_box.setCheckable(True)
-        self._shards_box.setChecked(bool(get("shards_on")))
-        self._shards_box.setToolTip(
-            "Load recorded AZ self-play (a directory of shard_*.npz, e.g. "
-            "train/az_data/gen) instead of simulating — no live engine; "
-            "whatif/run stay disabled.")
+        # -- source group (the --source flag: unchecked = simulate) -----------
+        self._source_box = QGroupBox(
+            "Browse recorded shards or a saved session instead")
+        self._source_box.setCheckable(True)
         sform = QFormLayout()
         sform.setSpacing(8)
-        shards_row = QHBoxLayout()
-        self._shards_dir = QLineEdit(get("shards") or "")
-        self._shards_dir.setToolTip("Directory of shard_*.npz files.")
-        browse = QToolButton()
-        browse.setText("…")
-        browse.clicked.connect(self._browse_shards)
-        shards_row.addWidget(self._shards_dir, 1)
-        shards_row.addWidget(browse)
-        sform.addRow("Shards dir", shards_row)
-        self._seat = QComboBox()
-        self._seat.addItems(["A", "B"])
-        self._seat.setCurrentIndex(1 if get("seat") == "B" else 0)
-        self._seat.setToolTip(
-            "Viewpoint seat: that seat's searched decisions are the browsable "
-            "steps.")
-        sform.addRow("Seat", self._seat)
-        self._no_net = QCheckBox("No value net — use recorded outcomes (torch-free)")
-        self._no_net.setChecked(bool(get("no_net")))
-        sform.addRow(self._no_net)
-        self._shard_limit = QSpinBox()
-        self._shard_limit.setRange(0, 500)
-        self._shard_limit.setValue(int(get("shard_limit") or 0))
-        self._shard_limit.setToolTip(
-            "Maximum bo3 matches to load from the shards directory "
-            "(0 = load every match). Each kept match gets a value-net V(s) "
-            "pass, so a cap can speed up loading a very large pool.")
-        sform.addRow("Max matches (0 = all)", self._shard_limit)
-        self._shards_box.setLayout(sform)
-        self._shards_box.toggled.connect(self._update_enabled)
+        source_row = QHBoxLayout()
+        saved = self._values["source"] or BROWSE_SOURCE_SIMULATE
+        simulate = saved == BROWSE_SOURCE_SIMULATE
+        self._source_path = QLineEdit("" if simulate else saved)
+        self._source_box.setChecked(not simulate)
+        self._register("source", self._source_box,
+                       lambda: ((self._source_path.text().strip()
+                                 or BROWSE_SOURCE_SIMULATE)
+                                if self._source_box.isChecked()
+                                else BROWSE_SOURCE_SIMULATE))
+        pick_dir = QToolButton()
+        pick_dir.setText("Dir…")
+        pick_dir.setToolTip("Pick a directory of shard_*.npz files")
+        pick_dir.clicked.connect(self._browse_shards)
+        pick_trace = QToolButton()
+        pick_trace.setText(f"{TRACE_EXT}…")
+        pick_trace.setToolTip("Pick a saved analysis session")
+        pick_trace.clicked.connect(self._browse_trace)
+        source_row.addWidget(self._source_path, 1)
+        source_row.addWidget(pick_dir)
+        source_row.addWidget(pick_trace)
+        sform.addRow("Source", source_row)
+        sform.addRow("Seat", self._choice("seat", {"A": "A", "B": "B"}))
+        sform.addRow(self._check(
+            "no_net", "No value net — use recorded outcomes (torch-free)"))
+        self._source_box.setLayout(sform)
+        self._source_box.toggled.connect(self._update_enabled)
+
+        # --games is both the sim count and, in shard mode, the match-load cap.
+        gform = QFormLayout()
+        gform.addRow("Games (shards: max matches, 0 = all)",
+                     self._spin("games", maximum=500))
+        self._check_fields()
 
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
@@ -281,65 +214,39 @@ class NewAnalysisSessionDialog(QDialog):
         lay = QVBoxLayout(self)
         title = QLabel("New Analysis Session")
         title.setObjectName("launcherTitle")
-        subtitle = QLabel("Simulate games and browse them, or open recorded shards.")
+        subtitle = QLabel("Simulate games and browse them, or open recorded "
+                          "shards or a saved session.")
         subtitle.setObjectName("launcherSubtitle")
         lay.addWidget(title)
         lay.addWidget(subtitle)
+        lay.addLayout(gform)
         lay.addWidget(self._sim_box)
         lay.addWidget(self._search_box)
-        lay.addWidget(self._shards_box)
+        lay.addWidget(self._source_box)
         lay.addWidget(buttons)
         self.setMinimumWidth(460)
         self._update_enabled()
         self._update_search_visibility()
 
-    def _build_search_box(self, get):
-        """The az:/mcts:-only search-tuning group, mirroring the play launcher's:
-        simulations / worlds / think time / search procs / match clock / eval
-        device / cross-world batching. Applies to EVERY seat whose spec is a
-        search spec (model and/or opponent); the knobs are folded into those
-        specs' ?query by options(). Hidden while neither seat searches."""
+    def _build_search_box(self):
+        """The az:/mcts:-only search-tuning group, mirroring the browser's
+        search-knob flags. Applies to EVERY seat whose spec is a search spec
+        (model and/or opponent). Hidden while neither seat searches."""
         form = QFormLayout()
         form.setSpacing(8)
-        self._sims = NewPlaySessionDialog._int_field(
-            get("sims"), "MCTS simulations per decision (more = stronger, slower).")
-        self._worlds = NewPlaySessionDialog._int_field(
-            get("worlds"), "Determinized worlds per decision (sims split across them).")
-        self._think_time = NewPlaySessionDialog._float_field(
-            get("think_time"), "Wall-clock seconds per decision — runs as many "
-            "sims as fit in this budget (overrides the sims terminator).")
-        self._search_procs = NewPlaySessionDialog._int_field(
-            get("search_procs"), "Engine processes to fan the worlds across "
-            "(world-parallel search). '(default)' means AUTO: half the visible "
-            "cores, capped at the world count. Set a value to override.")
-        self._match_clock = NewPlaySessionDialog._float_field(
-            get("match_clock"), "Whole-match thinking bank in seconds (chess "
-            "clock; 1500 = 25 min for a bo3). Each decision draws a variable "
-            "budget. Mutually exclusive with a Simulations cap — a clocked "
-            "search is paced by the clock alone.")
+        self._sims = self._spin("sims")
+        self._match_clock = self._spin("match_clock", maximum=100_000)
         self._sims.valueChanged.connect(self._sync_clock_sims_exclusivity)
         self._match_clock.valueChanged.connect(self._sync_clock_sims_exclusivity)
         self._sync_clock_sims_exclusivity()
-        self._search_device = NewPlaySessionDialog._device_combo(
-            get("search_device"),
-            "Torch device for the search seats' net forwards: CPU, or the GPU "
-            "(cuda — the Radeon under the ROCm torch build). The GPU pays in "
-            "proportion to the rows per forward, i.e. together with cross-world "
-            "batching and higher world counts.")
-        self._search_xw = QCheckBox("Cross-world batched leaf evaluation")
-        self._search_xw.setChecked(bool(get("search_xw")))
-        self._search_xw.setToolTip(
-            "Batch each round's leaf evaluations (one per determinized world) "
-            "into a single net forward. Visit counts are arithmetically "
-            "identical to the sequential search — this is pure speed. "
-            "Uncheck only to debug.")
         form.addRow("Simulations", self._sims)
-        form.addRow("Worlds", self._worlds)
-        form.addRow("Think time (s)", self._think_time)
-        form.addRow("Search procs", self._search_procs)
+        form.addRow("Worlds", self._spin("worlds"))
+        form.addRow("Think time (s)", self._spin("think_time", maximum=100_000))
+        form.addRow("Search procs", self._spin("search_procs"))
         form.addRow("Match clock (s)", self._match_clock)
-        form.addRow("Eval device", self._search_device)
-        form.addRow(self._search_xw)
+        form.addRow("Eval device", self._device("search_device"))
+        form.addRow(self._check("search_xw",
+                                "Cross-world batched leaf evaluation"))
         box = QGroupBox("Search settings (az:/mcts: model or opponent)")
         box.setToolTip(
             "Shown only while the model or the opponent is an az:/mcts: search "
@@ -351,109 +258,71 @@ class NewAnalysisSessionDialog(QDialog):
     def _sync_clock_sims_exclusivity(self, *_):
         sync_clock_sims_exclusivity(self, self._sims, self._match_clock)
 
-    def _search_seats(self):
-        """The (key, spec) pairs of the seats that run a tree search."""
-        seats = [("model", self._model.currentText().strip()),
-                 ("opponent", NewPlaySessionDialog._combo_spec(self._opponent))]
-        return [(k, s) for k, s in seats if is_search_spec(s)]
+    def _has_search_seat(self):
+        return any(is_search_spec(self._getters[d]())
+                   for d in ("player_a", "player_b"))
 
     def _update_search_visibility(self, *_):
-        self._search_box.setVisible(bool(self._search_seats()))
+        self._search_box.setVisible(self._has_search_seat())
         self.adjustSize()
-
-    def _search_knobs(self):
-        return search_knob_pairs(
-            sims=NewPlaySessionDialog._spin_value(self._sims),
-            worlds=NewPlaySessionDialog._spin_value(self._worlds),
-            time_val=NewPlaySessionDialog._spin_value(self._think_time),
-            procs=NewPlaySessionDialog._spin_value(self._search_procs),
-            clock=NewPlaySessionDialog._spin_value(self._match_clock),
-            xw_on=self._search_xw.isChecked(),
-            device=self._search_device.currentData(),
-            # Simulated games have no human to hide timing tells from.
-            paced=False)
 
     def _browse_shards(self):
         path = QFileDialog.getExistingDirectory(self, "Shards directory",
-                                                self._shards_dir.text() or ".")
+                                                self._source_path.text() or ".")
         if path:
-            self._shards_dir.setText(path)
+            self._source_path.setText(path)
+
+    def _browse_trace(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Saved analysis session", self._source_path.text() or "",
+            f"RoboMage analysis session (*{TRACE_EXT})")
+        if path:
+            self._source_path.setText(path)
 
     def _update_enabled(self, *_):
-        """Shard mode disables the sim fields (they don't apply)."""
-        self._sim_box.setEnabled(not self._shards_box.isChecked())
+        """A shard / trace source disables the sim fields (they don't apply)."""
+        self._sim_box.setEnabled(not self._source_box.isChecked())
 
     def options(self):
-        """The opts dict the SessionManager/BrowserPane contract expects.
-        Computed live so the dialog is inspectable without exec()."""
-        shards_on = self._shards_box.isChecked()
-        deck_b = self._deck_b.currentText().strip()
-        model = self._model.currentText().strip() or "gen"
-        opponent = NewPlaySessionDialog._combo_spec(self._opponent)
-        # The search knobs ride in each search seat's own spec query (the
-        # loader's --think-time/--match-clock flags would reject a run with
-        # no search seat, and can't carry sims/worlds/procs/device anyway).
-        knobs = self._search_knobs()
-        if is_search_spec(model):
-            model = with_spec_query(model, knobs)
-        if is_search_spec(opponent):
-            opponent = with_spec_query(opponent, knobs)
-        return {
-            "model": model,
-            "opponent": opponent,
-            "deck_a": self._deck_a.currentText().strip(),
-            "deck_b": deck_b or None,
-            # In shard mode n_games is the match-load cap (0 = all); in sim
-            # mode it is the number of games to simulate on startup.
-            "n_games": (int(self._shard_limit.value()) if shards_on
-                        else int(self._n_games.value())),
-            "bo3": self._bo3.isChecked(),
-            "think_time": None,
-            "match_clock": None,
-            "shards": (self._shards_dir.text().strip() or None) if shards_on
-                      else None,
-            "seat": self._seat.currentText(),
-            "no_net": self._no_net.isChecked(),
-            "binary": self._binary,
-        }
+        """The opts dict the SessionManager/BrowserPane contract expects: the
+        browser's flag values by dest (plus binary). The search knobs ride
+        along for the loader to fold into each search seat's spec
+        (analysis._apply_search_knob_flags); with no search seat they stay at
+        their defaults. Computed live so the dialog is inspectable without
+        exec()."""
+        opts = self.field_values()
+        opts["player_a"] = opts["player_a"] or "gen"
+        if not self._has_search_seat():
+            defaults = launcher_config.section_defaults(self.SECTION)
+            for dest, _key in SEARCH_KNOB_KEYS:
+                if dest in defaults:
+                    opts[dest] = defaults[dest]
+        opts["binary"] = self._binary
+        return opts
 
     def _on_accept(self):
         opts = self.options()
-        if self._shards_box.isChecked():
-            if not opts["shards"]:
-                QMessageBox.warning(self, "Missing shards directory",
-                                    "Pick the directory of shard_*.npz files.")
+        if self._source_box.isChecked():
+            path = self._source_path.text().strip()
+            try:
+                if not path:
+                    raise ValueError("Pick a directory of shard_*.npz files "
+                                     f"or a saved {TRACE_EXT} session.")
+                browse_source_kind(path)
+            except ValueError as exc:
+                QMessageBox.warning(self, "Missing or invalid source",
+                                    str(exc))
                 return
         else:
             if not opts["deck_a"]:
                 QMessageBox.warning(self, "Missing deck",
                                     "Pick the model's deck.")
                 return
-            if not opts["model"] or not opts["opponent"]:
+            if not opts["player_a"] or not opts["player_b"]:
                 QMessageBox.warning(self, "Missing spec",
                                     "Pick a model and an opponent.")
                 return
-        spin = NewPlaySessionDialog._spin_value
-        _save_launcher_config({
-            # Persist the BASE specs (the search knobs are folded into
-            # opts["model"]/["opponent"] and save as their own fields).
-            "model": self._model.currentText().strip() or "gen",
-            "opponent": NewPlaySessionDialog._combo_spec(self._opponent),
-            "deck_a": opts["deck_a"], "deck_b": opts["deck_b"] or "",
-            # Persist the sim "Games" field itself (opts["n_games"] is the
-            # shard-load cap in shard mode); the shard cap saves separately.
-            "n_games": int(self._n_games.value()), "bo3": opts["bo3"],
-            "sims": spin(self._sims), "worlds": spin(self._worlds),
-            "think_time": spin(self._think_time),
-            "search_procs": spin(self._search_procs),
-            "match_clock": spin(self._match_clock),
-            "search_xw": self._search_xw.isChecked(),
-            "search_device": self._search_device.currentData() or "",
-            "shards_on": self._shards_box.isChecked(),
-            "shards": self._shards_dir.text().strip(),
-            "shard_limit": int(self._shard_limit.value()),
-            "seat": opts["seat"], "no_net": opts["no_net"],
-        }, _ANALYSIS_LAUNCHER_CONFIG)
+        self._save_fields()
         self.accept()
 
 
@@ -498,11 +367,9 @@ class SessionManager(QObject):
                 bo3=opts.get("bo3", True), analysis=analysis_cfg is not None,
                 step_pacing=True, engine_seed=opts.get("engine_seed"),
                 human_clock_s=opts.get("human_clock_s"),
-                hard_timeout=bool(opts.get("hard_timeout", False)))
+                hard_timeout=bool(opts.get("hard_timeout", False)),
+                record_shards=bool(opts.get("record_shards")))
             session.analysis_cfg = analysis_cfg
-            if opts.get("record_shards"):
-                from shard_record import default_recording_dir
-                session.record_dir = default_recording_dir()
             pane = PlayPane(session,
                             replay_actions=(replay or {}).get("actions"))
         except Exception as exc:                          # noqa: BLE001
@@ -556,6 +423,14 @@ class SessionManager(QObject):
             return False
         self._window._sync_actions()
         return True
+
+    def open_browse(self, opts):
+        """Start the analysis session an analysis.py browse opts dict names:
+        a ``.rmtrace`` --source opens that saved session (--player-a as its
+        replay-search net), anything else builds a simulate / shard session."""
+        if browse_source_kind(opts.get("source")) == BROWSE_KIND_TRACE:
+            return self._open_trace(opts["source"], player_a=opts.get("player_a"))
+        return self.new_analysis_session(opts)
 
     def _install(self, pane, mode):
         self._stack.addWidget(pane)
@@ -765,7 +640,7 @@ class SessionManager(QObject):
             finally:
                 app.restoreOverrideCursor()
             provenance = {
-                "model": None, "opponent": doc.get("opponent_spec"),
+                "player_a": None, "player_b": doc.get("opponent_spec"),
                 "deck_a": doc.get("deck_a"), "deck_b": doc.get("deck_b"),
                 "bo3": doc.get("bo3", True), "source": path,
             }
@@ -774,7 +649,7 @@ class SessionManager(QObject):
         # Continue playing: rebuild the session at the saved seed/seat/decks
         # and fast-forward the saved action prefix.
         try:
-            model_path = _resolve_opponent_spec(doc.get("opponent_spec")
+            model_path = resolve_opponent_spec(doc.get("opponent_spec")
                                                 or "scripted")
         except Exception as exc:                          # noqa: BLE001
             _critical(self._window, "Opponent unavailable", str(exc))
@@ -789,7 +664,7 @@ class SessionManager(QObject):
             return True
         return False
 
-    def _open_trace(self, path):
+    def _open_trace(self, path, player_a=None):
         interp_fn = None
         try:
             import analysis as an
@@ -803,6 +678,8 @@ class SessionManager(QObject):
             return False
         provenance = meta.get("provenance") or {}
         opts = self._browse_only_opts(provenance, self._binary)
+        if player_a:
+            opts["player_a"] = player_a
         if self.new_analysis_session(opts, traces=(games, provenance)):
             self._save_path = path
             return True
@@ -811,15 +688,15 @@ class SessionManager(QObject):
     @staticmethod
     def _browse_only_opts(provenance, binary):
         """A BrowserPane opts dict for a traces-only (no simulation) session.
-        Deliberately carries NO engine keys (model/opponent/shards) — their
+        Deliberately carries NO engine keys (player_b/source) — their
         presence is what makes BrowserPane build an engine worker, and an
         opened .rmtrace must never reload a model/env. The provenance dict
         (passed alongside via load_traces) keeps them for display."""
         return {
             "deck_a": provenance.get("deck_a"),
             "deck_b": provenance.get("deck_b"),
-            "n_games": 0,
-            "bo3": bool(provenance.get("bo3", True)),
+            "games": 0,
+            "format": format_name(bool(provenance.get("bo3", True))),
             "think_time": None, "match_clock": None,
             "seat": provenance.get("seat", "A"),
             "no_net": False, "binary": binary,
@@ -833,17 +710,6 @@ def _torch_available():
     return importlib.util.find_spec("torch") is not None
 
 
-def _recording_value_spec(opponent_spec):
-    """The V(s) model spec for browsing a recording, derived from the play
-    session's opponent spec: strip the ?knob query; an mcts: wrapper searches
-    with the PPO heads, so its value net is the bare PPO spec."""
-    base = (opponent_spec or "az:gen").split("?", 1)[0].strip()
-    low = base.lower()
-    if low.startswith("mcts:"):
-        return base[5:] or "gen"
-    return base or "az:gen"
-
-
 class ShardBrowserWindow(QMainWindow):
     """A SECOND top-level window hosting a shard-mode BrowserPane, so a live
     play session's recording can be analyzed WITHOUT tearing the game down
@@ -854,7 +720,7 @@ class ShardBrowserWindow(QMainWindow):
     def __init__(self, opts, parent=None):
         super().__init__(parent)          # QMainWindow stays top-level
         from gui_browser import BrowserPane
-        self.setWindowTitle(f"RoboMage — Recording · {opts.get('shards', '')}")
+        self.setWindowTitle(f"RoboMage — Recording · {opts.get('source', '')}")
         self.resize(1180, 860)
         self._pane = BrowserPane(opts, parent=self)
         self.setCentralWidget(self._pane)
@@ -1028,7 +894,7 @@ class MainWindow(QMainWindow):
         dlg = NewAnalysisSessionDialog(self._binary, parent=self)
         if dlg.exec() != QDialog.DialogCode.Accepted:
             return
-        self.manager.new_analysis_session(dlg.options())
+        self.manager.open_browse(dlg.options())
 
     def _open_dialog(self):
         path, _ = QFileDialog.getOpenFileName(
@@ -1055,12 +921,14 @@ class MainWindow(QMainWindow):
         rec.flush()
         session = self.manager._session
         opts = {
-            "shards": rec.out_dir,
+            "source": rec.out_dir,
             "seat": "A" if session.opp_is_a else "B",     # the opponent's rows
-            "model": _recording_value_spec(
-                (self.manager._opts or {}).get("model_path")),
+            # The browser resolves the opponent's own spec (opponents.
+            # parse_model_spec), so V(s), probes and replay search all read
+            # the net that seat played with.
+            "player_a": (self.manager._opts or {}).get("model_path") or "az:gen",
             "no_net": not _torch_available(),
-            "n_games": 0,                                  # load every match
+            "games": 0,                                  # load every match
             "binary": self._binary,
         }
         try:
@@ -1128,23 +996,24 @@ class MainWindow(QMainWindow):
 # ── Entry points ──────────────────────────────────────────────────────────────
 
 def run(binary_path, model_path, human_player=None,
-        human_deck="delver", model_deck="delver", bo3=True, analysis=False,
-        record_shards=False, human_clock_s=None, hard_timeout=False):
-    """play.py --gui entry: MainWindow + a play session built directly (no
-    dialog). Same signature/semantics as tui_game.run. Returns the exit code;
-    the ROBOMAGE_ANALYSIS_SMOKE / record-shards smoke exit-1 checks live
-    here.
+        human_deck="delver", model_deck="delver", bo3=True, analysis=None,
+        record_shards=False, human_clock_s=None, hard_timeout=False,
+        engine_seed=None):
+    """play.py --board gui entry: MainWindow + a play session built directly
+    (no dialog). Same signature/semantics as tui_game.run, plus `analysis`:
+    the analysis-window options dict (gui_game.analysis_opts; None = off).
+    Returns the exit code; the ``analysis`` smoke / record-shards smoke
+    exit-1 checks live here.
 
-    `human_clock_s` / `hard_timeout` are play.py's --human-clock /
-    --hard-timeout (the launcher dialog has its own fields for them)."""
+    `human_clock_s` / `hard_timeout` / `engine_seed` are play.py's
+    --human-clock / --hard-timeout / --seed."""
     app = _ensure_app()
     window = MainWindow(binary_path)
     window.show()
     opts = dict(binary=binary_path, model_path=model_path,
                 human_player=human_player, human_deck=human_deck,
-                model_deck=model_deck, bo3=bo3,
-                analysis=({} if analysis else None),
-                record_shards=record_shards,
+                model_deck=model_deck, bo3=bo3, analysis=analysis,
+                record_shards=record_shards, engine_seed=engine_seed,
                 human_clock_s=human_clock_s, hard_timeout=hard_timeout)
     if not window.manager.new_play_session(opts):
         return 1
@@ -1152,8 +1021,7 @@ def run(binary_path, model_path, human_player=None,
     recorder = getattr(window.manager.pane, "recorder", None)
     app.exec()
     window.manager.shutdown()                # idempotent safety net
-    if (os.environ.get("ROBOMAGE_ANALYSIS_SMOKE")
-            and not window.manager.analysis_smoke_ok):
+    if smoke_leg("analysis") and not window.manager.analysis_smoke_ok:
         print("ANALYSIS SMOKE FAILED: no analysis stats arrived",
               file=sys.stderr)
         return 1
@@ -1172,13 +1040,13 @@ def run(binary_path, model_path, human_player=None,
 
 
 def run_launcher(binary_path=None):
-    """gui.sh / no-arguments entry: MainWindow on the welcome pane with the
-    menus live — no dialog is auto-opened; start via File ▸ New Session
+    """gui.sh / play.py-with-no-session-flags entry: MainWindow on the
+    welcome pane with the menus live — no dialog is auto-opened; start via File ▸ New Session
     (Ctrl+N play, Ctrl+Shift+N analysis). Returns 0 on a clean exit.
 
-    The headless shell smokes hijack this entry: set
-    ROBOMAGE_GUI_SESSION_SMOKE / ROBOMAGE_GUI_TRACE_SMOKE /
-    ROBOMAGE_BROWSER_SMOKE and run `python train/gui_main.py`."""
+    The headless shell smokes hijack this entry: set ROBOMAGE_SMOKE to
+    session / trace / browser:DIR / tree:DIR and run
+    `python train/gui_main.py`."""
     from cli_spec import INTERACTIVE_BINARY
     binary_path = binary_path or INTERACTIVE_BINARY
     app = _ensure_app()
@@ -1190,9 +1058,28 @@ def run_launcher(binary_path=None):
     return code
 
 
+def run_browser(opts):
+    """analysis.py browse --board gui entry: MainWindow + the analysis session
+    ``opts`` (the browse flags by dest) names, built directly (no dialog).
+    Returns the exit code. Under the ``browser`` smoke leg the pane's own smoke
+    drive runs and its verdict is the exit code."""
+    app = _ensure_app()
+    window = MainWindow(opts["binary"])
+    window.show()
+    if not window.manager.open_browse(opts):
+        window.manager.shutdown()
+        return 1
+    if smoke_leg("browser"):
+        window.manager.pane.smoke_done.connect(
+            lambda n: app.exit(0 if n > 0 else 1))
+    code = app.exec()
+    window.manager.shutdown()
+    return code
+
+
 # ── Headless shell smokes ─────────────────────────────────────────────────────
 # Each is a QTimer-driven state machine over the REAL SessionManager/menu
-# flows (no test doubles), mirroring PlayPane's ROBOMAGE_GUI_SMOKE pattern.
+# flows (no test doubles), mirroring PlayPane's ``play`` smoke pattern.
 # They app.exit(0/1) themselves; run_launcher returns that code.
 
 class _ShellSmoke(QObject):
@@ -1310,7 +1197,7 @@ class _TraceSmoke(_ShellSmoke):
         self._path = os.path.join(tempfile.mkdtemp(), "traces" +
                                   gui_session_io.TRACE_EXT)
         gui_session_io.save_traces(self._path, games,
-                                   provenance={"model": "smoke"})
+                                   provenance={"player_a": "smoke"})
         self._opened = False
 
     def step(self):
@@ -1331,28 +1218,28 @@ class _TraceSmoke(_ShellSmoke):
 
 
 class _BrowserSmoke(_ShellSmoke):
-    """Shard-mode browser session (torch-free, --no-net) driving the pane's
-    own ROBOMAGE_BROWSER_SMOKE hook. Self-skips when no shards exist."""
+    """Shard-mode browser session (torch-free, --no-net) over a small
+    recording, driving the pane's own ``browser`` smoke hook. The
+    recording comes from the leg's value (ROBOMAGE_SMOKE=browser:DIR — a
+    recording, or a ROBOMAGE_RECORD_DIR base holding rec_* dirs); fails
+    without one — there is deliberately no fallback to a training pool."""
 
-    def __init__(self, window, shards=None):
+    def __init__(self, window):
         super().__init__(window)
-        self._shards = shards or os.environ.get(
-            "ROBOMAGE_BROWSER_SMOKE_SHARDS",
-            os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "az_data", "gen"))
+        self._base = _smoke_dir("browser")
         self._started = False
 
     def step(self):
         mgr = self.manager
         if not self._started:
             self._started = True
-            import glob as _glob
-            if not _glob.glob(os.path.join(self._shards, "shard_*.npz")):
-                self._finish(0, f"BROWSER SMOKE SKIP: no shards in "
-                                f"{self._shards}")
+            rec = _recording_dir(self._base) if self._base else None
+            if rec is None:
+                self._finish(1, f"BROWSER SMOKE FAILED: no recording under "
+                                f"ROBOMAGE_SMOKE=browser:{self._base!r}")
                 return
-            opts = {"shards": self._shards, "seat": "A", "no_net": True,
-                    "n_games": 3, "bo3": False, "think_time": None,
+            opts = {"source": rec, "seat": "A", "no_net": True,
+                    "games": 3, "format": "bo1", "think_time": None,
                     "match_clock": None, "deck_a": None, "deck_b": None,
                     "binary": mgr._binary}
             if not mgr.new_analysis_session(opts):
@@ -1392,16 +1279,16 @@ def _recording_search_seat(rec_dir):
 
 class _TreeSmoke(_ShellSmoke):
     """Shard-mode browser over a search opponent's recording, driving the
-    pane's ROBOMAGE_TREE_SMOKE hook: rebuild the first searched decision's
-    tree and expand one root action. The recording dir comes from
-    ROBOMAGE_BROWSER_SMOKE_SHARDS (a recording, or a ROBOMAGE_RECORD_DIR base
+    pane's ``tree`` smoke hook: rebuild the first searched decision's
+    tree and expand one root action. The recording dir is the leg's value
+    (ROBOMAGE_SMOKE=tree:DIR — a recording, or a ROBOMAGE_RECORD_DIR base
     holding rec_* dirs); the viewpoint seat is the recording's search seat.
     Fails (never skips) without a recording — the ci leg that records one
     runs first."""
 
     def __init__(self, window):
         super().__init__(window, timeout_s=300)
-        self._base = os.environ.get("ROBOMAGE_BROWSER_SMOKE_SHARDS", "")
+        self._base = _smoke_dir("tree")
         self._started = False
 
     def step(self):
@@ -1414,8 +1301,8 @@ class _TreeSmoke(_ShellSmoke):
             self._finish(1, f"TREE SMOKE FAILED: no recording under "
                             f"{self._base!r}")
             return
-        opts = {"shards": rec, "seat": _recording_search_seat(rec),
-                "no_net": True, "n_games": 0, "bo3": False,
+        opts = {"source": rec, "seat": _recording_search_seat(rec),
+                "no_net": True, "games": 0, "format": "bo1",
                 "think_time": None, "match_clock": None, "deck_a": None,
                 "deck_b": None, "binary": mgr._binary}
         if not mgr.new_analysis_session(opts):
@@ -1427,16 +1314,24 @@ class _TreeSmoke(_ShellSmoke):
 
 
 def _start_shell_smoke(window):
-    """Instantiate the shell smoke selected by env vars (None = interactive)."""
-    if os.environ.get("ROBOMAGE_GUI_SESSION_SMOKE") == "1":
+    """Instantiate the shell smoke ROBOMAGE_SMOKE selects (None = interactive)."""
+    legs = smoke_legs()
+    if "session" in legs:
         return _SessionSmoke(window)
-    if os.environ.get("ROBOMAGE_GUI_TRACE_SMOKE") == "1":
+    if "trace" in legs:
         return _TraceSmoke(window)
-    if os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1":
+    if "browser" in legs:
         return _BrowserSmoke(window)
-    if os.environ.get("ROBOMAGE_TREE_SMOKE") == "1":
+    if "tree" in legs:
         return _TreeSmoke(window)
     return None
+
+
+def _smoke_dir(leg):
+    """The recording dir a ``browser:DIR`` / ``tree:DIR`` smoke leg names
+    ("" when the leg carries no value)."""
+    v = smoke_leg(leg)
+    return v if isinstance(v, str) else ""
 
 
 if __name__ == "__main__":

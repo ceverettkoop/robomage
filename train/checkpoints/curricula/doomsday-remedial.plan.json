@@ -23,7 +23,6 @@
       "model": "az:gen",
       "games": 10,
       "overrides": {
-        "all": true,
         "workers": 28
       }
     }

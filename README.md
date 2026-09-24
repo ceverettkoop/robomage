@@ -113,10 +113,10 @@ of past snapshots for you. The single-matchup `train`/`sweep` subcommands below 
 scripting one deck-vs-deck session or inspecting a checkpoint, not the primary training loop.
 
 ```bash
-train/.venv/bin/python train/train.py --deck delver --opponent mav                 # continue gen on one matchup
-train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start gen over from scratch
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10  # sanity-check a build (scripted vs scripted + summary)
-train/.venv/bin/python train/train.py baseline gen --deck delver                   # gen's win rate vs the scripted agent
+train/.venv/bin/python train/train.py --deck-a delver --deck-b mav                 # continue gen on one matchup
+train/.venv/bin/python train/train.py --deck-a delver --deck-b mav --fresh         # start gen over from scratch
+train/.venv/bin/python train/train.py observe --deck-a delver --deck-b mav --games 10  # sanity-check a build (scripted vs scripted + summary)
+train/.venv/bin/python train/train.py baseline --player-a gen --deck-a delver      # gen's win rate vs the scripted agent
 ```
 
 ### League (PFSP) — train the PPO generalist
@@ -143,7 +143,7 @@ See `docs/ppo_az_training.md` for when to switch from PPO to AZ and `docs/alphaz
 for the machinery.
 
 ```bash
-train/.venv/bin/python train/train.py az --deck delver                # one full cycle: self-play -> train -> gate
+train/.venv/bin/python train/train.py az --decks delver               # one full cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                       # rotate AZ cycles across decks/league/
 ```
 
@@ -155,48 +155,69 @@ controller spec is accepted: `az:gen?sims=128&worlds=4` (with search) or `azraw:
 ## Play against model
 
 ```bash
-train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)          # TUI game board (default); the generalist (gen) pilots --model-deck
-train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --gui    # PySide6 desktop board (needs requirements-gui.txt)
-train/.venv/bin/python train/gui_game.py                                              # GUI launcher — pick decks/opponent/format/analysis in a dialog
-./gui.sh                                                                              # shortcut for the line above, run from the repo root
+./gui.sh                                                                              # GUI app on its welcome pane — File ▸ New Session opens the play/analysis dialogs
+train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck)                  # straight into a game on the GUI board; you are player A vs az:gen on --deck-b
+train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck) --board tui      # Textual terminal board
+train/.venv/bin/python train/play.py --board text --player-b scripted                 # plain-text board (type an action number or 'cast:bolt')
 ```
 
-**`./gui.sh`**, run from the repo root, is the GUI-board equivalent of `./tui.sh` — it launches
-`train/gui_game.py` with no arguments, which opens the launcher dialog (needs
-`requirements-gui.txt`; falls back to the TUI if PySide6 is missing). The launcher's "Game
-setup" group picks your deck, the opponent's deck, the opponent controller (`gen`, a scripted
-tier, or an `az:`/`azraw:`/`mcts:` search spec), which seat you play, and bo3-vs-single-game
-format; choices persist to `~/.robomage/gui_launcher.json` for next time. When the opponent is
-a search spec (`az:`/`mcts:`), a "Search opponent settings" group appears with tuning knobs
-(each defaults to "omit the knob" unless set): simulations per decision, determinized worlds,
-think-time-per-decision (overrides the sims cap with a wall-clock budget), search procs
-(engine processes to fan worlds across), a whole-match thinking clock, and whether to pace
-responses to mask which decisions were easy/hard.
+`play.py --board gui|tui|text` picks the front end (default `gui`, which falls back to the TUI
+with a notice when PySide6 — `requirements-gui.txt` — is missing). **`./gui.sh`**, run from the
+repo root, is `play.py --board gui` with no seat or deck flags: the GUI app opens on its welcome
+pane, and File ▸ New Session ▸ Play… opens the launcher dialog. **The dialog is the `play.py`
+command line as a form**: every field is a `play.py` flag with the same name and default —
+player A and player B (`--player-a`/`--player-b`: `Human (you)` on one seat, the opponent —
+`gen`, a scripted tier, or an `az:`/`azraw:`/`mcts:` search spec — on the other), their decks,
+which side is on the play in game 1 (`--on-the-play a|b|random`, default `a`: player A; `b`
+swaps the two sides so the board labels player B's side Player A; `random` flips a coin, seeded
+by `--seed` when given), `--format`, your own clock, shard recording, the search-opponent knobs (`--sims`, `--worlds`,
+`--think-time`, `--search-procs`, `--match-clock`, `--search-device`, `--search-xw`,
+`--paced`; shown for an `az:`/`mcts:` opponent) and the analysis window (`--analysis`,
+`--analysis-evaluator/-worlds/-procs/-cap/-device/-xw/-auto`). The shipped defaults are one
+matchup on both: `league/bug` vs `league/ur_delver` against `az:gen` searching 8 worlds on a
+25-minute match clock, analysis window on. Choices persist to `~/.robomage/gui_launcher.json`
+(one section per dialog) for next time.
 
-The GUI also has an always-available **analysis window** (launcher's "Analysis window" group,
-or `--gui --analysis`; F9 toggles it in-game): live MCTS evaluation of your current decision on
-a separate, detached engine copy that never blocks the live game. 
+The GUI's **analysis window** (F9 toggles it in-game; `--no-analysis` to start without it) is
+live MCTS evaluation of your current decision on a separate, detached engine copy that never
+blocks the live game. It is GUI-only; `--board tui`/`text` reject the `--analysis*` flags.
 
-## Run N games and analyze them (interactive)
+## Run N games and analyze them
 
 ```bash
-train/.venv/bin/python train/analysis.py interactive (gen, or a checkpoint path) --opponent (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck)
+train/.venv/bin/python train/analysis.py browse --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck)
 ```
 
-`analysis.py` also has a non-interactive subcommands for a report each — `report`,
+`analysis.py report` runs the standard battery once and writes a self-contained HTML report
+(headless). With a search `--player-a` (`az:gen`, `mcts:gen`; `--sims`/`--worlds` set the
+budget) it adds the search-vs-net sections — KL(search‖net) and top-1 agreement by action
+category, the biggest disagreements decoded, net V vs the search's root value (MAE / corr) —
+and `--workers N` splits the games across processes for a large sample. The browser's
+`net KL` / `net V vs search` probes are the same views over the games you are browsing.
 
-### TUI analysis browser
+### Analysis browser
 
-`tui_analysis.py` is a full-screen Textual front end for the same simulated-game analysis:
-pick a game from the sidebar and page through its board states (rendered like the TUI game
-board) one decision at a time, with the model's full policy distribution shown at each step;
-seek by clicking the V(s) histogram docked at the bottom; run any REPL analysis view (summary,
-cardvalue, targeting, swings, regret, entropy, calibration, shap, …) from the sidebar menu; and
-branch a counterfactual `whatif` at the current step (`w` key) to simulate an alternative line.
+`analysis.py browse` is a full-screen browser for the same analysis: pick a game from the
+sidebar and page through its board states (rendered like the TUI game board) one decision at a
+time, with the model's full policy distribution shown at each step; seek by clicking the V(s)
+histogram docked at the bottom; run any analysis view (summary, cardvalue, targeting,
+swings, regret, entropy, calibration, shap, …) from the sidebar menu, along with the selected
+game's text transcript and the `chart …` views (each saves a PNG under `train/analysis_out/`
+and prints its path); and branch a counterfactual `whatif` at the current step (`w` key) to
+simulate an alternative line.
 
-From `./tui.sh`, pick the **analysis-tui** tool and its **browse** subcommand to fill in the
-same options through the form. To invoke it directly:
+`--source` picks what it browses: `simulate` (the default — `--games` games of `--player-a` vs
+`--player-b` on `--deck-a`/`--deck-b`), a directory of recorded shards (AZ self-play such as
+`train/az_data/gen`, or a GUI recording under `train/az_data/recorded/`; `--player-a` is the V(s)
+net, `--seat` the viewpoint, `--no-net` keeps the recorded outcomes, `--games N` loads the first
+N matches — `--games 0`, every match, is refused for a directory over 2 GiB of shards), or a saved `.rmtrace`
+analysis session. `--board tui` (the default) is the Textual browser; `--board gui` opens the
+same session in the PySide6 app. From `./tui.sh`, pick the **analysis** tool and its **browse**
+subcommand to fill in the options through the form; the GUI's New Analysis Session dialog
+carries the same flags. To invoke it directly:
 
 ```bash
-train/.venv/bin/python train/tui_analysis.py (gen, or a checkpoint path) --opponent (model, or 'scripted') --deck-b (opponent's deck) --n-games 20
+train/.venv/bin/python train/analysis.py browse --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck) --games 20
+train/.venv/bin/python train/analysis.py browse --source train/az_data/gen --player-a gen
+train/.venv/bin/python train/analysis.py browse --source session.rmtrace --board gui
 ```

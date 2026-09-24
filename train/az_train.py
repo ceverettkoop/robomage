@@ -27,7 +27,6 @@ Exposed to ``train.py`` as the ``az-train`` / ``az-eval`` / ``az`` subcommands.
 
 from __future__ import annotations
 
-import argparse
 import contextlib
 import glob
 import json
@@ -65,7 +64,8 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
                       DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
-from cli_spec import DEFAULT_AZ_ROWS_PER_GAME
+from cli_spec import (DEFAULT_AZ_ROWS_PER_GAME, LEAGUE_DECKS_DIR, is_bo3,
+                      league_decks)
 from env import _MATCH_CTX_START as _GAME_NUMBER_IDX
 from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, VERDICT_REJECT,
                        floor_locked, sprt_cap_line, sprt_cap_verdict,
@@ -83,9 +83,6 @@ except ImportError:  # pragma: no cover
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "checkpoints", "az")
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
-_DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                          "bin", "resources", "decks")
-_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 # P(opponent deck == focus deck) per self-play game (mirror vs cross-deck roster).
 # Value lives in cli_spec's AZ-defaults block (one home); local alias kept for
@@ -1315,7 +1312,7 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
 
-    roster = list(roster) if roster else _default_az_league_roster()
+    roster = list(roster) if roster else league_decks()
     focus_decks = _normalize_focus(deck, roster)
     matchups = _gate_matchups(focus_decks, roster, cross_pairs, seed)
     per = max(2, games // len(matchups))   # matches per matchup (>=2 so seats alternate)
@@ -1703,7 +1700,7 @@ def _resolve_expert_decks(expert_decks) -> Optional[list]:
     if lowered == [EXPERT_DECKS_NONE]:
         return None
     if lowered == [EXPERT_DECKS_ROSTER]:
-        return _default_az_league_roster() or None
+        return league_decks() or None
     return decks
 
 
@@ -1831,8 +1828,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     import az_selfplay
 
     if roster is None:
-        roster = _default_az_league_roster()
-    focus = _normalize_focus(deck, _default_az_league_roster())
+        roster = league_decks()
+    focus = _normalize_focus(deck, league_decks())
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
     excluded = [d for d in (selfplay_exclude or []) if d]
     sp_roster = [d for d in roster if d not in excluded] or list(roster)
@@ -1968,14 +1965,6 @@ def _write_az_league_state(ckpt_dir: str, state: dict) -> None:
 
 def _read_az_league_state(ckpt_dir: str) -> Optional[dict]:
     return read_progress_state(_az_league_state_path(ckpt_dir), "az-league")
-
-
-def _default_az_league_roster() -> list:
-    """Every deck in decks/league/, referenced 'league/<stem>' (rotation order)."""
-    if not os.path.isdir(_LEAGUE_DECKS_DIR):
-        return []
-    return sorted("league/" + os.path.splitext(p)[0]
-                  for p in os.listdir(_LEAGUE_DECKS_DIR) if p.endswith(".dk"))
 
 
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
@@ -2182,10 +2171,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         roster = ([d.strip() for d in decks.split(",") if d.strip()]
                   if isinstance(decks, str) else [str(d).strip() for d in decks if str(d).strip()])
     else:
-        roster = _default_az_league_roster()
+        roster = league_decks()
     if not roster:
         raise ValueError(
-            f"No decks found for az-league (looked in {_LEAGUE_DECKS_DIR}). "
+            f"No decks found for az-league (looked in {LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
     # 'gen' is the reserved generalist stem — a roster deck may not collide with it.
     for _d in roster:
@@ -2495,7 +2484,9 @@ def _resolve_use_actor(args) -> Optional[bool]:
     return None
 
 def run_train(args) -> None:
-    train_az(args.deck, batches=args.batches, batch_size=args.batch_size,
+    import az_selfplay
+    # The window is the shared az_data/gen pool; the label only tags the log.
+    train_az("pooled window", batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, c_v=args.c_v,
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX), window=args.window,
              epoch_frac=getattr(args, "epoch_frac", DEFAULT_AZ_EPOCH_FRAC),
@@ -2505,13 +2496,12 @@ def run_train(args) -> None:
              snapshot_every=args.snapshot_every,
              sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
              sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
-             seed=args.seed if args.seed is not None else 0)
+             seed=az_selfplay.resolve_seed(args, "az-train"))
 
 
 def run_eval(args) -> None:
     import az_selfplay
-    # az-eval defaults to bo3 matches; --bo1 opts back into single games.
-    az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
+    az_eval(args.deck_a, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
             c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
             sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
@@ -2526,7 +2516,7 @@ def run_eval(args) -> None:
                                DEFAULT_GATE_MAX_ROUNDS),
             alpha=getattr(args, "gate_alpha", DEFAULT_GATE_ALPHA),
             seed=args.seed if args.seed is not None else 1,
-            bo3=not getattr(args, "bo1", False),
+            bo3=is_bo3(args),
             workers=getattr(args, "workers", None),
             use_actor=_resolve_use_actor(args),
             actor_device=getattr(args, "actor_device", "cpu"),
@@ -2547,14 +2537,13 @@ def _split_decks(val) -> Optional[list]:
 
 def run_cycle(args) -> None:
     import az_selfplay
-    # --deck (comma-joined multipick) is the FOCUS pool and --opponents the
+    # --decks (comma-joined multipick) is the FOCUS pool and --opponents the
     # opponent pool for this cycle's self-play + gating; either default (None/empty)
     # falls back to the whole decks/league/ roster inside az_cycle. So a bare
-    # `train.py az` runs the full league deck×opponent matrix; pass a single --deck
+    # `train.py az` runs the full league deck×opponent matrix; pass a single deck in --decks
     # to fix one focus.
-    focus = _split_decks(getattr(args, "deck", None))
+    focus = _split_decks(getattr(args, "decks", None))
     roster = _split_decks(getattr(args, "opponents", None))
-    # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
              full_search_frac=float(getattr(args, "full_search_frac",
                                             DEFAULT_AZ_FULL_SEARCH_FRAC)),
@@ -2600,7 +2589,7 @@ def run_cycle(args) -> None:
              expert_opponent=getattr(args, "expert_opponent", None),
              selfplay_exclude=_split_decks(getattr(args, "selfplay_exclude",
                                                    None)),
-             roster=roster, bo3=not getattr(args, "bo1", False),
+             roster=roster, bo3=is_bo3(args),
              use_actor=_resolve_use_actor(args),
              actor_device=getattr(args, "actor_device", "cpu"),
              eval_server=az_selfplay.resolve_eval_server(args),
@@ -2675,228 +2664,10 @@ def run_league(args) -> None:
               eval_server=az_selfplay.resolve_eval_server(args),
               cross_world=not getattr(args, "no_cross_world", False),
               resume=args.resume,
-              bo3=not getattr(args, "bo1", False))
+              bo3=is_bo3(args))
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description="AlphaZero trainer / gating")
-    sub = ap.add_subparsers(dest="cmd", required=True)
-
-    t = sub.add_parser("train", help="Train AZNet on self-play shards")
-    t.add_argument("--deck", default="delver")
-    t.add_argument("--batches", type=int, default=DEFAULT_AZ_TRAIN_BATCHES)
-    t.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
-    t.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
-    t.add_argument("--c-v", type=float, default=DEFAULT_AZ_CV)
-    t.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
-                   help="Weight of the shard's n-step TD target in the value "
-                        "loss: (1-q_mix)*z + q_mix*td_q (default %s)"
-                        % DEFAULT_AZ_Q_MIX)
-    t.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
-    t.add_argument("--from-ppo", default=None, help="Warm-start from a PPO ckpt")
-    t.add_argument("--fresh", action="store_true", help="Start from random init")
-    t.add_argument("--snapshot-every", type=int, default=0)
-    t.add_argument("--seed", type=int, default=0)
-    t.set_defaults(func=run_train)
-
-    e = sub.add_parser("eval", help="Gate candidate vs incumbent")
-    e.add_argument("--deck", default="delver")
-    e.add_argument("--candidate", required=True)
-    e.add_argument("--incumbent", default=None)
-    e.add_argument("--games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
-    e.add_argument("--sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
-    e.add_argument("--worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
-    e.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
-                   help="Candidate plans at a bo3 sideboard root (bo3 only)")
-    e.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
-                   help="Determinized worlds at a bo3 sideboard root (bo3 only)")
-    e.add_argument("--sb-rollout-turns", type=int,
-                   default=DEFAULT_SB_ROLLOUT_TURNS,
-                   help="Leaf-rollout horizon at a bo3 sideboard root, in "
-                        "player turns (0 = off)")
-    e.add_argument("--promote-threshold", type=float,
-                   default=DEFAULT_AZ_PROMOTE_THRESHOLD)
-    e.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
-                   help="Per-piloted-deck win-rate floor; a deck below it "
-                        "vetoes promotion (0 disables)")
-    e.add_argument("--promote", action="store_true")
-    e.add_argument("--seed", type=int, default=1)
-    e.add_argument("--bo1", action="store_true",
-                   help="Single-game gate (default: bo3 match win-rate)")
-    e.set_defaults(func=run_eval)
-
-    c = sub.add_parser("cycle", help="One generate->train->eval cycle")
-    c.add_argument("--deck", default="delver")
-    c.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
-    c.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
-                   help="Self-play PUCT sims, TOTAL across --worlds")
-    c.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
-    c.add_argument("--full-search-frac", type=float,
-                   default=DEFAULT_AZ_FULL_SEARCH_FRAC,
-                   help="Playout cap: fraction of searched in-game roots that "
-                        "get the FULL --sims budget and record pi; the rest "
-                        "run --fast-sims with no policy target (1.0 = every "
-                        "root full)")
-    c.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
-                   help="PUCT sims (TOTAL across --worlds) for the playout "
-                        "cap's fast searches")
-    c.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
-                   help="Candidate plans at a bo3 sideboard root (bo3 only)")
-    c.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
-                   help="Determinized worlds at a bo3 sideboard root")
-    c.add_argument("--sb-rollout-turns", type=int,
-                   default=DEFAULT_SB_ROLLOUT_TURNS,
-                   help="Leaf-rollout horizon at a bo3 sideboard root, in "
-                        "player turns (0 = off)")
-    c.add_argument("--workers", type=int, default=None)
-    c.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
-    c.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
-    c.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
-    c.add_argument("--td-n", type=int, default=DEFAULT_AZ_TD_N,
-                   help="n-step TD horizon recorded in this cycle's shards "
-                        "(default %d)" % DEFAULT_AZ_TD_N)
-    c.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
-                   help="Weight of td_q in the value target (default %s)"
-                        % DEFAULT_AZ_Q_MIX)
-    c.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
-    c.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
-    c.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
-    c.add_argument("--eval-worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
-    c.add_argument("--promote-threshold", type=float,
-                   default=DEFAULT_AZ_PROMOTE_THRESHOLD)
-    c.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
-                   help="Per-piloted-deck gate floor (0 disables the veto)")
-    c.add_argument("--exhaustive", action="store_true",
-                   help="Exact matchup matrix instead of the random draw")
-    c.add_argument("--exhaustive-selfplay", action="store_true",
-                   help="Exhaustive matrix, pure SELF-PLAY cells only "
-                        "(implies --exhaustive)")
-    c.add_argument("--exhaustive-repeats", type=int,
-                   default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
-                   help="Play every cell of the matrix N times (default %d)"
-                        % DEFAULT_AZ_EXHAUSTIVE_REPEATS)
-    c.add_argument("--scripted-cells", type=int,
-                   default=DEFAULT_AZ_SCRIPTED_CELLS,
-                   help="With --exhaustive-selfplay: also play K vs-scripted "
-                        "matches from the rotating ordered-pair slice "
-                        "(default %d; 0 disables)" % DEFAULT_AZ_SCRIPTED_CELLS)
-    c.add_argument("--expert-decks", default=EXPERT_DECKS_ROSTER,
-                   help="Comma-separated decks to also write scripted:hard "
-                        "EXPERT demonstration shards for each cycle (BC "
-                        "targets for combo lines search can't discover); "
-                        "default '%s' = every decks/league/ deck, 'none' to "
-                        "disable" % EXPERT_DECKS_ROSTER)
-    c.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
-                   help="Expert matches per expert deck per cycle")
-    c.add_argument("--seed", type=int, default=1)
-    c.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
-                   help="P(opponent deck == focus deck) per self-play game "
-                        "(else uniform league-roster draw)")
-    c.add_argument("--scripted-opponent-frac", type=float, default=0.0,
-                   help="Fraction of self-play games (0..1) whose opponent seat "
-                        "is piloted by scripted:hard (net+MCTS on the focus "
-                        "seat, net samples only). Forces the Python backend")
-    c.add_argument("--bo1", action="store_true",
-                   help="Run bo1 self-play + gate (default: bo3 with per-game value)")
-    cg = c.add_mutually_exclusive_group()
-    cg.add_argument("--actor", action="store_true",
-                    help="Force the C++ az_actor self-play backend")
-    cg.add_argument("--no-actor", action="store_true",
-                    help="Force the pure-Python self-play backend")
-    c.set_defaults(func=run_cycle)
-
-    lg = sub.add_parser("league",
-                        help="Rotate az cycles over the decks/league/ roster")
-    lg.add_argument("--resume", action="store_true",
-                    help="Resume from checkpoints/_az_league_progress.json "
-                         "(other flags ignored)")
-    lg.add_argument("--decks", default=None,
-                    help="Comma-separated roster (default: every decks/league/*.dk)")
-    lg.add_argument("--rotations", type=int, default=1,
-                    help="Full passes over the roster (0 = run indefinitely "
-                         "until interrupted)")
-    lg.add_argument("--cycles-per-deck", type=int, default=1)
-    lg.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
-    lg.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
-                    help="Self-play PUCT sims, TOTAL across --worlds")
-    lg.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
-    lg.add_argument("--full-search-frac", type=float,
-                    default=DEFAULT_AZ_FULL_SEARCH_FRAC,
-                    help="Playout cap: fraction of searched in-game roots that "
-                         "get the FULL --sims budget and record pi; the rest "
-                         "run --fast-sims with no policy target (1.0 = every "
-                         "root full)")
-    lg.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
-                    help="PUCT sims (TOTAL across --worlds) for the playout "
-                         "cap's fast searches")
-    lg.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
-                    help="Candidate plans at a bo3 sideboard root (bo3 only)")
-    lg.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
-                    help="Determinized worlds at a bo3 sideboard root")
-    lg.add_argument("--sb-rollout-turns", type=int,
-                    default=DEFAULT_SB_ROLLOUT_TURNS,
-                    help="Leaf-rollout horizon at a bo3 sideboard root, in "
-                         "player turns (0 = off)")
-    lg.add_argument("--workers", type=int, default=None)
-    lg.add_argument("--batches", type=int, default=DEFAULT_AZ_CYCLE_BATCHES)
-    lg.add_argument("--batch-size", type=int, default=DEFAULT_AZ_BATCH_SIZE)
-    lg.add_argument("--lr", type=float, default=DEFAULT_AZ_LR)
-    lg.add_argument("--td-n", type=int, default=DEFAULT_AZ_TD_N,
-                    help="n-step TD horizon recorded in each slot's shards "
-                         "(default %d)" % DEFAULT_AZ_TD_N)
-    lg.add_argument("--q-mix", type=float, default=DEFAULT_AZ_Q_MIX,
-                    help="Weight of td_q in the value target (default %s)"
-                         % DEFAULT_AZ_Q_MIX)
-    lg.add_argument("--window", type=int, default=DEFAULT_AZ_WINDOW)
-    lg.add_argument("--eval-games", type=int, default=DEFAULT_AZ_EVAL_GAMES)
-    lg.add_argument("--eval-sims", type=int, default=DEFAULT_AZ_EVAL_SIMS)
-    lg.add_argument("--eval-worlds", type=int, default=DEFAULT_AZ_EVAL_WORLDS)
-    lg.add_argument("--promote-threshold", type=float,
-                    default=DEFAULT_AZ_PROMOTE_THRESHOLD)
-    lg.add_argument("--gate-floor", type=float, default=DEFAULT_GATE_FLOOR,
-                    help="Per-piloted-deck gate floor (0 disables the veto)")
-    lg.add_argument("--matrix", action="store_true",
-                    help="Whole-roster focus MATRIX every slot instead of the "
-                         "per-deck focus rotation")
-    lg.add_argument("--exhaustive", action="store_true",
-                    help="Exact matchup matrix every slot")
-    lg.add_argument("--exhaustive-selfplay", action="store_true",
-                    help="Exhaustive matrix, pure SELF-PLAY cells only "
-                         "(implies --exhaustive)")
-    lg.add_argument("--exhaustive-repeats", type=int,
-                    default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
-                    help="Play every cell of the matrix N times per slot "
-                         "(default %d)" % DEFAULT_AZ_EXHAUSTIVE_REPEATS)
-    lg.add_argument("--scripted-cells", type=int,
-                    default=DEFAULT_AZ_SCRIPTED_CELLS,
-                    help="With --exhaustive-selfplay: also play K vs-scripted "
-                         "matches per slot from the rotating ordered-pair "
-                         "slice (default %d; 0 disables)"
-                         % DEFAULT_AZ_SCRIPTED_CELLS)
-    lg.add_argument("--expert-decks", default=EXPERT_DECKS_ROSTER,
-                    help="Comma-separated decks to also write scripted:hard "
-                         "EXPERT demonstration shards for each slot (BC "
-                         "targets for combo lines search can't discover); "
-                         "default '%s' = every decks/league/ deck, 'none' to "
-                         "disable" % EXPERT_DECKS_ROSTER)
-    lg.add_argument("--expert-games", type=int, default=DEFAULT_AZ_EXPERT_GAMES,
-                    help="Expert matches per expert deck per slot")
-    lg.add_argument("--seed", type=int, default=1)
-    lg.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
-                    help="P(opponent deck == focus deck) per self-play game "
-                         "(else uniform league-roster draw)")
-    lg.add_argument("--scripted-opponent-frac", type=float, default=0.0,
-                    help="Fraction of self-play games (0..1) whose opponent seat "
-                         "is piloted by scripted:hard (net+MCTS on the focus "
-                         "seat, net samples only). Forces the Python backend")
-    lg.add_argument("--bo1", action="store_true",
-                    help="Run bo1 self-play + gate (default: bo3 with per-game value)")
-    lgg = lg.add_mutually_exclusive_group()
-    lgg.add_argument("--actor", action="store_true",
-                     help="Force the C++ az_actor self-play backend")
-    lgg.add_argument("--no-actor", action="store_true",
-                     help="Force the pure-Python self-play backend")
-    lg.set_defaults(func=run_league)
-
-    args = ap.parse_args()
-    args.func(args)
+    import sys
+    sys.exit("az_train.py has no CLI; use `train.py az-train` / `az-eval` / "
+             "`az` / `az-league`")

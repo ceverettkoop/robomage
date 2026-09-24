@@ -17,7 +17,6 @@ exits.
 import contextlib
 import glob
 import os
-import random
 import shlex
 import shutil
 import subprocess
@@ -31,13 +30,13 @@ from textual.widgets import (Button, Checkbox, Footer, Header, Input, Label,
                              ListItem, ListView, Select, SelectionList, Static,
                              Tree)
 
-from cli_spec import (ALL_TOOLS, REPO_ROOT, MutexGroup)
+from cli_spec import (ALL_TOOLS, DECKS_DIR, league_decks, HARNESS_DEFAULT_PLAYER, HUMAN_SPEC,
+                      REPO_ROOT, MutexGroup, scan_decks)
 # Curriculum plans: stdlib-only module (cli_spec + progress_io), so the launcher
 # can list/read/write plan files without pulling in the ML stack.
 import curriculum
 
 VENV_PY = sys.executable
-_DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
 _CKPT_DIR = os.path.join(REPO_ROOT, "train", "checkpoints")
 
 # Rolling per-command output logs: one file per run, newest 50 kept.
@@ -79,39 +78,10 @@ def _prune_command_logs():
             pass
 
 
-# Deck subfolders hidden from the dropdowns: temp/ holds auto-generated test
-# decks (see test_harness.py), not_used/ parked development stubs.
-_DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
-
-
 def _grouped_sort_key(rel):
     """Sort decks/checkpoints top-level first, then grouped by subfolder,
     alphabetical within each group."""
     return (rel.count("/"), rel)
-
-
-def _scan_decks():
-    """All .dk decks under decks/ (recursive), as decks/-relative stems.
-
-    Subfolder decks are offered in the 'league/ur_delver' path-relative form
-    that train.py and the engine accept alongside top-level stems like
-    'delver'. temp/ and not_used/ are excluded."""
-    out = []
-    for root, dirs, files in os.walk(_DECKS_DIR):
-        dirs[:] = sorted(d for d in dirs if d not in _DECK_SCAN_EXCLUDE)
-        rel_dir = os.path.relpath(root, _DECKS_DIR).replace(os.sep, "/")
-        for fname in files:
-            if fname.endswith(".dk"):
-                stem = os.path.splitext(fname)[0]
-                out.append(stem if rel_dir == "." else f"{rel_dir}/{stem}")
-    return sorted(out, key=_grouped_sort_key)
-
-
-def _scan_league_decks():
-    # League roster decks live in decks/league/; reference them as 'league/<stem>'
-    # so the engine loads decks/league/<stem>.dk (matches train.league() default).
-    return sorted("league/" + os.path.splitext(os.path.basename(p))[0]
-                  for p in glob.glob(os.path.join(_DECKS_DIR, "league", "*.dk")))
 
 
 def _scan_checkpoints():
@@ -159,7 +129,7 @@ def _generalist_checkpoints():
     There is one generalist model (`gen`), so this is every gen snapshot
     ('gen__v{steps}.zip'), 'gen__final.zip', and any explicit .zip present —
     i.e. all scanned zips. The choice is deck-independent (the deck the model
-    pilots travels as a separate explicit --deck parameter)."""
+    pilots travels as a separate explicit --deck-a/--deck-b parameter)."""
     return _scan_checkpoints()
 
 
@@ -175,7 +145,7 @@ def _expand_checkpoint(val):
 # --load resume, --from-ppo); 'agent' adds the az:/azraw:/mcts: gen entries for
 # fields that go through make_controller (observe's players, baseline's model);
 # 'az_checkpoint' is bare AZ .pt paths.
-_SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
+_SCANNERS = {"deck": scan_decks, "league_deck": league_decks,
              "checkpoint": _scan_checkpoints, "agent": _scan_agents,
              "az_checkpoint": _scan_az_checkpoints,
              "curriculum": _scan_curricula}
@@ -184,10 +154,8 @@ _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
 # roster" run): these seed the widgets differently from the CLI Arg defaults but
 # leave cli_spec / the command-line untouched. The multipick '--decks' is
 # pre-checked separately (see _apply_league_defaults) since it needs the mounted
-# widget. '--bo3' is a shared flag (common_args), so we override it here rather
-# than flipping its global cli_spec default.
+# widget.
 _LEAGUE_TUI_DEFAULTS = {
-    "--bo3": True,            # best-of-three on by default
     "--promote-margin": 0,    # 0 disables the snapshot win-rate gate
 }
 
@@ -207,11 +175,6 @@ class ArgFormMixin:
     provide ``self._sub`` (the Sub being edited, used for the form-level
     defaults) and a ``#fieldhelp`` Static.
     """
-
-    # Seed an az* form's --seed with a fresh random value per load (see
-    # _default_for). Hosts that EDIT a stored document rather than launch a
-    # one-off command turn this off.
-    _RANDOM_AZ_SEED = True
 
     def _init_form_state(self):
         self._fields = []
@@ -248,14 +211,23 @@ class ArgFormMixin:
         """Dropdown options for a suggest-tagged arg (decks/checkpoints)."""
         # --load resumes a specific checkpoint of the one generalist model, so it
         # offers every gen snapshot / gen__final / explicit zip (deck-independent;
-        # the piloted deck travels as a separate --deck parameter).
+        # the piloted deck travels as a separate --deck-a/--deck-b parameter).
         if a.name == "--load" and a.suggest == "checkpoint":
             return _generalist_checkpoints()
         opts = list(_suggestions_for(a))
-        # Fields that also accept the rule-based agent get a 'scripted' option.
+        # Fields that also accept the rule-based agent get a 'scripted' option;
+        # play's seats also offer 'human' (exactly one seat is the human), and
+        # the harness's seats 'human' plus their 'auto' default.
+        tool = getattr(getattr(self, "_sub", None), "tool", None)
+        play_seat = a.suggest == "agent" and tool == "play"
+        harness_seat = a.suggest == "agent" and tool == "harness"
         if a.suggest in ("checkpoint", "agent") and (
-                a.default == "scripted" or a.name == "--opponent"):
+                a.default == "scripted" or play_seat or harness_seat):
             opts = ["scripted"] + opts
+        if play_seat or harness_seat:
+            opts = [HUMAN_SPEC] + opts
+        if harness_seat:
+            opts = [HARNESS_DEFAULT_PLAYER] + opts
         # AZ fields defaulting to the generalist stem offer 'gen' itself, so the
         # default is selectable (and preselected) rather than only the explicit
         # snapshot paths the scanner finds.
@@ -277,16 +249,6 @@ class ArgFormMixin:
         through to the Arg's own default."""
         if getattr(self._sub, "name", None) == "league" and a.name in _LEAGUE_TUI_DEFAULTS:
             return _LEAGUE_TUI_DEFAULTS[a.name]
-        # az* forms: pre-fill --seed with a fresh random value per form load, so
-        # repeated TUI launches don't silently replay the fixed cli_spec seed
-        # (identical self-play games before any training has happened). CLI
-        # defaults are untouched, and the value is visible in the field and the
-        # composed-command preview, so every run stays reproducible. A plan
-        # editor opts out (_RANDOM_AZ_SEED): merely selecting a phase must not
-        # rewrite the saved plan with a new random seed.
-        if (self._RANDOM_AZ_SEED and a.name == "--seed"
-                and str(getattr(self._sub, "name", "")).startswith("az")):
-            return random.randint(1, 999_999)
         return a.default
 
     def _build_arg(self, a):
@@ -295,6 +257,15 @@ class ArgFormMixin:
         if a.kind == "flag":
             w = Checkbox(value=bool(default), compact=True)
             self._fields.append({"kind": "flag", "arg": a, "widget": w})
+        elif a.kind == "bool":
+            # --name / --no-name: a checkbox, or an on/off select whose blank
+            # is the flag's unset (None) default.
+            if default is None:
+                w = Select([("on", "on"), ("off", "off")], allow_blank=True,
+                           compact=True)
+            else:
+                w = Checkbox(value=bool(default), compact=True)
+            self._fields.append({"kind": "bool", "arg": a, "widget": w})
         elif a.kind == "choice":
             opts = [(c, c) for c in a.choices]
             kwargs = {"allow_blank": not a.required, "compact": True}
@@ -350,6 +321,10 @@ class ArgFormMixin:
         kind = f["kind"]
         if kind == "flag":
             return bool(w.value)
+        if kind == "bool":
+            if isinstance(w, Checkbox):
+                return bool(w.value)
+            return {"on": True, "off": False}.get(w.value)
         if kind in ("mutex", "choice", "pick"):
             v = w.value
             return v if isinstance(v, str) and v else None
@@ -381,6 +356,13 @@ class ArgFormMixin:
             w = f["widget"]
             if f["kind"] == "flag":
                 w.value = bool(val)
+            elif f["kind"] == "bool":
+                if isinstance(w, Checkbox):
+                    w.value = bool(val)
+                elif val is None:
+                    w.clear()
+                else:
+                    w.value = "on" if val else "off"
             elif f["kind"] == "multipick":
                 picks = ([v.strip() for v in str(val).split(",") if v.strip()]
                          if not isinstance(val, (list, tuple)) else list(val))
@@ -601,17 +583,25 @@ class LauncherApp(ArgFormMixin, App):
         return os.path.join(REPO_ROOT, self._tool.script)
 
     # Scripts that take over the whole terminal with their own Textual app:
-    # play.py launches the game board (tui_game.py) and tui_analysis.py is the
-    # analysis browser. Teeing either through `script` would fill the log with
-    # terminal escape sequences, so they run without logging.
-    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py",
-                                     "tui_az_inspect.py"})
+    # play.py launches a game board (--board tui is tui_game.py; gui and text
+    # also own the terminal while they run), analysis.py's `browse`
+    # subcommand is the analysis browser, and az_inspect.py's `tui` subcommand
+    # is the checkpoint inspector. Teeing any of them through `script` would
+    # fill the log with terminal escape sequences, so they run without logging.
+    _FULLSCREEN_SCRIPTS = frozenset({"play.py"})
+    _FULLSCREEN_SUBS = frozenset({("az_inspect.py", "tui"),
+                                  ("analysis.py", "browse")})
 
     def _is_play_mode(self):
         """True when the selected command is itself a full-screen Textual app
-        (see _FULLSCREEN_SCRIPTS) — it runs in the terminal without logging."""
-        return bool(self._tool) and (os.path.basename(self._tool.script)
-                                     in self._FULLSCREEN_SCRIPTS)
+        (see _FULLSCREEN_SCRIPTS / _FULLSCREEN_SUBS) — it runs in the terminal
+        without logging."""
+        if not self._tool:
+            return False
+        script = os.path.basename(self._tool.script)
+        return (script in self._FULLSCREEN_SCRIPTS
+                or (script, getattr(self._sub, "name", None))
+                in self._FULLSCREEN_SUBS)
 
     def _collect(self):
         """Return (argv, missing_required_names) for the selected command."""
@@ -635,7 +625,19 @@ class LauncherApp(ArgFormMixin, App):
                 if val:
                     argv.append(a.name)
                 continue
+            if f["kind"] == "bool":
+                if val is not None and val != a.default:
+                    argv.append(a.name if val else "--no-" + a.name[2:])
+                continue
             if val in (None, []):
+                continue
+            # A value left at the flag's own default is omitted: the script
+            # parses the same default, and the command stays explicit only
+            # about what the form changed (play.py lets a spec's own knobs
+            # win over un-given defaults, and rejects given GUI-only flags on
+            # the tui board).
+            if (not a.is_positional and f["kind"] != "multipick"
+                    and a.default is not None and str(val) == str(a.default)):
                 continue
             if f["kind"] == "multipick":   # multi-select roster -> comma-joined
                 text = ",".join(val)
@@ -746,10 +748,6 @@ class CurriculumScreen(ArgFormMixin, Screen):
         ("[", "move_earlier", "◀ move"),
         ("]", "move_later", "move ▶"),
     ]
-
-    # A plan is a stored document: selecting an az phase must not rewrite it
-    # with a fresh random --seed the way a one-off az launch form does.
-    _RANDOM_AZ_SEED = False
 
     def __init__(self, name_or_path: str = None):
         super().__init__()

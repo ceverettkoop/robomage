@@ -47,7 +47,8 @@ import subprocess
 import sys
 import time
 
-from cli_spec import (TRAIN_TOOL, MutexGroup, REPO_ROOT, iter_args, shard_tag)
+from cli_spec import (TRAIN_TOOL, MutexGroup, REPO_ROOT, iter_args,
+                      removed_flag_hint, shard_tag)
 from progress_io import read_progress_state, write_progress_state
 
 TRAIN_SCRIPT = os.path.join(REPO_ROOT, "train", "train.py")
@@ -81,13 +82,14 @@ RESUME_SELECTOR_DESTS = {"exploiter": ("archetype",), "league": ("shard",)}
 PHASE_FIELDS = {
     "league":    {"decks": "decks", "steps": "total_timesteps"},
     "exploiter": {"archetype": "archetype", "steps": "steps", "decks": "decks"},
-    "az":        {"decks": "deck", "games": "games"},
+    "az":        {"decks": "decks", "games": "games"},
     "az-league": {"decks": "decks", "rotations": "rotations", "games": "games"},
-    "az-selfplay": {"decks": "deck", "games": "games"},
+    "az-selfplay": {"decks": "deck_a", "games": "games"},
     # az-eval: a standalone promotion gate (candidate vs gen__azfinal). "model"
     # is the CANDIDATE spec ('gen' = the newest gen__azv* snapshot).
-    "az-eval":   {"model": "candidate", "deck": "deck", "games": "games"},
-    "baseline":  {"model": "model", "deck": "deck", "games": "games"},
+    "az-eval":   {"model": "candidate", "deck": "deck_a", "games": "games"},
+    # baseline: "model" is --player-a (the side under test), "deck" its deck.
+    "baseline":  {"model": "player_a", "deck": "deck_a", "games": "games"},
 }
 
 # The runner owns --resume (it decides per phase whether a relaunch resumes), so
@@ -97,7 +99,7 @@ RUNNER_OWNED_DESTS = frozenset({"resume"})
 # A deck field set to this means "the subcommand's own default roster" (every
 # deck in decks/league/) — the flag is simply omitted.
 ALL_DECKS = "all"
-_DECK_DESTS = frozenset({"decks", "deck", "opponents", "train_decks"})
+_DECK_DESTS = frozenset({"decks", "deck_a", "deck_b", "opponents", "train_decks"})
 
 # Optional free-form annotations a phase / plan may carry (ignored by the runner).
 _PHASE_ANNOTATIONS = ("label", "note")
@@ -279,6 +281,15 @@ def _validate_phase(phase, where: str) -> None:
                 f"runner (it decides per phase whether a relaunch resumes) and "
                 f"may not be set in a plan")
         if dest not in args:
+            removed = (removed_flag_hint("--" + dest.replace("_", "-"),
+                                         "train", f"train/{kind}")
+                       or removed_flag_hint(dest, "train", f"train/{kind}"))
+            if removed:
+                raise PlanError(
+                    f"{where} ({kind}): override {dest!r}: {removed} (a plan "
+                    f"override is keyed by the new flag's dest, e.g. "
+                    f"--format bo1 -> \"format\": \"bo1\", --deck-a X -> "
+                    f"\"deck_a\": \"X\")")
             near = sorted(d for d in args if d.startswith(dest[:3]))
             raise PlanError(
                 f"{where} ({kind}): unknown override {dest!r} — "
@@ -301,13 +312,16 @@ def _format_value(arg, value, where: str):
     """Normalize one plan value into the argv text for ``arg``.
 
     Returns None when the value means "leave the flag off" (False for a flag,
-    an empty/blank value, or the ``all`` sentinel on a deck-roster arg)."""
+    an empty/blank value, or the ``all`` sentinel on a deck-roster arg). A
+    ``bool`` arg formats true/false as its ``--name`` / ``--no-name`` form."""
     if value is None:
         return None
-    if arg.kind == "flag":
+    if arg.kind in ("flag", "bool"):
         if not isinstance(value, bool):
             raise PlanError(f"{where}: {arg.name} is a flag — its value must be "
                             f"true or false (got {value!r})")
+        if arg.kind == "bool":
+            return arg.name if value else "--no-" + arg.name[2:]
         return arg.name if value else None
     if isinstance(value, bool):
         raise PlanError(f"{where}: {arg.name} takes a value, not a boolean")
@@ -388,7 +402,7 @@ def compose_phase_argv(phase: dict, resume: bool = False,
         text = _format_value(arg, values[dest], where)
         if text is None:
             continue
-        if arg.kind == "flag":
+        if arg.kind in ("flag", "bool"):
             argv.append(text)
         elif arg.is_positional:
             argv.append(text)

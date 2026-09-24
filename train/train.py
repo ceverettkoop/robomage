@@ -18,15 +18,17 @@ Usage:
     # There is ONE generalist model (gen__final.zip / gen__v{steps}.zip) that
     # pilots any deck: every training session auto-resumes and continues that one
     # model, so training on any deck vs any opponent just generalizes it further.
-    python train.py --deck delver --opponent mav    # continue the generalist on delver
-    python train.py --deck delver --opponent mav --fresh    # start the generalist over
+    python train.py --deck-a delver --deck-b mav    # continue the generalist on delver
+    python train.py --deck-a delver --deck-b mav --fresh    # start the generalist over
 """
 
 import argparse
+import contextlib
 import datetime
 import json
 import os
 import sys
+import time
 from collections import deque
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
@@ -45,6 +47,7 @@ import decode
 from _enums import _CAT_NAMES, _STEP_NAMES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
 from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
+                      LEAGUE_DECKS_DIR, league_decks,
                       ENT_COEF, TARGET_KL, lr_for_timesteps,
                       shaping_scale_for_timesteps, PPO_KWARGS, NET_ARCH,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
@@ -52,7 +55,7 @@ from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
                       LEAGUE_ADAPTIVE_BOOST, LEAGUE_EXPLOITER_FLOOR,
                       EXPLOITER_STEPS, EXPLOITER_CHUNK, parse_shard, shard_tag,
-                      TRAIN_TOOL, apply_to_parser)
+                      TRAIN_TOOL, apply_to_parser, is_bo3, resolve_popart)
 # Crash-safe progress sidecars (write-to-temp + os.replace) shared by every
 # resumable driver — the league rotations, exploiter runs, the AZ league, and
 # the curriculum runner. Stdlib-only module so the torch-free callers (tui.py,
@@ -83,24 +86,28 @@ import numpy as np
 # action from its own encoded features (category + target card embedding +
 # controller_is_self + zone + referenced-entity embedding) instead of a flat
 # positional Linear — and is the flavor AZNet's from_ppo warm-start transfers
-# 1:1. Opt out with --stock-head (any training subcommand) or
-# ROBOMAGE_PER_ACTION_HEAD=0 to build the legacy stock MlpPolicy head.
+# 1:1. Opt out with --stock-head (any training subcommand) to build the legacy
+# stock MlpPolicy head.
 # The two flavors are NOT checkpoint-compatible: resuming a checkpoint always
 # keeps the flavor it was saved with (a mismatch with the session's flavor
 # prints a warning suggesting --fresh).
-USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "1").lower() \
-    not in ("0", "", "false", "no")
+USE_PER_ACTION_HEAD = True
 
 
-# ── PopArt value normalization (opt-in, default OFF) ────────────────────────
-# --popart (any training subcommand) or ROBOMAGE_POPART=1 swaps MaskablePPO for
-# the thin PopArtMaskablePPO subclass (train/popart.py), which normalizes each
-# archetype bucket's value targets by that bucket's running (mu, sigma). The
-# statistics live in the POLICY's buffers, so a checkpoint is loadable either way
-# and the flag can be flipped between sessions; with it off the stats stay at
-# (0, 1) and every PopArt formula is the identity.
-USE_POPART = os.environ.get("ROBOMAGE_POPART", "0").lower() \
-    in ("1", "true", "yes", "on")
+# ── PopArt value normalization (default ON) ─────────────────────────────────
+# Training sessions swap MaskablePPO for the thin PopArtMaskablePPO subclass
+# (train/popart.py), which normalizes each archetype bucket's value targets by
+# that bucket's running (mu, sigma); --no-popart (any training subcommand)
+# keeps stock MaskablePPO. The statistics live in the POLICY's buffers, so a
+# checkpoint is loadable either way and the flag can be flipped between
+# sessions: a checkpoint trained without PopArt carries identity stats
+# (0, 1, count 0), its first PopArt update adopts the rollout's statistics
+# and rescales the head output-preservingly, so resuming it under PopArt never
+# mis-scales its values. A stock-head checkpoint has no multi-head critic and
+# resumes without PopArt (popart.PopArtMaskablePPO.load).
+# The module default is OFF so importers that never parse training flags
+# (bench, analysis) construct stock MaskablePPO unless they opt in.
+USE_POPART = False
 
 
 def _ppo_class():
@@ -115,8 +122,8 @@ def _policy_config(policy_kwargs):
     """Resolve (policy, policy_kwargs) for MaskablePPO construction.
 
     Swaps in the per-action-logit head (and flips the extractor into
-    per_action_head mode) unless the session opted out via --stock-head /
-    ROBOMAGE_PER_ACTION_HEAD=0, in which case the stock "MlpPolicy" is returned
+    per_action_head mode) unless the session opted out via --stock-head, in
+    which case the stock "MlpPolicy" is returned
     untouched.
     """
     if not (USE_PER_ACTION_HEAD and USE_MASKABLE):
@@ -958,11 +965,9 @@ def _ensure_deck_ckpt_subdir(checkpoint_dir: str, deck: str) -> None:
 # TOTAL_TIMESTEPS / N_ENVS / N_ENVS_SELF_PLAY imported from cli_spec (see top of file).
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
-# League decks live in their own folder so the league roster is curated separately
-# from the top-level training decks. A deck here is referenced as 'league/<stem>'
-# (a path relative to decks/), which the engine resolves to decks/league/<stem>.dk
-# and which namespaces its checkpoints under a matching 'league/' subdir.
-_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
+# League decks (cli_spec.LEAGUE_DECKS_DIR, listed by cli_spec.league_decks) are
+# referenced as 'league/<stem>', which also namespaces their checkpoints under a
+# matching 'league/' subdir.
 
 
 def _limit_worker_threads():
@@ -972,7 +977,7 @@ def _limit_worker_threads():
     league / random-model pools). Left at torch's default (≈ physical core
     count), N worker processes each spawn ≈cores intra-op threads, so N envs
     oversubscribe the machine by ≈N× — aggregate throughput then *falls* as envs
-    are added instead of rising (measurable with train/bench_nenvs.py). Data
+    are added instead of rising (measurable with `train.py bench-nenvs`). Data
     parallelism here should come from the number of envs, not threads per env, so
     each worker is pinned to a single math thread by default.
 
@@ -1437,13 +1442,10 @@ def league(binary_path: str, decks: str | None = None,
     else:
         # Default roster: every deck in the dedicated league folder, referenced as
         # 'league/<stem>' so the engine loads decks/league/<stem>.dk.
-        roster = sorted(
-            "league/" + os.path.splitext(p)[0]
-            for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
-            if p.endswith(".dk"))
+        roster = league_decks()
     if not roster:
         raise ValueError(
-            f"No decks found for league (looked in {_LEAGUE_DECKS_DIR}). "
+            f"No decks found for league (looked in {LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
     # 'gen' is reserved for the one generalist checkpoint stem — a roster deck
     # named 'gen' would collide with its snapshots. Refuse it loudly.
@@ -1742,10 +1744,10 @@ def exploiter(binary_path: str, archetype: str,
             return
     else:
         roster = ([d.strip() for d in decks.split(",") if d.strip()] if decks
-                  else _league_roster())
+                  else league_decks())
     if not roster:
         raise ValueError(
-            f"exploiter: no opponent decks (looked in {_LEAGUE_DECKS_DIR}). Add "
+            f"exploiter: no opponent decks (looked in {LEAGUE_DECKS_DIR}). Add "
             f"deck files there, or pass --decks explicitly.")
     for _deck in roster:
         assert_not_reserved_deck(_deck)
@@ -1875,8 +1877,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     if not load_path:
         raise FileNotFoundError(
             f"No generalist checkpoint found ({GEN_STEM}__final.zip or "
-            f"{GEN_STEM}__v*.zip). Train one first (train --deck {model_deck} "
-            f"--opponent {opp_deck}).")
+            f"{GEN_STEM}__v*.zip). Train one first (train --deck-a {model_deck} "
+            f"--deck-b {opp_deck}).")
 
     opp_model_path = _resolve_model(GEN_STEM)
     if not opp_model_path or not os.path.exists(opp_model_path):
@@ -1949,7 +1951,7 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
         raise FileNotFoundError(
             f"No generalist checkpoint found to alternate ({GEN_STEM}__final.zip "
             f"or {GEN_STEM}__v*.zip). Train one first "
-            f"(train --deck {deck_a} --opponent {deck_b}).")
+            f"(train --deck-a {deck_a} --deck-b {deck_b}).")
 
     steps_done = 0
     round_num = 0
@@ -1982,22 +1984,25 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
 def baseline(binary_path: str, model, n_games: int = 100,
              deck: str | None = None, opp_deck: str | None = None,
              seed: int | None = None, quiet: bool = False, bo3: bool = False,
-             split_out: dict | None = None):
-    """Evaluate a model's win rate vs the scripted HARD agent.
+             split_out: dict | None = None, opponent="scripted:hard",
+             first_game: int = 0):
+    """Evaluate a model's win rate vs an opponent agent (default scripted:hard).
 
-    ``model`` is any ``opponents.make_controller`` model spec — ``'gen'`` (the
-    PPO generalist), an explicit ``.zip``/``.pt`` path (e.g. an ``exp_*``
-    exploiter checkpoint), or a search spec (``az:gen``, ``mcts:gen``,
-    ``azraw:gen``, with the usual ``?sims=...`` knobs) — or a pre-built
-    ``Controller`` instance (``baseline_sweep`` passes one so the checkpoint
-    loads once for a whole sequential sweep).
+    ``model`` and ``opponent`` are any ``opponents.make_controller`` specs —
+    ``'gen'`` (the PPO generalist), an explicit ``.zip``/``.pt`` path (e.g. an
+    ``exp_*`` exploiter checkpoint), a search spec (``az:gen``, ``mcts:gen``,
+    ``azraw:gen``, with the usual ``?sims=...`` knobs), a scripted tier — or a
+    pre-built ``Controller`` instance (``baseline_sweep`` builds them once per
+    unit of work).
 
     The model pilots ``deck`` (REQUIRED — a checkpoint no longer encodes a deck;
-    the one generalist pilots whatever deck you name) and faces scripted:hard
-    piloting ``opp_deck`` (defaults to ``deck`` — a mirror match). Seats alternate
-    each game (model is Player A in even games) so neither side gets a systematic
-    on-the-play edge. ``seed`` makes the run reproducible (game ``i`` uses
-    ``seed + i``; None = random per game).
+    the one generalist pilots whatever deck you name) and the opponent pilots
+    ``opp_deck`` (defaults to ``deck`` — a mirror match). Seats alternate each
+    game (model is Player A in even-indexed games) so neither side gets a
+    systematic on-the-play edge. Games are indexed ``first_game ..
+    first_game + n_games - 1`` and game ``i`` uses seed ``seed + i`` (None =
+    random per game), so a matchup split into contiguous chunks plays exactly
+    the games one unsplit run would.
 
     ``bo3`` plays best-of-three MATCHES (sideboarding between games) instead of
     single games, and additionally reports the pre-board vs post-board win-rate
@@ -2014,20 +2019,22 @@ def baseline(binary_path: str, model, n_games: int = 100,
     Returns ``(wins, losses, draws)`` from the model's perspective.
     """
     import runner
-    from opponents import make_controller, ScriptedController
-    from scripted_agent import make_agent
+    from opponents import make_controller
 
     if not deck:
         raise ValueError(
-            "baseline: --deck is required — a checkpoint no longer encodes the "
+            "baseline: --deck-a is required — a checkpoint no longer encodes the "
             "deck it pilots. Pass the deck the generalist should play "
-            "(e.g. baseline gen --deck league/ur_delver).")
+            "(e.g. baseline --player-a gen --deck-a league/ur_delver).")
     model_name = model if isinstance(model, str) else getattr(model, "label", "model")
+    opp_name = (opponent if isinstance(opponent, str)
+                else getattr(opponent, "label", "opponent"))
     ctrl_model = make_controller(model, checkpoint_resolver=_resolve_model,
                                  deterministic=True)
+    ctrl_opp = make_controller(opponent, checkpoint_resolver=_resolve_model,
+                               deterministic=True)
     if opp_deck is None:
         opp_deck = deck
-    ctrl_scripted = ScriptedController(make_agent("scripted:hard"), label="Scripted")
     wins = losses = draws = 0
     # Per-game-index tallies in the MODEL's perspective. tally_per_game scores for
     # Player A by default and the seats alternate every game, so ask it to flip on
@@ -2041,17 +2048,17 @@ def baseline(binary_path: str, model, n_games: int = 100,
             if dest is not None:
                 runner.merge_per_game(dest, tally)
 
-    for i in range(n_games):
+    for n, i in enumerate(range(first_game, first_game + n_games), 1):
         model_is_a = (i % 2 == 0)
-        ctrl_a, ctrl_b = ((ctrl_model, ctrl_scripted) if model_is_a
-                          else (ctrl_scripted, ctrl_model))
-        # The model always pilots `deck`; the scripted opponent always `opp_deck`.
+        ctrl_a, ctrl_b = ((ctrl_model, ctrl_opp) if model_is_a
+                          else (ctrl_opp, ctrl_model))
+        # The model always pilots `deck`; the opponent always `opp_deck`.
         deck_a, deck_b = ((deck, opp_deck) if model_is_a else (opp_deck, deck))
         records = []
         w, l, d = runner.run_games(
             ctrl_a, ctrl_b,
-            label_a="Model" if model_is_a else "Scripted",
-            label_b="Scripted" if model_is_a else "Model",
+            label_a="Model" if model_is_a else "Opponent",
+            label_b="Opponent" if model_is_a else "Model",
             binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
             n_games=1, seed=(seed + i) if seed is not None else None,
             transcript="quiet", bo3=bo3, on_game_end=records.append)
@@ -2060,44 +2067,26 @@ def baseline(binary_path: str, model, n_games: int = 100,
         losses += l if model_is_a else w
         draws += d
         if not quiet:
-            print(f"\rGame {i+1}/{n_games}  W:{wins} L:{losses} D:{draws}",
+            print(f"\rGame {n}/{n_games}  W:{wins} L:{losses} D:{draws}",
                   end="", flush=True)
 
     if not quiet:
         print()
-        vs = (f"scripted:hard ({opp_deck})" if opp_deck != deck else "scripted:hard")
+        vs = f"{opp_name} ({opp_deck})" if opp_deck != deck else opp_name
         unit = "matches" if bo3 else "games"
         print(f"{os.path.basename(model_name)} ({deck or 'default deck'}) vs "
               f"{vs} over {n_games} {unit}: {wins}W / {losses}L / {draws}D "
-              f"({100 * wins / n_games:.1f}% win rate)")
+              f"({100 * wins / max(1, n_games):.1f}% win rate)")
         for line in runner.format_per_game_split(per_game, subject="model"):
             print(f"  {line}")
     return wins, losses, draws
 
 
-def _league_roster() -> list[str]:
-    """The league deck roster ('league/<stem>' for every decks/league/*.dk).
-
-    Mirrors :func:`league`'s default roster so the baseline sweep evaluates the
-    same set of decks the league trains.
-    """
-    return sorted(
-        "league/" + os.path.splitext(p)[0]
-        for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
-        if p.endswith(".dk"))
-
-
-def _wld_line(w: int, l: int, d: int) -> str:
-    """Format a W/L/D tally with its win percentage (model's perspective)."""
-    total = w + l + d
-    pct = 100 * w / total if total else 0.0
-    return f"{w}W/{l}L/{d}D  {pct:.1f}% win rate"
-
-
-# Per-process controller cache for baseline_sweep's --workers pool: each spawned
-# worker builds the controller (checkpoint load) once and reuses it for every
-# matchup it is handed.
-_WORKER_CTRLS: dict = {}
+# Search-controller counters a baseline sweep sums across its units of work
+# (``opponents.SearchController.stats``); the report derives the safe fraction
+# (searched / (searched + fallback)) from the first two.
+_SEARCH_STAT_KEYS = ("searched", "fallback", "trivial", "followed", "sims",
+                     "sim_steps", "sb_searched")
 
 
 def _baseline_worker_init():
@@ -2112,78 +2101,134 @@ def _baseline_worker_init():
         pass
 
 
-def _baseline_matchup_worker(binary_path: str, spec: str, deck: str, opp: str,
-                             n_games: int, seed: int | None, bo3: bool):
-    """One (model deck, opponent deck) cell of a baseline sweep, run
-    inside a pool worker. Returns ``(w, l, d, per_game_split)``."""
+def _search_stats(ctrl) -> dict:
+    """A controller's summable search counters ({} for a non-search agent)."""
+    stats = getattr(ctrl, "stats", None) or {}
+    return {k: int(stats[k]) for k in _SEARCH_STAT_KEYS if k in stats}
+
+
+def _merge_search_stats(dest: dict, stats: dict) -> None:
+    for k, v in stats.items():
+        dest[k] = dest.get(k, 0) + v
+
+
+def _baseline_unit(binary_path: str, spec: str, opponent: str, deck: str,
+                   opp: str, first_game: int, n_games: int, seed: int | None,
+                   bo3: bool, quiet: bool = True) -> tuple:
+    """One unit of a baseline sweep: games ``first_game ..`` ``+ n_games - 1``
+    of the ``(deck, opp)`` matchup, on freshly built controllers (a search
+    controller's RNG advances game to game, so a unit's result depends only
+    on its own game range, never on which worker ran what before it).
+    Returns ``(w, l, d, per_game_split, stats_a, stats_b)``."""
     from opponents import make_controller
 
-    ctrl = _WORKER_CTRLS.get(spec)
-    if ctrl is None:
-        ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
-                               deterministic=True)
-        _WORKER_CTRLS[spec] = ctrl
+    ctrl_a = make_controller(spec, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
+    ctrl_b = make_controller(opponent, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
     split: dict = {}
-    w, l, d = baseline(binary_path, ctrl, n_games=n_games, deck=deck,
-                       opp_deck=opp, seed=seed, quiet=True, bo3=bo3,
-                       split_out=split)
-    return w, l, d, split
+    w, l, d = baseline(binary_path, ctrl_a, n_games=n_games, deck=deck,
+                       opp_deck=opp, seed=seed, quiet=quiet, bo3=bo3,
+                       split_out=split, opponent=ctrl_b, first_game=first_game)
+    return w, l, d, split, _search_stats(ctrl_a), _search_stats(ctrl_b)
+
+
+def _baseline_units(matchups: list, n_games: int, workers: int) -> list:
+    """``(deck, opp, first_game, count)`` units of work: one per matchup, or —
+    with fewer matchups than workers — each matchup split into contiguous game
+    chunks (at most one per worker it can use, never below one game)."""
+    chunks = 1
+    if workers > 1 and matchups:
+        chunks = max(1, min(n_games, -(-workers // len(matchups))))
+    units = []
+    for deck, opp in matchups:
+        start = 0
+        for c in range(chunks):
+            count = n_games // chunks + (1 if c < n_games % chunks else 0)
+            if count:
+                units.append((deck, opp, start, count))
+            start += count
+    return units
 
 
 def baseline_sweep(binary_path: str, spec: str, matchups: list,
                    n_games: int, seed: int | None, bo3: bool,
-                   workers: int = 1) -> tuple:
-    """Play every ``(model deck, scripted deck)`` matchup vs scripted:hard on
-    the runner-based Python backend (the ``train.py baseline`` path for PPO
-    ``.zip`` models, ``mcts:`` specs and ``--no-actor``; ``az_baseline`` owns
-    the report and the actor backend).
+                   workers: int = 1, opponent: str = "scripted:hard") -> tuple:
+    """Play every ``(model deck, opponent deck)`` matchup of ``spec`` vs
+    ``opponent`` on the runner-based Python backend (the ``train.py baseline``
+    path for PPO ``.zip`` models, ``mcts:``/``azraw:`` specs, a non-scripted
+    opponent and ``--no-actor``; ``az_baseline`` owns the report and the actor
+    backend).
 
-    ``spec`` is any ``make_controller`` model spec. Returns ``(results,
-    per_game)`` — ``results[(deck, opp)] = (w, l, d)`` from the model's view and
-    ``per_game`` the pooled ``runner.tally_per_game`` split (bo3 only).
+    ``spec``/``opponent`` are any ``make_controller`` specs. Returns
+    ``(results, per_game, stats)`` — ``results[(deck, opp)] = (w, l, d)`` from
+    the model's view, ``per_game`` the pooled ``runner.tally_per_game`` split
+    (bo3 only), and ``stats = {"a": {...}, "b": {...}}`` each side's summed
+    search counters (empty for a non-search agent).
 
-    ``workers > 1`` runs that many matchups concurrently in a spawn-based
-    process pool (one Python driver + one engine subprocess per worker; the
-    matchup grid is embarrassingly parallel). Seeds mean the same thing in both
-    modes — every matchup plays games ``seed .. seed+n_games-1`` — so a
-    parallel run is game-for-game reproducible against a sequential one; only
-    the progress-line completion order varies.
+    ``workers > 1`` runs units of work (see :func:`_baseline_units`)
+    concurrently in a spawn-based process pool (one Python driver + one engine
+    subprocess per worker). Every matchup plays games ``seed .. seed+n_games-1``
+    whatever the split, so the seeds mean the same thing in both modes; every
+    unit builds fresh controllers, so a result depends only on how the games
+    were chunked (fixed by ``workers`` and the matchup count), not on
+    completion order.
     """
+    from az_baseline import wld_line
     import runner
-    from opponents import make_controller
 
+    units = _baseline_units(matchups, n_games, workers)
+    tallies = {m: [0, 0, 0] for m in matchups}
+    units_left = {m: 0 for m in matchups}
+    for deck, opp, _first, _count in units:
+        units_left[(deck, opp)] += 1
     results: dict[tuple, tuple] = {}
     per_game_all: dict[int, list[int]] = {}
-    if workers > 1 and len(matchups) > 1:
+    stats = {"a": {}, "b": {}}
+    total = [0, 0, 0]
+
+    def _fold(unit, out):
+        deck, opp, first, count = unit
+        w, l, d, split, sa, sb = out
+        t = tallies[(deck, opp)]
+        for tally in (t, total):
+            tally[0] += w; tally[1] += l; tally[2] += d
+        runner.merge_per_game(per_game_all, split)
+        _merge_search_stats(stats["a"], sa)
+        _merge_search_stats(stats["b"], sb)
+        units_left[(deck, opp)] -= 1
+        if units_left[(deck, opp)] == 0:
+            results[(deck, opp)] = tuple(t)
+        return w, l, d
+
+    if workers > 1 and len(units) > 1:
         import concurrent.futures as cf
         import multiprocessing as mp
 
         ctx = mp.get_context("spawn")
-        with cf.ProcessPoolExecutor(max_workers=min(workers, len(matchups)),
+        with cf.ProcessPoolExecutor(max_workers=min(workers, len(units)),
                                     mp_context=ctx,
                                     initializer=_baseline_worker_init) as pool:
-            futs = {pool.submit(_baseline_matchup_worker, binary_path, spec,
-                                deck, opp, n_games, seed, bo3): (deck, opp)
-                    for deck, opp in matchups}
+            futs = {pool.submit(_baseline_unit, binary_path, spec, opponent,
+                                *unit, seed, bo3): unit
+                    for unit in units}
             for done, fut in enumerate(cf.as_completed(futs), 1):
-                deck, opp = futs[fut]
-                w, l, d, split = fut.result()
-                results[(deck, opp)] = (w, l, d)
-                runner.merge_per_game(per_game_all, split)
-                print(f"  [{done}/{len(matchups)}] {spec} piloting {deck} vs "
-                      f"{opp}: " + _wld_line(w, l, d), flush=True)
+                unit = futs[fut]
+                deck, opp, first, count = unit
+                w, l, d = _fold(unit, fut.result())
+                span = (f" games {first + 1}-{first + count}"
+                        if count < n_games else "")
+                print(f"  [{done}/{len(units)}] {spec} piloting {deck} vs "
+                      f"{opponent} {opp}{span}: " + wld_line(w, l, d)
+                      + f"   (running total: {wld_line(*total)})", flush=True)
     else:
-        # Build the controller ONCE (loads the checkpoint once); baseline()
-        # accepts a pre-built Controller and reuses it for every matchup.
-        ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
-                               deterministic=True)
-        for deck, opp in matchups:
-            print(f"\n  {spec} (model) piloting {deck} vs {opp} (scripted:hard):",
-                  flush=True)
-            results[(deck, opp)] = baseline(
-                binary_path, ctrl, n_games=n_games, deck=deck, opp_deck=opp,
-                seed=seed, bo3=bo3, split_out=per_game_all)
-    return results, per_game_all
+        for unit in units:
+            deck, opp, first, count = unit
+            print(f"\n  {spec} (player A) piloting {deck} vs {opp} "
+                  f"({opponent}):", flush=True)
+            _fold(unit, _baseline_unit(binary_path, spec, opponent, deck, opp,
+                                       first, count, seed, bo3, quiet=False))
+    return results, per_game_all, stats
 
 
 def observe(binary_path: str,
@@ -2191,18 +2236,30 @@ def observe(binary_path: str,
             deck_a: str | None = None, deck_b: str | None = None,
             n_games: int = 1, bo3: bool = False,
             seed: int | None = None, verbose: bool = False,
-            play_a: str | None = None, play_b: str | None = None):
-    """Observe one or more games between any pair of {scripted | model} controllers.
+            quiet: bool = False, out: str | None = None,
+            max_decisions: int | None = None, timing: bool = False):
+    """Observe one or more games between any pair of agent controllers.
 
-    ``player_a``/``player_b`` are either the literal "scripted" (or a
-    "scripted:*" variant) or a model checkpoint (.zip path or shorthand).
-    ``play_a``/``play_b`` override the corresponding side with a semantic action
-    script (see ``action_spec``) — handy for driving one seat through a fixed
-    line while watching the other.  ``deck_a``/``deck_b`` set each side's deck.
+    ``player_a``/``player_b`` are ``opponents.make_controller`` specs: "scripted"
+    (or a "scripted:*" variant), the "explore"/"explore:patient" coverage fuzzer,
+    a model checkpoint (.zip path or shorthand), an az:/azraw:/mcts: spec, or a
+    "play:<specs>" semantic action script (see ``action_spec``) — handy for
+    driving one seat through a fixed line while watching the other. Each seat
+    gets its own controller object (an explore seat keeps its own novelty set).
+    ``deck_a``/``deck_b`` set each side's deck; game i uses seed ``seed + i``.
     Every decision by each agent is logged; ``--verbose`` additionally dumps the
     full board state and the legal action menu at each decision (the same
-    transcript format the test harness prints).  With ``n_games > 1`` a per-game
-    result line and a final W/L/D summary are printed.
+    transcript format the test harness prints), ``--quiet`` prints none of it,
+    only a one-line W/L/D summary.
+    With ``n_games > 1`` a per-game result line and a final W/L/D summary are
+    printed.
+
+    ``out`` sends everything above to that file and prints one W/L/D summary
+    line to stdout instead (a fuzz campaign: explore on both seats, verbose,
+    one file per matchup for review; a draw is a finding and is also saved to
+    draw_<stamp>.txt). ``timing`` prints the engine throughput line after the
+    run; with ``quiet`` too the engine runs without narrative (the lean
+    benchmark path). ``max_decisions`` caps each game/match.
 
     This is a thin wrapper: the actual game-driving loop lives in
     ``runner.run_games`` (shared with the test harness).
@@ -2210,29 +2267,47 @@ def observe(binary_path: str,
     from opponents import make_controller, is_scripted_spec, PlayController
     import runner
 
+    player_a, player_b = player_a or "scripted", player_b or "scripted"
     # Observation is a fixed replay, so use deterministic model predictions.
-    # A --play-{a,b} script takes precedence over --player-{a,b} for that seat.
-    if play_a is not None:
-        ctrl_a, label_a = PlayController(play_a), "Play"
-    else:
-        ctrl_a = make_controller(player_a or "scripted",
-                                 checkpoint_resolver=_resolve_model, deterministic=True)
-        label_a = "Scripted" if is_scripted_spec(player_a or "scripted") else "Model"
-    if play_b is not None:
-        ctrl_b, label_b = PlayController(play_b), "Play"
-    else:
-        ctrl_b = make_controller(player_b or "scripted",
-                                 checkpoint_resolver=_resolve_model, deterministic=True)
-        label_b = "Scripted" if is_scripted_spec(player_b or "scripted") else "Model"
+    ctrl_a = make_controller(player_a, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
+    ctrl_b = make_controller(player_b, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
+    label_a, label_b = (
+        "Play" if isinstance(ctrl, PlayController)
+        else "Scripted" if is_scripted_spec(spec) else "Model"
+        for ctrl, spec in ((ctrl_a, player_a), (ctrl_b, player_b)))
+    transcript = "quiet" if quiet else ("verbose" if verbose else "compact")
+    unit = f"{'match' if bo3 else 'game'}{'es' if bo3 else 's'}"
+    records = []
 
-    unit = "match" if bo3 else "game"
-    print(f"=== {label_a}/A ({deck_a or 'default'} deck) vs "
-          f"{label_b}/B ({deck_b or 'default'} deck) — "
-          f"{n_games} {unit}{'es' if bo3 else 's'} ===\n", flush=True)
+    def run():
+        if not quiet:
+            print(f"=== {label_a}/A [{player_a}] ({deck_a or 'default'} deck) vs "
+                  f"{label_b}/B [{player_b}] ({deck_b or 'default'} deck) — "
+                  f"{n_games} {unit} ===\n", flush=True)
+        return runner.run_games(
+            ctrl_a, ctrl_b, label_a=label_a, label_b=label_b,
+            binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
+            n_games=n_games, bo3=bo3, seed=seed, transcript=transcript,
+            max_decisions=max_decisions, on_game_end=records.append,
+            narrative=not (timing and quiet))
 
-    runner.run_games(ctrl_a, ctrl_b, label_a=label_a, label_b=label_b,
-                     binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                     n_games=n_games, bo3=bo3, seed=seed, verbose=verbose)
+    t0 = time.perf_counter()
+    if out:
+        with open(out, "w") as fh, contextlib.redirect_stdout(fh):
+            wins, losses, draws = run()
+    else:
+        wins, losses, draws = run()
+    wall = time.perf_counter() - t0
+
+    if out or quiet:
+        print(f"{deck_a} vs {deck_b or deck_a} [{player_a} vs {player_b}] "
+              f"{n_games} {unit}: {wins}W / {losses}L / {draws}D "
+              f"(completed {wins + losses + draws})"
+              f"{f' -> {out}' if out else ''}", flush=True)
+    if timing:
+        print(runner.format_timing(records, wall, bo3=bo3), flush=True)
 
 
 # _CAT_NAMES / _STEP_NAMES are imported from _enums at the top of this module.
@@ -2270,7 +2345,7 @@ def _warn_if_debug_build(binary_path: str) -> None:
 def _run_sweep(args, parser):
     """Train one deck's generalist against a PFSP pool of the other decks.
 
-    Like ``league``, but with a single fixed learner: ``args.deck`` is the only
+    Like ``league``, but with a single fixed learner: ``args.deck_a`` is the only
     model that trains and it never rotates away — the roster (default: every
     other deck in ``bin/resources/decks/``) supplies opponents only, sampled the
     same way ``league`` samples them (scripted anchor floor, PFSP/softmax-weighted
@@ -2279,12 +2354,9 @@ def _run_sweep(args, parser):
     """
     all_decks = sorted(os.path.splitext(p)[0]
                        for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
-    all_decks += sorted(
-        "league/" + os.path.splitext(p)[0]
-        for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
-        if p.endswith(".dk"))
-    if args.deck not in all_decks:
-        parser.error(f"Deck '{args.deck}' not found in {_DECKS_DIR}. "
+    all_decks += league_decks()
+    if args.deck_a not in all_decks:
+        parser.error(f"Deck '{args.deck_a}' not found in {_DECKS_DIR}. "
                      f"Available: {', '.join(all_decks)}")
     if args.opponents:
         roster = [d.strip() for d in args.opponents.split(",") if d.strip()]
@@ -2293,29 +2365,29 @@ def _run_sweep(args, parser):
             parser.error(f"--opponents: {unknown} not found in {_DECKS_DIR}. "
                          f"Available: {', '.join(all_decks)}")
     else:
-        roster = [d for d in all_decks if d != args.deck]
+        roster = [d for d in all_decks if d != args.deck_a]
     if not roster:
         parser.error("No opponent decks available for the pool (need at least "
                      "one other deck in bin/resources/decks/, or pass --opponents).")
     # 'gen' is the reserved generalist stem — no deck may be named it.
     from opponents import assert_not_reserved_deck
-    for _deck in [args.deck, *roster]:
+    for _deck in [args.deck_a, *roster]:
         assert_not_reserved_deck(_deck)
 
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
     n_envs = args.n_envs if args.n_envs is not None else N_ENVS_SELF_PLAY
-    env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+    env_kwargs = dict(bo3=is_bo3(args), auto_sideboard=args.auto_sideboard)
 
-    print(f"Sweep: training '{args.deck}' vs pool [{', '.join(roster)}]")
+    print(f"Sweep: training '{args.deck_a}' vs pool [{', '.join(roster)}]")
     print(f"  total={args.total_timesteps:,}  n_envs={n_envs}")
     print(f"  self_play_frac={args.self_play_frac}  scripted_anchor_frac={args.scripted_anchor_frac}")
     print(f"  pfsp_mode={args.pfsp_mode}  p={args.pfsp_p}  eta={args.softmax_eta}")
     print(f"  snapshot_every={args.snapshot_every:,}  promote_margin={args.promote_margin}  "
           f"embed_dim={args.embed_dim}")
 
-    _league_chunk(args.binary, args.deck, roster, checkpoint_dir, args.total_timesteps,
+    _league_chunk(args.binary, args.deck_a, roster, checkpoint_dir, args.total_timesteps,
                  n_envs=n_envs, opp_ckpt_ratio=args.opponent_ckpt_ratio,
                  self_play_frac=args.self_play_frac,
                  scripted_anchor_frac=args.scripted_anchor_frac,
@@ -2323,7 +2395,7 @@ def _run_sweep(args, parser):
                  snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
                  embed_dim=args.embed_dim, no_shaping=args.no_shaping,
                  fresh=args.fresh, **env_kwargs)
-    print(f"\nSweep complete: {args.total_timesteps:,} timesteps for '{args.deck}'.")
+    print(f"\nSweep complete: {args.total_timesteps:,} timesteps for '{args.deck_a}'.")
 
 
 if __name__ == "__main__":
@@ -2331,7 +2403,7 @@ if __name__ == "__main__":
         description="RoboMage RL training and evaluation.",
         epilog="Run a subcommand with -h for its options (e.g. 'train.py train -h'). "
                "If no subcommand is given, 'train' is assumed, so legacy one-liners "
-               "like 'train.py --opponent mav' still work.")
+               "like 'train.py --deck-b mav' work.")
     sub = parser.add_subparsers(dest="command")
 
     # All subcommands and their flags come from cli_spec.TRAIN_TOOL (single source
@@ -2341,7 +2413,7 @@ if __name__ == "__main__":
         apply_to_parser(sp, s)
 
     # Default to the 'train' subcommand when none is given, so legacy one-liners
-    # such as 'train.py --opponent mav' continue to work.
+    # such as 'train.py --deck-b mav' work.
     COMMANDS = {s.name for s in TRAIN_TOOL.subs}
     argv = sys.argv[1:]
     if not argv or (argv[0] not in COMMANDS and argv[0] not in ("-h", "--help")):
@@ -2358,7 +2430,7 @@ if __name__ == "__main__":
 
     if args.command in ("train", "sweep", "fixed-model", "alternate", "league",
                         "exploiter"):
-        env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+        env_kwargs = dict(bo3=is_bo3(args), auto_sideboard=args.auto_sideboard)
         # These are the training subcommands — nudge toward a release engine build.
         _warn_if_debug_build(args.binary)
         _apply_ppo_overrides(args)
@@ -2368,14 +2440,11 @@ if __name__ == "__main__":
             USE_PER_ACTION_HEAD = False
             print("[head] --stock-head: fresh models this session use the "
                   "stock MlpPolicy positional head")
-        # --popart normalizes each archetype bucket's value targets by that
-        # bucket's running (mu, sigma) (see train/popart.py). Default OFF.
-        if getattr(args, "popart", False):
-            if not USE_PER_ACTION_HEAD:
-                parser.error("--popart requires the multi-head critic policy; it "
-                             "cannot be combined with --stock-head")
-            USE_POPART = True
-            print("[popart] per-archetype-bucket value normalization ENABLED")
+        # PopArt normalizes each archetype bucket's value targets by that
+        # bucket's running (mu, sigma) (see train/popart.py).
+        USE_POPART = resolve_popart(args, parser)
+        print("[popart] per-archetype-bucket value normalization "
+              + ("ENABLED" if USE_POPART else "disabled (--no-popart / --stock-head)"))
 
     if args.command == "league":
         league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,
@@ -2402,7 +2471,7 @@ if __name__ == "__main__":
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
-              model_deck=args.deck, opp_deck=args.opponent,
+              model_deck=args.deck_a, opp_deck=args.deck_b,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
               embed_dim=args.embed_dim, fresh=args.fresh, **env_kwargs)
@@ -2419,30 +2488,28 @@ if __name__ == "__main__":
     elif args.command == "sweep":
         _run_sweep(args, parser)
     elif args.command == "fixed-model":
-        train_fixed_model(args.binary, args.deck, args.opponent,
+        train_fixed_model(args.binary, args.deck_a, args.deck_b,
                           load_path=_resolve_model(args.load),
                           total_timesteps=args.total_timesteps,
                           tally=args.tally,
                           n_envs_override=args.n_envs,
                           no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "alternate":
-        train_alternate(args.binary, args.deck, args.opponent,
+        train_alternate(args.binary, args.deck_a, args.deck_b,
                         alternate_steps=args.every,
                         total_timesteps=args.total_timesteps,
                         tally=args.tally,
                         n_envs_override=args.n_envs,
                         no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "observe":
-        # observe defaults to bo3 matches; --bo1 opts back into single games
-        # (--bo3 is accepted as a redundant no-op for backward compatibility).
+        if args.verbose and args.quiet:
+            parser.error("observe: --verbose and --quiet are mutually exclusive")
         observe(args.binary, player_a=args.player_a, player_b=args.player_b,
-                deck_a=args.deck, deck_b=args.opponent,
-                n_games=args.games, bo3=not args.bo1, seed=args.seed,
-                verbose=args.verbose,
-                play_a=args.play_a, play_b=args.play_b)
+                deck_a=args.deck_a, deck_b=args.deck_b,
+                n_games=args.games, bo3=is_bo3(args), seed=args.seed,
+                verbose=args.verbose, quiet=args.quiet, out=args.out,
+                max_decisions=args.max_decisions, timing=args.timing)
     elif args.command == "baseline":
-        # baseline defaults to bo3 matches; --bo1 opts back into single games
-        # (--bo3 is accepted as a redundant no-op for backward compatibility).
         import az_baseline
         az_baseline.run(args, python_sweep=baseline_sweep,
                         resolve_model=_resolve_model)
@@ -2461,3 +2528,12 @@ if __name__ == "__main__":
     elif args.command == "az-league":
         import az_train
         az_train.run_league(args)
+    elif args.command == "bench-actor":
+        import bench_actor
+        sys.exit(bench_actor.run(args))
+    elif args.command == "bench-workers":
+        import bench_az_workers
+        bench_az_workers.run(args)
+    elif args.command == "bench-nenvs":
+        import bench_nenvs
+        bench_nenvs.run(args)

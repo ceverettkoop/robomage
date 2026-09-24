@@ -42,25 +42,19 @@ class RebuildError(Exception):
 
 
 def evaluator_spec_for(prov: dict) -> str:
-    """The ``analysis_session.load_analysis_evaluator`` spec that reproduces a
-    recording's evaluator: the resolved checkpoint by extension (``.pt`` ->
-    ``az:``, ``.zip`` -> ``mcts:``), ``uniform`` for the torch-free evaluator,
-    else the controller spec's base with its knob query stripped."""
+    """The ``opponents.load_spec_evaluator`` spec that reproduces a recording's
+    evaluator: the controller spec's net kind (``opponents.parse_model_spec``;
+    a spec-less provenance is classified by its checkpoint, ``.pt`` -> AZ,
+    else PPO) loaded from the resolved checkpoint when one was recorded, in
+    canonical knob-free form (``uniform`` / ``mcts:<path>`` / ``az:<path>``)."""
+    from opponents import parse_model_spec
     prov = prov or {}
     ckpt = prov.get("checkpoint")
-    if isinstance(ckpt, str) and ckpt:
-        ext = os.path.splitext(ckpt)[1].lower()
-        if ext == ".zip":
-            return f"mcts:{ckpt}"
-        return f"az:{ckpt}"
-    spec = str(prov.get("spec") or "uniform")
-    spec = spec.partition("?")[0].strip()
-    prefix, sep, base = spec.partition(":")
-    if not sep:
-        prefix, base = "", prefix
-    if base.strip().lower() == "uniform":
-        return "uniform"
-    return f"{prefix}:{base}" if prefix else base
+    ckpt = ckpt if isinstance(ckpt, str) and ckpt else None
+    ms = parse_model_spec(prov.get("spec") or ckpt or "uniform")
+    if ckpt and ms.has_net:
+        ms = ms.with_base(ckpt)
+    return ms.evaluator_spec
 
 
 def cache_path_for(shard_stem: str, row: int) -> str:
@@ -69,44 +63,68 @@ def cache_path_for(shard_stem: str, row: int) -> str:
     return os.path.join(d, "trees", f"{base}_row{int(row)}.npz")
 
 
-def _game_is_replayable(game) -> bool:
+def game_is_replayable(game) -> bool:
+    """True if a game trace carries the seed + action log needed for replay."""
     return (game.get("engine_seed") is not None
             and game.get("full_actions") is not None
             and game.get("prefix_len") is not None)
 
 
-def replay_to_step(game, step, *, binary, deck_a, deck_b, bo3, strict=True):
-    """Replay ``game`` on a fresh ``SearchRoboMageEnv`` to model decision
-    ``step`` (the recorded engine seed + the action prefix). Returns the env
-    parked at that decision; the caller owns it. ``RebuildError`` when the
-    game carries no replay data, the replay ends inside the prefix, or (with
-    ``strict``) the reached obs differs from the recorded one."""
-    from search_env import SearchRoboMageEnv
+def obs_divergence(obs, expected) -> int:
+    """How many obs floats differ between a replayed and a recorded state
+    (0 = the replay reached the recorded position)."""
+    expected = np.asarray(expected, dtype=np.float32)
+    return int(np.sum(~np.isclose(obs, expected, atol=_OBS_ATOL)))
 
-    if not _game_is_replayable(game):
+
+def feed_prefix(env, game, step, obs):
+    """Step an env that was just reset with the game's engine seed through the
+    recorded action prefix to model decision ``step``. ``obs`` is the reset
+    observation. Returns ``(obs, prefix_reward, n_diff)``: the obs reached,
+    the cumulative Player-A reward accrued during the prefix (nonzero when
+    ``step`` is in game 2+ of a bo3 match) and :func:`obs_divergence` against
+    the recorded obs. ``RebuildError`` when the game carries no replay data or
+    the replay ends inside the prefix."""
+    if not game_is_replayable(game):
         raise RebuildError("game has no recorded seed/action log")
     prefix = game["prefix_len"][step]
     if prefix is None:
         raise RebuildError(f"step {step} has no recorded replay position")
+    prefix_reward = 0.0
+    for a in game["full_actions"][:int(prefix)]:
+        obs, r, term, trunc, _ = env.step(int(a))
+        prefix_reward += r
+        if term or trunc:
+            raise RebuildError(
+                f"replay ended inside the action prefix before step {step}")
+    return obs, prefix_reward, obs_divergence(obs, game["observations"][step])
+
+
+def replay_to_step(game, step, *, binary, deck_a, deck_b, bo3, strict=True):
+    """Replay ``game`` on a fresh ``SearchRoboMageEnv`` to model decision
+    ``step`` (the recorded engine seed + the action prefix, via
+    :func:`feed_prefix`). Returns ``(env, n_diff)`` — the env parked at that
+    decision (the caller owns it) and the number of obs floats that differ
+    from the recorded state. ``RebuildError`` when the game carries no replay
+    data, the replay ends inside the prefix, or (with ``strict``) the reached
+    obs differs from the recorded one."""
+    from search_env import SearchRoboMageEnv
+
+    if not game_is_replayable(game):
+        raise RebuildError("game has no recorded seed/action log")
     env = SearchRoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
                             bo3=bool(bo3))
     try:
         obs, _ = env.reset(options={"engine_seed": game["engine_seed"]})
-        for a in game["full_actions"][:int(prefix)]:
-            obs, _r, term, trunc, _ = env.step(int(a))
-            if term or trunc:
-                raise RebuildError(
-                    f"replay ended inside the action prefix before step {step}")
-        expected = np.asarray(game["observations"][step], dtype=np.float32)
-        if strict and not np.allclose(obs, expected, atol=_OBS_ATOL):
-            n_diff = int(np.sum(~np.isclose(obs, expected, atol=_OBS_ATOL)))
+        _obs, _r, n_diff = feed_prefix(env, game, step, obs)
+        if strict and n_diff:
             raise RebuildError(
                 f"replay diverged from the recorded state at step {step} "
                 f"({n_diff} obs floats differ)")
     except BaseException:
         env.close()
         raise
-    return env
+    return env, n_diff
 
 
 class _RecordedRootEvaluator:
@@ -289,9 +307,9 @@ class TreeSession:
             except ValueError:
                 cached = None
 
-        env = replay_to_step(self._game, self.root_step, binary=self._binary,
-                             deck_a=self._deck_a, deck_b=self._deck_b,
-                             bo3=self._bo3)
+        env, _n_diff = replay_to_step(
+            self._game, self.root_step, binary=self._binary,
+            deck_a=self._deck_a, deck_b=self._deck_b, bo3=self._bo3)
         self._env = env
         try:
             if not getattr(env, "last_search_safe", False):
@@ -306,8 +324,8 @@ class TreeSession:
             elif self._evaluator is not None:
                 evaluator = self._evaluator
             else:
-                from analysis_session import load_analysis_evaluator
-                evaluator, _label = load_analysis_evaluator(
+                from opponents import load_spec_evaluator
+                evaluator, _label = load_spec_evaluator(
                     self.evaluator_spec, device=prov.get("device"))
                 _set_torch_threads(prov.get("torch_threads"))
             search = IncrementalSearch(

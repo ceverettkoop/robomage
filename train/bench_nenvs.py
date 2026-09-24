@@ -18,18 +18,19 @@ reports, for each:
   * measured-phase wall-clock
 
 For each ``n_envs`` it builds the same vec-env + model that ``train.py`` uses
-(same ``PPO_KWARGS``, same per-action-head policy, PopArt with ``--popart``),
+(same ``PPO_KWARGS``, same per-action-head policy, the training runs'
+``--popart/--no-popart`` / ``--embed-dim`` flags),
 runs one **warmup** rollout+update (pays process spawn, torch/HIP init, and the
 opponent-model loads) and then a **timed** measured phase of ``--timesteps``
 new env steps (rounded up to whole rollouts). Nothing is saved and no
 checkpoint is written or overwritten — this is a pure timing harness.
 
-Usage (run from the repo root):
+Usage (``train.py bench-nenvs`` is the entry point; flags in cli_spec):
 
-    train/.venv/bin/python train/bench_nenvs.py --mode league --popart --bo3 \
-        --envs 24,32,48,64,72 --timesteps 250000
-    train/.venv/bin/python train/bench_nenvs.py --deck delver --opponent delver
-    train/.venv/bin/python train/bench_nenvs.py --mode scripted --deck burn --opponent mav
+    train/.venv/bin/python train/train.py bench-nenvs --mode league \
+        --n-envs 24,32,48,64,72 --timesteps 250000
+    train/.venv/bin/python train/train.py bench-nenvs --deck-a delver --deck-b delver
+    train/.venv/bin/python train/train.py bench-nenvs --mode scripted --deck-a burn --deck-b mav
 
 Notes:
   * ``--mode league`` benchmarks the PFSP league path exactly as ``train.py
@@ -45,7 +46,6 @@ Notes:
     the ``N_ENVS = 32`` default) and needs no checkpoints.
 """
 
-import argparse
 import os
 import sys
 import threading
@@ -154,10 +154,10 @@ def _build_vec_env(mode, n_envs, deck, opp_deck, env_kwargs):
         # Mirror train.py league's default mixed-self-deck configuration: the
         # LeaguePool spans the league roster (scripted anchors + gen snapshots +
         # the self-play slot) and supplies the learner's deck per episode.
-        from cli_spec import LEAGUE_SELF_PLAY_FRAC
+        from cli_spec import LEAGUE_SELF_PLAY_FRAC, league_decks
         # scripted_anchor_frac 0.2 matches the default curriculum's league
         # phase (curricula/default.plan.json), not cli_spec's 0.1 default.
-        roster = T._league_roster()
+        roster = league_decks()
         if not roster:
             raise RuntimeError("no league decks found under decks/league/")
         factories = [
@@ -183,9 +183,10 @@ def _build_vec_env(mode, n_envs, deck, opp_deck, env_kwargs):
 def _make_model(vec_env, embed_dim):
     """Fresh model matching train.py's construction (no checkpoint I/O).
 
-    Uses the same ``_ppo_class()`` (PopArt when ROBOMAGE_POPART is set) and
-    ``_policy_config`` (per-action logit head by default) as a real training
-    session, so the benchmarked forward/backward cost is the real one.
+    Uses the same ``_ppo_class()`` (PopArt unless ``run`` switched it off
+    for ``--no-popart``) and ``_policy_config`` (per-action logit head by default) as
+    a real training session, so the benchmarked forward/backward cost is the
+    real one.
     """
     import train as T
     from cli_spec import PPO_KWARGS, NET_ARCH
@@ -286,76 +287,41 @@ def _print_table(results, ram_budget_gb):
     if ram_budget_gb:
         print(f"(highest throughput with peak RAM <= {ram_budget_gb:.1f} GB)")
     print("Tip: the optimum is the 'knee' — where steps/s stops climbing. If the top\n"
-          "of the sweep is still the fastest, extend --envs higher to find the plateau.")
+          "of the sweep is still the fastest, extend --n-envs higher to find the plateau.")
 
 
 _BINARY = None
 
 
-def main(argv=None):
+def run(args):
+    """``train.py bench-nenvs`` entry."""
     global _BINARY
-    # INTERACTIVE_BINARY = release-by-default, the tier every PPO training
-    # driver runs on (plain BINARY is the debug-by-default correctness tier).
-    from cli_spec import INTERACTIVE_BINARY, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM
-
-    # sb3 defaults to the GPU when available; the ROCm RDNA2 env defaults must
-    # be in place before the first cuda touch initializes the HIP runtime
-    # (train.py does the same in its __main__ block, which never runs here).
-    from az_net import ensure_rocm_env
-    ensure_rocm_env()
-
-    p = argparse.ArgumentParser(
-        description="Benchmark training throughput vs. n_envs to size --n-envs for this machine.")
-    p.add_argument("--mode", choices=("league", "self-play", "scripted"),
-                   default="self-play",
-                   help="Opponent path to benchmark: league (the PFSP league pool, "
-                        "mixed self-deck — what 'train.py league' runs), self-play "
-                        "(default), or scripted.")
-    p.add_argument("--deck", default="delver",
-                   help="Deck the learner pilots (.dk stem; ignored by --mode league).")
-    p.add_argument("--opponent", default=None,
-                   help="Opponent deck (.dk stem). Default: mirror (--deck). "
-                        "Ignored by --mode league.")
-    p.add_argument("--envs", default=None,
-                   help="Comma-separated n_envs values to sweep (default: derived from CPU count).")
-    p.add_argument("--timesteps", type=int, default=250_000,
-                   help="Env steps in the timed measured phase per n_envs point, "
-                        "after a 1-rollout warmup (rounded up to whole rollouts; "
-                        "default 250000).")
-    p.add_argument("--bo3", action="store_true",
-                   help="Run bo3 matches (matches 'train.py league --bo3').")
-    p.add_argument("--popart", action="store_true",
-                   help="Use the PopArt PPO subclass, matching a --popart training run.")
-    p.add_argument("--embed-dim", type=int, default=EMBED_DIM,
-                   help="Feature-extractor embed dim for the throwaway model.")
-    p.add_argument("--ram-budget-gb", type=float, default=None,
-                   help="If set, recommend the fastest n_envs whose peak RAM stays under this.")
-    p.add_argument("--binary", default=INTERACTIVE_BINARY,
-                   help="Path to the robomage binary (default: the release-tier "
-                        "binary the training drivers use).")
-    args = p.parse_args(argv)
-
-    # train.py reads ROBOMAGE_POPART at import time — set it before any
-    # `import train` below so _ppo_class() resolves to the PopArt subclass.
-    if args.popart:
-        os.environ["ROBOMAGE_POPART"] = "1"
+    # INTERACTIVE_BINARY (the --binary default) = release-by-default, the tier
+    # every PPO training driver runs on.
+    from cli_spec import (N_ENVS, N_ENVS_SELF_PLAY, PPO_KWARGS, is_bo3,
+                          parse_int_list, resolve_popart)
+    import train as T
+    bo3 = is_bo3(args)
+    # _ppo_class() reads this module global, exactly as train.py's
+    # --popart/--no-popart does.
+    T.USE_POPART = resolve_popart(args)
 
     _BINARY = args.binary
-    deck = args.deck
-    opp_deck = args.opponent or args.deck
-    env_kwargs = {"bo3": args.bo3}
-    sweep = ([int(x) for x in args.envs.split(",") if x.strip()]
-             if args.envs else _default_env_sweep())
+    deck = args.deck_a
+    opp_deck = args.deck_b or args.deck_a
+    env_kwargs = {"bo3": bo3}
+    sweep = (parse_int_list(args.n_envs, "--n-envs")
+             if args.n_envs else _default_env_sweep())
 
     if not os.path.exists(args.binary):
-        p.error(f"binary not found: {args.binary} — build it first (make HEADLESS=TRUE)")
+        raise SystemExit(f"error: binary not found: {args.binary} — build it "
+                         f"first (make BUILD=RELEASE)")
 
-    from cli_spec import PPO_KWARGS
     print(f"Machine: {os.cpu_count()} logical CPUs")
     if args.mode == "league":
-        print(f"Mode: league (mixed self-deck, bo3={args.bo3}, popart={args.popart})")
+        print(f"Mode: league (mixed self-deck, bo3={bo3}, popart={T.USE_POPART})")
     else:
-        print(f"Mode: {args.mode}  |  deck={deck}  opponent={opp_deck}  bo3={args.bo3}")
+        print(f"Mode: {args.mode}  |  deck={deck}  opponent={opp_deck}  bo3={bo3}")
     print(f"Sweep n_envs: {sweep}")
     print(f"Per point: 1 warmup rollout + ~{args.timesteps:,} measured steps "
           f"(rollout = {PPO_KWARGS['n_steps']} steps/env)")
@@ -363,7 +329,6 @@ def main(argv=None):
           f"N_ENVS_SELF_PLAY={N_ENVS_SELF_PLAY} (self-play)")
 
     if args.mode == "self-play":
-        import train as T
         resolved = T._resolve_model(opp_deck)
         if not os.path.exists(resolved):
             print(f"\n[warn] No opponent checkpoint for '{opp_deck}' "
@@ -389,4 +354,5 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit("bench_nenvs.py was removed; use `train.py bench-nenvs` "
+             "(--envs is now --n-envs)")

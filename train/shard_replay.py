@@ -3,13 +3,14 @@
 The AZ trainer's shards (``train/az_data/gen/shard_*.npz``: parallel arrays
 ``obs (N, OBS_SIZE)``, ``pi (N, MAX_ACTIONS)``, ``z (N,)``, ``mask (N,
 MAX_ACTIONS)``, plus the n-step TD columns ``q``/``explored``/``td_q (N,)``
-this module does not need — one row per SEARCHED decision root, in
+— this module reads ``q`` only as the behavior-row marker — one row per
+SEARCHED decision root, in
 game-backfill order) carry no game/match ids, yet every row's obs embeds the
 bo3 match context
 (game number, win counters, sideboard flag) and the mover's seat. This module
 recovers that structure and re-packs the rows into the per-game trace dicts
-``analysis._collect_game_traces`` produces, so ``tui_analysis.py`` can browse
-recorded self-play exactly like freshly simulated games (``--shards``).
+``analysis._collect_game_traces`` produces, so ``analysis.py browse`` can browse
+recorded self-play exactly like freshly simulated games (``--source DIR``).
 
 The record unit is a full bo3 MATCH trace (matching the analysis collector,
 whose env episode spans the match): steps are the VIEWPOINT seat's rows, the
@@ -62,33 +63,133 @@ def shard_sort_key(path):
     return (os.path.getmtime(path), n)
 
 
-def load_shard_rows(data_dir):
-    """Load every ``shard_*.npz`` under ``data_dir`` in WRITE order.
+# Unbounded-load guard: loading EVERY match of a directory holds all its rows
+# in RAM at once (the per-shard arrays, their concatenation, then the records'
+# per-step obs copies — roughly 2-3x the on-disk bytes, since float32 obs
+# barely compress). 2 GiB on disk keeps that peak around 6 GB, inside a
+# desktop's headroom, while still covering thousands of GUI-recorded matches;
+# a training pool (train/az_data/gen is ~100 GB) is far past it and must be
+# browsed with a match cap (--games N) instead.
+MAX_UNBOUNDED_SHARD_BYTES = 2 << 30
+
+
+class ShardPoolTooLarge(RuntimeError):
+    """An uncapped load of a shard directory past MAX_UNBOUNDED_SHARD_BYTES."""
+
+
+def shard_paths(data_dir):
+    """Every ``shard_*.npz`` under ``data_dir`` in WRITE order
+    (:func:`shard_sort_key`: oldest first)."""
+    paths = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
+                   key=shard_sort_key)
+    if not paths:
+        raise FileNotFoundError(f"no shard_*.npz files in {data_dir}")
+    return paths
+
+
+def check_unbounded_load(data_dir, paths):
+    """Refuse an uncapped load of ``paths`` whose total on-disk size exceeds
+    MAX_UNBOUNDED_SHARD_BYTES (raises :class:`ShardPoolTooLarge`)."""
+    total = sum(os.path.getsize(p) for p in paths)
+    if total > MAX_UNBOUNDED_SHARD_BYTES:
+        raise ShardPoolTooLarge(
+            f"{data_dir} holds {total / 2**30:.1f} GiB of shards "
+            f"({len(paths)} files); loading every match needs at least that "
+            f"much RAM (the uncapped-load limit is "
+            f"{MAX_UNBOUNDED_SHARD_BYTES / 2**30:.0f} GiB). Pass --games N "
+            f"(N > 0) to load only the first N matches.")
+
+
+def _read_shard(path):
+    """One shard's ``(obs, pi, z, mask)``, layout-checked against this build."""
+    d = np.load(path)
+    if d["obs"].shape[1] != OBS_SIZE or d["mask"].shape[1] != MAX_ACTIONS:
+        raise RuntimeError(
+            f"shard layout mismatch in {path}: obs width {d['obs'].shape[1]} "
+            f"(expected {OBS_SIZE}), mask width {d['mask'].shape[1]} "
+            f"(expected {MAX_ACTIONS}) — regenerate the shards with this build")
+    return d["obs"], d["pi"], d["z"], d["mask"]
+
+
+def _browsable_matches(obs, viewpoint_is_a):
+    """How many records :func:`build_match_records` makes from one shard's
+    rows: its matches in which the viewpoint seat moved at least once."""
+    seat = obs[:, _SELF_IS_A_IDX] > 0.5
+    return sum(1 for games in segment_matches(obs, [(None, 0, obs.shape[0])])
+               if any(seat[i] == viewpoint_is_a for rows in games for i in rows))
+
+
+def load_shard_rows(data_dir, max_matches=None, viewpoint_is_a=True):
+    """Load the ``shard_*.npz`` under ``data_dir`` in WRITE order.
 
     Returns ``(obs, pi, z, mask, spans)`` where ``spans`` is a list of
     ``(path, start, end)`` row ranges, one per shard file. Rows are only
     contiguous per game WITHIN a file (each file is one worker's buffer), so
     segmentation must never cross a span boundary.
+
+    ``max_matches`` (> 0) reads shards one at a time and stops after the
+    shard that brings the count of browsable matches (those where the
+    ``viewpoint_is_a`` seat moved) to ``max_matches`` — since no match spans
+    two files, the records built from this prefix start with exactly the
+    first ``max_matches`` records of the whole directory. None / 0 reads
+    every shard, guarded by :func:`check_unbounded_load`.
     """
-    paths = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
-                   key=shard_sort_key)
-    if not paths:
-        raise FileNotFoundError(f"no shard_*.npz files in {data_dir}")
+    paths = shard_paths(data_dir)
+    if not max_matches:
+        check_unbounded_load(data_dir, paths)
     obs, pi, z, mask, spans = [], [], [], [], []
-    row = 0
+    row = found = 0
     for p in paths:
-        d = np.load(p)
-        n = d["obs"].shape[0]
-        if d["obs"].shape[1] != OBS_SIZE or d["mask"].shape[1] != MAX_ACTIONS:
-            raise RuntimeError(
-                f"shard layout mismatch in {p}: obs width {d['obs'].shape[1]} "
-                f"(expected {OBS_SIZE}), mask width {d['mask'].shape[1]} "
-                f"(expected {MAX_ACTIONS}) — regenerate the shards with this build")
-        obs.append(d["obs"]); pi.append(d["pi"]); z.append(d["z"]); mask.append(d["mask"])
+        o, pp, zz, m = _read_shard(p)
+        n = o.shape[0]
+        obs.append(o); pi.append(pp); z.append(zz); mask.append(m)
         spans.append((p, row, row + n))
         row += n
+        if max_matches:
+            found += _browsable_matches(o, viewpoint_is_a)
+            if found >= max_matches:
+                break
     return (np.concatenate(obs), np.concatenate(pi), np.concatenate(z),
             np.concatenate(mask), spans)
+
+
+def load_shard_q(spans):
+    """The concatenated ``q`` column for :func:`load_shard_rows`' spans (a
+    shard lacking it contributes zeros — no behavior-row marker)."""
+    out = []
+    for path, start, end in spans:
+        d = np.load(path)
+        q = (np.asarray(d["q"], dtype=np.float32) if "q" in d.files
+             else np.zeros(end - start, dtype=np.float32))
+        out.append(q)
+    return np.concatenate(out) if out else np.zeros(0, dtype=np.float32)
+
+
+def is_search_target_row(obs_row, pi_row, q=None):
+    """Does this shard row's ``pi`` hold a SEARCH posterior? False for a
+    playout-cap fast row (all-zero pi), a one-hot behavior row (``q = NaN``:
+    GUI-recorded human / unsearched decisions, expert BC rows), and a
+    prior-mode sideboard row (one-hot pi at a sideboard root — az_train's
+    ``sb_onehot`` marker). ``q`` None = unknown (only the pi tests apply)."""
+    if float(np.sum(pi_row)) <= 0.0:
+        return False
+    if q is not None and not np.isfinite(q):
+        return False
+    return not (float(obs_row[_IS_SIDEBOARD_IDX]) > 0.5
+                and float(np.max(pi_row)) >= 1.0 - 1e-6)
+
+
+def _row_search_pi(obs_row, pi_row, n, q, diag):
+    """A step's search posterior over its ``n``-action menu: the diag's
+    visits when a search (or tree-follow) ran there, else the shard ``pi``
+    when that is a search target, else None."""
+    from shard_record import diag_posterior
+    post = diag_posterior(diag)
+    if post is not None:
+        return post
+    if is_search_target_row(obs_row, pi_row, q):
+        return pi_row[:n].astype(np.float64)
+    return None
 
 
 def _row_game_number(obs_row):
@@ -263,7 +364,7 @@ def _origin_steps(row_index, diags):
 
 
 def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
-                        interp_fn=None, replay_docs=None, diags=None):
+                        interp_fn=None, replay_docs=None, diags=None, q=None):
     """Pack match segments into analysis-schema trace dicts.
 
     Steps are the viewpoint seat's rows; the other seat's rows are summarized
@@ -288,6 +389,11 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
     ``search_provenance``) and ``shard_stem`` (the shard path sans extension).
     Without sidecars these load as all-None / empty.
 
+    ``search_pi`` (per step) is the step's search posterior for the net
+    probes (:func:`_row_search_pi`): the diag's visits, else the shard ``pi``
+    when :func:`is_search_target_row` holds (``q``, the shard ``q`` column
+    from :func:`load_shard_q`, flags behavior rows), else None.
+
     Matches where the viewpoint seat never held a searched root are skipped
     (nothing to page through).
     """
@@ -296,7 +402,7 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
         doc = replay_docs[mi] if replay_docs else None
         steps, vals, zs, interp, actions, num_choices, probs, opp = \
             [], [], [], [], [], [], [], []
-        g_prefix, row_index, step_diags = [], [], []
+        g_prefix, row_index, step_diags, search_pi = [], [], [], []
         for rows in games:
             for i in rows:
                 n = int(mask[i].sum())
@@ -315,6 +421,9 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
                     probs.append(pi[i, :n].astype(np.float64))
                     row_index.append(int(i))
                     step_diags.append(diags.get(i) if diags else None)
+                    search_pi.append(_row_search_pi(
+                        obs[i], pi[i], n, None if q is None else float(q[i]),
+                        step_diags[-1]))
                     if doc is not None:
                         g_prefix.append(doc["row_prefix"].get(i))
                     if interp_fn is not None:
@@ -355,6 +464,7 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
             "diag": step_diags,
             "origin_step": _origin_steps(row_index, step_diags),
             "row_index": row_index,
+            "search_pi": search_pi,
             "diag_prov": doc.get("search_provenance") if doc else None,
             "shard_stem": doc.get("stem") if doc else None,
         })
@@ -420,16 +530,23 @@ def load_replay_sidecars(spans, matches):
 
 
 def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
-    """The one-call front door: shards on disk -> browsable match records."""
-    obs, pi, z, mask, spans = load_shard_rows(data_dir)
+    """The one-call front door: shards on disk -> browsable match records.
+
+    ``limit`` (> 0) caps the records at the first ``limit`` matches in write
+    order (oldest first) and reads only the shards those need; None / 0 loads
+    every match and raises :class:`ShardPoolTooLarge` past
+    MAX_UNBOUNDED_SHARD_BYTES."""
+    obs, pi, z, mask, spans = load_shard_rows(
+        data_dir, max_matches=limit, viewpoint_is_a=viewpoint_is_a)
     matches = segment_matches(obs, spans)
     records = build_match_records(obs, pi, z, mask, matches,
                                   viewpoint_is_a=viewpoint_is_a,
                                   interp_fn=interp_fn,
                                   replay_docs=load_replay_sidecars(spans,
                                                                    matches),
-                                  diags=load_diag_sidecars(spans, mask))
-    if limit is not None:
+                                  diags=load_diag_sidecars(spans, mask),
+                                  q=load_shard_q(spans))
+    if limit:
         records = records[:limit]
     return records
 
@@ -437,22 +554,17 @@ def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
 # ── Optional value net (lazy torch) ──────────────────────────────────────────
 
 def load_value_model(spec):
-    """Load the V(s) net for a model spec ('gen', a .zip/.pt path, az:/azraw:).
+    """Load the V(s) net for a model spec — the net
+    ``opponents.parse_model_spec`` says it names (bare / ``mcts:`` → the PPO
+    critic, ``az:`` / ``azraw:`` / ``.pt`` → the AZ ladder's net), so V(s)
+    describes the same checkpoint the browser's probes and replay search use.
 
-    Reuses analysis.py's loaders, so PPO checkpoints and AZNets both come back
-    as an object exposing ``policy.predict_values(obs_t)``. Torch imports stay
-    inside this call.
+    Reuses analysis.load_inspection_model, so PPO checkpoints and AZNets both
+    come back as an object exposing ``policy.predict_values(obs_t)``. Torch
+    imports stay inside this call.
     """
     import analysis as an
-    insp = an._inspection_spec(spec)
-    if an._is_az_model_spec(insp):
-        model, _path = an._load_az_analysis_model(insp)
-        return model
-    try:
-        from sb3_contrib import MaskablePPO
-    except ImportError:
-        from stable_baselines3 import PPO as MaskablePPO
-    return MaskablePPO.load(an._resolve_any_path(insp))
+    return an.load_inspection_model(spec)
 
 
 def apply_net_values(model, records, batch_size=256):

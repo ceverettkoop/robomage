@@ -13,7 +13,16 @@ human rows via the step observer, sideboard rows between games) and asserts
   * both existing readers round-trip it: az_inspect.load_shard_sample and
     shard_replay.load_records (correct match/game segmentation and per-seat
     viewpoints),
-  * a second match opens a second file.
+  * a second match opens a second file,
+  * a capped load_records reads only the shards its matches need and equals
+    the uncapped load's prefix; an uncapped load of an oversized directory is
+    refused,
+  * the browser net probes' π is the SEARCH posterior (diag visits / a pool
+    shard's search π), never a behavior row or a simulated trace's
+    action_probs, and survives an .rmtrace round-trip; az_inspect's own
+    shard sample marks the same rows (``pi_valid``),
+  * the shared search-vs-net divergence folds duplicate menu actions and
+    measures KL(search ‖ net) (test_menu_merge.test_search_net_divergence).
 
 Run: train/.venv/bin/python train/test_shard_record.py
 """
@@ -31,7 +40,8 @@ import shard_replay
 from env import (MAX_ACTIONS, OBS_SIZE, _CUR_TURN_IDX, _IS_SIDEBOARD_IDX,
                  _MATCH_CTX_START, _SELF_IS_A_IDX)
 from shard_record import (DIAG_KEYS, DIAG_KIND_FOLLOWED, DIAG_KIND_NONE,
-                          DIAG_KIND_SEARCH, ShardRecorder, diag_path_for)
+                          DIAG_KIND_PLAN, DIAG_KIND_SEARCH, ShardRecorder,
+                          diag_path_for)
 
 
 class _FakeResult:
@@ -170,6 +180,203 @@ def _check_diag(shard_path, n_rows):
     return d
 
 
+def _close(a, b):
+    return a is not None and np.allclose(np.asarray(a), np.asarray(b))
+
+
+def _check_search_posterior(ra, rb):
+    """The net probes' π is the SEARCH posterior (shard_probes.step_search_pi):
+    diag visits where a search / tree-follow ran, the recorded π for a
+    sidecar-less pool-shard search row, never a behavior row's one-hot and
+    never a simulated trace's action_probs (the inspection net's own
+    softmax). Rows without one are excluded from the π views with a note."""
+    import gui_session_io
+    import shard_probes
+
+    # Recorded match (A = searcher, B = human): shard rows 0,2,4,7,8 / 1,3,5,6,9.
+    sp = ra["search_pi"]
+    assert _close(sp[0], [0.8, 0.1, 0.1]) and _close(sp[1], [5 / 8, 3 / 8])
+    assert sp[2] is None                  # one-hot sideboard pick (q = NaN)
+    assert _close(sp[3], [0.75, 0.25]) and _close(sp[4], [7 / 8, 1 / 8])
+    sp = rb["search_pi"]
+    assert sp[0] is None and sp[1] is None and sp[4] is None   # human rows
+    assert _close(sp[2], [0.25, 0.75])
+    # The followed row's shard pi is the one-hot behavior row; its posterior
+    # is the followed subtree's visits from the diag.
+    assert _close(sp[3], np.array([40, 2, 1]) / 43.0)
+
+    # A sidecar-less POOL shard: no diags, so a finite-q row's recorded pi IS
+    # the posterior; q = NaN (expert BC) and a one-hot sideboard row are not.
+    obs = np.stack([_obs(True, 0, 1), _obs(True, 0, 2),
+                    _obs(True, 1, 0, sideboard=True), _obs(True, 1, 1)])
+    pi = np.zeros((4, MAX_ACTIONS), dtype=np.float32)
+    pi[0, :2] = [0.3, 0.7]
+    pi[1, 1] = 1.0
+    pi[2, 0] = 1.0
+    pi[3, :2] = [0.0, 0.0]                # playout-cap fast row
+    mask = np.zeros((4, MAX_ACTIONS), dtype=bool)
+    mask[:, :2] = True
+    z = np.array([1, 1, -1, -1], dtype=np.float32)
+    q = np.array([0.2, np.nan, 0.1, 0.0], dtype=np.float32)
+    recs = shard_replay.build_match_records(obs, pi, z, mask, [[[0, 1, 2, 3]]],
+                                            viewpoint_is_a=True, q=q)
+    sp = recs[0]["search_pi"]
+    assert _close(sp[0], [0.3, 0.7]) and sp[1] is None and sp[2] is None \
+        and sp[3] is None, sp
+
+    # A SIMULATED trace: action_probs are the inspection net's softmax and
+    # must not be π. Step 0 searched (merged duplicate: visits live on the
+    # representative index 0, index 1 stays 0), step 1 raw policy (no diag),
+    # step 2 tree-followed.
+    sim = {"observations": [_obs(True, 0, 1), _obs(True, 0, 2), _obs(True, 0, 3)],
+           "num_choices": [3, 2, 2],
+           "action_probs": [np.array([0.1, 0.1, 0.8]), np.array([0.5, 0.5]),
+                            np.array([0.9, 0.1])],
+           "diag": [{"kind": DIAG_KIND_SEARCH, "visits": np.array([6, 0, 2]),
+                     "root_value": 0.4},
+                    None,
+                    {"kind": DIAG_KIND_FOLLOWED, "visits": np.array([1, 3])}],
+           "result": 1.0}
+    snap = shard_probes.snapshot([sim, ra, rb], cur_game=0, cur_step=1)
+    sample, index, z_valid, pi_valid = shard_probes.build_sample(snap)
+    assert pi_valid.tolist() == [True, False, True,
+                                 True, True, False, True, True,
+                                 False, False, True, True, False]
+    assert np.allclose(sample["pi"][0, :3], [0.75, 0.0, 0.25])
+    assert sample["pi"][1].sum() == 0.0
+    assert np.allclose(sample["pi"][2, :2], [0.25, 0.75])
+    assert z_valid.all()                  # calibration keeps every row
+    # The search root value rides beside π: a search / plan step's diag
+    # root_value, never a tree-followed or unsearched step's.
+    sv = sample["search_v"]
+    assert np.isclose(sv[0], 0.4) and np.isnan(sv[1]) and np.isnan(sv[2]), sv
+    want = [d is not None and d["kind"] in (DIAG_KIND_SEARCH, DIAG_KIND_PLAN)
+            for d in ra["diag"] + rb["diag"]]
+    assert np.isfinite(sv[3:]).tolist() == want, (sv, want)
+
+    # π-dependent probes say what they skipped. No net needed on these paths.
+    raw_only = shard_probes.snapshot([{**sim, "diag": [None, None, None]}],
+                                     cur_game=0, cur_step=0)
+    lines = shard_probes.run_probe("probe_kl", None, raw_only)
+    assert lines[0].startswith("no browsed decision carries a search "
+                               "posterior"), lines
+    assert "3 of 3 browsed decisions skipped" in lines[-1], lines
+    lines = shard_probes.run_probe("probe_value", None, raw_only)
+    assert lines[0].startswith("no browsed decision carries a search root "
+                               "value"), lines
+    tally = shard_probes.search_stats_lines(snap)[0]
+    assert tally.startswith("searches: ") and "tree-followed" in tally, tally
+    lines = shard_probes.run_probe("probe_state", None, snap)   # step 1: raw
+    assert lines[0].startswith("(no search posterior at this decision"), lines
+    assert not any("50.0%" in ln for ln in lines), lines
+    lines = shard_probes.run_probe("probe_state", None,
+                                   {**snap, "sel": (0, 0)})
+    assert any(ln.lstrip().startswith("75.0%") for ln in lines), lines
+
+    # The .rmtrace keeps the resolved posterior (the diag dicts don't survive
+    # a save/load), so a reloaded session probes the same π.
+    tmp = tempfile.mkdtemp(prefix="shard_record_test_trace_")
+    try:
+        path = os.path.join(tmp, "s.rmtrace")
+        gui_session_io.save_traces(path, [sim, ra])
+        games, _meta = gui_session_io.load_traces(path)
+        _s2, _i2, _z2, pv2 = shard_probes.build_sample(
+            shard_probes.snapshot(games))
+        assert pv2.tolist() == pi_valid[:8].tolist()
+        assert _close(games[0]["search_pi"][0], [0.75, 0.0, 0.25])
+        assert games[0]["search_pi"][1] is None
+        assert np.isclose(games[0]["search_v"][0], 0.4)
+        assert games[0]["search_v"][1] is None and games[0]["search_v"][2] is None
+        assert np.allclose(_s2["search_v"], sample["search_v"][:8],
+                           equal_nan=True)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def _same(a, b):
+    """Deep equality over record values (dicts, lists, numpy arrays, NaN-aware
+    floats)."""
+    if isinstance(a, dict):
+        return (isinstance(b, dict) and a.keys() == b.keys()
+                and all(_same(a[k], b[k]) for k in a))
+    if isinstance(a, (list, tuple)):
+        return (isinstance(b, (list, tuple)) and len(a) == len(b)
+                and all(_same(x, y) for x, y in zip(a, b)))
+    if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        return np.array_equal(np.asarray(a), np.asarray(b), equal_nan=True)
+    if isinstance(a, float) and isinstance(b, float):
+        return a == b or (np.isnan(a) and np.isnan(b))
+    return a == b
+
+
+def _check_bounded_load():
+    """shard_replay.load_records(limit=k) reads only the shards its first k
+    matches need and returns exactly the uncapped load's records[:k] — over
+    recorder files (one match each, with .rmplay/.diag sidecars), a match
+    with no viewpoint-A rows, and a pooled file holding two matches — and an
+    uncapped load past MAX_UNBOUNDED_SHARD_BYTES is refused."""
+    tmp = tempfile.mkdtemp(prefix="shard_record_test_bounded_")
+    try:
+        rec = ShardRecorder(tmp, td_n=3,
+                            replay_meta={"deck_a": "a", "deck_b": "b",
+                                         "human_is_a": False, "bo3": True},
+                            seed_fn=lambda: 7)
+        # Match 0: bo3, both seats.
+        _searched(rec, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=0)
+        _onehot(rec, _obs(False, 0, 1), 2, action=1,
+                reward=1.0, game_result=True)
+        _searched(rec, _obs(False, 1, 1), 2, [2, 6], 0.4, chosen=1)
+        _searched(rec, _obs(True, 1, 2), 2, [6, 2], -0.3, chosen=0,
+                  reward=1.0, game_result=True, done=True)
+        # Match 1: only B moves (no viewpoint-A record).
+        _searched(rec, _obs(False, 0, 1), 2, [3, 5], 0.1, chosen=1,
+                  reward=-1.0, done=True)
+        # Match 2: both seats.
+        _onehot(rec, _obs(False, 0, 1), 3, action=2)
+        _searched(rec, _obs(True, 0, 2), 2, [1, 7], 0.2, chosen=1,
+                  reward=-1.0, done=True)
+        rec.close()
+        files = sorted(glob.glob(os.path.join(tmp, "shard_*.npz")),
+                       key=shard_replay.shard_sort_key)
+        assert len(files) == 3, files
+        # A pooled (sidecar-less) file holding two matches, written last.
+        a, b = np.load(files[0]), np.load(files[2])
+        pooled = os.path.join(tmp, "shard_29990101_000000_1_0.npz")
+        np.savez_compressed(pooled, **{k: np.concatenate([a[k], b[k]])
+                                       for k in a.files})
+        for k, f in enumerate(files + [pooled]):
+            os.utime(f, (3000 + k, 3000 + k))       # pin write order
+        for vp in (True, False):
+            full = shard_replay.load_records(tmp, viewpoint_is_a=vp)
+            assert len(full) == (4 if vp else 5), len(full)
+            for k in range(1, len(full) + 2):
+                part = shard_replay.load_records(tmp, viewpoint_is_a=vp,
+                                                 limit=k)
+                assert _same(part, full[:k]), f"limit {k} seat A={vp}"
+        # The cap stops reading at the shard that completes the k-th match.
+        spans = shard_replay.load_shard_rows(tmp, max_matches=1)[4]
+        assert len(spans) == 1, spans
+        spans = shard_replay.load_shard_rows(tmp, max_matches=2)[4]
+        assert len(spans) == 3, spans      # match 1 has no viewpoint-A rows
+        # Uncapped past the guard: refused, naming --games; capped still loads.
+        saved = shard_replay.MAX_UNBOUNDED_SHARD_BYTES
+        shard_replay.MAX_UNBOUNDED_SHARD_BYTES = 1
+        try:
+            for lim in (None, 0):
+                try:
+                    shard_replay.load_records(tmp, limit=lim)
+                except shard_replay.ShardPoolTooLarge as exc:
+                    assert "--games" in str(exc), exc
+                else:
+                    raise AssertionError("uncapped load was not refused")
+            assert len(shard_replay.load_records(tmp, limit=2)) == 2
+        finally:
+            shard_replay.MAX_UNBOUNDED_SHARD_BYTES = saved
+        print("  bounded shard load: OK")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     tmp = tempfile.mkdtemp(prefix="shard_record_test_")
     try:
@@ -271,6 +478,15 @@ def main():
         # ── Readers ────────────────────────────────────────────────────────
         sample = az_inspect.load_shard_sample(tmp, max_rows=100)
         assert sample["obs"].shape[0] == 10 and "td_q" in sample
+        # π-dependent views read only search-posterior rows: the searched
+        # rows 0,2,5,7,8 — not the human / followed one-hots (q = NaN) or
+        # the sideboard one-hot (row 4).
+        assert sample["pi_valid"].tolist() == [
+            True, False, True, False, False, True, False, True, True,
+            False], sample["pi_valid"]
+        lines = az_inspect.render_state(sample, 1)
+        assert lines[0].startswith("(no search posterior"), lines
+        assert not az_inspect.render_state(sample, 0)[0].startswith("(no")
 
         matches = shard_replay.segment_matches(
             *(lambda o, p, z, m, s: (o, s))(*shard_replay.load_shard_rows(tmp)))
@@ -331,6 +547,15 @@ def main():
         dd = decision_data(rb, 0)
         assert dd.search_line == ""
         assert all(r.visits is None for r in dd.rows)
+
+        _check_search_posterior(ra, rb)
+        _check_bounded_load()
+
+        # The one search-vs-net KL / top-1 definition (duplicate-folded net
+        # priors, KL(search ‖ net)) the probes and analysis.py share.
+        import test_menu_merge
+        test_menu_merge.test_search_net_divergence()
+        assert not test_menu_merge.FAILURES, test_menu_merge.FAILURES
 
         # Trainer ingestion (skipped when torch isn't installed).
         try:
@@ -408,7 +633,7 @@ def main():
 
         print("shard_record OK: schema, mid-game flush, z backfill, "
               "segmentation, both readers, per-match files, replay sidecar, "
-              "diag sidecar")
+              "diag sidecar, probe search posterior")
         return 0
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

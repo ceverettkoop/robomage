@@ -8,7 +8,7 @@ the card embedding by clicking a neighbour and walking outward from it.
 **It opens weights-only.** By default nothing but the checkpoint (and its
 baseline, for exposure) is read: the app starts in about a second, needs no
 recorded self-play on disk, and the sidebar lists only views it can actually
-compute. ``--with-shards`` loads recorded self-play and adds the rest.
+compute. ``--shards DIR`` loads recorded self-play and adds the rest.
 
   Embedding — neighbours of a card (click a neighbour to recentre on it, ``u``
               walks back), kNN label purity, k-means clusters, PCA scatter,
@@ -35,14 +35,15 @@ instead of exiting: the Weights pane and the embedding-matrix views work in
 full (the trunk is shared), while the net-dependent views (overview, buckets,
 exposure, everything shard-backed) explain what they need.
 
-Run from the repo root:
-    train/.venv/bin/python train/tui_az_inspect.py                  # weights only
-    train/.venv/bin/python train/tui_az_inspect.py --with-shards    # + self-play
-    train/.venv/bin/python train/tui_az_inspect.py --model gen__azv384000
+Launched as ``az_inspect.py tui`` (flags: cli_spec.AZ_INSPECT_TOOL's ``tui``
+subcommand), from the repo root:
+    train/.venv/bin/python train/az_inspect.py tui                    # weights only
+    train/.venv/bin/python train/az_inspect.py tui --shards train/az_data/gen
+    train/.venv/bin/python train/az_inspect.py tui --model gen__azv384000
 """
 
-import argparse
 import os
+import sys
 import traceback
 from functools import partial
 
@@ -58,7 +59,6 @@ from textual.widgets import (Footer, Header, Input, OptionList, Static,
 from textual.widgets.option_list import Option
 
 import az_inspect as azi
-from cli_spec import AZ_INSPECT_TOOL, apply_to_parser
 
 # (view key, sidebar label). The key is dispatched in _render_worker.
 _EMB_VIEWS = [
@@ -99,7 +99,7 @@ _PROBE_VIEWS = [
     ("sweep", "Scalar sweeps"),
 ]
 
-# Views that need recorded self-play. Without --with-shards they are not listed
+# Views that need recorded self-play. Without --shards they are not listed
 # at all (the sidebar shows only what this session can actually compute), and the
 # Probes pane — every view of which needs a recorded state — is not built.
 _NEEDS_SHARDS = {"occur", "calib", "divergence"} | {k for k, _ in _PROBE_VIEWS}
@@ -174,15 +174,8 @@ class InspectApp(App):
 
     def __init__(self, args):
         super().__init__()
-        # Naming an explicit --shards directory is a request to use it.
-        if getattr(args, "shards", None):
-            args.with_shards = True
-        else:
-            # The shared spec leaves --shards unset (the launcher should not have
-            # to carry an absolute path), so the default is applied here — on
-            # every construction path, not just main()'s.
-            args.shards = azi.AZ_DATA_DIR
-        self._with_shards = bool(getattr(args, "with_shards", False))
+        # --shards DIR is the request for the self-play views; absent = weights only.
+        self._with_shards = bool(getattr(args, "shards", None))
         self._panes = (("emb", "critic", "weights", "probe")
                        if self._with_shards else ("emb", "critic", "weights"))
         self._args = args
@@ -298,17 +291,21 @@ class InspectApp(App):
             self._mat = azi.card_embedding(self._sd)
             status = [f"{path.split('/')[-1]} [{self._sd_kind}]  "
                       f"steps={azi.checkpoint_meta(path).get('steps', '?')}"]
+            warm = net is not None and str(path).endswith(".zip")
             if net is None:
                 status.append("no AZ checkpoint — PPO fallback: weight-space "
                               "and embedding views only")
+            elif warm:
+                status.append("no AZ checkpoint — AZNet warm-started from "
+                              "this PPO checkpoint")
             # Exposure is weights-only and cheap, so it loads whenever an AZ
             # net did: it is what the embedding views filter on when there is
             # no shard sample (and the stricter signal even when there is one).
-            # Under the PPO fallback its only baseline would be the checkpoint
-            # itself (a zero diff), so it is skipped.
+            # Under the PPO fallback or a PPO warm-start its only baseline
+            # would be the checkpoint itself (a zero diff), so it is skipped.
             try:
-                if net is None:
-                    raise FileNotFoundError("PPO fallback session")
+                if net is None or warm:
+                    raise FileNotFoundError("PPO checkpoint session")
                 self._exp = azi.card_exposure(path)
                 self._exposure = azi.exposure_counts(self._exp)
                 trained = int(self._exp["moved"][azi.named_card_ids()].sum())
@@ -317,7 +314,7 @@ class InspectApp(App):
                               f"{os.path.basename(self._exp['baseline'])}")
             except (FileNotFoundError, KeyError, RuntimeError) as exc:
                 status.append(f"exposure unavailable ({exc})")
-            if a.with_shards:
+            if self._with_shards:
                 self._sample = azi.load_shard_sample(
                     a.shards, max_rows=a.max_rows, window=a.window, seed=a.seed)
                 self._counts, self._count_states = azi.card_occurrences(
@@ -326,7 +323,7 @@ class InspectApp(App):
                               f"{self._sample['n_shards']} shards, "
                               f"{self._count_states} decoded")
             else:
-                status.append("weights only — pass --with-shards for the "
+                status.append("weights only — pass --shards DIR for the "
                               "self-play views")
             self.post_message(Loaded(path, "\n".join(status)))
         except Exception:
@@ -538,7 +535,7 @@ class InspectApp(App):
             if key in _NEEDS_SHARDS and self._sample is None:
                 self.post_message(Rendered(
                     target, [f"'{key}' needs recorded self-play — restart with "
-                             "--with-shards."]))
+                             "--shards DIR."]))
                 return
             lines, cards = self._compute(key)
             self.post_message(Rendered(target, lines, cards))
@@ -645,7 +642,8 @@ class InspectApp(App):
             except ValueError as e:
                 return [str(e)], None
         if key == "overview":
-            return azi.render_overview(self._net, self._path, self._sample), None
+            return azi.render_overview(self._net, self._path, self._sample,
+                                       self._args.shards), None
         if key == "buckets":
             sb = (None if self._sample is None
                   else azi.obs_buckets(self._net, self._sample["obs"]))
@@ -715,20 +713,6 @@ class InspectApp(App):
         self.query_one(f"#{message.target}-out", Static).update(message.text)
 
 
-def build_parser():
-    """Parser built from the shared spec, so the ./tui.sh launcher form and this
-    script's flags cannot drift apart (same contract tui_analysis.py uses)."""
-    ap = argparse.ArgumentParser(
-        prog="tui_az_inspect",
-        description="Interactive AZ checkpoint inspector (weights + recorded "
-                    "self-play; no games are played).")
-    apply_to_parser(ap, AZ_INSPECT_TOOL.subs[0])
-    return ap
-
-
-def main(argv=None):
-    InspectApp(build_parser().parse_args(argv)).run()
-
-
 if __name__ == "__main__":
-    main()
+    sys.exit("tui_az_inspect.py was removed as an entry point; use "
+             "`az_inspect.py tui` (e.g. --shards train/az_data/gen)")

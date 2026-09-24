@@ -24,9 +24,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - C++17 with exceptions disabled (`-fno-exceptions`)
 - Two interactive front ends, both Python, both sitting on the shared driver in
   `train/game_driver.py`: the Textual TUI (`train/tui_game.py`) and the PySide6 GUI
-  (`train/gui_game.py`, with its analysis window in `train/gui_analysis.py`). There is NO C++
+  (`train/gui_main.py` app shell over the `train/gui_game.py` board, with its analysis window in
+  `train/gui_analysis.py`). There is NO C++
   front end (the old raylib GUI was removed); the engine is always a `--machine` subprocess.
 - Uses clang-format configuration in `.clang-format`
+- Every Python CLI flag lives in `train/cli_spec.py` (the TUI/GUI forms are built from it). The
+  match format is one flag everywhere, `--format bo1|bo3` (default bo3, PPO training included).
+  Seats use one vocabulary everywhere: a single seat's deck is `--deck-a` / `--deck-b` (multi-deck
+  pools stay `--decks` / `--opponents`) and a seat's agent (an `opponents.make_controller` spec)
+  is `--player-a` / `--player-b` — the interactive human is just the spec `human`. Where one side
+  is "under test" (analysis, baseline, training) it is player A.
+  When a flag is renamed or removed, add the old spelling to
+  `cli_spec.REMOVED_FLAGS` (global or scoped to a tool / `tool/sub`) so it errors with
+  "`--old` was removed; use …" instead of vanishing — parsers built with `apply_to_parser` pick the
+  table up automatically, a standalone argparse calls `add_removed_flags(parser, scope)`. A removed
+  environment variable goes in `cli_spec.REMOVED_ENV_VARS` (enforced by `check_removed_env`).
 - DO NOT MODIFY CARD SCRIPTS
 - When given a long list of tasks or bugs to fix, do them one at a time (unless it is sensible to batch some)
   and use subagents for each one. Instruct the subagents to not spawn additional agents. 
@@ -72,7 +84,9 @@ just built** — every `train/` entry point resolves its engine binary through `
 - **Release by default** (`bin/release/robomage`, `bin/release/az_actor`) — the GUI, the
   standalone TUI analysis browser, every PPO/AZ training driver, and `baseline`'s default
   C++-actor path (`train/az_baseline.py`: `az:gen` at the full league search budget vs
-  scripted:hard over the league grid, report appended to `checkpoints/baseline_report.log`).
+  scripted:hard over the league grid, report appended to `checkpoints/baseline_report.log`;
+  `--player-b SPEC` swaps the reference agent — e.g. `--player-a mcts:gen --player-b gen` on
+  one `--deck-a` is the search-vs-raw-policy A/B gate, which runs on the Python fallback).
 
 **Override**: `ROBOMAGE_BUILD=debug|release` forces every tool onto one config (e.g. to reproduce
 a debug-only assertion failure); each subcommand also takes `--binary <path>` as a per-invocation
@@ -101,10 +115,10 @@ background** and make the live output inspectable by the user:
  vocab coverage, byte-identical replay corpus, deterministic league smoke, short fuzz). It
  must pass before pushing, and CI runs exactly it. See [`docs/ci.md`](docs/ci.md) for the
  tiers, how to reproduce a CI failure, and how to intentionally re-record the replay corpus /
- regenerate the codegen. `train/fuzz_campaign.py` remains the manual exploratory fuzz tool.
--Don't use sed or cat - if possible don't pipe a bunch of commands together in a way that will require asking my permission, run build and test tasks as simply as possible
+ regenerate the codegen. `train.py observe --player-a explore --player-b explore --verbose
+ --out FILE` is the manual exploratory fuzz campaign (see observe below).
 -Non fatal errors are not acceptable
--Draws are not acceptable
+-Draws are not acceptable, outside of exceedingly rare cases, and require review
 -Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
 -Do not use commas when using the test harness. The harness splits `--play`, `--hand-a/-b`,
  `--library-a/-b`, `--battlefield/graveyard/exile/sideboard-a/-b` on commas, so a comma inside a
@@ -115,8 +129,22 @@ background** and make the live output inspectable by the user:
  commands — one command observes any {scripted|model} vs {scripted|model} matchup).
  Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
  `--verbose` for the full per-decision transcript (board state + action menu + narrative),
- and supply `--deck`/`--opponent` to test cards/decks relevant to recently implemented features.
- **observe defaults to bo3 matches**; pass `--bo1` for single games (`--bo3` is a redundant no-op).
+ and supply `--deck-a`/`--deck-b` to test cards/decks relevant to recently implemented features.
+ **observe defaults to bo3 matches**; pass `--format bo1` for single games.
+ Game i uses seed `--seed`+i. `--out FILE` writes the transcript to FILE and prints a one-line
+ W/L/D summary; `--quiet` prints only that summary; `--max-decisions N` caps each game.
+ **Fuzz campaign** (one matchup, the `explore` coverage fuzzer on both seats, any draw is a
+ finding, also saved to `draw_<stamp>.txt`): `observe --player-a explore --player-b explore
+ --deck-a league/ur_delver --deck-b league/gw_maverick --games 100 --verbose --out out.txt`
+ (`explore:patient` = big-mana mode). **Engine throughput benchmark**: `observe --format bo1
+ --games 40 --max-decisions 4000 --quiet --timing` (games/s, decisions/s, ms/decision; with
+ `--quiet` the engine runs without narrative).
+ **Training throughput benchmarks** are `train.py` subcommands (flags in `cli_spec`, the az-*
+ vocabulary): `bench-actor` (C++ `az_actor` legs — `--batch` sweep, cross-world, the eval
+ server — vs the in-process Python self-play leg, same net and workload; `--player-b scripted`
+ for the vs-scripted mode), `bench-workers` (az self-play throughput per `--workers` count on
+ the curriculum's exhaustive matrix, shards pooled; `--train` adds az-train + az-eval legs) and
+ `bench-nenvs` (PPO steps/s and peak RAM per `--n-envs` value, to size `--n-envs`).
 -**Running games programmatically: `runner.run_match`.** `runner.run_match(agent_a, agent_b,
  deck_a=…, deck_b=…, games=, bo3=True, seed=1, transcript="compact|verbose|narrative|quiet",
  out=…)` — agent specs are scripted tiers ("scripted"/"hard", "easy", "random", "explore"),
@@ -131,53 +159,72 @@ background** and make the live output inspectable by the user:
 
 **Shuffling:** by default each library is shuffled with the seeded RNG (deterministic per `--seed`). Pass `--no-shuffle` for a **stacked deck** so deck-file order = draw order (first 7 = starting hand). `--no-shuffle` is implied by `--hand-a`/`--hand-b` (they build a stacked temp deck), so inline-hand and scenario examples stay deck-ordered; a plain `--deck-a X --deck-b Y` run shuffles unless you add `--no-shuffle`.
 
+**Match format:** like every tool, the harness defaults to `--format bo3` — a best-of-three
+match: once your specs run out it keeps auto-advancing through game 1, sideboarding, and games
+2–3, up to `--max-decisions` (default 1500). Pass `--format bo1` for a single game (default cap
+500), which is usually what a sculpted card scenario wants; `--merge-sideboard` requires it.
+
 **Engine flags used by the harness:**
 - `--no-shuffle` — skip initial library shuffle; cards are drawn in deck file order (opt-in; see Shuffling above)
 - `--narrative` — enable game_log output in machine mode (perfect information)
 
-**Quick start — specify hands inline:**
+The harness's flags are defined once in `train/cli_spec.py` (`HARNESS_TOOL`), which also builds
+the `./tui.sh` harness form; `test_harness.py --help` lists them all (zone presets
+`--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--scenario`, `--merge-sideboard`,
+`--coverage-json`, `--log-decisions`, …).
+
+**Quick start — specify hands inline** (the `keep,keep` script keeps both sculpted hands —
+the hard scripted tier would mulligan a hand it dislikes — then the scripted agents play on):
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Mountain,Lightning Bolt" \
   --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
   --hand-b "Forest,Grizzly Bears" \
   --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
-  --scripted --max-decisions 30
+  --play "keep,keep" --player-a scripted --player-b scripted --max-decisions 30
 ```
 
 **Pre-set battlefield** — start with permanents already in play (no summoning sickness):
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Lightning Bolt" \
   --library-a "Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
-  --hand-b "Giant Growth" \
-  --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
+  --hand-b "Counterspell" \
+  --library-b "Island,Island,Island,Island,Island,Island,Island,Island" \
   --battlefield-a "Mountain,Mountain" \
-  --battlefield-b "Grizzly Bears,Forest" \
-  --scripted --max-decisions 30
+  --battlefield-b "Grizzly Bears,Island,Island" \
+  --play "keep,keep" --player-a scripted --player-b scripted --max-decisions 30
 ```
 
 **Using pre-made deck files** (for precise library sizes without auto-padding):
 Write `.dk` files to `bin/resources/decks/temp/` with `1 CardName` per line (hand cards first), then pass the deck name relative to `decks/`:
 ```bash
-train/.venv/bin/python train/test_harness.py \
-  --deck-a temp/my_test_a --deck-b temp/my_test_b --scripted
+train/.venv/bin/python train/test_harness.py --format bo1 --no-shuffle \
+  --deck-a temp/my_test_a --deck-b temp/my_test_b --player-a scripted --player-b scripted
 ```
 
-**Play modes:**
+**Who decides — the script, then the players:**
 - `--play "cast:Lightning Bolt,target:Grizzly Bears@opp,pass"` — **semantic action specs**
   (the preferred way to script a precise line of play, especially for Claude). Each spec is
   resolved against *this* decision's live menu by intent (verb + card name + controller), so
   it is robust to index reordering and authorable up front. See "Scripting with `--play`"
   below. An unmatched or ambiguous spec **fails loudly with the legal menu** instead of
   silently playing the wrong action.
-- `--scripted` — rule-based agent (from env.py) plays both sides automatically
-- `--actions "9,0,7,0,8"` — pre-scripted *positional* action index sequence (fragile; prefer
+- `--actions "0,0,1"` — pre-scripted *positional* action index sequence (fragile; prefer
   `--play`). Indices shift if the menu reorders. Still useful as a canonical replay form —
   a `--play` run prints the `resolved --actions:` integer list it played.
-- `--interactive` — prompt a human per decision. **Claude cannot use this mode** (no TTY; the
-  `input()` prompt hits EOF and spins) — use `--play` or `--actions` instead.
-- Default (no flag) — auto-passes every decision
+- `--player-a SPEC` / `--player-b SPEC` — each seat's agent, any `opponents.make_controller`
+  spec: `auto` (the default — pass priority / take the first choice), `scripted` (hard tier),
+  `scripted:easy`, `scripted:random`, `explore` / `explore:patient` (coverage fuzzer; vary
+  `--seed`), `gen`, `az:gen`, … or `human` (prompt at the terminal). **Claude cannot use
+  `human`** (no TTY; the `input()` prompt hits EOF) — use `--play` or `--actions` instead.
+
+`--play` / `--actions` are ONE global script for both seats (the `A:`/`B:` seat keys below are
+inherently cross-seat): it makes every decision until it runs out, and from then on each
+decision goes to the priority seat's `--player-a`/`--player-b` agent. With the default `auto`
+players the game auto-advances (action `0`) to its end or `--max-decisions`; with e.g.
+`--player-a scripted --player-b scripted` a scripted opening hands over to the scripted agent.
+Without a script the players drive their seats from the first decision.
 
 **Scripting with `--play` (the method for automated/Claude-driven testing):**
 A `--play` value is a comma-separated list of semantic specs, one consumed per decision (the
@@ -209,10 +256,17 @@ A keyed spec also **auto-passes the keyed seat forward through its own priority 
 action is legal** — e.g. `A:attack:Voice of Victory` written in A's main phase keeps passing until
 declare-attackers. (Forward-advance fires only on a genuinely-not-yet-legal action while a `pass`
 is available; an ambiguous/misspelled spec, or one hitting a mandatory choice it doesn't match,
-fails loudly with the legal menu.) The seat key is independent of the `@own`/`@opp` target suffix.
-Unkeyed specs apply to whoever has priority and are **not** auto-advanced (must match or fail),
-so existing scripts are unchanged and keyed/unkeyed may be mixed. (Under `observe --play-a/-b`
-each list already drives one seat, so leave specs unkeyed there.)
+fails loudly with the legal menu.) When the seat lacking the next spec faces a mandatory choice
+of its own instead of a priority window (e.g. its cleanup discard), its `--player-a/-b` agent
+makes it. The seat key is independent of the `@own`/`@opp` target suffix.
+Unkeyed specs apply to whoever has priority and are **not** auto-advanced (must match or fail);
+keyed and unkeyed specs may be mixed. (Under `observe --player-a "play:…"` each list already
+drives one seat, so leave specs unkeyed there.)
+
+**The engine never asks a seat whose only legal action is a pass** — such a priority window is
+skipped without a decision. So write a `pass` (keyed or not) only where that seat could do
+something else; a keyed `pass` written for a skipped window waits for the seat's next real
+decision, and if that is a mandatory choice it fails with a hint to drop the `pass`.
 
 Notes:
 - Card names match case- and apostrophe-insensitively; an exact name wins, else a unique
@@ -222,37 +276,40 @@ Notes:
 - The opening decisions are mulligans — start a sculpted-hand line with `keep,keep,…` (one
   `keep` per seat, since the harness drives both seats from the one list); with seat keys that's
   `A:keep,B:keep,…`.
-- After the specs run out the game auto-advances (action `0`) to its end or `--max-decisions`.
+- After the specs run out the `--player-a/-b` agents take over (default `auto`: action `0`)
+  until the game ends or `--max-decisions`.
 - Read the transcript: every decision prints the numbered **Available actions** menu next to
   the decoded board state, so when a spec fails you can see exactly what was legal and fix it.
   Keep `--seed` constant (default `1`) so the prefix replays identically while you extend the line.
 
 Example (Bolt kills a bear that is already in play), unkeyed:
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Mountain,Lightning Bolt" \
   --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
   --battlefield-b "Grizzly Bears" \
-  --play "keep,keep,play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp"
+  --play "keep,keep,play:Mountain,cast:Lightning Bolt,target:Grizzly Bears@opp"
 ```
 
-Same line with seat keys (the harness fills in B's passes and A's post-cast passes for you):
+Same line with seat keys (the harness fills in the other seat's passes for you; B needs no
+`pass` here — with no response available, the engine never gives B a decision):
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Lightning Bolt" --battlefield-a "Mountain" \
   --battlefield-b "Grizzly Bears" \
-  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp,B:pass"
+  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
 
-`train.py observe` takes per-seat `--play-a` / `--play-b` to drive one side by specs while the
-other stays scripted/model (e.g. `observe --play-a "keep,play:Island,pass" --player-b scripted`).
+`train.py observe` drives one side by specs with a `play:` agent spec while the other stays
+scripted/model (e.g. `observe --format bo1 --player-a "play:keep,play:Island,pass" --player-b scripted`).
 
 For fully reproducible scenarios, capture the spec list (plus hands/libraries) in a JSON
-scenario file via the `"play"` field (alongside or instead of `"actions"`).
+scenario file via the `"play"` field (or a positional `"actions"` list). Command-line flags
+override the scenario's values; the format and players come from the command line.
 
 **JSON scenario files:**
 ```bash
-train/.venv/bin/python train/test_harness.py --scenario scenario.json
+train/.venv/bin/python train/test_harness.py --format bo1 --scenario scenario.json
 ```
 ```json
 {
@@ -263,7 +320,7 @@ train/.venv/bin/python train/test_harness.py --scenario scenario.json
   "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
   "battlefield_a": [],
   "battlefield_b": ["Grizzly Bears"],
-  "actions": [9, 0, 7, 0, 8],
+  "play": ["keep", "keep", "play:Mountain", "cast:Lightning Bolt", "target:Grizzly Bears@opp"],
   "seed": 1
 }
 ```
@@ -506,6 +563,12 @@ Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO`
   `--q-mix`; `z` stays the anchor — see [`docs/alphazero_status.md`](docs/alphazero_status.md)).
 - Shaping is budgeted **per game** against ±1.0 (`SHAPING_EPISODE_CAP` in `train/env.py`); bo1 and
   bo3 shaped identically.
+- Format: PPO training (like every tool) plays bo3 matches by default; `--format bo1` switches to
+  single games. The reward and shaping above are per game either way.
+- PopArt: PPO training normalizes each archetype bucket's value targets by that bucket's running
+  (mu, sigma) by default (`train/popart.py`); `--no-popart` turns it off and `--stock-head` implies
+  it. The stats ride in the policy's buffers and every update is output-preserving, so a
+  checkpoint trained either way resumes under either setting.
 
 **Bo3-relevant state-vector fields** (exact indices/normalizers live in the `src/machine_io.h`
 layout block — don't hardcode them here):
@@ -579,30 +642,71 @@ injects one for the human seat. Regression `train/test_concede.py` (`make check`
 ### Interactive front ends: TUI, GUI, and the analysis window
 
 `./tui.sh` (`train/tui.py`) is the overall Textual control panel (deck management, training,
-league runs, observing, launching play) — separate from the two *game board* front ends below.
-`./gui.sh` launches `train/gui_main.py` on its welcome pane (sessions start via File ▸ New Session).
+league runs, observing, launching play) — separate from the game boards below.
 
-Both game boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a
-worker thread reporting `StateUpdate`s to a sink; `build_session` assembles env + opponent
-controller). The engine is always a `--machine` subprocess; the opponent is any
+`train/play.py` is the ONE entry point for play: `--board gui|tui|text` (default `gui`, falling
+back to `tui` with a printed notice when PySide6 is missing). Seats are `--player-a`/`--player-b`,
+exactly one of them the spec `human` (default: human on A vs `az:gen` on B; e.g.
+`--player-a az:gen --player-b human` to be on the draw); decks `--deck-a`/`--deck-b` (default
+`league/bug` vs `league/ur_delver`). Player A is on the play in game 1; `--on-the-play a|b|random`
+(default `a`; a Play-dialog field too) puts player B's side there instead by swapping the two
+(agent, deck) pairs onto the other engine seats before the session is built (`random` = a coin
+flip, seeded by `--seed` when given; `cli_spec.resolve_on_the_play`/`seat_play_sides`), so the
+board then labels that side Player A. Every flag works on every board that can honour it and
+errors on one that cannot (`--analysis*` are GUI-only; `--human-clock`/`--hard-timeout`/
+`--record-shards` need a GameDriver board, gui or tui; `--seed` works everywhere). The GameDriver
+boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a worker
+thread reporting `StateUpdate`s to a sink; `build_session` assembles env + opponent controller,
+seed, and recording dir). The engine is always a `--machine` subprocess; the opponent is any
 `opponents.make_controller` spec (scripted tiers, `gen`, `az:`/`azraw:`/`mcts:` wrappers).
 
-- **TUI board**: `train/play.py --human-deck X --model-deck Y` (default), or via `./tui.sh`.
-- **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_game.py` / `./gui.sh` with
-  no args for the app shell's welcome pane — File ▸ New Session opens the play/analysis dialogs
-  (deck/opponent/seat/format pickers + search and analysis settings, persisted to
-  `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is missing.
-- **Standalone analysis browser** (`train/tui_analysis.py`, Textual, not on `game_driver.py`):
-  simulates N games vs an opponent and lets you page board states, seek via a clickable V(s)
-  histogram, run any `analysis.py` REPL view, and branch `whatif` counterfactuals. Launch via
-  `./tui.sh`'s `analysis-tui → browse`, or `train/tui_analysis.py <model.zip|deck> --opponent
-  scripted [--deck-b mav] [--n-games 20]`.
-- **Headless smokes**: `QT_QPA_PLATFORM=offscreen ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and
-  exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it
-  delivered stats.
+- **GUI board** (PySide6, `train/gui_main.py` app shell over `train/gui_game.py`): `play.py
+  --deck-a X --deck-b Y` goes straight into a game; `./gui.sh` (= `play.py --board gui` with no
+  seat/deck flags) opens the app's welcome pane — File ▸ New Session opens the play/analysis
+  dialogs. **The GUI mirrors the CLI**: the Play dialog's fields ARE `play.py`'s flags and the
+  Analysis dialog's are the browser's (`analysis.py browse`) — same dests, same cli_spec
+  defaults — listed in `train/launcher_config.py` (Qt-free; `test_cli_spec.py` asserts every
+  field ↔ flag with equal defaults). Settings persist to ONE file,
+  `~/.robomage/gui_launcher.json`, a section per dialog; unknown / ill-typed keys are ignored. A
+  new GUI knob gets a cli_spec flag first, then a field. The search-knob fold (flag → `az:`/`mcts:`
+  spec query, AUTO `--search-procs`, paced default) is `cli_spec.search_knob_pairs` /
+  `apply_search_knobs` — shared by play.py, both dialogs and the analysis loader.
+- **TUI board**: `play.py --board tui ...`, or `./tui.sh`'s play entry (the same PLAY_TOOL form).
+- **Text board**: `play.py --board text ...` — `runner.run_games` with a `HumanController` seat
+  (action number or semantic spec, `concede`) vs `make_controller(opponent spec)`.
+- **Analysis browser** (`analysis.py browse`, not on `game_driver.py`): page board states, seek
+  via a clickable V(s) histogram, run any analysis view (text analyses, the selected game's
+  transcript, `chart …` views that save PNGs under `train/analysis_out/`), and branch `whatif`
+  counterfactuals. ONE `--source` picks what it browses (`cli_spec.browse_source_kind`):
+  `simulate` (default — `--games` games of `--player-a`, the inspected model, vs `--player-b` on
+  `--deck-a/-b`), a directory of `shard_*.npz` (AZ self-play or a recording; `--player-a` is the
+  V(s) net, `--seat`/`--no-net` apply; `--games N` loads the first N matches in write order and
+  reads only the shards they need, `--games 0` loads every match but is refused past
+  `shard_replay.MAX_UNBOUNDED_SHARD_BYTES` (2 GiB — a training pool like `az_data/gen` is
+  ~100 GB)), or a saved `.rmtrace` session (`--player-a` is the replay-search net). A flag that does not apply to the source kind errors
+  (`cli_spec.BROWSE_SOURCE_DESTS`). `--board tui` (default) is the Textual
+  app in `train/tui_analysis.py`; `--board gui` opens the PySide6 app on that session
+  (`gui_main.run_browser`, falling back to tui without PySide6). Also `./tui.sh`'s
+  `analysis → browse`.
+  **The two boards have the same capabilities** — both sit on `train/browse_session.py`
+  (games store, `EngineCore` jobs + the one `EngineWorker` thread, analyses registry,
+  presentation/tree-walk helpers, `.rmtrace` save via `save_session`/`session_provenance`), so a
+  new browser feature goes there first and each board adds only its rendering. Shared keys:
+  arrows/Home/End step, `w` whatif, F6 replay search, F7 tree rebuild; the TUI adds `f` follow
+  live, `x` stop simulating, ctrl+s save `.rmtrace` (the GUI has a Follow checkbox, a Stop
+  button and File ▸ Save / Ctrl+S). The TUI renders the Tree tab as a navigable text tree with
+  the walked hypothetical board as text. (The play board's analysis window uses F6 differently —
+  opponent review, below.) Regression: `train/test_tui_browser.py` (default tier `browser`).
+- **Headless smokes**: one env var, `ROBOMAGE_SMOKE=<comma list of legs>` (parsed by
+  `cli_spec.smoke_legs`; legs `play[:N]`, `analysis`, `session`, `trace`, `browser[:DIR]`,
+  `tree:DIR`). `QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=play:8` auto-plays 8 decisions and
+  exits 0; `play:8,analysis` also forces the analysis window on and fails unless it delivered
+  stats. `session` / `trace` / `browser:DIR` / `tree:DIR` drive `gui_main.py`'s shell smokes; the
+  browser/tree legs browse the recording DIR (a recording or a `ROBOMAGE_RECORD_DIR` base) and
+  fail without one — never point them at a training pool.
 
-**The analysis window** (`train/gui_analysis.py`, GUI only; enable via launcher checkbox or
-`play.py --gui --analysis`; F9 toggle, F5 analyze, F6 review opponent's last decision, Shift+F5
+**The analysis window** (`train/gui_analysis.py`, GUI only; on by default on the GUI board —
+`--no-analysis` / the launcher checkbox turn it off, `--analysis-*` flags tune it; F9 toggle, F5 analyze, F6 review opponent's last decision, Shift+F5
 stop): live chess-engine-style MCTS on the current decision. Runs `mcts.IncrementalSearch`
 (chunked, cancellable, bit-identical to `run_search` for the same world seeds; holds its root
 snapshot open for `pv()`/`walk()`) on a **detached analysis engine**
@@ -619,15 +723,16 @@ and marks the played action `▶`. Qt-free core in `train/analysis_session.py`; 
 `train/test_analysis_session.py` is the **opt-in** `ci_check.py --tier analysis` (not in default
 `make check`).
 
-**Shard recording of GUI play** (`train/shard_record.py`; launcher's "Record shards" checkbox —
-search opponents only — or `play.py --gui --record-shards`): records a session into
+**Shard recording of play** (`train/shard_record.py`; launcher's "Record shards" checkbox or
+`play.py --record-shards`, gui or tui board; `shard_record.attach_recorder` wires it into the
+board's driver): records a session into
 **trainer-schema shards** (`az_selfplay.SHARD_KEYS`, one dir per session under
 `train/az_data/recorded/rec_*`; `ROBOMAGE_RECORD_DIR` overrides). A search opponent's decisions
 land with full visit posterior / root value / explored flag (via `SearchController.on_result`,
 chained with the analysis window's sink); every other >1-choice decision (the human's included)
 lands as a one-hot behavior row (`q=NaN`) via the driver's `step_observer`. One file per match,
 atomically rewritten at each game boundary, so every shard consumer (`az_train.load_window`,
-`az_inspect`/`tui_az_inspect`/`tui_analysis --shards`, the GUI browser) always sees a valid dir
+`az_inspect` (CLI views and `az_inspect.py tui`)/`analysis.py browse --source DIR`, the GUI browser) always sees a valid dir
 (in-progress rows carry `z=0`). Each shard gets a same-stem **`.rmplay` replay sidecar** (seed +
 full action log + per-row positions) attached by `shard_replay.load_replay_sidecars`, making a
 recording **exactly replayable**: both browsers' `search` entry (**F6**,
@@ -636,9 +741,20 @@ recording **exactly replayable**: both browsers' `search` entry (**F6**,
 offline. Works without a live env/model; pre-sidecar and training-pool shards self-report as
 non-replayable. **View ▸ Analyze Recording… (F10)** opens the recording in a shard-mode
 `BrowserPane` in a second window (live game keeps running), viewpoint defaulting to the opponent.
-The browser also has **net-probe entries** (`train/shard_probes.py`, Qt-free glue over
-`az_inspect`'s probes): recorded-π-vs-net, block permutation importance, card-swap/scalar sweeps,
-pooled KL(search‖net), value calibration. Regression `train/test_shard_record.py` = default
+Both browsers also have **net-probe entries** (`train/shard_probes.py`, Qt-free glue over
+`az_inspect`'s probes): search-π-vs-net, block permutation importance, card-swap/scalar sweeps,
+pooled KL(search‖net) with the biggest disagreements decoded, net V vs the search root value
+(MAE / corr; the root value is each searched step's diag `root_value`), value calibration.
+`analysis.py report` with a search `--player-a` runs the same pooled search-vs-net probes over
+its batch simulation (`--workers N` splits the games across processes). π is always the SEARCH posterior (diag visits, or a
+pool shard's search π) — decisions with none (raw-policy seat, human/behavior rows) are skipped by
+the π views with a note, never compared against the inspection net's own softmax (the
+`az_inspect` CLI/TUI sample marks the same rows as `pi_valid` via
+`shard_replay.is_search_target_row`). Every search-vs-net KL / top-1 number (these probes,
+`az_inspect divergence`, `analysis.py report`) comes from one definition,
+`decode.search_net_divergence`: KL(search‖net) with the net priors folded over duplicate menu
+actions (`decode.fold_onto_reps`, the `menu_merge_reps` partition search merges edges by).
+Regression `train/test_shard_record.py` = default
 `make check` tier `shardrec`; opt-in `gui` tier adds a record-smoke leg.
 
 **Search diagnostics + exact tree rebuild.** Each recorded shard also gets a same-stem
@@ -651,17 +767,23 @@ sha256, device, torch threads, knobs). Because an in-game search never reuses ro
 with zero noise/temperature, `tree_rebuild.TreeSession` re-runs
 `IncrementalSearch(world_seeds=…).run_chunk(sims_run)` at the replayed decision and **verifies
 the rebuilt root visits equal the recorded ones exactly**; the tree is then cached under
-`<recording>/trees/` (`tree_cache.py`) so reopening is instant. The GUI recording browser's
-**Tree** tab (F7) walks it with hypothetical boards; both browsers show N/Q/P columns and a
-search line per decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
+`<recording>/trees/` (`tree_cache.py`) so reopening is instant. Both browsers' **Tree** tab
+(F7, recordings only) walks it per world with N/Q/P per node, the PV, and hypothetical boards
+(card widgets on the GUI, text on the TUI); both show N/Q/P columns and a search line per
+decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
 `test_tree_rebuild.py` (opt-in tier `treerebuild`, needs the engine).
 
 ### Key files
 
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper. Lazily re-exports `scripted_action` for back-compat callers; the real rule-based agent logic lives in `train/scripted_agent.py`.
-- `train/scripted_agent.py` — the rule-based `ScriptedAgent`/`scripted_action` implementation (smart mulligan, combat simulation, evaluation-based targeting, deck-specific combo lines); imported by `opponents.py`, `train.py`, `bench_engine.py`, `analysis.py`, and re-exported from `env.py`
+- `train/scripted_agent.py` — the rule-based `ScriptedAgent`/`scripted_action` implementation (smart mulligan, combat simulation, evaluation-based targeting, deck-specific combo lines); imported by `opponents.py`, `train.py`, `analysis.py`, and re-exported from `env.py`
 - `train/runner.py` — THE game-running module: `drive_game` (the single decision loop, with per-decision hooks), `run_games` (env-per-game orchestration + transcripts), `run_match` (spec-based front door for scripting: agents/decks/bo3/seed/output as parameters). See `docs/game_running.md`.
-- `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools
+- `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools, and THE
+  model-spec resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator`,
+  `load_spec_net`, `load_spec_value_model`): one rule for which net a spec names — bare /
+  `mcts:` = the PPO checkpoint, `az:`/`azraw:`/`.pt` = the AZ warm-start ladder — so a
+  browser's V(s), net probes and replay search always read the same checkpoint. Use it instead
+  of stripping prefixes/knobs by hand (regression `train/test_model_spec.py`, tier `modelspec`)
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
 - `train/curriculum.py` — multi-phase training plans behind `train.py curriculum`: the plan
@@ -671,9 +793,12 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   (`make check` tier `curriculum`)
 - `train/progress_io.py` — the single crash-safe (write-temp + `os.replace`) JSON progress
   sidecar reader/writer shared by the league, exploiter, az-league, and curriculum drivers
-- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration, a REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a window) with terminal fallbacks. The model (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`) encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (scripted opponent mirrors `--deck-a`).
+- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration) — `browse` (the analysis browser), `report` (HTML battery; a search `--player-a` adds the search-vs-net sections, `--workers N` parallelizes). Charts save to PNG under `train/analysis_out/` (headless-safe; `report --show` for a window) with terminal fallbacks. The inspected model is `--player-a` (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`), its opponent `--player-b` (default `scripted`); a model encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (a scripted `--player-b` mirrors `--deck-a`).
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
-- `train/play.py` — interactive human-vs-model play (text mode, `--tui`, `--gui`, `--analysis`)
+- `train/play.py` — interactive human-vs-model play (`--board gui|tui|text`; no seat/deck flags on
+  the GUI board = the app's welcome pane)
+- `train/launcher_config.py` — the GUI launcher dialogs' field tables (flag dests) and their one
+  settings file; Qt-free
 - `train/game_driver.py` — front-end-agnostic play loop + `build_session`; `StateUpdate` carries
   an obs COPY plus `search_safe`/`history_len` for the analysis window
 - `train/tui_game.py` / `train/gui_game.py` — the Textual and PySide6 boards over that driver
@@ -689,12 +814,17 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   (`make check` tier `shardrec`).
 - `train/shard_probes.py` — Qt-free glue running `az_inspect`'s net probes over browsed
   records (snapshot on the UI thread, stack+torch on the worker); `PROBE_MENU` is appended to
-  the GUI browser's analyses sidebar
-- `train/tui_analysis.py` — standalone Textual analysis browser (game list, board-state pager,
-  clickable V(s) histogram, every `analysis.py` REPL view, `whatif` branching); behind
-  `./tui.sh`'s `analysis-tui → browse` menu entry
+  both browsers' analyses sidebar
+- `train/browse_session.py` — the Qt-free analysis-browser core both boards share (store,
+  `EngineCore`/`EngineWorker`, analyses registry, presentation + tree-walk text helpers,
+  `.rmtrace` save); regression `train/test_browse_session.py` (opt-in tier `analysis`)
+- `train/tui_analysis.py` — the Textual analysis browser app (game list with live streaming,
+  board-state pager, clickable V(s) histogram, every analysis view (transcripts, saved charts), net probes, `whatif`
+  branching, F6 replay search, F7 text tree walk, ctrl+s `.rmtrace` save); launched by
+  `analysis.py browse` (`--board tui`, the default) and `./tui.sh`'s `analysis → browse`
 - `train/analysis_session.py` — Qt-free analysis core: `AnalysisSession` (detached engine,
-  delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig`, `load_analysis_evaluator`
+  delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig` (its evaluator comes from
+  `opponents.load_spec_evaluator`)
 - `train/search_env.py` — `SearchRoboMageEnv` (snapshot protocol client, mirror pool,
   `spawn_detached_mirror`)
 - `train/mcts.py` — determinized PUCT search: `run_search`/`run_search_parallel` (report
@@ -712,17 +842,22 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   REINFORCE-style against the realized next-game z (`az-train --sb-batch-frac/--sb-loss-coef`);
   gates/eval/analysis/play always use the multi-world plan search. See docs/alphazero_status.md.
 - `train/test_analysis_session.py` — analysis-core regression (opt-in ci tier `analysis`)
-- `train/az_inspect.py` — **static** inspection of an AZ checkpoint (never a played game).
-  Weights-only views: card-embedding neighbours / purity / clusters / PCA (rows align with
-  `src/card_vocab.h`), per-matchup value-head column map, checkpoint diffs, and **`exposure`**
-  (which embedding rows / critic columns received gradient). Shard-backed views (`az_data/gen/*.npz`):
-  per-card counts, calibration vs realized outcomes, KL(search‖net) by category, per-decision
-  probes (permutation importance, card-swap, scalar sweeps). Each view = data fn + `render_*`, so
-  CLI and TUI can't diverge.
-- `train/tui_az_inspect.py` — Textual front end over those views (Embedding / Critic panes,
-  clickable embedding drill-down); `./tui.sh`'s `az-inspect → inspect` menu entry. **Opens
-  weights-only** (~1s, no shard pool needed) and lists only the views it can compute;
-  `--with-shards` loads recorded self-play and adds the Probes pane
+- `train/az_inspect.py` — **static** inspection of an AZ checkpoint (never a played game), ONE
+  command: a subcommand per view, flags in `cli_spec.AZ_INSPECT_TOOL` (so `./tui.sh`'s
+  `az-inspect` menu renders the same definition). `--model` resolves via
+  `opponents.parse_model_spec`; `--shards DIR` names recorded self-play (absent = weights only;
+  the shard-only views then read `az_data/gen`). Weights-only views: card-embedding neighbours /
+  purity / clusters / PCA (rows align with `src/card_vocab.h`; `project --chart` saves a
+  PCA/t-SNE PNG of the rows that ever trained), per-matchup value-head column map, checkpoint
+  diffs, **`exposure`** (which embedding rows / critic columns received gradient) and `drift`
+  (`--chart`: the movement-PC heatmap). Shard-backed views: per-card counts, calibration vs
+  realized outcomes, KL(search‖net) by category, per-decision probes (permutation importance,
+  card-swap, scalar sweeps), and `sbreport` (between-games sideboard swaps per matchup,
+  fetchlands pooled via `decode.sb_card_class`). Each view = data fn + `render_*`, so CLI and
+  TUI can't diverge. **`az_inspect.py tui`** launches the Textual front end
+  (`tui_az_inspect.InspectApp`: Embedding / Critic / Weights panes, clickable embedding
+  drill-down); it **opens weights-only** (~1s, no shard pool needed) and lists only the views it
+  can compute; `--shards DIR` adds the Probes pane
 - `train/test_az_inspect.py` — inspector regression against a fresh net + synthetic shards
   (opt-in ci tier `azinspect`; needs torch, no engine binary)
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
@@ -733,12 +868,13 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   trainable 32-dim embedding carries only the behavioral residual. DFC-face aware and token-band
   aware (token rows parse `bin/resources/tokenscripts/`).
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
-- `train/fuzz_campaign.py` — batch fuzz driver: runs N scripted games for ONE matchup (both seats
-  driven by the `explore` fuzzer), dumping the verbose transcript to a file for bug review. Modes
-  `--mode explore` (default) / `explore:patient` (big-mana). Example: `fuzz_campaign.py --deck-a
-  league/ur_delver --deck-b league/gw_maverick --mode explore --games 100 --seed 1 --out out.txt`
-  (decks relative to `bin/resources/decks/`; W/L/D to stdout, any draw is a finding).
-- `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
+- `train.py observe` as the batch fuzz driver: N games of ONE matchup with both seats driven
+  by the `explore` fuzzer (`--player-a/-b explore`, or `explore:patient` for big-mana), the
+  verbose transcript dumped to a file for bug review. Example: `train.py observe --player-a
+  explore --player-b explore --deck-a league/ur_delver --deck-b league/gw_maverick --games 100
+  --seed 1 --verbose --out out.txt` (decks relative to `bin/resources/decks/`; W/L/D to stdout,
+  any draw is a finding).
+- `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, a `play:<specs>` agent spec such as `observe --player-a "play:…"`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `train/card_props.py` — auto-generated frozen card-property matrix (do not edit manually)
 - `train/test_obs_invariants.py` — asserts per-decision structural invariants on the RAW

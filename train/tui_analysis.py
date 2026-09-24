@@ -1,50 +1,72 @@
 """Model-analysis browser as a full-screen Textual TUI.
 
-Migrates the analysis.py interactive REPL into a terminal UI (a sibling of
-tui_game.py). The app loads a checkpoint, simulates games against the chosen
-opponent in a background thread (the same per-decision traces analysis.py
-collects: observations, V(s), policy probs, actions), and then lets you:
+The terminal board of `analysis.py browse` (the PySide6 board is
+gui_browser.py; both sit on browse_session.py's store, engine core and
+engine-worker thread, so they offer the same capabilities). The app simulates
+games against the chosen opponent (streaming each decision as it is played),
+or loads a shard directory / saved .rmtrace session, and then lets you:
 
   * pick a game from the sidebar and PAGE THROUGH its board states — the
     board rendered in tui_game.py's style (bordered card widgets with
     color-identity edges, battlefield/land rows, stack, the model's hand,
-    life/mana info lines), one decision step at a time, with a decision
-    panel showing the model's full policy distribution at that step (every
-    legal action with its probability, chosen action marked) and the
-    opponent's interleaved actions;
+    life/mana info lines, graveyards/exile), one decision step at a time,
+    with a decision panel showing the model's full policy distribution at
+    that step (every legal action with its probability, chosen action
+    marked; a recorded search's N/Q/P columns) and the opponent's
+    interleaved actions. A game still being simulated shows as a LIVE row
+    that grows per decision; follow mode (f) keeps the board on its newest
+    decision, x stops simulating after the current game;
   * seek by CLICKING the V(s) histogram docked at the bottom — one bar per
     decision step (bucketed when the game is wider than the terminal),
     positive V above the zero line, negative below, cursor column highlighted;
-  * run every REPL analysis view (summary, cardvalue, targeting, swings,
+  * run every analysis view (summary, cardvalue, targeting, swings,
     boundaries, matchcal, regret, entropy, consistency, calibration, turning,
-    clusters, sideboard, sbvalue, shap) from the sidebar menu — output lands
-    in the "Analysis output" tab;
+    clusters, sideboard, sbvalue, shap), the selected game's text transcript,
+    the chart views (each saves a PNG under train/analysis_out/ and reports
+    its path) and the net probes (shard_probes: search π vs net, block
+    importance, card swap, sweeps, pooled KL and calibration) from the
+    sidebar menu — output lands in the "Analysis output" tab;
   * branch a counterfactual `whatif` at the current game/step (w key), and
     simulate more games, both on the live env. Each whatif ALTERNATIVE is
     grafted onto the source game's prefix and added to the games list as a
     full trace (marked ↳g<src>@<step>), so the counterfactual line can be
     selected, stepped through, and even re-branched — while staying excluded
     from the analysis/summary statistics pools (it is not an independent
-    sample).
+    sample);
+  * replay a recorded game to the current step and search it (F6), and, on
+    a recording, rebuild the recorded search tree of a searched decision
+    (F7) and walk it in the Tree tab — per-world trees with N/Q/P per node,
+    the principal variation, and each walked node's hypothetical board as
+    text;
+  * save the finished games as a .rmtrace session (ctrl+s), which
+    `analysis.py browse --source FILE` (either board) reopens.
 
-The matplotlib `chart *` commands and the HTML `report` battery stay in
-analysis.py — this front end covers the text/interactive tools.
+The HTML `report` battery stays in analysis.py.
 
-Run from the repo root (same simulation args as `analysis.py interactive`):
-    train/.venv/bin/python train/tui_analysis.py <model.zip|deck> \
-        --opponent scripted [--deck-b mav] [--n-games 20] [--bo3]
+Launched as `analysis.py browse` (the default --board tui; flags:
+cli_spec.ANALYSIS_BROWSE_SUB), from the repo root:
+    train/.venv/bin/python train/analysis.py browse --player-a <model.zip|gen> \
+        --player-b scripted --deck-a delver [--deck-b mav] [--games 20] \
+        [--format bo1]
 
-Shard replay — browse recorded AZ self-play instead of simulating (see
-shard_replay.py; the model spec becomes the V(s) net, --no-net keeps the
-recorded outcome z, and whatif/run stay disabled without a live env):
-    train/.venv/bin/python train/tui_analysis.py gen \
-        --shards train/az_data/gen [--seat A|B] [--no-net] [--n-games 20]
+--player-a is the inspected model and --player-b its opponent.
+
+--source picks what is browsed instead of simulating. A shard directory
+replays recorded AZ self-play or a GUI recording (see shard_replay.py; the
+--player-a spec becomes the V(s) net, --no-net keeps the recorded outcome z,
+and whatif/run stay disabled without a live env):
+    train/.venv/bin/python train/analysis.py browse --player-a gen \
+        --source train/az_data/gen [--seat A|B] [--no-net] [--games 20]
+A .rmtrace file opens a saved analysis session (no env; --player-a is the
+replay-search and probe net):
+    train/.venv/bin/python train/analysis.py browse --source session.rmtrace
 """
 
-import argparse
-import io
+import os
+import sys
+import threading
+import time
 import traceback
-from contextlib import redirect_stdout
 
 import numpy as np
 from rich.text import Text
@@ -55,14 +77,21 @@ from textual.binding import Binding
 from textual.containers import (Horizontal, HorizontalScroll, Vertical,
                                 VerticalScroll)
 from textual.message import Message
-from textual.widgets import (Footer, Header, OptionList, RichLog, Static,
-                             TabbedContent, TabPane)
+from textual.screen import ModalScreen
+from textual.widgets import (Checkbox, Footer, Header, Input, OptionList,
+                             RichLog, Select, Static, TabbedContent, TabPane,
+                             Tree)
 from textual.widgets.option_list import Option
 
-import analysis as an
+# The front-end-independent pieces live in browse_session (shared with the Qt
+# browser, gui_browser.py): the games store, the engine core + its worker
+# thread, the analyses registry, the ONE process-global capture lock, and the
+# label/summary/tree helpers.
+import browse_session as bs
 import decode
-from cli_spec import ANALYSIS_TUI_TOOL, apply_to_parser
-from env import STATE_SIZE, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
+import shard_probes
+from cli_spec import BROWSE_KIND_SHARDS, BROWSE_KIND_SIMULATE, browse_source_kind, is_bo3
+from env import STATE_SIZE
 # Board building blocks shared with the play board: the bordered card widget
 # (color-identity edges) and the step-strip abbreviations.
 from tui_game import CardButton, CardClicked, _edge_colors, _STEP_ABBR
@@ -83,6 +112,10 @@ _AXIS_STYLE = "dim"
 _BLOCKS = " ▁▂▃▄▅▆▇█"
 
 
+# Seconds between coalesced UI refreshes while events stream in.
+_REFRESH_S = 0.1
+
+
 def _diag_cells(row) -> str:
     """The recorded-search columns of one decision row: visits N, Q and the
     net prior P (blank where the diag carries none, e.g. a followed row)."""
@@ -91,20 +124,12 @@ def _diag_cells(row) -> str:
     p = f"{row.prior * 100:5.1f}%" if row.prior is not None else ""
     return f"{n:>5} {q:>6} {p:>6}"
 
-# The front-end-independent pieces live in browse_session (shared with the Qt
-# browser, gui_browser.py): the ONE process-global capture lock, the analyses
-# registry, and the label/summary helpers. Aliased to the old private names so
-# the rest of this file is unchanged.
-from browse_session import (CAPTURE_LOCK as _CAPTURE_LOCK, capture as _capture,
-                            decision_data as _decision_data,
-                            search_caption as _search_caption,
-                            result_str as _result_str,
-                            has_probs as _has_probs, probs_guard as _probs_guard,
-                            run_shap as _run_shap, ANALYSES as _ANALYSES,
-                            ENGINE_MENU as _ENGINE_MENU,
-                            REPLAY_MENU as _REPLAY_MENU,
-                            replay_search_decks as _replay_search_decks,
-                            run_replay_search as _run_replay_search)
+
+def _default_save_path():
+    """A fresh .rmtrace name in the working directory."""
+    import gui_session_io
+    return os.path.join(os.getcwd(), time.strftime("analysis_%Y%m%d_%H%M%S")
+                        + gui_session_io.TRACE_EXT)
 
 
 # ── Clickable V(s) histogram ──────────────────────────────────────────────────
@@ -321,33 +346,268 @@ class ValueHistogram(Static):
 
 # ── Worker → UI messages ──────────────────────────────────────────────────────
 
-class EnvReady(Message):
-    def __init__(self, startup_text):
-        self.startup_text = startup_text
+class EngineEvent(Message):
+    """A browse_session event from the engine worker thread (post_message is
+    thread-safe, so the worker's emit posts these directly)."""
+
+    def __init__(self, event):
+        self.event = event
         super().__init__()
 
 
-class GameAdded(Message):
-    def __init__(self, game):
-        self.game = game
-        super().__init__()
+class AnalysisResult(Message):
+    """An analysis / probe run finished on the analysis worker."""
 
-
-class EngineIdle(Message):
-    """The engine worker finished its current job (collect/whatif)."""
-
-
-class AnalysisDone(Message):
     def __init__(self, title, text):
         self.title = title
         self.text = text
         super().__init__()
 
 
-class LoadFailed(Message):
-    def __init__(self, text):
-        self.text = text
+# ── Save prompt ───────────────────────────────────────────────────────────────
+
+class SavePrompt(ModalScreen):
+    """Ask for the .rmtrace path to save the session to; dismisses with the
+    path, or None on escape / an empty entry."""
+
+    CSS = """
+    SavePrompt { align: center middle; }
+    #save-box  { width: 90; height: auto; border: round $accent;
+                 padding: 0 1; background: $surface; }
+    """
+    BINDINGS = [Binding("escape", "cancel", "Cancel")]
+
+    def __init__(self, default_path):
         super().__init__()
+        self._default = default_path
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="save-box"):
+            yield Static("Save analysis session (.rmtrace) — enter to save, "
+                         "escape to cancel")
+            yield Input(value=self._default, id="save-path")
+
+    def on_mount(self) -> None:
+        self.query_one("#save-path", Input).focus()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        self.dismiss(event.value.strip() or None)
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+# ── Tree tab ──────────────────────────────────────────────────────────────────
+
+_TREE_IDLE = ("no tree open — F7 rebuilds the recorded search tree of a "
+              "searched decision (recordings only)")
+_TREE_COLS = f"{'N':>7} {'Q':>7} {'P':>6}  action"
+
+
+def _tree_label(cells) -> Text:
+    """One tree row: N / Q / P columns, then the action."""
+    action, n, q, p = cells
+    return Text(f"{n:>7} {q:>7} {p:>6}  {action}")
+
+
+class TreePane(Vertical):
+    """The Tree tab: the rebuilt search tree of one recorded decision (the
+    Textual twin of gui_browser.TreePanel).
+
+    Header (TreeSession summary + verified badge), a world picker ("merged
+    root" = the summed root statistics, not expandable; one entry per
+    determinized world whose private tree is browsable), a lazily expanded
+    Tree (N / Q / P per node; a node's children are fetched from the engine
+    worker the first time it is expanded or selected, then cached per
+    (world, path)), the principal variation of the selected root action, and
+    the text board of the hypothetical position the selected node's walk
+    reached (the opponent's hand hidden unless revealed). Engine access goes
+    through ExpandRequested — the app submits the job and feeds show_nodes
+    back."""
+
+    class ExpandRequested(Message):
+        def __init__(self, world, path):
+            self.world = world
+            self.path = path
+            super().__init__()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._ready = None            # the TreeReady on display
+        self._node_cache = {}              # (world, path) -> TreeNodes
+        self._items = {}              # (world, path) -> TreeNode widget node
+        self._requested = set()       # (world, path) already submitted
+        self._world = None            # world whose root is shown
+        self._opp_is_a = True         # viewpoint: the browsed seat's opponent
+        self._shown = None            # TreeNodes on the board
+        self._follow_target = None    # (world, path) to select on arrival
+
+    def compose(self) -> ComposeResult:
+        yield Static(_TREE_IDLE, id="tree-head")
+        with Horizontal(id="tree-bar"):
+            yield Select([], prompt="world", id="tree-world")
+            yield Checkbox("reveal hidden hand", id="tree-reveal")
+        yield Static(_TREE_COLS, id="tree-cols")
+        tree = Tree("root", id="tree-view")
+        tree.show_root = False
+        yield tree
+        yield Static("", id="tree-pv")
+        yield Static("", id="tree-board")
+
+    # ----- viewpoint / board -----
+
+    def set_viewpoint(self, opp_is_a):
+        self._opp_is_a = bool(opp_is_a)
+
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        event.stop()
+        if self._shown is not None:
+            self._render_board(self._shown)
+
+    def _render_board(self, ev):
+        self._shown = ev
+        board = self.query_one("#tree-board", Static)
+        if ev.terminal is not None:
+            board.update(bs.walk_terminal_text(ev.terminal, self._opp_is_a))
+        elif ev.walk_nodes and ev.walk_nodes[-1].obs is not None:
+            reveal = self.query_one("#tree-reveal", Checkbox).value
+            board.update("\n".join(bs.walk_board_lines(
+                ev.walk_nodes[-1].obs, self._opp_is_a, reveal)))
+        else:
+            board.update("(tree root — the recorded decision; see the Board "
+                         "tab)")
+
+    # ----- tree content -----
+
+    def clear(self, text=_TREE_IDLE):
+        self._ready = None
+        self._node_cache = {}
+        self._items = {}
+        self._requested = set()
+        self._world = None
+        self._shown = None
+        self._follow_target = None
+        self.query_one("#tree-head", Static).update(text)
+        self.query_one("#tree-world", Select).set_options([])
+        self.query_one("#tree-view", Tree).clear()
+        self.query_one("#tree-pv", Static).update("")
+        self.query_one("#tree-board", Static).update("")
+
+    def show_tree(self, ev):
+        """Install a TreeReady: root rows per world, PVs, and (a followed
+        row) the path to pre-expand and select."""
+        self.clear()
+        self._ready = ev
+        self.query_one("#tree-head", Static).update(bs.tree_header(ev))
+        start = (ev.follow_worlds[0] if ev.follow_path and ev.follow_worlds
+                 else 0)
+        sel = self.query_one("#tree-world", Select)
+        sel.set_options([("merged root", bs.MERGED_WORLD)]
+                        + [(f"world {w}", w) for w in range(ev.worlds)])
+        sel.value = start
+        self._rebuild_root(start)
+        if ev.follow_path:
+            path = tuple(int(a) for a in ev.follow_path)
+            self._follow_target = (start, path)
+            for i in range(len(path) + 1):
+                self._request(start, path[:i])
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        event.stop()
+        if self._ready is None or event.value is Select.BLANK:
+            return
+        if int(event.value) != self._world:
+            self._rebuild_root(int(event.value))
+
+    def _rebuild_root(self, world):
+        tree = self.query_one("#tree-view", Tree)
+        tree.clear()
+        self._items = {}
+        self._world = world
+        self.query_one("#tree-pv", Static).update("")
+        ev = self._ready
+        if ev is None:
+            return
+        rows = ev.merged_rows if world == bs.MERGED_WORLD else ev.root_rows[world]
+        for a, n, cells in bs.tree_node_rows(rows, ev.root_labels):
+            self._add_item(tree.root, (world, (a,)), cells,
+                           expandable=(world != bs.MERGED_WORLD and n > 0))
+
+    def _add_item(self, parent, key, cells, expandable):
+        node = parent.add(_tree_label(cells), data=key,
+                          allow_expand=expandable)
+        self._items[key] = node
+        return node
+
+    def _request(self, world, path):
+        key = (int(world), tuple(int(a) for a in path))
+        cached = self._node_cache.get(key)
+        if cached is not None:
+            self.show_nodes(cached)       # a world re-pick rebuilt the items
+            return
+        if key in self._requested:
+            return
+        self._requested.add(key)
+        self.post_message(self.ExpandRequested(key[0], list(key[1])))
+
+    def request_expand(self, world, path):
+        """Public entry: fetch a node like selecting it would."""
+        self._request(world, path)
+
+    def on_tree_node_expanded(self, event: Tree.NodeExpanded) -> None:
+        event.stop()
+        key = event.node.data
+        if key is not None and not event.node.children:
+            self._request(*key)
+
+    def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
+        event.stop()
+        key = event.node.data
+        if key is None or self._ready is None:
+            return
+        world, path = key
+        pv = self.query_one("#tree-pv", Static)
+        if world == bs.MERGED_WORLD:
+            pv.update("(merged root — pick a world to walk its tree)")
+            return
+        if len(path) == 1:
+            pv.update("PV: " + (self._ready.pv_lines[world].get(path[0])
+                                or "—"))
+        cached = self._node_cache.get(key)
+        if cached is not None:
+            self._render_board(cached)
+        else:
+            self._request(world, path)
+
+    def show_nodes(self, ev):
+        """Install a TreeNodes: populate the node's children and, when it is
+        the selected/followed node, render its walked position."""
+        if self._ready is None:
+            return
+        key = (int(ev.world), tuple(int(a) for a in ev.path))
+        self._node_cache[key] = ev
+        node = self._items.get(key)
+        if node is not None and not node.children:
+            if ev.rows:
+                for a, n, cells in bs.tree_node_rows(ev.rows, ev.labels):
+                    self._add_item(node, (key[0], key[1] + (a,)), cells,
+                                   expandable=(n > 0))
+            elif ev.terminal is None:
+                node.add_leaf(Text("(unexpanded)", style="dim"))
+        tree = self.query_one("#tree-view", Tree)
+        cur = tree.cursor_node
+        is_current = cur is not None and cur.data == key
+        if key == self._follow_target:
+            self._follow_target = None
+            if node is not None:
+                parent = node.parent
+                while parent is not None:
+                    parent.expand()
+                    parent = parent.parent
+                tree.move_cursor(node)
+            is_current = True
+        if is_current or (key[1] == () and self._shown is None):
+            self._render_board(ev)
 
 
 # ── The app ───────────────────────────────────────────────────────────────────
@@ -386,6 +646,15 @@ class AnalysisApp(App):
     #decision   { height: 12; border: round $accent; }
     #decision-scroll { height: 1fr; }
     #decision-body { padding: 0 1; }
+    /* Tree tab. */
+    #tree-head  { height: auto; padding: 0 1; color: $accent; text-style: bold; }
+    #tree-bar   { height: auto; }
+    #tree-world { width: 28; }
+    #tree-cols  { height: 1; padding: 0 1; color: $text-muted; }
+    #tree-view  { height: 1fr; border: round $primary; }
+    #tree-pv    { height: auto; padding: 0 1; color: $text-muted; }
+    #tree-board { height: auto; max-height: 12; padding: 0 1;
+                  border: round $surface; }
     """
 
     BINDINGS = [
@@ -398,6 +667,10 @@ class AnalysisApp(App):
         Binding("end", "step_end", "last", priority=True),
         Binding("w", "whatif", "Whatif @ step"),
         Binding("f6", "search", "Search @ step"),
+        Binding("f7", "tree", "Tree @ step"),
+        Binding("f", "toggle_follow", "Follow live"),
+        Binding("x", "stop_sim", "Stop sim"),
+        Binding("ctrl+s", "save", "Save .rmtrace"),
     ]
 
     # ── Responsive vertical budget ────────────────────────────────────────────
@@ -423,19 +696,39 @@ class AnalysisApp(App):
     def __init__(self, args):
         super().__init__()
         self._args = args
-        self._games = []
-        self._model = None
-        self._env = None
-        self._opp_model = None
-        self._cur_game = None       # index into self._games
-        self._cur_step = 0
-        self._engine_busy = True    # startup load+collect owns the env first
-        self._analysis_busy = False
+        self._kind = browse_source_kind(getattr(args, "source", None))
+        self._shards = self._kind == BROWSE_KIND_SHARDS
+        self._store = bs.BrowseStore()
+        # The one engine thread: load/collect/whatif/search/tree jobs, each
+        # streaming browse_session events back as EngineEvent messages.
+        self._worker = bs.EngineWorker(bs.EngineCore(args, self._emit),
+                                       name="tui-browser-engine")
+        self._busy_kind = None        # None | "sim" | "whatif" | "search" | "tree"
+        self._collect_stop = None     # stop event of the running collect job
+        self._tree_open = False       # a TreeSession is open on the worker
+        self._tree_jobs = 0           # tree/tree_expand jobs not yet EngineIdle'd
+        self._follow = True           # ride the live game's newest decision
+        self._probe_net = None        # lazy shard_probes net (+ label)
+        self._probe_net_label = ""
+        self._loaded_provenance = None  # an opened .rmtrace's own provenance
+        self._save_path = None
+        self._shutting_down = False
+        # Coalesced refresh state (flushed by one pending timer).
+        self._dirty_rows = set()
+        self._dirty_rebuild = False
+        self._dirty_summary = False
+        self._dirty_selected = False
+        self._flush_pending = False
         # Rows consumed by the chrome (header + footer + tab bar) — everything
         # that is neither the histogram nor the tab's own content. Measured once
         # from the live layout so _relayout never hardcodes Textual's tab-bar
         # height; see _chrome_overhead / _relayout.
         self._overhead = None
+
+    def _emit(self, ev):
+        """EngineCore's emit (worker thread): hand the event to the UI."""
+        if not self._shutting_down:
+            self.post_message(EngineEvent(ev))
 
     # ----- layout -----
 
@@ -443,7 +736,7 @@ class AnalysisApp(App):
         yield Header(show_clock=False)
         with Horizontal():
             with Vertical(id="sidebar"):
-                yield Static("Loading model…", id="summary")
+                yield Static("Loading…", id="summary")
                 yield Static("Games", classes="head")
                 yield OptionList(id="games")
                 yield Static("Analyses", classes="head")
@@ -472,30 +765,34 @@ class AnalysisApp(App):
                             yield Static(id="decision-body")
                 with TabPane("Analysis output", id="tab-output"):
                     yield RichLog(id="output", wrap=True, highlight=False, markup=False)
+                with TabPane("Tree", id="tab-tree"):
+                    yield TreePane(id="tree-pane")
         yield ValueHistogram(id="vhist")
         yield Footer()
 
     def on_mount(self) -> None:
         self.title = "RoboMage · analysis"
-        self.sub_title = (f"{self._args.model}  vs  {self._args.opponent}"
-                          + ("  (bo3)" if getattr(self._args, "bo3", False) else ""))
+        self.sub_title = (f"{self._args.player_a}  vs  {self._args.player_b}"
+                          + ("  (bo3)" if is_bo3(self._args) else ""))
         menu = self.query_one("#analyses", OptionList)
-        for key, label, _fn in _ANALYSES:
+        for key, label, *_rest in bs.ANALYSES + bs.VIEWS:
             menu.add_option(Option(label, id=key))
-        for key, label in _ENGINE_MENU:
-            menu.add_option(Option(label, id=key))
-        for key, label in _REPLAY_MENU:
+        # Engine / replay / tree entries, then the net probes (every mode; the
+        # probe net loads on first use).
+        for key, label in (bs.ENGINE_MENU + bs.REPLAY_MENU + bs.TREE_MENU
+                           + shard_probes.PROBE_MENU):
             menu.add_option(Option(label, id=key))
         hist = self.query_one("#vhist", ValueHistogram)
         hist.border_title = "V(s) over game — click a bar to jump to that decision"
         self.query_one("#decision", Vertical).border_title = \
             "Decision — legal actions with policy P(a)"
         self.query_one("#phase", Static).update(
-            "[dim]Waiting for the first simulated game…[/dim]")
+            "[dim]Waiting for the first game…[/dim]")
         # Fit the board to the initial terminal size once the first layout pass
         # has assigned real widget heights (on_mount runs pre-layout).
         self.call_after_refresh(self._relayout)
-        self._load_and_collect(self._args.n_games)
+        self._worker.start()
+        self._submit_collect("load", self._args.games)
 
     # ----- responsive layout -----
 
@@ -574,198 +871,163 @@ class AnalysisApp(App):
         for sel, ph in panels.items():
             self.query_one(sel).styles.height = ph
 
-    # ----- engine worker (owns the env; one job at a time) -----
+    # ----- engine job submission -----
 
-    @work(thread=True, group="engine")
-    def _load_and_collect(self, n_games: int) -> None:
-        if getattr(self._args, "shards", None):
-            self._load_shards(n_games)
+    def _submit_collect(self, kind, n):
+        stop = threading.Event()
+        self._collect_stop = stop
+        self._store.engine_busy = True
+        self._busy_kind = "sim"
+        self._mark(summary=True)
+        self._worker.submit((kind, n, stop))
+
+    def _submit_job(self, busy_kind, cmd):
+        self._store.engine_busy = True
+        self._busy_kind = busy_kind
+        self._mark(summary=True)
+        self._worker.submit(cmd)
+
+    # ----- engine events (UI thread) -----
+
+    async def on_engine_event(self, message: EngineEvent) -> None:
+        if self._shutting_down:
             return
-        try:
-            buf = io.StringIO()
-            with _CAPTURE_LOCK, redirect_stdout(buf):
-                self._model, self._env, self._opp_model = an._load_model_and_env(self._args)
-            self.post_message(EnvReady(buf.getvalue()))
-        except BaseException as exc:   # _load_model_and_env may sys.exit()
-            self.post_message(LoadFailed(
-                f"model/env load failed: {exc!r}\n{traceback.format_exc()}"))
+        ev = message.event
+        applied = self._store.apply(ev)
+        if isinstance(ev, bs.EnvReady):
+            if ev.subtitle:
+                self.sub_title = ev.subtitle
+            if ev.provenance is not None:
+                self._loaded_provenance = dict(ev.provenance)
+            if ev.startup_text.strip():
+                self._log_output("startup", ev.startup_text)
+            self._mark(summary=True)
+        elif isinstance(ev, bs.LoadFailed):
+            self.query_one("#summary", Static).update(
+                Text(ev.text.splitlines()[0] if ev.text else "load failed",
+                     style="red"))
+            self._log_output("error", ev.text)
+            self.query_one("#tabs", TabbedContent).active = "tab-output"
+        elif isinstance(ev, bs.EngineNote):
+            self._log_output("note", ev.text)
+        elif isinstance(ev, bs.AnalysisDone):
+            # Engine-side results (whatif table, search, tree refusals, errors).
+            self._busy_kind = None
+            self._log_output(ev.title, ev.text)
+            self.query_one("#tabs", TabbedContent).active = "tab-output"
+        elif isinstance(ev, bs.EngineIdle):
+            if self._tree_jobs > 0:
+                self._tree_jobs -= 1
+                if self._tree_jobs > 0:
+                    self._store.engine_busy = True   # expansions still queued
+                    return
+            self._busy_kind = None
+            self._collect_stop = None
+            self._mark(summary=True)
+        elif isinstance(ev, bs.TreeReady):
+            self._tree_open = True
+            pane = self.query_one("#tree-pane", TreePane)
+            if ev.gn < len(self._store.games):
+                pane.set_viewpoint(
+                    not bool(self._store.games[ev.gn].get("model_is_a")))
+            pane.show_tree(ev)
+            self.query_one("#tabs", TabbedContent).active = "tab-tree"
+            self.notify(bs.tree_ready_status(ev))
+        elif isinstance(ev, bs.TreeNodes):
+            self.query_one("#tree-pane", TreePane).show_nodes(ev)
+        elif isinstance(ev, bs.TreeClosed):
+            self._tree_open = False
+            if ev.reason != "replaced":
+                self.query_one("#tree-pane", TreePane).clear()
+        elif isinstance(ev, bs.GameStarted):
+            self._mark(rows={applied.game_idx}, summary=True)
+            if self._follow or self._store.cur_game is None:
+                self._store.select_game(self._store.live_idx)
+                self._mark(selected=True)
+        elif isinstance(ev, bs.StepAppended):
+            if applied.game_idx is not None:
+                self._mark(rows={applied.game_idx})
+            if applied.selected_grew:
+                self._follow_advance()
+                self._mark(selected=True)
+        elif isinstance(ev, bs.OppActionAppended):
+            if applied.selected_grew:
+                self._mark(selected=True)
+        elif isinstance(ev, bs.GameFinished):
+            self._mark(rows={applied.game_idx}, summary=True)
+            if applied.game_idx == self._store.cur_game:
+                self._mark(selected=True)
+        elif isinstance(ev, bs.GameAborted):
+            if applied.removed:
+                self._mark(rebuild=True, summary=True, selected=True)
+        elif isinstance(ev, bs.GameAdded):
+            self._mark(rows={applied.game_idx}, summary=True)
+            if self._store.cur_game is None:
+                self._store.select_game(applied.game_idx)
+                self._mark(selected=True)
+
+    def _follow_advance(self) -> None:
+        """Live follow mode: when the selected game is the live game and the
+        cursor sat on the previous last step, ride the new step (stepping back
+        disengages naturally — the cursor is no longer at the end; End
+        re-engages)."""
+        st = self._store
+        if not self._follow or st.cur_game != st.live_idx:
             return
-        self._collect_games(n_games)
+        n = len(st.games[st.cur_game]["observations"])
+        if n == 1 or st.cur_step == n - 2:
+            st.cur_step = n - 1
 
-    def _load_shards(self, n_games: int) -> None:
-        """Shard-replay startup: reconstruct match records from recorded AZ
-        self-play instead of simulating. No env is created (self._env stays
-        None, so the whatif/run entries stay gated); the model spec is loaded
-        only as the V(s) net, unless --no-net keeps values at the recorded z.
-        Runs inside the engine worker thread."""
-        import shard_replay
-        try:
-            buf = io.StringIO()
-            with _CAPTURE_LOCK, redirect_stdout(buf):
-                model = None
-                if not getattr(self._args, "no_net", False):
-                    model = shard_replay.load_value_model(self._args.model)
-                records = shard_replay.load_records(
-                    self._args.shards,
-                    viewpoint_is_a=getattr(self._args, "seat", "A") != "B",
-                    limit=n_games or None,
-                    interp_fn=an._extract_interpretable)
-                if model is not None:
-                    shard_replay.apply_net_values(model, records)
-                print(f"{len(records)} match record(s) from {self._args.shards} "
-                      f"(seat {getattr(self._args, 'seat', 'A')}, "
-                      + ("net V(s))" if model is not None else "z values)"))
-            self.post_message(EnvReady(buf.getvalue()))
-            for g in records:
-                self.post_message(GameAdded(g))
-        except BaseException as exc:
-            self.post_message(LoadFailed(
-                f"shard load failed: {exc!r}\n{traceback.format_exc()}"))
-        finally:
-            self.post_message(EngineIdle())
-
-    def _collect_games(self, n: int) -> None:
-        """Simulate n games one at a time (posting each so the UI fills live).
-        Runs inside an engine worker thread."""
-        try:
-            for _ in range(n):
-                games = an._collect_game_traces(self._model, self._env,
-                                                self._opp_model, 1, verbose=False)
-                self.post_message(GameAdded(games[0]))
-        except Exception:
-            self.post_message(AnalysisDone("simulation error",
-                                           traceback.format_exc()))
-        finally:
-            self.post_message(EngineIdle())
-
-    @work(thread=True, group="engine")
-    def _collect_worker(self, n: int) -> None:
-        self._collect_games(n)
-
-    @work(thread=True, group="engine")
-    def _whatif_worker(self, gn: int, step: int, k: int) -> None:
-        try:
-            buf = io.StringIO()
-            with _CAPTURE_LOCK, redirect_stdout(buf):
-                branches = an._run_whatif(self._model, self._env, self._opp_model,
-                                          self._games[gn], gn, step, k,
-                                          make_traces=True)
-            text = buf.getvalue()
-            # Each alternative branch arrives as a full game trace — add it to
-            # the games list so the counterfactual line can be selected and
-            # stepped through (the chosen branch's line IS the source game).
-            added = 0
-            for b in branches or []:
-                if b.get("trace_game") is not None:
-                    self.post_message(GameAdded(b["trace_game"]))
-                    added += 1
-            if added:
-                text += (f"\n  Added {added} branch trace(s) to the games list "
-                         f"(marked ↳g{gn}@{step}) — select one to step through it.")
-            self.post_message(AnalysisDone(f"whatif — game {gn}, step {step}", text))
-        except Exception:
-            self.post_message(AnalysisDone("whatif error", traceback.format_exc()))
-        finally:
-            self.post_message(EngineIdle())
-
-    @work(thread=True, group="engine")
-    def _search_worker(self, gn: int, step: int) -> None:
-        """Replay-to-step MCTS analysis (the live analysis window's F6 review,
-        offline): rebuilds the position from the game's recorded seed + action
-        log on a throwaway search env — no live env/model needed, so it runs
-        in shard replay too."""
-        try:
-            game = self._games[gn]
-            decks = _replay_search_decks(game, self._args)
-            if decks is None:
-                self.post_message(AnalysisDone(
-                    f"search — game {gn}, step {step}",
-                    "This session does not know the game's seat decks — "
-                    "cannot build a replay env."))
-                return
-            deck_a, deck_b, bo3 = decks
-            binary = getattr(self._args, "binary", None)
-            if not binary:
-                from cli_spec import INTERACTIVE_BINARY as binary
-            spec = getattr(self._args, "model", None) or "az:gen"
-            text = _run_replay_search(game, step, binary=binary,
-                                      deck_a=deck_a, deck_b=deck_b, bo3=bo3,
-                                      eval_spec=spec)
-            self.post_message(AnalysisDone(f"search — game {gn}, step {step}",
-                                           text))
-        except Exception:
-            self.post_message(AnalysisDone("search error",
-                                           traceback.format_exc()))
-        finally:
-            self.post_message(EngineIdle())
-
-    # ----- analysis worker (trace crunching only; no env) -----
-
-    @work(thread=True, group="analysis")
-    def _analysis_worker(self, title: str, fn) -> None:
-        try:
-            # Whatif branch traces are counterfactual lines sharing their
-            # source game's prefix, not independent samples — pooling them
-            # would bias every statistic, so analyses run on real games only.
-            games = [g for g in self._games if not g.get("whatif")]
-            text = _capture(fn, games)
-            self.post_message(AnalysisDone(title, text))
-        except Exception:
-            self.post_message(AnalysisDone(f"{title} error", traceback.format_exc()))
-        finally:
-            self._analysis_busy = False
-
-    # ----- message handlers -----
-
-    def on_env_ready(self, message: EnvReady) -> None:
-        if getattr(self._args, "shards", None):
-            net = ("z values" if getattr(self._args, "no_net", False)
-                   else f"V(s): {self._args.model}")
-            self.sub_title = (f"shard replay: {self._args.shards} · "
-                              f"seat {getattr(self._args, 'seat', 'A')} · {net}")
-        else:
-            deck_a = getattr(self._args, "deck_a", None) or "?"
-            deck_b = getattr(self._args, "deck_b", None) or "?"
-            self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.opponent})"
-                              + ("  · bo3" if getattr(self._args, "bo3", False) else ""))
-        if message.startup_text.strip():
-            self._log_output("startup", message.startup_text)
-        self._refresh_summary(loading=True)
-
-    def on_load_failed(self, message: LoadFailed) -> None:
-        self._engine_busy = False
-        self.query_one("#summary", Static).update(Text(message.text, style="red"))
-        self._log_output("error", message.text)
-
-    async def on_game_added(self, message: GameAdded) -> None:
-        self._games.append(message.game)
-        g = message.game
-        i = len(self._games) - 1
-        w = g.get("whatif")
-        if w:
-            # A whatif branch trace: mark its origin instead of the bo3 score.
-            label = (f"{i:>3}  {_result_str(g):<4} {len(g['values']):>4}d  "
-                     f"↳g{w['src_game']}@{w['step']}")
-        else:
-            sc = an._match_score(g)
-            sc_str = f"{sc[0]}-{sc[1]}" if sc is not None else " — "
-            side = "A" if g["model_is_a"] else "B"
-            label = (f"{i:>3}  {_result_str(g):<4} {sc_str:<4} "
-                     f"{len(g['values']):>4}d  {side}")
-            if g.get("shard"):
-                label += "  ⛁"
-        self.query_one("#games", OptionList).add_option(Option(label, id=str(i)))
-        self._refresh_summary(loading=self._engine_busy)
-        if self._cur_game is None:
-            await self._select_game(0)
-
-    def on_engine_idle(self, message: EngineIdle) -> None:
-        self._engine_busy = False
-        self._refresh_summary()
-
-    def on_analysis_done(self, message: AnalysisDone) -> None:
+    def on_analysis_result(self, message: AnalysisResult) -> None:
+        self._store.analysis_busy = False
         self._log_output(message.title, message.text)
         self.query_one("#tabs", TabbedContent).active = "tab-output"
+
+    # ----- coalesced refresh -----
+
+    def _mark(self, rows=None, rebuild=False, summary=False, selected=False):
+        if rows:
+            self._dirty_rows |= {r for r in rows if r is not None}
+        self._dirty_rebuild = self._dirty_rebuild or rebuild
+        self._dirty_summary = self._dirty_summary or summary
+        self._dirty_selected = self._dirty_selected or selected
+        if not self._flush_pending:
+            self._flush_pending = True
+            self.set_timer(_REFRESH_S, self._flush_refresh)
+
+    async def _flush_refresh(self) -> None:
+        self._flush_pending = False
+        if self._shutting_down:
+            return
+        rows, rebuild = self._dirty_rows, self._dirty_rebuild
+        summary, selected = self._dirty_summary, self._dirty_selected
+        self._dirty_rows = set()
+        self._dirty_rebuild = self._dirty_summary = self._dirty_selected = False
+
+        games_list = self.query_one("#games", OptionList)
+        games = self._store.games
+        if rebuild:
+            games_list.clear_options()
+            games_list.add_options([Option(bs.game_label(i, g), id=str(i))
+                                    for i, g in enumerate(games)])
+        else:
+            for i in sorted(rows):
+                if i >= len(games):
+                    continue     # row vanished (abort) before the flush
+                while games_list.option_count <= i:
+                    j = games_list.option_count
+                    games_list.add_option(Option(bs.game_label(j, games[j]),
+                                                 id=str(j)))
+                games_list.replace_option_prompt_at_index(
+                    i, bs.game_label(i, games[i]))
+        if summary:
+            self._refresh_summary()
+        if selected:
+            await self._show_selected()
+
+    def _refresh_summary(self) -> None:
+        self.query_one("#summary", Static).update(bs.busy_summary_line(
+            self._store.games, self._store.engine_busy, self._busy_kind))
 
     # ----- selection / stepping -----
 
@@ -783,18 +1045,22 @@ class AnalysisApp(App):
         if message.step is None:
             self._refresh_hist_subtitle()
         else:
-            hist.border_subtitle = f"step {message.step} · V={message.value:+.3f}"
+            g = self._store.selected()
+            ss = bs.search_caption(g, message.step) if g is not None else ""
+            hist.border_subtitle = (f"step {message.step} · "
+                                    f"V={message.value:+.3f}{ss}")
 
     async def action_step(self, delta: int) -> None:
-        if self._cur_game is not None:
-            await self._set_step(self._cur_step + delta)
+        if self._store.cur_game is not None:
+            await self._set_step(self._store.cur_step + delta)
 
     async def action_step_home(self) -> None:
         await self._set_step(0)
 
     async def action_step_end(self) -> None:
-        if self._cur_game is not None:
-            await self._set_step(len(self._games[self._cur_game]["values"]) - 1)
+        g = self._store.selected()
+        if g is not None:
+            await self._set_step(len(g["observations"]) - 1)
 
     def action_whatif(self) -> None:
         self._run_menu_entry("whatif")
@@ -802,28 +1068,63 @@ class AnalysisApp(App):
     def action_search(self) -> None:
         self._run_menu_entry("search")
 
-    async def _select_game(self, gn: int) -> None:
-        if not (0 <= gn < len(self._games)):
+    def action_tree(self) -> None:
+        self._run_menu_entry("tree")
+
+    def action_toggle_follow(self) -> None:
+        self._follow = not self._follow
+        self.notify(f"Follow live game: {'on' if self._follow else 'off'}")
+
+    def action_stop_sim(self) -> None:
+        if self._collect_stop is None or self._busy_kind != "sim":
+            self.notify("Not simulating.", severity="warning")
             return
-        self._cur_game = gn
-        self._cur_step = 0
-        g = self._games[gn]
-        hist = self.query_one("#vhist", ValueHistogram)
-        hist.set_data(g["values"], cursor=0)
-        await self._show_step()
+        self._collect_stop.set()
+        self.notify("Stopping after the current game…")
+
+    async def _select_game(self, gn: int) -> None:
+        if gn == self._store.cur_game or not self._store.select_game(gn):
+            return
+        self._close_tree()
+        await self._show_selected()
         self.query_one("#tabs", TabbedContent).active = "tab-board"
 
     async def _set_step(self, step: int) -> None:
-        if self._cur_game is None:
+        st = self._store
+        if st.cur_game is None:
             return
-        n = len(self._games[self._cur_game]["observations"])
-        step = max(0, min(step, n - 1))
-        if step == self._cur_step:
+        step = st.clamp_step(step)
+        if step == st.cur_step:
             return
-        self._cur_step = step
+        st.cur_step = step
+        self._close_tree()
         self.query_one("#vhist", ValueHistogram).set_cursor(step)
         await self._show_step()
         self.query_one("#tabs", TabbedContent).active = "tab-board"
+
+    async def _show_selected(self) -> None:
+        """Render the selected game at its (clamped) cursor, or clear the
+        panes when nothing is selected / the live game has no decision yet."""
+        g = self._store.selected()
+        hist = self.query_one("#vhist", ValueHistogram)
+        if g is None or not g["observations"]:
+            hist.set_data(g["values"] if g is not None else [])
+            self.query_one("#phase", Static).update(
+                "[dim](no game selected)[/dim]" if g is None
+                else "[dim](no decisions recorded yet)[/dim]")
+            self.query_one("#decision-body", Static).update("")
+            self._refresh_hist_subtitle()
+            return
+        self._store.cur_step = self._store.clamp_step(self._store.cur_step)
+        hist.set_data(g["values"], cursor=self._store.cur_step)
+        await self._show_step()
+
+    def _close_tree(self) -> None:
+        """Release the open tree (the selected decision changed)."""
+        if self._tree_open:
+            self._tree_open = False
+            self._worker.submit(("tree_close",))
+        self.query_one("#tree-pane", TreePane).clear()
 
     # ----- board pane (tui_game-style card objects) -----
 
@@ -832,20 +1133,18 @@ class AnalysisApp(App):
         decision panel. The recorded obs is always from the MODEL's perspective
         (traces cover model decisions only), so 'self' is the model — no
         mirroring is ever needed."""
-        gn, step = self._cur_game, self._cur_step
-        g = self._games[gn]
-        obs = g["observations"][step]
+        gn, step = self._store.cur_game, self._store.cur_step
+        g = self._store.games[gn]
+        obs = np.asarray(g["observations"][step], dtype=np.float32)
         gs = decode.decode_game_state(obs[:STATE_SIZE],
                                       labels=decode.SELF_OPP_LABELS)
 
         self.query_one("#phase", Static).update(self._phase_strip(g, gn, step, obs, gs))
         self.query_one("#opp-info", Static).update(
-            self._info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
+            bs.info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
         self.query_one("#self-info", Static).update(
-            self._info_line("MODEL   ", gs["self"], gs["self_library"]))
-        self.query_one("#graveyards", Static).update(
-            f"Model GY: {', '.join(gs['self_graveyard']) or '—'}\n"
-            f"Opp GY:   {', '.join(gs['opp_graveyard']) or '—'}")
+            bs.info_line("MODEL   ", gs["self"], gs["self_library"]))
+        self.query_one("#graveyards", Static).update(bs.zones_text(gs))
 
         await self._rebuild_stack(gs["stack"])
         await self._rebuild_bf("#opp-bf-perms", "#opp-bf-lands",
@@ -853,45 +1152,23 @@ class AnalysisApp(App):
         await self._rebuild_bf("#self-bf-perms", "#self-bf-lands",
                                gs["self_battlefield"], "self")
         await self._rebuild_hand(gs["self_hand"])
+        dd = bs.decision_data(g, step)
         self.query_one("#decision-body", Static).update(
-            self._decision_text(g, step, obs))
-        num_ch = g["num_choices"][step] if step < len(g["num_choices"]) else 0
+            self._decision_text(g, step, dd))
         self.query_one("#decision", Vertical).border_subtitle = \
-            f"{num_ch} legal · scroll for more"
+            f"{dd.num_choices} legal · scroll for more"
         self.query_one("#decision-scroll", VerticalScroll).scroll_home(animate=False)
         self._refresh_hist_subtitle()
 
-    def _phase_strip(self, g, gn, step, obs, gs) -> str:
-        """One-line header: game/decision/V context plus the step strip."""
-        cur = int(np.argmax(
-            obs[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))
-        cells = " ".join(f"[reverse b]{a}[/reverse b]" if i == cur else f"[dim]{a}[/dim]"
-                         for i, a in enumerate(_STEP_ABBR))
-        val = g["values"][step] if step < len(g["values"]) else None
-        vstr = f" · V={val:+.3f}" if val is not None else ""
-        m = gs.get("match") or {}
-        mstr = ""
-        if any(m.get(k) for k in ("self_wins", "opp_wins", "is_sideboard")):
-            mstr = f" · match {m['self_wins']}–{m['opp_wins']}"
-            if m.get("is_sideboard"):
-                mstr += " [b yellow]SIDEBOARD[/b yellow]"
-        active = "A" if gs["active_is_a"] else "B"
-        return (f"[b]G{gn} ({_result_str(g)}) · decision {step}/"
-                f"{len(g['observations']) - 1}{vstr}[/b]{mstr}   "
-                f"Turn {gs['turn']} · Active {active} · "
-                f"Priority {gs['priority_player']}   " + cells)
-
     @staticmethod
-    def _info_line(label, p, library) -> str:
-        # Mirrors tui_game's info line: poison (☠) / energy (⚡) only when set.
-        counters = ""
-        if p.get("poison", 0) > 0:
-            counters += f"  ☠ {p['poison']}"
-        if p.get("energy", 0) > 0:
-            counters += f"  ⚡ {p['energy']}"
-        return (f"{label}  ♥ {p['life']}{counters}  "
-                f"mana [{decode.fmt_mana(p['mana'])}]  "
-                f"hand {p['hand_count']}  lib {library}")
+    def _phase_strip(g, gn, step, obs, gs) -> str:
+        """One-line header: game/decision/V context plus the step strip."""
+        pd = bs.phase_data(g, gn, step, obs, gs)
+        cells = " ".join(f"[reverse b]{a}[/reverse b]" if i == pd.cur_step_idx
+                         else f"[dim]{a}[/dim]"
+                         for i, a in enumerate(_STEP_ABBR))
+        match = pd.match.replace("SIDEBOARD", "[b yellow]SIDEBOARD[/b yellow]")
+        return f"[b]{pd.header}[/b]{match}   {pd.context}   " + cells
 
     async def _rebuild_bf(self, perms_sel: str, lands_sel: str, perms,
                           controller: str) -> None:
@@ -949,16 +1226,15 @@ class AnalysisApp(App):
 
     # ----- decision panel -----
 
-    def _decision_text(self, g, step, obs) -> Text:
+    @staticmethod
+    def _decision_text(g, step, dd) -> Text:
         """The model's decision at this step: every legal action with its
         recorded policy probability (sorted most-likely first, chosen action
         marked), then the opponent's actions since the previous decision.
         Clocked seats (a clock= spec knob) get a match-clock line on top."""
         out = Text()
-        clock_line = self._clock_line(g, step)
-        if clock_line:
-            out.append(clock_line + "\n", style="dim")
-        dd = _decision_data(g, step)
+        if dd.clock:
+            out.append(dd.clock + "\n", style="dim")
         if dd.search_line:
             out.append(dd.search_line + "\n", style="dim")
         has_diag = any(r.visits is not None for r in dd.rows)
@@ -977,12 +1253,11 @@ class AnalysisApp(App):
                 out.append("  ◀ chosen", style=style)
             out.append("\n")
 
-        opp_lines = self._opp_actions_before(g, step)
-        if opp_lines:
+        if dd.opp_lines:
             out.append(f"\nOpponent since decision {step - 1}:\n", style="italic")
-            for ln in opp_lines:
+            for ln in dd.opp_lines:
                 out.append(f"  opp → {ln}\n", style="dim")
-        if g.get("shard"):
+        if dd.shard_caveat:
             out.append("\n⛁ shard replay: chosen = argmax(recorded π) — "
                        "sampled decisions (a game's temperature window) are "
                        "reconstructed, not exact. Training shards omit "
@@ -991,145 +1266,166 @@ class AnalysisApp(App):
                        style="dim italic")
         return out
 
-    @staticmethod
-    def _clock_line(g, step) -> str:
-        """Match-clock strip for the decision panel: each clocked seat's bank
-        entering this model decision, as 'remaining / bank' seconds. Empty when
-        neither seat played under a match clock (no clock= knob in its spec).
-        The model's reading is recorded at each of its decisions; the
-        opponent's is the last reading its actions left at or before this step
-        (its full bank before it has acted)."""
-        def fmt(remaining, bank):
-            rem = f"{remaining:.1f}s" if remaining is not None else "?"
-            return f"{rem} / {bank:g}s"
-        parts = []
-        if g.get("clock_bank") is not None:
-            rems = g.get("clock_remaining") or []
-            rem = rems[step] if step < len(rems) else None
-            parts.append("model " + fmt(rem, g["clock_bank"]))
-        if g.get("opp_clock_bank") is not None:
-            opp_rem = g["opp_clock_bank"]
-            for oa in g.get("opp_actions", []):
-                if (oa["before_model_step"] <= step
-                        and oa.get("clock") is not None):
-                    opp_rem = oa["clock"]
-            parts.append("opp " + fmt(opp_rem, g["opp_clock_bank"]))
-        return "⏱ clock: " + " · ".join(parts) if parts else ""
-
     def _refresh_hist_subtitle(self) -> None:
         hist = self.query_one("#vhist", ValueHistogram)
-        if self._cur_game is None:
+        g = self._store.selected()
+        if g is None:
             hist.border_subtitle = ""
             return
-        g = self._games[self._cur_game]
-        v = g["values"][self._cur_step] if self._cur_step < len(g["values"]) else None
+        step = self._store.cur_step
+        v = g["values"][step] if step < len(g["values"]) else None
         vs = f" · V={v:+.3f}" if v is not None else ""
-        hist.border_subtitle = (f"game {self._cur_game} [{_result_str(g)}] · "
-                                f"step {self._cur_step}/{len(g['values']) - 1}{vs}"
-                                f"{_search_caption(g, self._cur_step)}")
+        hist.border_subtitle = (f"game {self._store.cur_game} [{bs.result_str(g)}] · "
+                                f"step {step}/{max(len(g['values']) - 1, 0)}{vs}"
+                                f"{bs.search_caption(g, step)}")
 
-    @staticmethod
-    def _opp_actions_before(g, step):
-        """Opponent actions between model decisions step-1 and step, with runs
-        of identical consecutive actions collapsed ('PASS (x19)')."""
-        descs = [oa["desc"] for oa in g.get("opp_actions", [])
-                 if oa["before_model_step"] == step]
-        lines = []
-        run_desc, run_len = None, 0
-
-        def flush():
-            if run_len == 1:
-                lines.append(run_desc)
-            elif run_len > 1:
-                lines.append(f"{run_desc} (x{run_len})")
-        for desc in descs:
-            if desc == run_desc:
-                run_len += 1
-            else:
-                flush()
-                run_desc, run_len = desc, 1
-        flush()
-        return lines
-
-    # ----- analyses menu -----
+    # ----- analyses / engine menu -----
 
     def _run_menu_entry(self, key: str) -> None:
-        if key == "search":
-            # Replay-to-step MCTS: needs only the game's recorded seed/action
-            # log (not the live env), so it works in shard replay too.
-            if self._cur_game is None:
-                self.notify("Select a game and step first.", severity="warning")
-                return
-            if self._engine_busy:
-                self.notify("Engine is busy (simulating or branching) — try "
-                            "again when it finishes.", severity="warning")
-                return
-            if self._games[self._cur_game].get("live"):
-                self.notify("The live game has no finished record yet.",
-                            severity="warning")
-                return
-            self._engine_busy = True
-            self._refresh_summary()
-            self.notify(f"Replaying game {self._cur_game} to step "
-                        f"{self._cur_step} and searching…")
-            self._search_worker(self._cur_game, self._cur_step)
-            return
         if key in ("whatif", "run5", "run20"):
-            if self._env is None or self._model is None:
-                msg = ("Not available in shard replay — branching/simulating "
-                       "needs a live env."
-                       if getattr(self._args, "shards", None)
-                       else "Live env not ready.")
-                self.notify(msg, severity="warning")
-                return
-            if self._engine_busy:
-                self.notify("Engine is busy (simulating or branching) — try again "
-                            "when it finishes.", severity="warning")
-                return
-            if key == "whatif":
-                if self._cur_game is None:
-                    self.notify("Select a game and step first.", severity="warning")
-                    return
-                self._engine_busy = True
-                self._refresh_summary()
-                self.notify(f"Branching whatif at game {self._cur_game}, "
-                            f"step {self._cur_step}…")
-                self._whatif_worker(self._cur_game, self._cur_step, 3)
-            else:
-                n = 5 if key == "run5" else 20
-                self._engine_busy = True
-                self._refresh_summary(loading=True)
-                self._collect_worker(n)
-            return
+            self._run_engine_entry(key)
+        elif key == "search":
+            self._run_search_entry()
+        elif key == "tree":
+            self._run_tree_entry()
+        elif key in shard_probes.PROBE_KEYS:
+            self._run_probe_entry(key)
+        else:
+            self._run_analysis_entry(key)
 
-        if not self._games:
-            self.notify("No games simulated yet.", severity="warning")
+    def _run_search_entry(self) -> None:
+        """Replay-to-step MCTS at the current game/step: needs only the game's
+        recorded seed/action log (not the live env), so it works in shard and
+        saved-session browsing too; an unreplayable game gets the job's
+        printed refusal in the output tab."""
+        sel, why = self._store.finished_selection()
+        if sel is None:
+            self.notify(why, severity="warning")
             return
-        if self._analysis_busy:
-            self.notify("An analysis is already running.", severity="warning")
+        gn, step, game = sel
+        self.notify(f"Replaying game {gn} to step {step} and searching…")
+        self._submit_job("search", ("search", gn, step, game))
+
+    def _run_tree_entry(self) -> None:
+        """Exact rebuild of the recorded search tree at the current game/step
+        (F7): a recording's searched (kind 1) or tree-followed (kind 2) row
+        only. The job replaces any tree already open."""
+        sel, why = self._store.tree_selection(bool(self._shards))
+        if sel is None:
+            self.notify(why, severity="warning")
             return
-        entry = next((e for e in _ANALYSES if e[0] == key), None)
-        if entry is None:
+        gn, step, game = sel
+        self._tree_jobs += 1
+        self.notify("Rebuilding search tree…")
+        self._submit_job("tree", ("tree", gn, step, game))
+
+    def on_tree_pane_expand_requested(self, message: TreePane.ExpandRequested) -> None:
+        """Fetch one node of the open tree. Expansions queue behind each other
+        (a followed row pre-expands its whole path), so engine_busy stays set
+        until the last one's EngineIdle."""
+        if self._shutting_down or not self._tree_open:
             return
-        _key, label, fn = entry
-        self._analysis_busy = True
-        self.notify(f"Running {key} on {len(self._games)} games…")
-        self._analysis_worker(key, fn)
+        self._tree_jobs += 1
+        self._submit_job("tree", ("tree_expand", int(message.world),
+                                  list(message.path)))
+
+    def _run_engine_entry(self, key: str) -> None:
+        """whatif / run +N: need the live env of a simulate session."""
+        if not self._worker.core.has_env:
+            self.notify("Not available when browsing recorded shards or a "
+                        "saved session — branching/simulating needs a live env."
+                        if self._kind != BROWSE_KIND_SIMULATE
+                        else "Live env not ready.", severity="warning")
+            return
+        if self._store.engine_busy:
+            self.notify(bs.MSG_BUSY, severity="warning")
+            return
+        if key == "whatif":
+            st = self._store
+            if st.cur_game is None:
+                self.notify(bs.MSG_NO_SEL, severity="warning")
+                return
+            gn, step = st.cur_game, st.cur_step
+            self.notify(f"Branching whatif at game {gn}, step {step}…")
+            self._submit_job("whatif", ("whatif", gn, step, 3, st.games[gn]))
+        else:
+            n = 5 if key == "run5" else 20
+            self.notify(f"Simulating {n} more games…")
+            self._submit_collect("collect", n)
+
+    def _run_analysis_entry(self, key: str) -> None:
+        """An ANALYSES (pool) or VIEWS (pool / selected game) entry."""
+        if self._store.analysis_busy:
+            self.notify(bs.MSG_ANALYSIS_BUSY, severity="warning")
+            return
+        job, why = bs.analysis_job(key, self._store.games, self._store.cur_game)
+        if job is None:
+            self.notify(why, severity="warning")
+            return
+        self._store.analysis_busy = True
+        self.notify(f"Running {key}…")
+        self._analysis_worker(key, job)
+
+    def _run_probe_entry(self, key: str) -> None:
+        """Net probes over the browsed records (shard_probes): snapshot on the
+        UI thread, stack + torch on the analysis worker. The probe net loads
+        on first use and is cached; analysis_busy keeps one worker on it."""
+        snap, why = self._store.probe_snapshot(key)
+        if snap is None:
+            self.notify(why, severity="warning")
+            return
+        self._store.analysis_busy = True
+        self.notify(f"Running {key}…")
+        self._probe_worker(key, snap, bs.probe_model_spec(
+            self._args, self._loaded_provenance))
+
+    @work(thread=True, group="analysis")
+    def _analysis_worker(self, title: str, job) -> None:
+        # Pool entries exclude whatif branch traces and the live game
+        # (bs.analysis_pool): not independent finished samples.
+        try:
+            text = job()
+        except Exception:
+            text = traceback.format_exc()
+        self.post_message(AnalysisResult(title, text))
+
+    @work(thread=True, group="analysis")
+    def _probe_worker(self, key: str, snap, model_spec: str) -> None:
+        try:
+            if self._probe_net is None:
+                self._probe_net, self._probe_net_label = \
+                    shard_probes.load_probe_net(model_spec)
+            lines = shard_probes.run_probe(key, self._probe_net, snap)
+            text = "\n".join([f"probe net: {self._probe_net_label}", ""] + lines)
+        except Exception:
+            text = traceback.format_exc()
+        self.post_message(AnalysisResult(key, text))
+
+    # ----- save -----
+
+    def action_save(self) -> None:
+        """ctrl+s: save the finished games as a .rmtrace (prompted path)."""
+        if not bs.saveable_games(self._store.games):
+            self.notify("No finished games to save yet.", severity="warning")
+            return
+        self.push_screen(SavePrompt(self._save_path or _default_save_path()),
+                         self._save_to)
+
+    def _save_to(self, path) -> None:
+        """Write the session to ``path`` (None = cancelled)."""
+        if not path:
+            return
+        try:
+            path, n = bs.save_session(
+                path, self._store.games,
+                bs.session_provenance(self._args, self._loaded_provenance))
+        except Exception as exc:  # noqa: BLE001 — report, never crash the UI
+            self.notify(f"Save failed: {exc}", severity="error", timeout=10)
+            return
+        self._save_path = path
+        self.notify(f"Saved {n} game(s) to {path}")
 
     # ----- misc -----
-
-    def _refresh_summary(self, loading=False) -> None:
-        real = [g for g in self._games if not g.get("whatif")]
-        w = sum(1 for g in real if g["result"] > 0)
-        l = sum(1 for g in real if g["result"] < 0)
-        d = len(real) - w - l
-        line = f"{len(real)} games · {w}W/{l}L/{d}D"
-        n_wf = len(self._games) - len(real)
-        if n_wf:
-            line += f" · +{n_wf} whatif"
-        if loading:
-            line += "  (simulating…)"
-        self.query_one("#summary", Static).update(line)
 
     def _log_output(self, title: str, text: str) -> None:
         log = self.query_one("#output", RichLog)
@@ -1138,21 +1434,18 @@ class AnalysisApp(App):
         log.write(Text(""))
 
     def on_unmount(self) -> None:
-        if self._env is not None:
-            self._env.close()
-
-
-# ── Entry point ───────────────────────────────────────────────────────────────
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Full-screen TUI for analyzing a trained RoboMage model "
-                    "(board-state pager + clickable V(s) histogram + analysis views)")
-    # Flags come from cli_spec.ANALYSIS_TUI_TOOL (single source shared with tui.py).
-    apply_to_parser(parser, ANALYSIS_TUI_TOOL.subs[0])
-    args = parser.parse_args()
-    AnalysisApp(args).run()
+        """Stop the running collect, release the tree, and let the worker
+        close the env on its own thread (bounded join; daemon thread)."""
+        self._shutting_down = True
+        if self._collect_stop is not None:
+            self._collect_stop.set()
+        if self._tree_open:
+            self._worker.submit(("tree_close",))
+        self._worker.submit(("shutdown",))
+        if self._worker.is_alive():
+            self._worker.join(5.0)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit("tui_analysis.py was removed as an entry point; use "
+             "`analysis.py browse` (e.g. --source train/az_data/gen)")
