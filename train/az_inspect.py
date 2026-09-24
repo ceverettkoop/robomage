@@ -2245,9 +2245,11 @@ def _spark(values, min_span=0.0):
     return "".join(_SPARK[i] for i in idx)
 
 
-def render_state(sample, row, net=None, top_n=12):
+def render_state(sample, row, net=None, top_n=12, has_pi=True):
     """One recorded decision: the board, the search's posterior next to the raw
-    net's priors, and the game's eventual result."""
+    net's priors, and the game's eventual result. ``has_pi=False`` marks a row
+    with no search posterior: the search column shows "-" and the actions are
+    ordered by the net's priors instead."""
     from env import MAX_ACTIONS
     obs = sample["obs"][row]
     pi, mask, z = sample["pi"][row], sample["mask"][row], float(sample["z"][row])
@@ -2269,11 +2271,13 @@ def render_state(sample, row, net=None, top_n=12):
                                  decode.action_ctrls(obs), n_legal,
                                  zone_refs=decode.action_zone_refs(obs,
                                                                    MAX_ACTIONS))
-    order = np.argsort(-pi[:n_legal])[:top_n]
+    rank = pi if has_pi or priors is None else priors
+    order = np.argsort(-rank[:n_legal], kind="stable")[:top_n]
     lines.append(f"  {'search':>7} {'net':>7}  action")
     for i in order:
         p_net = "" if priors is None else f"{priors[i]*100:6.1f}%"
-        lines.append(f"  {pi[i]*100:6.1f}% {p_net:>7}  "
+        p_srch = f"{pi[i]*100:6.1f}%" if has_pi else "-"
+        lines.append(f"  {p_srch:>7} {p_net:>7}  "
                      f"{acts[i]['description'][:64]}")
     return lines
 

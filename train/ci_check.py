@@ -38,8 +38,9 @@ fails, so one invocation reports every finding):
           match's searched + one-hot rows write trainer-schema shards, a
           MID-GAME flush is already a valid shard whose unfinished-game rows
           price z=0, game-boundary rewrites never duplicate, z backfill is
-          per-game per-mover, and both readers (shard_replay records,
-          az_inspect samples) round-trip it (train/test_shard_record.py).
+          per-game per-mover, both readers (shard_replay records,
+          az_inspect samples) round-trip it, and the browser net probes take
+          π from the search posterior only (train/test_shard_record.py).
           Torch-free, engine-free, instant.
   treecache The rebuilt-search-tree cache (train/tree_cache.py behind the
           recording browser's Tree tab): synthetic per-world MCTS trees

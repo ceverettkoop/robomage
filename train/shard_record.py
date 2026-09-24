@@ -248,6 +248,22 @@ def followed_diag(num_choices, visits, path, world_idx, origin):
     }
 
 
+def diag_posterior(diag):
+    """The search posterior a diag dict records: its visits (root visits for a
+    search / plan row, the followed subtree's for a tree-followed one)
+    normalized over the menu — the ``SearchResult.policy_target(1.0)`` a
+    searched row's shard ``pi`` is built from. Visits live on menu indices
+    (merged duplicates sit on their representative, like the shard ``pi``).
+    None when there is no diag or it carries no visits."""
+    if diag is None or diag.get("visits") is None:
+        return None
+    v = np.asarray(diag["visits"], dtype=np.float64).reshape(-1)
+    s = float(v.sum())
+    if s <= 0.0:
+        return None
+    return v / s
+
+
 def last_search_origin(diags):
     """Index of the most recent in-game search (kind 1) row in ``diags``, the
     row a tree-followed decision descends from; -1 when there is none."""

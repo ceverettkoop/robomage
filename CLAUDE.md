@@ -637,8 +637,10 @@ offline. Works without a live env/model; pre-sidecar and training-pool shards se
 non-replayable. **View ▸ Analyze Recording… (F10)** opens the recording in a shard-mode
 `BrowserPane` in a second window (live game keeps running), viewpoint defaulting to the opponent.
 The browser also has **net-probe entries** (`train/shard_probes.py`, Qt-free glue over
-`az_inspect`'s probes): recorded-π-vs-net, block permutation importance, card-swap/scalar sweeps,
-pooled KL(search‖net), value calibration. Regression `train/test_shard_record.py` = default
+`az_inspect`'s probes): search-π-vs-net, block permutation importance, card-swap/scalar sweeps,
+pooled KL(search‖net), value calibration. π is always the SEARCH posterior (diag visits, or a
+pool shard's search π) — decisions with none (raw-policy seat, human/behavior rows) are skipped by
+the π views with a note, never compared against the inspection net's own softmax. Regression `train/test_shard_record.py` = default
 `make check` tier `shardrec`; opt-in `gui` tier adds a record-smoke leg.
 
 **Search diagnostics + exact tree rebuild.** Each recorded shard also gets a same-stem

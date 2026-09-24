@@ -28,6 +28,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 from env import MAX_ACTIONS, OBS_SIZE, STATE_SIZE
+from shard_probes import step_search_pi
 
 PLAY_FORMAT = "robomage-play-replay"
 TRACE_FORMAT = "robomage-analysis-traces"
@@ -119,6 +120,10 @@ def save_traces(path, games, provenance=None):
     n_steps = sum(len(g["observations"]) for g in games)
     obs = np.zeros((n_steps, OBS_SIZE), dtype=np.float32)
     probs = np.full((n_steps, MAX_ACTIONS), np.nan, dtype=np.float32)
+    # Per-step search posterior (shard_probes.step_search_pi; NaN row = none)
+    # so the net probes keep their π source after a save/load, which drops
+    # the diag dicts.
+    search_pi = np.full((n_steps, MAX_ACTIONS), np.nan, dtype=np.float32)
     flat = {k: np.zeros(n_steps, dtype=np.float64) for k in _STEP_ARRAYS}
     game_span = np.zeros((len(games), 2), dtype=np.int64)
     full_actions = []
@@ -143,6 +148,10 @@ def save_traces(path, games, provenance=None):
             if p is not None:
                 p = np.asarray(p, dtype=np.float32)
                 probs[row + i, :p.shape[0]] = p
+            sp = step_search_pi(g, i)
+            if sp is not None:
+                sp = np.asarray(sp, dtype=np.float32).reshape(-1)[:MAX_ACTIONS]
+                search_pi[row + i, :sp.shape[0]] = sp
         _fill_step_arrays(flat, g, row, k)
         fa = g.get("full_actions")
         start = len(full_actions)
@@ -175,7 +184,7 @@ def save_traces(path, games, provenance=None):
     # to a bare path that lacks it).
     with open(path, "wb") as f:
         np.savez_compressed(
-            f, obs=obs, probs=probs,
+            f, obs=obs, probs=probs, search_pi=search_pi,
             values=flat["values"].astype(np.float32),
             # NaN marks a missing entry (e.g. a shard record's prefix_len=None);
             # casting NaN to int is undefined, so stamp the -1 sentinel first.
@@ -232,6 +241,7 @@ def load_traces(path, interp_fn=None):
         engine_seed = d["engine_seed"]
         result = d["result"]
         model_is_a = d["model_is_a"]
+        search_pi = d["search_pi"] if "search_pi" in d.files else None
 
         games = []
         for gi, gm in enumerate(meta["games"]):
@@ -272,6 +282,11 @@ def load_traces(path, interp_fn=None):
                 "clock_bank": gm.get("clock_bank"),
                 "opp_clock_bank": gm.get("opp_clock_bank"),
             }
+            if search_pi is not None:
+                game["search_pi"] = [
+                    None if np.isnan(search_pi[i, 0])
+                    else search_pi[i, :int(num_choices[i])].astype(np.float64)
+                    for i in range(lo, hi)]
             if gm.get("shard"):
                 game["shard"] = True
             if gm.get("whatif"):

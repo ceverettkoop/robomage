@@ -3,7 +3,8 @@
 The AZ trainer's shards (``train/az_data/gen/shard_*.npz``: parallel arrays
 ``obs (N, OBS_SIZE)``, ``pi (N, MAX_ACTIONS)``, ``z (N,)``, ``mask (N,
 MAX_ACTIONS)``, plus the n-step TD columns ``q``/``explored``/``td_q (N,)``
-this module does not need — one row per SEARCHED decision root, in
+— this module reads ``q`` only as the behavior-row marker — one row per
+SEARCHED decision root, in
 game-backfill order) carry no game/match ids, yet every row's obs embeds the
 bo3 match context
 (game number, win counters, sideboard flag) and the mover's seat. This module
@@ -89,6 +90,45 @@ def load_shard_rows(data_dir):
         row += n
     return (np.concatenate(obs), np.concatenate(pi), np.concatenate(z),
             np.concatenate(mask), spans)
+
+
+def load_shard_q(spans):
+    """The concatenated ``q`` column for :func:`load_shard_rows`' spans (a
+    shard lacking it contributes zeros — no behavior-row marker)."""
+    out = []
+    for path, start, end in spans:
+        d = np.load(path)
+        q = (np.asarray(d["q"], dtype=np.float32) if "q" in d.files
+             else np.zeros(end - start, dtype=np.float32))
+        out.append(q)
+    return np.concatenate(out) if out else np.zeros(0, dtype=np.float32)
+
+
+def is_search_target_row(obs_row, pi_row, q=None):
+    """Does this shard row's ``pi`` hold a SEARCH posterior? False for a
+    playout-cap fast row (all-zero pi), a one-hot behavior row (``q = NaN``:
+    GUI-recorded human / unsearched decisions, expert BC rows), and a
+    prior-mode sideboard row (one-hot pi at a sideboard root — az_train's
+    ``sb_onehot`` marker). ``q`` None = unknown (only the pi tests apply)."""
+    if float(np.sum(pi_row)) <= 0.0:
+        return False
+    if q is not None and not np.isfinite(q):
+        return False
+    return not (float(obs_row[_IS_SIDEBOARD_IDX]) > 0.5
+                and float(np.max(pi_row)) >= 1.0 - 1e-6)
+
+
+def _row_search_pi(obs_row, pi_row, n, q, diag):
+    """A step's search posterior over its ``n``-action menu: the diag's
+    visits when a search (or tree-follow) ran there, else the shard ``pi``
+    when that is a search target, else None."""
+    from shard_record import diag_posterior
+    post = diag_posterior(diag)
+    if post is not None:
+        return post
+    if is_search_target_row(obs_row, pi_row, q):
+        return pi_row[:n].astype(np.float64)
+    return None
 
 
 def _row_game_number(obs_row):
@@ -263,7 +303,7 @@ def _origin_steps(row_index, diags):
 
 
 def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
-                        interp_fn=None, replay_docs=None, diags=None):
+                        interp_fn=None, replay_docs=None, diags=None, q=None):
     """Pack match segments into analysis-schema trace dicts.
 
     Steps are the viewpoint seat's rows; the other seat's rows are summarized
@@ -288,6 +328,11 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
     ``search_provenance``) and ``shard_stem`` (the shard path sans extension).
     Without sidecars these load as all-None / empty.
 
+    ``search_pi`` (per step) is the step's search posterior for the net
+    probes (:func:`_row_search_pi`): the diag's visits, else the shard ``pi``
+    when :func:`is_search_target_row` holds (``q``, the shard ``q`` column
+    from :func:`load_shard_q`, flags behavior rows), else None.
+
     Matches where the viewpoint seat never held a searched root are skipped
     (nothing to page through).
     """
@@ -296,7 +341,7 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
         doc = replay_docs[mi] if replay_docs else None
         steps, vals, zs, interp, actions, num_choices, probs, opp = \
             [], [], [], [], [], [], [], []
-        g_prefix, row_index, step_diags = [], [], []
+        g_prefix, row_index, step_diags, search_pi = [], [], [], []
         for rows in games:
             for i in rows:
                 n = int(mask[i].sum())
@@ -315,6 +360,9 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
                     probs.append(pi[i, :n].astype(np.float64))
                     row_index.append(int(i))
                     step_diags.append(diags.get(i) if diags else None)
+                    search_pi.append(_row_search_pi(
+                        obs[i], pi[i], n, None if q is None else float(q[i]),
+                        step_diags[-1]))
                     if doc is not None:
                         g_prefix.append(doc["row_prefix"].get(i))
                     if interp_fn is not None:
@@ -355,6 +403,7 @@ def build_match_records(obs, pi, z, mask, matches, viewpoint_is_a=True,
             "diag": step_diags,
             "origin_step": _origin_steps(row_index, step_diags),
             "row_index": row_index,
+            "search_pi": search_pi,
             "diag_prov": doc.get("search_provenance") if doc else None,
             "shard_stem": doc.get("stem") if doc else None,
         })
@@ -428,7 +477,8 @@ def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
                                   interp_fn=interp_fn,
                                   replay_docs=load_replay_sidecars(spans,
                                                                    matches),
-                                  diags=load_diag_sidecars(spans, mask))
+                                  diags=load_diag_sidecars(spans, mask),
+                                  q=load_shard_q(spans))
     if limit is not None:
         records = records[:limit]
     return records

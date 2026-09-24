@@ -13,7 +13,10 @@ human rows via the step observer, sideboard rows between games) and asserts
   * both existing readers round-trip it: az_inspect.load_shard_sample and
     shard_replay.load_records (correct match/game segmentation and per-seat
     viewpoints),
-  * a second match opens a second file.
+  * a second match opens a second file,
+  * the browser net probes' π is the SEARCH posterior (diag visits / a pool
+    shard's search π), never a behavior row or a simulated trace's
+    action_probs, and survives an .rmtrace round-trip.
 
 Run: train/.venv/bin/python train/test_shard_record.py
 """
@@ -168,6 +171,102 @@ def _check_diag(shard_path, n_rows):
     assert d["follow_path"].dtype == np.int32 and d["follow_path"].ndim == 2 \
         and d["follow_path"].shape[0] == n and d["follow_path"].shape[1] >= 1
     return d
+
+
+def _close(a, b):
+    return a is not None and np.allclose(np.asarray(a), np.asarray(b))
+
+
+def _check_search_posterior(ra, rb):
+    """The net probes' π is the SEARCH posterior (shard_probes.step_search_pi):
+    diag visits where a search / tree-follow ran, the recorded π for a
+    sidecar-less pool-shard search row, never a behavior row's one-hot and
+    never a simulated trace's action_probs (the inspection net's own
+    softmax). Rows without one are excluded from the π views with a note."""
+    import gui_session_io
+    import shard_probes
+
+    # Recorded match (A = searcher, B = human): shard rows 0,2,4,7,8 / 1,3,5,6,9.
+    sp = ra["search_pi"]
+    assert _close(sp[0], [0.8, 0.1, 0.1]) and _close(sp[1], [5 / 8, 3 / 8])
+    assert sp[2] is None                  # one-hot sideboard pick (q = NaN)
+    assert _close(sp[3], [0.75, 0.25]) and _close(sp[4], [7 / 8, 1 / 8])
+    sp = rb["search_pi"]
+    assert sp[0] is None and sp[1] is None and sp[4] is None   # human rows
+    assert _close(sp[2], [0.25, 0.75])
+    # The followed row's shard pi is the one-hot behavior row; its posterior
+    # is the followed subtree's visits from the diag.
+    assert _close(sp[3], np.array([40, 2, 1]) / 43.0)
+
+    # A sidecar-less POOL shard: no diags, so a finite-q row's recorded pi IS
+    # the posterior; q = NaN (expert BC) and a one-hot sideboard row are not.
+    obs = np.stack([_obs(True, 0, 1), _obs(True, 0, 2),
+                    _obs(True, 1, 0, sideboard=True), _obs(True, 1, 1)])
+    pi = np.zeros((4, MAX_ACTIONS), dtype=np.float32)
+    pi[0, :2] = [0.3, 0.7]
+    pi[1, 1] = 1.0
+    pi[2, 0] = 1.0
+    pi[3, :2] = [0.0, 0.0]                # playout-cap fast row
+    mask = np.zeros((4, MAX_ACTIONS), dtype=bool)
+    mask[:, :2] = True
+    z = np.array([1, 1, -1, -1], dtype=np.float32)
+    q = np.array([0.2, np.nan, 0.1, 0.0], dtype=np.float32)
+    recs = shard_replay.build_match_records(obs, pi, z, mask, [[[0, 1, 2, 3]]],
+                                            viewpoint_is_a=True, q=q)
+    sp = recs[0]["search_pi"]
+    assert _close(sp[0], [0.3, 0.7]) and sp[1] is None and sp[2] is None \
+        and sp[3] is None, sp
+
+    # A SIMULATED trace: action_probs are the inspection net's softmax and
+    # must not be π. Step 0 searched (merged duplicate: visits live on the
+    # representative index 0, index 1 stays 0), step 1 raw policy (no diag),
+    # step 2 tree-followed.
+    sim = {"observations": [_obs(True, 0, 1), _obs(True, 0, 2), _obs(True, 0, 3)],
+           "num_choices": [3, 2, 2],
+           "action_probs": [np.array([0.1, 0.1, 0.8]), np.array([0.5, 0.5]),
+                            np.array([0.9, 0.1])],
+           "diag": [{"kind": DIAG_KIND_SEARCH, "visits": np.array([6, 0, 2])},
+                    None,
+                    {"kind": DIAG_KIND_FOLLOWED, "visits": np.array([1, 3])}],
+           "result": 1.0}
+    snap = shard_probes.snapshot([sim, ra, rb], cur_game=0, cur_step=1)
+    sample, index, z_valid, pi_valid = shard_probes.build_sample(snap)
+    assert pi_valid.tolist() == [True, False, True,
+                                 True, True, False, True, True,
+                                 False, False, True, True, False]
+    assert np.allclose(sample["pi"][0, :3], [0.75, 0.0, 0.25])
+    assert sample["pi"][1].sum() == 0.0
+    assert np.allclose(sample["pi"][2, :2], [0.25, 0.75])
+    assert z_valid.all()                  # calibration keeps every row
+
+    # π-dependent probes say what they skipped. No net needed on these paths.
+    raw_only = shard_probes.snapshot([{**sim, "diag": [None, None, None]}],
+                                     cur_game=0, cur_step=0)
+    lines = shard_probes.run_probe("probe_kl", None, raw_only)
+    assert lines[0].startswith("no browsed decision carries a search "
+                               "posterior"), lines
+    assert "3 of 3 browsed decisions skipped" in lines[-1], lines
+    lines = shard_probes.run_probe("probe_state", None, snap)   # step 1: raw
+    assert lines[0].startswith("(no search posterior at this decision"), lines
+    assert not any("50.0%" in ln for ln in lines), lines
+    lines = shard_probes.run_probe("probe_state", None,
+                                   {**snap, "sel": (0, 0)})
+    assert any(ln.lstrip().startswith("75.0%") for ln in lines), lines
+
+    # The .rmtrace keeps the resolved posterior (the diag dicts don't survive
+    # a save/load), so a reloaded session probes the same π.
+    tmp = tempfile.mkdtemp(prefix="shard_record_test_trace_")
+    try:
+        path = os.path.join(tmp, "s.rmtrace")
+        gui_session_io.save_traces(path, [sim, ra])
+        games, _meta = gui_session_io.load_traces(path)
+        _s2, _i2, _z2, pv2 = shard_probes.build_sample(
+            shard_probes.snapshot(games))
+        assert pv2.tolist() == pi_valid[:8].tolist()
+        assert _close(games[0]["search_pi"][0], [0.75, 0.0, 0.25])
+        assert games[0]["search_pi"][1] is None
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def main():
@@ -332,6 +431,8 @@ def main():
         assert dd.search_line == ""
         assert all(r.visits is None for r in dd.rows)
 
+        _check_search_posterior(ra, rb)
+
         # Trainer ingestion (skipped when torch isn't installed).
         try:
             import az_train
@@ -408,7 +509,7 @@ def main():
 
         print("shard_record OK: schema, mid-game flush, z backfill, "
               "segmentation, both readers, per-match files, replay sidecar, "
-              "diag sidecar")
+              "diag sidecar, probe search posterior")
         return 0
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

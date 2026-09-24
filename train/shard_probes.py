@@ -2,7 +2,7 @@
 
 The browser (gui_browser / tui_analysis) pages per-game trace dicts; az_inspect
 owns the "what informed this evaluation" probes (single-state block permutation
-importance, card-identity swap, scalar sweeps, recorded-π-vs-net state detail)
+importance, card-identity swap, scalar sweeps, search-π-vs-net state detail)
 and the pooled net-vs-search views (KL divergence by action category, per-bucket
 value calibration). This module is the glue between the two: it snapshots the
 browser's games into az_inspect's flat sample-dict shape (obs/pi/mask/z + a
@@ -17,6 +17,15 @@ and do the stacking and the torch work. The probe net comes from
 :func:`load_probe_net` — ``opponents.load_az_evaluator``'s AZNet (the AZ
 checkpoint when one exists, else the PPO warm-start), so the probes work with
 only a PPO ``gen`` trained.
+
+Per-row π is the SEARCH posterior (:func:`step_search_pi`): a step's diag
+visits (a search / plan / tree-followed decision, simulated or recorded), else
+a shard record's resolved ``search_pi`` (the recorded training π for
+sidecar-less pool shards). A step with neither — a raw-policy seat, a
+human / behavior row, a playout-cap fast row — has no posterior, and the
+π-dependent views (``probe_kl``, ``probe_state``'s search column) exclude it
+and say so. The simulated trace's ``action_probs`` are the inspection net's
+own softmax and are never used as π.
 
 Per-row z: shard-mode records carry an exact per-step game outcome (the shard's
 ``z`` column, preserved by shard_replay); simulated traces don't, so their rows
@@ -34,7 +43,7 @@ from env import MAX_ACTIONS, OBS_SIZE
 # The first four probe THE SELECTED DECISION; the last two pool every browsed
 # decision that has the needed data.
 PROBE_MENU = [
-    ("probe_state", "net state — recorded π vs net at current step"),
+    ("probe_state", "net state — search π vs net at current step"),
     ("probe_blocks", "net blocks — what this evaluation rests on"),
     ("probe_blocks_pi", "net blocks (policy) — what this policy rests on"),
     ("probe_readout", "net readout — V under every matchup column here"),
@@ -90,20 +99,39 @@ def snapshot(games, cur_game=None, cur_step=None):
             "gn": gn,
             "observations": list(g.get("observations") or ()),
             "num_choices": list(g.get("num_choices") or ()),
-            "action_probs": list(g.get("action_probs") or ()),
+            "diag": list(g.get("diag") or ()),
+            "search_pi": (list(g["search_pi"])
+                          if g.get("search_pi") is not None else None),
             "z": list(g.get("z") or ()),
             "result": g.get("result"),
         })
     return {"games": caps, "sel": (cur_game, cur_step)}
 
 
+def step_search_pi(game, step):
+    """The search posterior over ``game``'s menu at ``step`` (a float array,
+    menu-indexed, merged duplicates on their representative), or None when
+    no search ran there. A shard record's resolved ``search_pi`` list wins
+    (shard_replay built it from the diag or the recorded π); otherwise the
+    step's diag visits. Works on a trace dict and a :func:`snapshot` cap."""
+    from shard_record import diag_posterior
+    resolved = game.get("search_pi")
+    if resolved is not None:
+        return resolved[step] if step < len(resolved) else None
+    diags = game.get("diag") or ()
+    return diag_posterior(diags[step]) if step < len(diags) else None
+
+
 def build_sample(snap):
     """Stack a snapshot into the az_inspect sample-dict shape.
 
-    Returns ``(sample, index, z_valid)``: ``sample`` has obs/pi/mask/z (z is 0
-    where unknown), ``index`` maps (game, step) -> row, ``z_valid`` marks rows
-    whose z is a real outcome (shard z, or a finished game's result)."""
-    obs_rows, pi_rows, mask_rows, z_rows, z_ok, index = [], [], [], [], [], {}
+    Returns ``(sample, index, z_valid, pi_valid)``: ``sample`` has
+    obs/pi/mask/z (pi is the search posterior, zeros where none; z is 0 where
+    unknown), ``index`` maps (game, step) -> row, ``z_valid`` marks rows whose
+    z is a real outcome (shard z, or a finished game's result), ``pi_valid``
+    rows that carry a search posterior (:func:`step_search_pi`)."""
+    obs_rows, pi_rows, mask_rows, z_rows, z_ok, pi_ok, index = \
+        [], [], [], [], [], [], {}
     for cap in snap["games"]:
         for step, o in enumerate(cap["observations"]):
             o = np.asarray(o, dtype=np.float32)
@@ -115,13 +143,14 @@ def build_sample(snap):
             mask = np.zeros(MAX_ACTIONS, dtype=bool)
             mask[:n] = True
             pi = np.zeros(MAX_ACTIONS, dtype=np.float32)
-            probs = (cap["action_probs"][step]
-                     if step < len(cap["action_probs"]) else None)
-            if probs is not None and n:
-                p = np.asarray(probs, dtype=np.float32)[:n]
+            post = step_search_pi(cap, step) if n else None
+            has_pi = False
+            if post is not None:
+                p = np.asarray(post, dtype=np.float32).reshape(-1)[:n]
                 s = float(p.sum())
                 if s > 0:
-                    pi[:n] = p / s
+                    pi[:len(p)] = p / s
+                    has_pi = True
             if step < len(cap["z"]):
                 z, ok = float(cap["z"][step]), True
             elif cap["result"] is not None:
@@ -134,12 +163,22 @@ def build_sample(snap):
             mask_rows.append(mask)
             z_rows.append(z)
             z_ok.append(ok)
+            pi_ok.append(has_pi)
     if not obs_rows:
-        return None, {}, None
+        return None, {}, None, None
     sample = {"obs": np.stack(obs_rows), "pi": np.stack(pi_rows),
               "mask": np.stack(mask_rows),
               "z": np.asarray(z_rows, dtype=np.float32)}
-    return sample, index, np.asarray(z_ok, dtype=bool)
+    return (sample, index, np.asarray(z_ok, dtype=bool),
+            np.asarray(pi_ok, dtype=bool))
+
+
+def _no_posterior_note(n_skipped, n_total):
+    """The footer naming rows a π-dependent view left out."""
+    if not n_skipped:
+        return []
+    return [f"({n_skipped} of {n_total} browsed decisions skipped: no search "
+            "posterior — raw-policy, human / behavior, or fast-search rows)"]
 
 
 def _subsample(sample, keep_mask=None, limit=_MAX_POOL_ROWS, seed=0):
@@ -155,7 +194,7 @@ def _subsample(sample, keep_mask=None, limit=_MAX_POOL_ROWS, seed=0):
 def run_probe(key, net, snap):
     """Run one PROBE_MENU view over a snapshot; returns display lines."""
     import az_inspect as azi
-    sample, index, z_valid = build_sample(snap)
+    sample, index, z_valid, pi_valid = build_sample(snap)
     if sample is None:
         return ["no browsable decisions yet"]
 
@@ -166,7 +205,11 @@ def run_probe(key, net, snap):
             return ["select a game and step first"]
         obs_row, mask_row = sample["obs"][row], sample["mask"][row]
         if key == "probe_state":
-            return azi.render_state(sample, row, net=net)
+            if pi_valid[row]:
+                return azi.render_state(sample, row, net=net)
+            return (["(no search posterior at this decision — raw-policy, "
+                     "human / behavior, or fast-search row; net priors only)"]
+                    + azi.render_state(sample, row, net=net, has_pi=False))
         if key in ("probe_blocks", "probe_blocks_pi"):
             imp = azi.state_block_importance(net, sample, row, donors=16)
             sort = "pi" if key == "probe_blocks_pi" else "v"
@@ -193,14 +236,17 @@ def run_probe(key, net, snap):
             return azi.render_sweeps(net, obs_row, mask_row)
 
     if key == "probe_kl":
-        has_pi = sample["pi"].sum(axis=1) > 0
-        if not has_pi.any():
-            return ["no recorded action-probability data to compare against"]
-        sub, n = _subsample(sample, has_pi)
+        total = sample["obs"].shape[0]
+        n_pi = int(pi_valid.sum())
+        if not n_pi:
+            return ["no browsed decision carries a search posterior to compare "
+                    "against (simulated games need a searching seat, e.g. "
+                    "az:gen or mcts:gen)"] + _no_posterior_note(total, total)
+        sub, n = _subsample(sample, pi_valid)
         div = azi.policy_divergence(net, sub)
         return azi.render_divergence(div) + [
-            "", f"(over {n} of {sample['obs'].shape[0]} browsed decisions "
-                "with a recorded posterior)"]
+            "", f"(over {n} of {total} browsed decisions with a search "
+                "posterior)"] + _no_posterior_note(total - n_pi, total)
     if key == "probe_calib":
         if not z_valid.any():
             return ["no decisions with a known outcome yet"]

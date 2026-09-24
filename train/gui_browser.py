@@ -1044,7 +1044,7 @@ class BrowserPane(QWidget):
                 item.setToolTip(_MSG_TREE_NOT_SHARDS)
             self._menu_list.addItem(item)
         # Net probes (az_inspect over the browsed records): per-decision
-        # block-importance / card-swap / sweeps / recorded-π-vs-net, plus the
+        # block-importance / card-swap / sweeps / search-π-vs-net, plus the
         # pooled KL and calibration views. Work in every session mode; the
         # probe net (AZ checkpoint, else PPO warm-start) loads on first use.
         for key, label in shard_probes.PROBE_MENU:
