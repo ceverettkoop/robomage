@@ -80,18 +80,17 @@ RECORD_ROOT = os.path.join(_HERE, "az_data", "baseline")
 # ----------------------------------------------------------------------
 
 def resolve_matchups(deck: Optional[str], opponent: Optional[str],
-                     all_flag: bool, roster: list,
-                     mirrors: bool = False) -> list:
+                     roster: list, mirrors: bool = False) -> list:
     """The ``(player A deck, player B deck)`` cells to play.
 
-    No ``deck`` (or ``--all``) is the full roster grid, every ordered pair
+    No ``deck`` and no ``opponent`` is the full roster grid, every ordered pair
     including mirrors. ``mirrors`` is the grid's diagonal only — every roster
     deck vs itself. A ``deck`` alone is its mirror; ``deck`` + ``opponent``
     one cross cell; ``opponent`` alone is every roster deck vs that one
     player B deck."""
     if mirrors:
         return [(d, d) for d in roster]
-    if all_flag or (not deck and not opponent):
+    if not deck and not opponent:
         return [(d, o) for d in roster for o in roster]
     if deck:
         return [(deck, opponent or deck)]
@@ -700,7 +699,7 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     if not roster:
         print("No league decks found under bin/resources/decks/league")
         return
-    matchups = resolve_matchups(args.deck_a, args.deck_b, args.all, roster,
+    matchups = resolve_matchups(args.deck_a, args.deck_b, roster,
                                 mirrors=getattr(args, "mirrors", False))
     n_games = args.games
     bo3 = is_bo3(args)

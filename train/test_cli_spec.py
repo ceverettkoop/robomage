@@ -132,6 +132,42 @@ def test_removed_flags_hidden():
                   f"TUI form would render it)")
 
 
+# Scripts folded into a train.py / analysis.py / az_inspect.py subcommand (each
+# leaves a stub that exits with its replacement) and front-end modules that are
+# no longer entry points: help text must point at the replacement instead.
+_RETIRED_SCRIPTS = ("fuzz_campaign", "bench_engine", "eval_search_gate",
+                    "az_embed_viz", "sb_shard_report", "tui_analysis.py",
+                    "tui_az_inspect.py")
+
+
+def _help_texts():
+    """(where, text) for every help string cli_spec defines: each Sub's help
+    and each Arg's help, across every tool."""
+    for tool, sub in all_subs():
+        yield f"{tool.key}/{sub.name}", sub.help or ""
+        for a in iter_args(sub):
+            yield f"{tool.key}/{sub.name} {a.name}", a.help or ""
+
+
+def test_help_names_nothing_removed():
+    print("help text never names a removed flag, subcommand or script")
+    unscoped = [r.flag for r in cli_spec.REMOVED_FLAGS
+                if not r.scopes and not r.is_positional]
+    scripts = {t.key: os.path.basename(t.script) for t in ALL_TOOLS}
+    removed_cmds = [f"{scripts.get(tool, tool)} {name}"
+                    for tool, name in cli_spec.REMOVED_SUBCOMMANDS]
+    for where, text in _help_texts():
+        for flag in unscoped:
+            check(not _mentions(text, flag),
+                  f"{where}: help names the removed {flag}")
+        for cmd in removed_cmds:
+            check(cmd not in text,
+                  f"{where}: help names the removed command `{cmd}`")
+        for name in _RETIRED_SCRIPTS:
+            check(name not in text,
+                  f"{where}: help names the retired script {name}")
+
+
 def test_seat_vocabulary():
     print("seat decks are --deck-a/--deck-b and seat agents --player-a/--player-b")
     for tool, sub in all_subs():
@@ -929,6 +965,7 @@ def test_browse_source():
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
+    test_help_names_nothing_removed()
     test_format_default()
     test_scoped_removal()
     test_seat_vocabulary()

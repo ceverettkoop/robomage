@@ -715,6 +715,10 @@ REMOVED_FLAGS = (
     RemovedFlag("--map-top", "use --top", scopes=("az-inspect/drift",)),
     RemovedFlag("--dir", "use --shards", scopes=("az-inspect/sbreport",)),
     RemovedFlag("--last", "use --window", scopes=("az-inspect/sbreport",)),
+    # baseline: the full league grid is the default without deck flags.
+    RemovedFlag("--all", "omit --deck-a/--deck-b (the full league grid is "
+                         "the default without them)",
+                scopes=("train/baseline",)),
     # analysis.py browse: one --source picks simulate / shards / a saved trace.
     RemovedFlag("--shards", "use --source DIR (the shard or recording "
                             "directory to browse)",
@@ -932,7 +936,7 @@ def format_arg(help_extra: str = "") -> Arg:
 
 
 def common_args(binary_default=BINARY):
-    """Args shared by every train.py subcommand (was train.py _add_common).
+    """Args shared by every train.py subcommand.
 
     ``binary_default`` lets a subcommand override the engine binary default —
     PPO training subcommands pass ``INTERACTIVE_BINARY`` (release-by-default;
@@ -947,7 +951,7 @@ def common_args(binary_default=BINARY):
 
 
 def train_opts():
-    """Args shared by training subcommands (was train.py _add_train_opts)."""
+    """Args shared by training subcommands."""
     return [
         Arg("--total-timesteps", "int", default=TOTAL_TIMESTEPS,
             help="Total training timesteps"),
@@ -1839,9 +1843,6 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--deck-b", "str", default=None, suggest="deck",
             help="Restrict player B to this deck (alone: every league deck vs "
                  "it; with --deck-a: that one cell)"),
-        Arg("--all", "flag",
-            help="Force the full league grid even when --deck-a/--deck-b are "
-                 "given (the grid is already the default without them)"),
         Arg("--mirrors", "flag",
             help="Only the grid's diagonal: every league deck piloted by both "
                  "players (one leg per deck, all sharing the run's single eval "

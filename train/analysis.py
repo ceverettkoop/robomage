@@ -3540,7 +3540,7 @@ def cmd_report(args):
     traces_bo3 = any(_match_score(g) is not None for g in games)
     sections = [
         ("Summary", capture(_sim_summary, games)),
-        ("Card importance", capture(_analyze_cardvalue, games, args.top if hasattr(args, "top") else 30)),
+        ("Card importance", capture(_analyze_cardvalue, games, 30)),
         ("Targeting / hold-vs-cast", capture(_sim_targeting, games)),
         ("Value calibration", capture(_analyze_calibration, games)),
         ("Turning points", capture(_analyze_turning_points, games)),

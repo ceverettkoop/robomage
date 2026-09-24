@@ -117,9 +117,10 @@ def test_compose_baseline():
                    "games": 100})
     check(got == ["baseline", "--player-a", "gen", "--games", "100",
                   "--deck-a", "league/bug"], f"baseline argv: {got}")
-    got = argv_of({"kind": "baseline", "games": 50, "overrides": {"all": True}})
-    check(got == ["baseline", "--games", "50", "--all"],
-          f"baseline --all argv: {got}")
+    got = argv_of({"kind": "baseline", "games": 50,
+                   "overrides": {"mirrors": True}})
+    check(got == ["baseline", "--games", "50", "--mirrors"],
+          f"baseline --mirrors argv: {got}")
 
 
 def test_override_beats_alias():
@@ -168,6 +169,10 @@ def test_validation_errors():
     expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
         {"kind": "baseline", "overrides": {"opponent": "league/bug"}}]}),
         "--opponent was removed; use --deck-b", "removed override key (opponent)")
+    expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
+        {"kind": "baseline", "overrides": {"all": True}}]}),
+        "--all was removed; omit --deck-a/--deck-b",
+        "removed override key (baseline all)")
     expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
         {"kind": "az", "overrides": {"deck": "league/bug"}}]}),
         "--deck was removed; use --decks", "removed override key (az deck)")
