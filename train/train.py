@@ -52,7 +52,7 @@ from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
                       LEAGUE_ADAPTIVE_BOOST, LEAGUE_EXPLOITER_FLOOR,
                       EXPLOITER_STEPS, EXPLOITER_CHUNK, parse_shard, shard_tag,
-                      TRAIN_TOOL, apply_to_parser)
+                      TRAIN_TOOL, apply_to_parser, is_bo3)
 # Crash-safe progress sidecars (write-to-temp + os.replace) shared by every
 # resumable driver — the league rotations, exploiter runs, the AZ league, and
 # the curriculum runner. Stdlib-only module so the torch-free callers (tui.py,
@@ -2306,7 +2306,7 @@ def _run_sweep(args, parser):
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
     n_envs = args.n_envs if args.n_envs is not None else N_ENVS_SELF_PLAY
-    env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+    env_kwargs = dict(bo3=is_bo3(args), auto_sideboard=args.auto_sideboard)
 
     print(f"Sweep: training '{args.deck}' vs pool [{', '.join(roster)}]")
     print(f"  total={args.total_timesteps:,}  n_envs={n_envs}")
@@ -2358,7 +2358,7 @@ if __name__ == "__main__":
 
     if args.command in ("train", "sweep", "fixed-model", "alternate", "league",
                         "exploiter"):
-        env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+        env_kwargs = dict(bo3=is_bo3(args), auto_sideboard=args.auto_sideboard)
         # These are the training subcommands — nudge toward a release engine build.
         _warn_if_debug_build(args.binary)
         _apply_ppo_overrides(args)
@@ -2433,16 +2433,12 @@ if __name__ == "__main__":
                         n_envs_override=args.n_envs,
                         no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "observe":
-        # observe defaults to bo3 matches; --bo1 opts back into single games
-        # (--bo3 is accepted as a redundant no-op for backward compatibility).
         observe(args.binary, player_a=args.player_a, player_b=args.player_b,
                 deck_a=args.deck, deck_b=args.opponent,
-                n_games=args.games, bo3=not args.bo1, seed=args.seed,
+                n_games=args.games, bo3=is_bo3(args), seed=args.seed,
                 verbose=args.verbose,
                 play_a=args.play_a, play_b=args.play_b)
     elif args.command == "baseline":
-        # baseline defaults to bo3 matches; --bo1 opts back into single games
-        # (--bo3 is accepted as a redundant no-op for backward compatibility).
         import az_baseline
         az_baseline.run(args, python_sweep=baseline_sweep,
                         resolve_model=_resolve_model)

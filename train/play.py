@@ -19,7 +19,8 @@ from env import BINARY
 # ── Main play loop (text mode) ────────────────────────────────────────────────
 
 def play(binary_path: str, model_path: str, human_deck: str = "delver",
-         model_deck: str = "delver", human_player: str = None, seed: int = None):
+         model_deck: str = "delver", human_player: str = None, seed: int = None,
+         bo3: bool = True):
     """Text-mode game against a trained model, on the shared runner loop.
 
     The human seat is an :class:`opponents.HumanController` — it renders the
@@ -70,14 +71,15 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver",
         binary_path=binary_path,
         deck_a=model_deck if model_is_a else human_deck,
         deck_b=human_deck if model_is_a else model_deck,
-        n_games=1, seed=seed, transcript="narrative", on_action=announce)
+        n_games=1, bo3=bo3, seed=seed, transcript="narrative",
+        on_action=announce)
 
 
 if __name__ == "__main__":
     import os as _os
 
     # Flags come from cli_spec.PLAY_TOOL (single source shared with the TUI).
-    from cli_spec import PLAY_TOOL, append_spec_knob, apply_to_parser
+    from cli_spec import PLAY_TOOL, append_spec_knob, apply_to_parser, is_bo3
     parser = argparse.ArgumentParser()
     apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
@@ -183,7 +185,7 @@ if __name__ == "__main__":
                 import tui_game
                 tui_game.run(args.binary, model_path, human_player=args.player,
                              human_deck=args.human_deck, model_deck=args.model_deck,
-                             bo3=not args.bo1, human_clock_s=args.human_clock,
+                             bo3=is_bo3(args), human_clock_s=args.human_clock,
                              hard_timeout=args.hard_timeout)
             else:
                 parser.error("PySide6 not installed — pip install -r "
@@ -193,7 +195,7 @@ if __name__ == "__main__":
             _sys.exit(gui_main.run(
                 args.binary, model_path, human_player=args.player,
                 human_deck=args.human_deck, model_deck=args.model_deck,
-                bo3=not args.bo1, analysis=args.analysis,
+                bo3=is_bo3(args), analysis=args.analysis,
                 record_shards=args.record_shards,
                 human_clock_s=args.human_clock,
                 hard_timeout=args.hard_timeout))
@@ -201,8 +203,8 @@ if __name__ == "__main__":
         import tui_game
         tui_game.run(args.binary, model_path, human_player=args.player,
                      human_deck=args.human_deck, model_deck=args.model_deck,
-                     bo3=not args.bo1, human_clock_s=args.human_clock,
+                     bo3=is_bo3(args), human_clock_s=args.human_clock,
                      hard_timeout=args.hard_timeout)
     else:
         play(args.binary, model_path, human_deck=args.human_deck, model_deck=args.model_deck,
-             human_player=args.player, seed=args.seed)
+             human_player=args.player, seed=args.seed, bo3=is_bo3(args))

@@ -32,7 +32,7 @@ analysis.py — this front end covers the text/interactive tools.
 
 Run from the repo root (same simulation args as `analysis.py interactive`):
     train/.venv/bin/python train/tui_analysis.py <model.zip|deck> \
-        --opponent scripted [--deck-b mav] [--n-games 20] [--bo3]
+        --opponent scripted [--deck-b mav] [--n-games 20] [--format bo1]
 
 Shard replay — browse recorded AZ self-play instead of simulating (see
 shard_replay.py; the model spec becomes the V(s) net, --no-net keeps the
@@ -61,7 +61,7 @@ from textual.widgets.option_list import Option
 
 import analysis as an
 import decode
-from cli_spec import ANALYSIS_TUI_TOOL, apply_to_parser
+from cli_spec import ANALYSIS_TUI_TOOL, apply_to_parser, is_bo3
 from env import STATE_SIZE, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 # Board building blocks shared with the play board: the bordered card widget
 # (color-identity edges) and the step-strip abbreviations.
@@ -478,7 +478,7 @@ class AnalysisApp(App):
     def on_mount(self) -> None:
         self.title = "RoboMage · analysis"
         self.sub_title = (f"{self._args.model}  vs  {self._args.opponent}"
-                          + ("  (bo3)" if getattr(self._args, "bo3", False) else ""))
+                          + ("  (bo3)" if is_bo3(self._args) else ""))
         menu = self.query_one("#analyses", OptionList)
         for key, label, _fn in _ANALYSES:
             menu.add_option(Option(label, id=key))
@@ -727,7 +727,7 @@ class AnalysisApp(App):
             deck_a = getattr(self._args, "deck_a", None) or "?"
             deck_b = getattr(self._args, "deck_b", None) or "?"
             self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.opponent})"
-                              + ("  · bo3" if getattr(self._args, "bo3", False) else ""))
+                              + ("  · bo3" if is_bo3(self._args) else ""))
         if message.startup_text.strip():
             self._log_output("startup", message.startup_text)
         self._refresh_summary(loading=True)

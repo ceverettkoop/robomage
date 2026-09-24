@@ -153,7 +153,7 @@ sharding (`:175-179`) stay, the weights become dynamic:
   - `--snapshot-every` (steps), `--promote-margin` (default 0.2)
   - `--scripted-anchor-frac` (default 0.1)
   - `--rotate-every` (steps per learner before rotating deck)
-  - `--embed-dim`, `--n-envs`, `--bo3`, `--no-shaping`, `--total-timesteps`
+  - `--embed-dim`, `--n-envs`, `--format`, `--no-shaping`, `--total-timesteps`
 - Driver loop: for each rotation, pick the next learner deck, build the
   `OpponentPool` from the shared snapshot dir (all decks) + scripted anchors,
   train `--rotate-every` steps via the existing `train()` core, save snapshots,

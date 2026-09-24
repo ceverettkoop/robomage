@@ -82,6 +82,7 @@ import sys
 from pathlib import Path
 
 import runner
+from cli_spec import add_args, add_removed_flags, format_arg, is_bo3
 from opponents import (make_controller, ActionListController,
                        HumanController, AutoPassController, PlayController)
 
@@ -236,13 +237,11 @@ def main():
                              "'explore:patient' (or 'patient') for its big-mana profile "
                              "that develops mana and holds expensive cards until castable, "
                              "or 'scripted:easy' / 'scripted:random' for weaker tiers.")
-    parser.add_argument("--bo3", action="store_true",
-                        help="Run a best-of-three match instead of a single game "
-                             "(loser goes first next game; both players sideboard "
-                             "between games). The engine emits GAME_RESULT: per game "
-                             "and MATCH_RESULT: at the end. Composes with --scripted/"
-                             "--scripted-spec; raises the default --max-decisions to "
-                             "1500 (up to 3 games + sideboard decisions).")
+    add_args(parser, format_arg(
+        ". A bo3 match: loser goes first next game; both players sideboard "
+        "between games; the engine emits GAME_RESULT: per game and "
+        "MATCH_RESULT: at the end; the default --max-decisions is 1500 (up to "
+        "3 games + sideboard decisions) vs 500 for bo1"))
     parser.add_argument("--merge-sideboard", action="store_true",
                         help="Fold each deck's SIDEBOARD: section into its mainboard "
                              "(quantities summed for duplicate names) and run from a "
@@ -250,7 +249,7 @@ def main():
                              "fuzzing reach sideboard-only cards. Requires both "
                              "--deck-a and --deck-b (rejected with inline --hand/"
                              "--library seats, whose temp decks have no sideboard "
-                             "to merge) and is rejected with --bo3 (merging the "
+                             "to merge) and requires --format bo1 (merging the "
                              "sideboard and then sideboarding makes no sense). "
                              "Merged decks still shuffle (no --no-shuffle implied).")
     parser.add_argument("--no-shuffle", action="store_true",
@@ -278,7 +277,9 @@ def main():
                         help="Stop after this many decisions (default: 500, "
                              "or scenario's max_decisions if given)")
     parser.add_argument("--binary", default=str(_BINARY), help="Path to robomage binary")
+    add_removed_flags(parser, "harness")
     args = parser.parse_args()
+    bo3 = is_bo3(args)
 
     # Load scenario from JSON if provided
     scenario = {}
@@ -312,12 +313,12 @@ def main():
     # decision cap is 3x the single-game one (the engine's own step cap scales
     # the same way: MAX_STEPS_BO3 = 3 * MAX_STEPS in env.py).
     max_decisions = (args.max_decisions if args.max_decisions is not None
-                     else scenario.get("max_decisions", 1500 if args.bo3 else 500))
+                     else scenario.get("max_decisions", 1500 if bo3 else 500))
 
     if args.merge_sideboard:
-        if args.bo3:
-            parser.error("--merge-sideboard cannot be combined with --bo3 "
-                         "(the merged deck has no sideboard left to board from)")
+        if bo3:
+            parser.error("--merge-sideboard requires --format bo1 (the merged "
+                         "deck has no sideboard left to board from)")
         if hand_a or hand_b or library_a or library_b:
             parser.error("--merge-sideboard only applies to --deck-a/--deck-b deck "
                          "files; inline --hand/--library seats build stacked temp "
@@ -461,7 +462,7 @@ def main():
         wins, losses, _ = runner.run_games(
             controller, controller, label_a=mode_label, label_b=mode_label,
             binary_path=args.binary, deck_a=deck_a_name, deck_b=deck_b_name,
-            n_games=1, bo3=args.bo3, seed=seed, verbose=True,
+            n_games=1, bo3=bo3, seed=seed, verbose=True,
             battlefield_a=bf_a, battlefield_b=bf_b,
             graveyard_a=gy_a, graveyard_b=gy_b,
             exile_a=ex_a, exile_b=ex_b,

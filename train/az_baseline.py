@@ -50,7 +50,7 @@ from typing import Callable, Optional
 
 import archetypes
 from cli_spec import (BIN_DIR, DEFAULT_BASELINE_MODEL, DEFAULT_AZ_TD_N,
-                      append_spec_knob)
+                      append_spec_knob, is_bo3)
 
 from az_selfplay import _ACTOR_BIN   # the build-tier actor (bin/<config>/az_actor)
 
@@ -625,7 +625,7 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     matchups = resolve_matchups(args.deck, args.opponent, args.all, roster,
                                 mirrors=getattr(args, "mirrors", False))
     n_games = args.games
-    bo3 = not args.bo1
+    bo3 = is_bo3(args)
     log_path = args.log or DEFAULT_LOG_PATH
     spec = args.model or DEFAULT_BASELINE_MODEL
     try:

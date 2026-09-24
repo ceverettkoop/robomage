@@ -48,6 +48,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                                QFileDialog)
 
 import gui_session_io
+from cli_spec import format_name
 from game_driver import build_session
 from gui_game import (PlayPane, NewPlaySessionDialog, _ensure_app,
                       _analysis_cfg_from, _smoke_n_from_env, _scan_decks,
@@ -66,7 +67,7 @@ _ANALYSIS_DEFAULTS = {
     "deck_a": "league/ur_delver",
     "deck_b": "",
     "n_games": 20,
-    "bo3": True,
+    "format": "bo3",
     # Search settings (az:/mcts: seats only; None = "(default)" = omit the knob).
     "sims": None,
     "worlds": None,
@@ -220,9 +221,12 @@ class NewAnalysisSessionDialog(QDialog):
         self._n_games.setToolTip("Games to simulate on startup.")
         form.addRow("Games", self._n_games)
 
-        self._bo3 = QCheckBox("Best of three (with sideboarding)")
-        self._bo3.setChecked(bool(get("bo3")))
-        form.addRow(self._bo3)
+        self._format = QComboBox()
+        self._format.addItem("Best of three (with sideboarding)", "bo3")
+        self._format.addItem("Single game", "bo1")
+        self._format.setCurrentIndex(
+            max(0, self._format.findData(get("format"))))
+        form.addRow("Match format", self._format)
 
         self._sim_box = QGroupBox("Simulate games")
         self._sim_box.setLayout(form)
@@ -407,7 +411,7 @@ class NewAnalysisSessionDialog(QDialog):
             # mode it is the number of games to simulate on startup.
             "n_games": (int(self._shard_limit.value()) if shards_on
                         else int(self._n_games.value())),
-            "bo3": self._bo3.isChecked(),
+            "format": self._format.currentData(),
             "think_time": None,
             "match_clock": None,
             "shards": (self._shards_dir.text().strip() or None) if shards_on
@@ -442,7 +446,7 @@ class NewAnalysisSessionDialog(QDialog):
             "deck_a": opts["deck_a"], "deck_b": opts["deck_b"] or "",
             # Persist the sim "Games" field itself (opts["n_games"] is the
             # shard-load cap in shard mode); the shard cap saves separately.
-            "n_games": int(self._n_games.value()), "bo3": opts["bo3"],
+            "n_games": int(self._n_games.value()), "format": opts["format"],
             "sims": spin(self._sims), "worlds": spin(self._worlds),
             "think_time": spin(self._think_time),
             "search_procs": spin(self._search_procs),
@@ -819,7 +823,7 @@ class SessionManager(QObject):
             "deck_a": provenance.get("deck_a"),
             "deck_b": provenance.get("deck_b"),
             "n_games": 0,
-            "bo3": bool(provenance.get("bo3", True)),
+            "format": format_name(bool(provenance.get("bo3", True))),
             "think_time": None, "match_clock": None,
             "seat": provenance.get("seat", "A"),
             "no_net": False, "binary": binary,
@@ -1343,7 +1347,7 @@ class _BrowserSmoke(_ShellSmoke):
                                 f"{self._shards}")
                 return
             opts = {"shards": self._shards, "seat": "A", "no_net": True,
-                    "n_games": 3, "bo3": False, "think_time": None,
+                    "n_games": 3, "format": "bo1", "think_time": None,
                     "match_clock": None, "deck_a": None, "deck_b": None,
                     "binary": mgr._binary}
             if not mgr.new_analysis_session(opts):
@@ -1406,7 +1410,7 @@ class _TreeSmoke(_ShellSmoke):
                             f"{self._base!r}")
             return
         opts = {"shards": rec, "seat": _recording_search_seat(rec),
-                "no_net": True, "n_games": 0, "bo3": False,
+                "no_net": True, "n_games": 0, "format": "bo1",
                 "think_time": None, "match_clock": None, "deck_a": None,
                 "deck_b": None, "binary": mgr._binary}
         if not mgr.new_analysis_session(opts):

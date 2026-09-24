@@ -26,7 +26,7 @@ checkpoint is written or overwritten — this is a pure timing harness.
 
 Usage (run from the repo root):
 
-    train/.venv/bin/python train/bench_nenvs.py --mode league --popart --bo3 \
+    train/.venv/bin/python train/bench_nenvs.py --mode league --popart \
         --envs 24,32,48,64,72 --timesteps 250000
     train/.venv/bin/python train/bench_nenvs.py --deck delver --opponent delver
     train/.venv/bin/python train/bench_nenvs.py --mode scripted --deck burn --opponent mav
@@ -296,7 +296,8 @@ def main(argv=None):
     global _BINARY
     # INTERACTIVE_BINARY = release-by-default, the tier every PPO training
     # driver runs on (plain BINARY is the debug-by-default correctness tier).
-    from cli_spec import INTERACTIVE_BINARY, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM
+    from cli_spec import (INTERACTIVE_BINARY, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
+                          add_args, add_removed_flags, format_arg, is_bo3)
 
     # sb3 defaults to the GPU when available; the ROCm RDNA2 env defaults must
     # be in place before the first cuda touch initializes the HIP runtime
@@ -322,8 +323,7 @@ def main(argv=None):
                    help="Env steps in the timed measured phase per n_envs point, "
                         "after a 1-rollout warmup (rounded up to whole rollouts; "
                         "default 250000).")
-    p.add_argument("--bo3", action="store_true",
-                   help="Run bo3 matches (matches 'train.py league --bo3').")
+    add_args(p, format_arg(" — match the training run being sized"))
     p.add_argument("--popart", action="store_true",
                    help="Use the PopArt PPO subclass, matching a --popart training run.")
     p.add_argument("--embed-dim", type=int, default=EMBED_DIM,
@@ -333,7 +333,9 @@ def main(argv=None):
     p.add_argument("--binary", default=INTERACTIVE_BINARY,
                    help="Path to the robomage binary (default: the release-tier "
                         "binary the training drivers use).")
+    add_removed_flags(p, "bench")
     args = p.parse_args(argv)
+    bo3 = is_bo3(args)
 
     # train.py reads ROBOMAGE_POPART at import time — set it before any
     # `import train` below so _ppo_class() resolves to the PopArt subclass.
@@ -343,7 +345,7 @@ def main(argv=None):
     _BINARY = args.binary
     deck = args.deck
     opp_deck = args.opponent or args.deck
-    env_kwargs = {"bo3": args.bo3}
+    env_kwargs = {"bo3": bo3}
     sweep = ([int(x) for x in args.envs.split(",") if x.strip()]
              if args.envs else _default_env_sweep())
 
@@ -353,9 +355,9 @@ def main(argv=None):
     from cli_spec import PPO_KWARGS
     print(f"Machine: {os.cpu_count()} logical CPUs")
     if args.mode == "league":
-        print(f"Mode: league (mixed self-deck, bo3={args.bo3}, popart={args.popart})")
+        print(f"Mode: league (mixed self-deck, bo3={bo3}, popart={args.popart})")
     else:
-        print(f"Mode: {args.mode}  |  deck={deck}  opponent={opp_deck}  bo3={args.bo3}")
+        print(f"Mode: {args.mode}  |  deck={deck}  opponent={opp_deck}  bo3={bo3}")
     print(f"Sweep n_envs: {sweep}")
     print(f"Per point: 1 warmup rollout + ~{args.timesteps:,} measured steps "
           f"(rollout = {PPO_KWARGS['n_steps']} steps/env)")

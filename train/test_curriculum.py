@@ -63,10 +63,10 @@ def test_compose_league():
                    "decks": ["league/ur_delver", "league/bug"],
                    "steps": 2_000_000,
                    "overrides": {"self_play_frac": 0.2, "promote_margin": 0.05,
-                                 "bo3": True, "tally": False}})
+                                 "format": "bo3", "tally": False}})
     check(got == ["league", "--decks", "league/ur_delver,league/bug",
                   "--self-play-frac", "0.2", "--promote-margin", "0.05",
-                  "--total-timesteps", "2000000", "--bo3"],
+                  "--total-timesteps", "2000000", "--format", "bo3"],
           f"league argv: {got}")
     # 'all' decks means the subcommand's own default roster: no --decks at all.
     got = argv_of({"kind": "league", "decks": "all", "steps": 20000})
@@ -90,9 +90,9 @@ def test_compose_exploiter():
 def test_compose_az():
     print("az phase")
     got = argv_of({"kind": "az", "decks": ["league/bug"], "games": 40,
-                   "overrides": {"sims": 32, "bo1": True}})
+                   "overrides": {"sims": 32, "format": "bo1"}})
     check(got == ["az", "--deck", "league/bug", "--games", "40", "--sims", "32",
-                  "--bo1"], f"az argv: {got}")
+                  "--format", "bo1"], f"az argv: {got}")
 
 
 def test_compose_az_league():
@@ -153,8 +153,18 @@ def test_validation_errors():
         {"kind": "exploiter", "archetype": "nonsense"}]}),
         "must be one of", "bad choice")
     expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
-        {"kind": "league", "overrides": {"bo3": "yes"}}]}),
+        {"kind": "league", "overrides": {"tally": "yes"}}]}),
         "must be true or false", "flag needs a bool")
+    expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
+        {"kind": "league", "overrides": {"format": "bo2"}}]}),
+        "must be one of", "bad format choice")
+    # A removed flag's old dest names its replacement, like the CLI does.
+    expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
+        {"kind": "az", "overrides": {"bo1": True}}]}),
+        "--bo1 was removed; use --format bo1", "removed override key")
+    expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
+        {"kind": "league", "overrides": {"bo3": True}}]}),
+        "--bo3 was removed; use --format bo3", "removed override key (bo3)")
     expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
         {"kind": "az", "overrides": {"actor": True, "no_actor": True}}]}),
         "mutually exclusive", "mutex group")

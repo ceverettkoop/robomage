@@ -184,10 +184,8 @@ _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
 # roster" run): these seed the widgets differently from the CLI Arg defaults but
 # leave cli_spec / the command-line untouched. The multipick '--decks' is
 # pre-checked separately (see _apply_league_defaults) since it needs the mounted
-# widget. '--bo3' is a shared flag (common_args), so we override it here rather
-# than flipping its global cli_spec default.
+# widget.
 _LEAGUE_TUI_DEFAULTS = {
-    "--bo3": True,            # best-of-three on by default
     "--promote-margin": 0,    # 0 disables the snapshot win-rate gate
 }
 

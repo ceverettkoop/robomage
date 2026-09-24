@@ -19,10 +19,10 @@ Usage:
       --mode explore --games 100 --seed 1 \
       --out /tmp/fuzz_delver_maverick_explore.txt
 
-Pass ``--bo3`` to run best-of-three MATCHES instead of single games: that is the
-only way the between-games sideboard phase (and the post-board decks) gets
-fuzzed — the explore tier weights the sideboard swap categories above SIDEBOARD_DONE,
-so it swaps a few cards before finishing each board.
+``--format`` defaults to bo3: best-of-three MATCHES, the only way the
+between-games sideboard phase (and the post-board decks) gets fuzzed — the
+explore tier weights the sideboard swap categories above SIDEBOARD_DONE, so it
+swaps a few cards before finishing each board. ``--format bo1`` runs single games.
 
 Decks are resolved relative to bin/resources/decks/ (e.g. league/ur_delver).
 The verbose transcript (all game narrative + decoded state + action menus) goes
@@ -37,6 +37,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import runner
+from cli_spec import add_args, add_removed_flags, format_arg, is_bo3
 from opponents import make_controller
 
 
@@ -48,16 +49,16 @@ def main():
     p.add_argument("--mode", default="explore",
                    help="Scripted fuzzer tier: 'explore' (default) or 'explore:patient'")
     p.add_argument("--games", type=int, default=100,
-                   help="Number of games (or bo3 matches, with --bo3) to run")
-    p.add_argument("--bo3", action="store_true",
-                   help="Run best-of-three MATCHES instead of single games, so the "
-                        "between-games sideboard phase (and post-board decks) is fuzzed too")
+                   help="Number of bo3 matches (or games, with --format bo1) to run")
+    add_args(p, format_arg())
     p.add_argument("--seed", type=int, default=1, help="Base seed (game i uses seed+i)")
     p.add_argument("--max-decisions", type=int, default=None,
                    help="Optional per-game decision cap (default: run to completion)")
     p.add_argument("--out", required=True, help="Transcript output file")
     p.add_argument("--binary", default=str(runner.BINARY), help="Path to robomage binary")
+    add_removed_flags(p, "fuzz")
     args = p.parse_args()
+    bo3 = is_bo3(args)
 
     # Independent explore controllers per seat so each seat's novelty set is its
     # own (better coverage than sharing one object across both seats).
@@ -69,11 +70,11 @@ def main():
             ctrl_a, ctrl_b,
             label_a=f"A:{args.mode}", label_b=f"B:{args.mode}",
             binary_path=args.binary, deck_a=args.deck_a, deck_b=args.deck_b,
-            n_games=args.games, bo3=args.bo3, seed=args.seed, verbose=True,
+            n_games=args.games, bo3=bo3, seed=args.seed, verbose=True,
             max_decisions=args.max_decisions)
 
     total = wins + losses + draws
-    unit = "matches" if args.bo3 else "games"
+    unit = "matches" if bo3 else "games"
     print(f"{args.deck_a} vs {args.deck_b} [{args.mode}] "
           f"{args.games} {unit}: {wins}W / {losses}L / {draws}D "
           f"(completed {total}) -> {args.out}")

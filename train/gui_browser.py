@@ -53,7 +53,7 @@ import browse_session as bs
 import decode
 import shard_probes
 import tree_rebuild
-from cli_spec import BINARY
+from cli_spec import BINARY, is_bo3
 from env import STATE_SIZE
 from game_driver import stack_target_refs
 from gui_game import (CardRow, CardWidget, HAND_CARD_H, HAND_CARD_W,
@@ -102,7 +102,7 @@ def _tree_ready_status(ev):
 # consumes): opts-dict key -> default.
 _ARG_DEFAULTS = {
     "model": "gen", "opponent": "scripted", "deck_a": None, "deck_b": None,
-    "binary": BINARY, "bo3": False, "think_time": None, "match_clock": None,
+    "binary": BINARY, "format": "bo3", "think_time": None, "match_clock": None,
     "n_games": 20, "shards": None, "seat": "A", "no_net": False,
 }
 
@@ -1170,7 +1170,7 @@ class BrowserPane(QWidget):
             return f"shard replay: {self._args.shards}"
         if self._has_engine:
             return (f"{self._args.model}  vs  {self._args.opponent}"
-                    + ("  · bo3" if getattr(self._args, "bo3", False) else ""))
+                    + ("  · bo3" if is_bo3(self._args) else ""))
         prov = self._provenance_loaded or {}
         if prov.get("model"):
             return f"{prov['model']} traces (opened)"

@@ -7,7 +7,7 @@ in train/game_driver.py — this module only draws the board and marshals input.
 
 Launch it via::
 
-    train/.venv/bin/python train/play.py --gui --scripted --bo1
+    train/.venv/bin/python train/play.py --gui --scripted --format bo1
 
 (`--gui` takes precedence over `--tui`; any opponent spec the TUI accepts —
 scripted tiers, a checkpoint path, az:/mcts: search wrappers — works here too.)
@@ -2048,7 +2048,7 @@ _LAUNCHER_DEFAULTS = {
     "model_deck": "league/ur_delver",
     "opponent": "az:gen",
     "player": "",                            # Random seat
-    "bo3": True,
+    "format": "bo3",
     "human_clock": None,                     # your own bank: unset = untimed
     "hard_timeout": False,                   # an empty bank only informs, by default
     "sims": None,                            # no sims cap — the match clock paces it
@@ -2231,9 +2231,10 @@ class NewPlaySessionDialog(QDialog):
         form.addRow("You play as", self._player)
 
         self._format = QComboBox()
-        self._format.addItem("Best of three (with sideboarding)", True)
-        self._format.addItem("Single game", False)
-        self._format.setCurrentIndex(0 if _cfg_get(cfg, "bo3") else 1)
+        self._format.addItem("Best of three (with sideboarding)", "bo3")
+        self._format.addItem("Single game", "bo1")
+        self._format.setCurrentIndex(
+            max(0, self._format.findData(_cfg_get(cfg, "format"))))
         form.addRow("Match format", self._format)
 
         # YOUR own chess clock — the mirror of the search opponent's "Match
@@ -2559,7 +2560,7 @@ class NewPlaySessionDialog(QDialog):
                             device=self._analysis_device.currentData() or "")
 
         player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
-        bo3 = bool(self._format.currentData())
+        bo3 = self._format.currentData() == "bo3"
         record = self._record.isChecked() and self._is_search_spec(opponent)
         human_clock = self._spin_value(self._human_clock)
         hard_timeout = self._hard_timeout.isChecked()
@@ -2573,7 +2574,7 @@ class NewPlaySessionDialog(QDialog):
         # the fields autofill cleanly next session without double-appending.
         _save_launcher_config(dict(
             human_deck=human_deck, model_deck=model_deck, opponent=opponent,
-            player=player or "", bo3=bo3,
+            player=player or "", format=self._format.currentData(),
             human_clock=human_clock, hard_timeout=hard_timeout,
             sims=self._spin_value(self._sims), worlds=self._spin_value(self._worlds),
             think_time=self._spin_value(self._think_time),

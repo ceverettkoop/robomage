@@ -13,8 +13,8 @@ mover's perspective, 0 on a draw) is the result of the PARTICULAR game the
 decision belonged to — not the match result. Samples are written to
 ``az_data/{deck}/shard_{ts}_{pid}_{n}.npz``.
 
-Run via ``train.py az-selfplay`` (bo1); the ``train.py az`` / ``az-league`` cycles
-drive it in bo3.
+Run via ``train.py az-selfplay`` or the ``train.py az`` / ``az-league`` cycles
+(all bo3 by default; ``--format bo1`` for single games).
 
 ``generate(scripted_opponent_frac=f)`` makes a fraction ``f`` of matches play the
 net+MCTS (focus seat) against the rule-based scripted:hard agent (opponent seat)
@@ -2530,9 +2530,17 @@ def resolve_eval_server(args) -> Optional[bool]:
 
 def run(args) -> None:
     """train.py dispatch entry."""
+    try:
+        from cli_spec import is_bo3
+    except ImportError:
+        from train.cli_spec import is_bo3
+    bo3 = is_bo3(args)
     if getattr(args, "expert", False):
         # Expert shards are always bo3: the pooled az_data/gen window is bo3
         # (see _discard_pre_bo3_shards) and bo1 shards would mix silently.
+        if not bo3:
+            raise SystemExit("error: az-selfplay --expert always writes bo3 "
+                             "shards; drop --format bo1")
         generate_expert(args.deck, games=args.games,
                         mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
                         bo3=True, out_dir=args.out,
@@ -2552,7 +2560,7 @@ def run(args) -> None:
                                              DEFAULT_EXPLORE_DECAY_TURNS)),
              explore_floor=float(getattr(args, "explore_floor",
                                          DEFAULT_EXPLORE_FLOOR)),
-             seed=resolve_seed(args),
+             seed=resolve_seed(args), bo3=bo3,
              out_dir=args.out, use_actor=_resolve_use_actor(args),
              mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
              sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),

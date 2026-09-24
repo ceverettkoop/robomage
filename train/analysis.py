@@ -77,7 +77,7 @@ import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import (ANALYSIS_TOOL, append_spec_knob, apply_to_parser,
                       DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
-                      DEFAULT_SB_ROLLOUT_TURNS)
+                      DEFAULT_SB_ROLLOUT_TURNS, is_bo3)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
@@ -363,21 +363,6 @@ def _is_search_spec(spec) -> bool:
     return isinstance(spec, str) and parse_model_spec(spec).search
 
 
-def _effective_bo3(args) -> bool:
-    """Whether to simulate in bo3. AZ/MCTS models are trained and gated in bo3
-    (Phase 1a), so analysing one defaults to bo3 even without ``--bo3``; a
-    scripted/PPO model keeps ``--bo3`` opt-in. The explicit flag always forces
-    bo3 on."""
-    if getattr(args, "bo3", False):
-        return True
-    model = getattr(args, "model", None)
-    if not isinstance(model, str):
-        return False
-    from opponents import MODEL_KIND_AZ, parse_model_spec
-    ms = parse_model_spec(model)
-    return ms.search or ms.kind == MODEL_KIND_AZ
-
-
 class _AZDistribution:
     """Stand-in for an sb3 action distribution: exposes ``.probs`` like
     MaskableCategorical so ``_get_policy_probs`` reads it unchanged."""
@@ -560,7 +545,7 @@ def _load_model_and_env(args):
     else:
         env_cls = RoboMageEnv
     env = env_cls(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
-                  bo3=_effective_bo3(args))
+                  bo3=is_bo3(args))
     return model, env, opp_model
 
 
@@ -4102,7 +4087,7 @@ def cmd_report(args):
     # Text sections (captured from the verbose analyzers). Bo3-only analyzers
     # (sideboard, boundaries, match calibration) print a one-line "no data"
     # note on bo1 traces, so they are safe to include unconditionally.
-    is_bo3 = any(_match_score(g) is not None for g in games)
+    traces_bo3 = any(_match_score(g) is not None for g in games)
     sections = [
         ("Summary", _capture(_sim_summary, games)),
         ("Card importance", _capture(_analyze_cardvalue, games, args.top if hasattr(args, "top") else 30)),
@@ -4115,7 +4100,7 @@ def cmd_report(args):
         ("Policy entropy", _capture(_analyze_entropy, games)),
         ("Decision consistency", _capture(_analyze_consistency, games, 10)),
     ]
-    if is_bo3:
+    if traces_bo3:
         sections[2:2] = [
             ("Sideboard decisions", _capture(_sim_sideboard_report, games)),
             ("Sideboard preference & net impact", _capture(_analyze_sbvalue, games)),
@@ -4128,7 +4113,7 @@ def cmd_report(args):
     rows = _analyze_cardvalue(games, verbose=False)
     chart_paths = [_chart_cardvalue(rows, args=args),
                    _chart_value_overview(games, args=args)]
-    if is_bo3:
+    if traces_bo3:
         chart_paths.append(_chart_sbvalue(_analyze_sbvalue(games, verbose=False),
                                           args=args))
     imgs = [os.path.basename(p) for p in chart_paths if p]
@@ -4436,7 +4421,7 @@ def cmd_search_compare(args):
     args.deck_a, args.deck_b = deck_a, deck_b
 
     n_workers = max(1, getattr(args, "workers", 1) or 1)
-    bo3 = _effective_bo3(args)
+    bo3 = is_bo3(args)
 
     if n_workers <= 1:
         import runner

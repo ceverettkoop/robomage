@@ -16,8 +16,8 @@ mirror_frac-draw schedule instead (then --games/--mirror-frac apply).
 
 Legs call ``az_selfplay.generate(..., bo3=True)`` IN-PROCESS — the same code
 path the ``az`` / ``az-league`` cycles use — NOT the standalone ``train.py
-az-selfplay`` subcommand, which is bo1: the pooled ``az_data/gen`` window is
-bo3-only and bo1 shards would mix silently. Shards therefore land directly in
+az-selfplay`` subcommand. The pooled ``az_data/gen`` window is bo3-only and
+bo1 shards would mix silently. Shards therefore land directly in
 the normal training pool (``train/az_data/gen`` unless ``--out``) in the pooled
 bo3 schema, so the next az-train window picks them up like any other self-play
 pass. Each leg uses a DISTINCT seed: every leg contributes fresh games (no

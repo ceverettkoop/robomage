@@ -470,6 +470,115 @@ def shard_tag(spec):
     return f".shard{parsed[0]}of{parsed[1]}"
 
 
+# ── Match format (--format bo1|bo3) ──────────────────────────────────────────
+
+FORMAT_BO1 = "bo1"
+FORMAT_BO3 = "bo3"
+FORMAT_CHOICES = (FORMAT_BO3, FORMAT_BO1)
+DEFAULT_FORMAT = FORMAT_BO3
+
+
+def is_bo3(args) -> bool:
+    """True if a parsed namespace (or opts dict) selects best-of-three.
+
+    Reads the ``format`` dest every ``--format`` flag writes; a namespace that
+    carries none (a hand-built one) gets the default format."""
+    fmt = (args.get("format") if isinstance(args, dict)
+           else getattr(args, "format", None))
+    return (fmt or DEFAULT_FORMAT) == FORMAT_BO3
+
+
+def format_name(bo3: bool) -> str:
+    """The ``--format`` value for a bo3 boolean (the inverse of ``is_bo3``)."""
+    return FORMAT_BO3 if bo3 else FORMAT_BO1
+
+
+# ── Removed flags / env vars ──────────────────────────────────────────────────
+#
+# A flag that was renamed or folded into another must ERROR with a pointer to
+# its replacement rather than vanish (argparse's "unrecognized arguments" says
+# nothing about where the knob went) or silently alias. Each entry names the old
+# flag, the hint appended to "`--old` was removed; ", and the scopes it applies
+# to: () = every parser; otherwise tool keys ("train", "play", "harness", …) or
+# "tool/sub" ("train/observe") — scope a removal when the same spelling is still
+# a live flag somewhere else. Every parser built through ``apply_to_parser``
+# registers the entries in its scope as hidden (help-suppressed) options; a
+# standalone parser calls ``add_removed_flags(parser, scope)`` itself. The table
+# is separate from the Tool specs, so removed flags never render in the TUI.
+
+@dataclass(frozen=True)
+class RemovedFlag:
+    flag: str
+    hint: str
+    scopes: tuple = ()
+
+
+REMOVED_FLAGS = (
+    RemovedFlag("--bo1", "use --format bo1"),
+    RemovedFlag("--bo3", "use --format bo3 (the default)"),
+)
+
+# Environment variables that duplicated a flag: name -> hint appended to
+# "environment variable NAME was removed; ".
+REMOVED_ENV_VARS = {}
+
+
+def _scope_matches(entry_scopes, scopes) -> bool:
+    return not entry_scopes or any(s in entry_scopes for s in scopes)
+
+
+def removed_flags_for(*scopes):
+    """The ``RemovedFlag`` entries that apply to any of ``scopes``."""
+    return [r for r in REMOVED_FLAGS if _scope_matches(r.scopes, scopes)]
+
+
+def removed_flag_message(r: RemovedFlag) -> str:
+    return f"{r.flag} was removed; {r.hint}"
+
+
+def removed_flag_hint(flag: str, *scopes):
+    """The error message for ``flag`` if it is a removed flag in ``scopes``,
+    else None (lets non-argparse consumers — curriculum plans — say the same
+    thing the CLI does)."""
+    for r in removed_flags_for(*scopes):
+        if r.flag == flag:
+            return removed_flag_message(r)
+    return None
+
+
+def _removed_flag_action(entry: RemovedFlag):
+    import argparse
+
+    class _Removed(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            parser.error(removed_flag_message(entry))
+    return _Removed
+
+
+def add_removed_flags(parser, *scopes) -> None:
+    """Register every removed flag in ``scopes`` (plus the global ones) on
+    ``parser`` as a hidden option whose use errors with the replacement hint,
+    and fail at startup on any removed environment variable that is set."""
+    import argparse
+    check_removed_env(parser)
+    for r in removed_flags_for(*scopes):
+        parser.add_argument(r.flag, nargs="?", help=argparse.SUPPRESS,
+                            dest=f"_removed_{r.flag.lstrip('-').replace('-', '_')}",
+                            action=_removed_flag_action(r))
+
+
+def check_removed_env(parser=None, environ=None) -> None:
+    """Exit with an error naming the replacement if any removed environment
+    variable is set. Through ``parser.error`` when a parser is given."""
+    environ = os.environ if environ is None else environ
+    for name, hint in REMOVED_ENV_VARS.items():
+        if name in environ:
+            msg = f"environment variable {name} was removed; {hint}"
+            if parser is not None:
+                parser.error(msg)
+            raise SystemExit(f"error: {msg}")
+
+
 # ── Spec dataclasses ──────────────────────────────────────────────────────────
 
 @dataclass
@@ -522,6 +631,14 @@ class Sub:
     help: str = ""
     items: list = field(default_factory=list)
     mode: str = "capture"
+    tool: str = None     # owning Tool.key, set by Tool (removed-flag scoping)
+
+    @property
+    def scopes(self) -> tuple:
+        """Removed-flag scopes this subcommand's parser answers to."""
+        if self.tool is None:
+            return ()
+        return (self.tool, f"{self.tool}/{self.name}")
 
 
 @dataclass
@@ -534,8 +651,22 @@ class Tool:
     flat: bool = False   # True when the script has a flat parser (no subcommand
                          # token in argv, e.g. play.py / test_harness.py)
 
+    def __post_init__(self):
+        for s in self.subs:
+            s.tool = self.key
+
 
 # ── Reusable argument groups (mirror the helper functions in the scripts) ─────
+
+def format_arg(help_extra: str = "") -> Arg:
+    """--format bo1|bo3: the match format, shared by every tool that plays
+    games. Default bo3 everywhere; read it back with ``is_bo3(args)``."""
+    return Arg("--format", "choice", choices=FORMAT_CHOICES,
+               default=DEFAULT_FORMAT,
+               help="Match format: bo3 = best-of-three matches (deck swap + "
+                    "sideboarding between games), bo1 = single games "
+                    f"(default {DEFAULT_FORMAT})" + help_extra)
+
 
 def common_args(binary_default=BINARY):
     """Args shared by every train.py subcommand (was train.py _add_common).
@@ -548,8 +679,7 @@ def common_args(binary_default=BINARY):
     engine while iterating on a card/rule."""
     return [
         Arg("--binary", "str", default=binary_default, help="Path to robomage binary"),
-        Arg("--bo3", "flag",
-            help="Best-of-three match mode (deck swap + sideboarding between games)"),
+        format_arg(),
     ]
 
 
@@ -945,8 +1075,7 @@ def sim_args():
                  "generalist encodes no deck); a scripted opponent defaults to a "
                  "mirror match (--deck-a)."),
         Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
-        Arg("--bo3", "flag",
-            help="Run best-of-three matches (decks must include SIDEBOARD entries)"),
+        format_arg(),
         Arg("--out", "str", default=None,
             help="Directory for saved charts/reports (default: train/analysis_out/)"),
         Arg("--show", "flag",
@@ -1205,9 +1334,6 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="RNG seed for reproducible games (game N uses seed+N; default: random)"),
         Arg("--verbose", "flag",
             help="Dump full board state (battlefield, hands, mana, stack, graveyards) at each decision"),
-        Arg("--bo1", "flag",
-            help="Single-game mode. observe defaults to bo3 matches; this opts back "
-                 "into one-off games (--bo3 is a redundant no-op here)"),
         *common_args(),
     ]),
     Sub("baseline",
@@ -1265,9 +1391,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--seed", "int", default=None,
             help="Base RNG seed (matchup i uses seed + i*100003; default: randomly "
                  "drawn and printed)"),
-        Arg("--bo1", "flag",
-            help="Single-game mode. baseline defaults to bo3 matches; this opts back "
-                 "into one-off games (--bo3 is a redundant no-op here)"),
+        format_arg(),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
@@ -1276,7 +1400,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     # ── AlphaZero (Phase C) ───────────────────────────────────────────────────
     Sub("az-selfplay",
-        "Generate AlphaZero self-play data (focus deck vs mirror + roster, bo1)", items=[
+        "Generate AlphaZero self-play data (focus deck vs mirror + roster)", items=[
         Arg("--deck", "str", default="delver", suggest="deck",
             help="Focus deck (.dk stem); its opponent is a mirror with "
                  "P=--mirror-frac, else a uniform league-roster draw"),
@@ -1314,10 +1438,13 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--seed", "int", default=None,
             help="Base RNG seed (default: randomly drawn at launch and "
                  "printed, so the run stays reproducible after the fact)"),
+        format_arg(" — the pooled az_data/gen window is bo3, so write bo1 "
+                   "shards to a separate --out"),
         Arg("--expert", "flag",
             help="Write EXPERT demonstration shards instead of self-play: "
                  "scripted:hard pilots both seats and pi is a one-hot on the "
-                 "expert's action (always bo3 to match the pooled shard window; "
+                 "expert's action (always bo3 to match the pooled shard window, so "
+                 "--format bo1 is rejected; "
                  "sims/worlds/checkpoint are ignored)"),
         Arg("--expert-opponent", "str", default=None,
             help="Expert mode only: scripted-agent spec for the OPPONENT seat "
@@ -1403,9 +1530,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "training data — the cross-net signal pure self-play lacks"),
         _c_puct(),
         Arg("--seed", "int", default=1),
-        Arg("--bo1", "flag",
-            help="Single-game gate. az-eval defaults to bo3 match win-rate; this "
-                 "opts back into one-off games"),
+        format_arg(" — the gate's win rate is per match in bo3"),
         Arg("--workers", "int", default=None,
             help="Process-pool fan-out over the gate's matchup panel (default "
                  "max(1, cpu-1), capped at the panel size; 1 = serial). "
@@ -1423,7 +1548,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     Sub("az",
         "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "
         "opponent matrix (default: whole league; pass one --deck to fix a focus). "
-        "bo3 by default (per-game value target); --bo1 to opt out",
+        "bo3 by default (per-game value target); --format bo1 to opt out",
         items=[
         Arg("--deck", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated FOCUS deck pool the generalist pilots "
@@ -1556,9 +1681,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "net+MCTS pilots the focus seat (only the net seat's decisions "
                  "become training samples). Forces the Python backend; 1.0 = "
                  "every game vs scripted hard. Default 0 = pure self-play."),
-        Arg("--bo1", "flag",
-            help="Run bo1 self-play + gate. The az cycle defaults to bo3 matches "
-                 "with a per-game value target; this opts back into single games"),
+        format_arg(" — self-play + gate; the value target is per game either way"),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
@@ -1566,7 +1689,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("az-league",
         "AlphaZero league: rotate az cycles (self-play -> train -> gate) over the "
-        "decks/league/ roster (bo3 by default; --bo1 to opt out)", items=[
+        "decks/league/ roster (bo3 by default; --format bo1 to opt out)", items=[
         Arg("--resume", "flag",
             help="Resume an interrupted az-league run from its saved progress "
                  "(checkpoints/_az_league_progress.json, rewritten after each deck "
@@ -1726,10 +1849,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "become training samples). Forces the Python backend; 1.0 = "
                  "every game vs scripted hard. Default 0 = pure self-play "
                  "(persisted in the resume sidecar)."),
-        Arg("--bo1", "flag",
-            help="Run bo1 self-play + gate for every slot. The league defaults to "
-                 "bo3 matches with a per-game value target; this opts back into "
-                 "single games (persisted in the resume sidecar)"),
+        format_arg(" — every slot's self-play + gate; the value target is per "
+                   "game either way (persisted in the resume sidecar)"),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
@@ -1899,8 +2020,7 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "checkbox for this."),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
-        Arg("--bo1", "flag",
-            help="Play a single game instead of the default best-of-three match (TUI only)"),
+        format_arg(),
         Arg("--player", "choice", choices=("A", "B"), default=None,
             help="Which player the human controls, in CLI text mode (default: random)"),
         Arg("--seed", "int", default=None,
@@ -1929,6 +2049,7 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
         Arg("--scripted", "flag", help="Drive both sides with the rule-based scripted agent"),
         Arg("--no-shuffle", "flag",
             help="Don't shuffle libraries — deck-file order = draw order (implied by --hand-a/--hand-b)"),
+        format_arg(),
         Arg("--seed", "int", default=None, help="RNG seed (default: 1, or the scenario's seed)"),
         Arg("--max-decisions", "int", default=None, help="Stop after N decisions (default: 500)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
@@ -2012,8 +2133,15 @@ def _add_one(target, a: Arg):
         target.add_argument(a.name, **kwargs)
 
 
+def add_args(parser, *args):
+    """Add individual cli_spec Args to a standalone argparse parser."""
+    for a in args:
+        _add_one(parser, a)
+
+
 def apply_to_parser(parser, sub: Sub):
-    """Populate an argparse (sub)parser from a Sub spec."""
+    """Populate an argparse (sub)parser from a Sub spec, plus the hidden
+    removed-flag options in the Sub's scope (see ``REMOVED_FLAGS``)."""
     for item in sub.items:
         if isinstance(item, MutexGroup):
             group = parser.add_mutually_exclusive_group(required=item.required)
@@ -2021,6 +2149,7 @@ def apply_to_parser(parser, sub: Sub):
                 _add_one(group, a)
         else:
             _add_one(parser, item)
+    add_removed_flags(parser, *sub.scopes)
 
 
 def iter_args(sub: Sub):

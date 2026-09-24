@@ -64,7 +64,7 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
                       DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
-from cli_spec import DEFAULT_AZ_ROWS_PER_GAME
+from cli_spec import DEFAULT_AZ_ROWS_PER_GAME, is_bo3
 from env import _MATCH_CTX_START as _GAME_NUMBER_IDX
 from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, VERDICT_REJECT,
                        floor_locked, sprt_cap_line, sprt_cap_verdict,
@@ -2509,7 +2509,6 @@ def run_train(args) -> None:
 
 def run_eval(args) -> None:
     import az_selfplay
-    # az-eval defaults to bo3 matches; --bo1 opts back into single games.
     az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
             c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
@@ -2525,7 +2524,7 @@ def run_eval(args) -> None:
                                DEFAULT_GATE_MAX_ROUNDS),
             alpha=getattr(args, "gate_alpha", DEFAULT_GATE_ALPHA),
             seed=args.seed if args.seed is not None else 1,
-            bo3=not getattr(args, "bo1", False),
+            bo3=is_bo3(args),
             workers=getattr(args, "workers", None),
             use_actor=_resolve_use_actor(args),
             actor_device=getattr(args, "actor_device", "cpu"),
@@ -2553,7 +2552,6 @@ def run_cycle(args) -> None:
     # to fix one focus.
     focus = _split_decks(getattr(args, "deck", None))
     roster = _split_decks(getattr(args, "opponents", None))
-    # az defaults to bo3 matches (per-game value target); --bo1 opts back to bo1.
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
              full_search_frac=float(getattr(args, "full_search_frac",
                                             DEFAULT_AZ_FULL_SEARCH_FRAC)),
@@ -2599,7 +2597,7 @@ def run_cycle(args) -> None:
              expert_opponent=getattr(args, "expert_opponent", None),
              selfplay_exclude=_split_decks(getattr(args, "selfplay_exclude",
                                                    None)),
-             roster=roster, bo3=not getattr(args, "bo1", False),
+             roster=roster, bo3=is_bo3(args),
              use_actor=_resolve_use_actor(args),
              actor_device=getattr(args, "actor_device", "cpu"),
              eval_server=az_selfplay.resolve_eval_server(args),
@@ -2674,7 +2672,7 @@ def run_league(args) -> None:
               eval_server=az_selfplay.resolve_eval_server(args),
               cross_world=not getattr(args, "no_cross_world", False),
               resume=args.resume,
-              bo3=not getattr(args, "bo1", False))
+              bo3=is_bo3(args))
 
 
 if __name__ == "__main__":

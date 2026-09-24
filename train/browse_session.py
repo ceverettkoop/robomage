@@ -35,6 +35,7 @@ import numpy as np
 
 import analysis as an
 import decode
+from cli_spec import is_bo3
 import tree_rebuild
 from env import (STATE_SIZE, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX,
                  _STEP_ONEHOT_START,
@@ -278,7 +279,7 @@ def replay_search_decks(game, args):
     deck_a = getattr(args, "deck_a", None)
     deck_b = getattr(args, "deck_b", None)
     if deck_a and deck_b:
-        return deck_a, deck_b, bool(getattr(args, "bo3", True))
+        return deck_a, deck_b, is_bo3(args)
     return None
 
 
@@ -979,7 +980,7 @@ class EngineCore:
         deck_a = getattr(self.args, "deck_a", None) or "?"
         deck_b = getattr(self.args, "deck_b", None) or "?"
         return (f"{deck_a} (model)  vs  {deck_b} ({self.args.opponent})"
-                + ("  · bo3" if getattr(self.args, "bo3", False) else ""))
+                + ("  · bo3" if is_bo3(self.args) else ""))
 
     # ----- jobs (each ends by emitting EngineIdle) -----
 

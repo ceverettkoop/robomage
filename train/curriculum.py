@@ -47,7 +47,8 @@ import subprocess
 import sys
 import time
 
-from cli_spec import (TRAIN_TOOL, MutexGroup, REPO_ROOT, iter_args, shard_tag)
+from cli_spec import (TRAIN_TOOL, MutexGroup, REPO_ROOT, iter_args,
+                      removed_flag_hint, shard_tag)
 from progress_io import read_progress_state, write_progress_state
 
 TRAIN_SCRIPT = os.path.join(REPO_ROOT, "train", "train.py")
@@ -279,6 +280,13 @@ def _validate_phase(phase, where: str) -> None:
                 f"runner (it decides per phase whether a relaunch resumes) and "
                 f"may not be set in a plan")
         if dest not in args:
+            removed = removed_flag_hint("--" + dest.replace("_", "-"),
+                                        "train", f"train/{kind}")
+            if removed:
+                raise PlanError(
+                    f"{where} ({kind}): override {dest!r}: {removed} (a plan "
+                    f"override is keyed by the new flag's dest, e.g. "
+                    f"--format bo1 -> \"format\": \"bo1\")")
             near = sorted(d for d in args if d.startswith(dest[:3]))
             raise PlanError(
                 f"{where} ({kind}): unknown override {dest!r} — "

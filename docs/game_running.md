@@ -150,10 +150,15 @@ benchmarks; there is no other decision loop in the tree.
 
 ## The tools and where they sit
 
+Every Python tool that plays games takes the same match-format flag,
+`--format bo1|bo3`, defaulting to **bo3** (the old `--bo1`/`--bo3` switches
+error with a pointer to it).
+
 - **`test_harness.py`** — state sculpting (hands/zones/scenarios) + any
-  controller; `run_games` under the hood. bo1 by default (sculpted scenarios).
+  controller; `run_games` under the hood. Pass `--format bo1` for a single
+  game (sculpted scenarios usually want one).
 - **`train.py observe`** — per-seat agent specs (`--player-a/-b`,
-  `--play-a/-b`), any matchup. **Defaults to bo3**; pass `--bo1` for single
+  `--play-a/-b`), any matchup. bo3 by default; `--format bo1` for single
   games.
 - **`train.py baseline`** — the AZ generalist (`az:gen` = `gen__azfinal.pt`)
   under the full league search budget (1028 sims × 8 worlds) vs scripted

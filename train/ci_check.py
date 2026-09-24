@@ -26,6 +26,9 @@ fails, so one invocation reports every finding):
   curriculum The curriculum plan schema and the argv each phase kind composes
           for its train.py subcommand, the resume argv forms, and the plan-hash
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
+  clispec The shared CLI vocabulary (train/test_cli_spec.py): removed flags
+          error with their replacement hint and stay out of --help and the
+          TUI forms; --format defaults to bo3 on every tool. Torch-free.
   gatesprt The AZ promotion gate's sequential test (train/gate_sprt.py): the
           hypotheses are symmetric about 0.5, draws score half/half, the
           verdict is monotone and mirror-symmetric, the round cap's tie-break
@@ -201,7 +204,7 @@ LEAGUE = sorted(
 )
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
-ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "treecache",
+ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
              "modelspec", "concede", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
@@ -375,6 +378,19 @@ def tier_curriculum(rep):
         rep.error("curriculum", "curriculum plan/argv violation "
                                 f"(test_curriculum.py exit {r.returncode}):\n"
                                 f"{r.stdout}{r.stderr}")
+
+
+def tier_clispec(rep):
+    """Shared CLI vocabulary regression (train/test_cli_spec.py): the removed-
+    flag table errors with its hint on every parser, hides from --help and the
+    TUI forms, and --format defaults to bo3 everywhere. Torch-free."""
+    r = subprocess.run([sys.executable, "train/test_cli_spec.py"],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        rep.error("clispec", "CLI vocabulary violation "
+                             f"(test_cli_spec.py exit {r.returncode}):\n"
+                             f"{r.stdout}{r.stderr}")
 
 
 def tier_gatesprt(rep):
@@ -651,7 +667,7 @@ def tier_gui(rep):
          dict(env, ROBOMAGE_GUI_SMOKE="8"),
          [sys.executable, "train/play.py", "--gui",
           "--human-deck", "league/ur_delver",
-          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+          "--model-deck", "league/gw_maverick", "--scripted", "--format", "bo1"]),
         # Recording leg: the driver step-observer records every >1-choice
         # decision as a one-hot shard row (a scripted opponent never searches,
         # so this exercises the recorder without torch); gui_main.run's
@@ -660,13 +676,13 @@ def tier_gui(rep):
          dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=rec_dir),
          [sys.executable, "train/play.py", "--gui",
           "--human-deck", "league/ur_delver",
-          "--model-deck", "league/gw_maverick", "--scripted", "--bo1",
+          "--model-deck", "league/gw_maverick", "--scripted", "--format", "bo1",
           "--record-shards"]),
         ("analysis-window smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_ANALYSIS_SMOKE="1"),
          [sys.executable, "train/play.py", "--gui", "--analysis",
           "--human-deck", "league/ur_delver",
-          "--model-deck", "league/gw_maverick", "--scripted", "--bo1"]),
+          "--model-deck", "league/gw_maverick", "--scripted", "--format", "bo1"]),
         ("session save/reopen smoke",
          dict(env, ROBOMAGE_GUI_SESSION_SMOKE="1"),
          [sys.executable, "train/gui_main.py"]),
@@ -688,7 +704,7 @@ def tier_gui(rep):
           "--human-deck", "league/ur_delver",
           "--model-deck", "league/gw_maverick",
           "--model", "mcts:uniform?sims=32&worlds=2", "--search-procs", "1",
-          "--bo1", "--record-shards"]),
+          "--format", "bo1", "--record-shards"]),
         ("tree smoke",
          dict(env, ROBOMAGE_TREE_SMOKE="1",
               ROBOMAGE_BROWSER_SMOKE_SHARDS=tree_rec_dir),
@@ -1060,6 +1076,8 @@ def main(argv=None):
             tier_vocab(rep)
         elif t == "curriculum":
             tier_curriculum(rep)
+        elif t == "clispec":
+            tier_clispec(rep)
         elif t == "gatesprt":
             tier_gatesprt(rep)
         elif t == "shardrec":

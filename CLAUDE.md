@@ -28,6 +28,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   `train/gui_analysis.py`). There is NO C++
   front end (the old raylib GUI was removed); the engine is always a `--machine` subprocess.
 - Uses clang-format configuration in `.clang-format`
+- Every Python CLI flag lives in `train/cli_spec.py` (the TUI/GUI forms are built from it). The
+  match format is one flag everywhere, `--format bo1|bo3` (default bo3, PPO training included).
+  When a flag is renamed or removed, add the old spelling to
+  `cli_spec.REMOVED_FLAGS` (global or scoped to a tool / `tool/sub`) so it errors with
+  "`--old` was removed; use …" instead of vanishing — parsers built with `apply_to_parser` pick the
+  table up automatically, a standalone argparse calls `add_removed_flags(parser, scope)`. A removed
+  environment variable goes in `cli_spec.REMOVED_ENV_VARS` (enforced by `check_removed_env`).
 - DO NOT MODIFY CARD SCRIPTS
 - When given a long list of tasks or bugs to fix, do them one at a time (unless it is sensible to batch some)
   and use subagents for each one. Instruct the subagents to not spawn additional agents. 
@@ -117,7 +124,7 @@ background** and make the live output inspectable by the user:
  Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
  `--verbose` for the full per-decision transcript (board state + action menu + narrative),
  and supply `--deck`/`--opponent` to test cards/decks relevant to recently implemented features.
- **observe defaults to bo3 matches**; pass `--bo1` for single games (`--bo3` is a redundant no-op).
+ **observe defaults to bo3 matches**; pass `--format bo1` for single games.
 -**Running games programmatically: `runner.run_match`.** `runner.run_match(agent_a, agent_b,
  deck_a=…, deck_b=…, games=, bo3=True, seed=1, transcript="compact|verbose|narrative|quiet",
  out=…)` — agent specs are scripted tiers ("scripted"/"hard", "easy", "random", "explore"),
@@ -131,6 +138,11 @@ background** and make the live output inspectable by the user:
 `train/test_harness.py` runs the engine with `--machine --narrative`, with game narrative visible alongside decoded binary state.
 
 **Shuffling:** by default each library is shuffled with the seeded RNG (deterministic per `--seed`). Pass `--no-shuffle` for a **stacked deck** so deck-file order = draw order (first 7 = starting hand). `--no-shuffle` is implied by `--hand-a`/`--hand-b` (they build a stacked temp deck), so inline-hand and scenario examples stay deck-ordered; a plain `--deck-a X --deck-b Y` run shuffles unless you add `--no-shuffle`.
+
+**Match format:** like every tool, the harness defaults to `--format bo3` — a best-of-three
+match: once your specs run out it keeps auto-advancing through game 1, sideboarding, and games
+2–3, up to `--max-decisions` (default 1500). Pass `--format bo1` for a single game (default cap
+500), which is usually what a sculpted card scenario wants; `--merge-sideboard` requires it.
 
 **Engine flags used by the harness:**
 - `--no-shuffle` — skip initial library shuffle; cards are drawn in deck file order (opt-in; see Shuffling above)
@@ -507,6 +519,8 @@ Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO`
   `--q-mix`; `z` stays the anchor — see [`docs/alphazero_status.md`](docs/alphazero_status.md)).
 - Shaping is budgeted **per game** against ±1.0 (`SHAPING_EPISODE_CAP` in `train/env.py`); bo1 and
   bo3 shaped identically.
+- Format: PPO training (like every tool) plays bo3 matches by default; `--format bo1` switches to
+  single games. The reward and shaping above are per game either way.
 
 **Bo3-relevant state-vector fields** (exact indices/normalizers live in the `src/machine_io.h`
 layout block — don't hardcode them here):
