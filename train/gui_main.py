@@ -833,17 +833,6 @@ def _torch_available():
     return importlib.util.find_spec("torch") is not None
 
 
-def _recording_value_spec(opponent_spec):
-    """The V(s) model spec for browsing a recording, derived from the play
-    session's opponent spec: strip the ?knob query; an mcts: wrapper searches
-    with the PPO heads, so its value net is the bare PPO spec."""
-    base = (opponent_spec or "az:gen").split("?", 1)[0].strip()
-    low = base.lower()
-    if low.startswith("mcts:"):
-        return base[5:] or "gen"
-    return base or "az:gen"
-
-
 class ShardBrowserWindow(QMainWindow):
     """A SECOND top-level window hosting a shard-mode BrowserPane, so a live
     play session's recording can be analyzed WITHOUT tearing the game down
@@ -1057,8 +1046,10 @@ class MainWindow(QMainWindow):
         opts = {
             "shards": rec.out_dir,
             "seat": "A" if session.opp_is_a else "B",     # the opponent's rows
-            "model": _recording_value_spec(
-                (self.manager._opts or {}).get("model_path")),
+            # The browser resolves the opponent's own spec (opponents.
+            # parse_model_spec), so V(s), probes and replay search all read
+            # the net that seat played with.
+            "model": (self.manager._opts or {}).get("model_path") or "az:gen",
             "no_net": not _torch_available(),
             "n_games": 0,                                  # load every match
             "binary": self._binary,

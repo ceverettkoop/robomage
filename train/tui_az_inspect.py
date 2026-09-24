@@ -298,17 +298,21 @@ class InspectApp(App):
             self._mat = azi.card_embedding(self._sd)
             status = [f"{path.split('/')[-1]} [{self._sd_kind}]  "
                       f"steps={azi.checkpoint_meta(path).get('steps', '?')}"]
+            warm = net is not None and str(path).endswith(".zip")
             if net is None:
                 status.append("no AZ checkpoint — PPO fallback: weight-space "
                               "and embedding views only")
+            elif warm:
+                status.append("no AZ checkpoint — AZNet warm-started from "
+                              "this PPO checkpoint")
             # Exposure is weights-only and cheap, so it loads whenever an AZ
             # net did: it is what the embedding views filter on when there is
             # no shard sample (and the stricter signal even when there is one).
-            # Under the PPO fallback its only baseline would be the checkpoint
-            # itself (a zero diff), so it is skipped.
+            # Under the PPO fallback or a PPO warm-start its only baseline
+            # would be the checkpoint itself (a zero diff), so it is skipped.
             try:
-                if net is None:
-                    raise FileNotFoundError("PPO fallback session")
+                if net is None or warm:
+                    raise FileNotFoundError("PPO checkpoint session")
                 self._exp = azi.card_exposure(path)
                 self._exposure = azi.exposure_counts(self._exp)
                 trained = int(self._exp["moved"][azi.named_card_ids()].sum())

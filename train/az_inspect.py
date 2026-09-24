@@ -227,17 +227,43 @@ def resolve_spec(spec="gen", checkpoint_dir=AZ_CKPT_DIR, prefer="final"):
 
 
 def load_net(spec="gen", checkpoint_dir=AZ_CKPT_DIR, prefer="final"):
-    """Resolve an AZ checkpoint spec and load it. Returns ``(net, path)``.
+    """Resolve a net spec and load it as an AZNet. Returns ``(net, path)``.
+
+    A bare name is read as an ``az:`` spec. The AZ checkpoint
+    (:func:`resolve_spec`, which also takes snapshot names inside
+    ``checkpoint_dir``) when one exists, else the shared warm-start ladder's
+    rung (``opponents.resolve_model_checkpoint``, as ``load_az_evaluator``):
+    an AZNet transcribed from the PPO checkpoint via ``az_net.from_ppo`` —
+    ``path`` is then that ``.zip``. A ``mcts:`` / bare ``.zip`` spec names a
+    PPO net (``opponents.parse_model_spec``) and always loads that way.
+    Raises FileNotFoundError when neither family has a checkpoint.
 
     torch is imported lazily so the vocab-side helpers above stay importable in a
     torch-free environment."""
-    from az_net import load_az
-    path = resolve_spec(spec, checkpoint_dir=checkpoint_dir, prefer=prefer)
-    if path is None:
-        raise FileNotFoundError(
-            f"no AZ checkpoint for {spec!r} in {checkpoint_dir} — run "
-            "'train.py az' (which warm-starts from the PPO gen checkpoint) first")
-    return load_az(path), path
+    from az_net import from_ppo, load_az
+    from opponents import (MODEL_KIND_AZ, MODEL_KIND_PPO, parse_model_spec,
+                           resolve_model_checkpoint)
+    ms = parse_model_spec(spec)
+    if (not ms.prefix and ms.kind == MODEL_KIND_PPO
+            and not ms.base.lower().endswith(".zip")):
+        # This inspector reads a bare name ('gen', a snapshot stem) as an AZ net.
+        ms = parse_model_spec(f"az:{ms.base}")
+    path = None
+    if ms.kind == MODEL_KIND_AZ:
+        path = resolve_spec(ms.base, checkpoint_dir=checkpoint_dir,
+                            prefer=prefer)
+    if path is None and ms.has_net:
+        try:
+            path = resolve_model_checkpoint(ms)
+        except ValueError:
+            path = None
+    if path and os.path.isfile(path):
+        if path.endswith(".pt"):
+            return load_az(path), path
+        return from_ppo(path), path
+    raise FileNotFoundError(
+        f"no AZ checkpoint for {spec!r} in {checkpoint_dir} and no PPO "
+        "checkpoint to warm-start from — train the PPO gen first")
 
 
 def checkpoint_meta(path):

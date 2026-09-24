@@ -50,6 +50,12 @@ fails, so one invocation reports every finding):
           node-for-node — P/N/W/rep/sel_mask/children exact, argmax-visit PV
           descent identical — and a bad format version is refused
           (train/test_tree_cache.py). Torch-free, engine-free, instant.
+  modelspec The model-spec resolver (opponents.parse_model_spec + loaders):
+          the kind/prefix/base/canonical-evaluator table for every spec
+          family, knob stripping, tree_rebuild's recorded-evaluator mapping,
+          and — loaders stubbed — that one spec's search evaluator, V(s) model
+          and probe net read the SAME checkpoint through every consumer
+          (train/test_model_spec.py). Torch-free, engine-free, instant.
   concede The CR 104.3a concession sentinels (CONCEDE_GAME -2 / CONCEDE_MATCH
           -3, accepted wherever the engine reads a decision): a bo1 concede
           loses for the conceding seat, a bo3 game concede is an ordinary game
@@ -196,7 +202,7 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "gatesprt", "shardrec", "treecache",
-             "concede", "obsinv",
+             "modelspec", "concede", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
@@ -422,6 +428,14 @@ def tier_treecache(rep):
     per-world trees round-trip node-for-node (see train/test_tree_cache.py).
     Torch-free, engine-free."""
     _run_test_script(rep, "treecache", "train/test_tree_cache.py", "tree-cache")
+
+
+def tier_modelspec(rep):
+    """Model-spec resolver regression (opponents.parse_model_spec): the
+    resolver table and one-net-per-spec across every consumer (see
+    train/test_model_spec.py). Torch-free, engine-free."""
+    _run_test_script(rep, "modelspec", "train/test_model_spec.py",
+                     "model-spec resolver")
 
 
 def tier_treerebuild(rep):
@@ -1052,6 +1066,8 @@ def main(argv=None):
             tier_shardrec(rep)
         elif t == "treecache":
             tier_treecache(rep)
+        elif t == "modelspec":
+            tier_modelspec(rep)
         elif t == "treerebuild":
             tier_treerebuild(rep)
         elif t == "concede":

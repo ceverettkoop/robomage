@@ -669,7 +669,12 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper. Lazily re-exports `scripted_action` for back-compat callers; the real rule-based agent logic lives in `train/scripted_agent.py`.
 - `train/scripted_agent.py` — the rule-based `ScriptedAgent`/`scripted_action` implementation (smart mulligan, combat simulation, evaluation-based targeting, deck-specific combo lines); imported by `opponents.py`, `train.py`, `bench_engine.py`, `analysis.py`, and re-exported from `env.py`
 - `train/runner.py` — THE game-running module: `drive_game` (the single decision loop, with per-decision hooks), `run_games` (env-per-game orchestration + transcripts), `run_match` (spec-based front door for scripting: agents/decks/bo3/seed/output as parameters). See `docs/game_running.md`.
-- `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools
+- `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools, and THE
+  model-spec resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator`,
+  `load_spec_net`, `load_spec_value_model`): one rule for which net a spec names — bare /
+  `mcts:` = the PPO checkpoint, `az:`/`azraw:`/`.pt` = the AZ warm-start ladder — so a
+  browser's V(s), net probes and replay search always read the same checkpoint. Use it instead
+  of stripping prefixes/knobs by hand (regression `train/test_model_spec.py`, tier `modelspec`)
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
 - `train/curriculum.py` — multi-phase training plans behind `train.py curriculum`: the plan
@@ -702,7 +707,8 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   clickable V(s) histogram, every `analysis.py` REPL view, `whatif` branching); behind
   `./tui.sh`'s `analysis-tui → browse` menu entry
 - `train/analysis_session.py` — Qt-free analysis core: `AnalysisSession` (detached engine,
-  delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig`, `load_analysis_evaluator`
+  delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig` (its evaluator comes from
+  `opponents.load_spec_evaluator`)
 - `train/search_env.py` — `SearchRoboMageEnv` (snapshot protocol client, mirror pool,
   `spawn_detached_mirror`)
 - `train/mcts.py` — determinized PUCT search: `run_search`/`run_search_parallel` (report

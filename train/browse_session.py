@@ -301,7 +301,7 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
     shard) and verified against the recorded visits — so the table is the
     played search, not a fresh one."""
     import mcts
-    from analysis_session import load_analysis_evaluator
+    from opponents import load_spec_evaluator
 
     if not an._game_is_replayable(game):
         return ("This game has no recorded seed/action log. Training-pool "
@@ -340,7 +340,7 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
             lines.append("This decision is not a legal search root "
                          "(safe=0 prompt) — no search possible here.")
             return "\n".join(lines)
-        evaluator, label = load_analysis_evaluator(eval_spec)
+        evaluator, label = load_spec_evaluator(eval_spec)
         is_sb = bool(expected[_IS_SIDEBOARD_IDX] > 0.5)
         if is_sb:
             # A replayed sideboard prompt gets the same flat plan search the

@@ -57,8 +57,6 @@ Interactive session commands (via 'interactive'):
 """
 
 import argparse
-import glob
-import re
 import sys
 import os
 import time
@@ -338,40 +336,6 @@ def _extract_interpretable(obs):
     return f
 
 
-_CHECKPOINTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
-_SNAPSHOT_VER_RE = re.compile(r"__v(\d+)\.zip$")
-
-
-def _resolve_model_path(path):
-    """Resolve a model argument to a checkpoint path.
-
-    Accepts an explicit path, the literal ``scripted``, or the generalist stem
-    ``gen`` (→ ``checkpoints/gen__final.zip``, else the newest
-    ``checkpoints/gen__v{steps}.zip`` snapshot). The deck a model pilots is
-    supplied separately via ``--deck-a``/``--deck-b``, never inferred here.
-    Mirrors train.py's ``_resolve_model``.
-    """
-    if path == "scripted" or os.path.exists(path):
-        return path
-    # 'gen' → 'gen__final.zip' or newest 'gen__v*.zip'.
-    final = os.path.join(_CHECKPOINTS_DIR, f"{path}__final.zip")
-    if os.path.exists(final):
-        return final
-    snaps = glob.glob(os.path.join(_CHECKPOINTS_DIR, f"{path}__v*.zip"))
-    if snaps:
-        def _ver(p):
-            m = _SNAPSHOT_VER_RE.search(p)
-            return int(m.group(1)) if m else -1
-        return max(snaps, key=_ver)
-    # Legacy fallbacks.
-    for cand in (os.path.join(_CHECKPOINTS_DIR, path),
-                 os.path.join(_CHECKPOINTS_DIR, f"{path}.zip"),
-                 os.path.join(_CHECKPOINTS_DIR, f"{path}_final.zip")):
-        if os.path.exists(cand):
-            return cand
-    return path  # let the loader raise a meaningful error
-
-
 # ── AlphaZero (AZNet) checkpoint support ──────────────────────────────────────
 #
 # analysis.py only ever touches a model through three surfaces: the value head
@@ -387,31 +351,6 @@ def _resolve_model_path(path):
 # critic, so absolute V(s) magnitudes are not directly comparable across the two.
 
 
-def _is_az_model_spec(spec):
-    """True if ``spec`` names an AZNet checkpoint rather than a PPO ``.zip``.
-
-    Recognizes an explicit ``az:``/``azraw:`` prefix, a bare ``.pt`` path, or a
-    deck shorthand that (a) does NOT resolve to a PPO checkpoint and (b) DOES
-    resolve to an AZ checkpoint under checkpoints/az/. The PPO-first ordering
-    keeps normal checkpoints on the unchanged path (and avoids importing az_net
-    for them)."""
-    if not isinstance(spec, str):
-        return False
-    s = spec.strip()
-    low = s.lower()
-    if low.startswith("az:") or low.startswith("azraw:"):
-        return True
-    if s.endswith(".pt"):
-        return True
-    if _resolve_model_path(s) != s:  # a PPO checkpoint resolved — not AZ
-        return False
-    try:
-        from az_net import resolve_az_checkpoint
-    except Exception:
-        return False
-    return resolve_az_checkpoint(s) is not None
-
-
 def _is_search_spec(spec) -> bool:
     """True if ``spec`` is a search spec (``az:`` / ``mcts:`` prefix) whose trace
     games should be PLAYED by the real MCTS SearchController.
@@ -420,8 +359,8 @@ def _is_search_spec(spec) -> bool:
     ``"az:"`` requires the colon in the third position, so ``"azraw:gen"`` (an
     ``r`` there) does not match. Bare PPO specs and ``.pt`` paths are likewise
     raw-policy. The prefix is the only lever: no new CLI flag."""
-    return (isinstance(spec, str)
-            and spec.strip().lower().startswith(("az:", "mcts:")))
+    from opponents import parse_model_spec
+    return isinstance(spec, str) and parse_model_spec(spec).search
 
 
 def _effective_bo3(args) -> bool:
@@ -432,43 +371,11 @@ def _effective_bo3(args) -> bool:
     if getattr(args, "bo3", False):
         return True
     model = getattr(args, "model", None)
-    if isinstance(model, str) and model.strip().lower().startswith("mcts:"):
-        return True
-    return _is_az_model_spec(model)
-
-
-def _az_spec_base(spec):
-    """Strip an ``az:``/``azraw:`` prefix from a model spec (else return it)."""
-    s = spec.strip()
-    for pfx in ("az:", "azraw:"):
-        if s.lower().startswith(pfx):
-            return s[len(pfx):].strip()
-    return s
-
-
-def _inspection_spec(spec):
-    """Map a play spec to the spec that loads the INSPECTION net (value/probs/
-    SHAP), which never runs a search: drop any ``?query`` knobs (they configure
-    the SearchController, not the net / checkpoint path), and reduce an ``mcts:``
-    search spec to its base checkpoint — the search's PPO evaluator net. ``az:`` /
-    ``azraw:`` keep their prefix so ``_load_az_analysis_model`` loads an AZNet."""
-    if not isinstance(spec, str):
-        return spec
-    base = spec.split("?", 1)[0].strip()
-    if base.lower().startswith("mcts:"):
-        return base[len("mcts:"):].strip()
-    return base
-
-
-def _resolve_any_path(spec):
-    """Resolve a model spec to a checkpoint path, AZ-aware (for deck inference /
-    display). AZ specs resolve via resolve_az_checkpoint (falling back to the PPO
-    checkpoint used for a warm-start); everything else via _resolve_model_path."""
-    if _is_az_model_spec(spec):
-        from az_net import resolve_az_checkpoint
-        base = _az_spec_base(spec)
-        return resolve_az_checkpoint(base) or _resolve_model_path(base)
-    return _resolve_model_path(spec)
+    if not isinstance(model, str):
+        return False
+    from opponents import MODEL_KIND_AZ, parse_model_spec
+    ms = parse_model_spec(model)
+    return ms.search or ms.kind == MODEL_KIND_AZ
 
 
 class _AZDistribution:
@@ -545,30 +452,20 @@ class _AZModelAdapter:
         return action, None
 
 
-def _load_az_analysis_model(spec):
-    """Load an AZNet for analysis from a model spec. Returns (adapter, path).
+def _note_warm_start(base, ppo_path):
+    print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo_path}")
 
-    Resolves an AZ checkpoint (az:/azraw: prefix, ``.pt`` path, or deck shorthand)
-    via resolve_az_checkpoint; when only a PPO checkpoint exists it warm-starts an
-    AZNet from it (``from_ppo``) so an ``az:`` spec still yields an AZNet-shaped
-    model.
 
-    Delegates to the shared ladder ``opponents.load_az_evaluator``, injecting
-    analysis's own LENIENT ``_resolve_model_path`` (Decision 5: analysis does not
-    adopt the strict ``resolve_checkpoint``) and a printer for the warm-start
-    notice. The warm-start rung reports the PPO path, so the callback captures
-    it."""
-    from opponents import load_az_evaluator
-    base = _az_spec_base(spec)
-    warm: list = []
-
-    def _note(b, ppo_path):
-        warm.append(ppo_path)
-        print(f"No AZ checkpoint for {b!r}; warm-starting an AZNet from PPO {ppo_path}")
-
-    evaluator, resolved = load_az_evaluator(
-        base, ppo_resolver=_resolve_model_path, on_warm_start=_note)
-    return _AZModelAdapter(evaluator._net), (warm[0] if warm else resolved)
+def load_inspection_model(spec):
+    """The INSPECTION model (value / probs / SHAP) for a model spec: the net
+    ``opponents.parse_model_spec`` says the spec names, never a search. The
+    MaskablePPO checkpoint for a PPO spec (bare / ``mcts:``), else the AZ
+    ladder's AZNet wrapped in :class:`_AZModelAdapter` (``az:`` / ``azraw:`` /
+    ``.pt``; a missing AZ checkpoint warm-starts from PPO, with a notice).
+    Both expose ``policy.predict_values`` / ``policy.get_distribution``."""
+    from opponents import MODEL_KIND_AZ, load_spec_value_model
+    model, kind = load_spec_value_model(spec, on_warm_start=_note_warm_start)
+    return _AZModelAdapter(model) if kind == MODEL_KIND_AZ else model
 
 
 def _apply_search_budget_flags(args):
@@ -602,24 +499,16 @@ def _apply_search_budget_flags(args):
 
 def _load_model_and_env(args):
     """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
-    try:
-        from sb3_contrib import MaskablePPO
-    except ImportError:
-        from stable_baselines3 import PPO as MaskablePPO
-
     from opponents import is_scripted_spec
 
     _apply_search_budget_flags(args)
     binary = getattr(args, "binary", BINARY)
 
-    # The INSPECTION net loads from the search-prefix/query-stripped spec (an
-    # mcts: search plays with a PPO net, so inspect that PPO net; az: inspects
-    # the AZNet). The FULL original spec (with knobs) travels as _play_spec below
-    # so the trace loop can build the matching SearchController.
-    insp_model_spec = _inspection_spec(args.model)
-    insp_opp_spec = _inspection_spec(args.opponent)
-    opp_scripted = is_scripted_spec(insp_opp_spec)
-    model_path = _resolve_any_path(insp_model_spec)
+    # The INSPECTION net is the net the spec names (opponents.parse_model_spec:
+    # an mcts: search plays with a PPO net, so inspect that PPO net; az:
+    # inspects the AZNet). The FULL original spec (with knobs) travels as
+    # _play_spec below so the trace loop can build the matching SearchController.
+    opp_scripted = is_scripted_spec(args.opponent)
 
     # Deck resolution. A checkpoint no longer encodes a deck — there is one
     # generalist that pilots whatever deck it is told to. So the model's deck
@@ -646,10 +535,7 @@ def _load_model_and_env(args):
     # title) see the actual decks even when they were inferred, not just given.
     args.deck_a, args.deck_b = deck_a, deck_b
 
-    if _is_az_model_spec(insp_model_spec):
-        model, _ = _load_az_analysis_model(insp_model_spec)
-    else:
-        model = MaskablePPO.load(model_path)
+    model = load_inspection_model(args.model)
     # Remember the ORIGINAL spec on the loaded (inspection) model so the trace
     # loop can decide HOW to play the games (raw policy vs MCTS) — the model
     # object here is always the inspection net (SHAP/value/probs); a search spec
@@ -660,10 +546,7 @@ def _load_model_and_env(args):
     model._scripted_opp_spec = args.opponent if opp_scripted else None
     opp_model = None
     if not opp_scripted:
-        if _is_az_model_spec(insp_opp_spec):
-            opp_model, _ = _load_az_analysis_model(insp_opp_spec)
-        else:
-            opp_model = MaskablePPO.load(_resolve_model_path(insp_opp_spec))
+        opp_model = load_inspection_model(args.opponent)
         opp_model._play_spec = args.opponent
 
     # A search spec (az:/mcts:) plays its trace games with a real MCTS
@@ -4316,33 +4199,6 @@ def cmd_interactive(args):
 # is the natural search-aware analysis view.
 
 
-def _build_search_evaluator(spec):
-    """(evaluator, None) for the search-compare tool.
-
-    The second element is always ``None`` — a checkpoint no longer encodes a deck
-    (one generalist), so the deck is supplied explicitly via --deck-a/--deck-b.
-    An AZ spec -> AZEvaluator (falling back to a PPO warm-start); a PPO spec ->
-    PPOEvaluator; ``uniform`` / ``mcts:uniform`` -> the torch-free UniformEvaluator."""
-    from mcts import PPOEvaluator, UniformEvaluator
-    base = _az_spec_base(spec)
-    if base.lower() in ("uniform", "mcts:uniform"):
-        return UniformEvaluator(), None
-    if _is_az_model_spec(spec):
-        # Only the AZ rung is shared (opponents.load_az_evaluator); the uniform
-        # and PPOEvaluator rungs above/below are this tool's own.
-        from opponents import load_az_evaluator
-
-        def _note(b, ppo):
-            print(f"No AZ checkpoint for {b!r}; warm-starting an AZNet from PPO {ppo}")
-
-        evaluator, _ = load_az_evaluator(
-            base, ppo_resolver=_resolve_model_path, on_warm_start=_note)
-        return evaluator, None
-    from opponents import _load_model
-    path = _resolve_model_path(base)
-    return PPOEvaluator(_load_model(path)), None
-
-
 def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed,
                                     sb_branches=DEFAULT_SB_BRANCHES,
                                     sb_worlds=DEFAULT_SB_WORLDS,
@@ -4534,9 +4390,10 @@ def _run_search_compare_batch(payload):
     except ImportError:
         pass
     import runner
-    from opponents import make_controller
+    from opponents import load_spec_evaluator, make_controller
 
-    evaluator, _ = _build_search_evaluator(model_spec)
+    evaluator, _ = load_spec_evaluator(
+        model_spec, on_warm_start=_note_warm_start)
     ctrl_model = _make_search_compare_controller(
         evaluator, sims=sims, worlds=worlds, c_puct=c_puct, rng_seed=seed,
         sb_branches=sb_branches, sb_worlds=sb_worlds,
@@ -4583,9 +4440,10 @@ def cmd_search_compare(args):
 
     if n_workers <= 1:
         import runner
-        from opponents import make_controller
+        from opponents import load_spec_evaluator, make_controller
 
-        evaluator, _ = _build_search_evaluator(args.model)
+        evaluator, _ = load_spec_evaluator(
+            args.model, on_warm_start=_note_warm_start)
         ctrl_model = _make_search_compare_controller(
             evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
             rng_seed=args.seed, sb_branches=args.sb_branches,

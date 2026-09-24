@@ -487,22 +487,17 @@ def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
 # ── Optional value net (lazy torch) ──────────────────────────────────────────
 
 def load_value_model(spec):
-    """Load the V(s) net for a model spec ('gen', a .zip/.pt path, az:/azraw:).
+    """Load the V(s) net for a model spec — the net
+    ``opponents.parse_model_spec`` says it names (bare / ``mcts:`` → the PPO
+    critic, ``az:`` / ``azraw:`` / ``.pt`` → the AZ ladder's net), so V(s)
+    describes the same checkpoint the browser's probes and replay search use.
 
-    Reuses analysis.py's loaders, so PPO checkpoints and AZNets both come back
-    as an object exposing ``policy.predict_values(obs_t)``. Torch imports stay
-    inside this call.
+    Reuses analysis.load_inspection_model, so PPO checkpoints and AZNets both
+    come back as an object exposing ``policy.predict_values(obs_t)``. Torch
+    imports stay inside this call.
     """
     import analysis as an
-    insp = an._inspection_spec(spec)
-    if an._is_az_model_spec(insp):
-        model, _path = an._load_az_analysis_model(insp)
-        return model
-    try:
-        from sb3_contrib import MaskablePPO
-    except ImportError:
-        from stable_baselines3 import PPO as MaskablePPO
-    return MaskablePPO.load(an._resolve_any_path(insp))
+    return an.load_inspection_model(spec)
 
 
 def apply_net_values(model, records, batch_size=256):

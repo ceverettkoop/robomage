@@ -42,25 +42,19 @@ class RebuildError(Exception):
 
 
 def evaluator_spec_for(prov: dict) -> str:
-    """The ``analysis_session.load_analysis_evaluator`` spec that reproduces a
-    recording's evaluator: the resolved checkpoint by extension (``.pt`` ->
-    ``az:``, ``.zip`` -> ``mcts:``), ``uniform`` for the torch-free evaluator,
-    else the controller spec's base with its knob query stripped."""
+    """The ``opponents.load_spec_evaluator`` spec that reproduces a recording's
+    evaluator: the controller spec's net kind (``opponents.parse_model_spec``;
+    a spec-less provenance is classified by its checkpoint, ``.pt`` -> AZ,
+    else PPO) loaded from the resolved checkpoint when one was recorded, in
+    canonical knob-free form (``uniform`` / ``mcts:<path>`` / ``az:<path>``)."""
+    from opponents import parse_model_spec
     prov = prov or {}
     ckpt = prov.get("checkpoint")
-    if isinstance(ckpt, str) and ckpt:
-        ext = os.path.splitext(ckpt)[1].lower()
-        if ext == ".zip":
-            return f"mcts:{ckpt}"
-        return f"az:{ckpt}"
-    spec = str(prov.get("spec") or "uniform")
-    spec = spec.partition("?")[0].strip()
-    prefix, sep, base = spec.partition(":")
-    if not sep:
-        prefix, base = "", prefix
-    if base.strip().lower() == "uniform":
-        return "uniform"
-    return f"{prefix}:{base}" if prefix else base
+    ckpt = ckpt if isinstance(ckpt, str) and ckpt else None
+    ms = parse_model_spec(prov.get("spec") or ckpt or "uniform")
+    if ckpt and ms.has_net:
+        ms = ms.with_base(ckpt)
+    return ms.evaluator_spec
 
 
 def cache_path_for(shard_stem: str, row: int) -> str:
@@ -306,8 +300,8 @@ class TreeSession:
             elif self._evaluator is not None:
                 evaluator = self._evaluator
             else:
-                from analysis_session import load_analysis_evaluator
-                evaluator, _label = load_analysis_evaluator(
+                from opponents import load_spec_evaluator
+                evaluator, _label = load_spec_evaluator(
                     self.evaluator_spec, device=prov.get("device"))
                 _set_torch_threads(prov.get("torch_threads"))
             search = IncrementalSearch(

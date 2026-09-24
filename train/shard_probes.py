@@ -14,9 +14,9 @@ Two-phase by design, matching the browser's threading contract:
 the per-game step lists (the ndarray rows themselves are append-only, never
 mutated); :func:`build_sample` and :func:`run_probe` run on a worker thread
 and do the stacking and the torch work. The probe net comes from
-:func:`load_probe_net` — ``opponents.load_az_evaluator``'s AZNet (the AZ
-checkpoint when one exists, else the PPO warm-start), so the probes work with
-only a PPO ``gen`` trained.
+:func:`load_probe_net` — ``opponents.load_spec_net``: the net the browser's
+model spec names (see the resolver table in opponents.py), in AZNet form, so
+a PPO spec is probed through ``az_net.from_ppo`` of that same checkpoint.
 
 Per-row π is the SEARCH posterior (:func:`step_search_pi`): a step's diag
 visits (a search / plan / tree-followed decision, simulated or recorded), else
@@ -61,33 +61,13 @@ _MAX_POOL_ROWS = 2000     # cap for the pooled views / donor pool
 _MAX_SWAP_SITES = 6       # card-swap sites probed per decision (cost control)
 
 
-def probe_model_spec(model_spec):
-    """The ``opponents.load_az_evaluator`` base for a browser model spec: strip
-    the ?knob query and any az:/azraw:/mcts: wrapper prefix.
-
-    Note an ``mcts:`` spec is deliberately treated AS AN AZ SPEC here: its base
-    goes through the same ladder, so the probes get an AZNet (the AZ checkpoint
-    when one exists, else a warm-start from that PPO checkpoint) rather than the
-    PPOEvaluator the mcts: seat itself would play with. The probes need an
-    AZNet's heads; there is no PPO probe path."""
-    base = (model_spec or "gen").split("?", 1)[0].strip()
-    low = base.lower()
-    for pre in ("az:", "azraw:", "mcts:"):
-        if low.startswith(pre):
-            return base[len(pre):] or "gen"
-    return base or "gen"
-
-
 def load_probe_net(model_spec):
-    """(AZNet, label) for the probes. Raises with a readable message when
-    torch / a checkpoint is unavailable (the front end shows it verbatim)."""
-    from opponents import load_az_evaluator
-    evaluator, resolved = load_az_evaluator(probe_model_spec(model_spec))
-    net = getattr(evaluator, "_net", None)   # AZEvaluator holds the AZNet
-    if net is None:
-        raise RuntimeError(
-            f"evaluator for {model_spec!r} exposes no net — cannot probe")
-    return net, str(resolved)
+    """(AZNet, label) for the probes: ``opponents.load_spec_net`` — the net the
+    spec names (the browser's V(s) and replay search read the same one), in
+    AZNet form. Raises with a readable message when torch / a checkpoint is
+    unavailable (the front end shows it verbatim)."""
+    from opponents import load_spec_net
+    return load_spec_net(model_spec)
 
 
 def snapshot(games, cur_game=None, cur_step=None):
