@@ -30,22 +30,27 @@ collects: observations, V(s), policy probs, actions), and then lets you:
 The matplotlib `chart *` commands and the HTML `report` battery stay in
 analysis.py — this front end covers the text/interactive tools.
 
-Run from the repo root (same simulation args as `analysis.py interactive`):
-    train/.venv/bin/python train/tui_analysis.py --player-a <model.zip|gen> \
+Launched as `analysis.py browse` (the default --board tui; flags:
+cli_spec.ANALYSIS_BROWSE_SUB), from the repo root:
+    train/.venv/bin/python train/analysis.py browse --player-a <model.zip|gen> \
         --player-b scripted --deck-a delver [--deck-b mav] [--games 20] \
         [--format bo1]
 
 --player-a is the inspected model and --player-b its opponent.
 
-Shard replay — browse recorded AZ self-play instead of simulating (see
-shard_replay.py; the --player-a spec becomes the V(s) net, --no-net keeps the
-recorded outcome z, and whatif/run stay disabled without a live env):
-    train/.venv/bin/python train/tui_analysis.py --player-a gen \
-        --shards train/az_data/gen [--seat A|B] [--no-net] [--games 20]
+--source picks what is browsed instead of simulating. A shard directory
+replays recorded AZ self-play or a GUI recording (see shard_replay.py; the
+--player-a spec becomes the V(s) net, --no-net keeps the recorded outcome z,
+and whatif/run stay disabled without a live env):
+    train/.venv/bin/python train/analysis.py browse --player-a gen \
+        --source train/az_data/gen [--seat A|B] [--no-net] [--games 20]
+A .rmtrace file opens a saved analysis session (no env; --player-a is the
+replay-search net):
+    train/.venv/bin/python train/analysis.py browse --source session.rmtrace
 """
 
-import argparse
 import io
+import sys
 import traceback
 from contextlib import redirect_stdout
 
@@ -64,7 +69,8 @@ from textual.widgets.option_list import Option
 
 import analysis as an
 import decode
-from cli_spec import ANALYSIS_TUI_TOOL, apply_to_parser, is_bo3
+from cli_spec import (BROWSE_KIND_SHARDS, BROWSE_KIND_SIMULATE,
+                      BROWSE_KIND_TRACE, browse_source_kind, is_bo3)
 from env import STATE_SIZE, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 # Board building blocks shared with the play board: the bordered card widget
 # (color-identity edges) and the step-strip abbreviations.
@@ -106,6 +112,7 @@ from browse_session import (CAPTURE_LOCK as _CAPTURE_LOCK, capture as _capture,
                             run_shap as _run_shap, ANALYSES as _ANALYSES,
                             ENGINE_MENU as _ENGINE_MENU,
                             REPLAY_MENU as _REPLAY_MENU,
+                            load_trace_source as _load_trace_source,
                             replay_search_decks as _replay_search_decks,
                             run_replay_search as _run_replay_search)
 
@@ -426,6 +433,7 @@ class AnalysisApp(App):
     def __init__(self, args):
         super().__init__()
         self._args = args
+        self._kind = browse_source_kind(getattr(args, "source", None))
         self._games = []
         self._model = None
         self._env = None
@@ -581,8 +589,11 @@ class AnalysisApp(App):
 
     @work(thread=True, group="engine")
     def _load_and_collect(self, n_games: int) -> None:
-        if getattr(self._args, "shards", None):
+        if self._kind == BROWSE_KIND_SHARDS:
             self._load_shards(n_games)
+            return
+        if self._kind == BROWSE_KIND_TRACE:
+            self._load_trace()
             return
         try:
             buf = io.StringIO()
@@ -609,13 +620,13 @@ class AnalysisApp(App):
                 if not getattr(self._args, "no_net", False):
                     model = shard_replay.load_value_model(self._args.player_a)
                 records = shard_replay.load_records(
-                    self._args.shards,
+                    self._args.source,
                     viewpoint_is_a=getattr(self._args, "seat", "A") != "B",
                     limit=n_games or None,
                     interp_fn=an._extract_interpretable)
                 if model is not None:
                     shard_replay.apply_net_values(model, records)
-                print(f"{len(records)} match record(s) from {self._args.shards} "
+                print(f"{len(records)} match record(s) from {self._args.source} "
                       f"(seat {getattr(self._args, 'seat', 'A')}, "
                       + ("net V(s))" if model is not None else "z values)"))
             self.post_message(EnvReady(buf.getvalue()))
@@ -624,6 +635,23 @@ class AnalysisApp(App):
         except BaseException as exc:
             self.post_message(LoadFailed(
                 f"shard load failed: {exc!r}\n{traceback.format_exc()}"))
+        finally:
+            self.post_message(EngineIdle())
+
+    def _load_trace(self) -> None:
+        """Saved-session startup: the games of a .rmtrace file, with no env
+        (whatif/run stay gated); its provenance supplies the seat decks the
+        replay search needs. Runs inside the engine worker thread."""
+        try:
+            games, _provenance = _load_trace_source(self._args.source,
+                                                    self._args)
+            self.post_message(EnvReady(f"{len(games)} game(s) from "
+                                       f"{self._args.source}\n"))
+            for g in games:
+                self.post_message(GameAdded(g))
+        except BaseException as exc:
+            self.post_message(LoadFailed(
+                f"trace load failed: {exc!r}\n{traceback.format_exc()}"))
         finally:
             self.post_message(EngineIdle())
 
@@ -721,11 +749,14 @@ class AnalysisApp(App):
     # ----- message handlers -----
 
     def on_env_ready(self, message: EnvReady) -> None:
-        if getattr(self._args, "shards", None):
+        if self._kind == BROWSE_KIND_SHARDS:
             net = ("z values" if getattr(self._args, "no_net", False)
                    else f"V(s): {self._args.player_a}")
-            self.sub_title = (f"shard replay: {self._args.shards} · "
+            self.sub_title = (f"shard replay: {self._args.source} · "
                               f"seat {getattr(self._args, 'seat', 'A')} · {net}")
+        elif self._kind == BROWSE_KIND_TRACE:
+            self.sub_title = (f"saved session: {self._args.source} · "
+                              f"search net {self._args.player_a}")
         else:
             deck_a = getattr(self._args, "deck_a", None) or "?"
             deck_b = getattr(self._args, "deck_b", None) or "?"
@@ -1079,9 +1110,9 @@ class AnalysisApp(App):
             return
         if key in ("whatif", "run5", "run20"):
             if self._env is None or self._model is None:
-                msg = ("Not available in shard replay — branching/simulating "
-                       "needs a live env."
-                       if getattr(self._args, "shards", None)
+                msg = ("Not available when browsing recorded shards or a "
+                       "saved session — branching/simulating needs a live env."
+                       if self._kind != BROWSE_KIND_SIMULATE
                        else "Live env not ready.")
                 self.notify(msg, severity="warning")
                 return
@@ -1145,17 +1176,6 @@ class AnalysisApp(App):
             self._env.close()
 
 
-# ── Entry point ───────────────────────────────────────────────────────────────
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Full-screen TUI for analyzing a trained RoboMage model "
-                    "(board-state pager + clickable V(s) histogram + analysis views)")
-    # Flags come from cli_spec.ANALYSIS_TUI_TOOL (single source shared with tui.py).
-    apply_to_parser(parser, ANALYSIS_TUI_TOOL.subs[0])
-    args = parser.parse_args()
-    AnalysisApp(args).run()
-
-
 if __name__ == "__main__":
-    main()
+    sys.exit("tui_analysis.py was removed as an entry point; use "
+             "`analysis.py browse` (e.g. --source train/az_data/gen)")

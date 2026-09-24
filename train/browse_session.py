@@ -6,7 +6,8 @@ cursor, the analyses registry and its one process-global stdout-capture lock,
 the presentation-data helpers (game-list labels, decision rows, phase strip,
 clock line), the V(s) histogram geometry/bucketing model, and the engine-side
 job bodies (load, collect with live streaming, whatif, shard replay, and the
-replay-to-step MCTS `search_step`).
+replay-to-step MCTS `search_step`), plus the `--source` readers shared by
+both front ends (`is_shard_source`, `load_trace_source`).
 
 Threading contract (mirrors tui_analysis's @work groups):
   * `BrowseStore` is UI-thread-only — the front end applies events to it on its
@@ -35,7 +36,8 @@ import numpy as np
 
 import analysis as an
 import decode
-from cli_spec import is_bo3
+from cli_spec import (BROWSE_KIND_SHARDS, FORMAT_CHOICES, browse_source_kind,
+                      format_name, is_bo3)
 import tree_rebuild
 from env import (STATE_SIZE, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX,
                  _STEP_ONEHOT_START,
@@ -55,6 +57,36 @@ def capture(fn, *a, **k):
     with CAPTURE_LOCK, redirect_stdout(buf):
         fn(*a, **k)
     return buf.getvalue()
+
+
+# ── Browse source (analysis.py browse --source) ──────────────────────────────
+
+def is_shard_source(args):
+    """True when a browse namespace's ``--source`` is a shard directory."""
+    return (browse_source_kind(getattr(args, "source", None))
+            == BROWSE_KIND_SHARDS)
+
+
+def apply_trace_provenance(args, provenance):
+    """Write a saved session's seat decks and match format onto the browse
+    namespace (the replay search and tree rebuild read them from there)."""
+    args.deck_a = provenance.get("deck_a")
+    args.deck_b = provenance.get("deck_b")
+    if provenance.get("format") in FORMAT_CHOICES:
+        args.format = provenance["format"]
+    elif "bo3" in provenance:
+        args.format = format_name(bool(provenance["bo3"]))
+
+
+def load_trace_source(path, args):
+    """A saved ``.rmtrace`` analysis session as ``(games, provenance)``, with
+    the provenance applied to ``args`` (see apply_trace_provenance)."""
+    import gui_session_io
+    games, meta = gui_session_io.load_traces(
+        path, interp_fn=an._extract_interpretable)
+    provenance = meta.get("provenance") or {}
+    apply_trace_provenance(args, provenance)
+    return games, provenance
 
 
 # ── Analyses registry ─────────────────────────────────────────────────────────
@@ -958,7 +990,7 @@ class BrowseStore:
 class EngineCore:
     """Owns model/env/opp_model exclusively; every method is a synchronous job
     run on the front end's single engine worker thread, streaming events
-    through `emit`. `args` is an ANALYSIS_TUI_TOOL-style namespace the core
+    through `emit`. `args` is an analysis.py browse namespace the core
     may mutate (_apply_search_knob_flags self-clears; deck_a/deck_b are
     written back) — hand it a dedicated copy. `preloaded=(model, env,
     opp_model)` skips _load_model_and_env (the test seam)."""
@@ -987,7 +1019,7 @@ class EngineCore:
     def load_and_collect(self, n, stop=None):
         """Startup job: load model+env (or shard records) then stream n games."""
         try:
-            if getattr(self.args, "shards", None):
+            if is_shard_source(self.args):
                 self._load_shards(n)
                 return
             if not self.has_env:
@@ -1183,18 +1215,18 @@ class EngineCore:
                 if not getattr(self.args, "no_net", False):
                     model = shard_replay.load_value_model(self.args.player_a)
                 records = shard_replay.load_records(
-                    self.args.shards,
+                    self.args.source,
                     viewpoint_is_a=getattr(self.args, "seat", "A") != "B",
                     limit=n or None,
                     interp_fn=an._extract_interpretable)
                 if model is not None:
                     shard_replay.apply_net_values(model, records)
-                print(f"{len(records)} match record(s) from {self.args.shards} "
+                print(f"{len(records)} match record(s) from {self.args.source} "
                       f"(seat {getattr(self.args, 'seat', 'A')}, "
                       + ("net V(s))" if model is not None else "z values)"))
             net = ("z values" if getattr(self.args, "no_net", False)
                    else f"V(s): {self.args.player_a}")
-            subtitle = (f"shard replay: {self.args.shards} · "
+            subtitle = (f"shard replay: {self.args.source} · "
                         f"seat {getattr(self.args, 'seat', 'A')} · {net}")
             self.emit(EnvReady(buf.getvalue(), subtitle))
             for g in records:

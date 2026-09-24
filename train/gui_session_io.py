@@ -27,6 +27,7 @@ from datetime import datetime, timezone
 
 import numpy as np
 
+from cli_spec import TRACE_EXT
 from env import MAX_ACTIONS, OBS_SIZE, STATE_SIZE
 from shard_probes import step_search_pi
 
@@ -36,7 +37,6 @@ PLAY_VERSION = 1
 TRACE_VERSION = 1
 
 PLAY_EXT = ".rmplay"
-TRACE_EXT = ".rmtrace"
 
 # Per-game trace keys serialized as flat per-STEP arrays (ragged → spans).
 _STEP_ARRAYS = ("values", "actions", "num_choices", "prefix_len",

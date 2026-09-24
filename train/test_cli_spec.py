@@ -20,6 +20,9 @@
   CLI-only); the one settings file ignores unknown / ill-typed keys.
 * The search-knob fold (``cli_spec.search_knob_pairs`` / play.py's
   ``search_values``) and play's per-board option errors.
+* ``analysis.py browse``: the ``--source`` dispatch table (simulate / shard
+  directory / .rmtrace), per-source flag applicability, the removed
+  ``--shards``, and the retired tui_analysis.py entry point.
 
 The cli_spec parsers are built in-process exactly as the scripts build them
 (``apply_to_parser``); the standalone scripts are exercised as subprocesses.
@@ -52,8 +55,8 @@ FORMAT_SUBS = {
                            "fixed-model", "alternate", "observe", "baseline",
                            "az-selfplay", "az-eval", "az", "az-league",
                            "bench-nenvs")
-} | {("analysis", s) for s in ("report", "interactive", "search")} | {
-    ("analysis-tui", "browse"), ("play", "play"), ("harness", "harness")}
+} | {("analysis", s) for s in ("browse", "report", "interactive", "search")} | {
+    ("play", "play"), ("harness", "harness")}
 
 
 def check(cond, msg):
@@ -159,7 +162,7 @@ def test_seat_vocabulary():
           "analysis --opponent hint should point at --player-b")
     # A stray positional model names its replacement flag.
     for key in (("train", "baseline"), ("analysis", "report"),
-                ("analysis-tui", "browse")):
+                ("analysis", "browse")):
         code, err = parse_error(build(subs[key]), ["gen"])
         check(code == 2 and "positional MODEL argument was removed; use "
               "--player-a" in err,
@@ -217,7 +220,7 @@ def test_format_default():
 SEED_DEFAULTS = {
     ("train", "observe"): 1, ("train", "baseline"): 1, ("train", "az-eval"): 1,
     ("analysis", "report"): 1, ("analysis", "interactive"): 1,
-    ("analysis", "search"): 1, ("analysis-tui", "browse"): 1,
+    ("analysis", "search"): 1, ("analysis", "browse"): 1,
     ("harness", "harness"): None,
     ("play", "play"): None,
     ("train", "az-selfplay"): None, ("train", "az-train"): None,
@@ -261,7 +264,7 @@ def test_count_puct_seed_vocabulary():
     for key, argv, needle in (
             (("analysis", "report"), ["--n-games", "5"],
              "--n-games was removed; use --games"),
-            (("analysis-tui", "browse"), ["--n-games", "5"],
+            (("analysis", "browse"), ["--n-games", "5"],
              "--n-games was removed; use --games"),
             (("analysis", "search"), ["--c", "2.0"],
              "--c was removed; use --c-puct")):
@@ -510,7 +513,7 @@ def test_launcher_mirror():
     from cli_spec import arg_default, sub_defaults
     for section, sub, cli_only in (
             (lc.PLAY_SECTION, cli_spec.PLAY_TOOL.subs[0], lc.PLAY_CLI_ONLY),
-            (lc.ANALYSIS_SECTION, cli_spec.ANALYSIS_TUI_TOOL.subs[0],
+            (lc.ANALYSIS_SECTION, cli_spec.ANALYSIS_BROWSE_SUB,
              lc.ANALYSIS_CLI_ONLY)):
         flags = {a.dest: a for a in iter_args(sub)}
         fields = set(lc.section_args(section))
@@ -814,6 +817,76 @@ def test_az_inspect_entry():
           f"az_inspect tui --with-shards should error (rc={rc}):\n{out[-600:]}")
 
 
+def test_browse_source():
+    print("analysis.py browse: one --source, per-source flags, tui_analysis stub")
+    import tempfile
+    kind = cli_spec.browse_source_kind
+    with tempfile.TemporaryDirectory() as tmp:
+        shard_dir = os.path.join(tmp, "rec")
+        empty_dir = os.path.join(tmp, "empty")
+        os.makedirs(shard_dir)
+        os.makedirs(empty_dir)
+        open(os.path.join(shard_dir, "shard_000.npz"), "wb").close()
+        trace = os.path.join(tmp, "s.rmtrace")
+        open(trace, "wb").close()
+        for source, want in ((None, cli_spec.BROWSE_KIND_SIMULATE),
+                             ("simulate", cli_spec.BROWSE_KIND_SIMULATE),
+                             (shard_dir, cli_spec.BROWSE_KIND_SHARDS),
+                             (trace, cli_spec.BROWSE_KIND_TRACE)):
+            check(kind(source) == want, f"browse_source_kind({source!r}) != {want}")
+        for bad, needle in ((empty_dir, "holds no shard_*.npz"),
+                            (os.path.join(tmp, "gone.rmtrace"), "no such"),
+                            ("gen", "the model to inspect is --player-a")):
+            try:
+                kind(bad)
+                check(False, f"browse_source_kind({bad!r}) should raise")
+            except ValueError as exc:
+                check(needle in str(exc), f"{bad!r}: {exc}")
+        # Every flag with a source restriction is a browse flag, and each
+        # source kind accepts the flags that describe it.
+        sub = cli_spec.ANALYSIS_BROWSE_SUB
+        dests = {a.dest for a in iter_args(sub)}
+        check(set(cli_spec.BROWSE_SOURCE_DESTS) <= dests,
+              f"BROWSE_SOURCE_DESTS names non-flags "
+              f"{set(cli_spec.BROWSE_SOURCE_DESTS) - dests}")
+        bad = cli_spec.browse_inapplicable_dests
+        check(bad(cli_spec.BROWSE_KIND_SIMULATE,
+                  {"player_a", "player_b", "deck_a", "sims", "games", "board"})
+              == [], "simulate takes the sim / search flags")
+        check(bad(cli_spec.BROWSE_KIND_SHARDS,
+                  {"player_a", "games", "seat", "no_net", "deck_b", "sims"})
+              == ["deck_b", "sims"], "shards reject the sim flags")
+        check(bad(cli_spec.BROWSE_KIND_TRACE, {"player_a", "games", "seat"})
+              == ["games", "seat"], "a trace takes only --player-a")
+        p = build(sub)
+        ns = p.parse_args([])
+        check((ns.source, ns.board, ns.player_a)
+              == ("simulate", cli_spec.BOARD_TUI, "gen"),
+              f"browse defaults: simulate on the tui board ({ns})")
+        code, err = parse_error(p, ["--shards", shard_dir])
+        check(code == 2 and "--shards was removed; use --source DIR" in err,
+              f"browse --shards should error ({err!r})")
+        code, err = parse_error(p, ["--board", "text"])
+        check(code == 2 and "invalid choice" in err, "browse has no text board")
+        for argv, needle in (
+                (("--source", shard_dir, "--deck-b", "mav"),
+                 "--deck-b do not apply to a shards --source"),
+                (("--source", trace, "--games", "3"),
+                 "--games do not apply to a trace --source"),
+                (("--seat", "B"), "--seat do not apply to a simulate --source"),
+                (("--source", "gen"), "the model to inspect is --player-a")):
+            rc, out = run_script("train/analysis.py", "browse", *argv)
+            check(rc == 2 and needle in out,
+                  f"browse {' '.join(argv)} should error with {needle!r} "
+                  f"(rc={rc}):\n{out[-600:]}")
+    rc, out = run_script("train/tui_analysis.py", "--player-a", "gen")
+    check(rc == 1 and "was removed" in out and "use `analysis.py browse`" in out,
+          f"tui_analysis.py should exit 1 naming analysis.py browse (rc={rc}):\n"
+          f"{out[-600:]}")
+    check(not any(t.key == "analysis-tui" for t in ALL_TOOLS),
+          "the analysis-tui tool is folded into analysis browse")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -833,6 +906,7 @@ def main():
     test_benches()
     test_play_boards()
     test_az_inspect_entry()
+    test_browse_source()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")
         return 1

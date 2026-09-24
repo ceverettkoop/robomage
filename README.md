@@ -188,18 +188,26 @@ train/.venv/bin/python train/analysis.py interactive --player-a (gen, or a check
 
 `analysis.py` also has a non-interactive subcommands for a report each — `report`,
 
-### TUI analysis browser
+### Analysis browser
 
-`tui_analysis.py` is a full-screen Textual front end for the same simulated-game analysis:
-pick a game from the sidebar and page through its board states (rendered like the TUI game
-board) one decision at a time, with the model's full policy distribution shown at each step;
-seek by clicking the V(s) histogram docked at the bottom; run any REPL analysis view (summary,
-cardvalue, targeting, swings, regret, entropy, calibration, shap, …) from the sidebar menu; and
-branch a counterfactual `whatif` at the current step (`w` key) to simulate an alternative line.
+`analysis.py browse` is a full-screen browser for the same analysis: pick a game from the
+sidebar and page through its board states (rendered like the TUI game board) one decision at a
+time, with the model's full policy distribution shown at each step; seek by clicking the V(s)
+histogram docked at the bottom; run any REPL analysis view (summary, cardvalue, targeting,
+swings, regret, entropy, calibration, shap, …) from the sidebar menu; and branch a
+counterfactual `whatif` at the current step (`w` key) to simulate an alternative line.
 
-From `./tui.sh`, pick the **analysis-tui** tool and its **browse** subcommand to fill in the
-same options through the form. To invoke it directly:
+`--source` picks what it browses: `simulate` (the default — `--games` games of `--player-a` vs
+`--player-b` on `--deck-a`/`--deck-b`), a directory of recorded shards (AZ self-play such as
+`train/az_data/gen`, or a GUI recording under `train/az_data/recorded/`; `--player-a` is the V(s)
+net, `--seat` the viewpoint, `--no-net` keeps the recorded outcomes), or a saved `.rmtrace`
+analysis session. `--board tui` (the default) is the Textual browser; `--board gui` opens the
+same session in the PySide6 app. From `./tui.sh`, pick the **analysis** tool and its **browse**
+subcommand to fill in the options through the form; the GUI's New Analysis Session dialog
+carries the same flags. To invoke it directly:
 
 ```bash
-train/.venv/bin/python train/tui_analysis.py --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck) --games 20
+train/.venv/bin/python train/analysis.py browse --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck) --games 20
+train/.venv/bin/python train/analysis.py browse --source train/az_data/gen --player-a gen
+train/.venv/bin/python train/analysis.py browse --source session.rmtrace --board gui
 ```

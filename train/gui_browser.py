@@ -53,7 +53,7 @@ import browse_session as bs
 import decode
 import shard_probes
 import tree_rebuild
-from cli_spec import ANALYSIS_TUI_TOOL, BINARY, is_bo3, sub_defaults
+from cli_spec import ANALYSIS_BROWSE_SUB, BINARY, is_bo3, sub_defaults
 from env import STATE_SIZE
 from game_driver import stack_target_refs
 from gui_game import (CardRow, CardWidget, HAND_CARD_H, HAND_CARD_W,
@@ -98,9 +98,9 @@ def _tree_ready_status(ev):
     return ("Tree ready (cache hit)" if ev.from_cache
             else "Tree ready (rebuilt, verified)")
 
-# Namespace dests per cli_spec.ANALYSIS_TUI_TOOL (the schema _load_model_and_env
+# Namespace dests per cli_spec.ANALYSIS_BROWSE_SUB (the schema _load_model_and_env
 # consumes): opts-dict key -> default, the browse flags' own defaults.
-_ARG_DEFAULTS = dict(sub_defaults(ANALYSIS_TUI_TOOL.subs[0]), binary=BINARY)
+_ARG_DEFAULTS = dict(sub_defaults(ANALYSIS_BROWSE_SUB), binary=BINARY)
 
 
 def _make_args(opts):
@@ -926,12 +926,13 @@ class BrowserPane(QWidget):
     def __init__(self, opts, parent=None):
         super().__init__(parent)
         self._opts = dict(opts or {})
-        # Traces-only mode: gui_main constructs with no engine keys and calls
-        # load_traces (an opened .rmtrace) — never submit engine jobs then.
-        self._has_engine = any(k in self._opts
-                               for k in ("player_a", "player_b", "shards"))
+        # Traces-only mode: gui_main constructs with no engine keys (no
+        # --source / --player-b; --player-a may still name the replay-search
+        # net) and calls load_traces (an opened .rmtrace) — never submit
+        # engine jobs then.
+        self._has_engine = any(k in self._opts for k in ("player_b", "source"))
         self._args = _make_args(self._opts)
-        self._shards = bool(getattr(self._args, "shards", None))
+        self._shards = bs.is_shard_source(self._args)
         self._store = bs.BrowseStore()
         if not self._has_engine:
             self._store.engine_busy = False
@@ -1171,7 +1172,7 @@ class BrowserPane(QWidget):
         if self._subtitle:
             return self._subtitle
         if self._shards:
-            return f"shard replay: {self._args.shards}"
+            return f"shard replay: {self._args.source}"
         if self._has_engine:
             return (f"{self._args.player_a}  vs  {self._args.player_b}"
                     + ("  · bo3" if is_bo3(self._args) else ""))
@@ -1203,6 +1204,11 @@ class BrowserPane(QWidget):
         if not self._has_engine:
             self._summary.setText(bs.summary_line(self._store.games))
         self._flush_refresh()
+        if not self._has_engine and self._smoke_pending:
+            # No engine job will ever go idle in a traces-only session, so the
+            # smoke drive starts from the loaded traces.
+            self._smoke_pending = False
+            QTimer.singleShot(0, self._run_smoke)
 
     def set_active(self, active):
         self._active = bool(active)

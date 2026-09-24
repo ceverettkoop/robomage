@@ -591,12 +591,13 @@ class LauncherApp(ArgFormMixin, App):
 
     # Scripts that take over the whole terminal with their own Textual app:
     # play.py launches a game board (--board tui is tui_game.py; gui and text
-    # also own the terminal while they run) and tui_analysis.py is the
-    # analysis browser, and az_inspect.py's `tui` subcommand is the checkpoint
-    # inspector. Teeing any of them through `script` would fill the log with
-    # terminal escape sequences, so they run without logging.
-    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py"})
-    _FULLSCREEN_SUBS = frozenset({("az_inspect.py", "tui")})
+    # also own the terminal while they run), analysis.py's `browse`
+    # subcommand is the analysis browser, and az_inspect.py's `tui` subcommand
+    # is the checkpoint inspector. Teeing any of them through `script` would
+    # fill the log with terminal escape sequences, so they run without logging.
+    _FULLSCREEN_SCRIPTS = frozenset({"play.py"})
+    _FULLSCREEN_SUBS = frozenset({("az_inspect.py", "tui"),
+                                  ("analysis.py", "browse")})
 
     def _is_play_mode(self):
         """True when the selected command is itself a full-screen Textual app

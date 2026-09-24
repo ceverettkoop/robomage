@@ -522,9 +522,86 @@ DEFAULT_ANALYSIS_CAP = 2000
 EVAL_DEVICE_CHOICES = ("cpu", "cuda")
 # bench-actor's --player-b value for pure self-play (the net on both seats).
 BENCH_PLAYER_SELF = "self"
-# The analysis browser's (tui_analysis / the GUI's New Analysis Session)
+# The analysis browser's (analysis.py browse / the GUI's New Analysis Session)
 # default inspected deck.
 DEFAULT_BROWSE_DECK_A = "league/ur_delver"
+
+
+def resolve_board(board):
+    """The board to run: ``board``, except gui falls back to tui (with a
+    printed notice) when PySide6 is not installed. Shared by play.py and
+    analysis.py browse."""
+    if board != BOARD_GUI:
+        return board
+    try:
+        import PySide6  # noqa: F401
+    except ImportError:
+        print("PySide6 not installed — falling back to the TUI board "
+              "(pip install -r train/requirements-gui.txt for the GUI).",
+              flush=True)
+        return BOARD_TUI
+    return BOARD_GUI
+
+
+# ── Analysis browser source (analysis.py browse --source) ────────────────────
+#
+# The browser's one input selects what it pages through:
+#   simulate (the default)   simulate --games games of --player-a (the
+#                            inspected model) vs --player-b on --deck-a/-b
+#   a directory              recorded shards (shard_*.npz — AZ self-play, a GUI
+#                            recording): --player-a is the V(s) net, --seat
+#                            the viewpoint, --no-net keeps the recorded z
+#   a .rmtrace file          a saved analysis session: --player-a is the net
+#                            for the replay search / probes
+# Each browse flag applies to the source kinds in BROWSE_SOURCE_DESTS; setting
+# one on another kind is an error (browse_inapplicable_dests).
+
+BROWSE_SOURCE_SIMULATE = "simulate"
+BROWSE_KIND_SIMULATE = "simulate"
+BROWSE_KIND_SHARDS = "shards"
+BROWSE_KIND_TRACE = "trace"
+BROWSE_BOARD_CHOICES = (BOARD_TUI, BOARD_GUI)
+DEFAULT_BROWSE_BOARD = BOARD_TUI
+TRACE_EXT = ".rmtrace"               # a saved analysis session (gui_session_io)
+SHARD_GLOB = "shard_*.npz"
+
+_SIM_ONLY = (BROWSE_KIND_SIMULATE,)
+BROWSE_SOURCE_DESTS = {
+    "player_b": _SIM_ONLY, "deck_a": _SIM_ONLY, "deck_b": _SIM_ONLY,
+    "seed": _SIM_ONLY, "format": _SIM_ONLY,
+    "sims": _SIM_ONLY, "worlds": _SIM_ONLY, "think_time": _SIM_ONLY,
+    "search_procs": _SIM_ONLY, "match_clock": _SIM_ONLY,
+    "search_device": _SIM_ONLY, "search_xw": _SIM_ONLY,
+    "games": (BROWSE_KIND_SIMULATE, BROWSE_KIND_SHARDS),
+    "seat": (BROWSE_KIND_SHARDS,), "no_net": (BROWSE_KIND_SHARDS,),
+}
+
+
+def browse_source_kind(source):
+    """``simulate`` | ``shards`` | ``trace`` for a browse ``--source`` value
+    (None = simulate). Raises ValueError naming what a source may be."""
+    import glob
+    if source in (None, "", BROWSE_SOURCE_SIMULATE):
+        return BROWSE_KIND_SIMULATE
+    if source.lower().endswith(TRACE_EXT):
+        if not os.path.isfile(source):
+            raise ValueError(f"--source {source}: no such {TRACE_EXT} file")
+        return BROWSE_KIND_TRACE
+    if os.path.isdir(source):
+        if not glob.glob(os.path.join(source, SHARD_GLOB)):
+            raise ValueError(f"--source {source}: the directory holds no "
+                             f"{SHARD_GLOB} files")
+        return BROWSE_KIND_SHARDS
+    raise ValueError(f"--source {source!r} is not '{BROWSE_SOURCE_SIMULATE}', "
+                     f"a shard/recording directory, or a {TRACE_EXT} file "
+                     "(the model to inspect is --player-a)")
+
+
+def browse_inapplicable_dests(kind, explicit):
+    """The explicitly-set browse dests that do not apply to source ``kind``,
+    in a stable order."""
+    return sorted(d for d in explicit
+                  if d in BROWSE_SOURCE_DESTS and kind not in BROWSE_SOURCE_DESTS[d])
 
 
 # ── Removed flags / env vars ──────────────────────────────────────────────────
@@ -568,7 +645,7 @@ REMOVED_FLAGS = (
                 scopes=("train/az-train",)),
     RemovedFlag("--opponent", "use --deck-b (player B's deck)"),
     RemovedFlag("--opponent", "use --player-b (the opponent agent spec)",
-                scopes=("analysis", "analysis-tui")),
+                scopes=("analysis",)),
     RemovedFlag("--opponent", "use --opponents (the comma-separated opponent "
                               "deck pool)",
                 scopes=("train/sweep", "train/az")),
@@ -582,7 +659,7 @@ REMOVED_FLAGS = (
     RemovedFlag("--gui", "use --board gui (the default)", scopes=("play",)),
     RemovedFlag("--tui", "use --board tui", scopes=("play",)),
     RemovedFlag("model", "use --player-a SPEC",
-                scopes=("analysis", "analysis-tui", "train/baseline")),
+                scopes=("analysis", "train/baseline")),
     # The harness's seat agents are --player-a / --player-b; --play / --actions
     # stay as the both-seat script that runs before them.
     RemovedFlag("--scripted", "use --player-a scripted --player-b scripted",
@@ -639,6 +716,10 @@ REMOVED_FLAGS = (
     RemovedFlag("--map-top", "use --top", scopes=("az-inspect/drift",)),
     RemovedFlag("--dir", "use --shards", scopes=("az-inspect/sbreport",)),
     RemovedFlag("--last", "use --window", scopes=("az-inspect/sbreport",)),
+    # analysis.py browse: one --source picks simulate / shards / a saved trace.
+    RemovedFlag("--shards", "use --source DIR (the shard or recording "
+                            "directory to browse)",
+                scopes=("analysis/browse",)),
 )
 
 # Environment variables that duplicated a flag: name -> hint appended to
@@ -2386,14 +2467,72 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
 
 # analysis.py — every command loads a trained model and simulates games (the
 # .rmrec recording-file commands were removed; the live model-sim path is the
-# single source). Two commands remain: 'report' is capture-mode (emits a
+# single source; 'browse' also pages recorded shards and saved traces).
+# 'report' is capture-mode (emits a
 # self-contained HTML battery and exits), while 'interactive' opens the REPL
 # (TUI hands over the terminal) — the REPL supersets every per-analysis view
 # (cardvalue, shap, value-swings, regret, entropy, consistency, targeting,
 # calibration, turning, clusters, whatif, …) and is the only mode with a live
 # env for `run`/`whatif`. The former standalone analysis subcommands were thin
 # wrappers over those same REPL views and were dropped.
+#
+# analysis.py browse — the full-screen analysis browser: game list,
+# board-state pager (one decision step at a time), a clickable V(s) histogram
+# for seeking, and every REPL analysis view, on the Textual board (tui_analysis)
+# or the PySide6 app (gui_browser). ONE --source picks what it browses (see
+# BROWSE_SOURCE_DESTS). Same sim args as the other analysis commands minus the
+# chart-output flags. The GUI's New Analysis Session dialog mirrors these flags
+# (see launcher_config.py).
+ANALYSIS_BROWSE_SUB = Sub(
+    "browse",
+    "Full-screen analysis browser: page through board states with a "
+    "clickable V(s) histogram, plus every analysis view — over simulated "
+    "games, recorded shards, or a saved .rmtrace session", mode="interactive",
+    items=[
+        Arg("--source", "str", default=BROWSE_SOURCE_SIMULATE,
+            help=f"What to browse: '{BROWSE_SOURCE_SIMULATE}' (the default) "
+                 "simulates --games games of --player-a vs --player-b; a "
+                 f"directory of {SHARD_GLOB} files (recorded AZ self-play, e.g. "
+                 "train/az_data/gen, or a GUI recording under "
+                 "train/az_data/recorded/) replays those decisions — pi (the "
+                 "search's visit posterior) fills the policy column and whatif/"
+                 f"run stay disabled without a live env; a {TRACE_EXT} file "
+                 "opens a saved analysis session. Flags that do not apply to "
+                 "the chosen source are errors"),
+        Arg("--board", "choice", choices=BROWSE_BOARD_CHOICES,
+            default=DEFAULT_BROWSE_BOARD,
+            help="Browser front end: tui (the Textual terminal browser) or gui "
+                 "(the PySide6 app's analysis pane — falls back to tui when "
+                 f"PySide6 is missing) (default {DEFAULT_BROWSE_BOARD})"),
+        # --player-a (the inspected model) doubles as the shard/trace sources'
+        # value / replay-search net, so it gets a 'gen' default (simulate
+        # resolves that to the one generalist anyway); --deck-a defaults to a
+        # league deck so a bare launch simulates straight away.
+        *[replace(a, required=False, default="gen",
+                  help=a.help + " With a shard or .rmtrace --source: the net "
+                                "for V(s), the probes and the replay search "
+                                "(default gen)")
+          if a.name == "--player-a" else
+          replace(a, default=DEFAULT_BROWSE_DECK_A,
+                  help=a.help + f" (default {DEFAULT_BROWSE_DECK_A})")
+          if a.name == "--deck-a" else a
+          for a in sim_args() if a.name not in ("--out", "--show")],
+        *search_knob_args(),
+        Arg("--games", "int", default=20,
+            help="Games to simulate on startup — each a whole match under "
+                 "--format bo3 (default: 20). With a shard --source: the "
+                 "maximum recorded bo3 matches to load (0 = every match)"),
+        Arg("--seat", "choice", choices=("A", "B"), default="A",
+            help="Shard --source: viewpoint seat — that seat's searched "
+                 "decisions are the browsable steps, the other seat's are "
+                 "summarized as opponent actions (default: A)"),
+        Arg("--no-net", "flag",
+            help="Shard --source: skip loading the value net; V(s) falls back "
+                 "to each step's recorded game outcome z (torch-free)"),
+    ])
+
 ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
+    ANALYSIS_BROWSE_SUB,
     Sub("report", "Run the standard battery and emit a single HTML report", items=[
         *sim_args(),
         *search_budget_args(),
@@ -2431,49 +2570,6 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
                 help="Parallel worker processes (default: 1 = sequential). Splits "
                      "--games evenly across processes, each with its own "
                      "evaluator/controller; results are merged before reporting."),
-        ]),
-])
-
-# tui_analysis.py — the analysis REPL as a full-screen Textual app: game list,
-# board-state pager (one decision step at a time), a clickable V(s) histogram
-# for seeking, and every REPL analysis view. Same sim args as analysis.py minus
-# the chart-output flags (charts stay in analysis.py's report/interactive).
-ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, subs=[
-    Sub("browse",
-        "Full-screen analysis browser: page through board states with a "
-        "clickable V(s) histogram, plus every analysis view", mode="interactive",
-        items=[
-            # --player-a (the inspected model) doubles as the shard mode's
-            # value-net spec, so it gets a 'gen' default (live mode resolves
-            # that to the one generalist anyway); --deck-a defaults to a
-            # league deck so a bare launch simulates straight away. The GUI's
-            # New Analysis Session dialog mirrors these flags (see
-            # launcher_config.py).
-            *[replace(a, required=False, default="gen")
-              if a.name == "--player-a" else
-              replace(a, default=DEFAULT_BROWSE_DECK_A,
-                      help=a.help + f" (default {DEFAULT_BROWSE_DECK_A})")
-              if a.name == "--deck-a" else a
-              for a in sim_args() if a.name not in ("--out", "--show")],
-            *search_knob_args(),
-            Arg("--games", "int", default=20,
-                help="Games to simulate on startup — each a whole match under "
-                     "--format bo3 (default: 20). In --shards mode: the maximum "
-                     "recorded bo3 matches to load (0 = every match)"),
-            Arg("--shards", "str", default=None,
-                help="Browse recorded AZ self-play instead of simulating: "
-                     "directory of shard_*.npz files (e.g. train/az_data/gen). "
-                     "Steps are the searched decision roots; pi (the search's "
-                     "visit posterior) fills the policy column, and the "
-                     "--player-a spec is loaded as the V(s) net. whatif/run need a live "
-                     "env and stay disabled."),
-            Arg("--seat", "choice", choices=("A", "B"), default="A",
-                help="Shard mode: viewpoint seat — that seat's searched "
-                     "decisions are the browsable steps, the other seat's are "
-                     "summarized as opponent actions (default: A)"),
-            Arg("--no-net", "flag",
-                help="Shard mode: skip loading the value net; V(s) falls back "
-                     "to each step's recorded game outcome z (torch-free)"),
         ]),
 ])
 
@@ -2526,8 +2622,8 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "shard files under train/az_data/recorded/ — a search "
                  "opponent's searched decisions with their full visit "
                  "posterior, everything else as one-hot rows. Browse them "
-                 "with the analysis browser / az-inspect / tui_analysis "
-                 "pointed at the directory (on the GUI board also live via "
+                 "with `analysis.py browse --source DIR` or az-inspect "
+                 "--shards DIR (on the GUI board also live via "
                  "View ▸ Analyze Recording…, F10) (gui/tui boards)"),
         Arg("--analysis", "bool", default=None,
             help="The analysis window: live MCTS evaluation of your "
@@ -3001,7 +3097,7 @@ AZ_INSPECT_TOOL = Tool("az-inspect", "train/az_inspect.py", subs=[
                          help="Top cards listed per unit (default: 6)")),
 ])
 
-ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, ANALYSIS_TUI_TOOL, AZ_INSPECT_TOOL,
+ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, AZ_INSPECT_TOOL,
              PLAY_TOOL, HARNESS_TOOL]
 
 
@@ -3079,11 +3175,15 @@ def arg_default(a: Arg):
 
 def explicit_dests(parser, argv=None) -> set:
     """The dests ``argv`` sets on the command line (as opposed to leaving at
-    their defaults) — re-parses with every default swapped for a marker."""
+    their defaults) — re-parses with every default swapped for a marker. A
+    removed optional positional keeps its None default (argparse hands it the
+    default when nothing fills it, and anything else is the removal error)."""
     import argparse
     marker = object()
     saved = {}
     for act in parser._actions:
+        if act.dest.startswith("_removed_"):
+            continue
         if act.dest != argparse.SUPPRESS and act.default is not argparse.SUPPRESS:
             saved[act] = act.default
             act.default = marker
@@ -3092,4 +3192,5 @@ def explicit_dests(parser, argv=None) -> set:
     finally:
         for act, default in saved.items():
             act.default = default
-    return {k for k, v in vars(ns).items() if v is not marker}
+    return {k for k, v in vars(ns).items()
+            if v is not marker and not k.startswith("_removed_")}

@@ -22,6 +22,8 @@ Entry points:
 * ``run_launcher(...)`` — gui.sh / play.py --board gui with no seat or deck
                           flags: welcome pane with the menus live (File ▸ New
                           Session to begin; no dialog is auto-opened).
+* ``run_browser(...)``  — analysis.py browse --board gui: an analysis session
+                          on the command line's --source, built directly.
 
 Smokes: ``ROBOMAGE_GUI_SMOKE`` / ``ROBOMAGE_ANALYSIS_SMOKE`` keep their
 gui_game semantics — the pane auto-plays and emits session_finished, which
@@ -50,8 +52,9 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
 
 import gui_session_io
 import launcher_config
-from cli_spec import (SEARCH_KNOB_KEYS, format_name, is_search_spec,
-                      scan_decks)
+from cli_spec import (BROWSE_KIND_TRACE, BROWSE_SOURCE_SIMULATE, TRACE_EXT,
+                      SEARCH_KNOB_KEYS, browse_source_kind, format_name,
+                      is_search_spec, scan_decks)
 from game_driver import build_session, resolve_opponent_spec
 from gui_game import (PlayPane, NewPlaySessionDialog, LauncherDialog,
                       _ensure_app, _analysis_cfg_from, _smoke_n_from_env,
@@ -93,7 +96,7 @@ def _smoke_active():
     return any(os.environ.get(v) for v in (
         "ROBOMAGE_GUI_SMOKE", "ROBOMAGE_ANALYSIS_SMOKE",
         "ROBOMAGE_GUI_SESSION_SMOKE", "ROBOMAGE_GUI_TRACE_SMOKE",
-        "ROBOMAGE_TREE_SMOKE"))
+        "ROBOMAGE_TREE_SMOKE", "ROBOMAGE_BROWSER_SMOKE"))
 
 
 def _critical(parent, title, text):
@@ -128,10 +131,11 @@ class WelcomePane(QWidget):
 
 class NewAnalysisSessionDialog(LauncherDialog):
     """File ▸ New Session ▸ Analysis…: the analysis browser's command line
-    (tui_analysis.py browse; launcher_config.ANALYSIS_FIELDS) as a form —
+    (analysis.py browse; launcher_config.ANALYSIS_FIELDS) as a form —
     configure a simulated-games analysis session (model/opponent/decks/games/
-    search knobs), or tick "Browse recorded shards instead" (the --shards
-    flag) to load recorded AZ self-play with no live engine.
+    search knobs), or tick "Browse recorded shards or a saved session
+    instead" (the --source flag: a shard directory or a .rmtrace file) to
+    load recorded AZ self-play or a saved session with no live engine.
 
     ``options()`` computes the opts dict live (callable without exec — the
     smoke constructs the dialog programmatically); OK validates, persists the
@@ -164,28 +168,39 @@ class NewAnalysisSessionDialog(LauncherDialog):
         self._model.currentTextChanged.connect(self._update_search_visibility)
         self._opponent.currentTextChanged.connect(self._update_search_visibility)
 
-        # -- shards group (the --shards flag: checked = set) -------------------
-        self._shards_box = QGroupBox("Browse recorded shards instead")
-        self._shards_box.setCheckable(True)
+        # -- source group (the --source flag: unchecked = simulate) -----------
+        self._source_box = QGroupBox(
+            "Browse recorded shards or a saved session instead")
+        self._source_box.setCheckable(True)
         sform = QFormLayout()
         sform.setSpacing(8)
-        shards_row = QHBoxLayout()
-        self._shards_dir = QLineEdit(self._values["shards"] or "")
-        self._shards_box.setChecked(bool(self._values["shards"]))
-        self._register("shards", self._shards_box,
-                       lambda: ((self._shards_dir.text().strip() or None)
-                                if self._shards_box.isChecked() else None))
-        browse = QToolButton()
-        browse.setText("…")
-        browse.clicked.connect(self._browse_shards)
-        shards_row.addWidget(self._shards_dir, 1)
-        shards_row.addWidget(browse)
-        sform.addRow("Shards dir", shards_row)
+        source_row = QHBoxLayout()
+        saved = self._values["source"] or BROWSE_SOURCE_SIMULATE
+        simulate = saved == BROWSE_SOURCE_SIMULATE
+        self._source_path = QLineEdit("" if simulate else saved)
+        self._source_box.setChecked(not simulate)
+        self._register("source", self._source_box,
+                       lambda: ((self._source_path.text().strip()
+                                 or BROWSE_SOURCE_SIMULATE)
+                                if self._source_box.isChecked()
+                                else BROWSE_SOURCE_SIMULATE))
+        pick_dir = QToolButton()
+        pick_dir.setText("Dir…")
+        pick_dir.setToolTip("Pick a directory of shard_*.npz files")
+        pick_dir.clicked.connect(self._browse_shards)
+        pick_trace = QToolButton()
+        pick_trace.setText(f"{TRACE_EXT}…")
+        pick_trace.setToolTip("Pick a saved analysis session")
+        pick_trace.clicked.connect(self._browse_trace)
+        source_row.addWidget(self._source_path, 1)
+        source_row.addWidget(pick_dir)
+        source_row.addWidget(pick_trace)
+        sform.addRow("Source", source_row)
         sform.addRow("Seat", self._choice("seat", {"A": "A", "B": "B"}))
         sform.addRow(self._check(
             "no_net", "No value net — use recorded outcomes (torch-free)"))
-        self._shards_box.setLayout(sform)
-        self._shards_box.toggled.connect(self._update_enabled)
+        self._source_box.setLayout(sform)
+        self._source_box.toggled.connect(self._update_enabled)
 
         # --games is both the sim count and, in shard mode, the match-load cap.
         gform = QFormLayout()
@@ -202,14 +217,15 @@ class NewAnalysisSessionDialog(LauncherDialog):
         lay = QVBoxLayout(self)
         title = QLabel("New Analysis Session")
         title.setObjectName("launcherTitle")
-        subtitle = QLabel("Simulate games and browse them, or open recorded shards.")
+        subtitle = QLabel("Simulate games and browse them, or open recorded "
+                          "shards or a saved session.")
         subtitle.setObjectName("launcherSubtitle")
         lay.addWidget(title)
         lay.addWidget(subtitle)
         lay.addLayout(gform)
         lay.addWidget(self._sim_box)
         lay.addWidget(self._search_box)
-        lay.addWidget(self._shards_box)
+        lay.addWidget(self._source_box)
         lay.addWidget(buttons)
         self.setMinimumWidth(460)
         self._update_enabled()
@@ -255,13 +271,20 @@ class NewAnalysisSessionDialog(LauncherDialog):
 
     def _browse_shards(self):
         path = QFileDialog.getExistingDirectory(self, "Shards directory",
-                                                self._shards_dir.text() or ".")
+                                                self._source_path.text() or ".")
         if path:
-            self._shards_dir.setText(path)
+            self._source_path.setText(path)
+
+    def _browse_trace(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Saved analysis session", self._source_path.text() or "",
+            f"RoboMage analysis session (*{TRACE_EXT})")
+        if path:
+            self._source_path.setText(path)
 
     def _update_enabled(self, *_):
-        """Shard mode disables the sim fields (they don't apply)."""
-        self._sim_box.setEnabled(not self._shards_box.isChecked())
+        """A shard / trace source disables the sim fields (they don't apply)."""
+        self._sim_box.setEnabled(not self._source_box.isChecked())
 
     def options(self):
         """The opts dict the SessionManager/BrowserPane contract expects: the
@@ -282,10 +305,16 @@ class NewAnalysisSessionDialog(LauncherDialog):
 
     def _on_accept(self):
         opts = self.options()
-        if self._shards_box.isChecked():
-            if not opts["shards"]:
-                QMessageBox.warning(self, "Missing shards directory",
-                                    "Pick the directory of shard_*.npz files.")
+        if self._source_box.isChecked():
+            path = self._source_path.text().strip()
+            try:
+                if not path:
+                    raise ValueError("Pick a directory of shard_*.npz files "
+                                     f"or a saved {TRACE_EXT} session.")
+                browse_source_kind(path)
+            except ValueError as exc:
+                QMessageBox.warning(self, "Missing or invalid source",
+                                    str(exc))
                 return
         else:
             if not opts["deck_a"]:
@@ -397,6 +426,14 @@ class SessionManager(QObject):
             return False
         self._window._sync_actions()
         return True
+
+    def open_browse(self, opts):
+        """Start the analysis session an analysis.py browse opts dict names:
+        a ``.rmtrace`` --source opens that saved session (--player-a as its
+        replay-search net), anything else builds a simulate / shard session."""
+        if browse_source_kind(opts.get("source")) == BROWSE_KIND_TRACE:
+            return self._open_trace(opts["source"], player_a=opts.get("player_a"))
+        return self.new_analysis_session(opts)
 
     def _install(self, pane, mode):
         self._stack.addWidget(pane)
@@ -630,7 +667,7 @@ class SessionManager(QObject):
             return True
         return False
 
-    def _open_trace(self, path):
+    def _open_trace(self, path, player_a=None):
         interp_fn = None
         try:
             import analysis as an
@@ -644,6 +681,8 @@ class SessionManager(QObject):
             return False
         provenance = meta.get("provenance") or {}
         opts = self._browse_only_opts(provenance, self._binary)
+        if player_a:
+            opts["player_a"] = player_a
         if self.new_analysis_session(opts, traces=(games, provenance)):
             self._save_path = path
             return True
@@ -652,7 +691,7 @@ class SessionManager(QObject):
     @staticmethod
     def _browse_only_opts(provenance, binary):
         """A BrowserPane opts dict for a traces-only (no simulation) session.
-        Deliberately carries NO engine keys (player_a/player_b/shards) — their
+        Deliberately carries NO engine keys (player_b/source) — their
         presence is what makes BrowserPane build an engine worker, and an
         opened .rmtrace must never reload a model/env. The provenance dict
         (passed alongside via load_traces) keeps them for display."""
@@ -684,7 +723,7 @@ class ShardBrowserWindow(QMainWindow):
     def __init__(self, opts, parent=None):
         super().__init__(parent)          # QMainWindow stays top-level
         from gui_browser import BrowserPane
-        self.setWindowTitle(f"RoboMage — Recording · {opts.get('shards', '')}")
+        self.setWindowTitle(f"RoboMage — Recording · {opts.get('source', '')}")
         self.resize(1180, 860)
         self._pane = BrowserPane(opts, parent=self)
         self.setCentralWidget(self._pane)
@@ -858,7 +897,7 @@ class MainWindow(QMainWindow):
         dlg = NewAnalysisSessionDialog(self._binary, parent=self)
         if dlg.exec() != QDialog.DialogCode.Accepted:
             return
-        self.manager.new_analysis_session(dlg.options())
+        self.manager.open_browse(dlg.options())
 
     def _open_dialog(self):
         path, _ = QFileDialog.getOpenFileName(
@@ -885,7 +924,7 @@ class MainWindow(QMainWindow):
         rec.flush()
         session = self.manager._session
         opts = {
-            "shards": rec.out_dir,
+            "source": rec.out_dir,
             "seat": "A" if session.opp_is_a else "B",     # the opponent's rows
             # The browser resolves the opponent's own spec (opponents.
             # parse_model_spec), so V(s), probes and replay search all read
@@ -1018,6 +1057,25 @@ def run_launcher(binary_path=None):
     window = MainWindow(binary_path)
     window.show()
     _start_shell_smoke(window)
+    code = app.exec()
+    window.manager.shutdown()
+    return code
+
+
+def run_browser(opts):
+    """analysis.py browse --board gui entry: MainWindow + the analysis session
+    ``opts`` (the browse flags by dest) names, built directly (no dialog).
+    Returns the exit code. Under ROBOMAGE_BROWSER_SMOKE the pane's own smoke
+    drive runs and its verdict is the exit code."""
+    app = _ensure_app()
+    window = MainWindow(opts["binary"])
+    window.show()
+    if not window.manager.open_browse(opts):
+        window.manager.shutdown()
+        return 1
+    if os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1":
+        window.manager.pane.smoke_done.connect(
+            lambda n: app.exit(0 if n > 0 else 1))
     code = app.exec()
     window.manager.shutdown()
     return code
@@ -1184,7 +1242,7 @@ class _BrowserSmoke(_ShellSmoke):
                 self._finish(0, f"BROWSER SMOKE SKIP: no shards in "
                                 f"{self._shards}")
                 return
-            opts = {"shards": self._shards, "seat": "A", "no_net": True,
+            opts = {"source": self._shards, "seat": "A", "no_net": True,
                     "games": 3, "format": "bo1", "think_time": None,
                     "match_clock": None, "deck_a": None, "deck_b": None,
                     "binary": mgr._binary}
@@ -1247,7 +1305,7 @@ class _TreeSmoke(_ShellSmoke):
             self._finish(1, f"TREE SMOKE FAILED: no recording under "
                             f"{self._base!r}")
             return
-        opts = {"shards": rec, "seat": _recording_search_seat(rec),
+        opts = {"source": rec, "seat": _recording_search_seat(rec),
                 "no_net": True, "games": 0, "format": "bo1",
                 "think_time": None, "match_clock": None, "deck_a": None,
                 "deck_b": None, "binary": mgr._binary}

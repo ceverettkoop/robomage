@@ -7,11 +7,17 @@ the resulting per-decision traces (full observations, value estimates V(s), and
 policy probabilities). The older offline .rmrec recording-file commands were
 removed; this live model-sim path is now the single source.
 
-There are two commands:
-    python analysis.py report --player-a <model.zip> --player-b scripted --deck-a <deck> [--n-games 50]
+Commands:
+    python analysis.py browse [--source simulate|<shard dir>|<file.rmtrace>] \
+            [--board tui|gui] --player-a <model> --player-b scripted --deck-a <deck>
+        The full-screen analysis browser (board-state pager, clickable V(s)
+        histogram, every analysis view) on the Textual board (default) or the
+        PySide6 app. --source picks what it browses: simulated games (the
+        default), a directory of recorded shards, or a saved .rmtrace session.
+    python analysis.py report --player-a <model.zip> --player-b scripted --deck-a <deck> [--games 50]
         Run the standard battery once and emit a single self-contained HTML
         report (headless, non-interactive — for CI / sharing). Exits when done.
-    python analysis.py interactive --player-a <model.zip> --player-b scripted --deck-a <deck> [--n-games 20]
+    python analysis.py interactive --player-a <model.zip> --player-b scripted --deck-a <deck> [--games 20]
         Simulate games, then open the REPL below. This is the only mode with a
         live env, so 'run' and 'whatif' work only here. The REPL supersets every
         per-analysis view (cardvalue, shap, regret, entropy, consistency, …), so
@@ -77,7 +83,9 @@ import decode
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import (ANALYSIS_TOOL, SEARCH_KNOB_KEYS, search_knob_pairs,
-                      with_spec_query, apply_to_parser,
+                      with_spec_query, apply_to_parser, BOARD_GUI,
+                      browse_inapplicable_dests, browse_source_kind,
+                      explicit_dests, resolve_board,
                       DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS, is_bo3)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
@@ -4519,26 +4527,58 @@ def cmd_search_compare(args):
     _report_search_compare(merged, args)
 
 
+# ── Browse ───────────────────────────────────────────────────────────────────
+
+def cmd_browse(parser, args, explicit):
+    """analysis.py browse: the full-screen analysis browser over ``--source``
+    (simulated games, a shard directory, or a saved .rmtrace session) on the
+    ``--board`` front end. ``explicit`` is the set of dests the command line
+    set; one that does not apply to the source kind is an error."""
+    try:
+        kind = browse_source_kind(args.source)
+    except ValueError as exc:
+        parser.error(str(exc))
+    bad = browse_inapplicable_dests(kind, explicit)
+    if bad:
+        flags = "/".join("--" + d.replace("_", "-") for d in bad)
+        parser.error(f"{flags} do not apply to a {kind} --source (see "
+                     "`analysis.py browse --help`)")
+    if resolve_board(args.board) == BOARD_GUI:
+        import gui_main
+        return gui_main.run_browser(vars(args))
+    from tui_analysis import AnalysisApp
+    AnalysisApp(args).run()
+    return 0
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
-def main():
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else list(argv)
     parser = argparse.ArgumentParser(
         description="Analyze a trained RoboMage model by simulating games")
     sub = parser.add_subparsers(dest="command", required=True)
 
     # All subcommands and their flags come from cli_spec.ANALYSIS_TOOL (single
     # source shared with the TUI). Dispatch below stays hand-written.
+    subparsers = {}
     for s in ANALYSIS_TOOL.subs:
         sp = sub.add_parser(s.name, help=s.help)
         apply_to_parser(sp, s)
+        subparsers[s.name] = sp
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.command == "browse":
+        rest = argv[argv.index("browse") + 1:]
+        return cmd_browse(subparsers["browse"], args,
+                          explicit_dests(subparsers["browse"], rest))
     {
         "report": cmd_report,
         "interactive": cmd_interactive,
         "search": cmd_search_compare,
     }[args.command](args)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

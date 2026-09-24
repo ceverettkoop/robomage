@@ -657,7 +657,7 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
   --deck-a X --deck-b Y` goes straight into a game; `./gui.sh` (= `play.py --board gui` with no
   seat/deck flags) opens the app's welcome pane — File ▸ New Session opens the play/analysis
   dialogs. **The GUI mirrors the CLI**: the Play dialog's fields ARE `play.py`'s flags and the
-  Analysis dialog's are the browser's (`analysis-tui browse`) — same dests, same cli_spec
+  Analysis dialog's are the browser's (`analysis.py browse`) — same dests, same cli_spec
   defaults — listed in `train/launcher_config.py` (Qt-free; `test_cli_spec.py` asserts every
   field ↔ flag with equal defaults). Settings persist to ONE file,
   `~/.robomage/gui_launcher.json`, a section per dialog; unknown / ill-typed keys are ignored. A
@@ -667,12 +667,17 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
 - **TUI board**: `play.py --board tui ...`, or `./tui.sh`'s play entry (the same PLAY_TOOL form).
 - **Text board**: `play.py --board text ...` — `runner.run_games` with a `HumanController` seat
   (action number or semantic spec, `concede`) vs `make_controller(opponent spec)`.
-- **Standalone analysis browser** (`train/tui_analysis.py`, Textual, not on `game_driver.py`):
-  simulates N games vs an opponent and lets you page board states, seek via a clickable V(s)
-  histogram, run any `analysis.py` REPL view, and branch `whatif` counterfactuals. Launch via
-  `./tui.sh`'s `analysis-tui → browse`, or `train/tui_analysis.py --player-a <model.zip|gen>
-  --player-b scripted --deck-a delver [--deck-b mav] [--games 20]` (`--player-a` is the
-  inspected model, `--player-b` its opponent).
+- **Analysis browser** (`analysis.py browse`, not on `game_driver.py`): page board states, seek
+  via a clickable V(s) histogram, run any `analysis.py` REPL view, and branch `whatif`
+  counterfactuals. ONE `--source` picks what it browses (`cli_spec.browse_source_kind`):
+  `simulate` (default — `--games` games of `--player-a`, the inspected model, vs `--player-b` on
+  `--deck-a/-b`), a directory of `shard_*.npz` (AZ self-play or a recording; `--player-a` is the
+  V(s) net, `--seat`/`--no-net` apply), or a saved `.rmtrace` session (`--player-a` is the
+  replay-search net). A flag that does not apply to the source kind errors
+  (`cli_spec.BROWSE_SOURCE_DESTS`); `--shards` was removed. `--board tui` (default) is the Textual
+  app in `train/tui_analysis.py`; `--board gui` opens the PySide6 app on that session
+  (`gui_main.run_browser`, falling back to tui without PySide6). Also `./tui.sh`'s
+  `analysis → browse`. `tui_analysis.py` itself is no longer an entry point (exits 1).
 - **Headless smokes**: `QT_QPA_PLATFORM=offscreen ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and
   exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it
   delivered stats.
@@ -704,7 +709,7 @@ land with full visit posterior / root value / explored flag (via `SearchControll
 chained with the analysis window's sink); every other >1-choice decision (the human's included)
 lands as a one-hot behavior row (`q=NaN`) via the driver's `step_observer`. One file per match,
 atomically rewritten at each game boundary, so every shard consumer (`az_train.load_window`,
-`az_inspect` (CLI views and `az_inspect.py tui`)/`tui_analysis --shards`, the GUI browser) always sees a valid dir
+`az_inspect` (CLI views and `az_inspect.py tui`)/`analysis.py browse --source DIR`, the GUI browser) always sees a valid dir
 (in-progress rows carry `z=0`). Each shard gets a same-stem **`.rmplay` replay sidecar** (seed +
 full action log + per-row positions) attached by `shard_replay.load_replay_sidecars`, making a
 recording **exactly replayable**: both browsers' `search` entry (**F6**,
@@ -783,9 +788,9 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
 - `train/shard_probes.py` — Qt-free glue running `az_inspect`'s net probes over browsed
   records (snapshot on the UI thread, stack+torch on the worker); `PROBE_MENU` is appended to
   the GUI browser's analyses sidebar
-- `train/tui_analysis.py` — standalone Textual analysis browser (game list, board-state pager,
-  clickable V(s) histogram, every `analysis.py` REPL view, `whatif` branching); behind
-  `./tui.sh`'s `analysis-tui → browse` menu entry
+- `train/tui_analysis.py` — the Textual analysis browser app (game list, board-state pager,
+  clickable V(s) histogram, every `analysis.py` REPL view, `whatif` branching); launched by
+  `analysis.py browse` (`--board tui`, the default) and `./tui.sh`'s `analysis → browse`
 - `train/analysis_session.py` — Qt-free analysis core: `AnalysisSession` (detached engine,
   delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig` (its evaluator comes from
   `opponents.load_spec_evaluator`)

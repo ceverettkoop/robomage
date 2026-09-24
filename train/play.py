@@ -26,8 +26,8 @@ import sys
 from cli_spec import (BOARD_GUI, BOARD_TEXT, BOARD_TUI, DEFAULT_PLAY_OPPONENT,
                       PLAY_ANALYSIS_DESTS, PLAY_SESSION_DESTS, PLAY_TOOL,
                       SEARCH_KNOB_KEYS, apply_search_knobs, apply_to_parser,
-                      explicit_dests, is_bo3, is_search_spec, resolve_play_seats,
-                      spec_query_keys)
+                      explicit_dests, is_bo3, is_search_spec, resolve_board,
+                      resolve_play_seats, spec_query_keys)
 
 # Flags that only reach a GameDriver board (gui/tui), not the text board.
 _DRIVER_ONLY_DESTS = ("human_clock", "hard_timeout", "record_shards")
@@ -40,21 +40,6 @@ def build_parser():
         description="Play interactively against a trained model")
     apply_to_parser(parser, PLAY_TOOL.subs[0])
     return parser
-
-
-def resolve_board(board):
-    """The board to run: ``board``, except gui falls back to tui (with a
-    printed notice) when PySide6 is not installed."""
-    if board != BOARD_GUI:
-        return board
-    try:
-        import PySide6  # noqa: F401
-    except ImportError:
-        print("PySide6 not installed — falling back to the TUI board "
-              "(pip install -r train/requirements-gui.txt for the GUI).",
-              flush=True)
-        return BOARD_TUI
-    return BOARD_GUI
 
 
 def check_board_options(parser, args, explicit, board):

@@ -8,8 +8,8 @@ cli_spec without instantiating a widget.
 Every dialog field IS a command-line flag: the field is keyed by the flag's
 argparse dest, starts from the flag's cli_spec default, and is persisted
 under that dest. The Play dialog mirrors play.py (``cli_spec.PLAY_TOOL``);
-the Analysis dialog mirrors the analysis browser (``cli_spec.
-ANALYSIS_TUI_TOOL``'s browse Sub). Both dialogs remember their last-used
+the Analysis dialog mirrors the analysis browser (``analysis.py browse``,
+``cli_spec.ANALYSIS_BROWSE_SUB``). Both dialogs remember their last-used
 values in ONE file, ``~/.robomage/gui_launcher.json``, one section per dialog
 (``{"play": {...}, "analysis": {...}}``). Keys that are not a field of that
 dialog, or whose value does not fit the flag, are ignored — an old or
@@ -19,7 +19,7 @@ hand-edited file never breaks the launcher.
 import json
 import os
 
-from cli_spec import (ANALYSIS_TUI_TOOL, PLAY_TOOL, arg_default, iter_args,
+from cli_spec import (ANALYSIS_BROWSE_SUB, PLAY_TOOL, arg_default, iter_args,
                       resolve_play_seats, DEFAULT_PLAY_OPPONENT, HUMAN_SPEC)
 
 LAUNCHER_CONFIG = os.path.join(os.path.expanduser("~"), ".robomage",
@@ -56,15 +56,16 @@ ANALYSIS_FIELDS = (
     "player_a", "player_b", "deck_a", "deck_b", "games", "seed", "format",
     "sims", "worlds", "think_time", "search_procs", "match_clock",
     "search_device", "search_xw",
-    "shards", "seat", "no_net",
+    "source", "seat", "no_net",
 )
 ANALYSIS_CLI_ONLY = {
+    "board": "the dialog IS the GUI board",
     "binary": "the app's --binary applies to every session it starts",
 }
 
 _SECTIONS = {
     PLAY_SECTION: (PLAY_TOOL.subs[0], PLAY_FIELDS),
-    ANALYSIS_SECTION: (ANALYSIS_TUI_TOOL.subs[0], ANALYSIS_FIELDS),
+    ANALYSIS_SECTION: (ANALYSIS_BROWSE_SUB, ANALYSIS_FIELDS),
 }
 
 

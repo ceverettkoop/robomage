@@ -4,7 +4,7 @@
 a directory of ``shard_*.npz`` files in the exact self-play schema
 (:data:`az_selfplay.SHARD_KEYS`), so every existing shard consumer works on a
 recorded session unchanged: the analysis browser's shard mode
-(``shard_replay.load_records`` behind ``tui_analysis --shards`` /
+(``shard_replay.load_records`` behind ``analysis.py browse --source DIR`` /
 ``gui_browser``), ``az_inspect --shards`` (CLI views and ``az_inspect.py tui``), and
 even ``az_train.load_window``.
 

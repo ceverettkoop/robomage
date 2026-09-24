@@ -9,8 +9,8 @@ game-backfill order) carry no game/match ids, yet every row's obs embeds the
 bo3 match context
 (game number, win counters, sideboard flag) and the mover's seat. This module
 recovers that structure and re-packs the rows into the per-game trace dicts
-``analysis._collect_game_traces`` produces, so ``tui_analysis.py`` can browse
-recorded self-play exactly like freshly simulated games (``--shards``).
+``analysis._collect_game_traces`` produces, so ``analysis.py browse`` can browse
+recorded self-play exactly like freshly simulated games (``--source DIR``).
 
 The record unit is a full bo3 MATCH trace (matching the analysis collector,
 whose env episode spans the match): steps are the VIEWPOINT seat's rows, the
