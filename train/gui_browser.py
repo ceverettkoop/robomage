@@ -103,7 +103,7 @@ def _tree_ready_status(ev):
 _ARG_DEFAULTS = {
     "player_a": "gen", "player_b": "scripted", "deck_a": None, "deck_b": None,
     "binary": BINARY, "format": "bo3", "think_time": None, "match_clock": None,
-    "n_games": 20, "shards": None, "seat": "A", "no_net": False,
+    "games": 20, "seed": 1, "shards": None, "seat": "A", "no_net": False,
 }
 
 
@@ -1147,7 +1147,7 @@ class BrowserPane(QWidget):
         self._started = True
         self._worker.start()
         if self._has_engine:
-            self._submit_collect("load", getattr(self._args, "n_games", 20))
+            self._submit_collect("load", getattr(self._args, "games", 20))
 
     def shutdown(self):
         """Bounded-blocking teardown: stop the running collect, queue the

@@ -547,6 +547,10 @@ REMOVED_FLAGS = (
                 scopes=("play",)),
     RemovedFlag("model", "use --player-a SPEC",
                 scopes=("analysis", "analysis-tui", "train/baseline")),
+    # Every game/match count is --games; the PUCT constant is --c-puct.
+    RemovedFlag("--n-games", "use --games"),
+    RemovedFlag("--c", "use --c-puct",
+                scopes=("analysis/search", "eval-search-gate")),
 )
 
 # Environment variables that duplicated a flag: name -> hint appended to
@@ -1127,6 +1131,10 @@ def sim_args():
                  "mirror match (--deck-a)."),
         Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
         format_arg(),
+        Arg("--seed", "int", default=1,
+            help="Base seed: simulated game N (counted from 0 over the "
+                 "session) plays engine --seed seed+N, so a run is "
+                 "reproducible (default: 1)"),
         Arg("--out", "str", default=None,
             help="Directory for saved charts/reports (default: train/analysis_out/)"),
         Arg("--show", "flag",
@@ -1384,9 +1392,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--deck-a", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
         Arg("--deck-b", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
         Arg("--games", "int", default=1,
-            help="Number of games/matches to run (default: 1). >1 prints per-game results and a W/L/D summary"),
-        Arg("--seed", "int", default=None,
-            help="RNG seed for reproducible games (game N uses seed+N; default: random)"),
+            help="Matches to run — single games under --format bo1 (default: 1). "
+                 ">1 prints per-match results and a W/L/D summary"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (game N uses seed+N; default: 1)"),
         Arg("--verbose", "flag",
             help="Dump full board state (battlefield, hands, mana, stack, graveyards) at each decision"),
         *common_args(),
@@ -1405,7 +1414,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "PPO generalist), a .zip path, or an 'mcts:'/'azraw:' spec runs on "
                  "the Python backend instead"),
         Arg("--games", "int", default=DEFAULT_BASELINE_GAMES,
-            help=f"Matches per matchup (default {DEFAULT_BASELINE_GAMES}); seats "
+            help=f"Matches per matchup — single games under --format bo1 "
+                 f"(default {DEFAULT_BASELINE_GAMES}); seats "
                  "alternate within each matchup (net in seat A for the first "
                  "half, rounded up)"),
         Arg("--deck-a", "str", default=None, suggest="deck",
@@ -1445,9 +1455,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--no-record", "flag", help="Do not record shards"),
         Arg("--td-n", "int", default=DEFAULT_AZ_TD_N,
             help="n-step TD horizon stored in the recorded shards"),
-        Arg("--seed", "int", default=None,
-            help="Base RNG seed (matchup i uses seed + i*100003; default: randomly "
-                 "drawn and printed)"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (matchup i uses seed + i*100003; default: 1)"),
         format_arg(),
         _actor_mode(),
         _actor_device(),
@@ -1462,7 +1471,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Focus deck the learner pilots (.dk stem); its opponent is a "
                  "mirror with "
                  "P=--mirror-frac, else a uniform league-roster draw"),
-        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Games to generate"),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES,
+            help="Matches to generate — single games under --format bo1 "
+                 f"(default {DEFAULT_AZ_GAMES})"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="PUCT simulations per decision, TOTAL across --worlds"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS, help="Determinized worlds per search"),
@@ -1533,7 +1544,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--fresh", "flag", help="Start from random init"),
         Arg("--snapshot-every", "int", default=0,
             help="Also save an intermediate gen__azv{steps}.pt every N batches (0=off)"),
-        Arg("--seed", "int", default=0),
+        Arg("--seed", "int", default=None,
+            help="Init / batch-sampling seed (default: randomly drawn at "
+                 "launch and printed)"),
         *sb_train_args(),
     ]),
     Sub("az-eval", "Gate a candidate AZNet vs the incumbent (sequential test, "
@@ -1587,7 +1600,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "every one of those candidate-vs-incumbent games becomes "
                  "training data — the cross-net signal pure self-play lacks"),
         _c_puct(),
-        Arg("--seed", "int", default=1),
+        Arg("--seed", "int", default=1,
+            help="Base gate seed (every round's and matchup's seeds derive "
+                 "from it; default: 1)"),
         format_arg(" — the gate's win rate is per match in bo3"),
         Arg("--workers", "int", default=None,
             help="Process-pool fan-out over the gate's matchup panel (default "
@@ -1618,7 +1633,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "(default: every deck in decks/league/). Each focus deck plays "
                  "each; per game the opponent is the mirror with P=--mirror-frac, "
                  "else a uniform draw from this pool."),
-        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Self-play games this cycle"),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES,
+            help="Self-play matches this cycle — single games under --format "
+                 f"bo1 (default {DEFAULT_AZ_GAMES})"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="Self-play PUCT sims, TOTAL across --worlds "
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
@@ -1763,7 +1780,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "interrupted; still resumable via --resume)"),
         Arg("--cycles-per-deck", "int", default=1,
             help="az cycles to run per deck per rotation"),
-        Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Self-play games per cycle"),
+        Arg("--games", "int", default=DEFAULT_AZ_GAMES,
+            help="Self-play matches per cycle — single games under --format "
+                 f"bo1 (default {DEFAULT_AZ_GAMES})"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help="Self-play PUCT sims, TOTAL across --worlds "
                  f"({DEFAULT_AZ_SIMS}/{DEFAULT_AZ_WORLDS} = "
@@ -1930,15 +1949,18 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
     Sub("report", "Run the standard battery and emit a single HTML report", items=[
         *sim_args(),
         *search_budget_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
+        Arg("--games", "int", default=50,
+            help="Games to simulate — each a whole match under --format bo3 "
+                 "(default: 50)"),
     ]),
     Sub("interactive",
         "Interactive session: simulate games then inspect replays, board states, "
         "value charts, SHAP, counterfactual whatif, and more", mode="interactive", items=[
             *sim_args(),
             *search_budget_args(),
-            Arg("--n-games", "int", default=20,
-                help="Games to pre-simulate before entering session (default: 20; 0 = skip)"),
+            Arg("--games", "int", default=20,
+                help="Games to pre-simulate before entering the session — each "
+                     "a whole match under --format bo3 (default: 20; 0 = skip)"),
             Arg("--n-samples", "int", default=200, help="SHAP sample count (default: 200)"),
             Arg("--n-background", "int", default=50, help="SHAP background size (default: 50)"),
         ]),
@@ -1947,19 +1969,19 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
         "visit distribution and net value vs search root value (AZ or PPO ckpt)",
         items=[
             *sim_args(),
-            Arg("--n-games", "int", default=4,
-                help="Games to drive with the MCTS controller (default: 4)"),
+            Arg("--games", "int", default=4,
+                help="Games to drive with the MCTS controller — each a whole "
+                     "match under --format bo3 (default: 4)"),
             Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
             Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
             *sb_search_args(),
-            Arg("--c", "float", default=DEFAULT_AZ_C_PUCT,
-                help=f"PUCT exploration constant c_puct (default {DEFAULT_AZ_C_PUCT})"),
-            Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
+            Arg("--c-puct", "float", default=DEFAULT_AZ_C_PUCT,
+                help=f"PUCT exploration constant (default {DEFAULT_AZ_C_PUCT})"),
             Arg("--top", "int", default=8,
                 help="Biggest KL(search||net) decisions to decode (default: 8)"),
             Arg("--workers", "int", default=1,
                 help="Parallel worker processes (default: 1 = sequential). Splits "
-                     "--n-games evenly across processes, each with its own "
+                     "--games evenly across processes, each with its own "
                      "evaluator/controller; results are merged before reporting."),
         ]),
 ])
@@ -1980,9 +2002,10 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
               if a.name == "--player-a" else a
               for a in sim_args() if a.name not in ("--out", "--show")],
             *search_budget_args(),
-            Arg("--n-games", "int", default=20,
-                help="Games to simulate on startup (default: 20); in --shards "
-                     "mode, the max recorded matches to load"),
+            Arg("--games", "int", default=20,
+                help="Games to simulate on startup — each a whole match under "
+                     "--format bo3 (default: 20). In --shards mode: the maximum "
+                     "recorded bo3 matches to load (0 = every match)"),
             Arg("--shards", "str", default=None,
                 help="Browse recorded AZ self-play instead of simulating: "
                      "directory of shard_*.npz files (e.g. train/az_data/gen). "
@@ -2174,7 +2197,7 @@ AZ_INSPECT_TOOL = Tool("az-inspect", "train/tui_az_inspect.py", flat=True, subs=
             help="States decoded for per-card occurrence counts (default: 800)"),
         Arg("--window", "int", default=None,
             help="Use only the newest N shards"),
-        Arg("--seed", "int", default=0, help="Sampling seed"),
+        Arg("--seed", "int", default=1, help="Sampling seed (default: 1)"),
         Arg("--min-seen", "int", default=0,
             help="Drop cards seen fewer than N times from the embedding views "
                  "(their rows never trained)"),

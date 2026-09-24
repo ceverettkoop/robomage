@@ -152,7 +152,12 @@ benchmarks; there is no other decision loop in the tree.
 
 Every Python tool that plays games takes the same match-format flag,
 `--format bo1|bo3`, defaulting to **bo3** (the old `--bo1`/`--bo3` switches
-error with a pointer to it).
+error with a pointer to it). A game/match count is always `--games` (whole
+matches under bo3; each tool's help says what it counts), the PUCT constant is
+always `--c-puct`, and `--seed` defaults to **1** on every test, eval and
+inspection tool (observe, baseline, az-eval, analysis, the harness, fuzz,
+benches, az_inspect) but to a **random, printed** seed on long training runs
+(az-selfplay, az-train, az, az-league).
 
 - **`test_harness.py`** — state sculpting (hands/zones/scenarios) + any
   controller; `run_games` under the hood. Pass `--format bo1` for a single

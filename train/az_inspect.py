@@ -2607,7 +2607,8 @@ def _add_shard_args(p, default_rows=4000):
                    help="max recorded decisions to sample")
     p.add_argument("--window", type=int, default=None,
                    help="use only the newest N shards")
-    p.add_argument("--seed", type=int, default=0, help="sampling seed")
+    p.add_argument("--seed", type=int, default=1,
+                   help="sampling seed (default: 1)")
 
 
 def _sample(args):
@@ -2670,7 +2671,8 @@ def build_parser():
 
     p = sub.add_parser("clusters", help="k-means over the card embedding")
     p.add_argument("-k", type=int, default=8, help="clusters")
-    p.add_argument("--cluster-seed", type=int, default=0)
+    p.add_argument("--cluster-seed", type=int, default=1,
+                   help="k-means seed (default: 1)")
     _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
 
     p = sub.add_parser("project", help="PCA-to-2D terminal scatter")

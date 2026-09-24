@@ -66,7 +66,8 @@ _ANALYSIS_DEFAULTS = {
     "player_b": "scripted:hard",
     "deck_a": "league/ur_delver",
     "deck_b": "",
-    "n_games": 20,
+    "games": 20,
+    "seed": 1,
     "format": "bo3",
     # Search settings (az:/mcts: seats only; None = "(default)" = omit the knob).
     "sims": None,
@@ -215,11 +216,18 @@ class NewAnalysisSessionDialog(QDialog):
             "The opponent's deck; leave blank to mirror the model deck.")
         form.addRow("Player B deck", self._deck_b)
 
-        self._n_games = QSpinBox()
-        self._n_games.setRange(0, 500)
-        self._n_games.setValue(int(get("n_games") or 0))
-        self._n_games.setToolTip("Games to simulate on startup.")
-        form.addRow("Games", self._n_games)
+        self._games = QSpinBox()
+        self._games.setRange(0, 500)
+        self._games.setValue(int(get("games") or 0))
+        self._games.setToolTip("Games to simulate on startup.")
+        form.addRow("Games", self._games)
+
+        self._seed = QSpinBox()
+        self._seed.setRange(0, 2**31 - 1)
+        self._seed.setValue(int(get("seed") or 0))
+        self._seed.setToolTip("Base seed: simulated game N plays engine seed "
+                              "seed+N, so a session is reproducible.")
+        form.addRow("Seed", self._seed)
 
         self._format = QComboBox()
         self._format.addItem("Best of three (with sideboarding)", "bo3")
@@ -407,10 +415,11 @@ class NewAnalysisSessionDialog(QDialog):
             "player_b": opponent,
             "deck_a": self._deck_a.currentText().strip(),
             "deck_b": deck_b or None,
-            # In shard mode n_games is the match-load cap (0 = all); in sim
+            # In shard mode games is the match-load cap (0 = all); in sim
             # mode it is the number of games to simulate on startup.
-            "n_games": (int(self._shard_limit.value()) if shards_on
-                        else int(self._n_games.value())),
+            "games": (int(self._shard_limit.value()) if shards_on
+                      else int(self._games.value())),
+            "seed": int(self._seed.value()),
             "format": self._format.currentData(),
             "think_time": None,
             "match_clock": None,
@@ -444,9 +453,10 @@ class NewAnalysisSessionDialog(QDialog):
             "player_a": self._model.currentText().strip() or "gen",
             "player_b": NewPlaySessionDialog._combo_spec(self._opponent),
             "deck_a": opts["deck_a"], "deck_b": opts["deck_b"] or "",
-            # Persist the sim "Games" field itself (opts["n_games"] is the
+            # Persist the sim "Games" field itself (opts["games"] is the
             # shard-load cap in shard mode); the shard cap saves separately.
-            "n_games": int(self._n_games.value()), "format": opts["format"],
+            "games": int(self._games.value()), "seed": opts["seed"],
+            "format": opts["format"],
             "sims": spin(self._sims), "worlds": spin(self._worlds),
             "think_time": spin(self._think_time),
             "search_procs": spin(self._search_procs),
@@ -822,7 +832,7 @@ class SessionManager(QObject):
         return {
             "deck_a": provenance.get("deck_a"),
             "deck_b": provenance.get("deck_b"),
-            "n_games": 0,
+            "games": 0,
             "format": format_name(bool(provenance.get("bo3", True))),
             "think_time": None, "match_clock": None,
             "seat": provenance.get("seat", "A"),
@@ -1055,7 +1065,7 @@ class MainWindow(QMainWindow):
             # the net that seat played with.
             "player_a": (self.manager._opts or {}).get("model_path") or "az:gen",
             "no_net": not _torch_available(),
-            "n_games": 0,                                  # load every match
+            "games": 0,                                  # load every match
             "binary": self._binary,
         }
         try:
@@ -1347,7 +1357,7 @@ class _BrowserSmoke(_ShellSmoke):
                                 f"{self._shards}")
                 return
             opts = {"shards": self._shards, "seat": "A", "no_net": True,
-                    "n_games": 3, "format": "bo1", "think_time": None,
+                    "games": 3, "format": "bo1", "think_time": None,
                     "match_clock": None, "deck_a": None, "deck_b": None,
                     "binary": mgr._binary}
             if not mgr.new_analysis_session(opts):
@@ -1410,7 +1420,7 @@ class _TreeSmoke(_ShellSmoke):
                             f"{self._base!r}")
             return
         opts = {"shards": rec, "seat": _recording_search_seat(rec),
-                "no_net": True, "n_games": 0, "format": "bo1",
+                "no_net": True, "games": 0, "format": "bo1",
                 "think_time": None, "match_clock": None, "deck_a": None,
                 "deck_b": None, "binary": mgr._binary}
         if not mgr.new_analysis_session(opts):

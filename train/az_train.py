@@ -2494,6 +2494,7 @@ def _resolve_use_actor(args) -> Optional[bool]:
     return None
 
 def run_train(args) -> None:
+    import az_selfplay
     # The window is the shared az_data/gen pool; the label only tags the log.
     train_az("pooled window", batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, c_v=args.c_v,
@@ -2505,7 +2506,7 @@ def run_train(args) -> None:
              snapshot_every=args.snapshot_every,
              sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
              sb_loss_coef=getattr(args, "sb_loss_coef", DEFAULT_SB_LOSS_COEF),
-             seed=args.seed if args.seed is not None else 0)
+             seed=az_selfplay.resolve_seed(args, "az-train"))
 
 
 def run_eval(args) -> None:

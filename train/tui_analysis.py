@@ -32,7 +32,7 @@ analysis.py — this front end covers the text/interactive tools.
 
 Run from the repo root (same simulation args as `analysis.py interactive`):
     train/.venv/bin/python train/tui_analysis.py --player-a <model.zip|gen> \
-        --player-b scripted --deck-a delver [--deck-b mav] [--n-games 20] \
+        --player-b scripted --deck-a delver [--deck-b mav] [--games 20] \
         [--format bo1]
 
 --player-a is the inspected model and --player-b its opponent.
@@ -41,7 +41,7 @@ Shard replay — browse recorded AZ self-play instead of simulating (see
 shard_replay.py; the --player-a spec becomes the V(s) net, --no-net keeps the
 recorded outcome z, and whatif/run stay disabled without a live env):
     train/.venv/bin/python train/tui_analysis.py --player-a gen \
-        --shards train/az_data/gen [--seat A|B] [--no-net] [--n-games 20]
+        --shards train/az_data/gen [--seat A|B] [--no-net] [--games 20]
 """
 
 import argparse
@@ -498,7 +498,7 @@ class AnalysisApp(App):
         # Fit the board to the initial terminal size once the first layout pass
         # has assigned real widget heights (on_mount runs pre-layout).
         self.call_after_refresh(self._relayout)
-        self._load_and_collect(self._args.n_games)
+        self._load_and_collect(self._args.games)
 
     # ----- responsive layout -----
 

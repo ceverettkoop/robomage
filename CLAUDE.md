@@ -617,7 +617,7 @@ controller). The engine is always a `--machine` subprocess; the opponent is any
   simulates N games vs an opponent and lets you page board states, seek via a clickable V(s)
   histogram, run any `analysis.py` REPL view, and branch `whatif` counterfactuals. Launch via
   `./tui.sh`'s `analysis-tui → browse`, or `train/tui_analysis.py --player-a <model.zip|gen>
-  --player-b scripted --deck-a delver [--deck-b mav] [--n-games 20]` (`--player-a` is the
+  --player-b scripted --deck-a delver [--deck-b mav] [--games 20]` (`--player-a` is the
   inspected model, `--player-b` its opponent).
 - **Headless smokes**: `QT_QPA_PLATFORM=offscreen ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and
   exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it

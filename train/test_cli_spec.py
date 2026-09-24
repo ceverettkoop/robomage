@@ -11,6 +11,9 @@
   a stray positional model names ``--player-a``); play needs exactly one
   ``human`` seat.
 * Removed environment variables fail at startup with their hint.
+* Every game/match count is ``--games`` and the PUCT constant ``--c-puct``;
+  ``--seed`` defaults to 1 on test/eval/inspection tools and to None (random,
+  printed) on long training runs (``SEED_DEFAULTS``).
 
 The cli_spec parsers are built in-process exactly as the scripts build them
 (``apply_to_parser``); the standalone scripts are exercised as subprocesses.
@@ -201,6 +204,67 @@ def test_format_default():
     check(not is_bo3({"format": "bo1"}), "an opts dict with format bo1 is bo1")
 
 
+# --seed default per (tool, sub): 1 on deterministic test/eval/inspection
+# tools, None (randomly drawn at launch and printed) on long training runs and
+# interactive play. The harness's None means "1, or the scenario's seed".
+SEED_DEFAULTS = {
+    ("train", "observe"): 1, ("train", "baseline"): 1, ("train", "az-eval"): 1,
+    ("analysis", "report"): 1, ("analysis", "interactive"): 1,
+    ("analysis", "search"): 1, ("analysis-tui", "browse"): 1,
+    ("az-inspect", "inspect"): 1, ("harness", "harness"): None,
+    ("play", "play"): None,
+    ("train", "az-selfplay"): None, ("train", "az-train"): None,
+    ("train", "az"): None, ("train", "az-league"): None,
+}
+
+# Count flags other than --games, each naming a DIFFERENT count.
+_OTHER_COUNT_FLAGS = {"--eval-games", "--expert-games"}
+
+
+def test_count_puct_seed_vocabulary():
+    print("--games / --c-puct / --seed vocabulary and seed defaults")
+    subs = {(t.key, s.name): s for t, s in all_subs()}
+    for (key, sub) in subs.items():
+        where = "/".join(key)
+        names = {a.name for a in iter_args(sub)}
+        for n in names:
+            if re.search(r"games|matches", n) and n != "--games":
+                check(n in _OTHER_COUNT_FLAGS,
+                      f"{where}: game-count flag {n} should be --games")
+        check("--c" not in names and "--n-games" not in names,
+              f"{where}: --c / --n-games are live (use --c-puct / --games)")
+        if "--seed" in names:
+            check(key in SEED_DEFAULTS,
+                  f"{where}: --seed default is not pinned in SEED_DEFAULTS")
+            if key in SEED_DEFAULTS:
+                got = build(sub).get_default("seed")
+                check(got == SEED_DEFAULTS[key],
+                      f"{where}: --seed default {got!r} != "
+                      f"{SEED_DEFAULTS[key]!r}")
+        else:
+            check(key not in SEED_DEFAULTS, f"{where}: expected a --seed flag")
+    # Removed spellings error with their hint (an exact removed entry also
+    # stops argparse prefix-matching --c onto --c-puct).
+    for key, argv, needle in (
+            (("analysis", "report"), ["--n-games", "5"],
+             "--n-games was removed; use --games"),
+            (("analysis-tui", "browse"), ["--n-games", "5"],
+             "--n-games was removed; use --games"),
+            (("analysis", "search"), ["--c", "2.0"],
+             "--c was removed; use --c-puct")):
+        code, err = parse_error(build(subs[key]), argv)
+        check(code == 2 and needle in err,
+              f"{'/'.join(key)} {argv[0]} should error with {needle!r} ({err!r})")
+    p = build(subs[("analysis", "search")])
+    ns = p.parse_args(["--player-a", "gen", "--c-puct", "3.5", "--games", "2"])
+    check(ns.c_puct == 3.5 and ns.games == 2, "search --c-puct/--games parse")
+    # Standalone inspector: sampling and k-means seeds default to 1.
+    import az_inspect
+    ns = az_inspect.build_parser().parse_args(["clusters"])
+    check(ns.seed == 1 and ns.cluster_seed == 1,
+          f"az_inspect clusters seeds {ns.seed}/{ns.cluster_seed} != 1/1")
+
+
 def test_scoped_removal():
     print("scoped removals register only in their scope")
     saved = cli_spec.REMOVED_FLAGS
@@ -305,6 +369,26 @@ def test_scripts():
               f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
               f"{out[-600:]}")
 
+    print("scripts reject --n-games / --c with their hint")
+    vocab_cases = [
+        (("train/analysis.py", "report", "--player-a", "gen", "--n-games", "3"),
+         "--n-games was removed; use --games"),
+        (("train/analysis.py", "search", "--player-a", "gen", "--c", "2"),
+         "--c was removed; use --c-puct"),
+        (("train/eval_search_gate.py", "--checkpoint", "gen", "--deck-a", "d",
+          "--c", "2"), "--c was removed; use --c-puct"),
+        (("train/bench_engine.py", "--n-games", "3"),
+         "--n-games was removed; use --games"),
+    ]
+    for argv, needle in vocab_cases:
+        rc, out = run_script(*argv)
+        check(rc == 2 and needle in out,
+              f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
+              f"{out[-600:]}")
+    rc, out = run_script("train/eval_search_gate.py", "--help")
+    check(rc == 0 and "--c-puct" in out and not _mentions(out, "--c"),
+          f"eval_search_gate --help should list --c-puct only (rc={rc})")
+
 
 def main():
     test_removed_flags_error()
@@ -314,6 +398,7 @@ def main():
     test_seat_vocabulary()
     test_play_seats()
     test_removed_env()
+    test_count_puct_seed_vocabulary()
     test_scripts()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")

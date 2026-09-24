@@ -17,7 +17,6 @@ exits.
 import contextlib
 import glob
 import os
-import random
 import shlex
 import shutil
 import subprocess
@@ -206,11 +205,6 @@ class ArgFormMixin:
     defaults) and a ``#fieldhelp`` Static.
     """
 
-    # Seed an az* form's --seed with a fresh random value per load (see
-    # _default_for). Hosts that EDIT a stored document rather than launch a
-    # one-off command turn this off.
-    _RANDOM_AZ_SEED = True
-
     def _init_form_state(self):
         self._fields = []
         self._help_by_widget = {}   # widget -> help text, for the focus help line
@@ -280,16 +274,6 @@ class ArgFormMixin:
         through to the Arg's own default."""
         if getattr(self._sub, "name", None) == "league" and a.name in _LEAGUE_TUI_DEFAULTS:
             return _LEAGUE_TUI_DEFAULTS[a.name]
-        # az* forms: pre-fill --seed with a fresh random value per form load, so
-        # repeated TUI launches don't silently replay the fixed cli_spec seed
-        # (identical self-play games before any training has happened). CLI
-        # defaults are untouched, and the value is visible in the field and the
-        # composed-command preview, so every run stays reproducible. A plan
-        # editor opts out (_RANDOM_AZ_SEED): merely selecting a phase must not
-        # rewrite the saved plan with a new random seed.
-        if (self._RANDOM_AZ_SEED and a.name == "--seed"
-                and str(getattr(self._sub, "name", "")).startswith("az")):
-            return random.randint(1, 999_999)
         return a.default
 
     def _build_arg(self, a):
@@ -749,10 +733,6 @@ class CurriculumScreen(ArgFormMixin, Screen):
         ("[", "move_earlier", "◀ move"),
         ("]", "move_later", "move ▶"),
     ]
-
-    # A plan is a stored document: selecting an az phase must not rewrite it
-    # with a fresh random --seed the way a one-off az launch form does.
-    _RANDOM_AZ_SEED = False
 
     def __init__(self, name_or_path: str = None):
         super().__init__()

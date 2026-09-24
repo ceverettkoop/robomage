@@ -57,7 +57,8 @@ def main() -> int:
     ap.add_argument("--deck-a", required=True,
                     help="Deck both seats pilot (a mirror match)")
     ap.add_argument("--games", type=int, default=192,
-                    help="Total gate games, split evenly across seats (default 192)")
+                    help="Total gate bo3 matches, split evenly across seats "
+                         "(default 192)")
     ap.add_argument("--sims", type=int, default=128)
     ap.add_argument("--worlds", type=int, default=4)
     ap.add_argument("--sb-branches", type=int, default=None,
@@ -68,17 +69,19 @@ def main() -> int:
     ap.add_argument("--sb-rollout-turns", type=int, default=None,
                     help="bo3 sideboard-root leaf-rollout horizon in player "
                          "turns, 0 = off (default budget)")
-    ap.add_argument("--c", type=float, default=DEFAULT_AZ_C_PUCT, dest="c_puct",
+    ap.add_argument("--c-puct", type=float, default=DEFAULT_AZ_C_PUCT,
                     help=f"PUCT exploration constant (default {DEFAULT_AZ_C_PUCT})")
     ap.add_argument("--vscale", type=float, default=1.0,
                     help="Value squash scale for the PPO value head")
     ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) - 1))
     ap.add_argument("--batch-size", type=int, default=24,
-                    help="Games per batch (a batch is one worker unit of work)")
+                    help="bo3 matches per batch (a batch is one worker unit "
+                         "of work)")
     ap.add_argument("--ref-games", type=int, default=16,
-                    help="MCTS-vs-scripted:hard reference games (0 disables; raw "
-                         "reference runs 2x this)")
-    ap.add_argument("--seed", type=int, default=1)
+                    help="MCTS-vs-scripted:hard reference bo3 matches (0 "
+                         "disables; raw reference runs 2x this)")
+    ap.add_argument("--seed", type=int, default=1,
+                    help="Base seed (batch i uses seed + 1000*i; default 1)")
     add_removed_flags(ap, "eval-search-gate")
     args = ap.parse_args()
 

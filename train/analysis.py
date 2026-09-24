@@ -59,6 +59,7 @@ Interactive session commands (via 'interactive'):
 import argparse
 import sys
 import os
+import random
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -546,6 +547,7 @@ def _load_model_and_env(args):
         env_cls = RoboMageEnv
     env = env_cls(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
                   bo3=is_bo3(args))
+    _attach_sim_seed(env, getattr(args, "seed", None))
     return model, env, opp_model
 
 
@@ -566,6 +568,27 @@ def _get_policy_probs(model, obs, num_choices):
         dist = model.policy.get_distribution(obs_t, action_masks=mask)
         probs = dist.distribution.probs[0].cpu().numpy()
     return probs[:num_choices].astype(np.float64)
+
+
+def _attach_sim_seed(env, seed):
+    """Make every game later simulated on ``env`` reproducible from ``seed``:
+    the session's Nth game (counted across every _collect_game_traces call on
+    this env) plays engine seed ``seed + N`` with its model seat drawn from
+    that seed. ``seed`` None leaves the env unseeded (random seats/seeds)."""
+    env._sim_seed_base = seed
+    env._sim_seed_next = 0
+
+
+def _next_sim_game(env):
+    """``(model_is_a, engine_seed)`` for the next simulated game on ``env``:
+    derived from the seed _attach_sim_seed stored, else a random seat with
+    ``engine_seed`` None (the env draws its own)."""
+    base = getattr(env, "_sim_seed_base", None)
+    if base is None:
+        return bool(np.random.random() < 0.5), None
+    engine_seed = base + env._sim_seed_next
+    env._sim_seed_next += 1
+    return bool(np.random.default_rng(engine_seed).random() < 0.5), engine_seed
 
 
 def _reset_for_game(env, model_is_a, engine_seed=None):
@@ -754,8 +777,12 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True,
     for g in range(n_games):
         if should_stop is not None and should_stop():
             break
-        model_is_a = bool(np.random.random() < 0.5)
-        obs, engine_seed = _reset_for_game(env, model_is_a)
+        model_is_a, engine_seed = _next_sim_game(env)
+        obs, engine_seed = _reset_for_game(env, model_is_a, engine_seed)
+        if getattr(env, "_sim_seed_base", None) is not None:
+            # Scripted tie-breaks draw from Python's global RNG; seed it with
+            # the engine seed, as runner.run_games does.
+            random.seed(engine_seed)
         if progress is not None:
             progress({"kind": "game_start", "model_is_a": model_is_a,
                       "engine_seed": engine_seed})
@@ -4076,8 +4103,8 @@ def cmd_report(args):
               "[-1, 1] (a bounded game-result prediction, not the PPO shaped-return "
               "critic). All battery analyses apply; only absolute value magnitudes "
               "differ in scale from PPO reports.")
-    print(f"\nCollecting {args.n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, args.n_games)
+    print(f"\nCollecting {args.games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, args.games)
     env.close()
 
     out = viz.out_dir(args)
@@ -4148,9 +4175,9 @@ def cmd_interactive(args):
     model, env, opp_model = _load_model_and_env(args)
 
     games = []
-    if args.n_games > 0:
-        print(f"\nSimulating {args.n_games} games...")
-        games = _collect_game_traces(model, env, opp_model, args.n_games)
+    if args.games > 0:
+        print(f"\nSimulating {args.games} games...")
+        games = _collect_game_traces(model, env, opp_model, args.games)
 
     ctx = {
         "games": games,
@@ -4430,14 +4457,14 @@ def cmd_search_compare(args):
         evaluator, _ = load_spec_evaluator(
             args.player_a, on_warm_start=_note_warm_start)
         ctrl_model = _make_search_compare_controller(
-            evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
+            evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c_puct,
             rng_seed=args.seed, sb_branches=args.sb_branches,
             sb_worlds=args.sb_worlds,
             sb_rollout_turns=args.sb_rollout_turns)
         ctrl_opp = make_controller(args.player_b)
 
-        print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
-              f"vs {args.player_b} [{deck_b}] over {args.n_games} game(s)...")
+        print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c_puct}) "
+              f"vs {args.player_b} [{deck_b}] over {args.games} game(s)...")
 
         t0 = time.time()
         done = 0
@@ -4447,15 +4474,15 @@ def cmd_search_compare(args):
             done += 1
             elapsed = time.time() - t0
             rate = done / elapsed if elapsed > 0 else 0.0
-            eta = (args.n_games - done) / rate if rate > 0 else float("inf")
+            eta = (args.games - done) / rate if rate > 0 else float("inf")
             st = ctrl_model.stats
-            print(f"  game {done}/{args.n_games}  "
+            print(f"  game {done}/{args.games}  "
                   f"(searched {st['searched']}, fallback {st['fallback']})  "
                   f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
 
         runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
                          binary_path=args.binary, deck_a=deck_a, deck_b=deck_b,
-                         n_games=args.n_games, bo3=bo3,
+                         n_games=args.games, bo3=bo3,
                          seed=args.seed, transcript="quiet", on_game_end=_progress)
         _report_search_compare(ctrl_model, args)
         return
@@ -4463,15 +4490,15 @@ def cmd_search_compare(args):
     # Parallel: split n_games across worker processes, each rebuilding its own
     # evaluator/controller (a loaded model can't cross the process boundary),
     # then merge every batch's records/stats before reporting.
-    batches = _split_batches(args.n_games, n_workers, args.seed)
+    batches = _split_batches(args.games, n_workers, args.seed)
     payloads = [
         (i, args.player_a, args.player_b, deck_a, deck_b, count, args.seed + start,
-         args.sims, args.worlds, args.c, args.binary, bo3,
+         args.sims, args.worlds, args.c_puct, args.binary, bo3,
          args.sb_branches, args.sb_worlds, args.sb_rollout_turns)
         for i, (start, count) in enumerate(batches)
     ]
     print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "
-          f"c={args.c}) vs {args.player_b} [{deck_b}] over {args.n_games} game(s) "
+          f"c={args.c_puct}) vs {args.player_b} [{deck_b}] over {args.games} game(s) "
           f"across {len(payloads)} worker(s)...")
 
     merged = _MergedSearchStats()
@@ -4485,10 +4512,10 @@ def cmd_search_compare(args):
             done_games += n
             elapsed = time.time() - t0
             rate = done_games / elapsed if elapsed > 0 else 0.0
-            eta = (args.n_games - done_games) / rate if rate > 0 else float("inf")
+            eta = (args.games - done_games) / rate if rate > 0 else float("inf")
             print(f"  [batch {batch_id}] {n} game(s) in {dt:.1f}s -> "
-                  f"{done_games}/{args.n_games} done "
-                  f"({100 * done_games / args.n_games:.0f}%)  "
+                  f"{done_games}/{args.games} done "
+                  f"({100 * done_games / args.games:.0f}%)  "
                   f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
 
     _report_search_compare(merged, args)

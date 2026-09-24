@@ -198,5 +198,5 @@ From `./tui.sh`, pick the **analysis-tui** tool and its **browse** subcommand to
 same options through the form. To invoke it directly:
 
 ```bash
-train/.venv/bin/python train/tui_analysis.py --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck) --n-games 20
+train/.venv/bin/python train/tui_analysis.py --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck) --games 20
 ```

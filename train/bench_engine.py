@@ -16,15 +16,19 @@ from env import RoboMageEnv  # noqa: E402
 from opponents import ScriptedController  # noqa: E402
 from scripted_agent import make_agent  # noqa: E402
 import runner  # noqa: E402
+from cli_spec import add_removed_flags  # noqa: E402
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--deck-a", default="delver")
     ap.add_argument("--deck-b", default="delver")
-    ap.add_argument("--games", type=int, default=40)
-    ap.add_argument("--seed", type=int, default=1000)
+    ap.add_argument("--games", type=int, default=40,
+                    help="Single (bo1) games to play (default 40)")
+    ap.add_argument("--seed", type=int, default=1,
+                    help="Base seed (game i uses seed+i; default 1)")
     ap.add_argument("--max-decisions", type=int, default=4000)
+    add_removed_flags(ap, "bench")
     args = ap.parse_args()
 
     ctrl = ScriptedController(make_agent("scripted"))

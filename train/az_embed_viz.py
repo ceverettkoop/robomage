@@ -225,7 +225,7 @@ def build_parser():
                     help="annotate the N most-moved cards (default: 30)")
     ap.add_argument("--perplexity", type=float, default=30.0,
                     help="t-SNE perplexity (auto-capped for small sets)")
-    ap.add_argument("--seed", type=int, default=0, help="t-SNE seed")
+    ap.add_argument("--seed", type=int, default=1, help="t-SNE seed (default 1)")
     ap.add_argument("--out", default=None,
                     help="output directory (default: train/analysis_out/)")
     ap.add_argument("--show", action="store_true",
