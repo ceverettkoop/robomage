@@ -733,12 +733,15 @@ non-replayable. **View ▸ Analyze Recording… (F10)** opens the recording in a
 `BrowserPane` in a second window (live game keeps running), viewpoint defaulting to the opponent.
 Both browsers also have **net-probe entries** (`train/shard_probes.py`, Qt-free glue over
 `az_inspect`'s probes): search-π-vs-net, block permutation importance, card-swap/scalar sweeps,
-pooled KL(search‖net), value calibration. π is always the SEARCH posterior (diag visits, or a
+pooled KL(search‖net) with the biggest disagreements decoded, net V vs the search root value
+(MAE / corr; the root value is each searched step's diag `root_value`), value calibration.
+`analysis.py report` with a search `--player-a` runs the same pooled search-vs-net probes over
+its batch simulation (`--workers N` splits the games across processes). π is always the SEARCH posterior (diag visits, or a
 pool shard's search π) — decisions with none (raw-policy seat, human/behavior rows) are skipped by
 the π views with a note, never compared against the inspection net's own softmax (the
 `az_inspect` CLI/TUI sample marks the same rows as `pi_valid` via
 `shard_replay.is_search_target_row`). Every search-vs-net KL / top-1 number (these probes,
-`az_inspect divergence`, `analysis.py search`) comes from one definition,
+`az_inspect divergence`, `analysis.py report`) comes from one definition,
 `decode.search_net_divergence`: KL(search‖net) with the net priors folded over duplicate menu
 actions (`decode.fold_onto_reps`, the `menu_merge_reps` partition search merges edges by).
 Regression `train/test_shard_record.py` = default
@@ -780,7 +783,7 @@ decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
   (`make check` tier `curriculum`)
 - `train/progress_io.py` — the single crash-safe (write-temp + `os.replace`) JSON progress
   sidecar reader/writer shared by the league, exploiter, az-league, and curriculum drivers
-- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration) — `browse` (the analysis browser), `report` (HTML battery), `search`. Charts save to PNG under `train/analysis_out/` (headless-safe; `report --show` for a window) with terminal fallbacks. The inspected model is `--player-a` (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`), its opponent `--player-b` (default `scripted`); a model encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (a scripted `--player-b` mirrors `--deck-a`).
+- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration) — `browse` (the analysis browser), `report` (HTML battery; a search `--player-a` adds the search-vs-net sections, `--workers N` parallelizes). Charts save to PNG under `train/analysis_out/` (headless-safe; `report --show` for a window) with terminal fallbacks. The inspected model is `--player-a` (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`), its opponent `--player-b` (default `scripted`); a model encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (a scripted `--player-b` mirrors `--deck-a`).
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
 - `train/play.py` — interactive human-vs-model play (`--board gui|tui|text`; no seat/deck flags on
   the GUI board = the app's welcome pane)

@@ -675,7 +675,6 @@ REMOVED_FLAGS = (
                 scopes=("train/observe",)),
     # Every game/match count is --games; the PUCT constant is --c-puct.
     RemovedFlag("--n-games", "use --games"),
-    RemovedFlag("--c", "use --c-puct", scopes=("analysis/search",)),
     # The bench scripts' flags, renamed to the az-* / training vocabulary.
     RemovedFlag("--scripted", "use --player-b scripted",
                 scopes=("train/bench-actor",)),
@@ -729,6 +728,13 @@ REMOVED_SUBCOMMANDS = {
     ("analysis", "interactive"): "use `analysis.py browse` (its analyses menu "
                                  "has every former REPL view, the chart "
                                  "PNGs and the text transcript)",
+    ("analysis", "search"): "use `analysis.py report --player-a az:gen "
+                            "[--workers N]` (search-vs-net sections of the "
+                            "HTML report) or `analysis.py browse` with a "
+                            "search --player-a (its `net KL` / `net V vs "
+                            "search` probes); --sims/--worlds are flags, "
+                            "c-puct and the sideboard budget are spec knobs "
+                            "(az:gen?c=1.5&sb_branches=4)",
 }
 
 # Environment variables that duplicated a flag: name -> hint appended to
@@ -1276,14 +1282,12 @@ def is_search_spec(spec) -> bool:
         SEARCH_SPEC_PREFIXES)
 
 
-def search_knob_args(*, worlds=None, match_clock=None, paced=False,
-                     budget_only=False):
+def search_knob_args(*, worlds=None, match_clock=None, paced=False):
     """The search-knob flags. ``worlds`` / ``match_clock`` are the tool's
     defaults for those two (play's shipped matchup sets both); ``paced`` adds
-    --paced/--no-paced (human-facing play only); ``budget_only`` keeps just the
-    --think-time / --match-clock wall-clock budget pair (the batch analysis
-    subcommands). --search-procs unset means AUTO (half the visible cores,
-    capped at the world count) wherever the flag is offered."""
+    --paced/--no-paced (human-facing play only). --search-procs unset means
+    AUTO (half the visible cores, capped at the world count) wherever the flag
+    is offered."""
     budget = [
         Arg("--think-time", "float", default=None,
             help="Search seats only (an az:/mcts: player spec): wall-clock "
@@ -1299,8 +1303,6 @@ def search_knob_args(*, worlds=None, match_clock=None, paced=False,
                  + (f" (default {match_clock:g}; an explicit --sims drops it)"
                     if match_clock is not None else "")),
     ]
-    if budget_only:
-        return budget
     args = [
         Arg("--sims", "int", default=None,
             help="Search seats only: MCTS simulations per decision"),
@@ -1338,11 +1340,6 @@ def search_knob_args(*, worlds=None, match_clock=None, paced=False,
                  "search has a variable budget (--match-clock/--think-time); "
                  "--no-paced forces instant obvious decisions"))
     return args
-
-
-def search_budget_args():
-    """--think-time / --match-clock alone (the batch analysis subcommands)."""
-    return search_knob_args(budget_only=True)
 
 
 def search_knob_pairs(values, *, auto_procs=True):
@@ -1431,8 +1428,7 @@ def scan_decks():
 
 def sb_search_args():
     """The bo3 sideboard plan-search budget flags, shared verbatim by every Sub
-    that runs searches over bo3 matches (az-selfplay / az / az-league / the
-    analysis `search` report). One home — the defaults are the DEFAULT_SB_*
+    that runs searches over bo3 matches (az-selfplay / az / az-league). One home — the defaults are the DEFAULT_SB_*
     constants above; see their comment block for the design."""
     return [
         Arg("--sb-branches", "int", default=DEFAULT_SB_BRANCHES,
@@ -2568,33 +2564,21 @@ ANALYSIS_BROWSE_SUB = Sub(
 
 ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
     ANALYSIS_BROWSE_SUB,
-    Sub("report", "Run the standard battery and emit a single HTML report", items=[
+    Sub("report", "Run the standard battery and emit a single HTML report "
+        "(a search --player-a adds the search-vs-net sections)", items=[
         *sim_args(),
-        *search_budget_args(),
+        *search_knob_args(),
         Arg("--games", "int", default=50,
             help="Games to simulate — each a whole match under --format bo3 "
                  "(default: 50)"),
+        Arg("--workers", "int", default=1,
+            help="Parallel worker processes simulating the --games (default: "
+                 "1 = in-process). Each rebuilds its own model/engine and "
+                 "plays a contiguous slice of the seeds, so the engine seeds "
+                 "and seats are the same whatever the count (a search seat's "
+                 "own RNG stream restarts per worker); an unset "
+                 "--search-procs is 1 per worker"),
     ]),
-    Sub("search",
-        "Search-vs-raw comparison: per searched decision, net priors vs MCTS "
-        "visit distribution and net value vs search root value (AZ or PPO ckpt)",
-        items=[
-            *sim_args(),
-            Arg("--games", "int", default=4,
-                help="Games to drive with the MCTS controller — each a whole "
-                     "match under --format bo3 (default: 4)"),
-            Arg("--sims", "int", default=64, help="PUCT simulations per decision (default: 64)"),
-            Arg("--worlds", "int", default=4, help="Determinized worlds per search (default: 4)"),
-            *sb_search_args(),
-            Arg("--c-puct", "float", default=DEFAULT_AZ_C_PUCT,
-                help=f"PUCT exploration constant (default {DEFAULT_AZ_C_PUCT})"),
-            Arg("--top", "int", default=8,
-                help="Biggest KL(search||net) decisions to decode (default: 8)"),
-            Arg("--workers", "int", default=1,
-                help="Parallel worker processes (default: 1 = sequential). Splits "
-                     "--games evenly across processes, each with its own "
-                     "evaluator/controller; results are merged before reporting."),
-        ]),
 ])
 
 # play.py — interactive human-vs-opponent play on one of three boards: the

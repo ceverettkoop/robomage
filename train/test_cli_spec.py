@@ -55,7 +55,7 @@ FORMAT_SUBS = {
                            "fixed-model", "alternate", "observe", "baseline",
                            "az-selfplay", "az-eval", "az", "az-league",
                            "bench-nenvs")
-} | {("analysis", s) for s in ("browse", "report", "search")} | {
+} | {("analysis", s) for s in ("browse", "report")} | {
     ("play", "play"), ("harness", "harness")}
 
 
@@ -219,8 +219,7 @@ def test_format_default():
 # interactive play. The harness's None means "1, or the scenario's seed".
 SEED_DEFAULTS = {
     ("train", "observe"): 1, ("train", "baseline"): 1, ("train", "az-eval"): 1,
-    ("analysis", "report"): 1,
-    ("analysis", "search"): 1, ("analysis", "browse"): 1,
+    ("analysis", "report"): 1, ("analysis", "browse"): 1,
     ("harness", "harness"): None,
     ("play", "play"): None,
     ("train", "az-selfplay"): None, ("train", "az-train"): None,
@@ -259,21 +258,20 @@ def test_count_puct_seed_vocabulary():
                       f"{SEED_DEFAULTS[key]!r}")
         else:
             check(key not in SEED_DEFAULTS, f"{where}: expected a --seed flag")
-    # Removed spellings error with their hint (an exact removed entry also
-    # stops argparse prefix-matching --c onto --c-puct).
+    # Removed spellings error with their hint.
     for key, argv, needle in (
             (("analysis", "report"), ["--n-games", "5"],
              "--n-games was removed; use --games"),
             (("analysis", "browse"), ["--n-games", "5"],
-             "--n-games was removed; use --games"),
-            (("analysis", "search"), ["--c", "2.0"],
-             "--c was removed; use --c-puct")):
+             "--n-games was removed; use --games")):
         code, err = parse_error(build(subs[key]), argv)
         check(code == 2 and needle in err,
               f"{'/'.join(key)} {argv[0]} should error with {needle!r} ({err!r})")
-    p = build(subs[("analysis", "search")])
-    ns = p.parse_args(["--player-a", "gen", "--c-puct", "3.5", "--games", "2"])
-    check(ns.c_puct == 3.5 and ns.games == 2, "search --c-puct/--games parse")
+    p = build(subs[("analysis", "report")])
+    ns = p.parse_args(["--player-a", "az:gen", "--sims", "8", "--games", "2",
+                       "--workers", "2"])
+    check(ns.sims == 8 and ns.games == 2 and ns.workers == 2,
+          "report --sims/--games/--workers parse")
     # The inspector's one --seed drives sampling and k-means alike.
     import az_inspect
     ns = az_inspect.build_parser().parse_args(["clusters"])
@@ -331,13 +329,22 @@ def test_removed_subcommands():
                 p.parse_args(["--help"])
             except SystemExit:
                 pass
-        check(name not in out.getvalue(),
+        listed = re.findall(r"\{([^}]*)\}", out.getvalue())
+        check(listed and all(name not in c.split(",") for c in listed)
+              # a subcommand's own help row is indented exactly four
+              and not re.search(rf"^ {{4}}{re.escape(name)}\s", out.getvalue(),
+                                re.M),
               f"{tool_key} --help should not list removed {name!r}")
     check(cli_spec.removed_subcommand_message("analysis", "browse") is None,
           "a live subcommand has no removal message")
     rc, out = run_script("train/analysis.py", "interactive", "--player-a", "gen")
     check(rc == 2 and "`interactive` was removed; use `analysis.py browse`" in out,
           f"analysis.py interactive should error naming browse (rc={rc}):\n"
+          f"{out[-600:]}")
+    rc, out = run_script("train/analysis.py", "search", "--player-a", "gen",
+                         "--workers", "4")
+    check(rc == 2 and "`search` was removed; use `analysis.py report" in out,
+          f"analysis.py search should error naming report (rc={rc}):\n"
           f"{out[-600:]}")
 
 
@@ -522,12 +529,10 @@ def test_scripts():
               f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
               f"{out[-600:]}")
 
-    print("scripts reject --n-games / --c with their hint")
+    print("scripts reject --n-games with its hint")
     vocab_cases = [
         (("train/analysis.py", "report", "--player-a", "gen", "--n-games", "3"),
          "--n-games was removed; use --games"),
-        (("train/analysis.py", "search", "--player-a", "gen", "--c", "2"),
-         "--c was removed; use --c-puct"),
         (("train/train.py", "observe", "--n-games", "3"),
          "--n-games was removed; use --games"),
     ]

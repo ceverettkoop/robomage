@@ -264,6 +264,18 @@ def diag_posterior(diag):
     return v / s
 
 
+def diag_root_value(diag):
+    """The search's root value a diag dict records (the visit-weighted root Q,
+    root-mover perspective) for a search / plan row; None when there is no
+    diag or it is a tree-followed row (answered without a search of its
+    own)."""
+    if diag is None or diag.get("kind") not in (DIAG_KIND_SEARCH,
+                                                DIAG_KIND_PLAN):
+        return None
+    v = diag.get("root_value")
+    return None if v is None else float(v)
+
+
 def last_search_origin(diags):
     """Index of the most recent in-game search (kind 1) row in ``diags``, the
     row a tree-followed decision descends from; -1 when there is none."""

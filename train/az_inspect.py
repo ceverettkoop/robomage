@@ -730,8 +730,11 @@ def policy_divergence(net, sample, top_n=12):
     (net priors folded over duplicate menu actions like the search's merged
     edges). Only rows holding a search posterior count: ``sample["pi_valid"]``
     when the loader supplied it, else every row whose ``pi`` has mass.
+    ``per_row`` lists each counted row's facts (sample row, KL, agreement,
+    search / net folded argmax and both folded distributions' mass on them)
+    for :func:`render_disagreements`.
     """
-    from decode import search_net_divergence
+    from decode import fold_onto_reps, search_net_divergence
     obs, pi, mask = sample["obs"], sample["pi"], sample["mask"]
     _, priors = predict(net, obs, mask)
     from env import ACT_CATS_START, MAX_ACTIONS
@@ -742,15 +745,26 @@ def policy_divergence(net, sample, top_n=12):
     n_legal = mask.sum(axis=1)
 
     groups = {}
-    kls, agrees = [], []
+    kls, agrees, per_row = [], [], []
     for r in range(obs.shape[0]):
         if valid is not None and not valid[r]:
             continue
-        div = search_net_divergence(pi[r], priors[r], obs[r], int(n_legal[r]))
+        n = int(n_legal[r])
+        div = search_net_divergence(pi[r], priors[r], obs[r], n)
         if div is None:
             continue
         kl, agree, top = div
         kls.append(kl); agrees.append(agree)
+        p = fold_onto_reps(pi[r], obs[r], n)
+        p /= p.sum()
+        q = fold_onto_reps(priors[r], obs[r], n)
+        net_top = int(np.argmax(q))
+        per_row.append({"row": r, "kl": kl, "agree": bool(agree),
+                        "search_top": top, "net_top": net_top,
+                        "p_search_top": float(q[top]),
+                        "pi_search_top": float(p[top]),
+                        "p_net_top": float(q[net_top]),
+                        "pi_net_top": float(p[net_top])})
         c = int(cats[r, top])
         g = groups.setdefault(c, {"kl": [], "agree": [], "legal": []})
         g["kl"].append(kl); g["agree"].append(agree)
@@ -762,7 +776,7 @@ def policy_divergence(net, sample, top_n=12):
                      "top1": float(np.mean(g["agree"])),
                      "legal": float(np.mean(g["legal"]))})
     rows.sort(key=lambda r: -r["kl"])
-    return {"rows": rows[:top_n], "all_rows": rows,
+    return {"rows": rows[:top_n], "all_rows": rows, "per_row": per_row,
             "n": len(kls), "n_skipped": int(obs.shape[0]) - len(kls),
             "kl": float(np.mean(kls)) if kls else float("nan"),
             "top1": float(np.mean(agrees)) if agrees else float("nan")}
@@ -832,6 +846,27 @@ def obs_blocks():
         raise RuntimeError(f"observation block table covers {pos} floats but "
                            f"OBS_SIZE is {e.OBS_SIZE}")
     return blocks
+
+
+def value_vs_search(net, sample):
+    """The net's V against the search's root value (``sample["search_v"]``,
+    NaN where no search of its own ran) at every searched decision: MAE and
+    Pearson correlation (None with fewer than two rows or a constant side).
+    Both values are in the mover's perspective, so a well-calibrated net
+    tracks what search concludes about the same root."""
+    sv = np.asarray(sample["search_v"], dtype=np.float64)
+    keep = np.isfinite(sv)
+    out = {"n": int(keep.sum()), "mae": float("nan"), "corr": None,
+           "mean_net": float("nan"), "mean_search": float("nan")}
+    if not out["n"]:
+        return out
+    vals, _ = predict(net, sample["obs"][keep], sample["mask"][keep])
+    sv = sv[keep]
+    out["mae"] = float(np.mean(np.abs(vals - sv)))
+    out["mean_net"], out["mean_search"] = float(vals.mean()), float(sv.mean())
+    if out["n"] > 1 and vals.std() > 1e-9 and sv.std() > 1e-9:
+        out["corr"] = float(np.corrcoef(vals, sv)[0, 1])
+    return out
 
 
 def state_value(net, obs_row, mask_row):
@@ -2294,6 +2329,48 @@ def render_divergence(div):
                       "search posterior — behavior / one-hot sideboard / "
                       "fast-search rows)"]
     return lines
+
+
+def render_disagreements(sample, div, top_n=8, labels=None):
+    """The ``top_n`` decisions where search moved furthest off the net
+    (highest KL(search‖net)), each decoded: turn / step / life, the net's
+    greedy action and the search's pick with their folded prior P and visit
+    share. ``labels`` maps a sample row to a location string ("game 2 step
+    14"); rows without one show their sample row."""
+    order = sorted(div["per_row"], key=lambda d: -d["kl"])[:top_n]
+    if not order:
+        return []
+    labels = labels or {}
+    lines = [f"top {len(order)} search-vs-net disagreements (highest KL)"]
+    for rank, d in enumerate(order):
+        obs = sample["obs"][d["row"]]
+        st = decode.decode_game_state(obs)
+        acts = decode.decode_actions_from_obs(
+            obs, int(sample["mask"][d["row"]].sum()))
+        where = labels.get(d["row"], f"row {d['row']}")
+        lines.append(f"  [{rank}] {where}  T{st['turn']} {st['step']:<12} "
+                     f"life {st['self']['life']}/{st['opponent']['life']}  "
+                     f"KL={d['kl']:.3f}")
+        nt, stp = d["net_top"], d["search_top"]
+        lines.append(f"       net greedy : {decode.action_text(acts[nt])}  "
+                     f"(P={d['p_net_top']:.2f}, visits={d['pi_net_top']:.2f})")
+        lines.append("       search pick: " + (
+            f"{decode.action_text(acts[stp])}  (P={d['p_search_top']:.2f}, "
+            f"visits={d['pi_search_top']:.2f})" if stp != nt
+            else "(same action, visit mass shifted)"))
+    return lines
+
+
+def render_value_vs_search(res):
+    if not res["n"]:
+        return ["no decision carries a search root value to compare the net "
+                "against"]
+    corr = "n/a" if res["corr"] is None else f"{res['corr']:+.3f}"
+    return [f"net V vs search root value over {res['n']} searched decisions",
+            f"  MAE {res['mae']:.4f}   corr {corr}   mean V {res['mean_net']:+.3f}"
+            f" (net) / {res['mean_search']:+.3f} (search)",
+            "  large MAE / low corr = search's lookahead disagrees with the "
+            "net's static read of the position", ""]
 
 
 _SPARK = "▁▂▃▄▅▆▇█"

@@ -1761,8 +1761,7 @@ _load_az_evaluator = load_az_evaluator
 #
 # ONE rule for which NET a model spec names, shared by every consumer that
 # looks at a net without playing a seat through make_controller: the search
-# evaluator (analysis window, replay search, tree rebuild, analysis.py's search
-# report), the value model behind V(s) plots, and the AZNet the net probes
+# evaluator (analysis window, replay search, tree rebuild), the value model behind V(s) plots, and the AZNet the net probes
 # read. The rule: a spec names the net its make_controller SEAT plays with, and
 # every view of that spec reads that one checkpoint.
 #

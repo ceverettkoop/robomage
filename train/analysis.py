@@ -47,13 +47,11 @@ from cli_spec import (ANALYSIS_TOOL, SEARCH_KNOB_KEYS, search_knob_pairs,
                       with_spec_query, apply_to_parser, add_removed_subcommands,
                       BOARD_GUI,
                       browse_inapplicable_dests, browse_source_kind,
-                      explicit_dests, resolve_board,
-                      DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
-                      DEFAULT_SB_ROLLOUT_TURNS, is_bo3)
+                      explicit_dests, resolve_board, is_bo3)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
-                 _HAND_START, _MATCH_CTX_START, _IS_SIDEBOARD_IDX, _LIBRARY_CTX_START,
+                 _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
                  _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
                  _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
@@ -460,17 +458,10 @@ def _apply_search_knob_flags(args):
     args._search_knobs_folded = True
 
 
-def _load_model_and_env(args):
-    """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
+def _resolve_sim_decks(args):
+    """Resolve ``args.deck_a`` / ``args.deck_b`` for a simulation, in place
+    (exits with a message when a required deck is missing)."""
     from opponents import is_scripted_spec
-
-    _apply_search_knob_flags(args)
-    binary = getattr(args, "binary", BINARY)
-
-    # The INSPECTION net is the net the spec names (opponents.parse_model_spec:
-    # an mcts: search plays with a PPO net, so inspect that PPO net; az:
-    # inspects the AZNet). The FULL original spec (with knobs) travels as
-    # _play_spec below so the trace loop can build the matching SearchController.
     opp_scripted = is_scripted_spec(args.player_b)
 
     # Deck resolution. A checkpoint no longer encodes a deck — there is one
@@ -497,6 +488,23 @@ def _load_model_and_env(args):
     # Write the resolved decks back so downstream consumers (e.g. the report
     # title) see the actual decks even when they were inferred, not just given.
     args.deck_a, args.deck_b = deck_a, deck_b
+
+
+def _load_model_and_env(args):
+    """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
+    from opponents import is_scripted_spec
+
+    _apply_search_knob_flags(args)
+    binary = getattr(args, "binary", BINARY)
+
+    # The INSPECTION net is the net the spec names (opponents.parse_model_spec:
+    # an mcts: search plays with a PPO net, so inspect that PPO net; az:
+    # inspects the AZNet). The FULL original spec (with knobs) travels as
+    # _play_spec below so the trace loop can build the matching SearchController.
+    opp_scripted = is_scripted_spec(args.player_b)
+
+    _resolve_sim_decks(args)
+    deck_a, deck_b = args.deck_a, args.deck_b
 
     model = load_inspection_model(args.player_a)
     # Remember the ORIGINAL spec on the loaded (inspection) model so the trace
@@ -1073,7 +1081,8 @@ def _assemble_branch_trace(game, game_idx, step, branch, t):
         "interp_features": list(game["interp_features"][:n_pre]) + t["interp"],
         "actions": list(game["actions"][:step]) + [branch["action"]] + t["actions"],
         "num_choices": list(game["num_choices"][:n_pre]) + t["num_choices"],
-        "action_probs": list(game["action_probs"][:n_pre]) + t["probs"],
+        "action_probs": (_trace_probs(game)
+                         + [None] * n_pre)[:n_pre] + t["probs"],
         "opp_actions": opp_actions,
         "engine_seed": game["engine_seed"],
         "full_actions": list(game["full_actions"][:prefix]) + t["full_actions"],
@@ -1196,9 +1205,14 @@ def _action_desc(obs, i):
     ("Cast Lightning Bolt", "Target Wasteland (opp)"), including the
     option_ordinal suffix ("[#2]") that distinguishes modal / X-value /
     top-of-library-depth choices the other metadata can't tell apart."""
-    a = decode.decode_actions_from_obs(obs, i + 1)[i]
-    ordv = a["option_ordinal"]
-    return a["description"] + (f"  [#{ordv}]" if ordv >= 0 else "")
+    return decode.action_text(decode.decode_actions_from_obs(obs, i + 1)[i])
+
+
+def _trace_probs(game):
+    """A trace's per-step action-probability list, never None: a shard record
+    or an .rmtrace load without probs carries ``action_probs=None`` (and a
+    loaded list can hold None steps, which callers skip)."""
+    return game.get("action_probs") or []
 
 
 def _decode_legal_actions(obs, num_choices, chosen_action):
@@ -2119,7 +2133,7 @@ def _analyze_sbvalue(games, verbose=True):
         obs_list = g["observations"]
         actions = g["actions"]
         vals = g.get("values", [])
-        probs_list = g.get("action_probs", [])
+        probs_list = _trace_probs(g)
         ncs = g["num_choices"]
         in_phase = False
         phase_id = -1
@@ -2364,12 +2378,14 @@ def _analyze_regret(games, top_n=20, verbose=True):
     """
     entries = []
     for g_idx, game in enumerate(games):
-        probs_list = game.get("action_probs", [])
+        probs_list = _trace_probs(game)
         if not probs_list:
             continue
         for step, (probs, action, nc, obs, feat) in enumerate(zip(
                 probs_list, game["actions"], game["num_choices"],
                 game["observations"], game["interp_features"])):
+            if probs is None:
+                continue
             chosen_prob = probs[action]
             sorted_probs = np.sort(probs)[::-1]
             second_best = sorted_probs[1] if len(sorted_probs) > 1 else 0.0
@@ -2527,11 +2543,13 @@ def _analyze_entropy(games, verbose=True):
     """
     records = []
     for g_idx, game in enumerate(games):
-        probs_list = game.get("action_probs", [])
+        probs_list = _trace_probs(game)
         if not probs_list:
             continue
         for step, (probs, nc, feat) in enumerate(zip(
                 probs_list, game["num_choices"], game["interp_features"])):
+            if probs is None:
+                continue
             # Entropy: -sum(p * ln(p)), skip zero-probability actions
             p = probs[:nc]
             p_safe = p[p > 1e-10]
@@ -3151,7 +3169,7 @@ def _analyze_cardvalue(games, top_n=30, verbose=True):
         obs_list = g["observations"]
         actions = g["actions"]
         vals = g.get("values", [])
-        probs_list = g.get("action_probs", [])
+        probs_list = _trace_probs(g)
         ncs = g["num_choices"]
         for si in range(len(obs_list)):
             obs = obs_list[si]
@@ -3611,15 +3629,7 @@ def cmd_report(args):
 
     from browse_session import capture
 
-    model, env, opp_model = _load_model_and_env(args)
-    if getattr(model, "is_az", False):
-        print("[report] AZ checkpoint: V(s) is the AZNet tanh outcome estimate in "
-              "[-1, 1] (a bounded game-result prediction, not the PPO shaped-return "
-              "critic). All battery analyses apply; only absolute value magnitudes "
-              "differ in scale from PPO reports.")
-    print(f"\nCollecting {args.games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, args.games)
-    env.close()
+    games = _collect_report_traces(args)
 
     out = viz.out_dir(args)
     deck_a = getattr(args, "deck_a", None) or "?"
@@ -3649,6 +3659,7 @@ def cmd_report(args):
              capture(lambda g: _print_boundaries(_compute_boundaries(g)), games)),
             ("Match-score calibration", capture(_print_match_calibration, games)),
         ]
+    sections += _search_net_sections(args, games)
 
     # Charts (saved as PNGs alongside the report; referenced by basename).
     rows = _analyze_cardvalue(games, verbose=False)
@@ -3678,231 +3689,65 @@ def cmd_report(args):
     print(f"\n[report] wrote {report_path}")
 
 
-# ── Search vs raw comparison (AZ / PPO evaluator + MCTS) ──────────────────────
-#
-# Per searched (loop-safe) root, compare what the NET alone says (softmax priors,
-# leaf value) against what SEARCH concludes (MCTS visit distribution, root value):
-#   * how far the visit distribution moved off the prior (mean KL(search||net)),
-#   * how often search's top move disagrees with the net's greedy move,
-#   * how well the net's leaf value tracks the search's root value (MAE + corr).
-# Search is where an AZ/PPO checkpoint's play differs from its raw policy, so this
-# is the natural search-aware analysis view.
+def _note_az_value(spec):
+    """The report's one-time notice that an AZ inspection net's V(s) is the
+    tanh outcome estimate, not the PPO critic."""
+    from opponents import MODEL_KIND_AZ, parse_model_spec
+    if parse_model_spec(spec).kind == MODEL_KIND_AZ:
+        print("[report] AZ checkpoint: V(s) is the AZNet tanh outcome estimate in "
+              "[-1, 1] (a bounded game-result prediction, not the PPO shaped-return "
+              "critic). All battery analyses apply; only absolute value magnitudes "
+              "differ in scale from PPO reports.")
 
 
-def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed,
-                                    sb_branches=DEFAULT_SB_BRANCHES,
-                                    sb_worlds=DEFAULT_SB_WORLDS,
-                                    sb_rollout_turns=DEFAULT_SB_ROLLOUT_TURNS):
-    """A SearchController that also RECORDS (priors, visit_dist, net_value,
-    root_value, obs) for every searched root, for the search-vs-raw report."""
-    from opponents import SearchController
+def _collect_report_traces(args):
+    """The report's game traces: in-process for ``--workers 1``, else split
+    across worker processes (:func:`_collect_trace_batch`) by contiguous seed
+    slices and concatenated in seed order — the same engine seeds and seats
+    either way (a search seat's RNG stream restarts in each worker)."""
+    n_workers = max(1, min(int(getattr(args, "workers", 1) or 1), args.games))
+    if (n_workers > 1 and getattr(args, "search_procs", None) is None
+            and (_is_search_spec(args.player_a)
+                 or _is_search_spec(args.player_b))):
+        # Games are the parallel axis; AUTO world-procs per worker would
+        # oversubscribe the cores.
+        args.search_procs = 1
+    _apply_search_knob_flags(args)
+    _resolve_sim_decks(args)
+    _note_az_value(args.player_a)
+    if n_workers == 1:
+        model, env, opp_model = _load_model_and_env(args)
+        print(f"\nCollecting {args.games} game traces...")
+        games = _collect_game_traces(model, env, opp_model, args.games)
+        env.close()
+        return games
 
-    class _SearchCompareController(SearchController):
-        """Records every searched root, by OVERRIDING ``choose`` outright rather
-        than hooking the base controller's ``_choose_impl``.
-
-        That is deliberate: this controller is a MEASUREMENT instrument for
-        "raw search vs raw net at every safe root", not a model of production
-        play. Routing it through the base implementation would let the base's
-        play-policy machinery decide *which* roots get recorded, silently
-        changing what the report means. So it omits, on purpose:
-
-          * the clock / pacing budget (every root gets the full sim budget,
-            so the KL and value-error stats are comparable root to root);
-          * the trivial-decision skip (a root the play policy would shortcut
-            is still a root the net has an opinion about — we want it);
-          * tree-following / root reuse across decisions (each root is searched
-            fresh, so no root inherits another's visit statistics);
-          * sideboard boundary memo — the plan search has no tree persistence,
-            so each sideboard root is searched fresh (only the sideboard
-            branches/worlds/rollout budget is honored, below);
-          * the mirror-engine pool and the ``on_result`` tap (nothing else
-            consumes these results; ``self.records`` IS the output).
-
-        It does keep the base's ``stats`` counters and ``self._env``/rng, and
-        the sideboard budget split, so the printed decision counts still line up
-        with a normal search controller's."""
-
-        def __init__(self):
-            super().__init__(evaluator, sims=sims, worlds=worlds, c_puct=c_puct,
-                             temperature=0.0, label="search-compare", rng_seed=rng_seed,
-                             sb_branches=sb_branches, sb_worlds=sb_worlds,
-                             sb_rollout_turns=sb_rollout_turns)
-            self.records = []
-
-        def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
-            from mcts import run_search, run_plan_search
-            env = self._env
-            searchable = (env is not None
-                          and getattr(env, "last_search_safe", None)
-                          and num_choices > 1)
-            priors, net_value = self._evaluator.evaluate(obs, num_choices)
-            if not searchable:
-                self.stats["fallback"] += 1
-                return int(np.argmax(priors))
-            # bo3 sideboard root -> flat plan search under the sideboard
-            # branches/worlds/rollout budget (game-long horizon); in-game roots
-            # keep run_search's default max_depth (60).
-            # merge_dupes=True is run_search's default, but it is spelled out
-            # here because the report compares against it:
-            # _report_search_compare folds the raw priors (and the visits)
-            # through decode.menu_merge_reps via
-            # decode.search_net_divergence to match the merged visit
-            # distribution.
-            if obs[_IS_SIDEBOARD_IDX] > 0.5:
-                result = run_plan_search(env, self._evaluator,
-                                         worlds=self._sb_worlds,
-                                         branches=self._sb_branches,
-                                         rollout_turns=self._sb_rollout_turns,
-                                         rng=self._rng)
-                self.stats["sb_searched"] += 1
-            else:
-                result = run_search(env, self._evaluator, sims=self._sims,
-                                    worlds=self._worlds, c_puct=self._c_puct,
-                                    rng=self._rng, merge_dupes=True)
-            self.stats["searched"] += 1
-            self.stats["sims"] += result.sims_run
-            self.stats["sim_steps"] += result.sim_steps
-            visits = result.visits.astype(np.float64)
-            tot = visits.sum()
-            visit_dist = (visits / tot if tot > 0
-                          else np.full(num_choices, 1.0 / num_choices))
-            self.records.append({
-                "obs": np.asarray(obs, dtype=np.float32).copy(),
-                "num_choices": int(num_choices),
-                "priors": np.asarray(priors, dtype=np.float64).copy(),
-                "visit_dist": visit_dist,
-                "net_value": float(net_value),
-                "root_value": float(result.root_value),
-            })
-            return result.best_action()
-
-    return _SearchCompareController()
-
-
-def _report_search_compare(ctrl, args):
-    """Print the search-vs-raw summary from a recording controller's records."""
-    recs = ctrl.records
-    st = ctrl.stats
-    total = st["searched"] + st["fallback"]
-    print("\n" + "=" * 68)
-    print("Search vs raw-net comparison")
-    print("=" * 68)
-    print(f"  Decisions: {st['searched']} searched "
-          f"({st.get('sb_searched', 0)} at bo3 sideboard roots), "
-          f"{st['fallback']} fallback "
-          f"(safe fraction {st['searched'] / max(1, total):.1%}); "
-          f"{st['sims']} sims, {st['sim_steps']} sim steps.")
-    if not recs:
-        print("  No searched roots recorded (all decisions fell back to the raw "
-              "policy — try a deck/opponent with more loop-safe priority windows).")
-        return
-
-    # The search merges duplicate edges (visit mass sits on each group's
-    # representative — see the explicit merge_dupes=True on the run_search calls
-    # in _SearchCompareController); decode.search_net_divergence folds the raw
-    # priors the same way before comparing.
-    from decode import fold_onto_reps, search_net_divergence
-    divs = [search_net_divergence(r["visit_dist"], r["priors"], r["obs"],
-                                  r["num_choices"]) for r in recs]
-    kls = np.array([d[0] for d in divs])
-    agree = np.array([int(d[1]) for d in divs])
-    net_v = np.array([r["net_value"] for r in recs])
-    root_v = np.array([r["root_value"] for r in recs])
-    vmae = float(np.mean(np.abs(net_v - root_v)))
-    if len(recs) > 1 and net_v.std() > 1e-9 and root_v.std() > 1e-9:
-        vcorr = float(np.corrcoef(net_v, root_v)[0, 1])
-        vcorr_s = f"{vcorr:+.3f}"
-    else:
-        vcorr_s = "n/a"
-
-    print(f"  Roots analyzed: {len(recs)}")
-    print(f"  mean KL(search || net): {kls.mean():.4f}  "
-          f"(median {np.median(kls):.4f}, max {kls.max():.4f})")
-    print(f"  argmax agreement (net greedy == search pick): {agree.mean():.1%}")
-    print(f"  value net-vs-search:  MAE {vmae:.4f}   corr {vcorr_s}")
-
-    top_n = max(0, int(getattr(args, "top", 8)))
-    if top_n:
-        order = np.argsort(-kls)[:top_n]
-        print(f"\n  Top {len(order)} biggest search-vs-net disagreements:")
-        for rank, i in enumerate(order):
-            r = recs[i]
-            obs = r["obs"]
-            feat = _extract_interpretable(obs)
-            step = _step_name_from_feat(feat)
-            turn_no = 1 + int(round(feat[_FEAT["turn"]]))
-            folded = fold_onto_reps(r["priors"], obs, r["num_choices"])
-            pa = int(np.argmax(folded))
-            va = divs[i][2]
-            print(f"   [{rank}] T{turn_no} {step:<12} "
-                  f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}"
-                  f"  KL={kls[i]:.3f}  Vnet={r['net_value']:+.3f} "
-                  f"Vsearch={r['root_value']:+.3f}")
-            print(f"        net greedy : {_action_desc(obs, pa)}  "
-                  f"(P={folded[pa]:.2f}, visits={r['visit_dist'][pa]:.2f})")
-            if va != pa:
-                print(f"        search pick: {_action_desc(obs, va)}  "
-                      f"(P={folded[va]:.2f}, visits={r['visit_dist'][va]:.2f})")
-            else:
-                print(f"        search pick: (same action, visit mass shifted)")
-
-
-class _MergedSearchStats:
-    """Duck-types the bits of ``_SearchCompareController`` that
-    ``_report_search_compare`` reads (``records``/``stats``), so results
-    gathered from parallel worker batches can be reported the same way as a
-    single in-process controller."""
-
-    def __init__(self):
-        self.records = []
-        self.stats = {"searched": 0, "fallback": 0, "sims": 0, "sim_steps": 0,
-                      "sb_searched": 0}
-
-    def absorb(self, records, stats):
-        self.records.extend(records)
-        for k in self.stats:
-            self.stats[k] += stats.get(k, 0)
-
-
-def _run_search_compare_batch(payload):
-    """Worker entry point (one process per batch): rebuild the evaluator/
-    controller from scratch — a loaded model isn't picklable across the
-    process boundary — and drive this batch's games. Returns
-    ``(batch_id, n_games, records, stats, elapsed)``."""
-    (batch_id, model_spec, opponent_spec, deck_a, deck_b, n_games, seed,
-     sims, worlds, c_puct, binary_path, bo3,
-     sb_branches, sb_worlds, sb_rollout_turns) = payload
+    if args.seed is None:
+        args.seed = random.SystemRandom().randrange(1 << 30)
+    batches = _split_batches(args.games, n_workers)
+    print(f"\nCollecting {args.games} game traces across {len(batches)} "
+          f"workers (seeds {args.seed}..{args.seed + args.games - 1})...")
+    results = {}
     t0 = time.time()
-    try:
-        import torch
-        torch.set_num_threads(1)
-    except ImportError:
-        pass
-    import runner
-    from opponents import load_spec_evaluator, make_controller
-
-    evaluator, _ = load_spec_evaluator(
-        model_spec, on_warm_start=_note_warm_start)
-    ctrl_model = _make_search_compare_controller(
-        evaluator, sims=sims, worlds=worlds, c_puct=c_puct, rng_seed=seed,
-        sb_branches=sb_branches, sb_worlds=sb_worlds,
-        sb_rollout_turns=sb_rollout_turns)
-    ctrl_opp = make_controller(opponent_spec)
-    runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
-                     binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                     n_games=n_games, bo3=bo3, seed=seed, transcript="quiet")
-    return batch_id, n_games, ctrl_model.records, dict(ctrl_model.stats), time.time() - t0
+    done = 0
+    with ProcessPoolExecutor(max_workers=len(batches)) as ex:
+        futs = {ex.submit(_collect_trace_batch, args, start, count): start
+                for start, count in batches}
+        for fut in as_completed(futs):
+            start = futs[fut]
+            results[start] = fut.result()
+            done += len(results[start])
+            print(f"  [seeds {args.seed + start}..] {len(results[start])} "
+                  f"game(s) -> {done}/{args.games} done  elapsed "
+                  f"{time.time() - t0:.1f}s", flush=True)
+    return [g for start in sorted(results) for g in results[start]]
 
 
-def _split_batches(n_games, n_workers, seed):
-    """Contiguous, seed-disjoint batches: batch i's local seed+j lines up
-    with the sequential run's seed+(global index), so results are the same
-    set of (deck, seed) games regardless of worker count."""
-    n_workers = max(1, min(n_workers, n_games))
+def _split_batches(n_games, n_workers):
+    """``[(start, count)]``: contiguous slices of the ``n_games`` game indices,
+    one per worker (sizes differ by at most one)."""
     base, extra = divmod(n_games, n_workers)
-    batches = []
-    start = 0
+    batches, start = [], 0
     for i in range(n_workers):
         count = base + (1 if i < extra else 0)
         if count:
@@ -3911,92 +3756,42 @@ def _split_batches(n_games, n_workers, seed):
     return batches
 
 
-def cmd_search_compare(args):
-    """Drive N games with an MCTS controller and report, per searched decision,
-    net priors vs MCTS visits and net value vs search root value."""
-    deck_a = getattr(args, "deck_a", None)
-    if not deck_a:
-        print("Model deck is required — a checkpoint no longer encodes a deck; "
-              "pass --deck-a", file=sys.stderr)
-        sys.exit(1)
-    deck_b = getattr(args, "deck_b", None)
-    if not deck_b:
-        # A model opponent no longer encodes a deck either; mirror by default.
-        deck_b = deck_a
-    args.deck_a, args.deck_b = deck_a, deck_b
+def _collect_trace_batch(args, start, count):
+    """Worker entry point: rebuild the model / engine from ``args`` (a loaded
+    model can't cross the process boundary) and collect games ``start`` ..
+    ``start + count - 1`` of the run — engine seeds ``args.seed + start``
+    onward, the seeds and seats an in-process run plays at those indices."""
+    try:
+        import torch
+        torch.set_num_threads(1)
+    except ImportError:
+        pass
+    args.seed += start
+    model, env, opp_model = _load_model_and_env(args)
+    try:
+        return _collect_game_traces(model, env, opp_model, count, verbose=False)
+    finally:
+        env.close()
 
-    n_workers = max(1, getattr(args, "workers", 1) or 1)
-    bo3 = is_bo3(args)
 
-    if n_workers <= 1:
-        import runner
-        from opponents import load_spec_evaluator, make_controller
-
-        evaluator, _ = load_spec_evaluator(
-            args.player_a, on_warm_start=_note_warm_start)
-        ctrl_model = _make_search_compare_controller(
-            evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c_puct,
-            rng_seed=args.seed, sb_branches=args.sb_branches,
-            sb_worlds=args.sb_worlds,
-            sb_rollout_turns=args.sb_rollout_turns)
-        ctrl_opp = make_controller(args.player_b)
-
-        print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c_puct}) "
-              f"vs {args.player_b} [{deck_b}] over {args.games} game(s)...")
-
-        t0 = time.time()
-        done = 0
-
-        def _progress(record):
-            nonlocal done
-            done += 1
-            elapsed = time.time() - t0
-            rate = done / elapsed if elapsed > 0 else 0.0
-            eta = (args.games - done) / rate if rate > 0 else float("inf")
-            st = ctrl_model.stats
-            print(f"  game {done}/{args.games}  "
-                  f"(searched {st['searched']}, fallback {st['fallback']})  "
-                  f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
-
-        runner.run_games(ctrl_model, ctrl_opp, label_a="Search", label_b="Opp",
-                         binary_path=args.binary, deck_a=deck_a, deck_b=deck_b,
-                         n_games=args.games, bo3=bo3,
-                         seed=args.seed, transcript="quiet", on_game_end=_progress)
-        _report_search_compare(ctrl_model, args)
-        return
-
-    # Parallel: split n_games across worker processes, each rebuilding its own
-    # evaluator/controller (a loaded model can't cross the process boundary),
-    # then merge every batch's records/stats before reporting.
-    batches = _split_batches(args.games, n_workers, args.seed)
-    payloads = [
-        (i, args.player_a, args.player_b, deck_a, deck_b, count, args.seed + start,
-         args.sims, args.worlds, args.c_puct, args.binary, bo3,
-         args.sb_branches, args.sb_worlds, args.sb_rollout_turns)
-        for i, (start, count) in enumerate(batches)
-    ]
-    print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "
-          f"c={args.c_puct}) vs {args.player_b} [{deck_b}] over {args.games} game(s) "
-          f"across {len(payloads)} worker(s)...")
-
-    merged = _MergedSearchStats()
-    t0 = time.time()
-    done_games = 0
-    with ProcessPoolExecutor(max_workers=len(payloads)) as ex:
-        futs = {ex.submit(_run_search_compare_batch, p): p[0] for p in payloads}
-        for fut in as_completed(futs):
-            batch_id, n, records, stats, dt = fut.result()
-            merged.absorb(records, stats)
-            done_games += n
-            elapsed = time.time() - t0
-            rate = done_games / elapsed if elapsed > 0 else 0.0
-            eta = (args.games - done_games) / rate if rate > 0 else float("inf")
-            print(f"  [batch {batch_id}] {n} game(s) in {dt:.1f}s -> "
-                  f"{done_games}/{args.games} done "
-                  f"({100 * done_games / args.games:.0f}%)  "
-                  f"elapsed {elapsed:.1f}s  eta {eta:.1f}s", flush=True)
-
-    _report_search_compare(merged, args)
+def _search_net_sections(args, games):
+    """The report's search-vs-net sections for a search ``--player-a``: the
+    browsers' ``probe_kl`` (KL(search‖net), top-1 agreement by action
+    category, the biggest disagreements decoded) and ``probe_value`` (net V
+    vs search root value, the search tally) over every searched decision.
+    Empty for a raw-policy seat."""
+    if not _is_search_spec(args.player_a):
+        return []
+    import shard_probes
+    try:
+        net, _label = shard_probes.load_probe_net(args.player_a)
+    except Exception as exc:  # no net behind the spec (mcts:uniform), torch
+        return [("Search vs net", f"no probe net for {args.player_a}: {exc}")]
+    snap = shard_probes.snapshot(games)
+    return [(f"Search vs net — {title}",
+             "\n".join(shard_probes.run_probe(key, net, snap, limit=None)))
+            for key, title in (("probe_kl", "policy"),
+                               ("probe_value", "value"))]
 
 
 # ── Browse ───────────────────────────────────────────────────────────────────
@@ -4045,10 +3840,7 @@ def main(argv=None):
         rest = argv[argv.index("browse") + 1:]
         return cmd_browse(subparsers["browse"], args,
                           explicit_dests(subparsers["browse"], rest))
-    {
-        "report": cmd_report,
-        "search": cmd_search_compare,
-    }[args.command](args)
+    cmd_report(args)
     return 0
 
 

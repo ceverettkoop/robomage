@@ -40,7 +40,8 @@ import shard_replay
 from env import (MAX_ACTIONS, OBS_SIZE, _CUR_TURN_IDX, _IS_SIDEBOARD_IDX,
                  _MATCH_CTX_START, _SELF_IS_A_IDX)
 from shard_record import (DIAG_KEYS, DIAG_KIND_FOLLOWED, DIAG_KIND_NONE,
-                          DIAG_KIND_SEARCH, ShardRecorder, diag_path_for)
+                          DIAG_KIND_PLAN, DIAG_KIND_SEARCH, ShardRecorder,
+                          diag_path_for)
 
 
 class _FakeResult:
@@ -231,7 +232,8 @@ def _check_search_posterior(ra, rb):
            "num_choices": [3, 2, 2],
            "action_probs": [np.array([0.1, 0.1, 0.8]), np.array([0.5, 0.5]),
                             np.array([0.9, 0.1])],
-           "diag": [{"kind": DIAG_KIND_SEARCH, "visits": np.array([6, 0, 2])},
+           "diag": [{"kind": DIAG_KIND_SEARCH, "visits": np.array([6, 0, 2]),
+                     "root_value": 0.4},
                     None,
                     {"kind": DIAG_KIND_FOLLOWED, "visits": np.array([1, 3])}],
            "result": 1.0}
@@ -244,6 +246,13 @@ def _check_search_posterior(ra, rb):
     assert sample["pi"][1].sum() == 0.0
     assert np.allclose(sample["pi"][2, :2], [0.25, 0.75])
     assert z_valid.all()                  # calibration keeps every row
+    # The search root value rides beside π: a search / plan step's diag
+    # root_value, never a tree-followed or unsearched step's.
+    sv = sample["search_v"]
+    assert np.isclose(sv[0], 0.4) and np.isnan(sv[1]) and np.isnan(sv[2]), sv
+    want = [d is not None and d["kind"] in (DIAG_KIND_SEARCH, DIAG_KIND_PLAN)
+            for d in ra["diag"] + rb["diag"]]
+    assert np.isfinite(sv[3:]).tolist() == want, (sv, want)
 
     # π-dependent probes say what they skipped. No net needed on these paths.
     raw_only = shard_probes.snapshot([{**sim, "diag": [None, None, None]}],
@@ -252,6 +261,11 @@ def _check_search_posterior(ra, rb):
     assert lines[0].startswith("no browsed decision carries a search "
                                "posterior"), lines
     assert "3 of 3 browsed decisions skipped" in lines[-1], lines
+    lines = shard_probes.run_probe("probe_value", None, raw_only)
+    assert lines[0].startswith("no browsed decision carries a search root "
+                               "value"), lines
+    tally = shard_probes.search_stats_lines(snap)[0]
+    assert tally.startswith("searches: ") and "tree-followed" in tally, tally
     lines = shard_probes.run_probe("probe_state", None, snap)   # step 1: raw
     assert lines[0].startswith("(no search posterior at this decision"), lines
     assert not any("50.0%" in ln for ln in lines), lines
@@ -271,6 +285,10 @@ def _check_search_posterior(ra, rb):
         assert pv2.tolist() == pi_valid[:8].tolist()
         assert _close(games[0]["search_pi"][0], [0.75, 0.0, 0.25])
         assert games[0]["search_pi"][1] is None
+        assert np.isclose(games[0]["search_v"][0], 0.4)
+        assert games[0]["search_v"][1] is None and games[0]["search_v"][2] is None
+        assert np.allclose(_s2["search_v"], sample["search_v"][:8],
+                           equal_nan=True)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

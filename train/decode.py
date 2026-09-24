@@ -1522,13 +1522,17 @@ def format_state_lines(gs):
     return lines
 
 
+def action_text(a):
+    """A decoded action's description plus its option_ordinal suffix ("[#2]")
+    — the suffix tells apart modal / X-value / top-of-library-depth choices
+    the other metadata can't."""
+    ordv = a.get("option_ordinal", -1)
+    return a["description"] + (f"  [#{ordv}]" if ordv >= 0 else "")
+
+
 def format_action_lines(actions):
     """Enumerated legal-action lines (the 'Actions:' menu, shared transcript)."""
-    def _line(a):
-        ordv = a.get("option_ordinal", -1)
-        suffix = f"  [#{ordv}]" if ordv >= 0 else ""
-        return f"  {a['index']:>2}: {a['description']}{suffix}"
-    return [_line(a) for a in actions]
+    return [f"  {a['index']:>2}: {action_text(a)}" for a in actions]
 
 
 def format_decision_block(decision_idx, gs, actions):

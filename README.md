@@ -187,7 +187,11 @@ train/.venv/bin/python train/analysis.py browse --player-a (gen, or a checkpoint
 ```
 
 `analysis.py report` runs the standard battery once and writes a self-contained HTML report
-(headless); `analysis.py search` compares search against the raw net.
+(headless). With a search `--player-a` (`az:gen`, `mcts:gen`; `--sims`/`--worlds` set the
+budget) it adds the search-vs-net sections — KL(search‖net) and top-1 agreement by action
+category, the biggest disagreements decoded, net V vs the search's root value (MAE / corr) —
+and `--workers N` splits the games across processes for a large sample. The browser's
+`net KL` / `net V vs search` probes are the same views over the games you are browsing.
 
 ### Analysis browser
 

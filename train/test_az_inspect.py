@@ -278,6 +278,31 @@ def test_critic(net, sample):
                                        "pi_valid": np.zeros_like(valid)})
     check(none["n"] == 0 and azi.render_divergence(none)[0].startswith("no "),
           "a sample with no search rows renders a note, not NaNs")
+    check(len(d2["per_row"]) == d2["n"]
+          and [p["row"] for p in d2["per_row"]] == list(np.nonzero(valid)[0])
+          and all(abs(p["kl"] - w[0]) < 1e-9 and p["search_top"] == w[2]
+                  for p, w in zip(d2["per_row"], want)),
+          "per_row carries each counted row's shared-definition KL and pick")
+    dis = azi.render_disagreements(sub, d2, top_n=3,
+                                   labels={int(np.nonzero(valid)[0][0]): "here"})
+    check(dis and dis[0].startswith("top ") and len(dis) == 1 + 3 * min(3, d2["n"]),
+          f"disagreements decode the top rows ({dis[:2]})")
+    check(azi.render_disagreements(none, none) == [],
+          "no disagreements without search rows")
+
+    # Net V vs the search root value: MAE / corr over finite search_v rows.
+    sv = vals.astype(np.float32) + 0.1
+    sv[::3] = np.nan
+    vs = azi.value_vs_search(net, {**sample, "search_v": sv})
+    keep = np.isfinite(sv)
+    check(vs["n"] == int(keep.sum()) and abs(vs["mae"] - 0.1) < 1e-4
+          and (vs["corr"] is None or vs["corr"] > 0.999),
+          f"value_vs_search: constant offset = MAE 0.1, corr 1 ({vs})")
+    empty = azi.value_vs_search(
+        net, {**sample, "search_v": np.full_like(sv, np.nan)})
+    check(empty["n"] == 0
+          and azi.render_value_vs_search(empty)[0].startswith("no "),
+          "no search root values renders a note")
 
 
 def test_probes(net, sample):

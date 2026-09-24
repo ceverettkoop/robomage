@@ -3,11 +3,14 @@
 The browser (gui_browser / tui_analysis) pages per-game trace dicts; az_inspect
 owns the "what informed this evaluation" probes (single-state block permutation
 importance, card-identity swap, scalar sweeps, search-π-vs-net state detail)
-and the pooled net-vs-search views (KL divergence by action category, per-bucket
-value calibration). This module is the glue between the two: it snapshots the
-browser's games into az_inspect's flat sample-dict shape (obs/pi/mask/z + a
-(game, step) -> row index) and runs each view, returning the display lines the
-front end appends to its output pane.
+and the pooled net-vs-search views (KL divergence by action category with the
+biggest disagreements decoded, net V vs the search's root value, per-bucket
+value calibration). ``analysis.py report`` runs the same pooled search-vs-net
+views over its batch simulation, so each number has one implementation. This
+module is the glue between the two: it snapshots the browser's games into
+az_inspect's flat sample-dict shape (obs/pi/mask/z + a (game, step) -> row
+index) and runs each view, returning the display lines the front end appends
+to its output pane.
 
 Two-phase by design, matching the browser's threading contract:
 :func:`snapshot` runs on the UI thread and only takes cheap list() copies of
@@ -40,7 +43,7 @@ import numpy as np
 from env import MAX_ACTIONS, OBS_SIZE
 
 # Menu entries the front end appends after the engine section: (key, label).
-# The first four probe THE SELECTED DECISION; the last two pool every browsed
+# The first six probe THE SELECTED DECISION; the last three pool every browsed
 # decision that has the needed data.
 PROBE_MENU = [
     ("probe_state", "net state — search π vs net at current step"),
@@ -50,6 +53,7 @@ PROBE_MENU = [
     ("probe_swap", "net swap — card-identity ΔV at current step"),
     ("probe_sweeps", "net sweeps — life/hand/turn response here"),
     ("probe_kl", "net KL — search vs net by action category (all)"),
+    ("probe_value", "net V vs search root value — MAE / corr (all)"),
     ("probe_calib", "net calib — V vs realized z by bucket (all)"),
 ]
 PROBE_KEYS = frozenset(k for k, _ in PROBE_MENU)
@@ -59,6 +63,7 @@ DECISION_PROBES = frozenset(
 
 _MAX_POOL_ROWS = 2000     # cap for the pooled views / donor pool
 _MAX_SWAP_SITES = 6       # card-swap sites probed per decision (cost control)
+_TOP_DISAGREEMENTS = 8    # biggest KL(search‖net) decisions probe_kl decodes
 
 
 def load_probe_net(model_spec):
@@ -82,6 +87,8 @@ def snapshot(games, cur_game=None, cur_step=None):
             "diag": list(g.get("diag") or ()),
             "search_pi": (list(g["search_pi"])
                           if g.get("search_pi") is not None else None),
+            "search_v": (list(g["search_v"])
+                         if g.get("search_v") is not None else None),
             "z": list(g.get("z") or ()),
             "result": g.get("result"),
         })
@@ -102,16 +109,33 @@ def step_search_pi(game, step):
     return diag_posterior(diags[step]) if step < len(diags) else None
 
 
+def step_search_value(game, step):
+    """The search's root value at ``game``'s ``step`` (root-mover
+    perspective, like the net's V), or None when no search of its own ran
+    there (a tree-followed step included). A resolved ``search_v`` list (an
+    .rmtrace load, which keeps no diag dicts) wins; otherwise the step's diag
+    (:func:`shard_record.diag_root_value`). Works on a trace dict and a
+    :func:`snapshot` cap."""
+    from shard_record import diag_root_value
+    resolved = game.get("search_v")
+    if resolved is not None:
+        return resolved[step] if step < len(resolved) else None
+    diags = game.get("diag") or ()
+    return diag_root_value(diags[step]) if step < len(diags) else None
+
+
 def build_sample(snap):
     """Stack a snapshot into the az_inspect sample-dict shape.
 
     Returns ``(sample, index, z_valid, pi_valid)``: ``sample`` has
     obs/pi/mask/z (pi is the search posterior, zeros where none; z is 0 where
-    unknown), ``index`` maps (game, step) -> row, ``z_valid`` marks rows whose
+    unknown) plus ``search_v`` (the search root value,
+    :func:`step_search_value`; NaN where none), ``index`` maps
+    (game, step) -> row, ``z_valid`` marks rows whose
     z is a real outcome (shard z, or a finished game's result), ``pi_valid``
     rows that carry a search posterior (:func:`step_search_pi`)."""
-    obs_rows, pi_rows, mask_rows, z_rows, z_ok, pi_ok, index = \
-        [], [], [], [], [], [], {}
+    obs_rows, pi_rows, mask_rows, z_rows, z_ok, pi_ok, sv_rows, index = \
+        [], [], [], [], [], [], [], {}
     for cap in snap["games"]:
         for step, o in enumerate(cap["observations"]):
             o = np.asarray(o, dtype=np.float32)
@@ -137,6 +161,8 @@ def build_sample(snap):
                 z, ok = float(cap["result"]), True
             else:
                 z, ok = 0.0, False
+            sv = step_search_value(cap, step)
+            sv_rows.append(np.nan if sv is None else float(sv))
             index[(cap["gn"], step)] = len(obs_rows)
             obs_rows.append(o)
             pi_rows.append(pi)
@@ -148,7 +174,8 @@ def build_sample(snap):
         return None, {}, None, None
     sample = {"obs": np.stack(obs_rows), "pi": np.stack(pi_rows),
               "mask": np.stack(mask_rows),
-              "z": np.asarray(z_rows, dtype=np.float32)}
+              "z": np.asarray(z_rows, dtype=np.float32),
+              "search_v": np.asarray(sv_rows, dtype=np.float32)}
     return (sample, index, np.asarray(z_ok, dtype=bool),
             np.asarray(pi_ok, dtype=bool))
 
@@ -162,17 +189,54 @@ def _no_posterior_note(n_skipped, n_total):
 
 
 def _subsample(sample, keep_mask=None, limit=_MAX_POOL_ROWS, seed=0):
+    """``(sub_sample, rows)``: the rows ``keep_mask`` keeps, randomly capped
+    at ``limit`` (None = no cap); ``rows`` maps each sub-sample row back to
+    its full-sample row."""
     idx = np.arange(sample["obs"].shape[0])
     if keep_mask is not None:
         idx = idx[keep_mask]
-    if len(idx) > limit:
+    if limit is not None and len(idx) > limit:
         idx = np.sort(np.random.default_rng(seed).choice(
             idx, size=limit, replace=False))
-    return {k: v[idx] for k, v in sample.items()}, len(idx)
+    return {k: v[idx] for k, v in sample.items()}, idx
 
 
-def run_probe(key, net, snap):
-    """Run one PROBE_MENU view over a snapshot; returns display lines."""
+def _row_labels(index, rows):
+    """Sub-sample row -> "game G step S" (the browsers' game / step indices)
+    for the pooled views' per-decision listings."""
+    where = {row: (gn, step) for (gn, step), row in index.items()}
+    return {i: f"game {where[r][0]} step {where[r][1]}"
+            for i, r in enumerate(rows) if r in where}
+
+
+def search_stats_lines(snap):
+    """One-line tally of the searches behind the browsed decisions: roots
+    searched in-game / at bo3 sideboard roots, tree-followed decisions,
+    decisions with no search, and the sims / sim steps the searches ran."""
+    from shard_record import (DIAG_KIND_FOLLOWED, DIAG_KIND_PLAN,
+                              DIAG_KIND_SEARCH)
+    counts = {DIAG_KIND_SEARCH: 0, DIAG_KIND_PLAN: 0, DIAG_KIND_FOLLOWED: 0}
+    none = sims = steps = 0
+    for cap in snap["games"]:
+        diags = cap["diag"]
+        for step in range(len(cap["observations"])):
+            d = diags[step] if step < len(diags) else None
+            if d is None or d.get("kind") not in counts:
+                none += 1
+                continue
+            counts[d["kind"]] += 1
+            sims += int(d.get("sims_run") or 0)
+            steps += int(d.get("sim_steps") or 0)
+    return [f"searches: {counts[DIAG_KIND_SEARCH]} in-game, "
+            f"{counts[DIAG_KIND_PLAN]} bo3 sideboard, "
+            f"{counts[DIAG_KIND_FOLLOWED]} tree-followed, {none} without a "
+            f"search; {sims} sims, {steps} sim steps"]
+
+
+def run_probe(key, net, snap, limit=_MAX_POOL_ROWS):
+    """Run one PROBE_MENU view over a snapshot; returns display lines.
+    ``limit`` caps the rows a pooled view samples (None = every row — the
+    batch report's setting)."""
     import az_inspect as azi
     sample, index, z_valid, pi_valid = build_sample(snap)
     if sample is None:
@@ -219,17 +283,31 @@ def run_probe(key, net, snap):
             return ["no browsed decision carries a search posterior to compare "
                     "against (simulated games need a searching seat, e.g. "
                     "az:gen or mcts:gen)"] + _no_posterior_note(total, total)
-        sub, n = _subsample(sample, pi_valid)
+        sub, rows = _subsample(sample, pi_valid, limit)
         div = azi.policy_divergence(net, sub)
-        return azi.render_divergence(div) + [
-            "", f"(over {n} of {total} browsed decisions with a search "
-                "posterior)"] + _no_posterior_note(total - n_pi, total)
+        return (azi.render_divergence(div) + [""]
+                + azi.render_disagreements(sub, div, _TOP_DISAGREEMENTS,
+                                           _row_labels(index, rows))
+                + ["", f"(over {len(rows)} of {total} browsed decisions with "
+                       "a search posterior)"]
+                + _no_posterior_note(total - n_pi, total))
+    if key == "probe_value":
+        has_v = np.isfinite(sample["search_v"])
+        if not has_v.any():
+            return ["no browsed decision carries a search root value "
+                    "(simulated games need a searching seat, e.g. az:gen or "
+                    "mcts:gen; tree-followed and pool-shard rows have none)"]
+        sub, rows = _subsample(sample, has_v, limit)
+        return (azi.render_value_vs_search(azi.value_vs_search(net, sub))
+                + search_stats_lines(snap)
+                + ["", f"(over {len(rows)} of {sample['obs'].shape[0]} "
+                       "browsed decisions with a search root value)"])
     if key == "probe_calib":
         if not z_valid.any():
             return ["no decisions with a known outcome yet"]
-        sub, n = _subsample(sample, z_valid)
+        sub, rows = _subsample(sample, z_valid, limit)
         cal = azi.bucket_calibration(net, sub)
         return azi.render_calibration(cal) + [
-            "", f"(over {n} decisions with a realized outcome; simulated "
+            "", f"(over {len(rows)} decisions with a realized outcome; simulated "
                 "traces use the match result as z)"]
     return [f"unknown probe {key!r}"]
