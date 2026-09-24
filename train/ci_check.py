@@ -56,6 +56,14 @@ fails, so one invocation reports every finding):
           node-for-node — P/N/W/rep/sel_mask/children exact, argmax-visit PV
           descent identical — and a bad format version is refused
           (train/test_tree_cache.py). Torch-free, engine-free, instant.
+  browser The Textual analysis browser (train/tui_analysis.py, `analysis.py
+          browse --board tui`) driven headlessly over a synthetic saved
+          session: the .rmtrace source loads through the shared engine
+          worker, ctrl+s saves a .rmtrace that reloads identically, a net
+          probe runs on the analysis worker, the Tree tab installs a rebuilt
+          tree's roots, submits node expansions and renders the walked board
+          as text, and live-streamed events grow/follow/finalize a LIVE row
+          (train/test_tui_browser.py). Torch-free; needs bin/robomage; ~3s.
   modelspec The model-spec resolver (opponents.parse_model_spec + loaders):
           the kind/prefix/base/canonical-evaluator table for every spec
           family, knob stripping, tree_rebuild's recorded-evaluator mapping,
@@ -209,7 +217,7 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
-             "modelspec", "concede", "obsinv",
+             "browser", "modelspec", "concede", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
@@ -448,6 +456,14 @@ def tier_treecache(rep):
     per-world trees round-trip node-for-node (see train/test_tree_cache.py).
     Torch-free, engine-free."""
     _run_test_script(rep, "treecache", "train/test_tree_cache.py", "tree-cache")
+
+
+def tier_browser(rep):
+    """Textual analysis-browser regression (tui_analysis): trace-source load,
+    .rmtrace save round trip, probe / tree / live-stream glue over the shared
+    browse_session core (see train/test_tui_browser.py). Torch-free."""
+    _run_test_script(rep, "browser", "train/test_tui_browser.py",
+                     "tui-browser")
 
 
 def tier_modelspec(rep):
@@ -1088,6 +1104,8 @@ def main(argv=None):
             tier_shardrec(rep)
         elif t == "treecache":
             tier_treecache(rep)
+        elif t == "browser":
+            tier_browser(rep)
         elif t == "modelspec":
             tier_modelspec(rep)
         elif t == "treerebuild":

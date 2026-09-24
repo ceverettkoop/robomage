@@ -9,18 +9,18 @@ load+collect job, `shutdown()` to stop it, `traces()`/`provenance()` to save,
 Everything front-end-independent lives in browse_session.py (shared with the
 Textual TUI): the games store + cursor (`BrowseStore`), the analyses registry,
 the presentation-data helpers (game labels, decision rows, phase strip, clock
-line), the V(s) histogram geometry (`HistogramModel`), and the engine job
-bodies (`EngineCore`). This module supplies only the Qt half:
+line, tree-walk rows), the V(s) histogram geometry (`HistogramModel`), the
+engine job bodies (`EngineCore`) and the one thread that runs them
+(`EngineWorker`), and the .rmtrace save helpers. This module supplies only
+the Qt half:
 
   * `BrowserBridge` — queued-signal marshalling from the worker threads to the
     UI thread (the Qt analog of Textual's post_message).
-  * `EngineWorker` — the ONE thread that touches model/env/opp_model, running
-    one queued job at a time (load / collect / whatif / shutdown), reproducing
-    Textual's `group="engine"` serialization.
   * The widgets: `TraceBoard` (full-parity board render of a recorded obs,
     composing gui_game's CardWidget/CardRow/PhaseStrip/StackItemWidget),
     `DecisionPanel` (policy table + opponent-actions + clock/shard footers),
-    and `ValueHistogramWidget` (clickable per-decision V(s) bars).
+    `TreePanel` (the rebuilt search tree), and `ValueHistogramWidget`
+    (clickable per-decision V(s) bars).
 
 Live streaming: EngineCore streams GameStarted/StepAppended/... events while a
 game is still being played; the pane shows it as a LIVE games-list row that
@@ -34,7 +34,6 @@ finished games (`browse_session.analysis_pool`), never touching the env.
 
 import argparse
 import os
-import queue
 import threading
 import traceback
 
@@ -53,7 +52,7 @@ import browse_session as bs
 import decode
 import shard_probes
 import tree_rebuild
-from cli_spec import ANALYSIS_BROWSE_SUB, BINARY, is_bo3, sub_defaults
+from cli_spec import is_bo3
 from env import STATE_SIZE
 from game_driver import stack_target_refs
 from gui_game import (CardRow, CardWidget, HAND_CARD_H, HAND_CARD_W,
@@ -84,23 +83,13 @@ _MSG_NO_ENV = "Live env not ready."
 _MSG_BUSY = ("Engine is busy (simulating or branching) — try again when it "
              "finishes.")
 _MSG_NO_SEL = "Select a game and step first."
-_MSG_TREE_NOT_SHARDS = ("Rebuilding a search tree needs a recording (shard "
-                        "mode) — only recorded rows carry search diagnostics.")
-_MSG_NO_DIAG = ("This decision has no search diagnostics — only a search "
-                "opponent's own searched or tree-followed decision has a "
-                "tree to rebuild.")
+_MSG_TREE_NOT_SHARDS = bs.MSG_TREE_NOT_SHARDS
+_MSG_NO_DIAG = bs.MSG_NO_DIAG
 
 
-def _tree_ready_status(ev):
-    """The status-line text for a TreeReady."""
-    if not ev.verified:
-        return f"Tree ready (MISMATCH {ev.mismatch})"
-    return ("Tree ready (cache hit)" if ev.from_cache
-            else "Tree ready (rebuilt, verified)")
-
-# Namespace dests per cli_spec.ANALYSIS_BROWSE_SUB (the schema _load_model_and_env
-# consumes): opts-dict key -> default, the browse flags' own defaults.
-_ARG_DEFAULTS = dict(sub_defaults(ANALYSIS_BROWSE_SUB), binary=BINARY)
+# opts-dict key -> default: the browse flags' own defaults (the namespace
+# schema _load_model_and_env consumes).
+_ARG_DEFAULTS = bs.BROWSE_ARG_DEFAULTS
 
 
 def _make_args(opts):
@@ -142,57 +131,6 @@ class BrowserBridge(QObject):
 
     engine_event = Signal(object)     # a browse_session event dataclass
     analysis_done = Signal(object)    # (title, text) from an analysis runner
-
-
-class EngineWorker(threading.Thread):
-    """The one thread that touches EngineCore (model/env/opp_model).
-
-    Commands (via the queue): ("load", n, stop) / ("collect", n, stop) /
-    ("whatif", gn, step, k, game) / ("search", gn, step, game) /
-    ("tree", gn, step, game) / ("tree_expand", world, path) /
-    ("tree_close",) / ("shutdown",). Stop events are created at
-    submit time, one per collect run (the AnalysisWorker discipline), so a
-    stop that lands before the worker even dequeues the run still sticks. The
-    UI rejects submissions while the store is engine_busy, keeping the queue
-    depth ≤ 1 job (+ shutdown)."""
-
-    def __init__(self, core):
-        super().__init__(name="gui-browser-engine", daemon=True)
-        self._core = core
-        self._q = queue.Queue()
-
-    def submit(self, cmd):
-        self._q.put(cmd)
-
-    def run(self):
-        while True:
-            cmd = self._q.get()
-            kind = cmd[0]
-            if kind == "shutdown":
-                break
-            try:
-                if kind == "load":
-                    self._core.load_and_collect(cmd[1], cmd[2])
-                elif kind == "collect":
-                    self._core.collect(cmd[1], cmd[2])
-                elif kind == "whatif":
-                    self._core.whatif(cmd[1], cmd[2], cmd[3], cmd[4])
-                elif kind == "search":
-                    self._core.search_step(cmd[1], cmd[2], cmd[3])
-                elif kind == "tree":
-                    self._core.open_tree(cmd[1], cmd[2], cmd[3])
-                elif kind == "tree_expand":
-                    self._core.tree_expand(cmd[1], cmd[2])
-                elif kind == "tree_close":
-                    self._core.close_tree()
-            except Exception:   # noqa: BLE001 — the worker loop must survive
-                # EngineCore jobs guard themselves; this is the last-resort
-                # net so a bug can't kill the queue loop silently.
-                self._core.emit(bs.AnalysisDone("engine worker error",
-                                                traceback.format_exc()))
-                self._core.emit(bs.EngineIdle())
-        # Release the env on THIS thread (its owner), as the last job.
-        self._core.close()
 
 
 # ── V(s) histogram ────────────────────────────────────────────────────────────
@@ -425,23 +363,13 @@ class TraceBoard(QWidget):
             bs.info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
         self._self_info.setText(
             bs.info_line("MODEL", gs["self"], gs["self_library"]))
-        self._zones.setText(self._zones_text(gs))
+        self._zones.setText(bs.zones_text(gs))
         self._rebuild_stack(gs["stack"])
         self._fill_bf(self._opp_perms, self._opp_lands,
                       gs["opp_battlefield"], "opp")
         self._fill_bf(self._self_perms, self._self_lands,
                       gs["self_battlefield"], "self")
         self._hand_row.set_cards([self._mk_hand(c) for c in gs["self_hand"]])
-
-    @staticmethod
-    def _zones_text(gs):
-        lines = [f"Model GY: {', '.join(gs['self_graveyard']) or '—'}",
-                 f"Opp GY:   {', '.join(gs['opp_graveyard']) or '—'}"]
-        # Exile shown only when non-empty (the TUI's compact-text convention).
-        if gs.get("self_exile") or gs.get("opp_exile"):
-            lines.append(f"Model exile: {', '.join(gs['self_exile']) or '—'}"
-                         f"   Opp exile: {', '.join(gs['opp_exile']) or '—'}")
-        return "\n".join(lines)
 
     def _fill_bf(self, perms_row, lands_row, perms, controller):
         perms_row.set_cards([self._mk_perm(p, controller)
@@ -643,17 +571,7 @@ class DecisionPanel(QWidget):
 # ── Tree panel ────────────────────────────────────────────────────────────────
 
 _TREE_IDLE = "no tree open — F7 rebuilds the recorded search tree of a searched decision"
-_MERGED_WORLD = -1
-
-
-def _fmt_node_rows(rows, labels):
-    """(action, N, Q, P) rows -> (key action, cell texts) most-visited first."""
-    out = []
-    for a, n, q, p in sorted(rows, key=lambda r: -r[1]):
-        label = labels[a] if a < len(labels) else f"#{a}"
-        out.append((a, n, (f"[{a}] {label}", str(n), f"{q:+.3f}",
-                           f"{p * 100:5.1f}%")))
-    return out
+_MERGED_WORLD = bs.MERGED_WORLD
 
 
 class TreePanel(QWidget):
@@ -779,10 +697,7 @@ class TreePanel(QWidget):
         row) the path to pre-expand and select."""
         self.clear()
         self._ready = ev
-        badge = ("verified" if ev.verified
-                 else f"MISMATCH ({ev.mismatch})")
-        self._head.setText(f"game {ev.gn} step {ev.step} · {badge} · "
-                           f"{ev.summary}")
+        self._head.setText(bs.tree_header(ev))
         self._world.blockSignals(True)
         self._world.addItem("merged root", _MERGED_WORLD)
         for w in range(ev.worlds):
@@ -814,7 +729,7 @@ class TreePanel(QWidget):
             rows, labels = ev.merged_rows, ev.root_labels
         else:
             rows, labels = ev.root_rows[w], ev.root_labels
-        for a, n, cells in _fmt_node_rows(rows, labels):
+        for a, n, cells in bs.tree_node_rows(rows, labels):
             self._add_item(None, (w, (a,)), cells,
                            expandable=(w != _MERGED_WORLD and n > 0))
 
@@ -888,7 +803,7 @@ class TreePanel(QWidget):
                 item.takeChild(0)
             if item.childCount() == 0:
                 if ev.rows:
-                    for a, n, cells in _fmt_node_rows(ev.rows, ev.labels):
+                    for a, n, cells in bs.tree_node_rows(ev.rows, ev.labels):
                         self._add_item(item, (key[0], key[1] + (a,)), cells,
                                        expandable=(n > 0))
                 elif ev.terminal is None:
@@ -945,7 +860,7 @@ class BrowserPane(QWidget):
         # search job works off a game's recorded seed/action log alone, so it
         # must be submittable even without a live env/model.
         core = bs.EngineCore(self._args, self._bridge.engine_event.emit)
-        self._worker = EngineWorker(core)
+        self._worker = bs.EngineWorker(core, name="gui-browser-engine")
         self._collect_stop = None      # stop event of the running collect job
         self._busy_kind = None         # None | "sim" | "whatif" | "search" | "tree"
         self._tree_open = False        # a TreeSession is open on the worker
@@ -1184,12 +1099,11 @@ class BrowserPane(QWidget):
     def traces(self):
         """Finished games only (the live placeholder is excluded; whatif
         branches and shard records are included — they are complete traces)."""
-        return [g for g in self._store.games if not g.get("live")]
+        return bs.saveable_games(self._store.games)
 
     def provenance(self):
-        if not self._has_engine and self._provenance_loaded is not None:
-            return dict(self._provenance_loaded)
-        return {k: getattr(self._args, k, d) for k, d in _ARG_DEFAULTS.items()}
+        return bs.session_provenance(
+            self._args, None if self._has_engine else self._provenance_loaded)
 
     def load_traces(self, traces, provenance):
         """Append opened traces on the UI thread (no worker). In a session
@@ -1285,7 +1199,7 @@ class BrowserPane(QWidget):
                 self._tree_panel.set_viewpoint(not bool(g.get("model_is_a")))
             self._tree_panel.show_tree(ev)
             self._tabs.setCurrentWidget(self._tree_panel)
-            self._say(_tree_ready_status(ev))
+            self._say(bs.tree_ready_status(ev))
             if self._tree_smoke and self._tree_smoke_path is None:
                 self._tree_smoke_expand(ev)
         elif isinstance(ev, bs.TreeNodes):
@@ -1402,16 +1316,8 @@ class BrowserPane(QWidget):
                            else QColor("#d8d8d8"))
 
     def _refresh_summary(self):
-        text = bs.summary_line(
-            self._store.games,
-            loading=(self._store.engine_busy and self._busy_kind == "sim"))
-        if self._store.engine_busy and self._busy_kind == "whatif":
-            text += "  (branching…)"
-        elif self._store.engine_busy and self._busy_kind == "search":
-            text += "  (searching…)"
-        elif self._store.engine_busy and self._busy_kind == "tree":
-            text += "  (rebuilding tree…)"
-        self._summary.setText(text)
+        self._summary.setText(bs.busy_summary_line(
+            self._store.games, self._store.engine_busy, self._busy_kind))
 
     def _refresh_selected(self):
         g = self._store.selected()
@@ -1618,9 +1524,7 @@ class BrowserPane(QWidget):
             self._say("The live game has no finished record yet.")
             return
         gn, step = self._store.cur_game, self._store.cur_step
-        diag = bs.step_diag(game, step)
-        if diag is None or diag.get("kind") not in (
-                tree_rebuild.DIAG_KIND_SEARCH, tree_rebuild.DIAG_KIND_FOLLOWED):
+        if not bs.step_has_tree(game, step):
             self._say(_MSG_NO_DIAG)
             return
         self._store.engine_busy = True
@@ -1652,7 +1556,7 @@ class BrowserPane(QWidget):
         """Gate chain (verbatim parity with the TUI): live env → not busy →
         (whatif) a selected game. A live/unreplayable game passes through —
         _run_whatif prints its own refusal into the output tab."""
-        core = self._worker._core if self._worker is not None else None
+        core = self._worker.core if self._worker is not None else None
         if core is None or self._shards or not core.has_env:
             self._say(_MSG_SHARD if self._shards
                       else (_MSG_BROWSE_ONLY if core is None else _MSG_NO_ENV))

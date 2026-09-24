@@ -22,6 +22,14 @@ Proves the guarantees both trace-browser front ends rely on:
      and a should_stop after the 3rd step yields GameAborted with no
      GameFinished. The same events replayed through BrowseStore leave it
      consistent. This leg needs torch (self-skips without it) + bin/robomage.
+  5. save + trace source — save_session drops the live game and adds the
+     .rmtrace extension, session_provenance prefers an opened session's
+     own, and a .rmtrace --source streams through EngineCore on an
+     EngineWorker (EnvReady carrying the file's provenance, one GameAdded per
+     game, the provenance applied to the namespace).
+  6. tree-walk / summary helpers — tree_node_rows ordering and cells,
+     walk_terminal_text viewpoint, step_has_tree kinds, the busy summary
+     suffixes, and the exile line of zones_text.
 
 Runnable standalone::
 
@@ -475,12 +483,98 @@ def test_live_collect_stream():
         _rm(paths)
 
 
+# ── 5. Save + trace source through the engine worker ──────────────────────────
+
+def test_save_and_trace_worker():
+    import tempfile
+    import shutil
+    tmp = tempfile.mkdtemp(prefix="browse_save_test_")
+    try:
+        live = dict(_finished(2), live=True)
+        games = [_finished(3), _finished(2, result=-1.0, model_is_a=False), live]
+        prov = {"player_a": "gen", "deck_a": "da", "deck_b": "db",
+                "format": "bo1"}
+        path, n = bs.save_session(os.path.join(tmp, "s"), games, prov)
+        _check(path.endswith(".rmtrace") and n == 2,
+               f"save_session wrote {path} with {n} games (live not excluded?)")
+        args = SimpleNamespace(**bs.BROWSE_ARG_DEFAULTS)
+        args.source = path
+        _check(bs.session_provenance(args, prov) == prov
+               and bs.session_provenance(args)["source"] == path,
+               "session_provenance: loaded wins, else the namespace flags")
+
+        # The trace source through EngineCore + EngineWorker (the TUI path).
+        events = []
+        done = threading.Event()
+
+        def emit(ev):
+            events.append(ev)
+            if isinstance(ev, bs.EngineIdle):
+                done.set()
+
+        worker = bs.EngineWorker(bs.EngineCore(args, emit))
+        worker.start()
+        worker.submit(("load", 0, threading.Event()))
+        _check(done.wait(30), "trace load never went idle")
+        worker.submit(("shutdown",))
+        worker.join(10)
+        ready = [e for e in events if isinstance(e, bs.EnvReady)]
+        added = [e for e in events if isinstance(e, bs.GameAdded)]
+        _check(len(ready) == 1 and ready[0].provenance == prov,
+               "EnvReady missing or without the file's provenance")
+        _check(len(added) == 2 and len(added[1].game["observations"]) == 2,
+               "trace games not streamed as GameAdded")
+        _check(args.deck_a == "da" and args.format == "bo1",
+               "provenance not applied to the namespace")
+        _check(not worker.is_alive(), "worker did not shut down")
+        return "live excluded, provenance rules, .rmtrace via EngineWorker"
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+# ── 6. Tree-walk / summary presentation helpers ───────────────────────────────
+
+def test_tree_helpers():
+    rows = bs.tree_node_rows([(0, 3, 0.5, 0.25), (2, 9, -0.125, 0.5)],
+                             ["Keep", "x", "Mulligan"])
+    _check([r[0] for r in rows] == [2, 0], "rows not most-visited first")
+    _check(rows[0][2] == ("[2] Mulligan", "9", "-0.125", " 50.0%"),
+           f"cells {rows[0][2]}")
+    far = bs.tree_node_rows([(5, 1, 0.0, 1.0)], ["only"])
+    _check(far[0][2][0] == "[5] #5", "out-of-range label fallback")
+    _check(bs.walk_terminal_text("A", opp_is_a=False) == "Game ends: you win"
+           and bs.walk_terminal_text("A", opp_is_a=True) == "Game ends: you lose"
+           and bs.walk_terminal_text("DRAW", True) == "Game ends: draw",
+           "terminal text")
+    g = _finished(2)
+    g["diag"] = [None, {"kind": 1}]
+    _check(not bs.step_has_tree(g, 0) and bs.step_has_tree(g, 1),
+           "step_has_tree")
+    g["diag"][1] = {"kind": 3}
+    _check(not bs.step_has_tree(g, 1), "plan search has no tree")
+    games = [_finished(1)]
+    _check(bs.busy_summary_line(games, True, "tree").endswith(
+        "(rebuilding tree…)")
+           and bs.busy_summary_line(games, True, "sim").endswith("(simulating…)")
+           and bs.busy_summary_line(games, False, "search")
+           == bs.summary_line(games), "busy summary suffixes")
+    gs = {"self_graveyard": ["A"], "opp_graveyard": [], "self_exile": [],
+          "opp_exile": ["B"]}
+    _check(bs.zones_text(gs).splitlines()[2].endswith("Opp exile: B"),
+           "exile line")
+    gs["opp_exile"] = []
+    _check(len(bs.zones_text(gs).splitlines()) == 2, "empty exile shown")
+    return "node rows, terminal text, has_tree, busy suffix, zones"
+
+
 TESTS = [
     ("histogram_layout", test_histogram_layout),
     ("store_live_sequence", test_store_live_sequence),
     ("store_abort", test_store_abort),
     ("labels_and_pool", test_labels_and_pool),
     ("decision_data", test_decision_data),
+    ("save_and_trace_worker", test_save_and_trace_worker),
+    ("tree_helpers", test_tree_helpers),
     ("live_collect_stream", test_live_collect_stream),
 ]
 

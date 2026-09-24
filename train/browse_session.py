@@ -5,18 +5,22 @@ so the Textual TUI and the Qt GUI cannot drift: the games store and step
 cursor, the analyses registry and its one process-global stdout-capture lock,
 the presentation-data helpers (game-list labels, decision rows, phase strip,
 clock line), the V(s) histogram geometry/bucketing model, and the engine-side
-job bodies (load, collect with live streaming, whatif, shard replay, and the
-replay-to-step MCTS `search_step`), plus the `--source` readers shared by
-both front ends (`is_shard_source`, `load_trace_source`).
+job bodies (load, collect with live streaming, whatif, shard replay, saved
+.rmtrace sessions, the replay-to-step MCTS `search_step`, and exact-tree
+browsing), the `EngineWorker` thread that runs them, the `--source` readers
+shared by both front ends (`is_shard_source`, `load_trace_source`), the
+.rmtrace save helpers (`session_provenance`, `save_session`), and the
+tree-walk text helpers (`tree_node_rows`, `walk_board_lines`).
 
-Threading contract (mirrors tui_analysis's @work groups):
+Threading contract:
   * `BrowseStore` is UI-thread-only — the front end applies events to it on its
     UI thread (one-writer discipline).
-  * `EngineCore` is worker-thread-only — exactly one engine worker thread ever
-    touches model/env/opp_model, running one job at a time; each job streams
-    `Event` dataclasses through the thread-safe `emit` callable supplied at
-    construction (Textual: a post_message wrapper; Qt: a queued-signal bridge)
-    and ends by emitting EngineIdle.
+  * `EngineCore` is worker-thread-only — exactly one engine worker thread
+    (`EngineWorker`) ever touches model/env/opp_model and the open tree,
+    running one job at a time; each job streams `Event` dataclasses through
+    the thread-safe `emit` callable supplied at construction (Textual: a
+    post_message wrapper; Qt: a queued-signal bridge) and ends by emitting
+    EngineIdle.
   * Finished game dicts are immutable once emitted — sharing them read-only
     with an analysis thread is safe.
 
@@ -27,17 +31,20 @@ pure helpers stay importable everywhere.
 
 import io
 import os
+import queue
 import threading
 import traceback
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
+from types import SimpleNamespace
 
 import numpy as np
 
 import analysis as an
 import decode
-from cli_spec import (BROWSE_KIND_SHARDS, FORMAT_CHOICES, browse_source_kind,
-                      format_name, is_bo3)
+from cli_spec import (ANALYSIS_BROWSE_SUB, BINARY, BROWSE_KIND_SHARDS,
+                      BROWSE_KIND_TRACE, FORMAT_CHOICES, browse_source_kind,
+                      format_name, is_bo3, sub_defaults)
 import tree_rebuild
 from env import (STATE_SIZE, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX,
                  _STEP_ONEHOT_START,
@@ -87,6 +94,39 @@ def load_trace_source(path, args):
     provenance = meta.get("provenance") or {}
     apply_trace_provenance(args, provenance)
     return games, provenance
+
+
+# ── Session save (.rmtrace) ───────────────────────────────────────────────────
+
+# Namespace dests per cli_spec.ANALYSIS_BROWSE_SUB (the schema
+# _load_model_and_env consumes) with the browse flags' own defaults: the
+# provenance a saved session records, and the GUI pane's opts→namespace map.
+BROWSE_ARG_DEFAULTS = dict(sub_defaults(ANALYSIS_BROWSE_SUB), binary=BINARY)
+
+
+def saveable_games(games):
+    """Finished games only (the live placeholder is excluded; whatif branches
+    and shard records are included — they are complete traces)."""
+    return [g for g in games if not g.get("live")]
+
+
+def session_provenance(args, loaded=None):
+    """The provenance dict a saved session records: an opened session's own
+    (``loaded``), else the browse namespace's flag values."""
+    if loaded is not None:
+        return dict(loaded)
+    return {k: getattr(args, k, d) for k, d in BROWSE_ARG_DEFAULTS.items()}
+
+
+def save_session(path, games, provenance):
+    """Write the finished ``games`` as a ``.rmtrace`` (the extension is added
+    when ``path`` has none). Returns ``(path, n_games)``."""
+    import gui_session_io
+    if not os.path.splitext(path)[1]:
+        path += gui_session_io.TRACE_EXT
+    finished = saveable_games(games)
+    gui_session_io.save_traces(path, finished, provenance)
+    return path, len(finished)
 
 
 # ── Analyses registry ─────────────────────────────────────────────────────────
@@ -184,6 +224,12 @@ REPLAY_MENU = [
 TREE_MENU = [
     ("tree", "Rebuild search tree (F7)"),
 ]
+
+MSG_TREE_NOT_SHARDS = ("Rebuilding a search tree needs a recording (shard "
+                       "mode) — only recorded rows carry search diagnostics.")
+MSG_NO_DIAG = ("This decision has no search diagnostics — only a search "
+               "opponent's own searched or tree-followed decision has a "
+               "tree to rebuild.")
 
 _MSG_NO_DECKS = ("This session does not know the game's seat decks — cannot "
                  "build a replay env.")
@@ -301,6 +347,91 @@ def _tree_ready_event(gn, step, session):
                      follow_worlds=list(session.follow_worlds))
 
 
+# ── Tree-walk presentation (the Tree tab of both boards) ──────────────────────
+
+# The world picker's "merged root" entry: the summed root statistics, not a
+# browsable tree.
+MERGED_WORLD = -1
+
+
+def step_has_tree(game, step):
+    """True when ``step`` recorded a searched (kind 1) or tree-followed
+    (kind 2) decision — the only rows with a tree to rebuild."""
+    diag = step_diag(game, step)
+    return diag is not None and diag.get("kind") in (
+        tree_rebuild.DIAG_KIND_SEARCH, tree_rebuild.DIAG_KIND_FOLLOWED)
+
+
+def tree_ready_status(ev):
+    """The status-line text for a TreeReady."""
+    if not ev.verified:
+        return f"Tree ready (MISMATCH {ev.mismatch})"
+    return ("Tree ready (cache hit)" if ev.from_cache
+            else "Tree ready (rebuilt, verified)")
+
+
+def tree_header(ev):
+    """The Tree tab's header line for a TreeReady."""
+    badge = "verified" if ev.verified else f"MISMATCH ({ev.mismatch})"
+    return f"game {ev.gn} step {ev.step} · {badge} · {ev.summary}"
+
+
+def tree_node_rows(rows, labels):
+    """``(action, N, Q, P)`` rows -> ``(action, N, cell texts)`` most-visited
+    first; the cells are (``[a] label``, N, Q, P%)."""
+    out = []
+    for a, n, q, p in sorted(rows, key=lambda r: -r[1]):
+        label = labels[a] if a < len(labels) else f"#{a}"
+        out.append((a, n, (f"[{a}] {label}", str(n), f"{q:+.3f}",
+                           f"{p * 100:5.1f}%")))
+    return out
+
+
+def walk_node_frame(obs, opp_is_a):
+    """Decode a walked (hypothetical) node's obs into the viewer's frame —
+    "you" is the browsed seat, ``opp_is_a`` whether its opponent is seat A.
+    Returns ``(gs, mirrored)``; ``mirrored`` means the opponent is to act, so
+    ``gs["self_hand"]`` is the OPPONENT's private hand."""
+    from game_driver import decode_human_frame
+    node_is_a = bool(obs[_SELF_IS_A_IDX] > 0.5)
+    frame = SimpleNamespace(obs=obs, opp_perspective=(node_is_a == opp_is_a),
+                            perm_counters=None, perm_token_names=None)
+    return decode_human_frame(frame)
+
+
+def walk_terminal_text(terminal, opp_is_a):
+    """The board text of a walk that ended the game (``terminal`` is the
+    winner seat "A"/"B" or "DRAW")."""
+    if terminal == "DRAW":
+        return "Game ends: draw"
+    won = (terminal == "A") != opp_is_a
+    return f"Game ends: you {'win' if won else 'lose'}"
+
+
+def walk_board_lines(obs, opp_is_a, reveal=False):
+    """Text board of a walked (hypothetical) node: life/step header, both
+    battlefields, the stack, and the hand of the seat to act — the opponent's
+    private hand only when ``reveal`` (the play boards' hidden-hand rule)."""
+    gs, mirrored = walk_node_frame(obs, opp_is_a)
+    lines = [f"YOU ♥ {gs['self']['life']}   OPP ♥ {gs['opponent']['life']}   "
+             f"{gs['step']} (turn {gs['turn']})",
+             "Opp BF:   " + (" | ".join(decode.fmt_perm(p)
+                                        for p in gs["opp_battlefield"]) or "—"),
+             "Your BF:  " + (" | ".join(decode.fmt_perm(p)
+                                        for p in gs["self_battlefield"]) or "—")]
+    if gs["stack"]:
+        lines.append("Stack:    " + " -> ".join(decode.fmt_stack_entry(e)
+                                                for e in gs["stack"]))
+    hand = ", ".join(c["name"] for c in gs["self_hand"]) or "(empty)"
+    if mirrored and not reveal:
+        lines.append("Opp hand: (opponent to act — hand hidden)")
+    elif mirrored:
+        lines.append(f"Opp hand: {hand}")
+    else:
+        lines.append(f"Hand:     {hand}")
+    return lines
+
+
 def replay_search_decks(game, args):
     """The (deck_a, deck_b, bo3) a replay-search env must be built with:
     the record's own absolute-seat decks (a recording's sidecar), else the
@@ -343,9 +474,7 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
     prefix = game["prefix_len"][step]
     if prefix is None or game["full_actions"] is None:
         return "This step has no recorded replay position."
-    diag = step_diag(game, step)
-    if diag is not None and diag.get("kind") in (tree_rebuild.DIAG_KIND_SEARCH,
-                                                 tree_rebuild.DIAG_KIND_FOLLOWED):
+    if step_has_tree(game, step):
         try:
             with tree_rebuild.TreeSession(
                     game, step, binary=binary, deck_a=deck_a, deck_b=deck_b,
@@ -464,6 +593,31 @@ def summary_line(games, loading=False):
     if loading:
         line += "  (simulating…)"
     return line
+
+
+# What each engine job kind appends to the summary line while it runs.
+_BUSY_SUFFIX = {"whatif": "  (branching…)", "search": "  (searching…)",
+                "tree": "  (rebuilding tree…)"}
+
+
+def busy_summary_line(games, engine_busy, busy_kind):
+    """summary_line plus the running engine job ("sim" | "whatif" | "search" |
+    "tree" | None)."""
+    line = summary_line(games, loading=(engine_busy and busy_kind == "sim"))
+    if engine_busy:
+        line += _BUSY_SUFFIX.get(busy_kind, "")
+    return line
+
+
+def zones_text(gs):
+    """The graveyard lines of a decoded state, plus the exile line when
+    either exile is non-empty."""
+    lines = [f"Model GY: {', '.join(gs['self_graveyard']) or '—'}",
+             f"Opp GY:   {', '.join(gs['opp_graveyard']) or '—'}"]
+    if gs.get("self_exile") or gs.get("opp_exile"):
+        lines.append(f"Model exile: {', '.join(gs['self_exile']) or '—'}"
+                     f"   Opp exile: {', '.join(gs['opp_exile']) or '—'}")
+    return "\n".join(lines)
 
 
 def clock_line(game, step):
@@ -775,6 +929,7 @@ class HistogramModel:
 class EnvReady:
     startup_text: str
     subtitle: str = ""
+    provenance: object = None       # an opened .rmtrace's own provenance dict
 
 
 @dataclass
@@ -1017,10 +1172,15 @@ class EngineCore:
     # ----- jobs (each ends by emitting EngineIdle) -----
 
     def load_and_collect(self, n, stop=None):
-        """Startup job: load model+env (or shard records) then stream n games."""
+        """Startup job: load model+env then stream n games — or, for a shard
+        directory / .rmtrace --source, load its records (no env)."""
         try:
-            if is_shard_source(self.args):
+            kind = browse_source_kind(getattr(self.args, "source", None))
+            if kind == BROWSE_KIND_SHARDS:
                 self._load_shards(n)
+                return
+            if kind == BROWSE_KIND_TRACE:
+                self._load_trace()
                 return
             if not self.has_env:
                 try:
@@ -1233,3 +1393,74 @@ class EngineCore:
                 self.emit(GameAdded(g))
         except BaseException:
             self.emit(LoadFailed(f"shard load failed:\n{traceback.format_exc()}"))
+
+    def _load_trace(self):
+        """Saved-session startup: the games of a .rmtrace --source, with no
+        env (whatif/run stay gated); its provenance supplies the seat decks
+        the replay search needs and rides on EnvReady for a later re-save."""
+        try:
+            games, provenance = load_trace_source(self.args.source, self.args)
+            subtitle = (f"saved session: {self.args.source} · search net "
+                        f"{getattr(self.args, 'player_a', None) or 'az:gen'}")
+            self.emit(EnvReady(f"{len(games)} game(s) from {self.args.source}\n",
+                               subtitle, provenance))
+            for g in games:
+                self.emit(GameAdded(g))
+        except BaseException:
+            self.emit(LoadFailed(f"trace load failed:\n{traceback.format_exc()}"))
+
+
+class EngineWorker(threading.Thread):
+    """The one thread that touches an EngineCore (model/env/opp_model and the
+    open tree session).
+
+    Commands (via the queue): ("load", n, stop) / ("collect", n, stop) /
+    ("whatif", gn, step, k, game) / ("search", gn, step, game) /
+    ("tree", gn, step, game) / ("tree_expand", world, path) /
+    ("tree_close",) / ("shutdown",). Stop events are created at submit time,
+    one per collect run, so a stop that lands before the worker even dequeues
+    the run still sticks. The front ends reject submissions while the store
+    is engine_busy, keeping the queue depth ≤ 1 job (+ tree expansions +
+    shutdown)."""
+
+    def __init__(self, core, name="browse-engine"):
+        super().__init__(name=name, daemon=True)
+        self._core = core
+        self._q = queue.Queue()
+
+    @property
+    def core(self):
+        return self._core
+
+    def submit(self, cmd):
+        self._q.put(cmd)
+
+    def run(self):
+        while True:
+            cmd = self._q.get()
+            kind = cmd[0]
+            if kind == "shutdown":
+                break
+            try:
+                if kind == "load":
+                    self._core.load_and_collect(cmd[1], cmd[2])
+                elif kind == "collect":
+                    self._core.collect(cmd[1], cmd[2])
+                elif kind == "whatif":
+                    self._core.whatif(cmd[1], cmd[2], cmd[3], cmd[4])
+                elif kind == "search":
+                    self._core.search_step(cmd[1], cmd[2], cmd[3])
+                elif kind == "tree":
+                    self._core.open_tree(cmd[1], cmd[2], cmd[3])
+                elif kind == "tree_expand":
+                    self._core.tree_expand(cmd[1], cmd[2])
+                elif kind == "tree_close":
+                    self._core.close_tree()
+            except Exception:   # noqa: BLE001 — the worker loop must survive
+                # EngineCore jobs guard themselves; this is the last-resort
+                # net so a bug can't kill the queue loop silently.
+                self._core.emit(AnalysisDone("engine worker error",
+                                             traceback.format_exc()))
+                self._core.emit(EngineIdle())
+        # Release the env on THIS thread (its owner), as the last job.
+        self._core.close()

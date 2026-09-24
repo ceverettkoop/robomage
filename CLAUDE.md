@@ -117,9 +117,8 @@ background** and make the live output inspectable by the user:
  tiers, how to reproduce a CI failure, and how to intentionally re-record the replay corpus /
  regenerate the codegen. `train.py observe --player-a explore --player-b explore --verbose
  --out FILE` is the manual exploratory fuzz campaign (see observe below).
--Don't use sed or cat - if possible don't pipe a bunch of commands together in a way that will require asking my permission, run build and test tasks as simply as possible
 -Non fatal errors are not acceptable
--Draws are not acceptable
+-Draws are not acceptable, outside of exceedingly rare cases, and require review
 -Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
 -Do not use commas when using the test harness. The harness splits `--play`, `--hand-a/-b`,
  `--library-a/-b`, `--battlefield/graveyard/exile/sideboard-a/-b` on commas, so a comma inside a
@@ -678,6 +677,15 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
   app in `train/tui_analysis.py`; `--board gui` opens the PySide6 app on that session
   (`gui_main.run_browser`, falling back to tui without PySide6). Also `./tui.sh`'s
   `analysis → browse`. `tui_analysis.py` itself is no longer an entry point (exits 1).
+  **The two boards have the same capabilities** — both sit on `train/browse_session.py`
+  (games store, `EngineCore` jobs + the one `EngineWorker` thread, analyses registry,
+  presentation/tree-walk helpers, `.rmtrace` save via `save_session`/`session_provenance`), so a
+  new browser feature goes there first and each board adds only its rendering. Shared keys:
+  arrows/Home/End step, `w` whatif, F6 replay search, F7 tree rebuild; the TUI adds `f` follow
+  live, `x` stop simulating, ctrl+s save `.rmtrace` (the GUI has a Follow checkbox, a Stop
+  button and File ▸ Save / Ctrl+S). The TUI renders the Tree tab as a navigable text tree with
+  the walked hypothetical board as text. (The play board's analysis window uses F6 differently —
+  opponent review, below.) Regression: `train/test_tui_browser.py` (default tier `browser`).
 - **Headless smokes**: `QT_QPA_PLATFORM=offscreen ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and
   exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it
   delivered stats.
@@ -718,7 +726,7 @@ recording **exactly replayable**: both browsers' `search` entry (**F6**,
 offline. Works without a live env/model; pre-sidecar and training-pool shards self-report as
 non-replayable. **View ▸ Analyze Recording… (F10)** opens the recording in a shard-mode
 `BrowserPane` in a second window (live game keeps running), viewpoint defaulting to the opponent.
-The browser also has **net-probe entries** (`train/shard_probes.py`, Qt-free glue over
+Both browsers also have **net-probe entries** (`train/shard_probes.py`, Qt-free glue over
 `az_inspect`'s probes): search-π-vs-net, block permutation importance, card-swap/scalar sweeps,
 pooled KL(search‖net), value calibration. π is always the SEARCH posterior (diag visits, or a
 pool shard's search π) — decisions with none (raw-policy seat, human/behavior rows) are skipped by
@@ -741,9 +749,10 @@ sha256, device, torch threads, knobs). Because an in-game search never reuses ro
 with zero noise/temperature, `tree_rebuild.TreeSession` re-runs
 `IncrementalSearch(world_seeds=…).run_chunk(sims_run)` at the replayed decision and **verifies
 the rebuilt root visits equal the recorded ones exactly**; the tree is then cached under
-`<recording>/trees/` (`tree_cache.py`) so reopening is instant. The GUI recording browser's
-**Tree** tab (F7) walks it with hypothetical boards; both browsers show N/Q/P columns and a
-search line per decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
+`<recording>/trees/` (`tree_cache.py`) so reopening is instant. Both browsers' **Tree** tab
+(F7, recordings only) walks it per world with N/Q/P per node, the PV, and hypothetical boards
+(card widgets on the GUI, text on the TUI); both show N/Q/P columns and a search line per
+decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
 `test_tree_rebuild.py` (opt-in tier `treerebuild`, needs the engine).
 
 ### Key files
@@ -787,9 +796,13 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   (`make check` tier `shardrec`).
 - `train/shard_probes.py` — Qt-free glue running `az_inspect`'s net probes over browsed
   records (snapshot on the UI thread, stack+torch on the worker); `PROBE_MENU` is appended to
-  the GUI browser's analyses sidebar
-- `train/tui_analysis.py` — the Textual analysis browser app (game list, board-state pager,
-  clickable V(s) histogram, every `analysis.py` REPL view, `whatif` branching); launched by
+  both browsers' analyses sidebar
+- `train/browse_session.py` — the Qt-free analysis-browser core both boards share (store,
+  `EngineCore`/`EngineWorker`, analyses registry, presentation + tree-walk text helpers,
+  `.rmtrace` save); regression `train/test_browse_session.py` (opt-in tier `analysis`)
+- `train/tui_analysis.py` — the Textual analysis browser app (game list with live streaming,
+  board-state pager, clickable V(s) histogram, every `analysis.py` REPL view, net probes, `whatif`
+  branching, F6 replay search, F7 text tree walk, ctrl+s `.rmtrace` save); launched by
   `analysis.py browse` (`--board tui`, the default) and `./tui.sh`'s `analysis → browse`
 - `train/analysis_session.py` — Qt-free analysis core: `AnalysisSession` (detached engine,
   delta-replay lockstep, chunked analyze/pv/walk), `AnalysisConfig` (its evaluator comes from
