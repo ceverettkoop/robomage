@@ -113,10 +113,10 @@ of past snapshots for you. The single-matchup `train`/`sweep` subcommands below 
 scripting one deck-vs-deck session or inspecting a checkpoint, not the primary training loop.
 
 ```bash
-train/.venv/bin/python train/train.py --deck delver --opponent mav                 # continue gen on one matchup
-train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start gen over from scratch
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10  # sanity-check a build (scripted vs scripted + summary)
-train/.venv/bin/python train/train.py baseline gen --deck delver                   # gen's win rate vs the scripted agent
+train/.venv/bin/python train/train.py --deck-a delver --deck-b mav                 # continue gen on one matchup
+train/.venv/bin/python train/train.py --deck-a delver --deck-b mav --fresh         # start gen over from scratch
+train/.venv/bin/python train/train.py observe --deck-a delver --deck-b mav --games 10  # sanity-check a build (scripted vs scripted + summary)
+train/.venv/bin/python train/train.py baseline --player-a gen --deck-a delver      # gen's win rate vs the scripted agent
 ```
 
 ### League (PFSP) — train the PPO generalist
@@ -143,7 +143,7 @@ See `docs/ppo_az_training.md` for when to switch from PPO to AZ and `docs/alphaz
 for the machinery.
 
 ```bash
-train/.venv/bin/python train/train.py az --deck delver                # one full cycle: self-play -> train -> gate
+train/.venv/bin/python train/train.py az --decks delver               # one full cycle: self-play -> train -> gate
 train/.venv/bin/python train/train.py az-league                       # rotate AZ cycles across decks/league/
 ```
 
@@ -155,8 +155,8 @@ controller spec is accepted: `az:gen?sims=128&worlds=4` (with search) or `azraw:
 ## Play against model
 
 ```bash
-train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)          # TUI game board (default); the generalist (gen) pilots --model-deck
-train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --gui    # PySide6 desktop board (needs requirements-gui.txt)
+train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck)                  # TUI game board (default); you are player A, the generalist (gen) pilots --deck-b
+train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck) --gui            # PySide6 desktop board (needs requirements-gui.txt)
 train/.venv/bin/python train/gui_main.py                                              # GUI launcher — pick decks/opponent/format/analysis in a dialog
 ./gui.sh                                                                              # shortcut for the line above, run from the repo root
 ```
@@ -164,9 +164,9 @@ train/.venv/bin/python train/gui_main.py                                        
 **`./gui.sh`**, run from the repo root, is the GUI-board equivalent of `./tui.sh` — it launches
 `train/gui_main.py` with no arguments, which opens the launcher dialog (needs
 `requirements-gui.txt`; falls back to the TUI if PySide6 is missing). The launcher's "Game
-setup" group picks your deck, the opponent's deck, the opponent controller (`gen`, a scripted
-tier, or an `az:`/`azraw:`/`mcts:` search spec), which seat you play, and bo3-vs-single-game
-format; choices persist to `~/.robomage/gui_launcher.json` for next time. When the opponent is
+setup" group picks player A and player B (the same `--player-a`/`--player-b` specs as
+`play.py`: `Human (you)` on one seat, the opponent — `gen`, a scripted tier, or an
+`az:`/`azraw:`/`mcts:` search spec — on the other), their decks, and bo3-vs-single-game format; choices persist to `~/.robomage/gui_launcher.json` for next time. When the opponent is
 a search spec (`az:`/`mcts:`), a "Search opponent settings" group appears with tuning knobs
 (each defaults to "omit the knob" unless set): simulations per decision, determinized worlds,
 think-time-per-decision (overrides the sims cap with a wall-clock budget), search procs
@@ -180,7 +180,7 @@ a separate, detached engine copy that never blocks the live game.
 ## Run N games and analyze them (interactive)
 
 ```bash
-train/.venv/bin/python train/analysis.py interactive (gen, or a checkpoint path) --opponent (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck)
+train/.venv/bin/python train/analysis.py interactive --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck)
 ```
 
 `analysis.py` also has a non-interactive subcommands for a report each — `report`,
@@ -198,5 +198,5 @@ From `./tui.sh`, pick the **analysis-tui** tool and its **browse** subcommand to
 same options through the form. To invoke it directly:
 
 ```bash
-train/.venv/bin/python train/tui_analysis.py (gen, or a checkpoint path) --opponent (model, or 'scripted') --deck-b (opponent's deck) --n-games 20
+train/.venv/bin/python train/tui_analysis.py --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck) --n-games 20
 ```

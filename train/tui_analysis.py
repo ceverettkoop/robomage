@@ -31,13 +31,16 @@ The matplotlib `chart *` commands and the HTML `report` battery stay in
 analysis.py — this front end covers the text/interactive tools.
 
 Run from the repo root (same simulation args as `analysis.py interactive`):
-    train/.venv/bin/python train/tui_analysis.py <model.zip|deck> \
-        --opponent scripted [--deck-b mav] [--n-games 20] [--format bo1]
+    train/.venv/bin/python train/tui_analysis.py --player-a <model.zip|gen> \
+        --player-b scripted --deck-a delver [--deck-b mav] [--n-games 20] \
+        [--format bo1]
+
+--player-a is the inspected model and --player-b its opponent.
 
 Shard replay — browse recorded AZ self-play instead of simulating (see
-shard_replay.py; the model spec becomes the V(s) net, --no-net keeps the
+shard_replay.py; the --player-a spec becomes the V(s) net, --no-net keeps the
 recorded outcome z, and whatif/run stay disabled without a live env):
-    train/.venv/bin/python train/tui_analysis.py gen \
+    train/.venv/bin/python train/tui_analysis.py --player-a gen \
         --shards train/az_data/gen [--seat A|B] [--no-net] [--n-games 20]
 """
 
@@ -477,7 +480,7 @@ class AnalysisApp(App):
 
     def on_mount(self) -> None:
         self.title = "RoboMage · analysis"
-        self.sub_title = (f"{self._args.model}  vs  {self._args.opponent}"
+        self.sub_title = (f"{self._args.player_a}  vs  {self._args.player_b}"
                           + ("  (bo3)" if is_bo3(self._args) else ""))
         menu = self.query_one("#analyses", OptionList)
         for key, label, _fn in _ANALYSES:
@@ -604,7 +607,7 @@ class AnalysisApp(App):
             with _CAPTURE_LOCK, redirect_stdout(buf):
                 model = None
                 if not getattr(self._args, "no_net", False):
-                    model = shard_replay.load_value_model(self._args.model)
+                    model = shard_replay.load_value_model(self._args.player_a)
                 records = shard_replay.load_records(
                     self._args.shards,
                     viewpoint_is_a=getattr(self._args, "seat", "A") != "B",
@@ -687,7 +690,7 @@ class AnalysisApp(App):
             binary = getattr(self._args, "binary", None)
             if not binary:
                 from cli_spec import INTERACTIVE_BINARY as binary
-            spec = getattr(self._args, "model", None) or "az:gen"
+            spec = getattr(self._args, "player_a", None) or "az:gen"
             text = _run_replay_search(game, step, binary=binary,
                                       deck_a=deck_a, deck_b=deck_b, bo3=bo3,
                                       eval_spec=spec)
@@ -720,13 +723,13 @@ class AnalysisApp(App):
     def on_env_ready(self, message: EnvReady) -> None:
         if getattr(self._args, "shards", None):
             net = ("z values" if getattr(self._args, "no_net", False)
-                   else f"V(s): {self._args.model}")
+                   else f"V(s): {self._args.player_a}")
             self.sub_title = (f"shard replay: {self._args.shards} · "
                               f"seat {getattr(self._args, 'seat', 'A')} · {net}")
         else:
             deck_a = getattr(self._args, "deck_a", None) or "?"
             deck_b = getattr(self._args, "deck_b", None) or "?"
-            self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.opponent})"
+            self.sub_title = (f"{deck_a} (model)  vs  {deck_b} ({self._args.player_b})"
                               + ("  · bo3" if is_bo3(self._args) else ""))
         if message.startup_text.strip():
             self._log_output("startup", message.startup_text)

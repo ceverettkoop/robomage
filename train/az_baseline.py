@@ -9,8 +9,8 @@ included — for ``DEFAULT_BASELINE_GAMES`` bo3 matches per matchup, seats
 alternating within each matchup so neither side gets a systematic on-the-play
 edge. The report (per matchup, per piloted deck, per opponent deck, per value
 bucket, per game index) is appended to ``checkpoints/baseline_report.log`` and
-printed. ``--deck`` narrows the grid to one piloted deck (a mirror unless
-``--opponent`` names the scripted deck).
+printed. ``--deck-a`` narrows the grid to one piloted deck (a mirror unless
+``--deck-b`` names the scripted deck); ``--player-a`` is the model under test.
 
 Two backends, chosen by the model spec and the --actor/--no-actor pair:
 
@@ -33,7 +33,7 @@ Two backends, chosen by the model spec and the --actor/--no-actor pair:
 
 Run from the repo root:
     train/.venv/bin/python train/train.py baseline
-    train/.venv/bin/python train/train.py baseline --deck league/ur_delver --games 20
+    train/.venv/bin/python train/train.py baseline --deck-a league/ur_delver --games 20
     train/.venv/bin/python train/train.py baseline --sims 256 --worlds 4 --workers 16
 """
 from __future__ import annotations
@@ -622,12 +622,12 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     if not roster:
         print("No league decks found under bin/resources/decks/league")
         return
-    matchups = resolve_matchups(args.deck, args.opponent, args.all, roster,
+    matchups = resolve_matchups(args.deck_a, args.deck_b, args.all, roster,
                                 mirrors=getattr(args, "mirrors", False))
     n_games = args.games
     bo3 = is_bo3(args)
     log_path = args.log or DEFAULT_LOG_PATH
-    spec = args.model or DEFAULT_BASELINE_MODEL
+    spec = args.player_a or DEFAULT_BASELINE_MODEL
     try:
         kind, ckpt, base, params = classify_model(spec)
     except ValueError as exc:

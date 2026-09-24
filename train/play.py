@@ -1,25 +1,28 @@
 """
 Play interactively against a trained RoboMage model.
 
-The model is randomly assigned to Player A or B each game (pin with --player).
+The seats are --player-a / --player-b: exactly one is the spec 'human' (you),
+the other any opponents.make_controller spec (default: the generalist), with
+--deck-a / --deck-b their decks. By default you are player A.
 Text mode runs on the shared runner loop with a HumanController seat — enter
 an action number or a semantic spec ('cast:bolt', 'pass', or 'concede' /
 'concede:match' to resign); --seed reproduces a game. The --tui path delegates
 to tui_game.py.
 
 Usage:
-    train/.venv/bin/python train/play.py --human-deck delver --model-deck burn
+    train/.venv/bin/python train/play.py --deck-a delver --deck-b burn
+    train/.venv/bin/python train/play.py --player-a az:gen --player-b human \\
+        --deck-a burn --deck-b delver
 """
 
 import argparse
-import numpy as np
 
 from env import BINARY
 
 # ── Main play loop (text mode) ────────────────────────────────────────────────
 
 def play(binary_path: str, model_path: str, human_deck: str = "delver",
-         model_deck: str = "delver", human_player: str = None, seed: int = None,
+         model_deck: str = "delver", human_player: str = "A", seed: int = None,
          bo3: bool = True):
     """Text-mode game against a trained model, on the shared runner loop.
 
@@ -41,10 +44,7 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver",
         from stable_baselines3 import PPO as MaskablePPO
     model = MaskablePPO.load(model_path)
 
-    if human_player is None:
-        model_is_a = bool(np.random.random() < 0.5)
-    else:
-        model_is_a = human_player == "B"
+    model_is_a = human_player == "B"
     model_role = "A" if model_is_a else "B"
     human_role = "B" if model_is_a else "A"
 
@@ -79,19 +79,27 @@ if __name__ == "__main__":
     import os as _os
 
     # Flags come from cli_spec.PLAY_TOOL (single source shared with the TUI).
-    from cli_spec import PLAY_TOOL, append_spec_knob, apply_to_parser, is_bo3
+    from cli_spec import (PLAY_TOOL, append_spec_knob, apply_to_parser, is_bo3,
+                          resolve_play_seats)
     parser = argparse.ArgumentParser()
     apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
 
-    if args.scripted and not (args.tui or args.gui):
-        parser.error("--scripted is only supported with the TUI or GUI board")
     # The clocks live on the GameDriver, which only the board front ends run —
     # text mode drives the game through runner.run_games instead.
     if (args.human_clock is not None or args.hard_timeout) and not (args.tui or args.gui):
         parser.error("--human-clock/--hard-timeout need the TUI or GUI board")
 
-    model_path = args.model
+    # Seats: exactly one player spec is 'human'; the other is the opponent
+    # (None = the default generalist). Each seat pilots its own --deck-a/-b.
+    try:
+        human_player, model_path = resolve_play_seats(args.player_a, args.player_b)
+    except ValueError as exc:
+        parser.error(str(exc))
+    human_deck, model_deck = ((args.deck_a, args.deck_b) if human_player == "A"
+                              else (args.deck_b, args.deck_a))
+    opp_flag = "--player-b" if human_player == "A" else "--player-a"
+
     is_ctrl_spec = bool(model_path) and model_path.lower().startswith(
         ("az:", "azraw:", "mcts:", "scripted"))
     is_search_spec = bool(model_path) and model_path.lower().startswith(
@@ -102,7 +110,7 @@ if __name__ == "__main__":
     if args.sims is not None or args.worlds is not None:
         if not is_search_spec:
             parser.error("--sims/--worlds only apply to a search opponent "
-                         "(--model az:<ckpt> or mcts:<ckpt>)")
+                         f"({opp_flag} az:<ckpt> or mcts:<ckpt>)")
         # Append the knobs to the spec's query; appended-last wins over any
         # sims=/worlds= already present (later keys overwrite in the parser).
         if args.sims is not None:
@@ -112,14 +120,14 @@ if __name__ == "__main__":
     if args.think_time is not None:
         if not is_search_spec:
             parser.error("--think-time only applies to a search opponent "
-                         "(--model az:<ckpt> or mcts:<ckpt>)")
+                         f"({opp_flag} az:<ckpt> or mcts:<ckpt>)")
         # Wall-clock per-decision budget: the search runs as many sims as fit in
         # this many seconds. Appended last so it wins over any time= in the spec.
         model_path = append_spec_knob(model_path, "time", args.think_time)
     if args.search_procs is not None:
         if not is_search_spec:
             parser.error("--search-procs only applies to a search opponent "
-                         "(--model az:<ckpt> or mcts:<ckpt>)")
+                         f"({opp_flag} az:<ckpt> or mcts:<ckpt>)")
         # World-parallel search across N engine processes. Appended last so it
         # wins over any procs= already present in the spec.
         model_path = append_spec_knob(model_path, "procs", args.search_procs)
@@ -134,7 +142,7 @@ if __name__ == "__main__":
     if args.match_clock is not None:
         if not is_search_spec:
             parser.error("--match-clock only applies to a search opponent "
-                         "(--model az:<ckpt> or mcts:<ckpt>)")
+                         f"({opp_flag} az:<ckpt> or mcts:<ckpt>)")
         # Whole-match chess-clock bank; per-decision budgets are allocated from
         # it. Appended last so it wins over any clock= already in the spec.
         model_path = append_spec_knob(model_path, "clock", args.match_clock)
@@ -142,7 +150,7 @@ if __name__ == "__main__":
         parser.error("--paced and --no-paced are mutually exclusive")
     if (args.paced or args.no_paced) and not is_search_spec:
         parser.error("--paced/--no-paced only apply to a search opponent "
-                     "(--model az:<ckpt> or mcts:<ckpt>)")
+                     f"({opp_flag} az:<ckpt> or mcts:<ckpt>)")
     if is_search_spec:
         # Paced default: ON whenever the opponent has a variable thinking budget
         # (a match clock or per-decision think time) — that is when response
@@ -155,21 +163,20 @@ if __name__ == "__main__":
             model_path = append_spec_knob(model_path, "paced", 0)
         elif args.paced or has_variable_budget:
             model_path = append_spec_knob(model_path, "paced", 1)
-    if args.scripted:
-        # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
-        model_path = "scripted"
-    elif model_path is None:
-        # There is ONE generalist model ('gen'); it pilots whatever --model-deck
-        # names. The default opponent is that single generalist, resolved to
-        # 'gen__final.zip' (else the newest 'gen__v{steps}.zip').
+    if model_path is None:
+        # There is ONE generalist model ('gen'); it pilots whatever deck its
+        # seat names. The default opponent is that single generalist, resolved
+        # to 'gen__final.zip' (else the newest 'gen__v{steps}.zip').
         from opponents import resolve_checkpoint, GEN_STEM
         model_path = resolve_checkpoint(GEN_STEM)
         if not _os.path.exists(model_path):
             parser.error(f"No generalist checkpoint found "
                          f"(looked for {GEN_STEM}__final.zip and {GEN_STEM}__v*.zip "
                          f"under train/checkpoints/). Train the generalist first "
-                         f"(train --deck {args.model_deck} --opponent <opp>), "
-                         f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
+                         f"(train --deck-a {model_deck} --deck-b <opp>), "
+                         f"or name the opponent with {opp_flag} (a checkpoint "
+                         f"path, or {opp_flag} scripted for a rule-based "
+                         f"opponent on the TUI/GUI board).")
 
     if args.gui:
         # --gui takes precedence over --tui (the launcher form pre-checks --tui).
@@ -183,8 +190,8 @@ if __name__ == "__main__":
                 print("PySide6 not installed — falling back to the TUI board "
                       "(pip install -r train/requirements-gui.txt for the GUI).")
                 import tui_game
-                tui_game.run(args.binary, model_path, human_player=args.player,
-                             human_deck=args.human_deck, model_deck=args.model_deck,
+                tui_game.run(args.binary, model_path, human_player=human_player,
+                             human_deck=human_deck, model_deck=model_deck,
                              bo3=is_bo3(args), human_clock_s=args.human_clock,
                              hard_timeout=args.hard_timeout)
             else:
@@ -193,18 +200,18 @@ if __name__ == "__main__":
         else:
             import sys as _sys
             _sys.exit(gui_main.run(
-                args.binary, model_path, human_player=args.player,
-                human_deck=args.human_deck, model_deck=args.model_deck,
+                args.binary, model_path, human_player=human_player,
+                human_deck=human_deck, model_deck=model_deck,
                 bo3=is_bo3(args), analysis=args.analysis,
                 record_shards=args.record_shards,
                 human_clock_s=args.human_clock,
                 hard_timeout=args.hard_timeout))
     elif args.tui:
         import tui_game
-        tui_game.run(args.binary, model_path, human_player=args.player,
-                     human_deck=args.human_deck, model_deck=args.model_deck,
+        tui_game.run(args.binary, model_path, human_player=human_player,
+                     human_deck=human_deck, model_deck=model_deck,
                      bo3=is_bo3(args), human_clock_s=args.human_clock,
                      hard_timeout=args.hard_timeout)
     else:
-        play(args.binary, model_path, human_deck=args.human_deck, model_deck=args.model_deck,
-             human_player=args.player, seed=args.seed, bo3=is_bo3(args))
+        play(args.binary, model_path, human_deck=human_deck, model_deck=model_deck,
+             human_player=human_player, seed=args.seed, bo3=is_bo3(args))

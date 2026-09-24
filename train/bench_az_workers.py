@@ -155,8 +155,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
                     help="After all legs, run `train.py az-train` over the fresh "
                          "shards, then `train.py az-eval` gating the candidate")
     ap.add_argument("--train-deck", default="delver",
-                    help="--deck label passed to az-train/az-eval (default delver; "
-                         "the shard pool itself is deck-agnostic)")
+                    help="--deck-a focus deck passed to az-eval (default delver; "
+                         "the az-train shard pool is deck-agnostic)")
     ap.add_argument("--train-window", type=int, default=0,
                     help="az-train --window (0 = AUTO: the shards this "
                          "benchmark wrote PLUS the most recent az-league run's "
@@ -344,7 +344,7 @@ def final_train_eval(args, total_new_shards: int, pool_extra: int,
         else:
             window = max(1, 2 * total_new_shards)
     train_cmd = [sys.executable, TRAIN_PY, "az-train",
-                 "--deck", args.train_deck, "--window", str(window),
+                 "--window", str(window),
                  "--batches", str(args.train_batches)]
     cmds = [train_cmd]
     if not args.no_eval:
@@ -356,7 +356,7 @@ def final_train_eval(args, total_new_shards: int, pool_extra: int,
         # promotion verdict and the wrong one for a benchmark, whose leg must
         # cost the same every run to be comparable.
         eval_cmd = [sys.executable, TRAIN_PY, "az-eval",
-                    "--deck", args.train_deck, "--candidate", "gen",
+                    "--deck-a", args.train_deck, "--candidate", "gen",
                     "--gate-max-rounds", "1"]
         if args.eval_games is not None:
             eval_cmd += ["--games", str(args.eval_games)]

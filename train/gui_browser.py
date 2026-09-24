@@ -101,7 +101,7 @@ def _tree_ready_status(ev):
 # Namespace dests per cli_spec.ANALYSIS_TUI_TOOL (the schema _load_model_and_env
 # consumes): opts-dict key -> default.
 _ARG_DEFAULTS = {
-    "model": "gen", "opponent": "scripted", "deck_a": None, "deck_b": None,
+    "player_a": "gen", "player_b": "scripted", "deck_a": None, "deck_b": None,
     "binary": BINARY, "format": "bo3", "think_time": None, "match_clock": None,
     "n_games": 20, "shards": None, "seat": "A", "no_net": False,
 }
@@ -114,6 +114,14 @@ def _make_args(opts):
     self-clears, deck_a/deck_b are written back)."""
     return argparse.Namespace(
         **{k: opts.get(k, d) for k, d in _ARG_DEFAULTS.items()})
+
+
+def _provenance_model(prov):
+    """The inspected model spec a saved trace's provenance names: the
+    ``player_a`` dest, or the ``model`` key .rmtrace files written before the
+    seat vocabulary carry."""
+    prov = prov or {}
+    return prov.get("player_a") or prov.get("model")
 
 
 def _mono_font():
@@ -925,7 +933,7 @@ class BrowserPane(QWidget):
         # Traces-only mode: gui_main constructs with no engine keys and calls
         # load_traces (an opened .rmtrace) — never submit engine jobs then.
         self._has_engine = any(k in self._opts
-                               for k in ("model", "opponent", "shards"))
+                               for k in ("player_a", "player_b", "shards"))
         self._args = _make_args(self._opts)
         self._shards = bool(getattr(self._args, "shards", None))
         self._store = bs.BrowseStore()
@@ -1169,11 +1177,11 @@ class BrowserPane(QWidget):
         if self._shards:
             return f"shard replay: {self._args.shards}"
         if self._has_engine:
-            return (f"{self._args.model}  vs  {self._args.opponent}"
+            return (f"{self._args.player_a}  vs  {self._args.player_b}"
                     + ("  · bo3" if is_bo3(self._args) else ""))
-        prov = self._provenance_loaded or {}
-        if prov.get("model"):
-            return f"{prov['model']} traces (opened)"
+        model = _provenance_model(self._provenance_loaded)
+        if model:
+            return f"{model} traces (opened)"
         return "analysis traces"
 
     def traces(self):
@@ -1544,8 +1552,8 @@ class BrowserPane(QWidget):
         if not any(c["observations"] for c in snap["games"]):
             self._say("No browsable decisions yet.")
             return
-        model_spec = (getattr(self._args, "model", None)
-                      or (self._provenance_loaded or {}).get("model") or "gen")
+        model_spec = (getattr(self._args, "player_a", None)
+                      or _provenance_model(self._provenance_loaded) or "gen")
         self._store.analysis_busy = True
         self._say(f"Running {key}…")
         bridge = self._bridge

@@ -62,8 +62,8 @@ _ANALYSIS_LAUNCHER_CONFIG = os.path.join(
     os.path.expanduser("~"), ".robomage", "gui_analysis_launcher.json")
 
 _ANALYSIS_DEFAULTS = {
-    "model": "gen",
-    "opponent": "scripted:hard",
+    "player_a": "gen",
+    "player_b": "scripted:hard",
     "deck_a": "league/ur_delver",
     "deck_b": "",
     "n_games": 20,
@@ -178,28 +178,28 @@ class NewAnalysisSessionDialog(QDialog):
         self._model = QComboBox()
         self._model.setEditable(True)
         self._model.addItems(_ANALYSIS_MODEL_PRESETS)
-        self._model.setEditText(get("model") or "gen")
+        self._model.setEditText(get("player_a") or "gen")
         self._model.setToolTip(
             "The model whose play is analyzed: 'gen' (the generalist's raw "
             "policy, no search), 'az:gen' / 'mcts:gen' (the same nets driving a "
             "real MCTS search — the Search settings below apply), 'azraw:gen' "
             "(the raw AZ policy), or a checkpoint path. In shard mode this is "
             "the V(s) net (unless 'no net').")
-        form.addRow("Model", self._model)
+        form.addRow("Player A (model)", self._model)
 
         self._opponent = QComboBox()
         self._opponent.setEditable(True)
         for label, spec in _OPPONENT_PRESETS:
             self._opponent.addItem(label, spec)
-        NewPlaySessionDialog._set_combo_spec(self._opponent, get("opponent"))
+        NewPlaySessionDialog._set_combo_spec(self._opponent, get("player_b"))
         self._opponent.setToolTip(
             "Opponent controller for the simulated games: a scripted tier, "
             "'gen', a search spec, or a checkpoint path.")
-        form.addRow("Opponent", self._opponent)
+        form.addRow("Player B (opponent)", self._opponent)
 
         self._deck_a = NewPlaySessionDialog._deck_combo(decks, get("deck_a"))
         self._deck_a.setToolTip("The model's deck.")
-        form.addRow("Model deck", self._deck_a)
+        form.addRow("Player A deck", self._deck_a)
 
         self._deck_b = QComboBox()
         self._deck_b.setEditable(True)
@@ -213,7 +213,7 @@ class NewAnalysisSessionDialog(QDialog):
             self._deck_b.setEditText(cur_b)
         self._deck_b.setToolTip(
             "The opponent's deck; leave blank to mirror the model deck.")
-        form.addRow("Opponent deck", self._deck_b)
+        form.addRow("Player B deck", self._deck_b)
 
         self._n_games = QSpinBox()
         self._n_games.setRange(0, 500)
@@ -357,8 +357,8 @@ class NewAnalysisSessionDialog(QDialog):
 
     def _search_seats(self):
         """The (key, spec) pairs of the seats that run a tree search."""
-        seats = [("model", self._model.currentText().strip()),
-                 ("opponent", NewPlaySessionDialog._combo_spec(self._opponent))]
+        seats = [("player_a", self._model.currentText().strip()),
+                 ("player_b", NewPlaySessionDialog._combo_spec(self._opponent))]
         return [(k, s) for k, s in seats if is_search_spec(s)]
 
     def _update_search_visibility(self, *_):
@@ -403,8 +403,8 @@ class NewAnalysisSessionDialog(QDialog):
         if is_search_spec(opponent):
             opponent = with_spec_query(opponent, knobs)
         return {
-            "model": model,
-            "opponent": opponent,
+            "player_a": model,
+            "player_b": opponent,
             "deck_a": self._deck_a.currentText().strip(),
             "deck_b": deck_b or None,
             # In shard mode n_games is the match-load cap (0 = all); in sim
@@ -433,16 +433,16 @@ class NewAnalysisSessionDialog(QDialog):
                 QMessageBox.warning(self, "Missing deck",
                                     "Pick the model's deck.")
                 return
-            if not opts["model"] or not opts["opponent"]:
+            if not opts["player_a"] or not opts["player_b"]:
                 QMessageBox.warning(self, "Missing spec",
                                     "Pick a model and an opponent.")
                 return
         spin = NewPlaySessionDialog._spin_value
         _save_launcher_config({
             # Persist the BASE specs (the search knobs are folded into
-            # opts["model"]/["opponent"] and save as their own fields).
-            "model": self._model.currentText().strip() or "gen",
-            "opponent": NewPlaySessionDialog._combo_spec(self._opponent),
+            # opts["player_a"]/["player_b"] and save as their own fields).
+            "player_a": self._model.currentText().strip() or "gen",
+            "player_b": NewPlaySessionDialog._combo_spec(self._opponent),
             "deck_a": opts["deck_a"], "deck_b": opts["deck_b"] or "",
             # Persist the sim "Games" field itself (opts["n_games"] is the
             # shard-load cap in shard mode); the shard cap saves separately.
@@ -769,7 +769,7 @@ class SessionManager(QObject):
             finally:
                 app.restoreOverrideCursor()
             provenance = {
-                "model": None, "opponent": doc.get("opponent_spec"),
+                "player_a": None, "player_b": doc.get("opponent_spec"),
                 "deck_a": doc.get("deck_a"), "deck_b": doc.get("deck_b"),
                 "bo3": doc.get("bo3", True), "source": path,
             }
@@ -815,7 +815,7 @@ class SessionManager(QObject):
     @staticmethod
     def _browse_only_opts(provenance, binary):
         """A BrowserPane opts dict for a traces-only (no simulation) session.
-        Deliberately carries NO engine keys (model/opponent/shards) — their
+        Deliberately carries NO engine keys (player_a/player_b/shards) — their
         presence is what makes BrowserPane build an engine worker, and an
         opened .rmtrace must never reload a model/env. The provenance dict
         (passed alongside via load_traces) keeps them for display."""
@@ -1053,7 +1053,7 @@ class MainWindow(QMainWindow):
             # The browser resolves the opponent's own spec (opponents.
             # parse_model_spec), so V(s), probes and replay search all read
             # the net that seat played with.
-            "model": (self.manager._opts or {}).get("model_path") or "az:gen",
+            "player_a": (self.manager._opts or {}).get("model_path") or "az:gen",
             "no_net": not _torch_available(),
             "n_games": 0,                                  # load every match
             "binary": self._binary,
@@ -1305,7 +1305,7 @@ class _TraceSmoke(_ShellSmoke):
         self._path = os.path.join(tempfile.mkdtemp(), "traces" +
                                   gui_session_io.TRACE_EXT)
         gui_session_io.save_traces(self._path, games,
-                                   provenance={"model": "smoke"})
+                                   provenance={"player_a": "smoke"})
         self._opened = False
 
     def step(self):

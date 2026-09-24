@@ -30,6 +30,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Uses clang-format configuration in `.clang-format`
 - Every Python CLI flag lives in `train/cli_spec.py` (the TUI/GUI forms are built from it). The
   match format is one flag everywhere, `--format bo1|bo3` (default bo3, PPO training included).
+  Seats use one vocabulary everywhere: a single seat's deck is `--deck-a` / `--deck-b` (multi-deck
+  pools stay `--decks` / `--opponents`) and a seat's agent (an `opponents.make_controller` spec)
+  is `--player-a` / `--player-b` — the interactive human is just the spec `human`. Where one side
+  is "under test" (analysis, baseline, training) it is player A.
   When a flag is renamed or removed, add the old spelling to
   `cli_spec.REMOVED_FLAGS` (global or scoped to a tool / `tool/sub`) so it errors with
   "`--old` was removed; use …" instead of vanishing — parsers built with `apply_to_parser` pick the
@@ -123,7 +127,7 @@ background** and make the live output inspectable by the user:
  commands — one command observes any {scripted|model} vs {scripted|model} matchup).
  Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
  `--verbose` for the full per-decision transcript (board state + action menu + narrative),
- and supply `--deck`/`--opponent` to test cards/decks relevant to recently implemented features.
+ and supply `--deck-a`/`--deck-b` to test cards/decks relevant to recently implemented features.
  **observe defaults to bo3 matches**; pass `--format bo1` for single games.
 -**Running games programmatically: `runner.run_match`.** `runner.run_match(agent_a, agent_b,
  deck_a=…, deck_b=…, games=, bo3=True, seed=1, transcript="compact|verbose|narrative|quiet",
@@ -602,16 +606,19 @@ worker thread reporting `StateUpdate`s to a sink; `build_session` assembles env 
 controller). The engine is always a `--machine` subprocess; the opponent is any
 `opponents.make_controller` spec (scripted tiers, `gen`, `az:`/`azraw:`/`mcts:` wrappers).
 
-- **TUI board**: `train/play.py --human-deck X --model-deck Y` (default), or via `./tui.sh`.
+- **TUI board**: `train/play.py --deck-a X --deck-b Y` (default), or via `./tui.sh`. Seats are
+  `--player-a`/`--player-b`, exactly one of them the spec `human` (default: human on A vs the
+  generalist on B; e.g. `--player-a az:gen --player-b human` to be on the draw).
 - **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_main.py` / `./gui.sh` with
   no args for the app shell's welcome pane — File ▸ New Session opens the play/analysis dialogs
-  (deck/opponent/seat/format pickers + search and analysis settings, persisted to
-  `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is missing.
+  (player A/B + deck A/B + format pickers + search and analysis settings, persisted to
+  `~/.robomage/gui_launcher.json` under the flag dests). Falls back to the TUI if PySide6 is missing.
 - **Standalone analysis browser** (`train/tui_analysis.py`, Textual, not on `game_driver.py`):
   simulates N games vs an opponent and lets you page board states, seek via a clickable V(s)
   histogram, run any `analysis.py` REPL view, and branch `whatif` counterfactuals. Launch via
-  `./tui.sh`'s `analysis-tui → browse`, or `train/tui_analysis.py <model.zip|deck> --opponent
-  scripted [--deck-b mav] [--n-games 20]`.
+  `./tui.sh`'s `analysis-tui → browse`, or `train/tui_analysis.py --player-a <model.zip|gen>
+  --player-b scripted --deck-a delver [--deck-b mav] [--n-games 20]` (`--player-a` is the
+  inspected model, `--player-b` its opponent).
 - **Headless smokes**: `QT_QPA_PLATFORM=offscreen ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and
   exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it
   delivered stats.
@@ -699,7 +706,7 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   (`make check` tier `curriculum`)
 - `train/progress_io.py` — the single crash-safe (write-temp + `os.replace`) JSON progress
   sidecar reader/writer shared by the league, exploiter, az-league, and curriculum drivers
-- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration, a REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a window) with terminal fallbacks. The model (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`) encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (scripted opponent mirrors `--deck-a`).
+- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration, a REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a window) with terminal fallbacks. The inspected model is `--player-a` (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`), its opponent `--player-b` (default `scripted`); a model encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (a scripted `--player-b` mirrors `--deck-a`).
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
 - `train/play.py` — interactive human-vs-model play (text mode, `--tui`, `--gui`, `--analysis`)
 - `train/game_driver.py` — front-end-agnostic play loop + `build_session`; `StateUpdate` carries

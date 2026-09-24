@@ -37,7 +37,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import (AZNet, obs_space_from_const, load_az, AZEvaluator,
                     save_torchscript, torchscript_export_path)
-from cli_spec import BIN_DIR, BUILD_DIR
+from cli_spec import BIN_DIR, BUILD_DIR, add_removed_flags
 import az_selfplay
 
 # BUILD_DIR (bin/<config>/) is where the actor binary lives; BIN_DIR (bin/) stays
@@ -88,7 +88,7 @@ def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False,
 
     def _cmd(i):
         return az_selfplay.actor_selfplay_cmd(
-            ACTOR_BIN, deck=args.deck, deck_b=getattr(args, "deck_b", None),
+            ACTOR_BIN, deck=args.deck_a, deck_b=getattr(args, "deck_b", None),
             seed=args.seed + i * 100000, games=args.games,
             sims=args.sims, worlds=args.worlds, model=ts_path, out_dir=out_dir,
             batch=batch, cross_world=cross_world,
@@ -129,13 +129,13 @@ def _python_leg(ckpt, out_dir, args, scripted=False):
     evaluator = AZEvaluator(net)
     rng = np.random.default_rng(args.seed + 100003)
     from search_env import SearchRoboMageEnv
-    deck_b = getattr(args, "deck_b", None) or args.deck
-    env = SearchRoboMageEnv(deck_a=args.deck, deck_b=deck_b)
+    deck_b = getattr(args, "deck_b", None) or args.deck_a
+    env = SearchRoboMageEnv(deck_a=args.deck_a, deck_b=deck_b)
     agent = None
     if scripted:
         from scripted_agent import make_agent
         agent = make_agent("scripted:hard")
-        agent.set_deck_names(args.deck, deck_b)
+        agent.set_deck_names(args.deck_a, deck_b)
     decisions = 0
     t0 = time.perf_counter()
     try:
@@ -168,9 +168,10 @@ def main():
     ap.add_argument("--games", type=int, default=4)
     ap.add_argument("--sims", type=int, default=128)
     ap.add_argument("--worlds", type=int, default=4)
-    ap.add_argument("--deck", default="league/ur_delver")
+    ap.add_argument("--deck-a", default="league/ur_delver",
+                    help="Player A deck")
     ap.add_argument("--deck-b", default=None,
-                    help="Player B deck (default: mirror = --deck)")
+                    help="Player B deck (default: mirror = --deck-a)")
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--batch", type=int, nargs="+", default=[1],
                     help="actor --batch values to sweep on the C++ leg "
@@ -197,6 +198,7 @@ def main():
                          "--games games on a disjoint seed range); with "
                          "--eval-server this measures the fleet-wide batching "
                          "the server exists for")
+    add_removed_flags(ap, "bench")
     args = ap.parse_args()
 
     if not os.path.exists(ACTOR_BIN):
@@ -204,7 +206,7 @@ def main():
               file=sys.stderr)
         return 1
 
-    print(f"[bench] deck={args.deck} games={args.games} sims={args.sims} "
+    print(f"[bench] deck={args.deck_a} games={args.games} sims={args.sims} "
           f"worlds={args.worlds} seed={args.seed} (single-thread both legs)")
 
     with tempfile.TemporaryDirectory() as td:

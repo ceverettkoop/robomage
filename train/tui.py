@@ -31,7 +31,7 @@ from textual.widgets import (Button, Checkbox, Footer, Header, Input, Label,
                              ListItem, ListView, Select, SelectionList, Static,
                              Tree)
 
-from cli_spec import (ALL_TOOLS, REPO_ROOT, MutexGroup)
+from cli_spec import (ALL_TOOLS, HUMAN_SPEC, REPO_ROOT, MutexGroup)
 # Curriculum plans: stdlib-only module (cli_spec + progress_io), so the launcher
 # can list/read/write plan files without pulling in the ML stack.
 import curriculum
@@ -159,7 +159,7 @@ def _generalist_checkpoints():
     There is one generalist model (`gen`), so this is every gen snapshot
     ('gen__v{steps}.zip'), 'gen__final.zip', and any explicit .zip present —
     i.e. all scanned zips. The choice is deck-independent (the deck the model
-    pilots travels as a separate explicit --deck parameter)."""
+    pilots travels as a separate explicit --deck-a/--deck-b parameter)."""
     return _scan_checkpoints()
 
 
@@ -246,14 +246,19 @@ class ArgFormMixin:
         """Dropdown options for a suggest-tagged arg (decks/checkpoints)."""
         # --load resumes a specific checkpoint of the one generalist model, so it
         # offers every gen snapshot / gen__final / explicit zip (deck-independent;
-        # the piloted deck travels as a separate --deck parameter).
+        # the piloted deck travels as a separate --deck-a/--deck-b parameter).
         if a.name == "--load" and a.suggest == "checkpoint":
             return _generalist_checkpoints()
         opts = list(_suggestions_for(a))
-        # Fields that also accept the rule-based agent get a 'scripted' option.
+        # Fields that also accept the rule-based agent get a 'scripted' option;
+        # play's seats also offer 'human' (exactly one seat is the human).
+        play_seat = (a.suggest == "agent"
+                     and getattr(getattr(self, "_sub", None), "tool", None) == "play")
         if a.suggest in ("checkpoint", "agent") and (
-                a.default == "scripted" or a.name == "--opponent"):
+                a.default == "scripted" or play_seat):
             opts = ["scripted"] + opts
+        if play_seat:
+            opts = [HUMAN_SPEC] + opts
         # AZ fields defaulting to the generalist stem offer 'gen' itself, so the
         # default is selectable (and preselected) rather than only the explicit
         # snapshot paths the scanner finds.

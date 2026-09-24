@@ -2494,7 +2494,8 @@ def _resolve_use_actor(args) -> Optional[bool]:
     return None
 
 def run_train(args) -> None:
-    train_az(args.deck, batches=args.batches, batch_size=args.batch_size,
+    # The window is the shared az_data/gen pool; the label only tags the log.
+    train_az("pooled window", batches=args.batches, batch_size=args.batch_size,
              lr=args.lr, c_v=args.c_v,
              q_mix=getattr(args, "q_mix", DEFAULT_AZ_Q_MIX), window=args.window,
              epoch_frac=getattr(args, "epoch_frac", DEFAULT_AZ_EPOCH_FRAC),
@@ -2509,7 +2510,7 @@ def run_train(args) -> None:
 
 def run_eval(args) -> None:
     import az_selfplay
-    az_eval(args.deck, candidate=args.candidate, incumbent=args.incumbent,
+    az_eval(args.deck_a, candidate=args.candidate, incumbent=args.incumbent,
             games=args.games, sims=args.sims, worlds=args.worlds,
             c_puct=float(getattr(args, "c_puct", DEFAULT_AZ_C_PUCT)),
             sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
@@ -2545,12 +2546,12 @@ def _split_decks(val) -> Optional[list]:
 
 def run_cycle(args) -> None:
     import az_selfplay
-    # --deck (comma-joined multipick) is the FOCUS pool and --opponents the
+    # --decks (comma-joined multipick) is the FOCUS pool and --opponents the
     # opponent pool for this cycle's self-play + gating; either default (None/empty)
     # falls back to the whole decks/league/ roster inside az_cycle. So a bare
-    # `train.py az` runs the full league deck×opponent matrix; pass a single --deck
+    # `train.py az` runs the full league deck×opponent matrix; pass a single deck in --decks
     # to fix one focus.
-    focus = _split_decks(getattr(args, "deck", None))
+    focus = _split_decks(getattr(args, "decks", None))
     roster = _split_decks(getattr(args, "opponents", None))
     az_cycle(focus, games=args.games, sims=args.sims, worlds=args.worlds,
              full_search_frac=float(getattr(args, "full_search_frac",

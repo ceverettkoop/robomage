@@ -505,6 +505,10 @@ def format_name(bo3: bool) -> str:
 # registers the entries in its scope as hidden (help-suppressed) options; a
 # standalone parser calls ``add_removed_flags(parser, scope)`` itself. The table
 # is separate from the Tool specs, so removed flags never render in the TUI.
+# When a scoped entry and an unscoped one name the same flag, the scoped entry
+# wins in its scope (a different hint where the flag meant something else). An
+# entry whose name has no leading dashes is a removed POSITIONAL: the parser
+# gets a hidden optional positional that errors if anything fills it.
 
 @dataclass(frozen=True)
 class RemovedFlag:
@@ -512,10 +516,37 @@ class RemovedFlag:
     hint: str
     scopes: tuple = ()
 
+    @property
+    def is_positional(self) -> bool:
+        return not self.flag.startswith("-")
 
+
+# Seat vocabulary: every single-seat deck is --deck-a / --deck-b and every seat
+# agent (an opponents.make_controller spec) is --player-a / --player-b.
 REMOVED_FLAGS = (
     RemovedFlag("--bo1", "use --format bo1"),
     RemovedFlag("--bo3", "use --format bo3 (the default)"),
+    RemovedFlag("--deck", "use --deck-a (player A's deck; --deck-b is player B's)"),
+    RemovedFlag("--deck", "use --decks (the comma-separated focus deck pool)",
+                scopes=("train/az",)),
+    RemovedFlag("--deck", "az-train fits the one generalist on the pooled "
+                          "az_data/gen shard window and takes no deck",
+                scopes=("train/az-train",)),
+    RemovedFlag("--opponent", "use --deck-b (player B's deck)"),
+    RemovedFlag("--opponent", "use --player-b (the opponent agent spec)",
+                scopes=("analysis", "analysis-tui")),
+    RemovedFlag("--opponent", "use --opponents (the comma-separated opponent "
+                              "deck pool)",
+                scopes=("train/sweep", "train/az")),
+    RemovedFlag("--human-deck", "use --deck-a (with --player-a human)"),
+    RemovedFlag("--model-deck", "use --deck-b (the deck --player-b pilots)"),
+    RemovedFlag("--model", "use --player-b SPEC (the opponent seat; "
+                           "--player-a is human by default)", scopes=("play",)),
+    RemovedFlag("--scripted", "use --player-b scripted", scopes=("play",)),
+    RemovedFlag("--player", "use --player-a human or --player-b human",
+                scopes=("play",)),
+    RemovedFlag("model", "use --player-a SPEC",
+                scopes=("analysis", "analysis-tui", "train/baseline")),
 )
 
 # Environment variables that duplicated a flag: name -> hint appended to
@@ -528,11 +559,16 @@ def _scope_matches(entry_scopes, scopes) -> bool:
 
 
 def removed_flags_for(*scopes):
-    """The ``RemovedFlag`` entries that apply to any of ``scopes``."""
-    return [r for r in REMOVED_FLAGS if _scope_matches(r.scopes, scopes)]
+    """The ``RemovedFlag`` entries that apply to any of ``scopes`` — a scoped
+    entry shadows an unscoped one for the same flag."""
+    hits = [r for r in REMOVED_FLAGS if _scope_matches(r.scopes, scopes)]
+    scoped = {r.flag for r in hits if r.scopes}
+    return [r for r in hits if r.scopes or r.flag not in scoped]
 
 
 def removed_flag_message(r: RemovedFlag) -> str:
+    if r.is_positional:
+        return f"the positional {r.flag.upper()} argument was removed; {r.hint}"
     return f"{r.flag} was removed; {r.hint}"
 
 
@@ -551,6 +587,10 @@ def _removed_flag_action(entry: RemovedFlag):
 
     class _Removed(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
+            # An absent optional positional is "called" with its default.
+            if entry.is_positional and values is None:
+                setattr(namespace, self.dest, None)
+                return
             parser.error(removed_flag_message(entry))
     return _Removed
 
@@ -562,9 +602,14 @@ def add_removed_flags(parser, *scopes) -> None:
     import argparse
     check_removed_env(parser)
     for r in removed_flags_for(*scopes):
-        parser.add_argument(r.flag, nargs="?", help=argparse.SUPPRESS,
-                            dest=f"_removed_{r.flag.lstrip('-').replace('-', '_')}",
-                            action=_removed_flag_action(r))
+        dest = f"_removed_{r.flag.lstrip('-').replace('-', '_')}"
+        if r.is_positional:
+            parser.add_argument(dest, nargs="?", default=None,
+                                help=argparse.SUPPRESS,
+                                action=_removed_flag_action(r))
+        else:
+            parser.add_argument(r.flag, nargs="?", help=argparse.SUPPRESS,
+                                dest=dest, action=_removed_flag_action(r))
 
 
 def check_removed_env(parser=None, environ=None) -> None:
@@ -977,13 +1022,13 @@ def search_budget_args():
     """--think-time / --match-clock convenience flags for the analysis sim args.
 
     Mirror play.py's flags of the same names, but where play.py has one search
-    seat these apply to EVERY seat whose spec is a search spec (az:/mcts: model
-    or --opponent), appended last so they override any time=/clock= knob already
-    in the spec. For per-seat budgets, put the knobs in the specs directly and
-    skip the flags."""
+    seat these apply to EVERY seat whose spec is a search spec (an az:/mcts:
+    --player-a or --player-b), appended last so they override any time=/clock=
+    knob already in the spec. For per-seat budgets, put the knobs in the specs
+    directly and skip the flags."""
     return [
         Arg("--think-time", "float", default=None,
-            help="Search seats only (az:/mcts: model or --opponent): wall-clock "
+            help="Search seats only (an az:/mcts: --player-a/--player-b): wall-clock "
                  "seconds per decision — the search runs as many simulations as "
                  "fit in this budget. Applied to every search-spec seat, "
                  "overriding any time= already in the spec (put time= knobs in "
@@ -1053,25 +1098,31 @@ def sb_train_args():
 
 
 def sim_args():
-    """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
+    """Common simulation args for analysis.py (was analysis.py _add_sim_args).
+
+    Player A is the INSPECTED model (its value/probs/SHAP fill every view) and
+    player B its opponent. The physical seat still alternates per simulated
+    game; --deck-a always travels with --player-a."""
     return [
-        Arg("model", "str", required=True, suggest="agent",
-            help="Model to analyze: 'gen', a .zip path, or az:gen/azraw:gen "
-                 "for the generalist AlphaZero net. A SEARCH spec (az:/mcts: "
-                 "prefix, e.g. az:gen?sims=128&worlds=4) makes the simulated "
-                 "trace games be PLAYED by the real MCTS controller, so the "
-                 "browser inspects states arising from search-quality play "
-                 "(slow); azraw:gen and a bare PPO spec keep raw-policy traces. "
-                 "The inspection net (value/probs/SHAP) is the same either way."),
-        Arg("--opponent", "str", default="scripted", suggest="agent",
-            help="Opponent controller: 'gen', a model .zip path, az:gen/azraw:gen, "
-                 "or 'scripted' for the rule-based agent piloting the opponent deck "
+        Arg("--player-a", "str", required=True, suggest="agent",
+            help="The model to analyze (player A): 'gen', a .zip path, or "
+                 "az:gen/azraw:gen for the generalist AlphaZero net. A SEARCH "
+                 "spec (az:/mcts: prefix, e.g. az:gen?sims=128&worlds=4) makes "
+                 "the simulated trace games be PLAYED by the real MCTS "
+                 "controller, so the browser inspects states arising from "
+                 "search-quality play (slow); azraw:gen and a bare PPO spec keep "
+                 "raw-policy traces. The inspection net (value/probs/SHAP) is "
+                 "the same either way."),
+        Arg("--player-b", "str", default="scripted", suggest="agent",
+            help="Opponent (player B): 'gen', a model .zip path, az:gen/azraw:gen, "
+                 "or 'scripted' for the rule-based agent piloting --deck-b "
                  "(the default)"),
         Arg("--deck-a", "str", default=None, suggest="deck",
-            help="Model's deck (.dk stem) — the deck it pilots. REQUIRED for a "
-                 "model seat: the one generalist encodes no deck in its filename."),
+            help="Player A's deck (.dk stem) — the deck the inspected model "
+                 "pilots. REQUIRED for a model seat: the one generalist encodes "
+                 "no deck in its filename."),
         Arg("--deck-b", "str", default=None, suggest="deck",
-            help="Opponent's deck (.dk stem). REQUIRED for a model opponent (the "
+            help="Player B's deck (.dk stem). REQUIRED for a model opponent (the "
                  "generalist encodes no deck); a scripted opponent defaults to a "
                  "mirror match (--deck-a)."),
         Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
@@ -1087,12 +1138,12 @@ def sim_args():
 
 TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     Sub("train", "Train the one generalist model (default command)", items=[
-        Arg("--deck", "str", default="delver", suggest="deck",
-            help="Deck the generalist plays this session (.dk stem, default: "
-                 "delver). Always saved to the single gen__final.zip; sessions on "
-                 "any deck/opponent accumulate onto that one generalist."),
-        Arg("--opponent", "str", required=True, suggest="deck",
-            help="Opponent deck this session trains against (.dk stem). The model "
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Deck the generalist (player A) plays this session (.dk stem, "
+                 "default: delver). Always saved to the single gen__final.zip; "
+                 "sessions on any deck/opponent accumulate onto that one generalist."),
+        Arg("--deck-b", "str", required=True, suggest="deck",
+            help="Opponent deck (player B) this session trains against (.dk stem). The model "
                  "stays one generalist — training continues the same gen__final.zip "
                  "rather than forging a per-deck or matchup-specific model."),
         Arg("--load", "str", default=None, suggest="checkpoint",
@@ -1260,16 +1311,16 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "check a plan's composed argv before spending GPU-days on it."),
     ]),
     Sub("sweep", "PFSP sweep: train the generalist on one deck vs a pool of the other decks", items=[
-        Arg("--deck", "str", required=True, suggest="deck",
+        Arg("--deck-a", "str", required=True, suggest="deck",
             help="Deck to train on (.dk stem). Always saved to gen__final.zip; this "
                  "session accumulates onto the one generalist, same as 'train'."),
         Arg("--opponents", "str", default=None, suggest="deck", multi=True,
             help="Comma-separated pool of opponent decks to sample from via PFSP "
                  "(default: every other deck in bin/resources/decks/). Like league's "
-                 "roster, but this pool is opponents only — --deck is never rotated "
+                 "roster, but this pool is opponents only — --deck-a is never rotated "
                  "into training and never part of the pool."),
         Arg("--self-play-frac", "float", default=LEAGUE_SELF_PLAY_FRAC,
-            help="Probability of facing the latest snapshot of --deck itself (the "
+            help="Probability of facing the latest snapshot of --deck-a itself (the "
                  "'play the latest self' slot; default %.2f). Auto-ramped down while "
                  "few snapshots exist." % LEAGUE_SELF_PLAY_FRAC),
         Arg("--scripted-anchor-frac", "float", default=LEAGUE_SCRIPTED_ANCHOR_FRAC,
@@ -1286,7 +1337,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Save a frozen gen__v{steps}.zip snapshot every N steps "
                  "(default %d)." % LEAGUE_SNAPSHOT_EVERY),
         Arg("--promote-margin", "float", default=LEAGUE_PROMOTE_MARGIN,
-            help="Only keep a snapshot when --deck's recent-window win-rate "
+            help="Only keep a snapshot when --deck-a's recent-window win-rate "
                  ">= 0.5 + margin (negative gates below 0.5, e.g. -0.1 -> 0.40; the "
                  "first snapshot is exempt so self-play can bootstrap; 0 disables "
                  "the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
@@ -1296,17 +1347,21 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *train_opts(),
         *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
-    Sub("fixed-model", "Train --deck vs a fixed (never-reloaded) opponent model", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck the model plays (.dk stem)"),
-        Arg("--opponent", "str", required=True, suggest="deck", help="Opponent deck (.dk stem)"),
+    Sub("fixed-model", "Train --deck-a vs a fixed (never-reloaded) opponent model", items=[
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Deck the trained model (player A) plays (.dk stem)"),
+        Arg("--deck-b", "str", required=True, suggest="deck",
+            help="Deck the frozen opponent model (player B) plays (.dk stem)"),
         Arg("--load", "str", default=None, suggest="checkpoint",
             help="Resume from checkpoint .zip ('gen' or a path)"),
         *train_opts(),
         *common_args(binary_default=INTERACTIVE_BINARY),
     ]),
     Sub("alternate", "Swap which side is trained every N timesteps", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="First deck (.dk stem)"),
-        Arg("--opponent", "str", required=True, suggest="deck", help="Second deck (.dk stem)"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Player A's deck (.dk stem; trained first)"),
+        Arg("--deck-b", "str", required=True, suggest="deck",
+            help="Player B's deck (.dk stem)"),
         Arg("--every", "int", required=True, metavar="N",
             help="Swap the trained side every N timesteps"),
         *train_opts(),
@@ -1326,8 +1381,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" (see action_spec.py grammar)"),
         Arg("--play-b", "str", default=None,
             help="Drive Player B by semantic action specs instead of --player-b (see --play-a)"),
-        Arg("--deck", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
-        Arg("--opponent", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
+        Arg("--deck-a", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
+        Arg("--deck-b", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
         Arg("--games", "int", default=1,
             help="Number of games/matches to run (default: 1). >1 prints per-game results and a W/L/D summary"),
         Arg("--seed", "int", default=None,
@@ -1340,8 +1395,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         "Evaluate the AZ generalist (full search, C++ actor) vs scripted:hard over "
         "the league matchup grid; report appended to checkpoints/baseline_report.log",
         items=[
-        Arg("model", "str", required=False, suggest="agent",
-            help=f"Model to evaluate (default {DEFAULT_BASELINE_MODEL} = the "
+        Arg("--player-a", "str", default=DEFAULT_BASELINE_MODEL, suggest="agent",
+            help="Model to evaluate — player A, the side under test "
+                 "(scripted:hard is always player B; the two alternate "
+                 f"physical seats). Default {DEFAULT_BASELINE_MODEL} = the "
                  "incumbent gen__azfinal.pt under search). An 'az:' spec or a .pt "
                  "path runs on the C++ actor; its ?sims=&worlds=&c=&sb_* knobs "
                  "override the --sims/--worlds/--c-puct/--sb-* flags. 'gen' (the "
@@ -1351,16 +1408,16 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help=f"Matches per matchup (default {DEFAULT_BASELINE_GAMES}); seats "
                  "alternate within each matchup (net in seat A for the first "
                  "half, rounded up)"),
-        Arg("--deck", "str", default=None, suggest="deck",
-            help="Restrict the grid to this piloted deck (a mirror match unless "
-                 "--opponent names the scripted deck). Default: every league "
-                 "deck piloted vs every league deck — the full N×N grid, mirrors "
-                 "included"),
-        Arg("--opponent", "str", default=None, suggest="deck",
-            help="Restrict the scripted:hard side to this deck (alone: every "
-                 "league deck vs it; with --deck: that one cell)"),
+        Arg("--deck-a", "str", default=None, suggest="deck",
+            help="Restrict the grid to this deck piloted by --player-a (a "
+                 "mirror match unless --deck-b names the scripted deck). "
+                 "Default: every league deck piloted vs every league deck — the "
+                 "full N×N grid, mirrors included"),
+        Arg("--deck-b", "str", default=None, suggest="deck",
+            help="Restrict the scripted:hard side (player B) to this deck "
+                 "(alone: every league deck vs it; with --deck-a: that one cell)"),
         Arg("--all", "flag",
-            help="Force the full league grid even when --deck/--opponent are "
+            help="Force the full league grid even when --deck-a/--deck-b are "
                  "given (the grid is already the default without them)"),
         Arg("--mirrors", "flag",
             help="Only the grid's diagonal: every league deck piloted vs "
@@ -1401,8 +1458,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     # ── AlphaZero (Phase C) ───────────────────────────────────────────────────
     Sub("az-selfplay",
         "Generate AlphaZero self-play data (focus deck vs mirror + roster)", items=[
-        Arg("--deck", "str", default="delver", suggest="deck",
-            help="Focus deck (.dk stem); its opponent is a mirror with "
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Focus deck the learner pilots (.dk stem); its opponent is a "
+                 "mirror with "
                  "P=--mirror-frac, else a uniform league-roster draw"),
         Arg("--games", "int", default=DEFAULT_AZ_GAMES, help="Games to generate"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
@@ -1461,7 +1519,6 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _no_cross_world(),
     ]),
     Sub("az-train", "Train an AZNet on self-play shards", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
         Arg("--batches", "int", default=DEFAULT_AZ_TRAIN_BATCHES, help="Optimizer updates"),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
@@ -1481,7 +1538,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("az-eval", "Gate a candidate AZNet vs the incumbent (sequential test, "
                    "MCTS at the training sim budget)", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Deck (.dk stem)"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Focus deck (.dk stem) added to the gate's roster-wide panel"),
         Arg("--candidate", "str", required=True, suggest="az_checkpoint",
             help="Candidate AZ .pt ('gen' or a path)"),
         Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
@@ -1547,10 +1605,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
     Sub("az",
         "One AlphaZero cycle (self-play -> train -> eval/gate) over a deck x "
-        "opponent matrix (default: whole league; pass one --deck to fix a focus). "
+        "opponent matrix (default: whole league; pass one deck in --decks to fix "
+        "a focus). "
         "bo3 by default (per-game value target); --format bo1 to opt out",
         items=[
-        Arg("--deck", "str", default=None, suggest="league_deck", multi=True,
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated FOCUS deck pool the generalist pilots "
                  "(default: every deck in decks/league/). Pass a single deck to "
                  "fix one focus (the classic single-deck cycle)."),
@@ -1914,11 +1973,11 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
         "Full-screen analysis browser: page through board states with a "
         "clickable V(s) histogram, plus every analysis view", mode="interactive",
         items=[
-            # The model positional doubles as the shard mode's value-net spec,
-            # so it gets a 'gen' default (live mode resolves that to the one
-            # generalist anyway).
-            *[replace(a, required=False, default="gen") if a.name == "model"
-              else a
+            # --player-a (the inspected model) doubles as the shard mode's
+            # value-net spec, so it gets a 'gen' default (live mode resolves
+            # that to the one generalist anyway).
+            *[replace(a, required=False, default="gen")
+              if a.name == "--player-a" else a
               for a in sim_args() if a.name not in ("--out", "--show")],
             *search_budget_args(),
             Arg("--n-games", "int", default=20,
@@ -1928,8 +1987,8 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
                 help="Browse recorded AZ self-play instead of simulating: "
                      "directory of shard_*.npz files (e.g. train/az_data/gen). "
                      "Steps are the searched decision roots; pi (the search's "
-                     "visit posterior) fills the policy column, and the model "
-                     "spec is loaded as the V(s) net. whatif/run need a live "
+                     "visit posterior) fills the policy column, and the "
+                     "--player-a spec is loaded as the V(s) net. whatif/run need a live "
                      "env and stay disabled."),
             Arg("--seat", "choice", choices=("A", "B"), default="A",
                 help="Shard mode: viewpoint seat — that seat's searched "
@@ -1944,30 +2003,35 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
 # play.py — interactive game; the TUI path delegates to tui_game.py (placeholder).
 PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
     Sub("play", "Play interactively against a trained model", mode="interactive", items=[
-        Arg("--human-deck", "str", required=True, suggest="deck",
-            help="Deck the human plays (stem of .dk file)"),
-        Arg("--model-deck", "str", required=True, suggest="deck",
-            help="Deck the model plays (stem of .dk file). The default opponent is "
-                 "the one generalist (gen__final.zip, else the newest gen__v*.zip) "
-                 "piloting this deck."),
-        Arg("--model", "str", default=None, suggest="agent",
-            help="Override: explicit path to trained model .zip, or any "
-                 "opponents.make_controller spec — az:gen (MCTS+AZNet), "
-                 "azraw:gen (raw AZ policy), mcts:gen, scripted:<tier> "
-                 "(default: the generalist gen__final.zip)"),
+        Arg("--player-a", "str", default=None, suggest="agent",
+            help="Player A (on the play in game 1): 'human' for you, or any "
+                 "opponents.make_controller spec for the opponent — 'gen', a "
+                 "model .zip path, az:gen (MCTS+AZNet), azraw:gen (raw AZ "
+                 "policy), mcts:gen, scripted:<tier>. Exactly one seat is "
+                 "'human'; an omitted seat is the human when the other names "
+                 "the opponent, else the default opponent (the generalist "
+                 "gen__final.zip, else the newest gen__v*.zip). Default: human"),
+        Arg("--player-b", "str", default=None, suggest="agent",
+            help="Player B: 'human' or an opponent spec, as for --player-a "
+                 "(default: the generalist, or the human when --player-a "
+                 "names the opponent)"),
+        Arg("--deck-a", "str", required=True, suggest="deck",
+            help="Player A's deck (stem of .dk file)"),
+        Arg("--deck-b", "str", required=True, suggest="deck",
+            help="Player B's deck (stem of .dk file)"),
         Arg("--sims", "int", default=None,
-            help="Search opponent only (az:/mcts: --model): MCTS simulations "
+            help="Search opponent only (an az:/mcts: player spec): MCTS simulations "
                  "per decision; overrides any sims= already in the spec (TUI only)"),
         Arg("--worlds", "int", default=None,
             help="Search opponent only: determinized worlds per decision "
                  "(sims are split across worlds); overrides the spec's worlds= (TUI only)"),
         Arg("--think-time", "float", default=None,
-            help="Search opponent only (az:/mcts: --model): wall-clock seconds "
+            help="Search opponent only (an az:/mcts: player spec): wall-clock seconds "
                  "per decision — the search runs as many simulations as fit in "
                  "this budget (more time = stronger play); overrides sims= as the "
                  "terminator (TUI only)"),
         Arg("--search-procs", "int", default=None,
-            help="Search opponent only (az:/mcts: --model): number of engine "
+            help="Search opponent only (an az:/mcts: player spec): number of engine "
                  "processes to fan the determinized worlds across for a faster "
                  "search (world-parallel; more procs = more sims/decision in the "
                  "same wall-clock). Default for interactive play is AUTO — half "
@@ -2018,16 +2082,43 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
                  "with the analysis browser / az-inspect / tui_analysis "
                  "pointed at the directory. The launcher dialog has its own "
                  "checkbox for this."),
-        Arg("--scripted", "flag",
-            help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
         format_arg(),
-        Arg("--player", "choice", choices=("A", "B"), default=None,
-            help="Which player the human controls, in CLI text mode (default: random)"),
         Arg("--seed", "int", default=None,
             help="Engine RNG seed for a reproducible game (CLI text mode; default: random)"),
         Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
     ]),
 ])
+
+HUMAN_SPEC = "human"
+
+
+def is_human_spec(spec) -> bool:
+    """True for the agent spec that seats the interactive human."""
+    return isinstance(spec, str) and spec.strip().lower() == HUMAN_SPEC
+
+
+def resolve_play_seats(player_a, player_b):
+    """``(human_seat, opponent_spec)`` for play's --player-a / --player-b.
+
+    Exactly one seat is the spec ``human``. An omitted (None) seat fills in:
+    the default opponent when the other seat is human, else the human. With
+    neither given the human is player A. ``opponent_spec`` None means the
+    default opponent (the generalist). Raises ValueError unless exactly one
+    seat ends up human."""
+    a, b = player_a, player_b
+    if a is None and b is None:
+        a = HUMAN_SPEC
+    elif a is None:
+        a = None if is_human_spec(b) else HUMAN_SPEC
+    elif b is None:
+        b = None if is_human_spec(a) else HUMAN_SPEC
+    if is_human_spec(a) and is_human_spec(b):
+        raise ValueError("--player-a and --player-b are both 'human'; one "
+                         "seat must be the opponent")
+    if not (is_human_spec(a) or is_human_spec(b)):
+        raise ValueError("exactly one of --player-a / --player-b must be "
+                         f"'{HUMAN_SPEC}' (got {a!r} and {b!r})")
+    return ("A", b) if is_human_spec(a) else ("B", a)
 
 # test_harness.py — card-behaviour test harness (flat parser, no subcommand).
 # Mirrors the argparse in test_harness.main(); the launcher composes a command

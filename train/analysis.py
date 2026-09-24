@@ -8,10 +8,10 @@ policy probabilities). The older offline .rmrec recording-file commands were
 removed; this live model-sim path is now the single source.
 
 There are two commands:
-    python analysis.py report <model.zip> --opponent scripted [--n-games 50]
+    python analysis.py report --player-a <model.zip> --player-b scripted --deck-a <deck> [--n-games 50]
         Run the standard battery once and emit a single self-contained HTML
         report (headless, non-interactive — for CI / sharing). Exits when done.
-    python analysis.py interactive <model.zip> --opponent scripted [--n-games 20]
+    python analysis.py interactive --player-a <model.zip> --player-b scripted --deck-a <deck> [--n-games 20]
         Simulate games, then open the REPL below. This is the only mode with a
         live env, so 'run' and 'whatif' work only here. The REPL supersets every
         per-analysis view (cardvalue, shap, regret, entropy, consistency, …), so
@@ -457,19 +457,19 @@ def _apply_search_budget_flags(args):
     """Fold the --think-time / --match-clock convenience flags into the specs.
 
     Mirrors play.py's flags of the same names, but applies to EVERY seat whose
-    spec is a search spec (az:/mcts: model or --opponent) — appended last so
+    spec is a search spec (an az:/mcts: --player-a or --player-b) — appended last so
     they override any time=/clock= knob already in the spec. Rewrites
-    ``args.model`` / ``args.opponent`` in place (and clears the flags, so a
+    ``args.player_a`` / ``args.player_b`` in place (and clears the flags, so a
     second call — e.g. an args namespace reused across a re-simulate — is a
     no-op instead of appending the knobs again)."""
     think_time = getattr(args, "think_time", None)
     match_clock = getattr(args, "match_clock", None)
     if think_time is None and match_clock is None:
         return
-    seats = [s for s in ("model", "opponent") if _is_search_spec(getattr(args, s))]
+    seats = [s for s in ("player_a", "player_b") if _is_search_spec(getattr(args, s))]
     if not seats:
         print("--think-time/--match-clock only apply to a search seat "
-              "(an az:/mcts: model or --opponent spec).", file=sys.stderr)
+              "(an az:/mcts: --player-a or --player-b spec).", file=sys.stderr)
         sys.exit(1)
     for seat in seats:
         spec = getattr(args, seat)
@@ -493,7 +493,7 @@ def _load_model_and_env(args):
     # an mcts: search plays with a PPO net, so inspect that PPO net; az:
     # inspects the AZNet). The FULL original spec (with knobs) travels as
     # _play_spec below so the trace loop can build the matching SearchController.
-    opp_scripted = is_scripted_spec(args.opponent)
+    opp_scripted = is_scripted_spec(args.player_b)
 
     # Deck resolution. A checkpoint no longer encodes a deck — there is one
     # generalist that pilots whatever deck it is told to. So the model's deck
@@ -520,25 +520,25 @@ def _load_model_and_env(args):
     # title) see the actual decks even when they were inferred, not just given.
     args.deck_a, args.deck_b = deck_a, deck_b
 
-    model = load_inspection_model(args.model)
+    model = load_inspection_model(args.player_a)
     # Remember the ORIGINAL spec on the loaded (inspection) model so the trace
     # loop can decide HOW to play the games (raw policy vs MCTS) — the model
     # object here is always the inspection net (SHAP/value/probs); a search spec
     # additionally spins up a SearchController that plays via make_controller.
-    model._play_spec = args.model
+    model._play_spec = args.player_a
     # A scripted opponent never loads a checkpoint; remember its tier spec
     # (e.g. "scripted:easy") so _controllers_for builds the matching agent.
-    model._scripted_opp_spec = args.opponent if opp_scripted else None
+    model._scripted_opp_spec = args.player_b if opp_scripted else None
     opp_model = None
     if not opp_scripted:
-        opp_model = load_inspection_model(args.opponent)
-        opp_model._play_spec = args.opponent
+        opp_model = load_inspection_model(args.player_b)
+        opp_model._play_spec = args.player_b
 
     # A search spec (az:/mcts:) plays its trace games with a real MCTS
     # SearchController, which needs the engine's --search-server protocol and a
     # search-capable env. Mirror runner.py's duck-typed env swap.
-    search_play = (_is_search_spec(args.model)
-                   or (opp_model is not None and _is_search_spec(args.opponent)))
+    search_play = (_is_search_spec(args.player_a)
+                   or (opp_model is not None and _is_search_spec(args.player_b)))
     if search_play:
         from search_env import SearchRoboMageEnv
         env_cls = SearchRoboMageEnv
@@ -4082,7 +4082,7 @@ def cmd_report(args):
 
     out = viz.out_dir(args)
     deck_a = getattr(args, "deck_a", None) or "?"
-    deck_b = getattr(args, "deck_b", None) or args.opponent
+    deck_b = getattr(args, "deck_b", None) or args.player_b
 
     # Text sections (captured from the verbose analyzers). Bo3-only analyzers
     # (sideboard, boundaries, match calibration) print a one-line "no data"
@@ -4125,7 +4125,7 @@ def cmd_report(args):
              "h2{font-size:1.1rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}</style>",
              f"<h1>RoboMage analysis — {_html.escape(deck_a)} vs {_html.escape(deck_b)}</h1>",
              f"<p>{len(games)} simulated games · model "
-             f"<code>{_html.escape(os.path.basename(args.model))}</code></p>"]
+             f"<code>{_html.escape(os.path.basename(args.player_a))}</code></p>"]
     for name in imgs:
         parts.append(f"<img src='{_html.escape(name)}' alt='{_html.escape(name)}'>")
     for title, text in sections:
@@ -4428,16 +4428,16 @@ def cmd_search_compare(args):
         from opponents import load_spec_evaluator, make_controller
 
         evaluator, _ = load_spec_evaluator(
-            args.model, on_warm_start=_note_warm_start)
+            args.player_a, on_warm_start=_note_warm_start)
         ctrl_model = _make_search_compare_controller(
             evaluator, sims=args.sims, worlds=args.worlds, c_puct=args.c,
             rng_seed=args.seed, sb_branches=args.sb_branches,
             sb_worlds=args.sb_worlds,
             sb_rollout_turns=args.sb_rollout_turns)
-        ctrl_opp = make_controller(args.opponent)
+        ctrl_opp = make_controller(args.player_b)
 
         print(f"Search-compare: {deck_a} (search {args.sims}x{args.worlds}, c={args.c}) "
-              f"vs {args.opponent} [{deck_b}] over {args.n_games} game(s)...")
+              f"vs {args.player_b} [{deck_b}] over {args.n_games} game(s)...")
 
         t0 = time.time()
         done = 0
@@ -4465,13 +4465,13 @@ def cmd_search_compare(args):
     # then merge every batch's records/stats before reporting.
     batches = _split_batches(args.n_games, n_workers, args.seed)
     payloads = [
-        (i, args.model, args.opponent, deck_a, deck_b, count, args.seed + start,
+        (i, args.player_a, args.player_b, deck_a, deck_b, count, args.seed + start,
          args.sims, args.worlds, args.c, args.binary, bo3,
          args.sb_branches, args.sb_worlds, args.sb_rollout_turns)
         for i, (start, count) in enumerate(batches)
     ]
     print(f"Search-compare (parallel): {deck_a} (search {args.sims}x{args.worlds}, "
-          f"c={args.c}) vs {args.opponent} [{deck_b}] over {args.n_games} game(s) "
+          f"c={args.c}) vs {args.player_b} [{deck_b}] over {args.n_games} game(s) "
           f"across {len(payloads)} worker(s)...")
 
     merged = _MergedSearchStats()

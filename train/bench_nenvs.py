@@ -28,8 +28,8 @@ Usage (run from the repo root):
 
     train/.venv/bin/python train/bench_nenvs.py --mode league --popart \
         --envs 24,32,48,64,72 --timesteps 250000
-    train/.venv/bin/python train/bench_nenvs.py --deck delver --opponent delver
-    train/.venv/bin/python train/bench_nenvs.py --mode scripted --deck burn --opponent mav
+    train/.venv/bin/python train/bench_nenvs.py --deck-a delver --deck-b delver
+    train/.venv/bin/python train/bench_nenvs.py --mode scripted --deck-a burn --deck-b mav
 
 Notes:
   * ``--mode league`` benchmarks the PFSP league path exactly as ``train.py
@@ -312,10 +312,10 @@ def main(argv=None):
                    help="Opponent path to benchmark: league (the PFSP league pool, "
                         "mixed self-deck — what 'train.py league' runs), self-play "
                         "(default), or scripted.")
-    p.add_argument("--deck", default="delver",
+    p.add_argument("--deck-a", default="delver",
                    help="Deck the learner pilots (.dk stem; ignored by --mode league).")
-    p.add_argument("--opponent", default=None,
-                   help="Opponent deck (.dk stem). Default: mirror (--deck). "
+    p.add_argument("--deck-b", default=None,
+                   help="Opponent deck (.dk stem). Default: mirror (--deck-a). "
                         "Ignored by --mode league.")
     p.add_argument("--envs", default=None,
                    help="Comma-separated n_envs values to sweep (default: derived from CPU count).")
@@ -343,8 +343,8 @@ def main(argv=None):
         os.environ["ROBOMAGE_POPART"] = "1"
 
     _BINARY = args.binary
-    deck = args.deck
-    opp_deck = args.opponent or args.deck
+    deck = args.deck_a
+    opp_deck = args.deck_b or args.deck_a
     env_kwargs = {"bo3": bo3}
     sweep = ([int(x) for x in args.envs.split(",") if x.strip()]
              if args.envs else _default_env_sweep())

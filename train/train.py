@@ -18,8 +18,8 @@ Usage:
     # There is ONE generalist model (gen__final.zip / gen__v{steps}.zip) that
     # pilots any deck: every training session auto-resumes and continues that one
     # model, so training on any deck vs any opponent just generalizes it further.
-    python train.py --deck delver --opponent mav    # continue the generalist on delver
-    python train.py --deck delver --opponent mav --fresh    # start the generalist over
+    python train.py --deck-a delver --deck-b mav    # continue the generalist on delver
+    python train.py --deck-a delver --deck-b mav --fresh    # start the generalist over
 """
 
 import argparse
@@ -1875,8 +1875,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     if not load_path:
         raise FileNotFoundError(
             f"No generalist checkpoint found ({GEN_STEM}__final.zip or "
-            f"{GEN_STEM}__v*.zip). Train one first (train --deck {model_deck} "
-            f"--opponent {opp_deck}).")
+            f"{GEN_STEM}__v*.zip). Train one first (train --deck-a {model_deck} "
+            f"--deck-b {opp_deck}).")
 
     opp_model_path = _resolve_model(GEN_STEM)
     if not opp_model_path or not os.path.exists(opp_model_path):
@@ -1949,7 +1949,7 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
         raise FileNotFoundError(
             f"No generalist checkpoint found to alternate ({GEN_STEM}__final.zip "
             f"or {GEN_STEM}__v*.zip). Train one first "
-            f"(train --deck {deck_a} --opponent {deck_b}).")
+            f"(train --deck-a {deck_a} --deck-b {deck_b}).")
 
     steps_done = 0
     round_num = 0
@@ -2019,9 +2019,9 @@ def baseline(binary_path: str, model, n_games: int = 100,
 
     if not deck:
         raise ValueError(
-            "baseline: --deck is required — a checkpoint no longer encodes the "
+            "baseline: --deck-a is required — a checkpoint no longer encodes the "
             "deck it pilots. Pass the deck the generalist should play "
-            "(e.g. baseline gen --deck league/ur_delver).")
+            "(e.g. baseline --player-a gen --deck-a league/ur_delver).")
     model_name = model if isinstance(model, str) else getattr(model, "label", "model")
     ctrl_model = make_controller(model, checkpoint_resolver=_resolve_model,
                                  deterministic=True)
@@ -2270,7 +2270,7 @@ def _warn_if_debug_build(binary_path: str) -> None:
 def _run_sweep(args, parser):
     """Train one deck's generalist against a PFSP pool of the other decks.
 
-    Like ``league``, but with a single fixed learner: ``args.deck`` is the only
+    Like ``league``, but with a single fixed learner: ``args.deck_a`` is the only
     model that trains and it never rotates away — the roster (default: every
     other deck in ``bin/resources/decks/``) supplies opponents only, sampled the
     same way ``league`` samples them (scripted anchor floor, PFSP/softmax-weighted
@@ -2283,8 +2283,8 @@ def _run_sweep(args, parser):
         "league/" + os.path.splitext(p)[0]
         for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
         if p.endswith(".dk"))
-    if args.deck not in all_decks:
-        parser.error(f"Deck '{args.deck}' not found in {_DECKS_DIR}. "
+    if args.deck_a not in all_decks:
+        parser.error(f"Deck '{args.deck_a}' not found in {_DECKS_DIR}. "
                      f"Available: {', '.join(all_decks)}")
     if args.opponents:
         roster = [d.strip() for d in args.opponents.split(",") if d.strip()]
@@ -2293,13 +2293,13 @@ def _run_sweep(args, parser):
             parser.error(f"--opponents: {unknown} not found in {_DECKS_DIR}. "
                          f"Available: {', '.join(all_decks)}")
     else:
-        roster = [d for d in all_decks if d != args.deck]
+        roster = [d for d in all_decks if d != args.deck_a]
     if not roster:
         parser.error("No opponent decks available for the pool (need at least "
                      "one other deck in bin/resources/decks/, or pass --opponents).")
     # 'gen' is the reserved generalist stem — no deck may be named it.
     from opponents import assert_not_reserved_deck
-    for _deck in [args.deck, *roster]:
+    for _deck in [args.deck_a, *roster]:
         assert_not_reserved_deck(_deck)
 
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
@@ -2308,14 +2308,14 @@ def _run_sweep(args, parser):
     n_envs = args.n_envs if args.n_envs is not None else N_ENVS_SELF_PLAY
     env_kwargs = dict(bo3=is_bo3(args), auto_sideboard=args.auto_sideboard)
 
-    print(f"Sweep: training '{args.deck}' vs pool [{', '.join(roster)}]")
+    print(f"Sweep: training '{args.deck_a}' vs pool [{', '.join(roster)}]")
     print(f"  total={args.total_timesteps:,}  n_envs={n_envs}")
     print(f"  self_play_frac={args.self_play_frac}  scripted_anchor_frac={args.scripted_anchor_frac}")
     print(f"  pfsp_mode={args.pfsp_mode}  p={args.pfsp_p}  eta={args.softmax_eta}")
     print(f"  snapshot_every={args.snapshot_every:,}  promote_margin={args.promote_margin}  "
           f"embed_dim={args.embed_dim}")
 
-    _league_chunk(args.binary, args.deck, roster, checkpoint_dir, args.total_timesteps,
+    _league_chunk(args.binary, args.deck_a, roster, checkpoint_dir, args.total_timesteps,
                  n_envs=n_envs, opp_ckpt_ratio=args.opponent_ckpt_ratio,
                  self_play_frac=args.self_play_frac,
                  scripted_anchor_frac=args.scripted_anchor_frac,
@@ -2323,7 +2323,7 @@ def _run_sweep(args, parser):
                  snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
                  embed_dim=args.embed_dim, no_shaping=args.no_shaping,
                  fresh=args.fresh, **env_kwargs)
-    print(f"\nSweep complete: {args.total_timesteps:,} timesteps for '{args.deck}'.")
+    print(f"\nSweep complete: {args.total_timesteps:,} timesteps for '{args.deck_a}'.")
 
 
 if __name__ == "__main__":
@@ -2331,7 +2331,7 @@ if __name__ == "__main__":
         description="RoboMage RL training and evaluation.",
         epilog="Run a subcommand with -h for its options (e.g. 'train.py train -h'). "
                "If no subcommand is given, 'train' is assumed, so legacy one-liners "
-               "like 'train.py --opponent mav' still work.")
+               "like 'train.py --deck-b mav' work.")
     sub = parser.add_subparsers(dest="command")
 
     # All subcommands and their flags come from cli_spec.TRAIN_TOOL (single source
@@ -2341,7 +2341,7 @@ if __name__ == "__main__":
         apply_to_parser(sp, s)
 
     # Default to the 'train' subcommand when none is given, so legacy one-liners
-    # such as 'train.py --opponent mav' continue to work.
+    # such as 'train.py --deck-b mav' work.
     COMMANDS = {s.name for s in TRAIN_TOOL.subs}
     argv = sys.argv[1:]
     if not argv or (argv[0] not in COMMANDS and argv[0] not in ("-h", "--help")):
@@ -2402,7 +2402,7 @@ if __name__ == "__main__":
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
-              model_deck=args.deck, opp_deck=args.opponent,
+              model_deck=args.deck_a, opp_deck=args.deck_b,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
               embed_dim=args.embed_dim, fresh=args.fresh, **env_kwargs)
@@ -2419,14 +2419,14 @@ if __name__ == "__main__":
     elif args.command == "sweep":
         _run_sweep(args, parser)
     elif args.command == "fixed-model":
-        train_fixed_model(args.binary, args.deck, args.opponent,
+        train_fixed_model(args.binary, args.deck_a, args.deck_b,
                           load_path=_resolve_model(args.load),
                           total_timesteps=args.total_timesteps,
                           tally=args.tally,
                           n_envs_override=args.n_envs,
                           no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "alternate":
-        train_alternate(args.binary, args.deck, args.opponent,
+        train_alternate(args.binary, args.deck_a, args.deck_b,
                         alternate_steps=args.every,
                         total_timesteps=args.total_timesteps,
                         tally=args.tally,
@@ -2434,7 +2434,7 @@ if __name__ == "__main__":
                         no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "observe":
         observe(args.binary, player_a=args.player_a, player_b=args.player_b,
-                deck_a=args.deck, deck_b=args.opponent,
+                deck_a=args.deck_a, deck_b=args.deck_b,
                 n_games=args.games, bo3=is_bo3(args), seed=args.seed,
                 verbose=args.verbose,
                 play_a=args.play_a, play_b=args.play_b)

@@ -158,8 +158,8 @@ error with a pointer to it).
   controller; `run_games` under the hood. Pass `--format bo1` for a single
   game (sculpted scenarios usually want one).
 - **`train.py observe`** — per-seat agent specs (`--player-a/-b`,
-  `--play-a/-b`), any matchup. bo3 by default; `--format bo1` for single
-  games.
+  `--play-a/-b`) and decks (`--deck-a/-b`), any matchup. bo3 by default;
+  `--format bo1` for single games.
 - **`train.py baseline`** — the AZ generalist (`az:gen` = `gen__azfinal.pt`)
   under the full league search budget (1028 sims × 8 worlds) vs scripted
   **HARD** over the whole league grid (every deck piloted vs every deck, mirrors
@@ -167,14 +167,17 @@ error with a pointer to it).
   actor (`bin/az_actor --search` eval mode + the scripted oracle + the GPU eval
   server, 48 legs in flight) — NOT on `drive_game`; PPO `.zip` models,
   `mcts:` specs and `--no-actor` fall back to the runner-based
-  `train.baseline_sweep`. `--deck` narrows to one piloted deck (mirror unless
-  `--opponent`), `--games`/`--sims`/`--worlds`/`--workers` scale it, `--seed`
-  reproduces. Every run appends its report to `checkpoints/baseline_report.log`
+  `train.baseline_sweep`. `--player-a` is the model under test (player A
+  is the side under test, not a fixed physical seat), `--deck-a` narrows to
+  one piloted deck (mirror unless `--deck-b`), `--games`/`--sims`/
+  `--worlds`/`--workers` scale it, `--seed` reproduces. Every run appends its report to `checkpoints/baseline_report.log`
   (override with `--log`), and the actor path records the net's searched
   decisions as shards under `az_data/baseline/baseline_<stamp>/` (analyzable
   with `az_inspect`/the shard browsers; never pooled into training;
   `--no-record` to skip). Implementation: `train/az_baseline.py`.
-- **`play.py`** — human vs model. Text mode = runner + `HumanController`
+- **`play.py`** — human vs model: `--player-a`/`--player-b` are agent specs,
+  exactly one of them `human` (default: human on A vs the generalist on B),
+  with `--deck-a`/`--deck-b`. Text mode = runner + `HumanController`
   (semantic input, `--seed`); `--tui` = Textual board.
 - **`fuzz_campaign.py`** — explore-tier fuzz sweeps for one matchup;
   `run_games` verbose transcripts to a file.

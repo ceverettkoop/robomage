@@ -7,7 +7,8 @@ in train/game_driver.py — this module only draws the board and marshals input.
 
 Launch it via::
 
-    train/.venv/bin/python train/play.py --gui --scripted --format bo1
+    train/.venv/bin/python train/play.py --gui --player-b scripted \
+        --deck-a delver --deck-b mav --format bo1
 
 (`--gui` takes precedence over `--tui`; any opponent spec the TUI accepts —
 scripted tiers, a checkpoint path, az:/mcts: search wrappers — works here too.)
@@ -52,6 +53,7 @@ from PySide6.QtWidgets import (QApplication, QWidget, QLabel,
                                QGroupBox, QSpinBox, QDoubleSpinBox, QCheckBox)
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
+from cli_spec import HUMAN_SPEC, resolve_play_seats
 import decode
 import scryfall_cache
 from game_driver import (GameDriver, build_session, decode_human_frame,
@@ -2044,10 +2046,10 @@ _DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
 # net with MCTS, on a 25-minute bo3 match clock, with the analysis window open.
 # A saved config overrides every one of these, key by key.
 _LAUNCHER_DEFAULTS = {
-    "human_deck": "league/bug",
-    "model_deck": "league/ur_delver",
-    "opponent": "az:gen",
-    "player": "",                            # Random seat
+    "player_a": "human",                     # play.py --player-a/--player-b
+    "player_b": "az:gen",
+    "deck_a": "league/bug",
+    "deck_b": "league/ur_delver",
     "format": "bo3",
     "human_clock": None,                     # your own bank: unset = untimed
     "hard_timeout": False,                   # an empty bank only informs, by default
@@ -2189,13 +2191,14 @@ def _save_launcher_config(cfg, path=_LAUNCHER_CONFIG):
 class NewPlaySessionDialog(QDialog):
     """The File ▸ New Session ▸ Play… dialog (also the no-arguments intro).
 
-    Exposes the same game-running knobs as the TUI play form — the human's deck,
-    the opponent's deck, the opponent controller, which seat the human takes,
-    the match format, and the human's own chess clock (play.py --human-clock /
+    Exposes the same game-running knobs as the TUI play form — player A and
+    player B (play.py --player-a/--player-b: exactly one is 'human', the other
+    the opponent controller), their decks (--deck-a/--deck-b), the match
+    format, and the human's own chess clock (play.py --human-clock /
     --hard-timeout) — and seeds every field from the last session's choices
-    (persisted to ~/.robomage/gui_launcher.json). On Start it hands a plain options
-    dict back to the host (gui_main.SessionManager), which assembles the session
-    and shows the board."""
+    (persisted to ~/.robomage/gui_launcher.json under the flag dests). On Start
+    it hands a plain options dict back to the host (gui_main.SessionManager),
+    which assembles the session and shows the board."""
 
     def __init__(self, binary_path, parent=None):
         super().__init__(parent)
@@ -2208,27 +2211,14 @@ class NewPlaySessionDialog(QDialog):
         form = QFormLayout()
         form.setSpacing(8)
 
-        self._human_deck = self._deck_combo(decks, _cfg_get(cfg, "human_deck"))
-        self._model_deck = self._deck_combo(decks, _cfg_get(cfg, "model_deck"))
-        form.addRow("Your deck", self._human_deck)
-        form.addRow("Opponent deck", self._model_deck)
-
-        self._opponent = QComboBox()
-        self._opponent.setEditable(True)
-        for label, spec in _OPPONENT_PRESETS:
-            self._opponent.addItem(label, spec)
-        self._set_opponent(_cfg_get(cfg, "opponent"))
-        self._opponent.setToolTip(
-            "Opponent controller: 'gen' (the generalist model), a scripted tier, "
-            "an az:/azraw:/mcts: search spec, or an explicit checkpoint path.")
-        form.addRow("Opponent", self._opponent)
-
-        self._player = QComboBox()
-        for label in ("Random", "A (you go first)", "B (opponent first)"):
-            self._player.addItem(label)
-        self._player.setCurrentIndex(
-            {"": 0, "A": 1, "B": 2}.get(_cfg_get(cfg, "player"), 0))
-        form.addRow("You play as", self._player)
+        self._player_a = self._player_combo(_cfg_get(cfg, "player_a"))
+        self._deck_a = self._deck_combo(decks, _cfg_get(cfg, "deck_a"))
+        self._player_b = self._player_combo(_cfg_get(cfg, "player_b"))
+        self._deck_b = self._deck_combo(decks, _cfg_get(cfg, "deck_b"))
+        form.addRow("Player A (on the play)", self._player_a)
+        form.addRow("Player A deck", self._deck_a)
+        form.addRow("Player B", self._player_b)
+        form.addRow("Player B deck", self._deck_b)
 
         self._format = QComboBox()
         self._format.addItem("Best of three (with sideboarding)", "bo3")
@@ -2282,8 +2272,9 @@ class NewPlaySessionDialog(QDialog):
         self._options = None
 
         # The search knobs are only meaningful for an az:/mcts: search opponent —
-        # show that group only then, and re-check whenever the opponent changes.
-        self._opponent.currentTextChanged.connect(self._update_search_visibility)
+        # show that group only then, and re-check whenever a seat changes.
+        self._player_a.currentTextChanged.connect(self._update_search_visibility)
+        self._player_b.currentTextChanged.connect(self._update_search_visibility)
         self._update_search_visibility()
 
     def _build_search_box(self, cfg):
@@ -2496,13 +2487,33 @@ class NewPlaySessionDialog(QDialog):
             combo.setEditText(current)
         return combo
 
-    def _set_opponent(self, spec):
-        self._set_combo_spec(self._opponent, spec)
+    def _player_combo(self, spec):
+        """An editable seat combo: 'human' (you) plus the opponent presets."""
+        combo = QComboBox()
+        combo.setEditable(True)
+        combo.addItem("Human (you)", HUMAN_SPEC)
+        for label, preset in _OPPONENT_PRESETS:
+            combo.addItem(label, preset)
+        self._set_combo_spec(combo, spec)
+        combo.setToolTip(
+            "'Human (you)' on exactly one seat; the other seat is the opponent "
+            "controller: 'gen' (the generalist model), a scripted tier, an "
+            "az:/azraw:/mcts: search spec, or an explicit checkpoint path.")
+        return combo
+
+    def _seats(self):
+        """(human_seat, opponent_spec) per cli_spec.resolve_play_seats;
+        raises ValueError unless exactly one seat is 'human'."""
+        return resolve_play_seats(self._combo_spec(self._player_a) or None,
+                                  self._combo_spec(self._player_b) or None)
 
     def _opponent_spec(self):
-        """The opponent spec: a preset's data when the visible text still matches
-        that preset's label, else the raw typed text."""
-        return self._combo_spec(self._opponent)
+        """The non-human seat's spec ('' while the seats are not exactly one
+        human + one opponent)."""
+        try:
+            return self._seats()[1] or ""
+        except ValueError:
+            return ""
 
     def _search_knobs(self):
         """(key, value) query pairs for the set search fields (empty ones omitted).
@@ -2523,17 +2534,23 @@ class NewPlaySessionDialog(QDialog):
         return with_spec_query(spec, pairs)
 
     def _on_accept(self):
-        human_deck = self._human_deck.currentText().strip()
-        model_deck = self._model_deck.currentText().strip()
-        opponent = self._opponent_spec()
-        if not human_deck or not model_deck:
+        deck_a = self._deck_a.currentText().strip()
+        deck_b = self._deck_b.currentText().strip()
+        if not deck_a or not deck_b:
             QMessageBox.warning(self, "Missing deck",
-                                "Pick a deck for both you and the opponent.")
+                                "Pick a deck for both player A and player B.")
+            return
+        try:
+            player, opponent = self._seats()
+        except ValueError as exc:
+            QMessageBox.warning(self, "Seats", str(exc))
             return
         if not opponent:
             QMessageBox.warning(self, "Missing opponent",
                                 "Pick or type an opponent.")
             return
+        human_deck, model_deck = ((deck_a, deck_b) if player == "A"
+                                  else (deck_b, deck_a))
         # A search opponent carries its tuning knobs in the spec query; other
         # opponents ignore the (hidden) fields entirely.
         spec = opponent
@@ -2559,7 +2576,6 @@ class NewPlaySessionDialog(QDialog):
                             xw=self._analysis_xw.isChecked(),
                             device=self._analysis_device.currentData() or "")
 
-        player = {0: None, 1: "A", 2: "B"}[self._player.currentIndex()]
         bo3 = self._format.currentData() == "bo3"
         record = self._record.isChecked() and self._is_search_spec(opponent)
         human_clock = self._spin_value(self._human_clock)
@@ -2573,8 +2589,9 @@ class NewPlaySessionDialog(QDialog):
         # Persist the BASE opponent + individual knobs (not the composed spec) so
         # the fields autofill cleanly next session without double-appending.
         _save_launcher_config(dict(
-            human_deck=human_deck, model_deck=model_deck, opponent=opponent,
-            player=player or "", format=self._format.currentData(),
+            player_a=self._combo_spec(self._player_a),
+            player_b=self._combo_spec(self._player_b),
+            deck_a=deck_a, deck_b=deck_b, format=self._format.currentData(),
             human_clock=human_clock, hard_timeout=hard_timeout,
             sims=self._spin_value(self._sims), worlds=self._spin_value(self._worlds),
             think_time=self._spin_value(self._think_time),
@@ -2617,7 +2634,7 @@ def _resolve_opponent_spec(spec):
     if not path or not os.path.exists(path):
         raise ValueError(
             f"No checkpoint found for opponent {s!r}. Train the generalist first "
-            f"(train/train.py train --deck <deck> --opponent <opp>), pick a "
+            f"(train/train.py train --deck-a <deck> --deck-b <opp>), pick a "
             f"scripted opponent, or type an explicit .zip path.")
     return path
 

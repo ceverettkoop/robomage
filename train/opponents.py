@@ -195,9 +195,8 @@ def resolve_checkpoint(path: Optional[str],
     raise ValueError(
         f"cannot resolve model spec {path!r}. Models are now ONE generalist with "
         f"stem '{GEN_STEM}' — pass '{GEN_STEM}' (or an explicit .zip path) as the "
-        f"model, and give the deck it pilots as a SEPARATE parameter (baseline's "
-        f"--deck, observe's --deck/--opponent, analysis's --deck-a/--deck-b, "
-        f"play's --model-deck).")
+        f"model, and give the deck it pilots as a SEPARATE parameter (the "
+        f"seat's --deck-a/--deck-b).")
 
 # Pool token standing for a random generalist snapshot (the opponent deck it
 # pilots is chosen independently by the pool/episode, no longer by the model's

@@ -91,7 +91,7 @@ def test_compose_az():
     print("az phase")
     got = argv_of({"kind": "az", "decks": ["league/bug"], "games": 40,
                    "overrides": {"sims": 32, "format": "bo1"}})
-    check(got == ["az", "--deck", "league/bug", "--games", "40", "--sims", "32",
+    check(got == ["az", "--decks", "league/bug", "--games", "40", "--sims", "32",
                   "--format", "bo1"], f"az argv: {got}")
 
 
@@ -107,7 +107,7 @@ def test_compose_az_selfplay():
     print("az-selfplay phase")
     got = argv_of({"kind": "az-selfplay", "decks": ["league/wubg_doomsday"],
                    "games": 32, "overrides": {"expert": True}})
-    check(got == ["az-selfplay", "--deck", "league/wubg_doomsday", "--games",
+    check(got == ["az-selfplay", "--deck-a", "league/wubg_doomsday", "--games",
                   "32", "--expert"], f"az-selfplay argv: {got}")
 
 
@@ -115,8 +115,8 @@ def test_compose_baseline():
     print("baseline phase")
     got = argv_of({"kind": "baseline", "model": "gen", "deck": "league/bug",
                    "games": 100})
-    check(got == ["baseline", "gen", "--games", "100", "--deck", "league/bug"],
-          f"baseline argv (positional model first): {got}")
+    check(got == ["baseline", "--player-a", "gen", "--games", "100",
+                  "--deck-a", "league/bug"], f"baseline argv: {got}")
     got = argv_of({"kind": "baseline", "games": 50, "overrides": {"all": True}})
     check(got == ["baseline", "--games", "50", "--all"],
           f"baseline --all argv: {got}")
@@ -165,6 +165,12 @@ def test_validation_errors():
     expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
         {"kind": "league", "overrides": {"bo3": True}}]}),
         "--bo3 was removed; use --format bo3", "removed override key (bo3)")
+    expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
+        {"kind": "baseline", "overrides": {"opponent": "league/bug"}}]}),
+        "--opponent was removed; use --deck-b", "removed override key (opponent)")
+    expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
+        {"kind": "az", "overrides": {"deck": "league/bug"}}]}),
+        "--deck was removed; use --decks", "removed override key (az deck)")
     expect_error(lambda: cur.validate_plan({"version": 1, "phases": [
         {"kind": "az", "overrides": {"actor": True, "no_actor": True}}]}),
         "mutually exclusive", "mutex group")
@@ -264,7 +270,7 @@ def test_dry_run_and_status(tmp):
     check(rc == 0, "dry-run exit code")
     for needle in ("league --decks league/x --total-timesteps 20",
                    "exploiter --archetype burn --steps 30",
-                   "baseline gen --games 4 --deck delver"):
+                   "baseline --player-a gen --games 4 --deck-a delver"):
         check(needle in out, f"dry-run output missing {needle!r}:\n{out}")
     check("train/train.py" in out, "dry-run shows a repo-relative script path")
 

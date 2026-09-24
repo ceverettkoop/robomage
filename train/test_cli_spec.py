@@ -6,6 +6,10 @@
   ``--help``, and never render in the TUI forms (which are built from the Sub
   items, not the removed table).
 * ``--format`` exists on every game-playing subcommand and defaults to bo3.
+* Seat vocabulary: single-seat decks are ``--deck-a``/``--deck-b`` and seat
+  agents ``--player-a``/``--player-b`` (no ``--opponent``/``--deck`` anywhere;
+  a stray positional model names ``--player-a``); play needs exactly one
+  ``human`` seat.
 * Removed environment variables fail at startup with their hint.
 
 The cli_spec parsers are built in-process exactly as the scripts build them
@@ -19,6 +23,7 @@ Wired into ci_check.py as the 'clispec' tier, so `make check` runs it.
 import argparse
 import io
 import os
+import re
 import subprocess
 import sys
 from contextlib import redirect_stderr, redirect_stdout
@@ -77,15 +82,27 @@ def test_removed_flags_error():
     print("removed flags error with their hint on every cli_spec parser")
     for tool, sub in all_subs():
         p = build(sub)
-        for r in cli_spec.removed_flags_for(*sub.scopes):
+        flags = cli_spec.removed_flags_for(*sub.scopes)
+        check(len({r.flag for r in flags}) == len(flags),
+              f"{tool.key}/{sub.name}: one removed entry per flag "
+              f"(a scoped entry must shadow the global one)")
+        for r in flags:
             code, err = parse_error(p, [r.flag])
-            check(code == 2 and f"{r.flag} was removed; {r.hint}" in err,
+            check(code == 2 and cli_spec.removed_flag_message(r) in err,
                   f"{tool.key}/{sub.name}: {r.flag} should error with its hint "
                   f"(code={code}, stderr={err!r})")
+            if r.is_positional:
+                continue
             # The value form must hit the same error, not "unrecognized".
             code, err = parse_error(p, [f"{r.flag}=x"])
             check(code == 2 and "was removed" in err,
                   f"{tool.key}/{sub.name}: {r.flag}=x should error with the hint")
+
+
+def _mentions(text, flag):
+    """True if ``flag`` appears in ``text`` as a whole option token (so
+    '--deck' does not match '--deck-a' or '--decks')."""
+    return re.search(r"(?<![\w-])" + re.escape(flag) + r"(?![\w-])", text) is not None
 
 
 def test_removed_flags_hidden():
@@ -93,12 +110,73 @@ def test_removed_flags_hidden():
     for tool, sub in all_subs():
         help_text = build(sub).format_help()
         live = {a.name for a in iter_args(sub)}
-        for r in cli_spec.REMOVED_FLAGS:
-            check(r.flag not in help_text,
-                  f"{tool.key}/{sub.name}: {r.flag} leaks into --help")
+        for r in cli_spec.removed_flags_for(*sub.scopes):
+            if not r.is_positional:
+                check(not _mentions(help_text, r.flag),
+                      f"{tool.key}/{sub.name}: {r.flag} leaks into --help")
             check(r.flag not in live,
                   f"{tool.key}/{sub.name}: {r.flag} is still a live Arg (the "
                   f"TUI form would render it)")
+
+
+def test_seat_vocabulary():
+    print("seat decks are --deck-a/--deck-b and seat agents --player-a/--player-b")
+    for tool, sub in all_subs():
+        where = f"{tool.key}/{sub.name}"
+        for a in iter_args(sub):
+            check(a.name not in ("--opponent", "--deck", "--human-deck",
+                                 "--model-deck"),
+                  f"{where}: {a.name} is a live flag (seat decks are "
+                  f"--deck-a/--deck-b, pools --decks/--opponents)")
+            if a.suggest == "deck" and not a.multi:
+                check(a.name in ("--deck-a", "--deck-b"),
+                      f"{where}: single-seat deck flag {a.name} should be "
+                      f"--deck-a or --deck-b")
+            if a.suggest == "agent":
+                check(a.name in ("--player-a", "--player-b"),
+                      f"{where}: seat agent {a.name} should be --player-a or "
+                      f"--player-b")
+    subs = {(t.key, s.name): s for t, s in all_subs()}
+    # A scoped entry shadows the global one with its own hint.
+    check(cli_spec.removed_flag_hint("--deck", "train", "train/az")
+          == "--deck was removed; use --decks (the comma-separated focus deck pool)",
+          "az's --deck hint should point at --decks")
+    check("use --deck-a" in (cli_spec.removed_flag_hint(
+        "--deck", "train", "train/observe") or ""),
+          "observe's --deck hint should point at --deck-a")
+    check("use --player-b" in (cli_spec.removed_flag_hint(
+        "--opponent", "analysis", "analysis/report") or ""),
+          "analysis --opponent hint should point at --player-b")
+    # A stray positional model names its replacement flag.
+    for key in (("train", "baseline"), ("analysis", "report"),
+                ("analysis-tui", "browse")):
+        code, err = parse_error(build(subs[key]), ["gen"])
+        check(code == 2 and "positional MODEL argument was removed; use "
+              "--player-a" in err,
+              f"{'/'.join(key)}: a positional model should name --player-a "
+              f"({err!r})")
+    code, _ = parse_error(build(subs[("train", "baseline")]), [])
+    check(code is None, "baseline parses with no positional")
+    p = build(subs[("train", "baseline")])
+    check(p.parse_args([]).player_a == cli_spec.DEFAULT_BASELINE_MODEL,
+          "baseline --player-a defaults to the baseline model")
+
+
+def test_play_seats():
+    print("play seat resolution: exactly one human")
+    rps = cli_spec.resolve_play_seats
+    check(rps(None, None) == ("A", None), "default: human on A vs the default opponent")
+    check(rps("human", None) == ("A", None), "human A, default opponent on B")
+    check(rps(None, "human") == ("B", None), "human B, default opponent on A")
+    check(rps("az:gen", None) == ("B", "az:gen"), "an opponent on A puts the human on B")
+    check(rps(None, "scripted") == ("A", "scripted"), "an opponent on B puts the human on A")
+    check(rps("Human", "gen") == ("A", "gen"), "'human' is case-insensitive")
+    for a, b in (("human", "human"), ("gen", "scripted")):
+        try:
+            rps(a, b)
+            check(False, f"({a!r}, {b!r}) should be rejected")
+        except ValueError:
+            pass
 
 
 def test_format_default():
@@ -195,12 +273,46 @@ def test_scripts():
               f"{name} --help should list --format and not --bo1/--bo3 "
               f"(rc={rc})")
 
+    print("scripts reject the pre-seat-vocabulary spellings with their hint")
+    seat_cases = [
+        (("train/train.py", "observe", "--deck", "delver"),
+         "--deck was removed; use --deck-a"),
+        (("train/train.py", "observe", "--opponent", "mav"),
+         "--opponent was removed; use --deck-b"),
+        (("train/train.py", "--deck-b", "mav", "--opponent", "mav"),
+         "--opponent was removed; use --deck-b"),
+        (("train/train.py", "baseline", "gen"),
+         "positional MODEL argument was removed; use --player-a"),
+        (("train/train.py", "az", "--deck", "league/bug"),
+         "--deck was removed; use --decks"),
+        (("train/train.py", "az-train", "--deck", "delver"),
+         "--deck was removed; az-train"),
+        (("train/play.py", "--human-deck", "delver"),
+         "--human-deck was removed; use --deck-a (with --player-a human)"),
+        (("train/play.py", "--model-deck", "mav"),
+         "--model-deck was removed; use --deck-b"),
+        (("train/play.py", "--model", "gen"), "--model was removed; use --player-b"),
+        (("train/play.py", "--scripted"), "--scripted was removed; use --player-b scripted"),
+        (("train/play.py", "--player", "B"), "--player was removed"),
+        (("train/play.py", "--deck-a", "d", "--deck-b", "d", "--player-a", "gen",
+          "--player-b", "scripted"), "exactly one of --player-a / --player-b"),
+        (("train/play.py", "--deck-a", "d", "--deck-b", "d", "--player-a", "human",
+          "--player-b", "human"), "both 'human'"),
+    ]
+    for argv, needle in seat_cases:
+        rc, out = run_script(*argv)
+        check(rc == 2 and needle in out,
+              f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
+              f"{out[-600:]}")
+
 
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
     test_format_default()
     test_scoped_removal()
+    test_seat_vocabulary()
+    test_play_seats()
     test_removed_env()
     test_scripts()
     if FAILURES:

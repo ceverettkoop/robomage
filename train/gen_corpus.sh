@@ -22,7 +22,7 @@ for a in "${DECKS[@]}"; do
   for b in "${DECKS[@]}"; do
     for s in $SEEDS; do
       out="$OUTDIR/${a}_vs_${b}_seed${s}.log"
-      "$PY" train/train.py observe --deck "$a" --opponent "$b" --seed "$s" --verbose > "$out" 2>&1
+      "$PY" train/train.py observe --deck-a "$a" --deck-b "$b" --seed "$s" --verbose > "$out" 2>&1
       # Flag any game that did not end with a decisive result (draws/errors are unacceptable).
       if ! grep -q "=== Scripted/. wins ===" "$out"; then
         echo "NON-DECISIVE: $out"

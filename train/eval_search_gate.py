@@ -11,7 +11,7 @@ the plan: >= 55% for the search side over ~200 games.
 
 Example (the real-hardware gate):
     train/.venv/bin/python train/eval_search_gate.py \
-        --checkpoint league/ur_delver --deck league/ur_delver \
+        --checkpoint league/ur_delver --deck-a league/ur_delver \
         --games 192 --sims 128 --worlds 4 --workers 4
 
 The checkpoint spec is anything ``opponents.resolve_checkpoint`` accepts (deck
@@ -50,11 +50,12 @@ def _run_batch(args):
 
 def main() -> int:
     sys.path.insert(0, _TRAIN_DIR)
-    from cli_spec import DEFAULT_AZ_C_PUCT
+    from cli_spec import DEFAULT_AZ_C_PUCT, add_removed_flags
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--checkpoint", required=True,
                     help="Checkpoint spec (deck shorthand or path) piloting BOTH sides")
-    ap.add_argument("--deck", required=True, help="Deck for the mirror match")
+    ap.add_argument("--deck-a", required=True,
+                    help="Deck both seats pilot (a mirror match)")
     ap.add_argument("--games", type=int, default=192,
                     help="Total gate games, split evenly across seats (default 192)")
     ap.add_argument("--sims", type=int, default=128)
@@ -78,6 +79,7 @@ def main() -> int:
                     help="MCTS-vs-scripted:hard reference games (0 disables; raw "
                          "reference runs 2x this)")
     ap.add_argument("--seed", type=int, default=1)
+    add_removed_flags(ap, "eval-search-gate")
     args = ap.parse_args()
 
     spec = (f"mcts:{args.checkpoint}?sims={args.sims}&worlds={args.worlds}"
@@ -96,13 +98,13 @@ def main() -> int:
     for i in range(n_batches):
         seed = args.seed + 1000 * i
         if i % 2 == 0:
-            batches.append((f"gate_mctsA_{i}", spec, raw, args.deck, per, seed))
+            batches.append((f"gate_mctsA_{i}", spec, raw, args.deck_a, per, seed))
         else:
-            batches.append((f"gate_mctsB_{i}", raw, spec, args.deck, per, seed))
+            batches.append((f"gate_mctsB_{i}", raw, spec, args.deck_a, per, seed))
     if args.ref_games:
-        batches.append(("ref_mcts_vs_hard", spec, "scripted", args.deck,
+        batches.append(("ref_mcts_vs_hard", spec, "scripted", args.deck_a,
                         args.ref_games, args.seed + 900001))
-        batches.append(("ref_raw_vs_hard", raw, "scripted", args.deck,
+        batches.append(("ref_raw_vs_hard", raw, "scripted", args.deck_a,
                         2 * args.ref_games, args.seed + 950001))
 
     print(f"[gate] {sum(b[4] for b in batches if b[0].startswith('gate_'))} gate games "

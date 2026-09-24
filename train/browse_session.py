@@ -979,7 +979,7 @@ class EngineCore:
     def _subtitle(self):
         deck_a = getattr(self.args, "deck_a", None) or "?"
         deck_b = getattr(self.args, "deck_b", None) or "?"
-        return (f"{deck_a} (model)  vs  {deck_b} ({self.args.opponent})"
+        return (f"{deck_a} (model)  vs  {deck_b} ({self.args.player_b})"
                 + ("  · bo3" if is_bo3(self.args) else ""))
 
     # ----- jobs (each ends by emitting EngineIdle) -----
@@ -1049,7 +1049,7 @@ class EngineCore:
                 self.emit(AnalysisDone(
                     f"search — game {gn}, step {step}", _MSG_NO_DECKS))
                 return
-            spec = getattr(self.args, "model", None) or "az:gen"
+            spec = getattr(self.args, "player_a", None) or "az:gen"
             text = run_replay_search(game, step, eval_spec=spec, **params)
             self.emit(AnalysisDone(f"search — game {gn}, step {step}", text))
         except Exception:
@@ -1181,7 +1181,7 @@ class EngineCore:
             with CAPTURE_LOCK, redirect_stdout(buf):
                 model = None
                 if not getattr(self.args, "no_net", False):
-                    model = shard_replay.load_value_model(self.args.model)
+                    model = shard_replay.load_value_model(self.args.player_a)
                 records = shard_replay.load_records(
                     self.args.shards,
                     viewpoint_is_a=getattr(self.args, "seat", "A") != "B",
@@ -1193,7 +1193,7 @@ class EngineCore:
                       f"(seat {getattr(self.args, 'seat', 'A')}, "
                       + ("net V(s))" if model is not None else "z values)"))
             net = ("z values" if getattr(self.args, "no_net", False)
-                   else f"V(s): {self.args.model}")
+                   else f"V(s): {self.args.player_a}")
             subtitle = (f"shard replay: {self.args.shards} · "
                         f"seat {getattr(self.args, 'seat', 'A')} · {net}")
             self.emit(EnvReady(buf.getvalue(), subtitle))

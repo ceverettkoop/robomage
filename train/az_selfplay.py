@@ -2541,13 +2541,13 @@ def run(args) -> None:
         if not bo3:
             raise SystemExit("error: az-selfplay --expert always writes bo3 "
                              "shards; drop --format bo1")
-        generate_expert(args.deck, games=args.games,
+        generate_expert(args.deck_a, games=args.games,
                         mirror_frac=getattr(args, "mirror_frac", DEFAULT_MIRROR_FRAC),
                         bo3=True, out_dir=args.out,
                         seed=resolve_seed(args),
                         opponent=getattr(args, "expert_opponent", None))
         return
-    generate(args.deck, games=args.games, sims=args.sims, worlds=args.worlds,
+    generate(args.deck_a, games=args.games, sims=args.sims, worlds=args.worlds,
              full_search_frac=float(getattr(args, "full_search_frac",
                                             DEFAULT_AZ_FULL_SEARCH_FRAC)),
              fast_sims=int(getattr(args, "fast_sims", DEFAULT_AZ_FAST_SIMS)),
