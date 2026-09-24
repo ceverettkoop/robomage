@@ -131,15 +131,16 @@ def save_session(path, games, provenance):
 
 # ── Analyses registry ─────────────────────────────────────────────────────────
 
-def run_shap(games, n_background=50, n_samples=200):
-    """Fit the V(s) surrogate and print SHAP feature importances (the REPL's
-    'shap' command, minus the chart)."""
+def compute_shap(games, n_background=50, n_samples=200):
+    """Fit a gradient-boosted surrogate of V(s) on the games' interpretable
+    features and explain it with SHAP. Returns ``(shap_values, samples)``, or
+    None (after printing why) when shap/sklearn are missing."""
     try:
         import shap
         from sklearn.ensemble import GradientBoostingRegressor
     except ImportError as e:
         print(f"  Missing dependency: {e}")
-        return
+        return None
     all_interp = np.array([f for g in games for f in g["interp_features"]])
     all_vals = np.array([v for g in games for v in g["values"]])
     print(f"Fitting surrogate on {len(all_interp)} points...")
@@ -153,12 +154,26 @@ def run_shap(games, n_background=50, n_samples=200):
                                size=min(n_samples, len(all_interp)), replace=False)
     print(f"Running SHAP ({len(bg_idx)} background, {len(smp_idx)} samples)...")
     explainer = shap.KernelExplainer(surrogate.predict, all_interp[bg_idx])
-    shap_vals = explainer.shap_values(all_interp[smp_idx])
-    mean_abs = abs(shap_vals).mean(axis=0)
+    return explainer.shap_values(all_interp[smp_idx]), all_interp[smp_idx]
+
+
+def run_shap(games):
+    """Print SHAP feature importances of the V(s) surrogate."""
+    res = compute_shap(games)
+    if res is None:
+        return
+    mean_abs = abs(res[0]).mean(axis=0)
     print(f"\n{'Feature':<25} {'Mean |SHAP|':>12}")
     print("-" * 40)
     for idx in mean_abs.argsort()[::-1]:
         print(f"  {an._INTERP_FEATURE_NAMES[idx]:<23} {mean_abs[idx]:12.4f}")
+
+
+def chart_shap(games):
+    """Save the SHAP summary plot of the V(s) surrogate."""
+    res = compute_shap(games)
+    if res is not None:
+        an._chart_shap(*res)
 
 
 def has_probs(games):
@@ -175,7 +190,7 @@ def probs_guard(fn):
     return run
 
 
-# Analyses menu: (key, label, fn(games)). Mirrors the REPL commands (each just
+# Analyses menu: (key, label, fn(games)) over the analysis pool (each just
 # prints; the front end captures the text via `capture`).
 ANALYSES = [
     ("summary", "summary — W/L/D stats", an._sim_summary),
@@ -201,6 +216,78 @@ ANALYSES = [
     ("sbvalue", "sbvalue — sideboard preference & impact (bo3)", an._analyze_sbvalue),
     ("shap", "shap — feature importance (slow)", run_shap),
 ]
+
+# Views menu: (key, label, fn, needs_game). A needs_game view runs on the
+# selected game as fn(games, gn) (whatif branch traces included); the others
+# run on the analysis pool as fn(pool). The chart views save a PNG under
+# train/analysis_out/ (matplotlib Agg — headless-safe) and print its path.
+VIEWS = [
+    ("transcript", "transcript — one line per decision of the selected game",
+     lambda games, gn: an._replay_sim_game(games[gn], gn), True),
+    ("transcript_full", "transcript (full) — + zones, chosen action, "
+                        "opponent actions", lambda games, gn:
+     an._replay_sim_game(games[gn], gn, verbose=True), True),
+    ("chart_game", "chart game — the selected game's V(s) curve (PNG)",
+     lambda games, gn: an._chart_game(games[gn], gn), True),
+    ("chart_whatif", "chart whatif — the selected game's whatif branches (PNG)",
+     lambda games, gn: an._chart_whatif(*whatif_family(games, gn)), True),
+    ("chart_swings", "chart swings — top swing games' V(s) curves (PNG)",
+     an._chart_swings, False),
+    ("chart_cardvalue", "chart cardvalue — per-card ΔV bars (PNG)",
+     lambda g: an._chart_cardvalue(an._analyze_cardvalue(g, verbose=False)),
+     False),
+    ("chart_sbvalue", "chart sbvalue — sideboard preference + net ΔWR (PNG, bo3)",
+     lambda g: an._chart_sbvalue(an._analyze_sbvalue(g, verbose=False)), False),
+    ("chart_calibration", "chart calibration — calibration curve (PNG)",
+     an._chart_calibration, False),
+    ("chart_turning", "chart turning — turning-point distribution (PNG)",
+     an._chart_turning, False),
+    ("chart_clusters", "chart clusters — V(s) curves by archetype (PNG)",
+     an._chart_clusters, False),
+    ("chart_overview", "chart overview — every game's V(s) + the mean (PNG)",
+     an._chart_value_overview, False),
+    ("chart_shap", "chart shap — SHAP summary plot (PNG, slow)", chart_shap,
+     False),
+]
+
+MSG_NO_GAMES = "No finished games yet."
+MSG_NO_SEL = "Select a game and step first."
+MSG_LIVE = "The live game has no finished record yet."
+
+
+def whatif_family(games, gn):
+    """``(source game, source index, branch traces)`` for game ``gn``: a
+    whatif branch trace resolves to the game it branched from."""
+    w = games[gn].get("whatif")
+    src = w["src_game"] if w else gn
+    return (games[src], src,
+            [g for g in games if (g.get("whatif") or {}).get("src_game") == src])
+
+
+def analysis_job(key, games, cur_game):
+    """The ANALYSES / VIEWS entry ``key`` as ``(job, None)`` — ``job()`` runs
+    it and returns its captured text — or ``(None, why)`` when it cannot run
+    on these games / this selection."""
+    pool = analysis_pool(games)
+    fn = next((e[2] for e in ANALYSES if e[0] == key), None)
+    if fn is not None:
+        if not pool:
+            return None, MSG_NO_GAMES
+        return (lambda: capture(fn, pool)), None
+    view = next((e for e in VIEWS if e[0] == key), None)
+    if view is None:
+        return None, f"Unknown analysis {key!r}."
+    _key, _label, fn, needs_game = view
+    if not needs_game:
+        if not pool:
+            return None, MSG_NO_GAMES
+        return (lambda: capture(fn, pool)), None
+    if cur_game is None:
+        return None, MSG_NO_SEL
+    if games[cur_game].get("live"):
+        return None, MSG_LIVE
+    return (lambda: capture(fn, games, cur_game)), None
+
 
 # Live-env entries appended after the analyses (they need the engine worker).
 ENGINE_MENU = [

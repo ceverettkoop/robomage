@@ -180,22 +180,25 @@ The GUI's **analysis window** (F9 toggles it in-game; `--no-analysis` to start w
 live MCTS evaluation of your current decision on a separate, detached engine copy that never
 blocks the live game. It is GUI-only; `--board tui`/`text` reject the `--analysis*` flags.
 
-## Run N games and analyze them (interactive)
+## Run N games and analyze them
 
 ```bash
-train/.venv/bin/python train/analysis.py interactive --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck)
+train/.venv/bin/python train/analysis.py browse --player-a (gen, or a checkpoint path) --player-b (model, or 'scripted') --deck-a (model's deck) --deck-b (opponent's deck)
 ```
 
-`analysis.py` also has a non-interactive subcommands for a report each — `report`,
+`analysis.py report` runs the standard battery once and writes a self-contained HTML report
+(headless); `analysis.py search` compares search against the raw net.
 
 ### Analysis browser
 
 `analysis.py browse` is a full-screen browser for the same analysis: pick a game from the
 sidebar and page through its board states (rendered like the TUI game board) one decision at a
 time, with the model's full policy distribution shown at each step; seek by clicking the V(s)
-histogram docked at the bottom; run any REPL analysis view (summary, cardvalue, targeting,
-swings, regret, entropy, calibration, shap, …) from the sidebar menu; and branch a
-counterfactual `whatif` at the current step (`w` key) to simulate an alternative line.
+histogram docked at the bottom; run any analysis view (summary, cardvalue, targeting,
+swings, regret, entropy, calibration, shap, …) from the sidebar menu, along with the selected
+game's text transcript and the `chart …` views (each saves a PNG under `train/analysis_out/`
+and prints its path); and branch a counterfactual `whatif` at the current step (`w` key) to
+simulate an alternative line.
 
 `--source` picks what it browses: `simulate` (the default — `--games` games of `--player-a` vs
 `--player-b` on `--deck-a`/`--deck-b`), a directory of recorded shards (AZ self-play such as

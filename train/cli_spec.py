@@ -722,6 +722,15 @@ REMOVED_FLAGS = (
                 scopes=("analysis/browse",)),
 )
 
+# Subcommands that were folded into another: (tool key, name) -> hint appended
+# to "`name` was removed; ". ``add_removed_subcommands`` registers each on its
+# tool's argparse subparsers as a hidden command that errors with the hint.
+REMOVED_SUBCOMMANDS = {
+    ("analysis", "interactive"): "use `analysis.py browse` (its analyses menu "
+                                 "has every former REPL view, the chart "
+                                 "PNGs and the text transcript)",
+}
+
 # Environment variables that duplicated a flag: name -> hint appended to
 # "environment variable NAME was removed; ".
 REMOVED_ENV_VARS = {}
@@ -783,6 +792,35 @@ def add_removed_flags(parser, *scopes) -> None:
         else:
             parser.add_argument(r.flag, nargs="?", help=argparse.SUPPRESS,
                                 dest=dest, action=_removed_flag_action(r))
+
+
+def removed_subcommand_message(tool_key, name):
+    """The error for removed subcommand ``name`` of ``tool_key``, else None."""
+    hint = REMOVED_SUBCOMMANDS.get((tool_key, name))
+    return None if hint is None else f"`{name}` was removed; {hint}"
+
+
+def add_removed_subcommands(subparsers, tool_key) -> None:
+    """Register ``tool_key``'s removed subcommands on an argparse subparsers
+    action (after the live ones): each is a hidden command that errors with
+    its hint whatever follows it. The usage line keeps listing only the live
+    subcommands."""
+    import argparse
+    live = list(subparsers.choices)
+    for (key, name), _hint in REMOVED_SUBCOMMANDS.items():
+        if key != tool_key:
+            continue
+        msg = removed_subcommand_message(key, name)
+
+        class _Removed(argparse.Action):
+            def __call__(self, parser, namespace, values, option_string=None,
+                         _msg=msg):
+                parser.error(_msg)
+
+        sp = subparsers.add_parser(name, add_help=False)
+        sp.add_argument("_removed_rest", nargs=argparse.REMAINDER,
+                        action=_Removed)
+    subparsers.metavar = "{" + ",".join(live) + "}"
 
 
 def check_removed_env(parser=None, environ=None) -> None:
@@ -2468,17 +2506,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
 # analysis.py — every command loads a trained model and simulates games (the
 # .rmrec recording-file commands were removed; the live model-sim path is the
 # single source; 'browse' also pages recorded shards and saved traces).
-# 'report' is capture-mode (emits a
-# self-contained HTML battery and exits), while 'interactive' opens the REPL
-# (TUI hands over the terminal) — the REPL supersets every per-analysis view
-# (cardvalue, shap, value-swings, regret, entropy, consistency, targeting,
-# calibration, turning, clusters, whatif, …) and is the only mode with a live
-# env for `run`/`whatif`. The former standalone analysis subcommands were thin
-# wrappers over those same REPL views and were dropped.
+# 'report' is capture-mode (emits a self-contained HTML battery and exits).
 #
 # analysis.py browse — the full-screen analysis browser: game list,
 # board-state pager (one decision step at a time), a clickable V(s) histogram
-# for seeking, and every REPL analysis view, on the Textual board (tui_analysis)
+# for seeking, every analysis view (text analyses, per-game transcripts, saved
+# PNG charts, counterfactual whatif), on the Textual board (tui_analysis)
 # or the PySide6 app (gui_browser). ONE --source picks what it browses (see
 # BROWSE_SOURCE_DESTS). Same sim args as the other analysis commands minus the
 # chart-output flags. The GUI's New Analysis Session dialog mirrors these flags
@@ -2542,17 +2575,6 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
             help="Games to simulate — each a whole match under --format bo3 "
                  "(default: 50)"),
     ]),
-    Sub("interactive",
-        "Interactive session: simulate games then inspect replays, board states, "
-        "value charts, SHAP, counterfactual whatif, and more", mode="interactive", items=[
-            *sim_args(),
-            *search_budget_args(),
-            Arg("--games", "int", default=20,
-                help="Games to pre-simulate before entering the session — each "
-                     "a whole match under --format bo3 (default: 20; 0 = skip)"),
-            Arg("--n-samples", "int", default=200, help="SHAP sample count (default: 200)"),
-            Arg("--n-background", "int", default=50, help="SHAP background size (default: 50)"),
-        ]),
     Sub("search",
         "Search-vs-raw comparison: per searched decision, net priors vs MCTS "
         "visit distribution and net value vs search root value (AZ or PPO ckpt)",

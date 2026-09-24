@@ -55,7 +55,7 @@ FORMAT_SUBS = {
                            "fixed-model", "alternate", "observe", "baseline",
                            "az-selfplay", "az-eval", "az", "az-league",
                            "bench-nenvs")
-} | {("analysis", s) for s in ("browse", "report", "interactive", "search")} | {
+} | {("analysis", s) for s in ("browse", "report", "search")} | {
     ("play", "play"), ("harness", "harness")}
 
 
@@ -219,7 +219,7 @@ def test_format_default():
 # interactive play. The harness's None means "1, or the scenario's seed".
 SEED_DEFAULTS = {
     ("train", "observe"): 1, ("train", "baseline"): 1, ("train", "az-eval"): 1,
-    ("analysis", "report"): 1, ("analysis", "interactive"): 1,
+    ("analysis", "report"): 1,
     ("analysis", "search"): 1, ("analysis", "browse"): 1,
     ("harness", "harness"): None,
     ("play", "play"): None,
@@ -305,6 +305,40 @@ def test_scoped_removal():
               "removed_flag_hint must respect scope")
     finally:
         cli_spec.REMOVED_FLAGS = saved
+
+
+def test_removed_subcommands():
+    print("removed subcommands error with their hint and stay out of --help")
+    for (tool_key, name), _hint in cli_spec.REMOVED_SUBCOMMANDS.items():
+        tool = next(t for t in ALL_TOOLS if t.key == tool_key)
+        check(all(s.name != name for s in tool.subs),
+              f"{tool_key}: removed subcommand {name!r} is still a live Sub")
+        p = argparse.ArgumentParser(prog=tool_key)
+        sp = p.add_subparsers(dest="command", required=True)
+        for s in tool.subs:
+            apply_to_parser(sp.add_parser(s.name, help=s.help), s)
+        cli_spec.add_removed_subcommands(sp, tool_key)
+        msg = cli_spec.removed_subcommand_message(tool_key, name)
+        for argv in ([name], [name, "--player-a", "gen"], [name, "-h"],
+                     [name, "x", "--y"]):
+            code, err = parse_error(p, argv)
+            check(code == 2 and msg in err,
+                  f"{tool_key} {' '.join(argv)} should error with {msg!r} "
+                  f"(code={code}, stderr={err!r})")
+        out = io.StringIO()
+        with redirect_stdout(out):
+            try:
+                p.parse_args(["--help"])
+            except SystemExit:
+                pass
+        check(name not in out.getvalue(),
+              f"{tool_key} --help should not list removed {name!r}")
+    check(cli_spec.removed_subcommand_message("analysis", "browse") is None,
+          "a live subcommand has no removal message")
+    rc, out = run_script("train/analysis.py", "interactive", "--player-a", "gen")
+    check(rc == 2 and "`interactive` was removed; use `analysis.py browse`" in out,
+          f"analysis.py interactive should error naming browse (rc={rc}):\n"
+          f"{out[-600:]}")
 
 
 def test_removed_env():
@@ -895,6 +929,7 @@ def main():
     test_seat_vocabulary()
     test_play_seats()
     test_removed_env()
+    test_removed_subcommands()
     test_count_puct_seed_vocabulary()
     test_harness_parity()
     test_harness_script_then_players()

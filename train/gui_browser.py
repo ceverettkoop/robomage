@@ -82,7 +82,7 @@ _MSG_BROWSE_ONLY = ("Not available — browse-only session (no live env to "
 _MSG_NO_ENV = "Live env not ready."
 _MSG_BUSY = ("Engine is busy (simulating or branching) — try again when it "
              "finishes.")
-_MSG_NO_SEL = "Select a game and step first."
+_MSG_NO_SEL = bs.MSG_NO_SEL
 _MSG_TREE_NOT_SHARDS = bs.MSG_TREE_NOT_SHARDS
 _MSG_NO_DIAG = bs.MSG_NO_DIAG
 
@@ -890,7 +890,7 @@ class BrowserPane(QWidget):
 
         self._smoke = os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1"
         self._smoke_pending = self._smoke
-        self._smoke_wait_summary = False
+        self._smoke_keys = []       # smoke analyses still to run, in order
         # Tree smoke (ROBOMAGE_TREE_SMOKE=1): after the load, rebuild the
         # first searched decision's tree and expand one root action.
         self._tree_smoke = os.environ.get("ROBOMAGE_TREE_SMOKE") == "1"
@@ -933,7 +933,7 @@ class BrowserPane(QWidget):
         ana_head.setStyleSheet("color: #b8b8c0; font-weight: bold;")
         sv.addWidget(ana_head)
         self._menu_list = QListWidget()
-        for key, label, _fn in bs.ANALYSES:
+        for key, label, *_rest in bs.ANALYSES + bs.VIEWS:
             item = QListWidgetItem(label)
             item.setData(Qt.UserRole, key)
             self._menu_list.addItem(item)
@@ -1415,24 +1415,21 @@ class BrowserPane(QWidget):
         if key in shard_probes.PROBE_KEYS:
             self._run_probe_entry(key)
             return
-        pool = bs.analysis_pool(self._store.games)
-        if not pool:
-            self._say("No games simulated yet.")
-            return
         if self._store.analysis_busy:
             self._say("An analysis is already running.")
             return
-        entry = next((e for e in bs.ANALYSES if e[0] == key), None)
-        if entry is None:
+        job, why = bs.analysis_job(key, self._store.games,
+                                   self._store.cur_game)
+        if job is None:
+            self._say(why)
             return
-        _key, _label, fn = entry
         self._store.analysis_busy = True
-        self._say(f"Running {key} on {len(pool)} games…")
+        self._say(f"Running {key}…")
         bridge = self._bridge
 
         def runner():
             try:
-                text = bs.capture(fn, pool)
+                text = job()
             except Exception:  # noqa: BLE001 — report, never crash the UI
                 text = traceback.format_exc()
             bridge.analysis_done.emit((key, text))
@@ -1496,7 +1493,7 @@ class BrowserPane(QWidget):
             return
         game = self._store.games[self._store.cur_game]
         if game.get("live"):
-            self._say("The live game has no finished record yet.")
+            self._say(bs.MSG_LIVE)
             return
         gn, step = self._store.cur_game, self._store.cur_step
         self._store.engine_busy = True
@@ -1521,7 +1518,7 @@ class BrowserPane(QWidget):
             return
         game = self._store.games[self._store.cur_game]
         if game.get("live"):
-            self._say("The live game has no finished record yet.")
+            self._say(bs.MSG_LIVE)
             return
         gn, step = self._store.cur_game, self._store.cur_step
         if not bs.step_has_tree(game, step):
@@ -1587,9 +1584,12 @@ class BrowserPane(QWidget):
         self._store.analysis_busy = False
         self._log_output(title, text)
         self._tabs.setCurrentWidget(self._output)
-        if self._smoke_wait_summary and title == "summary":
-            self._smoke_wait_summary = False
-            self._smoke_report()
+        if self._smoke_keys and title == self._smoke_keys[0]:
+            self._smoke_keys.pop(0)
+            if self._smoke_keys:
+                self._run_menu_entry(self._smoke_keys[0])
+            else:
+                self._smoke_report()
 
     # ----- misc -----
 
@@ -1611,8 +1611,8 @@ class BrowserPane(QWidget):
     # ----- smoke hook (ROBOMAGE_BROWSER_SMOKE=1) -----
 
     def _run_smoke(self):
-        """After the first EngineIdle: exercise selection, stepping, and one
-        analysis, then report. The ci wiring lives elsewhere — this is just
+        """After the first EngineIdle: exercise selection, stepping, a pool
+        analysis and a selected-game view, then report. The ci wiring lives elsewhere — this is just
         the in-pane auto-drive."""
         self._flush_refresh()
         if self._store.games:
@@ -1625,7 +1625,7 @@ class BrowserPane(QWidget):
                 self._step_by(1)
             self._step_end()
         if bs.analysis_pool(self._store.games):
-            self._smoke_wait_summary = True
+            self._smoke_keys = ["summary", "transcript"]
             self._run_menu_entry("summary")
         else:
             self._smoke_report()

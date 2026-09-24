@@ -30,13 +30,20 @@ Proves the guarantees both trace-browser front ends rely on:
   6. tree-walk / summary helpers — tree_node_rows ordering and cells,
      walk_terminal_text viewpoint, step_has_tree kinds, the busy summary
      suffixes, and the exile line of zones_text.
+  7. analysis views — every ANALYSES / VIEWS key is unique and apart from
+     the engine/replay/tree/probe menus; analysis_job refuses with no pool,
+     no selection, or the live game; the transcript views print the selected
+     game; every chart view saves its PNG (redirected to a temp dir) and
+     reports the path; whatif_family resolves a branch to its source.
 
 Runnable standalone::
 
     train/.venv/bin/python train/test_browse_session.py
 """
 import os
+import shutil
 import sys
+import tempfile
 import threading
 from types import SimpleNamespace
 
@@ -567,6 +574,89 @@ def test_tree_helpers():
     return "node rows, terminal text, has_tree, busy suffix, zones"
 
 
+# ── 7. Analysis views (transcripts + saved charts) ────────────────────────────
+
+def _view_game(result, n_steps, model_is_a=True):
+    """A finished game whose V(s) ramps across zero toward ``result`` (so
+    calibration, turning points and clusters all have data)."""
+    import analysis as an
+    g = _finished(n_steps, result=result, model_is_a=model_is_a)
+    g["values"] = list(np.linspace(-0.5 * result, 0.8 * result, n_steps))
+    g["action_probs"] = [np.array([0.6, 0.4])] * n_steps
+    g["interp_features"] = [an._extract_interpretable(o)
+                            for o in g["observations"]]
+    g["opp_actions"] = [{"before_model_step": 1, "desc": "PASS"}] * 2
+    return g
+
+
+def test_analysis_views():
+    import shard_probes
+    import viz
+    keys = [e[0] for e in bs.ANALYSES + bs.VIEWS]
+    others = [k for k, *_ in (bs.ENGINE_MENU + bs.REPLAY_MENU + bs.TREE_MENU
+                              + shard_probes.PROBE_MENU)]
+    _check(len(set(keys)) == len(keys), "duplicate ANALYSES/VIEWS key")
+    _check(not set(keys) & set(others), "an analysis key shadows a menu entry")
+
+    _check(bs.analysis_job("summary", [], None) == (None, bs.MSG_NO_GAMES),
+           "an empty pool should refuse")
+    games = [_view_game(1.0 if i % 2 else -1.0, 6 + i, model_is_a=bool(i % 2))
+             for i in range(6)]
+    branch = _view_game(1.0, 7)
+    branch["whatif"] = {"src_game": 0, "step": 2, "action": 1, "desc": "Alt"}
+    games += [branch, bs._live_placeholder(True, 5)]
+    live_gn = len(games) - 1
+    _check(bs.analysis_job("transcript", games, None) == (None, bs.MSG_NO_SEL),
+           "a game view without a selection should refuse")
+    _check(bs.analysis_job("chart_game", games, live_gn) == (None, bs.MSG_LIVE),
+           "a game view on the live game should refuse")
+    _check(bs.analysis_job("nope", games, 0)[0] is None, "unknown key ran")
+    src, src_gn, branches = bs.whatif_family(games, 6)
+    _check(src is games[0] and src_gn == 0 and branches == [branch],
+           "whatif_family did not resolve the branch to its source")
+
+    tmp = tempfile.mkdtemp(prefix="browse_views_")
+    real_out, real_shap = viz._DEFAULT_OUT, bs.compute_shap
+    viz._DEFAULT_OUT = tmp
+    rng = np.random.default_rng(0)
+    n_feat = len(games[0]["interp_features"][0])
+    bs.compute_shap = lambda g: (rng.normal(size=(12, n_feat)),
+                                 rng.normal(size=(12, n_feat)))
+    try:
+        texts = {}
+        for key, _label, _fn, _needs in bs.VIEWS:
+            job, why = bs.analysis_job(key, games, 0)
+            _check(job is not None, f"{key} refused: {why}")
+            texts[key] = job()
+        _check("Game 0" in texts["transcript"] and "V=" in texts["transcript"],
+               "transcript did not print the selected game")
+        _check("BF self" in texts["transcript_full"]
+               and "opp --> PASS (x2)" in texts["transcript_full"],
+               "full transcript lacks zones / collapsed opponent actions")
+        # Card-less zero observations cast nothing and never sideboard: those
+        # two report their no-data line instead of a chart.
+        no_data = {"chart_sbvalue": "No sideboard swaps",
+                   "chart_cardvalue": "No cards with enough cast samples"}
+        saved = []
+        for key, text in texts.items():
+            if not key.startswith("chart_"):
+                continue
+            if key in no_data:
+                _check(no_data[key] in text, f"{key}: {text!r}")
+                continue
+            line = next((ln for ln in text.splitlines()
+                         if "[chart] saved " in ln), None)
+            _check(line is not None, f"{key} saved no chart: {text!r}")
+            path = line.split("[chart] saved ", 1)[1].strip()
+            _check(os.path.dirname(path) == tmp and os.path.exists(path),
+                   f"{key}: {path} not written under the chart dir")
+            saved.append(os.path.basename(path))
+    finally:
+        viz._DEFAULT_OUT, bs.compute_shap = real_out, real_shap
+        shutil.rmtree(tmp, ignore_errors=True)
+    return f"transcripts + {len(saved)} charts saved ({', '.join(sorted(saved))})"
+
+
 TESTS = [
     ("histogram_layout", test_histogram_layout),
     ("store_live_sequence", test_store_live_sequence),
@@ -575,6 +665,7 @@ TESTS = [
     ("decision_data", test_decision_data),
     ("save_and_trace_worker", test_save_and_trace_worker),
     ("tree_helpers", test_tree_helpers),
+    ("analysis_views", test_analysis_views),
     ("live_collect_stream", test_live_collect_stream),
 ]
 

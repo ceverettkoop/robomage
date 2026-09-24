@@ -667,7 +667,8 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
 - **Text board**: `play.py --board text ...` — `runner.run_games` with a `HumanController` seat
   (action number or semantic spec, `concede`) vs `make_controller(opponent spec)`.
 - **Analysis browser** (`analysis.py browse`, not on `game_driver.py`): page board states, seek
-  via a clickable V(s) histogram, run any `analysis.py` REPL view, and branch `whatif`
+  via a clickable V(s) histogram, run any analysis view (text analyses, the selected game's
+  transcript, `chart …` views that save PNGs under `train/analysis_out/`), and branch `whatif`
   counterfactuals. ONE `--source` picks what it browses (`cli_spec.browse_source_kind`):
   `simulate` (default — `--games` games of `--player-a`, the inspected model, vs `--player-b` on
   `--deck-a/-b`), a directory of `shard_*.npz` (AZ self-play or a recording; `--player-a` is the
@@ -779,7 +780,7 @@ decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
   (`make check` tier `curriculum`)
 - `train/progress_io.py` — the single crash-safe (write-temp + `os.replace`) JSON progress
   sidecar reader/writer shared by the league, exploiter, az-league, and curriculum drivers
-- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration, a REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a window) with terminal fallbacks. The inspected model is `--player-a` (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`), its opponent `--player-b` (default `scripted`); a model encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (a scripted `--player-b` mirrors `--deck-a`).
+- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration) — `browse` (the analysis browser), `report` (HTML battery), `search`. Charts save to PNG under `train/analysis_out/` (headless-safe; `report --show` for a window) with terminal fallbacks. The inspected model is `--player-a` (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`), its opponent `--player-b` (default `scripted`); a model encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (a scripted `--player-b` mirrors `--deck-a`).
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
 - `train/play.py` — interactive human-vs-model play (`--board gui|tui|text`; no seat/deck flags on
   the GUI board = the app's welcome pane)
@@ -805,7 +806,7 @@ decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
   `EngineCore`/`EngineWorker`, analyses registry, presentation + tree-walk text helpers,
   `.rmtrace` save); regression `train/test_browse_session.py` (opt-in tier `analysis`)
 - `train/tui_analysis.py` — the Textual analysis browser app (game list with live streaming,
-  board-state pager, clickable V(s) histogram, every `analysis.py` REPL view, net probes, `whatif`
+  board-state pager, clickable V(s) histogram, every analysis view (transcripts, saved charts), net probes, `whatif`
   branching, F6 replay search, F7 text tree walk, ctrl+s `.rmtrace` save); launched by
   `analysis.py browse` (`--board tui`, the default) and `./tui.sh`'s `analysis → browse`
 - `train/analysis_session.py` — Qt-free analysis core: `AnalysisSession` (detached engine,

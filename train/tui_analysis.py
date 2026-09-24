@@ -19,12 +19,13 @@ or loads a shard directory / saved .rmtrace session, and then lets you:
   * seek by CLICKING the V(s) histogram docked at the bottom — one bar per
     decision step (bucketed when the game is wider than the terminal),
     positive V above the zero line, negative below, cursor column highlighted;
-  * run every REPL analysis view (summary, cardvalue, targeting, swings,
+  * run every analysis view (summary, cardvalue, targeting, swings,
     boundaries, matchcal, regret, entropy, consistency, calibration, turning,
-    clusters, sideboard, sbvalue, shap) and the net probes (shard_probes:
-    search π vs net, block importance, card swap, sweeps, pooled KL and
-    calibration) from the sidebar menu — output lands in the "Analysis
-    output" tab;
+    clusters, sideboard, sbvalue, shap), the selected game's text transcript,
+    the chart views (each saves a PNG under train/analysis_out/ and reports
+    its path) and the net probes (shard_probes: search π vs net, block
+    importance, card swap, sweeps, pooled KL and calibration) from the
+    sidebar menu — output lands in the "Analysis output" tab;
   * branch a counterfactual `whatif` at the current game/step (w key), and
     simulate more games, both on the live env. Each whatif ALTERNATIVE is
     grafted onto the source game's prefix and added to the games list as a
@@ -40,8 +41,7 @@ or loads a shard directory / saved .rmtrace session, and then lets you:
   * save the finished games as a .rmtrace session (ctrl+s), which
     `analysis.py browse --source FILE` (either board) reopens.
 
-The matplotlib `chart *` commands and the HTML `report` battery stay in
-analysis.py — this front end covers the text/interactive tools.
+The HTML `report` battery stays in analysis.py.
 
 Launched as `analysis.py browse` (the default --board tui; flags:
 cli_spec.ANALYSIS_BROWSE_SUB), from the repo root:
@@ -114,8 +114,8 @@ _BLOCKS = " ▁▂▃▄▅▆▇█"
 # Gate messages (the same refusals the GUI pane shows).
 _MSG_BUSY = ("Engine is busy (simulating, branching, searching or walking a "
              "tree) — try again when it finishes.")
-_MSG_NO_SEL = "Select a game and step first."
-_MSG_LIVE = "The live game has no finished record yet."
+_MSG_NO_SEL = bs.MSG_NO_SEL
+_MSG_LIVE = bs.MSG_LIVE
 
 # Seconds between coalesced UI refreshes while events stream in.
 _REFRESH_S = 0.1
@@ -780,7 +780,7 @@ class AnalysisApp(App):
         self.sub_title = (f"{self._args.player_a}  vs  {self._args.player_b}"
                           + ("  (bo3)" if is_bo3(self._args) else ""))
         menu = self.query_one("#analyses", OptionList)
-        for key, label, _fn in bs.ANALYSES:
+        for key, label, *_rest in bs.ANALYSES + bs.VIEWS:
             menu.add_option(Option(label, id=key))
         # Engine / replay / tree entries, then the net probes (every mode; the
         # probe net loads on first use).
@@ -1379,19 +1379,17 @@ class AnalysisApp(App):
             self._submit_collect("collect", n)
 
     def _run_analysis_entry(self, key: str) -> None:
-        pool = bs.analysis_pool(self._store.games)
-        if not pool:
-            self.notify("No finished games yet.", severity="warning")
-            return
+        """An ANALYSES (pool) or VIEWS (pool / selected game) entry."""
         if self._store.analysis_busy:
             self.notify("An analysis is already running.", severity="warning")
             return
-        entry = next((e for e in bs.ANALYSES if e[0] == key), None)
-        if entry is None:
+        job, why = bs.analysis_job(key, self._store.games, self._store.cur_game)
+        if job is None:
+            self.notify(why, severity="warning")
             return
         self._store.analysis_busy = True
-        self.notify(f"Running {key} on {len(pool)} games…")
-        self._analysis_worker(key, entry[2], pool)
+        self.notify(f"Running {key}…")
+        self._analysis_worker(key, job)
 
     def _run_probe_entry(self, key: str) -> None:
         """Net probes over the browsed records (shard_probes): snapshot on the
@@ -1414,11 +1412,11 @@ class AnalysisApp(App):
                            or "gen")
 
     @work(thread=True, group="analysis")
-    def _analysis_worker(self, title: str, fn, pool) -> None:
-        # Whatif branch traces and the live game are excluded from the pool
+    def _analysis_worker(self, title: str, job) -> None:
+        # Pool entries exclude whatif branch traces and the live game
         # (bs.analysis_pool): not independent finished samples.
         try:
-            text = bs.capture(fn, pool)
+            text = job()
         except Exception:
             text = traceback.format_exc()
         self.post_message(AnalysisResult(title, text))

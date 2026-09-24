@@ -22,6 +22,9 @@ pane (gui_browser.BrowserPane) are wired to browse_session:
      (opponent's hand hidden unless revealed).
   5. live streaming — GameStarted/StepAppended/GameFinished events grow a
      LIVE games-list row that follow mode rides, then finalize it.
+  6. views — the VIEWS entries are in the analyses menu; the transcript
+     view prints the selected game into the Analysis-output log and a chart
+     view saves its PNG (redirected to a temp dir) and logs the path.
 
 Needs bin/robomage (one real engine observation is the fixture); torch-free.
 
@@ -49,6 +52,7 @@ from env import RoboMageEnv, _SELF_IS_A_IDX  # noqa: E402
 from textual.widgets import Checkbox, Input, RichLog, Select, Tree  # noqa: E402
 
 import tui_analysis  # noqa: E402
+import viz  # noqa: E402
 
 _PROV = {"player_a": "gen", "player_b": "scripted",
          "deck_a": "temp/tui_browser_a", "deck_b": "temp/tui_browser_b",
@@ -174,6 +178,28 @@ async def _drive(trace_path, save_path, obs, num):
                "probe output missing from the log")
         results.append("probe menu → shard_probes on the analysis worker")
 
+        # 6. views: transcript + a saved chart on the selected game.
+        menu_ids = {app.query_one("#analyses").get_option_at_index(i).id
+                    for i in range(app.query_one("#analyses").option_count)}
+        _check({k for k, *_ in bs.VIEWS} <= menu_ids,
+               "VIEWS entries missing from the analyses menu")
+        app._run_menu_entry("transcript_full")
+        await _wait(pilot, lambda: "Game 0" in _log_text(app)
+                    and not st.analysis_busy, "the transcript")
+        _check("BF self" in _log_text(app), "full transcript lacks the zones")
+        chart_dir = os.path.join(os.path.dirname(save_path), "charts")
+        real_out = viz._DEFAULT_OUT
+        viz._DEFAULT_OUT = chart_dir
+        try:
+            app._run_menu_entry("chart_game")
+            png = os.path.join(chart_dir, "game0.png")
+            await _wait(pilot, lambda: f"[chart] saved {png}" in _log_text(app)
+                        and not st.analysis_busy, "the chart")
+        finally:
+            viz._DEFAULT_OUT = real_out
+        _check(os.path.exists(png), f"{png} not written")
+        results.append("views: transcript + chart_game PNG in the output log")
+
         # 4. tree walk glue.
         await pilot.press("f7")
         _check(not st.engine_busy, "F7 submitted a tree job on a .rmtrace")
@@ -288,8 +314,8 @@ def main():
             return 1
         for r in results:
             print(f"ok    {r}", flush=True)
-        print(f"\ntui browser: {len(results)}/5 checks passed", flush=True)
-        return 0 if len(results) == 5 else 1
+        print(f"\ntui browser: {len(results)}/6 checks passed", flush=True)
+        return 0 if len(results) == 6 else 1
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
         for p in decks:
