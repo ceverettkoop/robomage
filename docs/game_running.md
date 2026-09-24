@@ -154,8 +154,7 @@ loop in the tree.
 ## The tools and where they sit
 
 Every Python tool that plays games takes the same match-format flag,
-`--format bo1|bo3`, defaulting to **bo3** (the old `--bo1`/`--bo3` switches
-error with a pointer to it). A game/match count is always `--games` (whole
+`--format bo1|bo3`, defaulting to **bo3**. A game/match count is always `--games` (whole
 matches under bo3; each tool's help says what it counts), the PUCT constant is
 always `--c-puct`, and `--seed` defaults to **1** on every test, eval and
 inspection tool (observe, baseline, az-eval, analysis, the harness, the

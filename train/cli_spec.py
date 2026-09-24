@@ -743,7 +743,19 @@ REMOVED_SUBCOMMANDS = {
 
 # Environment variables that duplicated a flag: name -> hint appended to
 # "environment variable NAME was removed; ".
-REMOVED_ENV_VARS = {}
+REMOVED_ENV_VARS = {
+    "ROBOMAGE_GUI_SMOKE": "use ROBOMAGE_SMOKE=play:N",
+    "ROBOMAGE_ANALYSIS_SMOKE": "use ROBOMAGE_SMOKE=play:N,analysis",
+    "ROBOMAGE_GUI_SESSION_SMOKE": "use ROBOMAGE_SMOKE=session",
+    "ROBOMAGE_GUI_TRACE_SMOKE": "use ROBOMAGE_SMOKE=trace",
+    "ROBOMAGE_BROWSER_SMOKE": "use ROBOMAGE_SMOKE=browser[:DIR]",
+    "ROBOMAGE_BROWSER_SMOKE_SHARDS": "use ROBOMAGE_SMOKE=browser:DIR "
+                                     "(or tree:DIR)",
+    "ROBOMAGE_TREE_SMOKE": "use ROBOMAGE_SMOKE=tree:DIR",
+    "ROBOMAGE_POPART": "use --popart / --no-popart (PopArt is on by default)",
+    "ROBOMAGE_PER_ACTION_HEAD": "use --stock-head for the stock MlpPolicy "
+                                "head (the per-action head is the default)",
+}
 
 
 def _scope_matches(entry_scopes, scopes) -> bool:
@@ -843,6 +855,74 @@ def check_removed_env(parser=None, environ=None) -> None:
             if parser is not None:
                 parser.error(msg)
             raise SystemExit(f"error: {msg}")
+
+
+# ── Headless GUI smokes ───────────────────────────────────────────────────────
+# ROBOMAGE_SMOKE is a comma list of smoke legs, each ``name`` or
+# ``name:value`` (split on the first colon, so a value may itself hold one):
+#   play[:N]       auto-play N human decisions on the play board, then quit
+#                  (N=1, the default, quits right after the first render)
+#   analysis       force the analysis window on (torch-free uniform evaluator)
+#                  and fail unless it delivered stats — pair with play:N
+#   session        play-session save -> reopen replay round-trip (gui_main)
+#   trace          synthetic .rmtrace opened into the analysis browser (gui_main)
+#   browser[:DIR]  the analysis browser's own auto-drive; from the bare
+#                  gui_main shell it opens DIR (a recording, or a record base
+#                  holding rec_* dirs) as a shard-mode session
+#   tree:DIR       rebuild + expand the first searched decision's tree of the
+#                  search-opponent recording at DIR (gui_main)
+# Any leg also turns modal dialogs into stderr lines, and a --record-shards
+# play session fails unless it recorded a shard.
+SMOKE_ENV = "ROBOMAGE_SMOKE"
+SMOKE_LEGS = ("play", "analysis", "session", "trace", "browser", "tree")
+_SMOKE_VALUED = {"play", "browser", "tree"}
+
+
+def parse_smoke(value):
+    """``{leg: value}`` from a ROBOMAGE_SMOKE string (a valueless leg maps to
+    True; ``play`` maps to its int decision count). ValueError on an unknown
+    leg, a value on a leg that takes none, or a non-positive play count."""
+    legs = {}
+    for item in (value or "").split(","):
+        item = item.strip()
+        if not item:
+            continue
+        name, sep, val = item.partition(":")
+        name = name.strip()
+        if name not in SMOKE_LEGS:
+            raise ValueError(f"unknown smoke leg {name!r} (legs: "
+                             f"{', '.join(SMOKE_LEGS)})")
+        if sep and name not in _SMOKE_VALUED:
+            raise ValueError(f"smoke leg {name!r} takes no value")
+        if name == "play":
+            try:
+                n = int(val) if sep else 1
+            except ValueError:
+                n = 0
+            if n < 1:
+                raise ValueError(f"play:N needs a positive decision count, "
+                                 f"got {val!r}")
+            legs[name] = n
+        else:
+            legs[name] = val if sep else True
+    return legs
+
+
+def smoke_legs(environ=None):
+    """The parsed ROBOMAGE_SMOKE legs of ``environ`` (os.environ by default);
+    {} when unset. Exits with an error on a removed smoke variable or a
+    malformed list."""
+    environ = os.environ if environ is None else environ
+    check_removed_env(environ=environ)
+    try:
+        return parse_smoke(environ.get(SMOKE_ENV, ""))
+    except ValueError as e:
+        raise SystemExit(f"error: {SMOKE_ENV}: {e}")
+
+
+def smoke_leg(name, environ=None):
+    """One leg's value from ROBOMAGE_SMOKE (None when the leg is absent)."""
+    return smoke_legs(environ).get(name)
 
 
 # ── Spec dataclasses ──────────────────────────────────────────────────────────
@@ -950,6 +1030,23 @@ def common_args(binary_default=BINARY):
     ]
 
 
+def resolve_popart(args, parser=None) -> bool:
+    """The session's effective PopArt setting from a training namespace:
+    ``--popart`` / ``--no-popart`` when given, else ON unless ``--stock-head``
+    (the stock head has no multi-head critic for PopArt to normalize).
+    Explicit ``--popart`` with ``--stock-head`` is an error (through
+    ``parser.error`` when a parser is given)."""
+    popart = getattr(args, "popart", None)
+    stock = bool(getattr(args, "stock_head", False))
+    if popart and stock:
+        msg = ("--popart requires the multi-head critic policy; it cannot be "
+               "combined with --stock-head")
+        if parser is not None:
+            parser.error(msg)
+        raise SystemExit(f"error: {msg}")
+    return (not stock) if popart is None else bool(popart)
+
+
 def train_opts():
     """Args shared by training subcommands."""
     return [
@@ -977,15 +1074,18 @@ def train_opts():
                  "checkpoint-compatible; resuming always keeps the checkpoint's "
                  "own head, so this only affects fresh (--fresh / first-time) "
                  "models."),
-        Arg("--popart", "flag",
-            help="Per-archetype-bucket PopArt value normalization (default OFF). "
-                 "The multi-head critic already isolates each matchup class in the "
-                 "last layer; PopArt additionally keeps a running (mu, sigma) of "
-                 "each bucket's returns and predicts normalized values, so a "
-                 "high-variance matchup can't dominate the SHARED torso's value "
-                 "gradients. Output-preserving (the head column is rescaled on "
-                 "every stats update), so it is safe to switch on mid-run. "
-                 "Incompatible with --stock-head and with clip_range_vf."),
+        Arg("--popart", "bool", default=None,
+            help="Per-archetype-bucket PopArt value normalization (default ON; "
+                 "--no-popart turns it off, and --stock-head implies "
+                 "--no-popart). The multi-head critic already isolates each "
+                 "matchup class in the last layer; PopArt additionally keeps a "
+                 "running (mu, sigma) of each bucket's returns and predicts "
+                 "normalized values, so a high-variance matchup can't dominate "
+                 "the SHARED torso's value gradients. Output-preserving (the "
+                 "head column is rescaled on every stats update), so a "
+                 "checkpoint trained either way resumes safely under either "
+                 "setting. Incompatible with --stock-head and with "
+                 "clip_range_vf."),
         Arg("--n-epochs", "int", default=N_EPOCHS,
             help="PPO optimization epochs per update (default: %d). Applies to "
                  "fresh models AND overrides whatever a resumed checkpoint was "

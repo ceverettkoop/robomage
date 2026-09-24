@@ -55,7 +55,7 @@ from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
                       LEAGUE_ADAPTIVE_BOOST, LEAGUE_EXPLOITER_FLOOR,
                       EXPLOITER_STEPS, EXPLOITER_CHUNK, parse_shard, shard_tag,
-                      TRAIN_TOOL, apply_to_parser, is_bo3)
+                      TRAIN_TOOL, apply_to_parser, is_bo3, resolve_popart)
 # Crash-safe progress sidecars (write-to-temp + os.replace) shared by every
 # resumable driver — the league rotations, exploiter runs, the AZ league, and
 # the curriculum runner. Stdlib-only module so the torch-free callers (tui.py,
@@ -86,24 +86,28 @@ import numpy as np
 # action from its own encoded features (category + target card embedding +
 # controller_is_self + zone + referenced-entity embedding) instead of a flat
 # positional Linear — and is the flavor AZNet's from_ppo warm-start transfers
-# 1:1. Opt out with --stock-head (any training subcommand) or
-# ROBOMAGE_PER_ACTION_HEAD=0 to build the legacy stock MlpPolicy head.
+# 1:1. Opt out with --stock-head (any training subcommand) to build the legacy
+# stock MlpPolicy head.
 # The two flavors are NOT checkpoint-compatible: resuming a checkpoint always
 # keeps the flavor it was saved with (a mismatch with the session's flavor
 # prints a warning suggesting --fresh).
-USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "1").lower() \
-    not in ("0", "", "false", "no")
+USE_PER_ACTION_HEAD = True
 
 
-# ── PopArt value normalization (opt-in, default OFF) ────────────────────────
-# --popart (any training subcommand) or ROBOMAGE_POPART=1 swaps MaskablePPO for
-# the thin PopArtMaskablePPO subclass (train/popart.py), which normalizes each
-# archetype bucket's value targets by that bucket's running (mu, sigma). The
-# statistics live in the POLICY's buffers, so a checkpoint is loadable either way
-# and the flag can be flipped between sessions; with it off the stats stay at
-# (0, 1) and every PopArt formula is the identity.
-USE_POPART = os.environ.get("ROBOMAGE_POPART", "0").lower() \
-    in ("1", "true", "yes", "on")
+# ── PopArt value normalization (default ON) ─────────────────────────────────
+# Training sessions swap MaskablePPO for the thin PopArtMaskablePPO subclass
+# (train/popart.py), which normalizes each archetype bucket's value targets by
+# that bucket's running (mu, sigma); --no-popart (any training subcommand)
+# keeps stock MaskablePPO. The statistics live in the POLICY's buffers, so a
+# checkpoint is loadable either way and the flag can be flipped between
+# sessions: a checkpoint trained without PopArt carries identity stats
+# (0, 1, count 0), its first PopArt update adopts the rollout's statistics
+# and rescales the head output-preservingly, so resuming it under PopArt never
+# mis-scales its values. A stock-head checkpoint has no multi-head critic and
+# resumes without PopArt (popart.PopArtMaskablePPO.load).
+# The module default is OFF so importers that never parse training flags
+# (bench, analysis) construct stock MaskablePPO unless they opt in.
+USE_POPART = False
 
 
 def _ppo_class():
@@ -118,8 +122,8 @@ def _policy_config(policy_kwargs):
     """Resolve (policy, policy_kwargs) for MaskablePPO construction.
 
     Swaps in the per-action-logit head (and flips the extractor into
-    per_action_head mode) unless the session opted out via --stock-head /
-    ROBOMAGE_PER_ACTION_HEAD=0, in which case the stock "MlpPolicy" is returned
+    per_action_head mode) unless the session opted out via --stock-head, in
+    which case the stock "MlpPolicy" is returned
     untouched.
     """
     if not (USE_PER_ACTION_HEAD and USE_MASKABLE):
@@ -2436,14 +2440,11 @@ if __name__ == "__main__":
             USE_PER_ACTION_HEAD = False
             print("[head] --stock-head: fresh models this session use the "
                   "stock MlpPolicy positional head")
-        # --popart normalizes each archetype bucket's value targets by that
-        # bucket's running (mu, sigma) (see train/popart.py). Default OFF.
-        if getattr(args, "popart", False):
-            if not USE_PER_ACTION_HEAD:
-                parser.error("--popart requires the multi-head critic policy; it "
-                             "cannot be combined with --stock-head")
-            USE_POPART = True
-            print("[popart] per-archetype-bucket value normalization ENABLED")
+        # PopArt normalizes each archetype bucket's value targets by that
+        # bucket's running (mu, sigma) (see train/popart.py).
+        USE_POPART = resolve_popart(args, parser)
+        print("[popart] per-archetype-bucket value normalization "
+              + ("ENABLED" if USE_POPART else "disabled (--no-popart / --stock-head)"))
 
     if args.command == "league":
         league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,

@@ -25,17 +25,16 @@ Wayland note: PySide6 wheels bundle both the wayland and xcb platform plugins.
 If a Wayland session misbehaves (blank window, input glitches), force X11 with
 ``QT_QPA_PLATFORM=xcb``.
 
-Headless sanity check: set ``ROBOMAGE_GUI_SMOKE=1`` to auto-quit cleanly shortly
-after the first StateUpdate renders (exit 0), or ``ROBOMAGE_GUI_SMOKE=N`` (N>1)
+Headless sanity check: set ``ROBOMAGE_SMOKE=play`` to auto-quit cleanly shortly
+after the first StateUpdate renders (exit 0), or ``ROBOMAGE_SMOKE=play:N`` (N>1)
 to auto-play N human decisions — submitting the first legal action each time —
 before quitting. Pair it with ``QT_QPA_PLATFORM=offscreen`` for a display-less run.
-Add ``ROBOMAGE_ANALYSIS_SMOKE=1`` to also force the analysis window on (uniform
-evaluator, no torch) and fail (exit 1) unless a live analysis run delivered
-stats during the smoke.
+Add the ``analysis`` leg (``ROBOMAGE_SMOKE=play:N,analysis``) to also force the
+analysis window on (uniform evaluator, no torch) and fail (exit 1) unless a live
+analysis run delivered stats during the smoke.
 """
 
 import html
-import os
 import threading
 import time
 
@@ -53,7 +52,7 @@ from PySide6.QtWidgets import (QApplication, QWidget, QLabel,
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 from cli_spec import (HUMAN_SPEC, apply_search_knobs, is_bo3, is_search_spec,
-                      resolve_play_seats, scan_decks)
+                      resolve_play_seats, scan_decks, smoke_leg)
 import launcher_config
 import decode
 import scryfall_cache
@@ -1905,8 +1904,8 @@ class PlayPane(QWidget):
     # ----- smoke-test auto-drive -----
 
     def _maybe_smoke(self, human_turn):
-        """Headless sanity driver: with ROBOMAGE_GUI_SMOKE=1 quit after the first
-        render; with N>1 auto-submit the first legal action on each human turn
+        """Headless sanity driver: with ROBOMAGE_SMOKE=play quit after the first
+        render; with play:N (N>1) auto-submit the first legal action on each human turn
         for N decisions, then quit."""
         if self._smoke_n is None:
             return
@@ -1928,7 +1927,7 @@ class PlayPane(QWidget):
         # auto-play until the first chunk of stats lands (re-check every 100ms,
         # ~15s total budget across the run) — submitting would cancel the run.
         if (self._analysis is not None
-                and os.environ.get("ROBOMAGE_ANALYSIS_SMOKE")
+                and smoke_leg("analysis")
                 and self._analysis.pending_analyzable
                 and not self._analysis.smoke_ok
                 and self._smoke_analysis_waits < 150):
@@ -1939,13 +1938,8 @@ class PlayPane(QWidget):
 
 
 def _smoke_n_from_env():
-    v = os.environ.get("ROBOMAGE_GUI_SMOKE")
-    if not v:
-        return None
-    try:
-        return max(1, int(v))
-    except ValueError:
-        return 1
+    """The ROBOMAGE_SMOKE ``play`` leg's decision count (None when absent)."""
+    return smoke_leg("play")
 
 
 # ── Launcher (intro screen) ───────────────────────────────────────────────────
@@ -2361,11 +2355,11 @@ def _analysis_cfg_from(opts):
     """An AnalysisConfig from launcher/CLI analysis options, or None (disabled).
 
     `opts` is the launcher's analysis dict ({} = enabled with defaults, None =
-    off). ``ROBOMAGE_ANALYSIS_SMOKE`` overrides everything with a small
+    off). The ``analysis`` smoke leg overrides everything with a small
     torch-free config so the headless smoke can exercise the pipeline."""
     from analysis_session import AnalysisConfig
 
-    if os.environ.get("ROBOMAGE_ANALYSIS_SMOKE"):
+    if smoke_leg("analysis"):
         return AnalysisConfig(evaluator_spec="uniform", worlds=2,
                               chunk_sims=8, max_sims=32, auto_analyze=True,
                               procs=1)   # one engine: keep the smoke cheap

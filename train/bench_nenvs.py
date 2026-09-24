@@ -19,7 +19,7 @@ reports, for each:
 
 For each ``n_envs`` it builds the same vec-env + model that ``train.py`` uses
 (same ``PPO_KWARGS``, same per-action-head policy, the training runs'
-``--popart`` / ``--embed-dim`` flags),
+``--popart/--no-popart`` / ``--embed-dim`` flags),
 runs one **warmup** rollout+update (pays process spawn, torch/HIP init, and the
 opponent-model loads) and then a **timed** measured phase of ``--timesteps``
 new env steps (rounded up to whole rollouts). Nothing is saved and no
@@ -27,7 +27,7 @@ checkpoint is written or overwritten — this is a pure timing harness.
 
 Usage (``train.py bench-nenvs`` is the entry point; flags in cli_spec):
 
-    train/.venv/bin/python train/train.py bench-nenvs --mode league --popart \
+    train/.venv/bin/python train/train.py bench-nenvs --mode league \
         --n-envs 24,32,48,64,72 --timesteps 250000
     train/.venv/bin/python train/train.py bench-nenvs --deck-a delver --deck-b delver
     train/.venv/bin/python train/train.py bench-nenvs --mode scripted --deck-a burn --deck-b mav
@@ -183,8 +183,8 @@ def _build_vec_env(mode, n_envs, deck, opp_deck, env_kwargs):
 def _make_model(vec_env, embed_dim):
     """Fresh model matching train.py's construction (no checkpoint I/O).
 
-    Uses the same ``_ppo_class()`` (PopArt when ``run`` switched it on for
-    ``--popart``) and ``_policy_config`` (per-action logit head by default) as
+    Uses the same ``_ppo_class()`` (PopArt unless ``run`` switched it off
+    for ``--no-popart``) and ``_policy_config`` (per-action logit head by default) as
     a real training session, so the benchmarked forward/backward cost is the
     real one.
     """
@@ -299,12 +299,12 @@ def run(args):
     # INTERACTIVE_BINARY (the --binary default) = release-by-default, the tier
     # every PPO training driver runs on.
     from cli_spec import (N_ENVS, N_ENVS_SELF_PLAY, PPO_KWARGS, is_bo3,
-                          parse_int_list)
+                          parse_int_list, resolve_popart)
     import train as T
     bo3 = is_bo3(args)
-    # _ppo_class() reads this module global, exactly as train.py's --popart does.
-    if args.popart:
-        T.USE_POPART = True
+    # _ppo_class() reads this module global, exactly as train.py's
+    # --popart/--no-popart does.
+    T.USE_POPART = resolve_popart(args)
 
     _BINARY = args.binary
     deck = args.deck_a
@@ -319,7 +319,7 @@ def run(args):
 
     print(f"Machine: {os.cpu_count()} logical CPUs")
     if args.mode == "league":
-        print(f"Mode: league (mixed self-deck, bo3={bo3}, popart={args.popart})")
+        print(f"Mode: league (mixed self-deck, bo3={bo3}, popart={T.USE_POPART})")
     else:
         print(f"Mode: {args.mode}  |  deck={deck}  opponent={opp_deck}  bo3={bo3}")
     print(f"Sweep n_envs: {sweep}")

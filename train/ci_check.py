@@ -684,7 +684,7 @@ def tier_gui(rep):
     tree_rec_dir = tempfile.mkdtemp(prefix="ci_tree_smoke_")
     legs = [
         ("play smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8"),
+         dict(env, ROBOMAGE_SMOKE="play:8"),
          [sys.executable, "train/play.py", "--no-analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1"]),
@@ -693,27 +693,26 @@ def tier_gui(rep):
         # so this exercises the recorder without torch); gui_main.run's
         # RECORD SMOKE check fails the leg when no shard was written.
         ("record-shards smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=rec_dir),
+         dict(env, ROBOMAGE_SMOKE="play:8", ROBOMAGE_RECORD_DIR=rec_dir),
          [sys.executable, "train/play.py", "--no-analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1",
           "--record-shards"]),
         ("analysis-window smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_ANALYSIS_SMOKE="1"),
+         dict(env, ROBOMAGE_SMOKE="play:8,analysis"),
          [sys.executable, "train/play.py", "--analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1"]),
         ("session save/reopen smoke",
-         dict(env, ROBOMAGE_GUI_SESSION_SMOKE="1"),
+         dict(env, ROBOMAGE_SMOKE="session"),
          [sys.executable, "train/play.py"]),
         ("trace open smoke",
-         dict(env, ROBOMAGE_GUI_TRACE_SMOKE="1"),
+         dict(env, ROBOMAGE_SMOKE="trace"),
          [sys.executable, "train/gui_main.py"]),
         # Browses the record-shards leg's small recording (never a training
-        # pool: the smoke fails without ROBOMAGE_BROWSER_SMOKE_SHARDS).
+        # pool: the smoke fails without a browser:DIR recording).
         ("browser shard smoke",
-         dict(env, ROBOMAGE_BROWSER_SMOKE="1",
-              ROBOMAGE_BROWSER_SMOKE_SHARDS=rec_dir),
+         dict(env, ROBOMAGE_SMOKE=f"browser:{rec_dir}"),
          [sys.executable, "train/gui_main.py"]),
         # Search-opponent recording leg: a torch-free mcts:uniform opponent
         # records its own searched decisions WITH diagnostics (seeds, sims,
@@ -722,15 +721,14 @@ def tier_gui(rep):
         # decision's tree bit-for-bit (verified against the recorded
         # visits) and expands one root action on the engine.
         ("record-search smoke",
-         dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=tree_rec_dir),
+         dict(env, ROBOMAGE_SMOKE="play:8", ROBOMAGE_RECORD_DIR=tree_rec_dir),
          [sys.executable, "train/play.py", "--no-analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick",
           "--player-b", "mcts:uniform?sims=32&worlds=2", "--search-procs", "1",
           "--format", "bo1", "--record-shards"]),
         ("tree smoke",
-         dict(env, ROBOMAGE_TREE_SMOKE="1",
-              ROBOMAGE_BROWSER_SMOKE_SHARDS=tree_rec_dir),
+         dict(env, ROBOMAGE_SMOKE=f"tree:{tree_rec_dir}"),
          [sys.executable, "train/gui_main.py"]),
     ]
     try:

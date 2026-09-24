@@ -55,6 +55,20 @@ any **error** (warnings alone still pass).
 train/.venv/bin/python train/ci_check.py --tier actor
 ```
 
+Each `gui` leg is one process selected by `ROBOMAGE_SMOKE`, a comma list of smoke legs
+(`play[:N]`, `analysis`, `session`, `trace`, `browser[:DIR]`, `tree:DIR`; parsed by
+`cli_spec.smoke_legs`). To reproduce one leg by hand, under a memory cap and against a small
+recording only:
+
+```bash
+QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=play:8 ROBOMAGE_RECORD_DIR=/tmp/rec \
+  train/.venv/bin/python train/play.py --no-analysis --deck-a league/ur_delver \
+  --deck-b league/gw_maverick --player-b scripted --format bo1 --record-shards
+QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=browser:/tmp/rec \
+  systemd-run --user --scope -q -p MemoryMax=8G -p MemorySwapMax=0 \
+  train/.venv/bin/python train/gui_main.py
+```
+
 Useful flags: `--tier pygen,vocab` (subset), `--smoke-games N` / `--fuzz-games N`
 (depth), `--seed N`, `--matchups mirrors|ring|mirrors+ring|all|"a:b,c:d"`,
 `--out-dir DIR` (transcripts + relocated draw logs; `ci_out/` by default).

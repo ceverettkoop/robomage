@@ -401,6 +401,99 @@ def test_removed_env():
         cli_spec.REMOVED_ENV_VARS.update(saved)
 
 
+def test_removed_env_real():
+    print("the removed smoke / PopArt / head env vars error naming the flag")
+    for name, want in (("ROBOMAGE_POPART", "--popart / --no-popart"),
+                       ("ROBOMAGE_PER_ACTION_HEAD", "--stock-head"),
+                       ("ROBOMAGE_GUI_SMOKE", "ROBOMAGE_SMOKE=play:N"),
+                       ("ROBOMAGE_ANALYSIS_SMOKE", "ROBOMAGE_SMOKE=play:N,analysis"),
+                       ("ROBOMAGE_GUI_SESSION_SMOKE", "ROBOMAGE_SMOKE=session"),
+                       ("ROBOMAGE_GUI_TRACE_SMOKE", "ROBOMAGE_SMOKE=trace"),
+                       ("ROBOMAGE_BROWSER_SMOKE", "ROBOMAGE_SMOKE=browser"),
+                       ("ROBOMAGE_BROWSER_SMOKE_SHARDS", "ROBOMAGE_SMOKE=browser:DIR"),
+                       ("ROBOMAGE_TREE_SMOKE", "ROBOMAGE_SMOKE=tree:DIR")):
+        try:
+            cli_spec.smoke_legs(environ={name: "1"})
+            check(False, f"{name} set should exit")
+        except SystemExit as exc:
+            check(f"{name} was removed; use" in str(exc.code)
+                  and want in str(exc.code),
+                  f"{name} error should name {want!r}: {exc.code!r}")
+    env = dict(os.environ, ROBOMAGE_POPART="1")
+    r = subprocess.run([sys.executable, "train/train.py", "league", "--help"],
+                       cwd=REPO, capture_output=True, text=True, timeout=300,
+                       env=env)
+    out = r.stdout + r.stderr
+    check(r.returncode == 2 and "ROBOMAGE_POPART was removed" in out,
+          f"train.py should refuse ROBOMAGE_POPART (rc={r.returncode}):\n"
+          f"{out[-600:]}")
+
+
+def test_smoke_legs():
+    print("ROBOMAGE_SMOKE parses into one leg map")
+    parse = cli_spec.parse_smoke
+    check(parse("") == {} and cli_spec.smoke_legs(environ={}) == {},
+          "unset smoke = no legs")
+    check(parse("play:8,analysis") == {"play": 8, "analysis": True},
+          f"play:8,analysis ({parse('play:8,analysis')})")
+    check(parse("play") == {"play": 1}, "bare play = 1 decision")
+    check(parse("session") == {"session": True}, "session")
+    check(parse("browser:/tmp/a:b, tree:/x") == {"browser": "/tmp/a:b",
+                                                  "tree": "/x"},
+          "browser/tree carry their dir (split on the first colon)")
+    check(parse("browser") == {"browser": True}, "bare browser")
+    for bad in ("bogus", "play:0", "play:x", "session:1", "analysis:on"):
+        try:
+            parse(bad)
+            check(False, f"smoke {bad!r} should be rejected")
+        except ValueError:
+            pass
+    try:
+        cli_spec.smoke_legs(environ={"ROBOMAGE_SMOKE": "nope"})
+        check(False, "a malformed ROBOMAGE_SMOKE should exit")
+    except SystemExit as exc:
+        check("ROBOMAGE_SMOKE" in str(exc.code) and "nope" in str(exc.code),
+              f"malformed smoke error: {exc.code!r}")
+    check(cli_spec.smoke_leg("play", environ={"ROBOMAGE_SMOKE": "play:3"}) == 3
+          and cli_spec.smoke_leg("tree", environ={}) is None, "smoke_leg")
+
+
+def test_popart_default():
+    print("PopArt is on by default for PPO training; --no-popart / --stock-head")
+    import curriculum
+    subs = {s.name: s for s in cli_spec.TRAIN_TOOL.subs}
+    for name in ("train", "sweep", "fixed-model", "alternate", "league",
+                 "exploiter", "bench-nenvs"):
+        sub = subs[name]
+        req = []
+        for a in iter_args(sub):
+            if a.required or a.is_positional:
+                val = (a.choices[0] if a.choices
+                       else "1" if a.kind in ("int", "float") else "x")
+                req += [val] if a.is_positional else [a.name, val]
+        p = build(sub)
+        on = cli_spec.resolve_popart(p.parse_args(req))
+        off = cli_spec.resolve_popart(p.parse_args(req + ["--no-popart"]))
+        check(on is True and off is False,
+              f"{name}: popart default on, --no-popart off ({on}, {off})")
+        if any(a.dest == "stock_head" for a in iter_args(sub)):
+            check(cli_spec.resolve_popart(p.parse_args(req + ["--stock-head"]))
+                  is False, f"{name}: --stock-head implies --no-popart")
+            code, err = parse_error(p, req + ["--popart", "--stock-head"])
+            check(code is None, "argparse accepts the pair itself")
+            try:
+                cli_spec.resolve_popart(p.parse_args(
+                    req + ["--popart", "--stock-head"]))
+                check(False, f"{name}: --popart --stock-head should error")
+            except SystemExit as exc:
+                check("--stock-head" in str(exc.code),
+                      f"{name}: popart/stock-head error ({exc.code!r})")
+    arg = curriculum.phase_args("league")["popart"]
+    check(curriculum._format_value(arg, False, "t") == "--no-popart"
+          and curriculum._format_value(arg, True, "t") == "--popart",
+          "a curriculum plan's popart true/false composes --popart/--no-popart")
+
+
 def _visible_options(parser):
     """Every help-visible option string of ``parser`` except -h/--help."""
     out = set()
@@ -971,6 +1064,9 @@ def main():
     test_seat_vocabulary()
     test_play_seats()
     test_removed_env()
+    test_removed_env_real()
+    test_smoke_legs()
+    test_popart_default()
     test_removed_subcommands()
     test_count_puct_seed_vocabulary()
     test_harness_parity()

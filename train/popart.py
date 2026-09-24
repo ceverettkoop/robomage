@@ -1,4 +1,4 @@
-"""PopArt value normalization for the per-archetype-bucket critic (opt-in).
+"""PopArt value normalization for the per-archetype-bucket critic.
 
 The multi-head critic (``extractor.PerActionMaskablePolicy``) gives every
 (self archetype x opponent archetype) value bucket its own final head column,
@@ -25,8 +25,11 @@ computed:
   normalized predictions against normalized targets, with no copy of its epoch
   loop here.
 
-Default OFF (``train.py --popart`` enables it). With PopArt off the stats stay at
-(0, 1) and every formula above is the identity.
+Default ON for PPO training (``train.py --no-popart`` disables it). With PopArt
+off the stats stay at (0, 1) and every formula above is the identity, which is
+also why a checkpoint trained without PopArt resumes safely under it: its first
+update adopts the rollout's statistics and rescales the head to preserve the
+output. A stock-head checkpoint (no multi-head critic) resumes without PopArt.
 """
 
 import numpy as np
@@ -74,12 +77,13 @@ class PopArtMaskablePPO(MaskablePPO):
     def _assert_popart_capable(self) -> None:
         if not hasattr(self.policy, "popart_update"):
             raise RuntimeError(
-                "--popart needs the multi-head critic policy "
+                "PopArt needs the multi-head critic policy "
                 "(extractor.PerActionMaskablePolicy); this model's policy is "
-                f"{type(self.policy).__name__} — drop --popart or drop --stock-head")
+                f"{type(self.policy).__name__} — use --no-popart or drop "
+                "--stock-head")
         if self.clip_range_vf is not None:
             raise RuntimeError(
-                "--popart is incompatible with clip_range_vf: the value clip would "
+                "PopArt is incompatible with clip_range_vf: the value clip would "
                 "compare normalized predictions against real-scale stored values")
 
     # ------------------------------------------------------------------
@@ -134,7 +138,11 @@ class PopArtMaskablePPO(MaskablePPO):
         self.logger.record("popart/n_buckets", len(present))
 
     def train(self) -> None:
-        """Normalize this rollout's targets, then run the stock PPO update."""
+        """Normalize this rollout's targets, then run the stock PPO update
+        (just the stock update for a resumed stock-head checkpoint)."""
+        if not hasattr(self.policy, "popart_update"):
+            super().train()
+            return
         self._update_popart_stats()
         self.policy.popart_normalized_out = True
         try:
@@ -146,10 +154,20 @@ class PopArtMaskablePPO(MaskablePPO):
     @classmethod
     def load(cls, *args, **kwargs):
         """Load a checkpoint (PPO or PopArt — the stats live in the policy's
-        buffers, so both flavors load) and re-check PopArt compatibility."""
+        buffers, so both flavors load) and re-check PopArt compatibility.
+
+        A stock-head checkpoint has no multi-head critic to normalize: it
+        keeps its own flavor and trains without PopArt (``train`` skips the
+        normalization), matching how a resume always keeps the checkpoint's
+        head."""
         model = super().load(*args, **kwargs)
         if not hasattr(model, "popart_beta"):
             model.popart_beta = POPART_BETA
+        if not hasattr(model.policy, "popart_update"):
+            print(f"[popart] resumed checkpoint has the "
+                  f"{type(model.policy).__name__} head (no multi-head critic); "
+                  f"training it without PopArt")
+            return model
         model._assert_popart_capable()
         return model
 

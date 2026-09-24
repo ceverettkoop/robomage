@@ -25,12 +25,12 @@ Entry points:
 * ``run_browser(...)``  — analysis.py browse --board gui: an analysis session
                           on the command line's --source, built directly.
 
-Smokes: ``ROBOMAGE_GUI_SMOKE`` / ``ROBOMAGE_ANALYSIS_SMOKE`` keep their
-gui_game semantics — the pane auto-plays and emits session_finished, which
-(under smoke only) tears the session down and quits the app; the analysis
-smoke's exit-1 check lives in ``run``. All confirm/critical dialogs are
-suppressed (printed to stderr) while any smoke env var is set so headless
-runs can never block on a modal.
+Smokes (``ROBOMAGE_SMOKE``, parsed by ``cli_spec.smoke_legs``): the ``play``
+/ ``analysis`` legs keep their gui_game semantics — the pane auto-plays and
+emits session_finished, which (under smoke only) tears the session down and
+quits the app; the analysis smoke's exit-1 check lives in ``run``. All
+confirm/critical dialogs are suppressed (printed to stderr) while any smoke
+leg is set so headless runs can never block on a modal.
 """
 
 import os
@@ -54,7 +54,7 @@ import gui_session_io
 import launcher_config
 from cli_spec import (BROWSE_KIND_TRACE, BROWSE_SOURCE_SIMULATE, TRACE_EXT,
                       SEARCH_KNOB_KEYS, browse_source_kind, format_name,
-                      is_search_spec, scan_decks)
+                      is_search_spec, scan_decks, smoke_leg, smoke_legs)
 from game_driver import build_session, resolve_opponent_spec
 from gui_game import (PlayPane, NewPlaySessionDialog, LauncherDialog,
                       _ensure_app, _analysis_cfg_from, _smoke_n_from_env,
@@ -91,12 +91,9 @@ Application:
 
 
 def _smoke_active():
-    """True when any headless smoke env var is set — modal dialogs must be
+    """True when any ROBOMAGE_SMOKE leg is set — modal dialogs must be
     suppressed (a modal under offscreen has nothing to dismiss it)."""
-    return any(os.environ.get(v) for v in (
-        "ROBOMAGE_GUI_SMOKE", "ROBOMAGE_ANALYSIS_SMOKE",
-        "ROBOMAGE_GUI_SESSION_SMOKE", "ROBOMAGE_GUI_TRACE_SMOKE",
-        "ROBOMAGE_TREE_SMOKE", "ROBOMAGE_BROWSER_SMOKE"))
+    return bool(smoke_legs())
 
 
 def _critical(parent, title, text):
@@ -1005,7 +1002,7 @@ def run(binary_path, model_path, human_player=None,
     """play.py --board gui entry: MainWindow + a play session built directly
     (no dialog). Same signature/semantics as tui_game.run, plus `analysis`:
     the analysis-window options dict (gui_game.analysis_opts; None = off).
-    Returns the exit code; the ROBOMAGE_ANALYSIS_SMOKE / record-shards smoke
+    Returns the exit code; the ``analysis`` smoke / record-shards smoke
     exit-1 checks live here.
 
     `human_clock_s` / `hard_timeout` / `engine_seed` are play.py's
@@ -1024,8 +1021,7 @@ def run(binary_path, model_path, human_player=None,
     recorder = getattr(window.manager.pane, "recorder", None)
     app.exec()
     window.manager.shutdown()                # idempotent safety net
-    if (os.environ.get("ROBOMAGE_ANALYSIS_SMOKE")
-            and not window.manager.analysis_smoke_ok):
+    if smoke_leg("analysis") and not window.manager.analysis_smoke_ok:
         print("ANALYSIS SMOKE FAILED: no analysis stats arrived",
               file=sys.stderr)
         return 1
@@ -1048,9 +1044,9 @@ def run_launcher(binary_path=None):
     welcome pane with the menus live — no dialog is auto-opened; start via File ▸ New Session
     (Ctrl+N play, Ctrl+Shift+N analysis). Returns 0 on a clean exit.
 
-    The headless shell smokes hijack this entry: set
-    ROBOMAGE_GUI_SESSION_SMOKE / ROBOMAGE_GUI_TRACE_SMOKE /
-    ROBOMAGE_BROWSER_SMOKE and run `python train/gui_main.py`."""
+    The headless shell smokes hijack this entry: set ROBOMAGE_SMOKE to
+    session / trace / browser:DIR / tree:DIR and run
+    `python train/gui_main.py`."""
     from cli_spec import INTERACTIVE_BINARY
     binary_path = binary_path or INTERACTIVE_BINARY
     app = _ensure_app()
@@ -1065,7 +1061,7 @@ def run_launcher(binary_path=None):
 def run_browser(opts):
     """analysis.py browse --board gui entry: MainWindow + the analysis session
     ``opts`` (the browse flags by dest) names, built directly (no dialog).
-    Returns the exit code. Under ROBOMAGE_BROWSER_SMOKE the pane's own smoke
+    Returns the exit code. Under the ``browser`` smoke leg the pane's own smoke
     drive runs and its verdict is the exit code."""
     app = _ensure_app()
     window = MainWindow(opts["binary"])
@@ -1073,7 +1069,7 @@ def run_browser(opts):
     if not window.manager.open_browse(opts):
         window.manager.shutdown()
         return 1
-    if os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1":
+    if smoke_leg("browser"):
         window.manager.pane.smoke_done.connect(
             lambda n: app.exit(0 if n > 0 else 1))
     code = app.exec()
@@ -1083,7 +1079,7 @@ def run_browser(opts):
 
 # ── Headless shell smokes ─────────────────────────────────────────────────────
 # Each is a QTimer-driven state machine over the REAL SessionManager/menu
-# flows (no test doubles), mirroring PlayPane's ROBOMAGE_GUI_SMOKE pattern.
+# flows (no test doubles), mirroring PlayPane's ``play`` smoke pattern.
 # They app.exit(0/1) themselves; run_launcher returns that code.
 
 class _ShellSmoke(QObject):
@@ -1223,14 +1219,14 @@ class _TraceSmoke(_ShellSmoke):
 
 class _BrowserSmoke(_ShellSmoke):
     """Shard-mode browser session (torch-free, --no-net) over a small
-    recording, driving the pane's own ROBOMAGE_BROWSER_SMOKE hook. The
-    recording comes from ROBOMAGE_BROWSER_SMOKE_SHARDS (a recording, or a
-    ROBOMAGE_RECORD_DIR base holding rec_* dirs); fails without one — there
-    is deliberately no fallback to a training pool."""
+    recording, driving the pane's own ``browser`` smoke hook. The
+    recording comes from the leg's value (ROBOMAGE_SMOKE=browser:DIR — a
+    recording, or a ROBOMAGE_RECORD_DIR base holding rec_* dirs); fails
+    without one — there is deliberately no fallback to a training pool."""
 
     def __init__(self, window):
         super().__init__(window)
-        self._base = os.environ.get("ROBOMAGE_BROWSER_SMOKE_SHARDS", "")
+        self._base = _smoke_dir("browser")
         self._started = False
 
     def step(self):
@@ -1240,7 +1236,7 @@ class _BrowserSmoke(_ShellSmoke):
             rec = _recording_dir(self._base) if self._base else None
             if rec is None:
                 self._finish(1, f"BROWSER SMOKE FAILED: no recording under "
-                                f"ROBOMAGE_BROWSER_SMOKE_SHARDS={self._base!r}")
+                                f"ROBOMAGE_SMOKE=browser:{self._base!r}")
                 return
             opts = {"source": rec, "seat": "A", "no_net": True,
                     "games": 3, "format": "bo1", "think_time": None,
@@ -1283,16 +1279,16 @@ def _recording_search_seat(rec_dir):
 
 class _TreeSmoke(_ShellSmoke):
     """Shard-mode browser over a search opponent's recording, driving the
-    pane's ROBOMAGE_TREE_SMOKE hook: rebuild the first searched decision's
-    tree and expand one root action. The recording dir comes from
-    ROBOMAGE_BROWSER_SMOKE_SHARDS (a recording, or a ROBOMAGE_RECORD_DIR base
+    pane's ``tree`` smoke hook: rebuild the first searched decision's
+    tree and expand one root action. The recording dir is the leg's value
+    (ROBOMAGE_SMOKE=tree:DIR — a recording, or a ROBOMAGE_RECORD_DIR base
     holding rec_* dirs); the viewpoint seat is the recording's search seat.
     Fails (never skips) without a recording — the ci leg that records one
     runs first."""
 
     def __init__(self, window):
         super().__init__(window, timeout_s=300)
-        self._base = os.environ.get("ROBOMAGE_BROWSER_SMOKE_SHARDS", "")
+        self._base = _smoke_dir("tree")
         self._started = False
 
     def step(self):
@@ -1318,16 +1314,24 @@ class _TreeSmoke(_ShellSmoke):
 
 
 def _start_shell_smoke(window):
-    """Instantiate the shell smoke selected by env vars (None = interactive)."""
-    if os.environ.get("ROBOMAGE_GUI_SESSION_SMOKE") == "1":
+    """Instantiate the shell smoke ROBOMAGE_SMOKE selects (None = interactive)."""
+    legs = smoke_legs()
+    if "session" in legs:
         return _SessionSmoke(window)
-    if os.environ.get("ROBOMAGE_GUI_TRACE_SMOKE") == "1":
+    if "trace" in legs:
         return _TraceSmoke(window)
-    if os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1":
+    if "browser" in legs:
         return _BrowserSmoke(window)
-    if os.environ.get("ROBOMAGE_TREE_SMOKE") == "1":
+    if "tree" in legs:
         return _TreeSmoke(window)
     return None
+
+
+def _smoke_dir(leg):
+    """The recording dir a ``browser:DIR`` / ``tree:DIR`` smoke leg names
+    ("" when the leg carries no value)."""
+    v = smoke_leg(leg)
+    return v if isinstance(v, str) else ""
 
 
 if __name__ == "__main__":

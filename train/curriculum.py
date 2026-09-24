@@ -312,13 +312,16 @@ def _format_value(arg, value, where: str):
     """Normalize one plan value into the argv text for ``arg``.
 
     Returns None when the value means "leave the flag off" (False for a flag,
-    an empty/blank value, or the ``all`` sentinel on a deck-roster arg)."""
+    an empty/blank value, or the ``all`` sentinel on a deck-roster arg). A
+    ``bool`` arg formats true/false as its ``--name`` / ``--no-name`` form."""
     if value is None:
         return None
-    if arg.kind == "flag":
+    if arg.kind in ("flag", "bool"):
         if not isinstance(value, bool):
             raise PlanError(f"{where}: {arg.name} is a flag — its value must be "
                             f"true or false (got {value!r})")
+        if arg.kind == "bool":
+            return arg.name if value else "--no-" + arg.name[2:]
         return arg.name if value else None
     if isinstance(value, bool):
         raise PlanError(f"{where}: {arg.name} takes a value, not a boolean")
@@ -399,7 +402,7 @@ def compose_phase_argv(phase: dict, resume: bool = False,
         text = _format_value(arg, values[dest], where)
         if text is None:
             continue
-        if arg.kind == "flag":
+        if arg.kind in ("flag", "bool"):
             argv.append(text)
         elif arg.is_positional:
             argv.append(text)

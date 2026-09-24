@@ -33,7 +33,6 @@ finished games (`browse_session.analysis_pool`), never touching the env.
 """
 
 import argparse
-import os
 import threading
 import traceback
 
@@ -52,7 +51,7 @@ import browse_session as bs
 import decode
 import shard_probes
 import tree_rebuild
-from cli_spec import is_bo3
+from cli_spec import is_bo3, smoke_leg
 from env import STATE_SIZE
 from game_driver import stack_target_refs, token_pt
 from gui_game import (CardRow, CardWidget, HAND_CARD_H, HAND_CARD_W,
@@ -813,7 +812,7 @@ class BrowserPane(QWidget):
 
     dirty_changed = Signal(bool)      # unsaved finished traces exist
     status = Signal(str)              # status-line text for the host
-    smoke_done = Signal(int)          # ROBOMAGE_BROWSER_SMOKE completion
+    smoke_done = Signal(int)          # browser smoke-leg completion
 
     def __init__(self, opts, parent=None):
         super().__init__(parent)
@@ -865,12 +864,12 @@ class BrowserPane(QWidget):
         self._refresh_timer.setInterval(50)
         self._refresh_timer.timeout.connect(self._flush_refresh)
 
-        self._smoke = os.environ.get("ROBOMAGE_BROWSER_SMOKE") == "1"
+        self._smoke = bool(smoke_leg("browser"))
         self._smoke_pending = self._smoke
         self._smoke_keys = []       # smoke analyses still to run, in order
-        # Tree smoke (ROBOMAGE_TREE_SMOKE=1): after the load, rebuild the
+        # Tree smoke (ROBOMAGE_SMOKE=tree:DIR): after the load, rebuild the
         # first searched decision's tree and expand one root action.
-        self._tree_smoke = os.environ.get("ROBOMAGE_TREE_SMOKE") == "1"
+        self._tree_smoke = bool(smoke_leg("tree"))
         self._tree_smoke_pending = self._tree_smoke
         self._tree_smoke_path = None
 
@@ -1558,7 +1557,7 @@ class BrowserPane(QWidget):
             self._dirty = dirty
             self.dirty_changed.emit(dirty)
 
-    # ----- smoke hook (ROBOMAGE_BROWSER_SMOKE=1) -----
+    # ----- smoke hook (ROBOMAGE_SMOKE=browser) -----
 
     def _run_smoke(self):
         """After the first EngineIdle: exercise selection, stepping, a pool
@@ -1585,7 +1584,7 @@ class BrowserPane(QWidget):
         print(f"BROWSER SMOKE OK: {n} games", flush=True)
         self.smoke_done.emit(n)
 
-    # ----- tree smoke hook (ROBOMAGE_TREE_SMOKE=1) -----
+    # ----- tree smoke hook (ROBOMAGE_SMOKE=tree:DIR) -----
 
     def _run_tree_smoke(self):
         """After the load: select the first searched (kind 1) decision and

@@ -565,6 +565,10 @@ Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO`
   bo3 shaped identically.
 - Format: PPO training (like every tool) plays bo3 matches by default; `--format bo1` switches to
   single games. The reward and shaping above are per game either way.
+- PopArt: PPO training normalizes each archetype bucket's value targets by that bucket's running
+  (mu, sigma) by default (`train/popart.py`); `--no-popart` turns it off and `--stock-head` implies
+  it. The stats ride in the policy's buffers and every update is output-preserving, so a
+  checkpoint trained either way resumes under either setting.
 
 **Bo3-relevant state-vector fields** (exact indices/normalizers live in the `src/machine_io.h`
 layout block — don't hardcode them here):
@@ -676,10 +680,10 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
   reads only the shards they need, `--games 0` loads every match but is refused past
   `shard_replay.MAX_UNBOUNDED_SHARD_BYTES` (2 GiB — a training pool like `az_data/gen` is
   ~100 GB)), or a saved `.rmtrace` session (`--player-a` is the replay-search net). A flag that does not apply to the source kind errors
-  (`cli_spec.BROWSE_SOURCE_DESTS`); `--shards` was removed. `--board tui` (default) is the Textual
+  (`cli_spec.BROWSE_SOURCE_DESTS`). `--board tui` (default) is the Textual
   app in `train/tui_analysis.py`; `--board gui` opens the PySide6 app on that session
   (`gui_main.run_browser`, falling back to tui without PySide6). Also `./tui.sh`'s
-  `analysis → browse`. `tui_analysis.py` itself is no longer an entry point (exits 1).
+  `analysis → browse`.
   **The two boards have the same capabilities** — both sit on `train/browse_session.py`
   (games store, `EngineCore` jobs + the one `EngineWorker` thread, analyses registry,
   presentation/tree-walk helpers, `.rmtrace` save via `save_session`/`session_provenance`), so a
@@ -689,11 +693,13 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
   button and File ▸ Save / Ctrl+S). The TUI renders the Tree tab as a navigable text tree with
   the walked hypothetical board as text. (The play board's analysis window uses F6 differently —
   opponent review, below.) Regression: `train/test_tui_browser.py` (default tier `browser`).
-- **Headless smokes**: `QT_QPA_PLATFORM=offscreen ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and
-  exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it
-  delivered stats. `ROBOMAGE_BROWSER_SMOKE=1` / `ROBOMAGE_TREE_SMOKE=1` (`gui_main.py`) browse the
-  recording named by `ROBOMAGE_BROWSER_SMOKE_SHARDS` (a recording or a `ROBOMAGE_RECORD_DIR` base)
-  and fail without one — never point them at a training pool.
+- **Headless smokes**: one env var, `ROBOMAGE_SMOKE=<comma list of legs>` (parsed by
+  `cli_spec.smoke_legs`; legs `play[:N]`, `analysis`, `session`, `trace`, `browser[:DIR]`,
+  `tree:DIR`). `QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=play:8` auto-plays 8 decisions and
+  exits 0; `play:8,analysis` also forces the analysis window on and fails unless it delivered
+  stats. `session` / `trace` / `browser:DIR` / `tree:DIR` drive `gui_main.py`'s shell smokes; the
+  browser/tree legs browse the recording DIR (a recording or a `ROBOMAGE_RECORD_DIR` base) and
+  fail without one — never point them at a training pool.
 
 **The analysis window** (`train/gui_analysis.py`, GUI only; on by default on the GUI board —
 `--no-analysis` / the launcher checkbox turn it off, `--analysis-*` flags tune it; F9 toggle, F5 analyze, F6 review opponent's last decision, Shift+F5
