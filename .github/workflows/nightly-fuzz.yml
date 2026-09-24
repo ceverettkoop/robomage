@@ -82,15 +82,17 @@ jobs:
       # sb3_contrib.common.maskable.policies at module load. The default CI
       # image (setup-robomage) deliberately omits both, since ordinary CI never
       # touches the AZ actor stack — installed here only, not there.
+      # torch is pinned to the dev venv's version (2.10): later releases' headers
+      # require C++20 and the actor compiles as C++17 with the engine.
       - name: Cache torch wheel
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: pip-torch-cpu-${{ runner.os }}
+          key: pip-torch-cpu-2.10-${{ runner.os }}
 
       - name: Install torch (CPU) + stable-baselines3 + build the actor
         run: |
-          train/.venv/bin/python -m pip install --quiet torch \
+          train/.venv/bin/python -m pip install --quiet "torch==2.10.*" \
             --index-url https://download.pytorch.org/whl/cpu
           train/.venv/bin/python -m pip install --quiet stable-baselines3 sb3-contrib
           make actor -j"$(nproc)"
