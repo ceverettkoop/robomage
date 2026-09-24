@@ -159,12 +159,14 @@ inspection tool (observe, baseline, az-eval, analysis, the harness, fuzz,
 benches, az_inspect) but to a **random, printed** seed on long training runs
 (az-selfplay, az-train, az, az-league).
 
-- **`test_harness.py`** — state sculpting (hands/zones/scenarios) + any
-  controller; `run_games` under the hood. Pass `--format bo1` for a single
-  game (sculpted scenarios usually want one).
-- **`train.py observe`** — per-seat agent specs (`--player-a/-b`,
-  `--play-a/-b`) and decks (`--deck-a/-b`), any matchup. bo3 by default;
-  `--format bo1` for single games.
+- **`test_harness.py`** — state sculpting (hands/zones/scenarios); a global
+  both-seat `--play`/`--actions` script makes decisions first, then each
+  seat's `--player-a/-b` agent spec (default `auto`); `run_games` under the
+  hood. Pass `--format bo1` for a single game (sculpted scenarios usually
+  want one).
+- **`train.py observe`** — per-seat agent specs (`--player-a/-b`, including
+  `play:<specs>` scripts) and decks (`--deck-a/-b`), any matchup. bo3 by
+  default; `--format bo1` for single games.
 - **`train.py baseline`** — the AZ generalist (`az:gen` = `gen__azfinal.pt`)
   under the full league search budget (1028 sims × 8 worlds) vs scripted
   **HARD** over the whole league grid (every deck piloted vs every deck, mirrors

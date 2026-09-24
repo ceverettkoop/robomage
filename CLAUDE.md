@@ -152,49 +152,63 @@ match: once your specs run out it keeps auto-advancing through game 1, sideboard
 - `--no-shuffle` — skip initial library shuffle; cards are drawn in deck file order (opt-in; see Shuffling above)
 - `--narrative` — enable game_log output in machine mode (perfect information)
 
-**Quick start — specify hands inline:**
+The harness's flags are defined once in `train/cli_spec.py` (`HARNESS_TOOL`), which also builds
+the `./tui.sh` harness form; `test_harness.py --help` lists them all (zone presets
+`--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`, `--scenario`, `--merge-sideboard`,
+`--coverage-json`, `--log-decisions`, …).
+
+**Quick start — specify hands inline** (the `keep,keep` script keeps both sculpted hands —
+the hard scripted tier would mulligan a hand it dislikes — then the scripted agents play on):
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Mountain,Lightning Bolt" \
   --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
   --hand-b "Forest,Grizzly Bears" \
   --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
-  --scripted --max-decisions 30
+  --play "keep,keep" --player-a scripted --player-b scripted --max-decisions 30
 ```
 
 **Pre-set battlefield** — start with permanents already in play (no summoning sickness):
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Lightning Bolt" \
   --library-a "Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
-  --hand-b "Giant Growth" \
-  --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
+  --hand-b "Counterspell" \
+  --library-b "Island,Island,Island,Island,Island,Island,Island,Island" \
   --battlefield-a "Mountain,Mountain" \
-  --battlefield-b "Grizzly Bears,Forest" \
-  --scripted --max-decisions 30
+  --battlefield-b "Grizzly Bears,Island,Island" \
+  --play "keep,keep" --player-a scripted --player-b scripted --max-decisions 30
 ```
 
 **Using pre-made deck files** (for precise library sizes without auto-padding):
 Write `.dk` files to `bin/resources/decks/temp/` with `1 CardName` per line (hand cards first), then pass the deck name relative to `decks/`:
 ```bash
-train/.venv/bin/python train/test_harness.py \
-  --deck-a temp/my_test_a --deck-b temp/my_test_b --scripted
+train/.venv/bin/python train/test_harness.py --format bo1 --no-shuffle \
+  --deck-a temp/my_test_a --deck-b temp/my_test_b --player-a scripted --player-b scripted
 ```
 
-**Play modes:**
+**Who decides — the script, then the players:**
 - `--play "cast:Lightning Bolt,target:Grizzly Bears@opp,pass"` — **semantic action specs**
   (the preferred way to script a precise line of play, especially for Claude). Each spec is
   resolved against *this* decision's live menu by intent (verb + card name + controller), so
   it is robust to index reordering and authorable up front. See "Scripting with `--play`"
   below. An unmatched or ambiguous spec **fails loudly with the legal menu** instead of
   silently playing the wrong action.
-- `--scripted` — rule-based agent (from env.py) plays both sides automatically
-- `--actions "9,0,7,0,8"` — pre-scripted *positional* action index sequence (fragile; prefer
+- `--actions "0,0,1"` — pre-scripted *positional* action index sequence (fragile; prefer
   `--play`). Indices shift if the menu reorders. Still useful as a canonical replay form —
   a `--play` run prints the `resolved --actions:` integer list it played.
-- `--interactive` — prompt a human per decision. **Claude cannot use this mode** (no TTY; the
-  `input()` prompt hits EOF and spins) — use `--play` or `--actions` instead.
-- Default (no flag) — auto-passes every decision
+- `--player-a SPEC` / `--player-b SPEC` — each seat's agent, any `opponents.make_controller`
+  spec: `auto` (the default — pass priority / take the first choice), `scripted` (hard tier),
+  `scripted:easy`, `scripted:random`, `explore` / `explore:patient` (coverage fuzzer; vary
+  `--seed`), `gen`, `az:gen`, … or `human` (prompt at the terminal). **Claude cannot use
+  `human`** (no TTY; the `input()` prompt hits EOF) — use `--play` or `--actions` instead.
+
+`--play` / `--actions` are ONE global script for both seats (the `A:`/`B:` seat keys below are
+inherently cross-seat): it makes every decision until it runs out, and from then on each
+decision goes to the priority seat's `--player-a`/`--player-b` agent. With the default `auto`
+players the game auto-advances (action `0`) to its end or `--max-decisions`; with e.g.
+`--player-a scripted --player-b scripted` a scripted opening hands over to the scripted agent.
+Without a script the players drive their seats from the first decision.
 
 **Scripting with `--play` (the method for automated/Claude-driven testing):**
 A `--play` value is a comma-separated list of semantic specs, one consumed per decision (the
@@ -226,10 +240,17 @@ A keyed spec also **auto-passes the keyed seat forward through its own priority 
 action is legal** — e.g. `A:attack:Voice of Victory` written in A's main phase keeps passing until
 declare-attackers. (Forward-advance fires only on a genuinely-not-yet-legal action while a `pass`
 is available; an ambiguous/misspelled spec, or one hitting a mandatory choice it doesn't match,
-fails loudly with the legal menu.) The seat key is independent of the `@own`/`@opp` target suffix.
-Unkeyed specs apply to whoever has priority and are **not** auto-advanced (must match or fail),
-so existing scripts are unchanged and keyed/unkeyed may be mixed. (Under `observe --play-a/-b`
-each list already drives one seat, so leave specs unkeyed there.)
+fails loudly with the legal menu.) When the seat lacking the next spec faces a mandatory choice
+of its own instead of a priority window (e.g. its cleanup discard), its `--player-a/-b` agent
+makes it. The seat key is independent of the `@own`/`@opp` target suffix.
+Unkeyed specs apply to whoever has priority and are **not** auto-advanced (must match or fail);
+keyed and unkeyed specs may be mixed. (Under `observe --player-a "play:…"` each list already
+drives one seat, so leave specs unkeyed there.)
+
+**The engine never asks a seat whose only legal action is a pass** — such a priority window is
+skipped without a decision. So write a `pass` (keyed or not) only where that seat could do
+something else; a keyed `pass` written for a skipped window waits for the seat's next real
+decision, and if that is a mandatory choice it fails with a hint to drop the `pass`.
 
 Notes:
 - Card names match case- and apostrophe-insensitively; an exact name wins, else a unique
@@ -239,37 +260,40 @@ Notes:
 - The opening decisions are mulligans — start a sculpted-hand line with `keep,keep,…` (one
   `keep` per seat, since the harness drives both seats from the one list); with seat keys that's
   `A:keep,B:keep,…`.
-- After the specs run out the game auto-advances (action `0`) to its end or `--max-decisions`.
+- After the specs run out the `--player-a/-b` agents take over (default `auto`: action `0`)
+  until the game ends or `--max-decisions`.
 - Read the transcript: every decision prints the numbered **Available actions** menu next to
   the decoded board state, so when a spec fails you can see exactly what was legal and fix it.
   Keep `--seed` constant (default `1`) so the prefix replays identically while you extend the line.
 
 Example (Bolt kills a bear that is already in play), unkeyed:
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Mountain,Lightning Bolt" \
   --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
   --battlefield-b "Grizzly Bears" \
-  --play "keep,keep,play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp"
+  --play "keep,keep,play:Mountain,cast:Lightning Bolt,target:Grizzly Bears@opp"
 ```
 
-Same line with seat keys (the harness fills in B's passes and A's post-cast passes for you):
+Same line with seat keys (the harness fills in the other seat's passes for you; B needs no
+`pass` here — with no response available, the engine never gives B a decision):
 ```bash
-train/.venv/bin/python train/test_harness.py \
+train/.venv/bin/python train/test_harness.py --format bo1 \
   --hand-a "Lightning Bolt" --battlefield-a "Mountain" \
   --battlefield-b "Grizzly Bears" \
-  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp,B:pass"
+  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
 
-`train.py observe` takes per-seat `--play-a` / `--play-b` to drive one side by specs while the
-other stays scripted/model (e.g. `observe --play-a "keep,play:Island,pass" --player-b scripted`).
+`train.py observe` drives one side by specs with a `play:` agent spec while the other stays
+scripted/model (e.g. `observe --format bo1 --player-a "play:keep,play:Island,pass" --player-b scripted`).
 
 For fully reproducible scenarios, capture the spec list (plus hands/libraries) in a JSON
-scenario file via the `"play"` field (alongside or instead of `"actions"`).
+scenario file via the `"play"` field (or a positional `"actions"` list). Command-line flags
+override the scenario's values; the format and players come from the command line.
 
 **JSON scenario files:**
 ```bash
-train/.venv/bin/python train/test_harness.py --scenario scenario.json
+train/.venv/bin/python train/test_harness.py --format bo1 --scenario scenario.json
 ```
 ```json
 {
@@ -280,7 +304,7 @@ train/.venv/bin/python train/test_harness.py --scenario scenario.json
   "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
   "battlefield_a": [],
   "battlefield_b": ["Grizzly Bears"],
-  "actions": [9, 0, 7, 0, 8],
+  "play": ["keep", "keep", "play:Mountain", "cast:Lightning Bolt", "target:Grizzly Bears@opp"],
   "seed": 1
 }
 ```
@@ -774,7 +798,7 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   `--mode explore` (default) / `explore:patient` (big-mana). Example: `fuzz_campaign.py --deck-a
   league/ur_delver --deck-b league/gw_maverick --mode explore --games 100 --seed 1 --out out.txt`
   (decks relative to `bin/resources/decks/`; W/L/D to stdout, any draw is a finding).
-- `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
+- `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, a `play:<specs>` agent spec such as `observe --player-a "play:…"`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `train/card_props.py` — auto-generated frozen card-property matrix (do not edit manually)
 - `train/test_obs_invariants.py` — asserts per-decision structural invariants on the RAW

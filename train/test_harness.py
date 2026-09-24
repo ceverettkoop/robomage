@@ -14,51 +14,57 @@ automatically when --hand-a/--hand-b are given (those build a stacked temp deck)
 Designed for automated testing: an LLM writes a scenario (hands + action script),
 runs this harness, and reads the output to verify card behavior.
 
+Who decides: the --play / --actions script (global — one entry per decision,
+whichever seat is on the clock) makes every decision until it runs out; after
+that, and at every decision when there is no script, each seat's --player-a /
+--player-b agent decides (any opponents.make_controller spec; default 'auto' =
+pass / first choice, so the game auto-advances to its end or --max-decisions).
+
 Usage examples:
-
-    # Scripted action sequence (action indices separated by commas)
-    python test_harness.py \\
-        --hand-a "Mountain,Lightning Bolt" \\
-        --library-a "Mountain,Island,Island,Mountain,Mountain,Mountain,Mountain" \\
-        --hand-b "Forest,Grizzly Bears" \\
-        --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest" \\
-        --actions "9,0,7,0,8"
-
-    # Use scripted agent (rule-based auto-play) for both sides
-    python test_harness.py \\
-        --hand-a "Mountain,Lightning Bolt,Volcanic Island,Delver of Secrets" \\
-        --library-a "Mountain,Island,Ponder,Lightning Bolt,Daze,Island,Mountain" \\
-        --deck-b delver \\
-        --scripted --max-decisions 40
 
     # Semantic action specs (resolved against the live menu each decision —
     # robust to index reordering; the preferred way to script a precise line).
-    python test_harness.py \\
+    python test_harness.py --format bo1 \\
         --hand-a "Mountain,Lightning Bolt" \\
         --library-a "Mountain,Island,Island,Mountain,Mountain,Mountain,Mountain" \\
         --battlefield-b "Grizzly Bears" \\
-        --play "play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp,pass"
+        --play "keep,keep,play:Mountain,cast:Lightning Bolt,target:Grizzly Bears@opp"
 
     # Seat-keyed specs: when --play drives BOTH seats, prefix a spec with "A:" or
     # "B:" to pin it to a player. When the next spec is keyed to the seat that
     # does NOT have priority, the priority holder auto-passes until the keyed seat
     # is on the clock — so you write each player's intended line and never have to
     # hand-interleave the priority-passes. (Unkeyed specs apply to whoever has
-    # priority, exactly as before.)
-    python test_harness.py \\
+    # priority.) The engine never asks a seat whose only legal action is a pass,
+    # so write a keyed pass only where that seat could do something else.
+    python test_harness.py --format bo1 \\
         --hand-a "Lightning Bolt" --battlefield-a "Mountain" \\
         --battlefield-b "Grizzly Bears" \\
-        --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp,B:pass"
+        --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 
-    # Interactive: pause at each decision and prompt a HUMAN for an action index.
-    # Not usable when an automated agent drives the harness (no TTY to type into)
-    # — precompute --actions or, better, use --play instead.
-    python test_harness.py \\
+    # Scripted agent (rule-based play) for both seats
+    python test_harness.py --format bo1 \\
+        --hand-a "Mountain,Lightning Bolt,Volcanic Island,Delver of Secrets" \\
+        --library-a "Mountain,Island,Ponder,Lightning Bolt,Daze,Island,Mountain" \\
+        --deck-b delver \\
+        --play "keep,keep" --player-a scripted --player-b scripted --max-decisions 40
+
+    # Script an opening, then let the scripted agent play A from there on
+    python test_harness.py --format bo1 --deck-a delver --deck-b delver \\
+        --play "A:keep,B:keep" --player-a scripted --max-decisions 60
+
+    # Positional action indices (fragile — prefer --play)
+    python test_harness.py --format bo1 \\
+        --hand-a "Mountain,Lightning Bolt" \\
+        --hand-b "Forest,Grizzly Bears" \\
+        --actions "0,0,1"
+
+    # A human at the terminal for seat A (needs a TTY — an automated agent
+    # driving the harness must use --play instead).
+    python test_harness.py --format bo1 \\
         --hand-a "Swamp,Dark Ritual,Doomsday" \\
         --library-a "Swamp,Swamp,Swamp,Swamp,Swamp,Swamp,Swamp" \\
-        --hand-b "Island,Island,Island" \\
-        --library-b "Island,Island,Island,Island,Island,Island,Island" \\
-        --interactive
+        --player-a human
 
     # JSON scenario file
     python test_harness.py --scenario scenario.json
@@ -82,16 +88,13 @@ import sys
 from pathlib import Path
 
 import runner
-from cli_spec import add_args, add_removed_flags, format_arg, is_bo3
+from cli_spec import HARNESS_TOOL, apply_to_parser, is_bo3, is_human_spec
 from opponents import (make_controller, ActionListController,
-                       HumanController, AutoPassController, PlayController)
+                       HumanController, PlayController)
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _BIN_DIR = _REPO_ROOT / "bin"  # resource cwd (not per-config)
-# Engine binary via runner/cli_spec so the harness honors the per-config build
-# split (bin/<config>/robomage) and ROBOMAGE_BUILD, not the retired bin/robomage.
-_BINARY = Path(runner.BINARY)
 _DECKS_DIR = _BIN_DIR / "resources" / "decks"
 
 
@@ -189,95 +192,57 @@ def _pad_library(hand, library, min_deck_size=15):
     return padded
 
 
-def main():
+def _player_controller(spec):
+    """(controller, label) for one harness seat's --player-a/--player-b spec.
+
+    A 'human' seat skips its own board dump — the harness transcript already
+    prints the state and menu at every decision."""
+    if is_human_spec(spec):
+        return HumanController(label="Human", show_state=False), "Human"
+    ctrl = make_controller(spec)
+    low = spec.strip().lower()
+    if low in ("auto", "autopass"):
+        return ctrl, "Auto"
+    return ctrl, "Scripted" if low == "scripted" else spec
+
+
+def _build_controllers(player_a, player_b, play_specs, actions):
+    """(ctrl_a, ctrl_b, label_a, label_b) for a harness run.
+
+    The --play / --actions script is global: ONE controller installed as both
+    seats makes every decision until it runs out, then hands each decision to
+    the priority seat's player. Without a script the players drive their seats
+    directly. Identical seat specs share one controller instance."""
+    pa, label_pa = _player_controller(player_a)
+    if player_b.strip() == player_a.strip():
+        pb, label_pb = pa, label_pa
+    else:
+        pb, label_pb = _player_controller(player_b)
+    if play_specs is not None:
+        script = PlayController(play_specs, players=(pa, pb))
+    elif actions is not None:
+        script = ActionListController(actions, players=(pa, pb))
+    else:
+        return pa, pb, label_pa, label_pb
+    labels = tuple(script.label if lbl == "Auto" else f"{script.label}+{lbl}"
+                   for lbl in (label_pa, label_pb))
+    return script, script, labels[0], labels[1]
+
+
+def build_parser():
+    """The harness CLI, built from cli_spec's HARNESS_TOOL (the single source
+    the TUI form is built from too)."""
     parser = argparse.ArgumentParser(
         description="RoboMage LLM test harness",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    parser.add_argument("--scenario", help="Path to JSON scenario file")
-    parser.add_argument("--hand-a", help="Player A starting hand (comma-separated card names)")
-    parser.add_argument("--library-a", help="Player A library after hand (comma-separated)")
-    parser.add_argument("--hand-b", help="Player B starting hand (comma-separated card names)")
-    parser.add_argument("--library-b", help="Player B library after hand (comma-separated)")
-    parser.add_argument("--deck-a", help="Use existing deck file for Player A (name, not path)")
-    parser.add_argument("--deck-b", help="Use existing deck file for Player B (name, not path)")
-    parser.add_argument("--battlefield-a", help="Cards starting on Player A's battlefield (comma-separated)")
-    parser.add_argument("--battlefield-b", help="Cards starting on Player B's battlefield (comma-separated)")
-    parser.add_argument("--graveyard-a", help="Cards starting in Player A's graveyard (comma-separated)")
-    parser.add_argument("--graveyard-b", help="Cards starting in Player B's graveyard (comma-separated)")
-    parser.add_argument("--exile-a", help="Cards starting in Player A's exile (comma-separated)")
-    parser.add_argument("--exile-b", help="Cards starting in Player B's exile (comma-separated)")
-    parser.add_argument("--sideboard-a", help="Cards starting in Player A's sideboard / 'outside the game' (comma-separated)")
-    parser.add_argument("--sideboard-b", help="Cards starting in Player B's sideboard / 'outside the game' (comma-separated)")
-    parser.add_argument("--life-a", type=int, default=None,
-                        help="Player A's starting life total (default 20). Lets a scenario "
-                             "exercise life-payment costs at a chosen life.")
-    parser.add_argument("--life-b", type=int, default=None,
-                        help="Player B's starting life total (default 20).")
-    parser.add_argument("--actions", help="Comma-separated action indices to play")
-    parser.add_argument("--play",
-                        help="Comma-separated semantic action specs resolved against the "
-                             "live menu each decision, e.g. "
-                             "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\". "
-                             "Robust to index reordering; see action_spec.py for the grammar. "
-                             "An unmatched/ambiguous spec fails loudly with the legal menu. "
-                             "Prefix a spec with \"A:\"/\"B:\" to pin it to a player seat: "
-                             "the priority holder auto-passes until the keyed seat is on the "
-                             "clock, so both seats can be scripted without hand-interleaving "
-                             "the priority-passes.")
-    parser.add_argument("--interactive", action="store_true",
-                        help="Prompt a human at the terminal for each action (NOT usable "
-                             "when Claude drives the harness — there is no TTY; use --play)")
-    parser.add_argument("--scripted", action="store_true", help="Use scripted agent")
-    parser.add_argument("--scripted-spec", default="scripted",
-                        help="Which scripted tier --scripted drives (default 'scripted' = "
-                             "hard). Use 'scripted:explore' (or 'explore') for the "
-                             "coverage fuzzer — vary --seed to fan it across engine paths — "
-                             "'explore:patient' (or 'patient') for its big-mana profile "
-                             "that develops mana and holds expensive cards until castable, "
-                             "or 'scripted:easy' / 'scripted:random' for weaker tiers.")
-    add_args(parser, format_arg(
-        ". A bo3 match: loser goes first next game; both players sideboard "
-        "between games; the engine emits GAME_RESULT: per game and "
-        "MATCH_RESULT: at the end; the default --max-decisions is 1500 (up to "
-        "3 games + sideboard decisions) vs 500 for bo1"))
-    parser.add_argument("--merge-sideboard", action="store_true",
-                        help="Fold each deck's SIDEBOARD: section into its mainboard "
-                             "(quantities summed for duplicate names) and run from a "
-                             "merged temp deck with NO sideboard — lets single-game "
-                             "fuzzing reach sideboard-only cards. Requires both "
-                             "--deck-a and --deck-b (rejected with inline --hand/"
-                             "--library seats, whose temp decks have no sideboard "
-                             "to merge) and requires --format bo1 (merging the "
-                             "sideboard and then sideboarding makes no sense). "
-                             "Merged decks still shuffle (no --no-shuffle implied).")
-    parser.add_argument("--no-shuffle", action="store_true",
-                        help="Don't shuffle libraries — deck-file order = draw order "
-                             "(first 7 cards = opening hand). Use when feeding a stacked "
-                             "deck via --deck-a/--deck-b. Implied automatically when "
-                             "--hand-a/--hand-b are given. Without it, libraries are "
-                             "shuffled with the seeded RNG (deterministic per --seed).")
-    parser.add_argument("--coverage-json", metavar="PATH",
-                        help="Accumulate per-action-category and per-card "
-                             "offered/taken counters over the run and write "
-                             "them as JSON to PATH at exit (includes a "
-                             "never_offered list of deck cards with zero menu "
-                             "appearances). Read-only observation — play and "
-                             "RNG are unchanged. Campaigns write one JSON per "
-                             "game and combine them with "
-                             "train/coverage_report.py merge/summarize.")
-    parser.add_argument("--log-decisions", action="store_true",
-                        help="Have the engine write its self-contained RMLOG v2 decision "
-                             "log (bin/resources/logs/game_<seed>.log), replayable with "
-                             "--replay alone. Off by default in machine mode.")
-    parser.add_argument("--seed", type=int, default=None,
-                        help="RNG seed (default: 1, or scenario's seed if given)")
-    parser.add_argument("--max-decisions", type=int, default=None,
-                        help="Stop after this many decisions (default: 500, "
-                             "or scenario's max_decisions if given)")
-    parser.add_argument("--binary", default=str(_BINARY), help="Path to robomage binary")
-    add_removed_flags(parser, "harness")
+    apply_to_parser(parser, HARNESS_TOOL.subs[0])
+    return parser
+
+
+def main():
+    parser = build_parser()
     args = parser.parse_args()
     bo3 = is_bo3(args)
 
@@ -401,24 +366,8 @@ def main():
             print(f"Play: {play_specs}")
         print()
 
-        # Pick the controller for the chosen play mode. The same controller
-        # drives both seats (the action list / interactive prompts / auto-pass
-        # are global, not per-side), matching the original harness behaviour.
-        if play_specs is not None:
-            controller = PlayController(play_specs)
-            mode_label = "Play"
-        elif actions is not None:
-            controller = ActionListController(actions)
-            mode_label = "Actions"
-        elif args.interactive:
-            controller = HumanController(label="Human", show_state=False)
-            mode_label = "Human"
-        elif args.scripted:
-            controller = make_controller(args.scripted_spec)
-            mode_label = args.scripted_spec if args.scripted_spec != "scripted" else "Scripted"
-        else:
-            controller = AutoPassController()
-            mode_label = "Auto"
+        ctrl_a, ctrl_b, label_a, label_b = _build_controllers(
+            args.player_a, args.player_b, play_specs, actions)
 
         # Pre-set battlefields are passed to the engine as comma-joined
         # deck-name strings (apostrophes stripped), same as the deck files.
@@ -460,7 +409,7 @@ def main():
         # The observation/decision loop lives in runner.run_games (shared with
         # train.py observe). test_harness only seeds the state above.
         wins, losses, _ = runner.run_games(
-            controller, controller, label_a=mode_label, label_b=mode_label,
+            ctrl_a, ctrl_b, label_a=label_a, label_b=label_b,
             binary_path=args.binary, deck_a=deck_a_name, deck_b=deck_b_name,
             n_games=1, bo3=bo3, seed=seed, verbose=True,
             battlefield_a=bf_a, battlefield_b=bf_b,
@@ -476,8 +425,8 @@ def main():
             print(f"\ncoverage written to {args.coverage_json}")
         # A --play run resolves specs to concrete indices; print them so the line
         # can be replayed deterministically as a plain --actions integer list.
-        if isinstance(controller, PlayController) and controller.resolved:
-            print(f"\nresolved --actions: {','.join(map(str, controller.resolved))}")
+        if isinstance(ctrl_a, PlayController) and ctrl_a.resolved:
+            print(f"\nresolved --actions: {','.join(map(str, ctrl_a.resolved))}")
     finally:
         for p in cleanup_paths:
             try:

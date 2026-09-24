@@ -547,6 +547,19 @@ REMOVED_FLAGS = (
                 scopes=("play",)),
     RemovedFlag("model", "use --player-a SPEC",
                 scopes=("analysis", "analysis-tui", "train/baseline")),
+    # The harness's seat agents are --player-a / --player-b; --play / --actions
+    # stay as the both-seat script that runs before them.
+    RemovedFlag("--scripted", "use --player-a scripted --player-b scripted",
+                scopes=("harness",)),
+    RemovedFlag("--scripted-spec", "use --player-a / --player-b with the tier "
+                                   "spec (e.g. scripted:easy, explore)",
+                scopes=("harness",)),
+    RemovedFlag("--interactive", "use --player-a human (and/or --player-b human)",
+                scopes=("harness",)),
+    RemovedFlag("--play-a", "use --player-a \"play:<spec,spec,...>\"",
+                scopes=("train/observe",)),
+    RemovedFlag("--play-b", "use --player-b \"play:<spec,spec,...>\"",
+                scopes=("train/observe",)),
     # Every game/match count is --games; the PUCT constant is --c-puct.
     RemovedFlag("--n-games", "use --games"),
     RemovedFlag("--c", "use --c-puct",
@@ -1380,15 +1393,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         "(replaces the old watch/diag/observe commands)", items=[
         Arg("--player-a", "str", default="scripted", suggest="agent",
             help="Player A controller: 'scripted' (or 'scripted:*'), 'gen', a model "
-                 ".zip path, or az:gen/azraw:gen/mcts:gen (default: scripted)"),
+                 ".zip path, az:gen/azraw:gen/mcts:gen, or a semantic action "
+                 "script \"play:cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" "
+                 "(action_spec.py grammar; passes / first choice once it runs "
+                 "out) (default: scripted)"),
         Arg("--player-b", "str", default="scripted", suggest="agent",
-            help="Player B controller: 'scripted' (or 'scripted:*'), 'gen', a model "
-                 ".zip path, or az:gen/azraw:gen/mcts:gen (default: scripted)"),
-        Arg("--play-a", "str", default=None,
-            help="Drive Player A by semantic action specs instead of --player-a, e.g. "
-                 "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" (see action_spec.py grammar)"),
-        Arg("--play-b", "str", default=None,
-            help="Drive Player B by semantic action specs instead of --player-b (see --play-a)"),
+            help="Player B controller (see --player-a; default: scripted)"),
         Arg("--deck-a", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
         Arg("--deck-b", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
         Arg("--games", "int", default=1,
@@ -2143,29 +2153,103 @@ def resolve_play_seats(player_a, player_b):
                          f"'{HUMAN_SPEC}' (got {a!r} and {b!r})")
     return ("A", b) if is_human_spec(a) else ("B", a)
 
+# The harness seat default: pass priority / take the first choice at every
+# decision the --play/--actions script does not make.
+HARNESS_DEFAULT_PLAYER = "auto"
+
 # test_harness.py — card-behaviour test harness (flat parser, no subcommand).
-# Mirrors the argparse in test_harness.main(); the launcher composes a command
-# and runs it in the real terminal (so --interactive's stdin prompts work).
+# test_harness.main() builds its parser from this Sub; the launcher composes a
+# command and runs it in the real terminal (so a 'human' seat's prompts work).
 HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
     Sub("harness", "Run a card-behaviour scenario through the engine",
         mode="interactive", items=[
-        Arg("--scenario", "str", help="Path to a JSON scenario file (supplies hands/library/etc.)"),
-        Arg("--hand-a", "str", help="Player A starting hand (comma-separated card names)"),
-        Arg("--library-a", "str", help="Player A library after the hand (comma-separated)"),
-        Arg("--hand-b", "str", help="Player B starting hand (comma-separated card names)"),
-        Arg("--library-b", "str", help="Player B library after the hand (comma-separated)"),
-        Arg("--deck-a", "str", suggest="deck", help="Use an existing deck file for Player A (stem, not path)"),
-        Arg("--deck-b", "str", suggest="deck", help="Use an existing deck file for Player B (stem, not path)"),
-        Arg("--battlefield-a", "str", help="Cards pre-placed on Player A's battlefield (comma-separated)"),
-        Arg("--battlefield-b", "str", help="Cards pre-placed on Player B's battlefield (comma-separated)"),
-        Arg("--actions", "str", help="Comma-separated action indices to play (e.g. 9,0,7,0,8)"),
-        Arg("--interactive", "flag", help="Prompt for an action index at each decision"),
-        Arg("--scripted", "flag", help="Drive both sides with the rule-based scripted agent"),
+        Arg("--scenario", "str",
+            help="Path to a JSON scenario file (hand_a/library_a/battlefield_a/"
+                 "…, life_a/b, actions or play, seed, max_decisions); a flag "
+                 "given on the command line overrides the scenario's value"),
+        Arg("--hand-a", "str",
+            help="Player A starting hand (comma-separated card names; builds a "
+                 "stacked temp deck, implies --no-shuffle)"),
+        Arg("--library-a", "str",
+            help="Player A library after the hand (comma-separated; padded to a "
+                 "15-card deck)"),
+        Arg("--hand-b", "str", help="Player B starting hand (see --hand-a)"),
+        Arg("--library-b", "str", help="Player B library after the hand (see --library-a)"),
+        Arg("--deck-a", "str", suggest="deck",
+            help="Existing deck file for Player A (stem relative to decks/, "
+                 "not a path; default: delver). Ignored when --hand-a is given"),
+        Arg("--deck-b", "str", suggest="deck",
+            help="Existing deck file for Player B (see --deck-a)"),
+        Arg("--battlefield-a", "str",
+            help="Cards starting on Player A's battlefield (comma-separated; "
+                 "no summoning sickness)"),
+        Arg("--battlefield-b", "str", help="Cards starting on Player B's battlefield"),
+        Arg("--graveyard-a", "str", help="Cards starting in Player A's graveyard (comma-separated)"),
+        Arg("--graveyard-b", "str", help="Cards starting in Player B's graveyard"),
+        Arg("--exile-a", "str", help="Cards starting in Player A's exile (comma-separated)"),
+        Arg("--exile-b", "str", help="Cards starting in Player B's exile"),
+        Arg("--sideboard-a", "str",
+            help="Cards starting in Player A's sideboard / 'outside the game' "
+                 "(comma-separated)"),
+        Arg("--sideboard-b", "str", help="Cards starting in Player B's sideboard"),
+        Arg("--life-a", "int", default=None,
+            help="Player A's starting life total (default 20) — exercises "
+                 "life-payment costs at a chosen life"),
+        Arg("--life-b", "int", default=None, help="Player B's starting life total (default 20)"),
+        Arg("--play", "str",
+            help="Semantic action script for BOTH seats (one spec per decision, "
+                 "comma-separated), resolved against the live menu, e.g. "
+                 "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" "
+                 "(grammar: action_spec.py). Prefix a spec with A:/B: to pin it "
+                 "to a seat — the other seat auto-passes until the keyed seat is "
+                 "on the clock. An unmatched/ambiguous spec fails loudly with the "
+                 "legal menu. Once the script runs out, --player-a/--player-b "
+                 "make the remaining decisions"),
+        Arg("--actions", "str",
+            help="Positional action-index script for BOTH seats (e.g. 9,0,7,0,8; "
+                 "fragile — prefer --play). Once it runs out, "
+                 "--player-a/--player-b make the remaining decisions"),
+        Arg("--player-a", "str", default=HARNESS_DEFAULT_PLAYER, suggest="agent",
+            help="Player A's agent for every decision the --play/--actions "
+                 "script does not make: any opponents.make_controller spec — "
+                 "'auto' (pass / first choice), 'scripted' (hard tier), "
+                 "'scripted:easy', 'scripted:random', 'explore' / "
+                 "'explore:patient' (coverage fuzzer; vary --seed), "
+                 "'human' (prompt at the terminal — needs a TTY), 'gen', "
+                 f"az:gen, … (default: {HARNESS_DEFAULT_PLAYER})"),
+        Arg("--player-b", "str", default=HARNESS_DEFAULT_PLAYER, suggest="agent",
+            help=f"Player B's agent (see --player-a; default: {HARNESS_DEFAULT_PLAYER})"),
+        format_arg(
+            ". A bo3 match: loser goes first next game; both players sideboard "
+            "between games; the default --max-decisions is 1500 (up to 3 games "
+            "+ sideboard decisions) vs 500 for bo1. Sculpted scenarios usually "
+            "want --format bo1"),
+        Arg("--merge-sideboard", "flag",
+            help="Fold each deck's SIDEBOARD: section into its mainboard "
+                 "(quantities summed) and run from a merged temp deck with NO "
+                 "sideboard — lets single-game fuzzing reach sideboard-only "
+                 "cards. Requires --deck-a and --deck-b (not inline "
+                 "--hand/--library seats) and --format bo1. Merged decks still "
+                 "shuffle"),
         Arg("--no-shuffle", "flag",
-            help="Don't shuffle libraries — deck-file order = draw order (implied by --hand-a/--hand-b)"),
-        format_arg(),
-        Arg("--seed", "int", default=None, help="RNG seed (default: 1, or the scenario's seed)"),
-        Arg("--max-decisions", "int", default=None, help="Stop after N decisions (default: 500)"),
+            help="Don't shuffle libraries — deck-file order = draw order (first "
+                 "7 cards = opening hand). Implied by --hand-a/--hand-b; without "
+                 "it libraries shuffle with the seeded RNG"),
+        Arg("--coverage-json", "str", metavar="PATH",
+            help="Accumulate per-action-category and per-card offered/taken "
+                 "counters and write them as JSON to PATH at exit (with a "
+                 "never_offered list of deck cards). Read-only observation — "
+                 "play and RNG are unchanged. Combine per-game JSONs with "
+                 "train/coverage_report.py merge/summarize"),
+        Arg("--log-decisions", "flag",
+            help="Have the engine write its self-contained RMLOG v2 decision "
+                 "log (bin/resources/logs/game_<seed>.log), replayable with "
+                 "--replay alone. Off by default in machine mode"),
+        Arg("--seed", "int", default=None,
+            help="RNG seed (default: 1, or the scenario's seed)"),
+        Arg("--max-decisions", "int", default=None,
+            help="Stop after N decisions (default: 500 for bo1 / 1500 for bo3, "
+                 "or the scenario's max_decisions)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
     ]),
 ])

@@ -308,6 +308,103 @@ def test_removed_env():
         cli_spec.REMOVED_ENV_VARS.update(saved)
 
 
+def _visible_options(parser):
+    """Every help-visible option string of ``parser`` except -h/--help."""
+    out = set()
+    for act in parser._actions:
+        if act.help == argparse.SUPPRESS:
+            continue
+        out.update(s for s in act.option_strings if s not in ("-h", "--help"))
+    return out
+
+
+def test_harness_parity():
+    print("test_harness's parser is HARNESS_TOOL (every option from cli_spec)")
+    import test_harness
+    sub = cli_spec.HARNESS_TOOL.subs[0]
+    parser = test_harness.build_parser()
+    spec = {a.name for a in iter_args(sub)}
+    got = _visible_options(parser)
+    check(got == spec, f"harness options differ from HARNESS_TOOL: only in the "
+                       f"parser {sorted(got - spec)}, only in cli_spec "
+                       f"{sorted(spec - got)}")
+    for name in ("--play", "--actions", "--player-a", "--player-b",
+                 "--graveyard-a", "--exile-b", "--sideboard-a", "--life-a",
+                 "--merge-sideboard", "--coverage-json", "--log-decisions"):
+        check(name in spec, f"HARNESS_TOOL lacks {name}")
+    ns = parser.parse_args([])
+    check(ns.player_a == ns.player_b == cli_spec.HARNESS_DEFAULT_PLAYER,
+          "harness seats default to the auto player")
+    for flag, needle in (("--scripted", "use --player-a scripted --player-b scripted"),
+                         ("--scripted-spec", "use --player-a / --player-b"),
+                         ("--interactive", "use --player-a human")):
+        code, err = parse_error(parser, [flag])
+        check(code == 2 and f"{flag} was removed; {needle}" in err,
+              f"harness {flag} should error with {needle!r} ({err!r})")
+    subs = {(t.key, s.name): s for t, s in all_subs()}
+    for flag in ("--play-a", "--play-b"):
+        code, err = parse_error(build(subs[("train", "observe")]), [flag, "pass"])
+        check(code == 2 and f"{flag} was removed; use --player-" in err
+              and "play:" in err,
+              f"observe {flag} should point at a play: player spec ({err!r})")
+
+
+def test_harness_script_then_players():
+    print("harness script precedence: the script first, then the seat players")
+    import test_harness
+    from env import _SELF_IS_A_IDX, STATE_SIZE
+    from opponents import ActionListController, PlayController
+
+    class Fixed:
+        def __init__(self, idx):
+            self.idx, self.calls = idx, 0
+
+        def choose(self, obs, num_choices, action_masks=None, decoded_actions=None):
+            self.calls += 1
+            return self.idx
+
+    def obs_for(seat):
+        obs = [0.0] * STATE_SIZE
+        obs[_SELF_IS_A_IDX] = 1.0 if seat == "A" else 0.0
+        return obs
+
+    pass_menu = [{"index": 0, "category": 0, "card": None, "controller": None,
+                  "description": "Pass priority"},
+                 {"index": 1, "category": 9, "card": "Mountain",
+                  "controller": "own", "description": "Play Mountain"}]
+    discard_menu = [{"index": 0, "category": 30, "card": "Island",
+                     "controller": "own", "description": "Discard Island"},
+                    {"index": 1, "category": 30, "card": "Forest",
+                     "controller": "own", "description": "Discard Forest"}]
+
+    pa, pb = Fixed(1), Fixed(1)
+    play = PlayController("A:land:Mountain", players=(pa, pb))
+    # B lacks the next (A-keyed) spec: passes a priority window, but a
+    # mandatory choice of B's goes to B's player.
+    check(play.choose(obs_for("B"), 2, decoded_actions=pass_menu) == 0,
+          "the seat without the keyed spec passes a priority window")
+    check(play.choose(obs_for("B"), 2, decoded_actions=discard_menu) == 1
+          and pb.calls == 1, "that seat's mandatory choice goes to its player")
+    check(play.choose(obs_for("A"), 2, decoded_actions=pass_menu) == 1
+          and pa.calls == 0, "the keyed spec is played by the script")
+    check(play.choose(obs_for("A"), 2, decoded_actions=pass_menu) == 1
+          and pa.calls == 1, "once the script runs out, A's player decides")
+    check(play.resolved == [0, 1, 1, 1], f"resolved {play.resolved}")
+
+    acts = ActionListController([0], players=(pa, pb))
+    check(acts.choose(obs_for("B"), 2) == 0 and pb.calls == 1,
+          "an --actions script decides first")
+    check(acts.choose(obs_for("B"), 2) == 1 and pb.calls == 2,
+          "then the seat's player decides")
+
+    ca, cb, la, lb = test_harness._build_controllers("auto", "auto", None, None)
+    check(ca is cb and la == lb == "Auto", "default seats share one auto player")
+    ca, cb, la, lb = test_harness._build_controllers("auto", "scripted", "pass", None)
+    check(ca is cb and isinstance(ca, PlayController)
+          and (la, lb) == ("Play", "Play+Scripted"),
+          f"a --play script drives both seats ({la!r}, {lb!r})")
+
+
 # ── 2. the scripts themselves (standalone parsers + dispatch) ───────────────
 
 def run_script(*argv):
@@ -358,6 +455,12 @@ def test_scripts():
         (("train/play.py", "--model", "gen"), "--model was removed; use --player-b"),
         (("train/play.py", "--scripted"), "--scripted was removed; use --player-b scripted"),
         (("train/play.py", "--player", "B"), "--player was removed"),
+        (("train/test_harness.py", "--scripted"),
+         "--scripted was removed; use --player-a scripted --player-b scripted"),
+        (("train/test_harness.py", "--interactive"),
+         "--interactive was removed; use --player-a human"),
+        (("train/train.py", "observe", "--play-a", "pass"),
+         "--play-a was removed; use --player-a \"play:"),
         (("train/play.py", "--deck-a", "d", "--deck-b", "d", "--player-a", "gen",
           "--player-b", "scripted"), "exactly one of --player-a / --player-b"),
         (("train/play.py", "--deck-a", "d", "--deck-b", "d", "--player-a", "human",
@@ -399,6 +502,8 @@ def main():
     test_play_seats()
     test_removed_env()
     test_count_puct_seed_vocabulary()
+    test_harness_parity()
+    test_harness_script_then_players()
     test_scripts()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")

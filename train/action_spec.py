@@ -6,8 +6,8 @@ entry point that drives the engine by intent rather than by a fragile positional
 index:
 
   * ``PlayController`` (opponents.py) — consumes a pre-written list of specs for
-    machine-driven runs (``test_harness.py --play`` / ``train.py observe
-    --play-a/--play-b``).
+    machine-driven runs (``test_harness.py --play`` / a ``play:<specs>``
+    agent spec, e.g. ``train.py observe --player-a "play:..."``).
   * ``play.py`` — (documented follow-up) lets a human type ``cast bolt`` instead
     of an index at the ``Choose>`` prompt.
 

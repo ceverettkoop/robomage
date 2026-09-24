@@ -30,7 +30,8 @@ from textual.widgets import (Button, Checkbox, Footer, Header, Input, Label,
                              ListItem, ListView, Select, SelectionList, Static,
                              Tree)
 
-from cli_spec import (ALL_TOOLS, HUMAN_SPEC, REPO_ROOT, MutexGroup)
+from cli_spec import (ALL_TOOLS, HARNESS_DEFAULT_PLAYER, HUMAN_SPEC, REPO_ROOT,
+                      MutexGroup)
 # Curriculum plans: stdlib-only module (cli_spec + progress_io), so the launcher
 # can list/read/write plan files without pulling in the ML stack.
 import curriculum
@@ -245,14 +246,18 @@ class ArgFormMixin:
             return _generalist_checkpoints()
         opts = list(_suggestions_for(a))
         # Fields that also accept the rule-based agent get a 'scripted' option;
-        # play's seats also offer 'human' (exactly one seat is the human).
-        play_seat = (a.suggest == "agent"
-                     and getattr(getattr(self, "_sub", None), "tool", None) == "play")
+        # play's seats also offer 'human' (exactly one seat is the human), and
+        # the harness's seats 'human' plus their 'auto' default.
+        tool = getattr(getattr(self, "_sub", None), "tool", None)
+        play_seat = a.suggest == "agent" and tool == "play"
+        harness_seat = a.suggest == "agent" and tool == "harness"
         if a.suggest in ("checkpoint", "agent") and (
-                a.default == "scripted" or play_seat):
+                a.default == "scripted" or play_seat or harness_seat):
             opts = ["scripted"] + opts
-        if play_seat:
+        if play_seat or harness_seat:
             opts = [HUMAN_SPEC] + opts
+        if harness_seat:
+            opts = [HARNESS_DEFAULT_PLAYER] + opts
         # AZ fields defaulting to the generalist stem offer 'gen' itself, so the
         # default is selectable (and preselected) rather than only the explicit
         # snapshot paths the scanner finds.

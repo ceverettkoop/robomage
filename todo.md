@@ -95,8 +95,6 @@ without this, or it will self-destruct on resolution.
 
 ## Harness / tooling
 
-- test_harness raises PlayResolveError when a seat-keyed `--play` spec lands on a mandatory
-  cleanup-discard decision.
 - Engine `--battlefield-a/-b` (and other preset list flags) split on commas → assert-crash
   (reported as DRAW) on comma-named cards. Workaround: pass comma-free names (name_to_uid strips
   punctuation, so the same card loads). The underlying assert is unfixed.

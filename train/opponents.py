@@ -1079,15 +1079,68 @@ class SearchController:
         return chosen
 
 
-class ActionListController:
+class _ScriptedLine:
+    """Base for the global both-seat scripts (``--actions`` / ``--play``).
+
+    A script may be installed as BOTH seats' controller; every decision it does
+    not make itself — once it has run out, or (``PlayController``) a mandatory
+    choice for the seat its next keyed spec is not for — goes to the priority
+    seat's *player* (``players=(ctrl_a, ctrl_b)``, default auto-pass: action 0,
+    pass / first choice). The runner's duck-typed per-game hooks are forwarded
+    to the players so any controller spec can sit behind a script.
+    """
+
+    def __init__(self, players=None):
+        if players is None:
+            auto = AutoPassController()
+            players = (auto, auto)
+        self._players = tuple(players)
+
+    def _player_for(self, obs):
+        return self._players[0 if obs[_SELF_IS_A_IDX] > 0.5 else 1]
+
+    def _distinct_players(self):
+        seen = []
+        for p in self._players:
+            if not any(p is q for q in seen):
+                seen.append(p)
+        return seen
+
+    def _forward(self, hook, *args):
+        for p in self._distinct_players():
+            fn = getattr(p, hook, None)
+            if fn is not None:
+                fn(*args)
+
+    @property
+    def wants_decoded(self) -> bool:
+        return any(getattr(p, "wants_decoded", False) for p in self._players)
+
+    @property
+    def wants_search_env(self) -> bool:
+        return any(getattr(p, "wants_search_env", False) for p in self._players)
+
+    def set_deck_names(self, deck_a, deck_b):
+        self._forward("set_deck_names", deck_a, deck_b)
+
+    def bind_env(self, env):
+        self._forward("bind_env", env)
+
+    def new_game(self):
+        self._forward("new_game")
+
+
+class ActionListController(_ScriptedLine):
     """Plays a fixed sequence of action indices (test harness ``--actions``).
 
     Consumes one index per decision regardless of which side has priority (the
-    sequence is global, matching the harness convention); once exhausted it
-    falls back to action 0 (pass / first choice).
+    sequence is global, matching the harness convention); once exhausted the
+    priority seat's player decides (default: action 0, pass / first choice).
     """
 
-    def __init__(self, actions: Sequence[int], label: str = "Actions"):
+    def __init__(self, actions: Sequence[int], label: str = "Actions",
+                 players=None):
+        super().__init__(players)
         self._actions = [int(a) for a in actions]
         self._i = 0
         self.label = label
@@ -1097,18 +1150,21 @@ class ActionListController:
             a = self._actions[self._i]
             self._i += 1
             return a
-        return 0
+        return self._player_for(obs).choose(obs, num_choices,
+                                            action_masks=action_masks,
+                                            decoded_actions=decoded_actions)
 
 
-class PlayController:
+class PlayController(_ScriptedLine):
     """Plays a fixed sequence of semantic action specs (``--play``).
 
     Each spec (``cast:Lightning Bolt``, ``target:Grizzly Bears@opp``, ``pass``,
     ``#7`` …) is resolved against *this* decision's decoded menu via
     :mod:`action_spec`, so the sequence is robust to dynamic index reordering.
-    The sequence is global (one spec consumed per decision); once exhausted it
-    falls back to action ``0`` (pass / first choice — always legal) so the game
-    keeps advancing to its conclusion or the decision cap.
+    The sequence is global (one spec consumed per decision); once exhausted the
+    priority seat's player decides (``players``; default action ``0``, pass /
+    first choice — always legal) so the game keeps advancing to its conclusion
+    or the decision cap.
 
     **Seat keys.** When the SAME controller drives both seats (the test harness's
     dual-seat ``--play`` mode), sequencing the priority hand-offs between the two
@@ -1117,9 +1173,14 @@ class PlayController:
     spec this controller checks the seat that currently holds priority
     (``obs[_SELF_IS_A_IDX]`` — true = Player A): if the next spec is keyed to the *other*
     seat, the current priority holder passes (the spec is **not** consumed) and
-    play advances until the keyed seat is on the clock. Unkeyed specs are applied
-    to whoever has priority (the legacy behaviour), so existing scripts are
-    unaffected.
+    play advances until the keyed seat is on the clock. When that holder faces a
+    mandatory choice instead (no pass on the menu, e.g. its cleanup discard), the
+    choice is not the script's to make and goes to the holder's player. Unkeyed
+    specs are applied to whoever has priority.
+
+    The engine never asks a seat whose only legal action is a pass, so a keyed
+    ``pass`` is only needed where that seat could do something else; one written
+    for a skipped window waits for the seat's next real decision.
 
     A keyed spec also **passes the keyed seat forward through its own priority
     windows** until the action becomes legal: e.g. ``A:attack:Voice`` given while A
@@ -1146,7 +1207,8 @@ class PlayController:
     # take) fails loudly instead of silently passing the rest of the game away.
     _MAX_WAIT = 200
 
-    def __init__(self, specs, label: str = "Play"):
+    def __init__(self, specs, label: str = "Play", players=None):
+        super().__init__(players)
         import action_spec
         self._action_spec = action_spec
         self._specs = action_spec.parse_spec_list(specs)
@@ -1155,24 +1217,36 @@ class PlayController:
         self.label = label
         self.resolved: list[int] = []
 
+    def _player_choice(self, obs, num_choices, action_masks, decoded_actions) -> int:
+        """A decision the script does not make: the priority seat's player's."""
+        idx = self._player_for(obs).choose(obs, num_choices,
+                                           action_masks=action_masks,
+                                           decoded_actions=decoded_actions)
+        self.resolved.append(idx)
+        return idx
+
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         if decoded_actions is None:
             raise RuntimeError("PlayController requires decoded_actions; drive it "
                                "through runner.run_games (which supplies the menu).")
-        # Specs exhausted: auto-advance with action 0 (always legal), like
-        # AutoPassController, so the game runs to its end / the decision cap.
+        # Specs exhausted: the seats' players take over (default action 0),
+        # so the game runs to its end / the decision cap.
         if self._i >= len(self._specs):
-            self.resolved.append(0)
-            return 0
+            return self._player_choice(obs, num_choices, action_masks, decoded_actions)
         spec = self._specs[self._i]
         # Seat-keyed spec for the seat that is NOT on the clock: the current
         # priority holder passes (spec left for later) so we advance to the keyed
-        # seat's decision instead of mis-applying its action to this player.
+        # seat's decision instead of mis-applying its action to this player. A
+        # holder with no pass on the menu faces a mandatory choice of its own,
+        # which its player makes.
         seat = self._action_spec.spec_seat(spec)
         if seat is not None and seat != ("A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"):
-            idx = self._action_spec.resolve_to_index("pass", decoded_actions)
-            self.resolved.append(idx)
-            return idx
+            pass_r = self._action_spec.resolve("pass", decoded_actions)
+            if not pass_r.ok:
+                return self._player_choice(obs, num_choices, action_masks,
+                                           decoded_actions)
+            self.resolved.append(pass_r.index)
+            return pass_r.index
 
         r = self._action_spec.resolve(spec, decoded_actions)
         if r.ok:
@@ -1195,6 +1269,10 @@ class PlayController:
                 self.resolved.append(pass_r.index)
                 return pass_r.index
 
+        if r.kind == "no_match" and self._action_spec.parse_spec(spec).verb == "pass":
+            r.reason += (" — this is a mandatory choice, not a priority window. The "
+                         "engine never asks a seat whose only legal action is a pass, "
+                         "so a pass written for such a window is not needed (drop it)")
         raise self._action_spec.PlayResolveError(r, decoded_actions)
 
 
