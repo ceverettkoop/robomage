@@ -2521,7 +2521,9 @@ ANALYSIS_BROWSE_SUB = Sub(
         Arg("--games", "int", default=20,
             help="Games to simulate on startup — each a whole match under "
                  "--format bo3 (default: 20). With a shard --source: the "
-                 "maximum recorded bo3 matches to load (0 = every match)"),
+                 "first N recorded bo3 matches (oldest first) to load, reading "
+                 "only the shards they need (0 = every match; refused for a "
+                 "directory over 2 GiB of shards, e.g. a training pool)"),
         Arg("--seat", "choice", choices=("A", "B"), default="A",
             help="Shard --source: viewpoint seat — that seat's searched "
                  "decisions are the browsable steps, the other seat's are "

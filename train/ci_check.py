@@ -670,7 +670,7 @@ def tier_gui(rep):
     play session (--record-shards writes ≥1 valid shard into a scratch dir),
     the live-analysis window, the play-session save→reopen replay round-trip,
     the synthetic .rmtrace open into the analysis browser, the shard-mode
-    browser (self-skips without recorded shards), and a search-opponent
+    browser over the record-shards leg's recording, and a search-opponent
     recording opened in the browser with its first searched decision's tree
     rebuilt and expanded (torch-free mcts:uniform). Self-skips without
     PySide6."""
@@ -709,8 +709,11 @@ def tier_gui(rep):
         ("trace open smoke",
          dict(env, ROBOMAGE_GUI_TRACE_SMOKE="1"),
          [sys.executable, "train/gui_main.py"]),
+        # Browses the record-shards leg's small recording (never a training
+        # pool: the smoke fails without ROBOMAGE_BROWSER_SMOKE_SHARDS).
         ("browser shard smoke",
-         dict(env, ROBOMAGE_BROWSER_SMOKE="1"),
+         dict(env, ROBOMAGE_BROWSER_SMOKE="1",
+              ROBOMAGE_BROWSER_SMOKE_SHARDS=rec_dir),
          [sys.executable, "train/gui_main.py"]),
         # Search-opponent recording leg: a torch-free mcts:uniform opponent
         # records its own searched decisions WITH diagnostics (seeds, sims,

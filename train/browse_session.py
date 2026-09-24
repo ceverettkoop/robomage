@@ -1391,6 +1391,8 @@ class EngineCore:
             self.emit(EnvReady(buf.getvalue(), subtitle))
             for g in records:
                 self.emit(GameAdded(g))
+        except shard_replay.ShardPoolTooLarge as exc:
+            self.emit(LoadFailed(f"shard load refused: {exc}"))
         except BaseException:
             self.emit(LoadFailed(f"shard load failed:\n{traceback.format_exc()}"))
 

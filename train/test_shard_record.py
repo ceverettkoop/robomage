@@ -14,6 +14,9 @@ human rows via the step observer, sideboard rows between games) and asserts
     shard_replay.load_records (correct match/game segmentation and per-seat
     viewpoints),
   * a second match opens a second file,
+  * a capped load_records reads only the shards its matches need and equals
+    the uncapped load's prefix; an uncapped load of an oversized directory is
+    refused,
   * the browser net probes' π is the SEARCH posterior (diag visits / a pool
     shard's search π), never a behavior row or a simulated trace's
     action_probs, and survives an .rmtrace round-trip; az_inspect's own
@@ -272,6 +275,90 @@ def _check_search_posterior(ra, rb):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def _same(a, b):
+    """Deep equality over record values (dicts, lists, numpy arrays, NaN-aware
+    floats)."""
+    if isinstance(a, dict):
+        return (isinstance(b, dict) and a.keys() == b.keys()
+                and all(_same(a[k], b[k]) for k in a))
+    if isinstance(a, (list, tuple)):
+        return (isinstance(b, (list, tuple)) and len(a) == len(b)
+                and all(_same(x, y) for x, y in zip(a, b)))
+    if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        return np.array_equal(np.asarray(a), np.asarray(b), equal_nan=True)
+    if isinstance(a, float) and isinstance(b, float):
+        return a == b or (np.isnan(a) and np.isnan(b))
+    return a == b
+
+
+def _check_bounded_load():
+    """shard_replay.load_records(limit=k) reads only the shards its first k
+    matches need and returns exactly the uncapped load's records[:k] — over
+    recorder files (one match each, with .rmplay/.diag sidecars), a match
+    with no viewpoint-A rows, and a pooled file holding two matches — and an
+    uncapped load past MAX_UNBOUNDED_SHARD_BYTES is refused."""
+    tmp = tempfile.mkdtemp(prefix="shard_record_test_bounded_")
+    try:
+        rec = ShardRecorder(tmp, td_n=3,
+                            replay_meta={"deck_a": "a", "deck_b": "b",
+                                         "human_is_a": False, "bo3": True},
+                            seed_fn=lambda: 7)
+        # Match 0: bo3, both seats.
+        _searched(rec, _obs(True, 0, 1), 3, [8, 1, 1], 0.25, chosen=0)
+        _onehot(rec, _obs(False, 0, 1), 2, action=1,
+                reward=1.0, game_result=True)
+        _searched(rec, _obs(False, 1, 1), 2, [2, 6], 0.4, chosen=1)
+        _searched(rec, _obs(True, 1, 2), 2, [6, 2], -0.3, chosen=0,
+                  reward=1.0, game_result=True, done=True)
+        # Match 1: only B moves (no viewpoint-A record).
+        _searched(rec, _obs(False, 0, 1), 2, [3, 5], 0.1, chosen=1,
+                  reward=-1.0, done=True)
+        # Match 2: both seats.
+        _onehot(rec, _obs(False, 0, 1), 3, action=2)
+        _searched(rec, _obs(True, 0, 2), 2, [1, 7], 0.2, chosen=1,
+                  reward=-1.0, done=True)
+        rec.close()
+        files = sorted(glob.glob(os.path.join(tmp, "shard_*.npz")),
+                       key=shard_replay.shard_sort_key)
+        assert len(files) == 3, files
+        # A pooled (sidecar-less) file holding two matches, written last.
+        a, b = np.load(files[0]), np.load(files[2])
+        pooled = os.path.join(tmp, "shard_29990101_000000_1_0.npz")
+        np.savez_compressed(pooled, **{k: np.concatenate([a[k], b[k]])
+                                       for k in a.files})
+        for k, f in enumerate(files + [pooled]):
+            os.utime(f, (3000 + k, 3000 + k))       # pin write order
+        for vp in (True, False):
+            full = shard_replay.load_records(tmp, viewpoint_is_a=vp)
+            assert len(full) == (4 if vp else 5), len(full)
+            for k in range(1, len(full) + 2):
+                part = shard_replay.load_records(tmp, viewpoint_is_a=vp,
+                                                 limit=k)
+                assert _same(part, full[:k]), f"limit {k} seat A={vp}"
+        # The cap stops reading at the shard that completes the k-th match.
+        spans = shard_replay.load_shard_rows(tmp, max_matches=1)[4]
+        assert len(spans) == 1, spans
+        spans = shard_replay.load_shard_rows(tmp, max_matches=2)[4]
+        assert len(spans) == 3, spans      # match 1 has no viewpoint-A rows
+        # Uncapped past the guard: refused, naming --games; capped still loads.
+        saved = shard_replay.MAX_UNBOUNDED_SHARD_BYTES
+        shard_replay.MAX_UNBOUNDED_SHARD_BYTES = 1
+        try:
+            for lim in (None, 0):
+                try:
+                    shard_replay.load_records(tmp, limit=lim)
+                except shard_replay.ShardPoolTooLarge as exc:
+                    assert "--games" in str(exc), exc
+                else:
+                    raise AssertionError("uncapped load was not refused")
+            assert len(shard_replay.load_records(tmp, limit=2)) == 2
+        finally:
+            shard_replay.MAX_UNBOUNDED_SHARD_BYTES = saved
+        print("  bounded shard load: OK")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     tmp = tempfile.mkdtemp(prefix="shard_record_test_")
     try:
@@ -444,6 +531,7 @@ def main():
         assert all(r.visits is None for r in dd.rows)
 
         _check_search_posterior(ra, rb)
+        _check_bounded_load()
 
         # The one search-vs-net KL / top-1 definition (duplicate-folded net
         # priors, KL(search ‖ net)) the probes and analysis.py share.

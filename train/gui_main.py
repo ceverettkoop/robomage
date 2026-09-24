@@ -1222,27 +1222,27 @@ class _TraceSmoke(_ShellSmoke):
 
 
 class _BrowserSmoke(_ShellSmoke):
-    """Shard-mode browser session (torch-free, --no-net) driving the pane's
-    own ROBOMAGE_BROWSER_SMOKE hook. Self-skips when no shards exist."""
+    """Shard-mode browser session (torch-free, --no-net) over a small
+    recording, driving the pane's own ROBOMAGE_BROWSER_SMOKE hook. The
+    recording comes from ROBOMAGE_BROWSER_SMOKE_SHARDS (a recording, or a
+    ROBOMAGE_RECORD_DIR base holding rec_* dirs); fails without one — there
+    is deliberately no fallback to a training pool."""
 
-    def __init__(self, window, shards=None):
+    def __init__(self, window):
         super().__init__(window)
-        self._shards = shards or os.environ.get(
-            "ROBOMAGE_BROWSER_SMOKE_SHARDS",
-            os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "az_data", "gen"))
+        self._base = os.environ.get("ROBOMAGE_BROWSER_SMOKE_SHARDS", "")
         self._started = False
 
     def step(self):
         mgr = self.manager
         if not self._started:
             self._started = True
-            import glob as _glob
-            if not _glob.glob(os.path.join(self._shards, "shard_*.npz")):
-                self._finish(0, f"BROWSER SMOKE SKIP: no shards in "
-                                f"{self._shards}")
+            rec = _recording_dir(self._base) if self._base else None
+            if rec is None:
+                self._finish(1, f"BROWSER SMOKE FAILED: no recording under "
+                                f"ROBOMAGE_BROWSER_SMOKE_SHARDS={self._base!r}")
                 return
-            opts = {"source": self._shards, "seat": "A", "no_net": True,
+            opts = {"source": rec, "seat": "A", "no_net": True,
                     "games": 3, "format": "bo1", "think_time": None,
                     "match_clock": None, "deck_a": None, "deck_b": None,
                     "binary": mgr._binary}

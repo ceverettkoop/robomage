@@ -49,7 +49,7 @@ any **error** (warnings alone still pass).
 | `analysis` | the GUI analysis window's engine core — chunked `IncrementalSearch` bit-identical to `run_search`, detached-mirror lockstep, cancellation (`test_analysis_session.py`) — plus the shard-replay reconstruction behind `analysis.py browse --source DIR` (`test_shard_replay.py`) | torch-free; `bin/robomage` |
 | `treerebuild` | the exact rebuild of a recorded opponent search (`train/tree_rebuild.py`, via `test_tree_rebuild.py`): a uniform-evaluator `SearchController` plays a recorded match with fixed-sims AND timed searches, then every searched row is replayed and re-searched from its recorded world seeds + sim count and must reproduce the recorded root visits bit-for-bit; the cached tree reopens identical, PV walks return boards, and a tree-followed row resolves to its origin search | torch-free; `bin/robomage` |
 | `azinspect` | the AZ checkpoint inspector's views against a fresh net + synthetic shards (`test_az_inspect.py`) | torch; no engine binary |
-| `gui` | headless PySide6 shell smokes (play board, shard recording, analysis window, save/reopen, browser) | PySide6 |
+| `gui` | headless PySide6 shell smokes (play board, shard recording, analysis window, save/reopen, the shard browser and tree rebuild over the recordings those legs write — never a training pool) | PySide6 |
 
 ```bash
 train/.venv/bin/python train/ci_check.py --tier actor

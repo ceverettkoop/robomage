@@ -63,31 +63,92 @@ def shard_sort_key(path):
     return (os.path.getmtime(path), n)
 
 
-def load_shard_rows(data_dir):
-    """Load every ``shard_*.npz`` under ``data_dir`` in WRITE order.
+# Unbounded-load guard: loading EVERY match of a directory holds all its rows
+# in RAM at once (the per-shard arrays, their concatenation, then the records'
+# per-step obs copies — roughly 2-3x the on-disk bytes, since float32 obs
+# barely compress). 2 GiB on disk keeps that peak around 6 GB, inside a
+# desktop's headroom, while still covering thousands of GUI-recorded matches;
+# a training pool (train/az_data/gen is ~100 GB) is far past it and must be
+# browsed with a match cap (--games N) instead.
+MAX_UNBOUNDED_SHARD_BYTES = 2 << 30
+
+
+class ShardPoolTooLarge(RuntimeError):
+    """An uncapped load of a shard directory past MAX_UNBOUNDED_SHARD_BYTES."""
+
+
+def shard_paths(data_dir):
+    """Every ``shard_*.npz`` under ``data_dir`` in WRITE order
+    (:func:`shard_sort_key`: oldest first)."""
+    paths = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
+                   key=shard_sort_key)
+    if not paths:
+        raise FileNotFoundError(f"no shard_*.npz files in {data_dir}")
+    return paths
+
+
+def check_unbounded_load(data_dir, paths):
+    """Refuse an uncapped load of ``paths`` whose total on-disk size exceeds
+    MAX_UNBOUNDED_SHARD_BYTES (raises :class:`ShardPoolTooLarge`)."""
+    total = sum(os.path.getsize(p) for p in paths)
+    if total > MAX_UNBOUNDED_SHARD_BYTES:
+        raise ShardPoolTooLarge(
+            f"{data_dir} holds {total / 2**30:.1f} GiB of shards "
+            f"({len(paths)} files); loading every match needs at least that "
+            f"much RAM (the uncapped-load limit is "
+            f"{MAX_UNBOUNDED_SHARD_BYTES / 2**30:.0f} GiB). Pass --games N "
+            f"(N > 0) to load only the first N matches.")
+
+
+def _read_shard(path):
+    """One shard's ``(obs, pi, z, mask)``, layout-checked against this build."""
+    d = np.load(path)
+    if d["obs"].shape[1] != OBS_SIZE or d["mask"].shape[1] != MAX_ACTIONS:
+        raise RuntimeError(
+            f"shard layout mismatch in {path}: obs width {d['obs'].shape[1]} "
+            f"(expected {OBS_SIZE}), mask width {d['mask'].shape[1]} "
+            f"(expected {MAX_ACTIONS}) — regenerate the shards with this build")
+    return d["obs"], d["pi"], d["z"], d["mask"]
+
+
+def _browsable_matches(obs, viewpoint_is_a):
+    """How many records :func:`build_match_records` makes from one shard's
+    rows: its matches in which the viewpoint seat moved at least once."""
+    seat = obs[:, _SELF_IS_A_IDX] > 0.5
+    return sum(1 for games in segment_matches(obs, [(None, 0, obs.shape[0])])
+               if any(seat[i] == viewpoint_is_a for rows in games for i in rows))
+
+
+def load_shard_rows(data_dir, max_matches=None, viewpoint_is_a=True):
+    """Load the ``shard_*.npz`` under ``data_dir`` in WRITE order.
 
     Returns ``(obs, pi, z, mask, spans)`` where ``spans`` is a list of
     ``(path, start, end)`` row ranges, one per shard file. Rows are only
     contiguous per game WITHIN a file (each file is one worker's buffer), so
     segmentation must never cross a span boundary.
+
+    ``max_matches`` (> 0) reads shards one at a time and stops after the
+    shard that brings the count of browsable matches (those where the
+    ``viewpoint_is_a`` seat moved) to ``max_matches`` — since no match spans
+    two files, the records built from this prefix start with exactly the
+    first ``max_matches`` records of the whole directory. None / 0 reads
+    every shard, guarded by :func:`check_unbounded_load`.
     """
-    paths = sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
-                   key=shard_sort_key)
-    if not paths:
-        raise FileNotFoundError(f"no shard_*.npz files in {data_dir}")
+    paths = shard_paths(data_dir)
+    if not max_matches:
+        check_unbounded_load(data_dir, paths)
     obs, pi, z, mask, spans = [], [], [], [], []
-    row = 0
+    row = found = 0
     for p in paths:
-        d = np.load(p)
-        n = d["obs"].shape[0]
-        if d["obs"].shape[1] != OBS_SIZE or d["mask"].shape[1] != MAX_ACTIONS:
-            raise RuntimeError(
-                f"shard layout mismatch in {p}: obs width {d['obs'].shape[1]} "
-                f"(expected {OBS_SIZE}), mask width {d['mask'].shape[1]} "
-                f"(expected {MAX_ACTIONS}) — regenerate the shards with this build")
-        obs.append(d["obs"]); pi.append(d["pi"]); z.append(d["z"]); mask.append(d["mask"])
+        o, pp, zz, m = _read_shard(p)
+        n = o.shape[0]
+        obs.append(o); pi.append(pp); z.append(zz); mask.append(m)
         spans.append((p, row, row + n))
         row += n
+        if max_matches:
+            found += _browsable_matches(o, viewpoint_is_a)
+            if found >= max_matches:
+                break
     return (np.concatenate(obs), np.concatenate(pi), np.concatenate(z),
             np.concatenate(mask), spans)
 
@@ -469,8 +530,14 @@ def load_replay_sidecars(spans, matches):
 
 
 def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
-    """The one-call front door: shards on disk -> browsable match records."""
-    obs, pi, z, mask, spans = load_shard_rows(data_dir)
+    """The one-call front door: shards on disk -> browsable match records.
+
+    ``limit`` (> 0) caps the records at the first ``limit`` matches in write
+    order (oldest first) and reads only the shards those need; None / 0 loads
+    every match and raises :class:`ShardPoolTooLarge` past
+    MAX_UNBOUNDED_SHARD_BYTES."""
+    obs, pi, z, mask, spans = load_shard_rows(
+        data_dir, max_matches=limit, viewpoint_is_a=viewpoint_is_a)
     matches = segment_matches(obs, spans)
     records = build_match_records(obs, pi, z, mask, matches,
                                   viewpoint_is_a=viewpoint_is_a,
@@ -479,7 +546,7 @@ def load_records(data_dir, viewpoint_is_a=True, limit=None, interp_fn=None):
                                                                    matches),
                                   diags=load_diag_sidecars(spans, mask),
                                   q=load_shard_q(spans))
-    if limit is not None:
+    if limit:
         records = records[:limit]
     return records
 

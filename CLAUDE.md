@@ -671,8 +671,10 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
   counterfactuals. ONE `--source` picks what it browses (`cli_spec.browse_source_kind`):
   `simulate` (default — `--games` games of `--player-a`, the inspected model, vs `--player-b` on
   `--deck-a/-b`), a directory of `shard_*.npz` (AZ self-play or a recording; `--player-a` is the
-  V(s) net, `--seat`/`--no-net` apply), or a saved `.rmtrace` session (`--player-a` is the
-  replay-search net). A flag that does not apply to the source kind errors
+  V(s) net, `--seat`/`--no-net` apply; `--games N` loads the first N matches in write order and
+  reads only the shards they need, `--games 0` loads every match but is refused past
+  `shard_replay.MAX_UNBOUNDED_SHARD_BYTES` (2 GiB — a training pool like `az_data/gen` is
+  ~100 GB)), or a saved `.rmtrace` session (`--player-a` is the replay-search net). A flag that does not apply to the source kind errors
   (`cli_spec.BROWSE_SOURCE_DESTS`); `--shards` was removed. `--board tui` (default) is the Textual
   app in `train/tui_analysis.py`; `--board gui` opens the PySide6 app on that session
   (`gui_main.run_browser`, falling back to tui without PySide6). Also `./tui.sh`'s
@@ -688,7 +690,9 @@ seed, and recording dir). The engine is always a `--machine` subprocess; the opp
   opponent review, below.) Regression: `train/test_tui_browser.py` (default tier `browser`).
 - **Headless smokes**: `QT_QPA_PLATFORM=offscreen ROBOMAGE_GUI_SMOKE=N` auto-plays N decisions and
   exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it
-  delivered stats.
+  delivered stats. `ROBOMAGE_BROWSER_SMOKE=1` / `ROBOMAGE_TREE_SMOKE=1` (`gui_main.py`) browse the
+  recording named by `ROBOMAGE_BROWSER_SMOKE_SHARDS` (a recording or a `ROBOMAGE_RECORD_DIR` base)
+  and fail without one — never point them at a training pool.
 
 **The analysis window** (`train/gui_analysis.py`, GUI only; on by default on the GUI board —
 `--no-analysis` / the launcher checkbox turn it off, `--analysis-*` flags tune it; F9 toggle, F5 analyze, F6 review opponent's last decision, Shift+F5

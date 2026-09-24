@@ -200,7 +200,8 @@ counterfactual `whatif` at the current step (`w` key) to simulate an alternative
 `--source` picks what it browses: `simulate` (the default — `--games` games of `--player-a` vs
 `--player-b` on `--deck-a`/`--deck-b`), a directory of recorded shards (AZ self-play such as
 `train/az_data/gen`, or a GUI recording under `train/az_data/recorded/`; `--player-a` is the V(s)
-net, `--seat` the viewpoint, `--no-net` keeps the recorded outcomes), or a saved `.rmtrace`
+net, `--seat` the viewpoint, `--no-net` keeps the recorded outcomes, `--games N` loads the first
+N matches — `--games 0`, every match, is refused for a directory over 2 GiB of shards), or a saved `.rmtrace`
 analysis session. `--board tui` (the default) is the Textual browser; `--board gui` opens the
 same session in the PySide6 app. From `./tui.sh`, pick the **analysis** tool and its **browse**
 subcommand to fill in the options through the form; the GUI's New Analysis Session dialog
