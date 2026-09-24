@@ -64,7 +64,8 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_FULL_SEARCH_FRAC, DEFAULT_AZ_FAST_SIMS,
                       DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
-from cli_spec import DEFAULT_AZ_ROWS_PER_GAME, is_bo3
+from cli_spec import (DEFAULT_AZ_ROWS_PER_GAME, LEAGUE_DECKS_DIR, is_bo3,
+                      league_decks)
 from env import _MATCH_CTX_START as _GAME_NUMBER_IDX
 from gate_sprt import (VERDICT_ACCEPT, VERDICT_CONTINUE, VERDICT_REJECT,
                        floor_locked, sprt_cap_line, sprt_cap_verdict,
@@ -82,9 +83,6 @@ except ImportError:  # pragma: no cover
 _AZ_CKPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "checkpoints", "az")
 _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data")
-_DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                          "bin", "resources", "decks")
-_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 # P(opponent deck == focus deck) per self-play game (mirror vs cross-deck roster).
 # Value lives in cli_spec's AZ-defaults block (one home); local alias kept for
@@ -1314,7 +1312,7 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     have_inc = os.path.exists(inc_path)
     opp_spec = f"az:{inc_path}{knobs}" if have_inc else "scripted"
 
-    roster = list(roster) if roster else _default_az_league_roster()
+    roster = list(roster) if roster else league_decks()
     focus_decks = _normalize_focus(deck, roster)
     matchups = _gate_matchups(focus_decks, roster, cross_pairs, seed)
     per = max(2, games // len(matchups))   # matches per matchup (>=2 so seats alternate)
@@ -1702,7 +1700,7 @@ def _resolve_expert_decks(expert_decks) -> Optional[list]:
     if lowered == [EXPERT_DECKS_NONE]:
         return None
     if lowered == [EXPERT_DECKS_ROSTER]:
-        return _default_az_league_roster() or None
+        return league_decks() or None
     return decks
 
 
@@ -1830,8 +1828,8 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
     import az_selfplay
 
     if roster is None:
-        roster = _default_az_league_roster()
-    focus = _normalize_focus(deck, _default_az_league_roster())
+        roster = league_decks()
+    focus = _normalize_focus(deck, league_decks())
     label = focus[0] if len(focus) == 1 else f"{len(focus)}-deck matrix"
     excluded = [d for d in (selfplay_exclude or []) if d]
     sp_roster = [d for d in roster if d not in excluded] or list(roster)
@@ -1967,14 +1965,6 @@ def _write_az_league_state(ckpt_dir: str, state: dict) -> None:
 
 def _read_az_league_state(ckpt_dir: str) -> Optional[dict]:
     return read_progress_state(_az_league_state_path(ckpt_dir), "az-league")
-
-
-def _default_az_league_roster() -> list:
-    """Every deck in decks/league/, referenced 'league/<stem>' (rotation order)."""
-    if not os.path.isdir(_LEAGUE_DECKS_DIR):
-        return []
-    return sorted("league/" + os.path.splitext(p)[0]
-                  for p in os.listdir(_LEAGUE_DECKS_DIR) if p.endswith(".dk"))
 
 
 def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
@@ -2181,10 +2171,10 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         roster = ([d.strip() for d in decks.split(",") if d.strip()]
                   if isinstance(decks, str) else [str(d).strip() for d in decks if str(d).strip()])
     else:
-        roster = _default_az_league_roster()
+        roster = league_decks()
     if not roster:
         raise ValueError(
-            f"No decks found for az-league (looked in {_LEAGUE_DECKS_DIR}). "
+            f"No decks found for az-league (looked in {LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
     # 'gen' is the reserved generalist stem — a roster deck may not collide with it.
     for _d in roster:

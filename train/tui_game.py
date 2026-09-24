@@ -35,7 +35,7 @@ import decode
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, action_zone, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
-                         _STEP_ABBR)
+                         _STEP_ABBR, stack_item_label)
 
 # The card-inspect ("hold Q") banner auto-hides this many seconds after the last
 # 'q'. A terminal has no key-up event, so "hold" is emulated: OS key auto-repeat
@@ -889,18 +889,10 @@ class GameApp(App):
         if not stack:
             await box.mount(Static("Stack: (empty)", classes="stack-empty"))
             return
-        widgets = [StackItem(self._stack_item_label(e),
+        widgets = [StackItem(stack_item_label(e),
                              stack_target_refs(e, mirrored))
                    for e in stack]
         await box.mount(*widgets)
-
-    @staticmethod
-    def _stack_item_label(e) -> str:
-        kind = "spell" if e["is_spell"] else "ability"
-        label = f"{e['name']} ({kind}, {e['controller']})"
-        if e.get("targets"):
-            label += " → " + "; ".join(e["targets"])
-        return label
 
 
 # ── Entry point (play.py --board tui) ─────────────────────────────────────────

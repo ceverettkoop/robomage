@@ -63,7 +63,7 @@ import archetypes
 from cli_spec import (BIN_DIR, DEFAULT_AZ_GATE_ALPHA,
                       DEFAULT_AZ_PROMOTE_THRESHOLD, DEFAULT_AZ_TD_N,
                       DEFAULT_BASELINE_MODEL, DEFAULT_BASELINE_OPPONENT,
-                      append_spec_knob, is_bo3, is_search_spec)
+                      append_spec_knob, is_bo3, is_search_spec, league_decks)
 from gate_sprt import sprt_verdict
 
 from az_selfplay import _ACTOR_BIN   # the build-tier actor (bin/<config>/az_actor)
@@ -454,7 +454,7 @@ def run_actor_sweep(matchups: list, *, ckpt: str, n_games: int, seed: int,
             results[(dx, dy)] = tuple(t)
             prog["matchups"] += 1
             print(f"[{tag}]   [{prog['matchups']}/{len(matchups)}] piloting "
-                  f"{dx} vs scripted:hard {dy}: {_wld_line(*t)}", flush=True)
+                  f"{dx} vs scripted:hard {dy}: {wld_line(*t)}", flush=True)
 
     n_shards = 0
     try:
@@ -540,7 +540,8 @@ def run_actor_sweep(matchups: list, *, ckpt: str, n_games: int, seed: int,
 # Report
 # ----------------------------------------------------------------------
 
-def _wld_line(w: int, l: int, d: int) -> str:
+def wld_line(w: int, l: int, d: int) -> str:
+    """Format a W/L/D tally with its win percentage."""
     total = w + l + d
     pct = 100 * w / total if total else 0.0
     return f"{w}W/{l}L/{d}D  {pct:.1f}% win rate"
@@ -628,7 +629,7 @@ def build_report(display: str, matchups: list, results: dict, *,
             pct = 100 * w / total if total else 0
             row.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
             lines.append(f"{display} piloting {deck:<22} vs {opponent} "
-                         f"{opp:<22} " + _wld_line(w, l, d))
+                         f"{opp:<22} " + wld_line(w, l, d))
             bucket = archetypes.bucket_index(deck, opp)
             for tally in (per_model[deck], per_opp[opp],
                           per_bucket.setdefault(bucket, [0, 0, 0])):
@@ -643,18 +644,18 @@ def build_report(display: str, matchups: list, results: dict, *,
         lines.append(f"per model deck ({display} piloting it vs the whole "
                      f"{opponent} field):")
         for deck, (w, l, d) in per_model.items():
-            lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
+            lines.append(f"  {deck:<22} " + wld_line(w, l, d))
         lines.append(f"per opponent deck ({opponent} piloting it vs every "
                      "model deck; win rate is still the model's):")
         for deck, (w, l, d) in per_opp.items():
-            lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
+            lines.append(f"  {deck:<22} " + wld_line(w, l, d))
         lines.append("per value bucket (self archetype vs opponent archetype — "
                      "the multi-head critic's split):")
         per_self_arch: dict = {}
         for bucket in sorted(per_bucket):
             w, l, d = per_bucket[bucket]
             lines.append(f"  {archetypes.bucket_name(bucket):<34} "
-                         + _wld_line(w, l, d))
+                         + wld_line(w, l, d))
             tally = per_self_arch.setdefault(
                 archetypes.bucket_archetypes(bucket)[0], [0, 0, 0])
             tally[0] += w; tally[1] += l; tally[2] += d
@@ -662,11 +663,11 @@ def build_report(display: str, matchups: list, results: dict, *,
         for arch in sorted(per_self_arch):
             w, l, d = per_self_arch[arch]
             lines.append(f"  {archetypes.arch_name_at(arch):<34} "
-                         + _wld_line(w, l, d))
+                         + wld_line(w, l, d))
     tw = sum(v[0] for v in results.values())
     tl = sum(v[1] for v in results.values())
     td = sum(v[2] for v in results.values())
-    lines.append(f"overall ({display} vs {opponent}): " + _wld_line(tw, tl, td))
+    lines.append(f"overall ({display} vs {opponent}): " + wld_line(tw, tl, td))
     lines.append(verdict_line(tw, tl, td))
     return "\n".join(lines)
 
@@ -691,11 +692,11 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     the runner-based matchup sweep (train.baseline_sweep) the Python backend
     uses; its ``per_game`` is the ``runner.tally_per_game`` shape and
     ``stats`` each seat's summed search counters."""
-    from az_selfplay import league_roster, resolve_seed, _resolve_use_actor
+    from az_selfplay import resolve_seed, _resolve_use_actor
     from az_selfplay import resolve_eval_server
     from opponents import make_controller
 
-    roster = league_roster()
+    roster = league_decks()
     if not roster:
         print("No league decks found under bin/resources/decks/league")
         return

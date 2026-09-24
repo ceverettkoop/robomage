@@ -54,6 +54,7 @@ try:
     from env import (OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
                      _CUR_TURN_IDX)
     from cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
+                          league_decks,
                           DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                           DEFAULT_SB_ROLLOUT_TURNS,
                           DEFAULT_SB_SELFPLAY_MODE, DEFAULT_SB_EXPLORE_TEMP,
@@ -72,6 +73,7 @@ except ImportError:  # pragma: no cover
     from train.env import (OBS_SIZE, MAX_ACTIONS, _SELF_IS_A_IDX,
                            _IS_SIDEBOARD_IDX, _CUR_TURN_IDX)
     from train.cli_spec import (BIN_DIR, INTERACTIVE_BUILD_DIR, INTERACTIVE_BINARY,
+                                league_decks,
                                 DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                                 DEFAULT_SB_ROLLOUT_TURNS,
                                 DEFAULT_SB_SELFPLAY_MODE,
@@ -96,9 +98,6 @@ _AZ_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "az_data
 # INTERACTIVE_BINARY doc comment); ROBOMAGE_BUILD overrides both this and the
 # az_actor path below.
 _ACTOR_BIN = os.path.join(INTERACTIVE_BUILD_DIR, "az_actor")
-_DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                          "bin", "resources", "decks")
-_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 # Defaults (AlphaZero-style)
 DEFAULT_ROOT_NOISE_EPS = 0.25
@@ -138,14 +137,6 @@ def _fmt_secs(s: float) -> str:
 # ----------------------------------------------------------------------
 # Matchup schedule (mirrors + cross-deck, seeded/reproducible)
 # ----------------------------------------------------------------------
-
-def league_roster() -> list:
-    """Every deck in decks/league/, referenced 'league/<stem>' (sorted)."""
-    if not os.path.isdir(_LEAGUE_DECKS_DIR):
-        return []
-    return sorted("league/" + os.path.splitext(p)[0]
-                  for p in os.listdir(_LEAGUE_DECKS_DIR) if p.endswith(".dk"))
-
 
 def build_matchup_schedule_ex(focus_decks, opponent_decks, games: int,
                               mirror_frac: float, seed: int) -> list:
@@ -1459,7 +1450,7 @@ def generate(deck: str, *, games: int = DEFAULT_AZ_GAMES,
     out_dir = out_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     os.makedirs(out_dir, exist_ok=True)
     if roster is None:
-        roster = league_roster()
+        roster = league_decks()
     focus = list(focus_decks) if focus_decks else [deck]
 
     # Build the schedule BEFORE choosing a backend: the per-match scripted
@@ -2423,7 +2414,7 @@ def generate_expert(decks, *, games: int = 16, roster: Optional[list] = None,
     from scripted_agent import make_agent
 
     focus = [decks] if isinstance(decks, str) else list(decks)
-    roster = list(roster) if roster else league_roster()
+    roster = list(roster) if roster else league_decks()
     out_dir = out_dir or os.path.join(_AZ_DATA_DIR, GEN_STEM)
     os.makedirs(out_dir, exist_ok=True)
     if bo3:

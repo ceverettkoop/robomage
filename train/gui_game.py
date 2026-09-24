@@ -60,7 +60,8 @@ import scryfall_cache
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, action_zone, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
-                         _STEP_ABBR, resolve_opponent_spec)
+                         _STEP_ABBR, resolve_opponent_spec, stack_item_label,
+                         token_pt)
 
 # ── Card geometry ─────────────────────────────────────────────────────────────
 # Untapped cards are portrait at the real 63:88 Magic aspect; a tapped card is
@@ -603,7 +604,7 @@ class StackItemWidget(QWidget):
         layout.setSpacing(6)
         self._thumb = _StackThumb(entry["card_idx"])
         layout.addWidget(self._thumb)
-        label = QLabel(_stack_item_label(entry))
+        label = QLabel(stack_item_label(entry))
         label.setWordWrap(True)
         layout.addWidget(label, 1)
 
@@ -612,15 +613,6 @@ class StackItemWidget(QWidget):
 
     def leaveEvent(self, event):
         self.hovered.emit(None)
-
-
-def _stack_item_label(e):
-    """Human-readable stack-object label (verbatim from the TUI)."""
-    kind = "spell" if e["is_spell"] else "ability"
-    label = f"{e['name']} ({kind}, {e['controller']})"
-    if e.get("targets"):
-        label += " → " + "; ".join(e["targets"])
-    return label
 
 
 # ── Fixed-height, horizontal-only card row ────────────────────────────────────
@@ -1692,11 +1684,11 @@ class PlayPane(QWidget):
             [self._mk_hand(c) for c in hand])
 
     def _mk_perm(self, p, controller):
-        token_pt = self._token_pt(p)
+        tpt = token_pt(p)
         w = CardWidget(p["name"], p["card_idx"], controller, "battlefield",
-                       perm=p, token_pt=token_pt)
+                       perm=p, token_pt=tpt)
         self._register(w, p["name"])
-        self._apply_image(w, p["name"], token_pt)
+        self._apply_image(w, p["name"], tpt)
         return w
 
     def _mk_hand(self, c):
@@ -1706,17 +1698,6 @@ class PlayPane(QWidget):
         self._register(w, c["name"])
         self._apply_image(w, c["name"], None)
         return w
-
-    @staticmethod
-    def _token_pt(p):
-        """The Scryfall token lookup key for a permanent: (p, t) for a P/T token,
-        (None, None) for a non-creature token (Clue/Food/Treasure), else None (a
-        real named card)."""
-        if p.get("card_idx") != decode._TOKEN_IDX:
-            return None
-        if "power" in p:
-            return (p["power"], p["toughness"])
-        return (None, None)
 
     def _apply_image(self, widget, name, token_pt):
         """Ask the provider for `name`'s art; slot it in immediately if ready.

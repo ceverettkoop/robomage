@@ -54,7 +54,7 @@ import shard_probes
 import tree_rebuild
 from cli_spec import is_bo3
 from env import STATE_SIZE
-from game_driver import stack_target_refs
+from game_driver import stack_target_refs, token_pt
 from gui_game import (CardRow, CardWidget, HAND_CARD_H, HAND_CARD_W,
                       HAND_ROW_H, ImageProvider, OraclePopup, PhaseStrip,
                       STACK_EMPTY_H, STACK_ROW_H, StackItemWidget)
@@ -80,11 +80,6 @@ _MSG_SHARD = ("Not available in shard replay — branching/simulating needs a "
 _MSG_BROWSE_ONLY = ("Not available — browse-only session (no live env to "
                     "branch/simulate on).")
 _MSG_NO_ENV = "Live env not ready."
-_MSG_BUSY = ("Engine is busy (simulating or branching) — try again when it "
-             "finishes.")
-_MSG_NO_SEL = bs.MSG_NO_SEL
-_MSG_TREE_NOT_SHARDS = bs.MSG_TREE_NOT_SHARDS
-_MSG_NO_DIAG = bs.MSG_NO_DIAG
 
 
 # opts-dict key -> default: the browse flags' own defaults (the namespace
@@ -101,26 +96,8 @@ def _make_args(opts):
         **{k: opts.get(k, d) for k, d in _ARG_DEFAULTS.items()})
 
 
-def _provenance_model(prov):
-    """The inspected model spec a saved trace's provenance names: the
-    ``player_a`` dest, or the ``model`` key .rmtrace files written before the
-    seat vocabulary carry."""
-    prov = prov or {}
-    return prov.get("player_a") or prov.get("model")
-
-
 def _mono_font():
     return QFontDatabase.systemFont(QFontDatabase.FixedFont)
-
-
-def _token_pt(p):
-    """Scryfall token lookup key for a permanent (same rule as the play board):
-    (p, t) for a P/T token, (None, None) for a non-creature token, else None."""
-    if p.get("card_idx") != decode._TOKEN_IDX:
-        return None
-    if "power" in p:
-        return (p["power"], p["toughness"])
-    return (None, None)
 
 
 # ── Worker → UI bridge ────────────────────────────────────────────────────────
@@ -393,11 +370,11 @@ class TraceBoard(QWidget):
     # ----- card builders -----
 
     def _mk_perm(self, p, controller):
-        token_pt = _token_pt(p)
+        tpt = token_pt(p)
         w = CardWidget(p["name"], p["card_idx"], controller, "battlefield",
-                       perm=p, token_pt=token_pt)
+                       perm=p, token_pt=tpt)
         self._wire_card(w)
-        self._register_image(w, p["name"], token_pt)
+        self._register_image(w, p["name"], tpt)
         return w
 
     def _mk_hand(self, c):
@@ -961,7 +938,7 @@ class BrowserPane(QWidget):
             item.setData(Qt.UserRole, key)
             if not self._shards:
                 item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
-                item.setToolTip(_MSG_TREE_NOT_SHARDS)
+                item.setToolTip(bs.MSG_TREE_NOT_SHARDS)
             self._menu_list.addItem(item)
         # Net probes (az_inspect over the browsed records): per-decision
         # block-importance / card-swap / sweeps / search-π-vs-net, plus the
@@ -1091,7 +1068,7 @@ class BrowserPane(QWidget):
         if self._has_engine:
             return (f"{self._args.player_a}  vs  {self._args.player_b}"
                     + ("  · bo3" if is_bo3(self._args) else ""))
-        model = _provenance_model(self._provenance_loaded)
+        model = bs.provenance_model(self._provenance_loaded)
         if model:
             return f"{model} traces (opened)"
         return "analysis traces"
@@ -1416,7 +1393,7 @@ class BrowserPane(QWidget):
             self._run_probe_entry(key)
             return
         if self._store.analysis_busy:
-            self._say("An analysis is already running.")
+            self._say(bs.MSG_ANALYSIS_BUSY)
             return
         job, why = bs.analysis_job(key, self._store.games,
                                    self._store.cur_game)
@@ -1445,20 +1422,11 @@ class BrowserPane(QWidget):
         append-only), stack + torch on the one-shot analysis thread. The probe
         net loads on first use and is cached; the analysis_busy gate keeps a
         single worker touching it."""
-        if self._store.analysis_busy:
-            self._say("An analysis is already running.")
+        snap, why = self._store.probe_snapshot(key)
+        if snap is None:
+            self._say(why)
             return
-        if (key in shard_probes.DECISION_PROBES
-                and self._store.cur_game is None):
-            self._say(_MSG_NO_SEL)
-            return
-        snap = shard_probes.snapshot(self._store.games, self._store.cur_game,
-                                     self._store.cur_step)
-        if not any(c["observations"] for c in snap["games"]):
-            self._say("No browsable decisions yet.")
-            return
-        model_spec = (getattr(self._args, "player_a", None)
-                      or _provenance_model(self._provenance_loaded) or "gen")
+        model_spec = bs.probe_model_spec(self._args, self._provenance_loaded)
         self._store.analysis_busy = True
         self._say(f"Running {key}…")
         bridge = self._bridge
@@ -1485,17 +1453,11 @@ class BrowserPane(QWidget):
         search env from the game's recorded seed/action log — so it runs in
         shard-browse and traces-only modes too. An unreplayable game gets the
         job's printed refusal in the output tab."""
-        if self._store.cur_game is None:
-            self._say(_MSG_NO_SEL)
+        sel, why = self._store.finished_selection()
+        if sel is None:
+            self._say(why)
             return
-        if self._store.engine_busy:
-            self._say(_MSG_BUSY)
-            return
-        game = self._store.games[self._store.cur_game]
-        if game.get("live"):
-            self._say(bs.MSG_LIVE)
-            return
-        gn, step = self._store.cur_game, self._store.cur_step
+        gn, step, game = sel
         self._store.engine_busy = True
         self._busy_kind = "search"
         self._mark(summary=True)
@@ -1504,26 +1466,14 @@ class BrowserPane(QWidget):
 
     def _run_tree_entry(self):
         """Exact rebuild of the recorded search tree at the current game/step
-        (TREE_MENU / F7): the search_step gate chain plus a diag check — only
+        (TREE_MENU / F7): the store's tree_selection gate — only
         a search opponent's searched (kind 1) or tree-followed (kind 2) row
         has a tree to rebuild. The job replaces any tree already open."""
-        if not self._shards:
-            self._say(_MSG_TREE_NOT_SHARDS)
+        sel, why = self._store.tree_selection(bool(self._shards))
+        if sel is None:
+            self._say(why)
             return
-        if self._store.cur_game is None:
-            self._say(_MSG_NO_SEL)
-            return
-        if self._store.engine_busy:
-            self._say(_MSG_BUSY)
-            return
-        game = self._store.games[self._store.cur_game]
-        if game.get("live"):
-            self._say(bs.MSG_LIVE)
-            return
-        gn, step = self._store.cur_game, self._store.cur_step
-        if not bs.step_has_tree(game, step):
-            self._say(_MSG_NO_DIAG)
-            return
+        gn, step, game = sel
         self._store.engine_busy = True
         self._busy_kind = "tree"
         self._tree_jobs += 1
@@ -1559,11 +1509,11 @@ class BrowserPane(QWidget):
                       else (_MSG_BROWSE_ONLY if core is None else _MSG_NO_ENV))
             return
         if self._store.engine_busy:
-            self._say(_MSG_BUSY)
+            self._say(bs.MSG_BUSY)
             return
         if key == "whatif":
             if self._store.cur_game is None:
-                self._say(_MSG_NO_SEL)
+                self._say(bs.MSG_NO_SEL)
                 return
             gn, step = self._store.cur_game, self._store.cur_step
             self._store.engine_busy = True

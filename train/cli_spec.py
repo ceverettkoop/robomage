@@ -1405,6 +1405,21 @@ DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
 # Deck subfolders hidden from deck pickers: temp/ holds auto-generated test
 # decks (see test_harness.py), not_used/ parked development stubs.
 DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
+# League decks live in their own folder so the league roster is curated
+# separately from the top-level training decks. A deck here is referenced as
+# 'league/<stem>' (a path relative to decks/), which the engine resolves to
+# decks/league/<stem>.dk.
+LEAGUE_DECKS_DIR = os.path.join(DECKS_DIR, "league")
+
+
+def league_decks():
+    """The league roster: every decks/league/*.dk as 'league/<stem>', sorted
+    (empty when the folder is missing). The one default roster the PPO league,
+    exploiter, baseline sweep, az self-play and the TUI deck picker share."""
+    if not os.path.isdir(LEAGUE_DECKS_DIR):
+        return []
+    return sorted("league/" + os.path.splitext(p)[0]
+                  for p in os.listdir(LEAGUE_DECKS_DIR) if p.endswith(".dk"))
 
 
 def scan_decks():

@@ -106,7 +106,7 @@ from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as VOCAB_NAMES,
                         _CARD_COST_MATRIX as CARD_COST_MATRIX,
                         _LAND_VOCAB_IDS as LAND_VOCAB_IDS)
 from card_props import N_CARD_PROPS, _PROP_NAMES
-from cli_spec import AZI_CARD_SPACES, AZI_LABEL_KINDS
+from cli_spec import AZI_CARD_SPACES, AZI_LABEL_KINDS, LEAGUE_DECKS_DIR
 from _enums import (_CAT_NAMES, _OBS_KEYWORDS, _REF_NAMES, N_OBS_KEYWORDS,
                     N_REF_ZONES, STACK_QUAL_FIELDS, MAX_STACK_MODES,
                     MAX_STACK_TGTS)
@@ -2861,9 +2861,6 @@ def chart_projection(coords, ids, movement, labels, axes, space="identity",
 # identified by matching the (boarding-invariant) main+side 75 against the
 # league decklists, falling back to the matchup tail's archetype one-hot.
 
-_LEAGUE_DECKS_DIR = os.path.join(os.path.dirname(_TRAIN_DIR), "bin", "resources",
-                                 "decks", "league")
-
 
 def _norm_card_name(name):
     return "".join(c for c in str(name).lower() if c.isalnum())
@@ -2890,7 +2887,7 @@ def decode_deck_slots(vec):
     return out
 
 
-def load_league_decks(decks_dir=_LEAGUE_DECKS_DIR):
+def load_league_decks(decks_dir=LEAGUE_DECKS_DIR):
     """{deck_stem: Counter(vocab_idx -> count over the full 75)}."""
     import collections
     import re

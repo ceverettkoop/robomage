@@ -85,6 +85,21 @@ def apply_trace_provenance(args, provenance):
         args.format = format_name(bool(provenance["bo3"]))
 
 
+def provenance_model(prov):
+    """The inspected model spec a saved trace's provenance names: the
+    ``player_a`` dest, or the ``model`` key .rmtrace files written before the
+    seat vocabulary carry."""
+    prov = prov or {}
+    return prov.get("player_a") or prov.get("model")
+
+
+def probe_model_spec(args, loaded_provenance=None):
+    """The net the browsers' net probes load: the session's ``--player-a``,
+    else the model an opened .rmtrace names, else the generalist."""
+    return (getattr(args, "player_a", None)
+            or provenance_model(loaded_provenance) or "gen")
+
+
 def load_trace_source(path, args):
     """A saved ``.rmtrace`` analysis session as ``(games, provenance)``, with
     the provenance applied to ``args`` (see apply_trace_provenance)."""
@@ -253,6 +268,9 @@ VIEWS = [
 MSG_NO_GAMES = "No finished games yet."
 MSG_NO_SEL = "Select a game and step first."
 MSG_LIVE = "The live game has no finished record yet."
+MSG_ANALYSIS_BUSY = "An analysis is already running."
+MSG_BUSY = ("Engine is busy (simulating, branching, searching or walking a "
+            "tree) — try again when it finishes.")
 
 
 def whatif_family(games, gn):
@@ -554,12 +572,11 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
     import mcts
     from opponents import load_spec_evaluator
 
-    if not an._game_is_replayable(game):
+    if not tree_rebuild.game_is_replayable(game):
         return ("This game has no recorded seed/action log. Training-pool "
                 "shards and recordings made before the replay sidecar cannot "
                 "be replayed — record a new session to enable this view.")
-    prefix = game["prefix_len"][step]
-    if prefix is None or game["full_actions"] is None:
+    if game["prefix_len"][step] is None:
         return "This step has no recorded replay position."
     if step_has_tree(game, step):
         try:
@@ -571,16 +588,14 @@ def run_replay_search(game, step, *, binary, deck_a, deck_b, bo3,
             return f"Cannot rebuild the recorded tree: {exc}"
     lines = []
     try:
-        env = tree_rebuild.replay_to_step(game, step, binary=binary,
-                                         deck_a=deck_a, deck_b=deck_b,
-                                         bo3=bo3, strict=False)
+        env, n_diff = tree_rebuild.replay_to_step(
+            game, step, binary=binary, deck_a=deck_a, deck_b=deck_b,
+            bo3=bo3, strict=False)
     except tree_rebuild.RebuildError as exc:
         return f"{exc} (deck files changed since the recording?)."
     try:
-        obs = env._obs
         expected = np.asarray(game["observations"][step], dtype=np.float32)
-        if not np.allclose(obs, expected, atol=1e-4):
-            n_diff = int(np.sum(~np.isclose(obs, expected, atol=1e-4)))
+        if n_diff:
             lines.append(f"WARNING: replay diverged from the recorded state "
                          f"({n_diff} obs floats differ) — the search below "
                          f"may not describe the recorded position.")
@@ -1130,7 +1145,7 @@ class Applied:
 def _live_placeholder(model_is_a, engine_seed):
     """The in-progress game dict a GameStarted opens: the trace schema with
     empty per-step lists, no result, and no replay keys (full_actions=None so
-    _game_is_replayable refuses it until GameFinished swaps in the real dict)."""
+    tree_rebuild.game_is_replayable refuses it until GameFinished swaps in the real dict)."""
     return {"observations": [], "values": [], "interp_features": [],
             "actions": [], "num_choices": [], "action_probs": [],
             "opp_actions": [], "clock_remaining": [], "prefix_len": [],
@@ -1225,6 +1240,44 @@ class BrowseStore:
 
     def selected(self):
         return None if self.cur_game is None else self.games[self.cur_game]
+
+    # ----- job gates (the refusals both boards show) -----
+
+    def finished_selection(self):
+        """``((gn, step, game), None)`` for the replay-search / tree jobs, or
+        ``(None, why)``: no selection, the engine busy, or the live game."""
+        if self.cur_game is None:
+            return None, MSG_NO_SEL
+        if self.engine_busy:
+            return None, MSG_BUSY
+        game = self.games[self.cur_game]
+        if game.get("live"):
+            return None, MSG_LIVE
+        return (self.cur_game, self.cur_step, game), None
+
+    def tree_selection(self, is_recording):
+        """:meth:`finished_selection` for the exact tree rebuild, which also
+        needs a recording and a step that recorded search diagnostics."""
+        if not is_recording:
+            return None, MSG_TREE_NOT_SHARDS
+        sel, why = self.finished_selection()
+        if sel is not None and not step_has_tree(sel[2], sel[1]):
+            return None, MSG_NO_DIAG
+        return sel, why
+
+    def probe_snapshot(self, key):
+        """``(snap, None)`` — the ``shard_probes.snapshot`` a net probe runs
+        on — or ``(None, why)``: an analysis already running, a per-decision
+        probe with no selection, or nothing browsable yet."""
+        import shard_probes
+        if self.analysis_busy:
+            return None, MSG_ANALYSIS_BUSY
+        if key in shard_probes.DECISION_PROBES and self.cur_game is None:
+            return None, MSG_NO_SEL
+        snap = shard_probes.snapshot(self.games, self.cur_game, self.cur_step)
+        if not any(c["observations"] for c in snap["games"]):
+            return None, "No browsable decisions yet."
+        return snap, None
 
 
 # ── Engine-side job bodies (worker-thread-only) ───────────────────────────────

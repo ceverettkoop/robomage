@@ -30,7 +30,7 @@ from textual.widgets import (Button, Checkbox, Footer, Header, Input, Label,
                              ListItem, ListView, Select, SelectionList, Static,
                              Tree)
 
-from cli_spec import (ALL_TOOLS, DECKS_DIR, HARNESS_DEFAULT_PLAYER, HUMAN_SPEC,
+from cli_spec import (ALL_TOOLS, DECKS_DIR, league_decks, HARNESS_DEFAULT_PLAYER, HUMAN_SPEC,
                       REPO_ROOT, MutexGroup, scan_decks)
 # Curriculum plans: stdlib-only module (cli_spec + progress_io), so the launcher
 # can list/read/write plan files without pulling in the ML stack.
@@ -82,13 +82,6 @@ def _grouped_sort_key(rel):
     """Sort decks/checkpoints top-level first, then grouped by subfolder,
     alphabetical within each group."""
     return (rel.count("/"), rel)
-
-
-def _scan_league_decks():
-    # League roster decks live in decks/league/; reference them as 'league/<stem>'
-    # so the engine loads decks/league/<stem>.dk (matches train.league() default).
-    return sorted("league/" + os.path.splitext(os.path.basename(p))[0]
-                  for p in glob.glob(os.path.join(DECKS_DIR, "league", "*.dk")))
 
 
 def _scan_checkpoints():
@@ -152,7 +145,7 @@ def _expand_checkpoint(val):
 # --load resume, --from-ppo); 'agent' adds the az:/azraw:/mcts: gen entries for
 # fields that go through make_controller (observe's players, baseline's model);
 # 'az_checkpoint' is bare AZ .pt paths.
-_SCANNERS = {"deck": scan_decks, "league_deck": _scan_league_decks,
+_SCANNERS = {"deck": scan_decks, "league_deck": league_decks,
              "checkpoint": _scan_checkpoints, "agent": _scan_agents,
              "az_checkpoint": _scan_az_checkpoints,
              "curriculum": _scan_curricula}

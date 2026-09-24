@@ -41,11 +41,12 @@ from _enums import (
     CAT_PLAY_LAND, CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE)
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
+import tree_rebuild
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import (ANALYSIS_TOOL, SEARCH_KNOB_KEYS, search_knob_pairs,
                       with_spec_query, apply_to_parser, add_removed_subcommands,
-                      BOARD_GUI,
+                      BOARD_GUI, is_search_spec,
                       browse_inapplicable_dests, browse_source_kind,
                       explicit_dests, resolve_board, is_bo3)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
@@ -321,92 +322,6 @@ def _extract_interpretable(obs):
 # critic, so absolute V(s) magnitudes are not directly comparable across the two.
 
 
-def _is_search_spec(spec) -> bool:
-    """True if ``spec`` is a search spec (``az:`` / ``mcts:`` prefix) whose trace
-    games should be PLAYED by the real MCTS SearchController.
-
-    ``azraw:`` is deliberately NOT a search spec (it is the raw AZNet policy) —
-    ``"az:"`` requires the colon in the third position, so ``"azraw:gen"`` (an
-    ``r`` there) does not match. Bare PPO specs and ``.pt`` paths are likewise
-    raw-policy. The prefix is the only lever: no new CLI flag."""
-    from opponents import parse_model_spec
-    return isinstance(spec, str) and parse_model_spec(spec).search
-
-
-class _AZDistribution:
-    """Stand-in for an sb3 action distribution: exposes ``.probs`` like
-    MaskableCategorical so ``_get_policy_probs`` reads it unchanged."""
-
-    def __init__(self, probs):
-        self.probs = probs
-
-
-class _AZDistributionWrap:
-    """Mirror of ``get_distribution``'s return: a ``.distribution`` with ``.probs``."""
-
-    def __init__(self, probs):
-        self.distribution = _AZDistribution(probs)
-
-
-class _AZPolicyAdapter:
-    """Adapts an AZNet to the sb3 ``policy`` subset analysis.py calls, both taking
-    a torch batch tensor: ``predict_values(obs_t)`` and
-    ``get_distribution(obs_t, action_masks=)``."""
-
-    def __init__(self, net):
-        import torch
-        self._torch = torch
-        self._net = net.eval()
-
-    def predict_values(self, obs_t):
-        torch = self._torch
-        b = obs_t.shape[0]
-        mask = torch.ones(b, MAX_ACTIONS, dtype=torch.bool)
-        with torch.no_grad():
-            _, value = self._net(obs_t, mask)
-        return value.reshape(-1, 1)  # so .item() works for a batch of 1
-
-    def get_distribution(self, obs_t, action_masks=None):
-        torch = self._torch
-        b = obs_t.shape[0]
-        if action_masks is None:
-            mask = torch.ones(b, MAX_ACTIONS, dtype=torch.bool)
-        else:
-            mask = torch.as_tensor(np.asarray(action_masks, dtype=bool))
-            if mask.ndim == 1:
-                mask = mask.unsqueeze(0)
-        with torch.no_grad():
-            logits, _ = self._net(obs_t, mask)
-            probs = torch.softmax(logits, dim=-1)
-        return _AZDistributionWrap(probs)
-
-
-class _AZModelAdapter:
-    """Drop-in for a MaskablePPO model across analysis.py: a ``.policy`` with
-    predict_values/get_distribution and a ``.predict`` for ModelController.
-
-    The value is the AZ tanh outcome estimate in [-1, 1] (a bounded game-result
-    prediction), NOT the PPO shaped-return critic."""
-
-    is_az = True
-
-    def __init__(self, net):
-        self._net = net
-        self.policy = _AZPolicyAdapter(net)
-
-    def predict(self, obs, action_masks=None, deterministic=True):
-        import torch
-        obs_t = torch.as_tensor(np.asarray(obs, dtype=np.float32)).unsqueeze(0)
-        if action_masks is None:
-            mask = torch.ones(1, MAX_ACTIONS, dtype=torch.bool)
-        else:
-            mask = torch.as_tensor(np.asarray(action_masks, dtype=bool)).unsqueeze(0)
-        with torch.no_grad():
-            logits, _ = self._net(obs_t, mask)
-            action = int(torch.argmax(logits[0]).item())
-        return action, None
-
-
 def _note_warm_start(base, ppo_path):
     print(f"No AZ checkpoint for {base!r}; warm-starting an AZNet from PPO {ppo_path}")
 
@@ -442,7 +357,7 @@ def _apply_search_knob_flags(args):
     set_knobs = [d for d, v in values.items()
                  if v is not None and not (d == "search_xw" and v is True)]
     auto_procs = "search_procs" in values
-    seats = [s for s in ("player_a", "player_b") if _is_search_spec(getattr(args, s))]
+    seats = [s for s in ("player_a", "player_b") if is_search_spec(getattr(args, s))]
     if set_knobs and not seats:
         flags = "/".join("--" + d.replace("_", "-") for d in set_knobs)
         print(f"{flags} only apply to a search seat "
@@ -523,8 +438,8 @@ def _load_model_and_env(args):
     # A search spec (az:/mcts:) plays its trace games with a real MCTS
     # SearchController, which needs the engine's --search-server protocol and a
     # search-capable env. Mirror runner.py's duck-typed env swap.
-    search_play = (_is_search_spec(args.player_a)
-                   or (opp_model is not None and _is_search_spec(args.player_b)))
+    search_play = (is_search_spec(args.player_a)
+                   or (opp_model is not None and is_search_spec(args.player_b)))
     if search_play:
         from search_env import SearchRoboMageEnv
         env_cls = SearchRoboMageEnv
@@ -617,7 +532,7 @@ def _playing_controller(model, label, env):
     """
     from opponents import ModelController, make_controller
     spec = getattr(model, "_play_spec", None)
-    if _is_search_spec(spec):
+    if is_search_spec(spec):
         ctrl = getattr(model, "_search_ctrl", None)
         if ctrl is None:
             ctrl = make_controller(spec, deterministic=True)
@@ -896,7 +811,7 @@ def _search_play_notes(model, opp_model):
     lines = []
     for who, m in (("model", model), ("opponent", opp_model)):
         spec = getattr(m, "_play_spec", None) if m is not None else None
-        if _is_search_spec(spec):
+        if is_search_spec(spec):
             lines.append(f"  {who} trace games played by MCTS ({spec}) — slow "
                          f"(~sims/decision); use azraw:/bare spec for "
                          f"raw-policy traces")
@@ -934,42 +849,26 @@ def _report_search_stats(model, opp_model):
         print(line, flush=True)
 
 
-def _game_is_replayable(game):
-    """True if a game trace carries the seed + action log needed for replay."""
-    return (game.get("engine_seed") is not None
-            and game.get("full_actions") is not None
-            and game.get("prefix_len") is not None)
-
-
 def _replay_to_step(env, game, step):
     """Re-run `game` in `env` up to (not including) model decision `step`.
 
     Resets with the game's recorded engine seed and deck arrangement, then feeds
-    the recorded interleaved action log until the model is on the clock for
-    decision `step`. Returns (obs, ok, prefix_reward): `ok` is False (with a
-    printed warning) if replay diverged from the stored observation, so callers
-    never present a counterfactual built on a desynced state. `prefix_reward` is
-    the cumulative Player-A reward accrued during the prefix — nonzero when the
-    branch point is in game 2+ of a bo3 match (the ±1.0 per-game results from
-    earlier games land here, not after the branch).
+    the recorded interleaved action log (`tree_rebuild.feed_prefix`) until the
+    model is on the clock for decision `step`. Returns (obs, ok, prefix_reward):
+    `ok` is False (with a printed warning) if the replay ended early or diverged
+    from the stored observation, so callers never present a counterfactual built
+    on a desynced state. `prefix_reward` is the cumulative Player-A reward
+    accrued during the prefix — nonzero when the branch point is in game 2+ of
+    a bo3 match (the ±1.0 per-game results from earlier games land here, not
+    after the branch).
     """
-    engine_seed = game["engine_seed"]
-    model_is_a = game["model_is_a"]
-    prefix = game["prefix_len"][step]
-    full_actions = game["full_actions"]
-
-    obs, _ = _reset_for_game(env, model_is_a, engine_seed)
-    prefix_reward = 0.0
-    for a in full_actions[:prefix]:
-        obs, r, terminated, truncated, _ = env.step(a)
-        prefix_reward += r
-        if terminated or truncated:
-            print(f"  Replay ended early at prefix action; cannot reach step {step}.")
-            return obs, False, prefix_reward
-
-    expected = game["observations"][step]
-    if not np.allclose(obs, expected, atol=1e-4):
-        n_diff = int(np.sum(~np.isclose(obs, expected, atol=1e-4)))
+    obs, _ = _reset_for_game(env, game["model_is_a"], game["engine_seed"])
+    try:
+        obs, prefix_reward, n_diff = tree_rebuild.feed_prefix(env, game, step, obs)
+    except tree_rebuild.RebuildError as exc:
+        print(f"  Cannot reach step {step}: {exc}.")
+        return obs, False, 0.0
+    if n_diff:
         print(f"  WARNING: replay diverged from recorded state at step {step} "
               f"({n_diff} obs floats differ). Engine nondeterminism? "
               f"Counterfactual results may be unreliable.")
@@ -1111,7 +1010,7 @@ def _run_whatif(model, env, opp_model, game, game_idx, step, k,
     re-branched like any simulated game. The chosen branch gets no trace: its
     line IS the source game.
     """
-    if not _game_is_replayable(game):
+    if not tree_rebuild.game_is_replayable(game):
         print("  This game has no recorded seed/action log — it predates the "
               "replay-enabled collector. Re-collect (or run more games) to enable whatif.")
         return None
@@ -3707,8 +3606,8 @@ def _collect_report_traces(args):
     either way (a search seat's RNG stream restarts in each worker)."""
     n_workers = max(1, min(int(getattr(args, "workers", 1) or 1), args.games))
     if (n_workers > 1 and getattr(args, "search_procs", None) is None
-            and (_is_search_spec(args.player_a)
-                 or _is_search_spec(args.player_b))):
+            and (is_search_spec(args.player_a)
+                 or is_search_spec(args.player_b))):
         # Games are the parallel axis; AUTO world-procs per worker would
         # oversubscribe the cores.
         args.search_procs = 1
@@ -3780,7 +3679,7 @@ def _search_net_sections(args, games):
     category, the biggest disagreements decoded) and ``probe_value`` (net V
     vs search root value, the search tally) over every searched decision.
     Empty for a raw-policy seat."""
-    if not _is_search_spec(args.player_a):
+    if not is_search_spec(args.player_a):
         return []
     import shard_probes
     try:

@@ -111,11 +111,6 @@ _AXIS_STYLE = "dim"
 # (from the bottom). Downward bars reuse them via reverse-video (see _cell).
 _BLOCKS = " ▁▂▃▄▅▆▇█"
 
-# Gate messages (the same refusals the GUI pane shows).
-_MSG_BUSY = ("Engine is busy (simulating, branching, searching or walking a "
-             "tree) — try again when it finishes.")
-_MSG_NO_SEL = bs.MSG_NO_SEL
-_MSG_LIVE = bs.MSG_LIVE
 
 # Seconds between coalesced UI refreshes while events stream in.
 _REFRESH_S = 0.1
@@ -1298,29 +1293,14 @@ class AnalysisApp(App):
         else:
             self._run_analysis_entry(key)
 
-    def _selected_finished_game(self):
-        """(gn, step, game) for the replay/tree jobs, or None after notifying
-        why not (no selection / engine busy / the live game)."""
-        st = self._store
-        if st.cur_game is None:
-            self.notify(_MSG_NO_SEL, severity="warning")
-            return None
-        if st.engine_busy:
-            self.notify(_MSG_BUSY, severity="warning")
-            return None
-        game = st.games[st.cur_game]
-        if game.get("live"):
-            self.notify(_MSG_LIVE, severity="warning")
-            return None
-        return st.cur_game, st.cur_step, game
-
     def _run_search_entry(self) -> None:
         """Replay-to-step MCTS at the current game/step: needs only the game's
         recorded seed/action log (not the live env), so it works in shard and
         saved-session browsing too; an unreplayable game gets the job's
         printed refusal in the output tab."""
-        sel = self._selected_finished_game()
+        sel, why = self._store.finished_selection()
         if sel is None:
+            self.notify(why, severity="warning")
             return
         gn, step, game = sel
         self.notify(f"Replaying game {gn} to step {step} and searching…")
@@ -1330,16 +1310,11 @@ class AnalysisApp(App):
         """Exact rebuild of the recorded search tree at the current game/step
         (F7): a recording's searched (kind 1) or tree-followed (kind 2) row
         only. The job replaces any tree already open."""
-        if not self._shards:
-            self.notify(bs.MSG_TREE_NOT_SHARDS, severity="warning")
-            return
-        sel = self._selected_finished_game()
+        sel, why = self._store.tree_selection(bool(self._shards))
         if sel is None:
+            self.notify(why, severity="warning")
             return
         gn, step, game = sel
-        if not bs.step_has_tree(game, step):
-            self.notify(bs.MSG_NO_DIAG, severity="warning")
-            return
         self._tree_jobs += 1
         self.notify("Rebuilding search tree…")
         self._submit_job("tree", ("tree", gn, step, game))
@@ -1363,12 +1338,12 @@ class AnalysisApp(App):
                         else "Live env not ready.", severity="warning")
             return
         if self._store.engine_busy:
-            self.notify(_MSG_BUSY, severity="warning")
+            self.notify(bs.MSG_BUSY, severity="warning")
             return
         if key == "whatif":
             st = self._store
             if st.cur_game is None:
-                self.notify(_MSG_NO_SEL, severity="warning")
+                self.notify(bs.MSG_NO_SEL, severity="warning")
                 return
             gn, step = st.cur_game, st.cur_step
             self.notify(f"Branching whatif at game {gn}, step {step}…")
@@ -1381,7 +1356,7 @@ class AnalysisApp(App):
     def _run_analysis_entry(self, key: str) -> None:
         """An ANALYSES (pool) or VIEWS (pool / selected game) entry."""
         if self._store.analysis_busy:
-            self.notify("An analysis is already running.", severity="warning")
+            self.notify(bs.MSG_ANALYSIS_BUSY, severity="warning")
             return
         job, why = bs.analysis_job(key, self._store.games, self._store.cur_game)
         if job is None:
@@ -1395,21 +1370,14 @@ class AnalysisApp(App):
         """Net probes over the browsed records (shard_probes): snapshot on the
         UI thread, stack + torch on the analysis worker. The probe net loads
         on first use and is cached; analysis_busy keeps one worker on it."""
-        if self._store.analysis_busy:
-            self.notify("An analysis is already running.", severity="warning")
-            return
-        if key in shard_probes.DECISION_PROBES and self._store.cur_game is None:
-            self.notify(_MSG_NO_SEL, severity="warning")
-            return
-        snap = shard_probes.snapshot(self._store.games, self._store.cur_game,
-                                     self._store.cur_step)
-        if not any(c["observations"] for c in snap["games"]):
-            self.notify("No browsable decisions yet.", severity="warning")
+        snap, why = self._store.probe_snapshot(key)
+        if snap is None:
+            self.notify(why, severity="warning")
             return
         self._store.analysis_busy = True
         self.notify(f"Running {key}…")
-        self._probe_worker(key, snap, getattr(self._args, "player_a", None)
-                           or "gen")
+        self._probe_worker(key, snap, bs.probe_model_spec(
+            self._args, self._loaded_provenance))
 
     @work(thread=True, group="analysis")
     def _analysis_worker(self, title: str, job) -> None:

@@ -70,7 +70,7 @@ import sys
 import time
 
 from cli_spec import (DEFAULT_AZ_FAST_SIMS, DEFAULT_AZ_FULL_SEARCH_FRAC,
-                      DEFAULT_AZ_OPP_POOL_FRAC, parse_int_list)
+                      DEFAULT_AZ_OPP_POOL_FRAC, league_decks, parse_int_list)
 
 TRAIN_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(TRAIN_DIR)
@@ -265,7 +265,7 @@ def run(args) -> None:
     # both the schedule preview and generate() — generate(roster=None) means
     # "the league roster", but build_matchup_schedule_ex(pool=None) means "no
     # pool" (every match a mirror), so the preview must never see None.
-    roster = az_selfplay.league_roster()
+    roster = league_decks()
     if not args.decks:
         focus = list(roster)
         if not focus:

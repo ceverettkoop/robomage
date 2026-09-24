@@ -199,6 +199,27 @@ def stack_target_refs(e, mirrored):
     return refs
 
 
+def stack_item_label(e):
+    """Human-readable stack-object label: name, spell/ability, controller and
+    any targets."""
+    kind = "spell" if e["is_spell"] else "ability"
+    label = f"{e['name']} ({kind}, {e['controller']})"
+    if e.get("targets"):
+        label += " → " + "; ".join(e["targets"])
+    return label
+
+
+def token_pt(p):
+    """The Scryfall token lookup key for a permanent: (p, t) for a P/T token,
+    (None, None) for a non-creature token (Clue/Food/Treasure), else None (a
+    real named card)."""
+    if p.get("card_idx") != decode._TOKEN_IDX:
+        return None
+    if "power" in p:
+        return (p["power"], p["toughness"])
+    return (None, None)
+
+
 def menu_label(a, opp_is_a):
     """Action description for the menu, tagging player choices SELF/OPPONENT.
 

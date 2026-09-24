@@ -47,6 +47,7 @@ import decode
 from _enums import _CAT_NAMES, _STEP_NAMES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
 from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
+                      LEAGUE_DECKS_DIR, league_decks,
                       ENT_COEF, TARGET_KL, lr_for_timesteps,
                       shaping_scale_for_timesteps, PPO_KWARGS, NET_ARCH,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
@@ -960,11 +961,9 @@ def _ensure_deck_ckpt_subdir(checkpoint_dir: str, deck: str) -> None:
 # TOTAL_TIMESTEPS / N_ENVS / N_ENVS_SELF_PLAY imported from cli_spec (see top of file).
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
-# League decks live in their own folder so the league roster is curated separately
-# from the top-level training decks. A deck here is referenced as 'league/<stem>'
-# (a path relative to decks/), which the engine resolves to decks/league/<stem>.dk
-# and which namespaces its checkpoints under a matching 'league/' subdir.
-_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
+# League decks (cli_spec.LEAGUE_DECKS_DIR, listed by cli_spec.league_decks) are
+# referenced as 'league/<stem>', which also namespaces their checkpoints under a
+# matching 'league/' subdir.
 
 
 def _limit_worker_threads():
@@ -1439,13 +1438,10 @@ def league(binary_path: str, decks: str | None = None,
     else:
         # Default roster: every deck in the dedicated league folder, referenced as
         # 'league/<stem>' so the engine loads decks/league/<stem>.dk.
-        roster = sorted(
-            "league/" + os.path.splitext(p)[0]
-            for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
-            if p.endswith(".dk"))
+        roster = league_decks()
     if not roster:
         raise ValueError(
-            f"No decks found for league (looked in {_LEAGUE_DECKS_DIR}). "
+            f"No decks found for league (looked in {LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
     # 'gen' is reserved for the one generalist checkpoint stem — a roster deck
     # named 'gen' would collide with its snapshots. Refuse it loudly.
@@ -1744,10 +1740,10 @@ def exploiter(binary_path: str, archetype: str,
             return
     else:
         roster = ([d.strip() for d in decks.split(",") if d.strip()] if decks
-                  else _league_roster())
+                  else league_decks())
     if not roster:
         raise ValueError(
-            f"exploiter: no opponent decks (looked in {_LEAGUE_DECKS_DIR}). Add "
+            f"exploiter: no opponent decks (looked in {LEAGUE_DECKS_DIR}). Add "
             f"deck files there, or pass --decks explicitly.")
     for _deck in roster:
         assert_not_reserved_deck(_deck)
@@ -2082,25 +2078,6 @@ def baseline(binary_path: str, model, n_games: int = 100,
     return wins, losses, draws
 
 
-def _league_roster() -> list[str]:
-    """The league deck roster ('league/<stem>' for every decks/league/*.dk).
-
-    Mirrors :func:`league`'s default roster so the baseline sweep evaluates the
-    same set of decks the league trains.
-    """
-    return sorted(
-        "league/" + os.path.splitext(p)[0]
-        for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
-        if p.endswith(".dk"))
-
-
-def _wld_line(w: int, l: int, d: int) -> str:
-    """Format a W/L/D tally with its win percentage (model's perspective)."""
-    total = w + l + d
-    pct = 100 * w / total if total else 0.0
-    return f"{w}W/{l}L/{d}D  {pct:.1f}% win rate"
-
-
 # Search-controller counters a baseline sweep sums across its units of work
 # (``opponents.SearchController.stats``); the report derives the safe fraction
 # (searched / (searched + fallback)) from the first two.
@@ -2193,6 +2170,7 @@ def baseline_sweep(binary_path: str, spec: str, matchups: list,
     were chunked (fixed by ``workers`` and the matchup count), not on
     completion order.
     """
+    from az_baseline import wld_line
     import runner
 
     units = _baseline_units(matchups, n_games, workers)
@@ -2237,8 +2215,8 @@ def baseline_sweep(binary_path: str, spec: str, matchups: list,
                 span = (f" games {first + 1}-{first + count}"
                         if count < n_games else "")
                 print(f"  [{done}/{len(units)}] {spec} piloting {deck} vs "
-                      f"{opponent} {opp}{span}: " + _wld_line(w, l, d)
-                      + f"   (running total: {_wld_line(*total)})", flush=True)
+                      f"{opponent} {opp}{span}: " + wld_line(w, l, d)
+                      + f"   (running total: {wld_line(*total)})", flush=True)
     else:
         for unit in units:
             deck, opp, first, count = unit
@@ -2372,10 +2350,7 @@ def _run_sweep(args, parser):
     """
     all_decks = sorted(os.path.splitext(p)[0]
                        for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
-    all_decks += sorted(
-        "league/" + os.path.splitext(p)[0]
-        for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
-        if p.endswith(".dk"))
+    all_decks += league_decks()
     if args.deck_a not in all_decks:
         parser.error(f"Deck '{args.deck_a}' not found in {_DECKS_DIR}. "
                      f"Available: {', '.join(all_decks)}")

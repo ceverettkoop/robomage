@@ -154,10 +154,10 @@ def _build_vec_env(mode, n_envs, deck, opp_deck, env_kwargs):
         # Mirror train.py league's default mixed-self-deck configuration: the
         # LeaguePool spans the league roster (scripted anchors + gen snapshots +
         # the self-play slot) and supplies the learner's deck per episode.
-        from cli_spec import LEAGUE_SELF_PLAY_FRAC
+        from cli_spec import LEAGUE_SELF_PLAY_FRAC, league_decks
         # scripted_anchor_frac 0.2 matches the default curriculum's league
         # phase (curricula/default.plan.json), not cli_spec's 0.1 default.
-        roster = T._league_roster()
+        roster = league_decks()
         if not roster:
             raise RuntimeError("no league decks found under decks/league/")
         factories = [
