@@ -13,8 +13,7 @@ mover's perspective, 0 on a draw) is the result of the PARTICULAR game the
 decision belonged to — not the match result. Samples are written to
 ``az_data/{deck}/shard_{ts}_{pid}_{n}.npz``.
 
-Run standalone (``az_selfplay.py --deck delver --games 2 --sims 12 --worlds 2``)
-or via ``train.py az-selfplay`` (bo1); the ``train.py az`` / ``az-league`` cycles
+Run via ``train.py az-selfplay`` (bo1); the ``train.py az`` / ``az-league`` cycles
 drive it in bo3.
 
 ``generate(scripted_opponent_frac=f)`` makes a fraction ``f`` of matches play the
@@ -44,7 +43,6 @@ Doomsday combo) that neither PPO exploration nor prior-guided search discovers.
 
 from __future__ import annotations
 
-import argparse
 import os
 import time
 from collections import namedtuple
@@ -2573,105 +2571,6 @@ def run(args) -> None:
              cross_world=not getattr(args, "no_cross_world", False))
 
 
-def _build_arg_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(description="AlphaZero self-play data generation")
-    ap.add_argument("--deck", default="delver",
-                    help="Focus deck (.dk stem) — its opponent is a mirror with "
-                         "P=--mirror-frac, else a uniform league-roster draw")
-    ap.add_argument("--games", type=int, default=DEFAULT_AZ_GAMES)
-    ap.add_argument("--sims", type=int, default=DEFAULT_AZ_SIMS,
-                    help="PUCT sims per decision, TOTAL across --worlds")
-    ap.add_argument("--worlds", type=int, default=DEFAULT_AZ_WORLDS)
-    ap.add_argument("--full-search-frac", type=float,
-                    default=DEFAULT_AZ_FULL_SEARCH_FRAC,
-                    help="Playout cap: fraction of searched in-game roots that "
-                         "get the FULL --sims budget and record pi (default "
-                         "%g); the rest run --fast-sims with no policy target. "
-                         "1.0 = every root full" % DEFAULT_AZ_FULL_SEARCH_FRAC)
-    ap.add_argument("--opp-pool-frac", type=float, default=0.0,
-                    help="Fraction of pure-self-play matches whose opponent "
-                         "seat is an OLDER checkpoint (incumbent + newest "
-                         "distinct snapshots); learner samples only "
-                         "(default 0 = pure mirror self-play)")
-    ap.add_argument("--fast-sims", type=int, default=DEFAULT_AZ_FAST_SIMS,
-                    help="PUCT sims (TOTAL across --worlds) for the playout "
-                         "cap's fast searches (default %d)"
-                         % DEFAULT_AZ_FAST_SIMS)
-    ap.add_argument("--c-puct", type=float, default=DEFAULT_AZ_C_PUCT,
-                    help="PUCT exploration constant (default %g): higher weights "
-                         "search Q over the net prior" % DEFAULT_AZ_C_PUCT)
-    ap.add_argument("--workers", type=int, default=None,
-                    help="Worker processes (default max(1, cpu-2))")
-    ap.add_argument("--checkpoint", default=None,
-                    help="AZ (.pt) / PPO (.zip) checkpoint or 'gen' "
-                         "(default: generalist AZ ckpt, else gen PPO warm-start, "
-                         "else random)")
-    ap.add_argument("--explore-full-turns", type=int,
-                    default=DEFAULT_EXPLORE_FULL_TURNS,
-                    help="Exploration clock: through this game turn (player "
-                         "turns; sideboard roots are turn 0) every searched "
-                         "root samples from the visit distribution (default "
-                         "%d)" % DEFAULT_EXPLORE_FULL_TURNS)
-    ap.add_argument("--explore-decay-turns", type=int,
-                    default=DEFAULT_EXPLORE_DECAY_TURNS,
-                    help="Exploration clock: over the next N game turns the "
-                         "per-root sampling probability falls linearly to "
-                         "--explore-floor (default %d)"
-                         % DEFAULT_EXPLORE_DECAY_TURNS)
-    ap.add_argument("--explore-floor", type=float,
-                    default=DEFAULT_EXPLORE_FLOOR,
-                    help="Exploration clock: per-root sampling probability for "
-                         "the rest of the game (default %g; 0 = argmax after "
-                         "the decay)" % DEFAULT_EXPLORE_FLOOR)
-    ap.add_argument("--merge-dupes", type=int, default=1,
-                    help="Merge interchangeable duplicate menu actions into one "
-                         "search edge (decode.menu_merge_reps; default 1, pass "
-                         "0 for the legacy per-copy edges)")
-    ap.add_argument("--no-cross-world", action="store_true",
-                    help="Disable the actor's cross-world batched leaf "
-                         "evaluation (on by default; no virtual loss — visits "
-                         "identical to the unbatched search, see "
-                         "docs/gpu_selfplay_inference_plan.md)")
-    ap.add_argument("--td-n", type=int, default=DEFAULT_TD_N,
-                    help="n-step TD horizon baked into each sample's td_q "
-                         "(default %d); the chain is shortened at the next "
-                         "exploratory move and falls back to the game outcome "
-                         "when the window reaches the end of the game"
-                         % DEFAULT_TD_N)
-    ap.add_argument("--sb-branches", type=int, default=DEFAULT_SB_BRANCHES,
-                    help="Alternate plans per legal first pick at a bo3 "
-                         "sideboard plan-search root (bo3 only; default %d)"
-                         % DEFAULT_SB_BRANCHES)
-    ap.add_argument("--sb-worlds", type=int, default=DEFAULT_SB_WORLDS,
-                    help="Determinized worlds at a bo3 sideboard root (default %d)"
-                         % DEFAULT_SB_WORLDS)
-    ap.add_argument("--sb-rollout-turns", type=int,
-                    default=DEFAULT_SB_ROLLOUT_TURNS,
-                    help="Rollout horizon at a bo3 sideboard root, in "
-                         "player turns (0 = off; default %d)"
-                         % DEFAULT_SB_ROLLOUT_TURNS)
-    ap.add_argument("--mirror-frac", type=float, default=DEFAULT_MIRROR_FRAC,
-                    help="P(opponent deck == focus deck) per game (default %.2f); "
-                         "else a uniform league-roster draw" % DEFAULT_MIRROR_FRAC)
-    ap.add_argument("--out", default=None, help="Output dir (default az_data/gen)")
-    ap.add_argument("--seed", type=int, default=1)
-    ap.add_argument("--expert", action="store_true",
-                    help="Write EXPERT demonstration shards instead of self-play: "
-                         "scripted:hard both seats, pi = one-hot expert action "
-                         "(always bo3; sims/worlds/checkpoint ignored)")
-    ap.add_argument("--expert-opponent", default=None,
-                    help="Expert mode only: scripted-agent spec for the OPPONENT "
-                         "seat (e.g. scripted:random / scripted:easy); "
-                         "scripted:hard keeps the focus seat and ONLY its "
-                         "decisions are recorded — so a combo deck's expert "
-                         "shards come from games the combo actually wins")
-    g = ap.add_mutually_exclusive_group()
-    g.add_argument("--actor", action="store_true",
-                   help="Force the C++ az_actor self-play backend (error if not built)")
-    g.add_argument("--no-actor", action="store_true",
-                   help="Force the pure-Python backend (skip the actor even if built)")
-    return ap
-
-
 if __name__ == "__main__":
-    run(_build_arg_parser().parse_args())
+    import sys
+    sys.exit("az_selfplay.py has no CLI; use `train.py az-selfplay`")

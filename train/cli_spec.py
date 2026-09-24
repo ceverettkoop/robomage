@@ -109,12 +109,12 @@ DEFAULT_SB_LOSS_COEF = 1.0
 # ── AZ pipeline defaults ────────────────────────────────────────────────────
 # One home for every tunable the AZ subcommands share, same one-home rule as
 # the sb_* knobs above: the az-selfplay / az-train / az-eval / az / az-league
-# CLI args AND the az_train.py / az_selfplay.py function + argparse defaults
-# MUST reference these constants, not literals — argparse always supplies the
-# CLI default, so a drifted literal silently overrides the constant.
+# CLI args AND the az_train.py / az_selfplay.py function defaults MUST
+# reference these constants, not literals — argparse always supplies the CLI
+# default, so a drifted literal silently overrides the constant.
 
 # Self-play generation.
-DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and standalone az-selfplay)
+DEFAULT_AZ_GAMES = 50        # matches per az/az-league slot (and az-selfplay)
 DEFAULT_AZ_SIMS = 1028       # in-game PUCT sims, TOTAL across worlds (the 8_20 run budget)
 DEFAULT_AZ_WORLDS = 8        # determinized worlds per search (the 8_20 run budget)
 # Playout-cap randomization (KataGo-style), the anti-memorization lever: each
@@ -1325,6 +1325,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "the focus seat and ONLY its decisions are recorded — so a "
                  "combo deck's demonstrations come from games it actually "
                  "wins. Default: hard both seats, both recorded"),
+        Arg("--merge-dupes", "int", default=1,
+            help="Merge interchangeable duplicate menu actions into one search "
+                 "edge (decode.menu_merge_reps; default 1, 0 = one edge per copy)"),
         _actor_mode(),
         _actor_device(),
         _eval_server(),
