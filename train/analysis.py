@@ -4309,7 +4309,7 @@ def cmd_interactive(args):
 #
 # Per searched (loop-safe) root, compare what the NET alone says (softmax priors,
 # leaf value) against what SEARCH concludes (MCTS visit distribution, root value):
-#   * how far the visit distribution moved off the prior (mean KL(priors||visits)),
+#   * how far the visit distribution moved off the prior (mean KL(search||net)),
 #   * how often search's top move disagrees with the net's greedy move,
 #   * how well the net's leaf value tracks the search's root value (MAE + corr).
 # Search is where an AZ/PPO checkpoint's play differs from its raw policy, so this
@@ -4398,11 +4398,11 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
             # branches/worlds/rollout budget (game-long horizon); in-game roots
             # keep run_search's default max_depth (60).
             # merge_dupes=True is run_search's default, but it is spelled out
-            # here because the report DEPENDS on it: _report_search_compare
-            # folds the raw priors through decode.menu_merge_reps to match the
-            # merged visit distribution. If these searches ever stopped merging
-            # duplicate edges, that fold would double-count and the reported KL
-            # / argmax agreement would be wrong.
+            # here because the report compares against it:
+            # _report_search_compare folds the raw priors (and the visits)
+            # through decode.menu_merge_reps via
+            # decode.search_net_divergence to match the merged visit
+            # distribution.
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 result = run_plan_search(env, self._evaluator,
                                          worlds=self._sb_worlds,
@@ -4434,16 +4434,6 @@ def _make_search_compare_controller(evaluator, *, sims, worlds, c_puct, rng_seed
     return _SearchCompareController()
 
 
-def _kl(p, q):
-    """KL(p || q) over a menu, smoothing q off zero so an unvisited action
-    doesn't blow up (p is a softmax prior, strictly positive)."""
-    p = np.asarray(p, dtype=np.float64)
-    q = np.maximum(np.asarray(q, dtype=np.float64), 1e-12)
-    q = q / q.sum()
-    nz = p > 0
-    return float(np.sum(p[nz] * np.log(p[nz] / q[nz])))
-
-
 def _report_search_compare(ctrl, args):
     """Print the search-vs-raw summary from a recording controller's records."""
     recs = ctrl.records
@@ -4464,25 +4454,13 @@ def _report_search_compare(ctrl, args):
 
     # The search merges duplicate edges (visit mass sits on each group's
     # representative — see the explicit merge_dupes=True on the run_search calls
-    # in _SearchCompareController), so fold the raw priors the same way before
-    # comparing —
-    # otherwise duplicate-heavy roots would report inflated KL and spurious
-    # argmax disagreement (net's max prior on a copy search never visits).
-    def _folded_priors(r):
-        from decode import menu_merge_reps
-        p = r["priors"].copy()
-        rep = menu_merge_reps(r["obs"], r["num_choices"])
-        for i in range(1, r["num_choices"]):
-            j = int(rep[i])
-            if j != i:
-                p[j] += p[i]
-                p[i] = 0.0
-        return p
-
-    folded = [_folded_priors(r) for r in recs]
-    kls = np.array([_kl(p, r["visit_dist"]) for p, r in zip(folded, recs)])
-    agree = np.array([int(np.argmax(p) == np.argmax(r["visit_dist"]))
-                      for p, r in zip(folded, recs)])
+    # in _SearchCompareController); decode.search_net_divergence folds the raw
+    # priors the same way before comparing.
+    from decode import fold_onto_reps, search_net_divergence
+    divs = [search_net_divergence(r["visit_dist"], r["priors"], r["obs"],
+                                  r["num_choices"]) for r in recs]
+    kls = np.array([d[0] for d in divs])
+    agree = np.array([int(d[1]) for d in divs])
     net_v = np.array([r["net_value"] for r in recs])
     root_v = np.array([r["root_value"] for r in recs])
     vmae = float(np.mean(np.abs(net_v - root_v)))
@@ -4493,7 +4471,7 @@ def _report_search_compare(ctrl, args):
         vcorr_s = "n/a"
 
     print(f"  Roots analyzed: {len(recs)}")
-    print(f"  mean KL(priors || visits): {kls.mean():.4f}  "
+    print(f"  mean KL(search || net): {kls.mean():.4f}  "
           f"(median {np.median(kls):.4f}, max {kls.max():.4f})")
     print(f"  argmax agreement (net greedy == search pick): {agree.mean():.1%}")
     print(f"  value net-vs-search:  MAE {vmae:.4f}   corr {vcorr_s}")
@@ -4501,24 +4479,25 @@ def _report_search_compare(ctrl, args):
     top_n = max(0, int(getattr(args, "top", 8)))
     if top_n:
         order = np.argsort(-kls)[:top_n]
-        print(f"\n  Top {len(order)} biggest prior-vs-visit disagreements:")
+        print(f"\n  Top {len(order)} biggest search-vs-net disagreements:")
         for rank, i in enumerate(order):
             r = recs[i]
             obs = r["obs"]
             feat = _extract_interpretable(obs)
             step = _step_name_from_feat(feat)
             turn_no = 1 + int(round(feat[_FEAT["turn"]]))
-            pa = int(np.argmax(r["priors"]))
-            va = int(np.argmax(r["visit_dist"]))
+            folded = fold_onto_reps(r["priors"], obs, r["num_choices"])
+            pa = int(np.argmax(folded))
+            va = divs[i][2]
             print(f"   [{rank}] T{turn_no} {step:<12} "
                   f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}"
                   f"  KL={kls[i]:.3f}  Vnet={r['net_value']:+.3f} "
                   f"Vsearch={r['root_value']:+.3f}")
             print(f"        net greedy : {_action_desc(obs, pa)}  "
-                  f"(P={r['priors'][pa]:.2f}, visits={r['visit_dist'][pa]:.2f})")
+                  f"(P={folded[pa]:.2f}, visits={r['visit_dist'][pa]:.2f})")
             if va != pa:
                 print(f"        search pick: {_action_desc(obs, va)}  "
-                      f"(P={r['priors'][va]:.2f}, visits={r['visit_dist'][va]:.2f})")
+                      f"(P={folded[va]:.2f}, visits={r['visit_dist'][va]:.2f})")
             else:
                 print(f"        search pick: (same action, visit mass shifted)")
 

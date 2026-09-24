@@ -406,13 +406,19 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
     The full pool is gigabytes of float32 observations, so this walks the shards
     newest-first and takes an even per-shard quota, keeping the sample spread over
     the window rather than concentrated in whichever shard happened to be biggest.
-    Returns a dict with ``obs, pi, z, mask, n_shards, n_rows_total``, plus the
-    n-step TD columns ``q, explored, td_q`` when the shards carry them. Those are
+    Returns a dict with ``obs, pi, z, mask, pi_valid, n_shards,
+    n_rows_total``, plus the n-step TD columns ``q, explored, td_q`` when the
+    shards carry them. ``pi_valid`` marks rows whose ``pi`` is a SEARCH
+    posterior (:func:`shard_replay.is_search_target_row` — not a fast-search
+    zero row, a one-hot behavior row, or a prior-mode sideboard row): the
+    π-dependent views (divergence, the state view's search column) read only
+    those, while z / obs views keep every row. The TD columns are
     OPTIONAL here on purpose: this is a diagnostic reader that gets pointed at
     arbitrary (including hand-built or pre-schema) shard directories, unlike the
     trainer's :func:`az_train.load_window`, which requires them.
     """
     from env import OBS_SIZE, MAX_ACTIONS
+    from shard_replay import is_search_target_row
     data_dir = data_dir or AZ_DATA_DIR
     paths = shard_paths(data_dir)
     if not paths:
@@ -426,7 +432,7 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
     quota = max(1, int(max_rows) // len(paths))
     # The n-step TD columns are taken only when EVERY sampled shard carries them,
     # so a mixed directory can never yield ragged parallel arrays.
-    cols = {k: [] for k in _SHARD_CORE_COLS + _SHARD_TD_COLS}
+    cols = {k: [] for k in _SHARD_CORE_COLS + _SHARD_TD_COLS + ("pi_valid",)}
     have_td = True
     total = 0
     used = 0
@@ -444,6 +450,11 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
         sel = np.sort(rng.choice(o.shape[0], size=take, replace=False))
         for k in _SHARD_CORE_COLS:
             cols[k].append(d[k][sel])
+        q = d["q"][sel] if "q" in d.files else None
+        cols["pi_valid"].append(np.array(
+            [is_search_target_row(cols["obs"][-1][i], cols["pi"][-1][i],
+                                  None if q is None else float(q[i]))
+             for i in range(take)], dtype=bool))
         if all(k in d.files for k in _SHARD_TD_COLS):
             for k in _SHARD_TD_COLS:
                 cols[k].append(d[k][sel])
@@ -452,7 +463,8 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
         used += 1
         if sum(a.shape[0] for a in cols["obs"]) >= max_rows:
             break
-    keys = _SHARD_CORE_COLS + (_SHARD_TD_COLS if have_td else ())
+    keys = (_SHARD_CORE_COLS + ("pi_valid",)
+            + (_SHARD_TD_COLS if have_td else ()))
     out = {k: np.concatenate(cols[k]) for k in keys}
     out["n_shards"] = used
     out["n_rows_total"] = total
@@ -649,32 +661,35 @@ def policy_divergence(net, sample, top_n=12):
 
     A category with high KL is one the raw net cannot reproduce without search;
     that is the concrete answer to "what does it still not understand".
+
+    Per-row KL and agreement come from :func:`decode.search_net_divergence`
+    (net priors folded over duplicate menu actions like the search's merged
+    edges). Only rows holding a search posterior count: ``sample["pi_valid"]``
+    when the loader supplied it, else every row whose ``pi`` has mass.
     """
+    from decode import search_net_divergence
     obs, pi, mask = sample["obs"], sample["pi"], sample["mask"]
     _, priors = predict(net, obs, mask)
     from env import ACT_CATS_START, MAX_ACTIONS
     from _enums import ACTION_CATEGORY_MAX
     cats = np.round(obs[:, ACT_CATS_START:ACT_CATS_START + MAX_ACTIONS]
                     * ACTION_CATEGORY_MAX).astype(int)
-
-    eps = 1e-9
-    tot = pi.sum(axis=1)
-    ok = tot > 0
-    p = np.where(mask, pi, 0.0)
-    p = p / np.where(tot[:, None] > 0, tot[:, None], 1.0)
-    q = np.clip(priors, eps, None)
-    kl = np.where(p > 0, p * (np.log(np.clip(p, eps, None)) - np.log(q)), 0.0)
-    kl = kl.sum(axis=1)
-    best_pi = p.argmax(axis=1)
-    best_q = np.where(mask, priors, -1.0).argmax(axis=1)
-    agree = best_pi == best_q
+    valid = sample.get("pi_valid")
     n_legal = mask.sum(axis=1)
 
     groups = {}
-    for r in np.nonzero(ok)[0]:
-        c = int(cats[r, best_pi[r]])
+    kls, agrees = [], []
+    for r in range(obs.shape[0]):
+        if valid is not None and not valid[r]:
+            continue
+        div = search_net_divergence(pi[r], priors[r], obs[r], int(n_legal[r]))
+        if div is None:
+            continue
+        kl, agree, top = div
+        kls.append(kl); agrees.append(agree)
+        c = int(cats[r, top])
         g = groups.setdefault(c, {"kl": [], "agree": [], "legal": []})
-        g["kl"].append(kl[r]); g["agree"].append(agree[r])
+        g["kl"].append(kl); g["agree"].append(agree)
         g["legal"].append(n_legal[r])
     rows = []
     for c, g in groups.items():
@@ -684,8 +699,9 @@ def policy_divergence(net, sample, top_n=12):
                      "legal": float(np.mean(g["legal"]))})
     rows.sort(key=lambda r: -r["kl"])
     return {"rows": rows[:top_n], "all_rows": rows,
-            "n": int(ok.sum()),
-            "kl": float(kl[ok].mean()), "top1": float(agree[ok].mean())}
+            "n": len(kls), "n_skipped": int(obs.shape[0]) - len(kls),
+            "kl": float(np.mean(kls)) if kls else float("nan"),
+            "top1": float(np.mean(agrees)) if agrees else float("nan")}
 
 
 # ----------------------------------------------------------------------
@@ -2210,6 +2226,9 @@ def render_calibration(cal, bins=True):
 
 
 def render_divergence(div):
+    if not div["n"]:
+        return ["no sampled decision carries a search posterior (behavior / "
+                "fast-search rows only) — nothing to compare the net against"]
     lines = [f"raw-net priors vs search posterior over {div['n']} decisions",
              f"  mean KL(search‖net) {div['kl']:.3f}   top-1 agreement "
              f"{div['top1']*100:.1f}%",
@@ -2221,6 +2240,10 @@ def render_divergence(div):
         lines.append(f"  {r['name'][:26]:<26} {r['n']:6d} {r['kl']:7.3f} "
                      f"{r['top1']*100:6.1f}% {r['legal']:6.1f}  "
                      f"{_bar(min(1.0, r['kl']))}")
+    if div.get("n_skipped"):
+        lines += ["", f"({div['n_skipped']} sampled decisions skipped: no "
+                      "search posterior — behavior / one-hot sideboard / "
+                      "fast-search rows)"]
     return lines
 
 
@@ -2245,19 +2268,27 @@ def _spark(values, min_span=0.0):
     return "".join(_SPARK[i] for i in idx)
 
 
-def render_state(sample, row, net=None, top_n=12, has_pi=True):
+def render_state(sample, row, net=None, top_n=12, has_pi=None):
     """One recorded decision: the board, the search's posterior next to the raw
     net's priors, and the game's eventual result. ``has_pi=False`` marks a row
     with no search posterior: the search column shows "-" and the actions are
-    ordered by the net's priors instead."""
+    ordered by the net's priors instead. ``None`` reads the sample's
+    ``pi_valid`` column when it has one, else whether the row's ``pi`` has
+    mass."""
     from env import MAX_ACTIONS
     obs = sample["obs"][row]
     pi, mask, z = sample["pi"][row], sample["mask"][row], float(sample["z"][row])
     n_legal = int(mask.sum())
-    lines = [f"recorded decision {row} of {sample['obs'].shape[0]}   "
+    if has_pi is None:
+        has_pi = (bool(sample["pi_valid"][row]) if "pi_valid" in sample
+                  else float(pi.sum()) > 0.0)
+    lines = [] if has_pi else [
+        "(no search posterior at this decision — raw-policy, human / "
+        "behavior, or fast-search row; net priors only)"]
+    lines += [f"recorded decision {row} of {sample['obs'].shape[0]}   "
              f"outcome z={z:+.0f}   legal actions={n_legal}"]
     if net is not None:
-        lines[0] += f"   net V={state_value(net, obs, mask):+.3f}"
+        lines[-1] += f"   net V={state_value(net, obs, mask):+.3f}"
     lines.append("")
     lines += decode.format_state_lines(decode.decode_game_state(obs))
     lines.append("")

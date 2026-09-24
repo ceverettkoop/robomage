@@ -205,11 +205,8 @@ def run_probe(key, net, snap):
             return ["select a game and step first"]
         obs_row, mask_row = sample["obs"][row], sample["mask"][row]
         if key == "probe_state":
-            if pi_valid[row]:
-                return azi.render_state(sample, row, net=net)
-            return (["(no search posterior at this decision — raw-policy, "
-                     "human / behavior, or fast-search row; net priors only)"]
-                    + azi.render_state(sample, row, net=net, has_pi=False))
+            return azi.render_state(sample, row, net=net,
+                                    has_pi=bool(pi_valid[row]))
         if key in ("probe_blocks", "probe_blocks_pi"):
             imp = azi.state_block_importance(net, sample, row, donors=16)
             sort = "pi" if key == "probe_blocks_pi" else "v"

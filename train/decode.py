@@ -1357,6 +1357,50 @@ def menu_merge_reps(obs, num_choices):
     return rep
 
 
+def fold_onto_reps(dist, obs, num_choices):
+    """A menu distribution with each duplicate group's mass moved onto its
+    representative (:func:`menu_merge_reps`), in the ascending order
+    mcts.Node.set_rep folds P. Returns a float64 copy of length
+    ``num_choices``; non-representatives hold 0. Idempotent, so an already
+    merged search posterior passes through unchanged."""
+    n = int(num_choices)
+    out = np.array(np.asarray(dist, dtype=np.float64).reshape(-1)[:n],
+                   copy=True)
+    rep = menu_merge_reps(obs, n)
+    for i in range(1, n):
+        j = int(rep[i])
+        if j != i:
+            out[j] += out[i]
+            out[i] = 0.0
+    return out
+
+
+def search_net_divergence(search_pi, net_priors, obs, num_choices, eps=1e-9):
+    """KL(search ‖ net) and top-1 agreement at one decision root — the single
+    definition every search-vs-raw-net report uses.
+
+    Search merges duplicate menu edges (its visit mass sits on each group's
+    representative), so both distributions are folded onto the
+    representatives (:func:`fold_onto_reps`) before comparing; otherwise a
+    duplicate-heavy root would report inflated KL and a spurious top-1 miss
+    (the net's max prior on a copy search never visits). The net side is
+    clipped at ``eps`` and renormalized so an action the net all but rules
+    out stays finite. Returns ``(kl, agree, top)``: ``agree`` is whether the
+    folded argmaxes coincide, ``top`` the search's folded argmax. None when
+    the search posterior carries no mass."""
+    p = fold_onto_reps(search_pi, obs, num_choices)
+    s = float(p.sum())
+    if s <= 0.0:
+        return None
+    p /= s
+    q = np.maximum(fold_onto_reps(net_priors, obs, num_choices), eps)
+    q /= q.sum()
+    nz = p > 0
+    kl = float(np.sum(p[nz] * np.log(p[nz] / q[nz])))
+    top = int(np.argmax(p))
+    return kl, top == int(np.argmax(q)), top
+
+
 # ── Formatting helpers ────────────────────────────────────────────────────────
 
 def fmt_mana(mana):

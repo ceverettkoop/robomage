@@ -189,6 +189,8 @@ def test_shards(data_dir, planted_idx):
           f"sample honours the row budget ({s['obs'].shape[0]} <= 40 of {total})")
     check(s["mask"].shape[1] == env.MAX_ACTIONS and s["pi"].shape == s["mask"].shape,
           "pi/mask keep the MAX_ACTIONS width")
+    check(s["pi_valid"].shape == (s["obs"].shape[0],) and s["pi_valid"].all(),
+          "every synthetic search row (finite q, spread pi) is pi_valid")
 
     with tempfile.TemporaryDirectory() as bad:
         np.savez_compressed(
@@ -252,6 +254,25 @@ def test_critic(net, sample):
     check(div["n"] > 0 and div["kl"] >= -1e-9,
           "policy divergence reports a non-negative mean KL")
     check(0.0 <= div["top1"] <= 1.0, "top-1 agreement is a fraction")
+
+    # Only pi_valid rows count, each through decode.search_net_divergence.
+    from decode import search_net_divergence
+    valid = sample["pi_valid"].copy()
+    valid[::2] = False
+    sub = {**sample, "pi_valid": valid}
+    d2 = azi.policy_divergence(net, sub)
+    want = [search_net_divergence(sample["pi"][r], priors[r], sample["obs"][r],
+                                  int(sample["mask"][r].sum()))
+            for r in np.nonzero(valid)[0]]
+    check(d2["n"] == int(valid.sum()),
+          f"divergence counts only pi_valid rows ({d2['n']})")
+    check(abs(d2["kl"] - float(np.mean([w[0] for w in want]))) < 1e-5
+          and abs(d2["top1"] - float(np.mean([w[1] for w in want]))) < 1e-9,
+          "divergence is the mean of the shared per-row definition")
+    none = azi.policy_divergence(net, {**sample,
+                                       "pi_valid": np.zeros_like(valid)})
+    check(none["n"] == 0 and azi.render_divergence(none)[0].startswith("no "),
+          "a sample with no search rows renders a note, not NaNs")
 
 
 def test_probes(net, sample):

@@ -16,7 +16,10 @@ human rows via the step observer, sideboard rows between games) and asserts
   * a second match opens a second file,
   * the browser net probes' π is the SEARCH posterior (diag visits / a pool
     shard's search π), never a behavior row or a simulated trace's
-    action_probs, and survives an .rmtrace round-trip.
+    action_probs, and survives an .rmtrace round-trip; az_inspect's own
+    shard sample marks the same rows (``pi_valid``),
+  * the shared search-vs-net divergence folds duplicate menu actions and
+    measures KL(search ‖ net) (test_menu_merge.test_search_net_divergence).
 
 Run: train/.venv/bin/python train/test_shard_record.py
 """
@@ -370,6 +373,15 @@ def main():
         # ── Readers ────────────────────────────────────────────────────────
         sample = az_inspect.load_shard_sample(tmp, max_rows=100)
         assert sample["obs"].shape[0] == 10 and "td_q" in sample
+        # π-dependent views read only search-posterior rows: the searched
+        # rows 0,2,5,7,8 — not the human / followed one-hots (q = NaN) or
+        # the sideboard one-hot (row 4).
+        assert sample["pi_valid"].tolist() == [
+            True, False, True, False, False, True, False, True, True,
+            False], sample["pi_valid"]
+        lines = az_inspect.render_state(sample, 1)
+        assert lines[0].startswith("(no search posterior"), lines
+        assert not az_inspect.render_state(sample, 0)[0].startswith("(no")
 
         matches = shard_replay.segment_matches(
             *(lambda o, p, z, m, s: (o, s))(*shard_replay.load_shard_rows(tmp)))
@@ -432,6 +444,12 @@ def main():
         assert all(r.visits is None for r in dd.rows)
 
         _check_search_posterior(ra, rb)
+
+        # The one search-vs-net KL / top-1 definition (duplicate-folded net
+        # priors, KL(search ‖ net)) the probes and analysis.py share.
+        import test_menu_merge
+        test_menu_merge.test_search_net_divergence()
+        assert not test_menu_merge.FAILURES, test_menu_merge.FAILURES
 
         # Trainer ingestion (skipped when torch isn't installed).
         try:

@@ -640,7 +640,13 @@ The browser also has **net-probe entries** (`train/shard_probes.py`, Qt-free glu
 `az_inspect`'s probes): search-π-vs-net, block permutation importance, card-swap/scalar sweeps,
 pooled KL(search‖net), value calibration. π is always the SEARCH posterior (diag visits, or a
 pool shard's search π) — decisions with none (raw-policy seat, human/behavior rows) are skipped by
-the π views with a note, never compared against the inspection net's own softmax. Regression `train/test_shard_record.py` = default
+the π views with a note, never compared against the inspection net's own softmax (the
+`az_inspect` CLI/TUI sample marks the same rows as `pi_valid` via
+`shard_replay.is_search_target_row`). Every search-vs-net KL / top-1 number (these probes,
+`az_inspect divergence`, `analysis.py search`) comes from one definition,
+`decode.search_net_divergence`: KL(search‖net) with the net priors folded over duplicate menu
+actions (`decode.fold_onto_reps`, the `menu_merge_reps` partition search merges edges by).
+Regression `train/test_shard_record.py` = default
 `make check` tier `shardrec`; opt-in `gui` tier adds a record-smoke leg.
 
 **Search diagnostics + exact tree rebuild.** Each recorded shard also gets a same-stem

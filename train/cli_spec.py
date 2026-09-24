@@ -1773,7 +1773,7 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
                 help=f"PUCT exploration constant c_puct (default {DEFAULT_AZ_C_PUCT})"),
             Arg("--seed", "int", default=1, help="Base RNG/engine seed (game N uses seed+N; default: 1)"),
             Arg("--top", "int", default=8,
-                help="Biggest prior-vs-visit disagreement decisions to decode (default: 8)"),
+                help="Biggest KL(search||net) decisions to decode (default: 8)"),
             Arg("--workers", "int", default=1,
                 help="Parallel worker processes (default: 1 = sequential). Splits "
                      "--n-games evenly across processes, each with its own "
