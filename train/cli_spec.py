@@ -1880,7 +1880,7 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="Disable the paced-response floor (instant obvious decisions)"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--gui", "flag",
-            help="Launch the PySide6 desktop game board (train/gui_game.py). "
+            help="Launch the PySide6 desktop game board (train/gui_main.py). "
                  "Takes precedence over --tui. Needs PySide6 (pip install -r "
                  "train/requirements-gui.txt); if it is missing, falls back to "
                  "the TUI when --tui is also set, else errors with the install hint."),

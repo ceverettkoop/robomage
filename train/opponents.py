@@ -1199,24 +1199,6 @@ class PlayController:
         raise self._action_spec.PlayResolveError(r, decoded_actions)
 
 
-class InteractiveController:
-    """Prompts stdin for an action index each decision (test harness ``--interactive``)."""
-
-    def __init__(self, label: str = "Human"):
-        self.label = label
-
-    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
-        while True:
-            try:
-                raw = input("  >> Enter action index: ").strip()
-                c = int(raw)
-                if 0 <= c < num_choices:
-                    return c
-                print(f"     Invalid: must be 0-{num_choices - 1}")
-            except (ValueError, EOFError):
-                print("     Enter a valid integer")
-
-
 class AutoPassController:
     """Always picks action 0 (pass priority / first choice) — the harness default."""
 

@@ -24,7 +24,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - C++17 with exceptions disabled (`-fno-exceptions`)
 - Two interactive front ends, both Python, both sitting on the shared driver in
   `train/game_driver.py`: the Textual TUI (`train/tui_game.py`) and the PySide6 GUI
-  (`train/gui_game.py`, with its analysis window in `train/gui_analysis.py`). There is NO C++
+  (`train/gui_main.py` app shell over the `train/gui_game.py` board, with its analysis window in
+  `train/gui_analysis.py`). There is NO C++
   front end (the old raylib GUI was removed); the engine is always a `--machine` subprocess.
 - Uses clang-format configuration in `.clang-format`
 - DO NOT MODIFY CARD SCRIPTS
@@ -588,7 +589,7 @@ controller). The engine is always a `--machine` subprocess; the opponent is any
 `opponents.make_controller` spec (scripted tiers, `gen`, `az:`/`azraw:`/`mcts:` wrappers).
 
 - **TUI board**: `train/play.py --human-deck X --model-deck Y` (default), or via `./tui.sh`.
-- **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_game.py` / `./gui.sh` with
+- **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_main.py` / `./gui.sh` with
   no args for the app shell's welcome pane — File ▸ New Session opens the play/analysis dialogs
   (deck/opponent/seat/format pickers + search and analysis settings, persisted to
   `~/.robomage/gui_launcher.json`). Falls back to the TUI if PySide6 is missing.

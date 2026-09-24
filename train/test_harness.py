@@ -83,7 +83,7 @@ from pathlib import Path
 
 import runner
 from opponents import (make_controller, ActionListController,
-                       InteractiveController, AutoPassController, PlayController)
+                       HumanController, AutoPassController, PlayController)
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -410,7 +410,7 @@ def main():
             controller = ActionListController(actions)
             mode_label = "Actions"
         elif args.interactive:
-            controller = InteractiveController()
+            controller = HumanController(label="Human", show_state=False)
             mode_label = "Human"
         elif args.scripted:
             controller = make_controller(args.scripted_spec)

@@ -15,40 +15,6 @@ import argparse
 import numpy as np
 
 from env import BINARY
-from decode import card_from_id as _card_from_id
-
-try:
-    from sb3_contrib import MaskablePPO
-except ImportError:
-    from stable_baselines3 import PPO as MaskablePPO
-
-# Mana-tap action categories → produced color (used by the model announcer's action labels).
-_MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
-
-
-# ── Decode helpers ────────────────────────────────────────────────────────────
-
-# Card-name decoding (vocab lookup + Token sentinel + out-of-range handling)
-# lives in decode.card_from_id — the single source of truth. Use _card_from_id.
-
-def _action_label(cat: int, card_id_float: float) -> str:
-    card = _card_from_id(card_id_float)
-    if cat == 0:  return "pass priority"
-    if cat == 2:  return f"attack with {card or '?'}"
-    if cat == 3:  return "confirm attackers"
-    if cat == 4:  return f"block with {card or '?'}"
-    if cat == 5:  return "confirm blockers"
-    if cat == 6:  return f"activate {card or '?'}"
-    if cat == 7:  return f"cast {card or '?'}"
-    if cat == 8:  return "select target"
-    if cat == 9:  return f"play {card or '?'}"
-    if cat == 10: return f"choose {card}" if card else "choose"
-    if cat == 12: return f"bottom {card}" if card else "bottom card"
-    if cat in _MANA_CAT_COLOR:
-        return f"tap {card or '?'} for {{{_MANA_CAT_COLOR[cat]}}}"
-    if cat == 19: return "fail to find" if card is None else f"find {card}"
-    return f"action {cat}"
-
 
 # ── Main play loop (text mode) ────────────────────────────────────────────────
 
@@ -68,6 +34,10 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver",
     import runner
     from opponents import HumanController, ModelController
 
+    try:
+        from sb3_contrib import MaskablePPO
+    except ImportError:
+        from stable_baselines3 import PPO as MaskablePPO
     model = MaskablePPO.load(model_path)
 
     if human_player is None:

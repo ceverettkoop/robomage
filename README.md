@@ -157,12 +157,12 @@ controller spec is accepted: `az:gen?sims=128&worlds=4` (with search) or `azraw:
 ```bash
 train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)          # TUI game board (default); the generalist (gen) pilots --model-deck
 train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --gui    # PySide6 desktop board (needs requirements-gui.txt)
-train/.venv/bin/python train/gui_game.py                                              # GUI launcher — pick decks/opponent/format/analysis in a dialog
+train/.venv/bin/python train/gui_main.py                                              # GUI launcher — pick decks/opponent/format/analysis in a dialog
 ./gui.sh                                                                              # shortcut for the line above, run from the repo root
 ```
 
 **`./gui.sh`**, run from the repo root, is the GUI-board equivalent of `./tui.sh` — it launches
-`train/gui_game.py` with no arguments, which opens the launcher dialog (needs
+`train/gui_main.py` with no arguments, which opens the launcher dialog (needs
 `requirements-gui.txt`; falls back to the TUI if PySide6 is missing). The launcher's "Game
 setup" group picks your deck, the opponent's deck, the opponent controller (`gen`, a scripted
 tier, or an `az:`/`azraw:`/`mcts:` search spec), which seat you play, and bo3-vs-single-game

@@ -36,7 +36,6 @@ stats during the smoke.
 import html
 import json
 import os
-import sys
 import threading
 import time
 
@@ -2599,11 +2598,6 @@ class NewPlaySessionDialog(QDialog):
         return self._options
 
 
-# Back-compat alias (the dialog was the GUI's whole intro screen before the
-# gui_main.MainWindow app shell existed).
-LauncherDialog = NewPlaySessionDialog
-
-
 def _resolve_opponent_spec(spec):
     """Turn the launcher's opponent spec into the model_path build_session wants.
 
@@ -2668,26 +2662,3 @@ def _analysis_cfg_from(opts):
     cfg.cross_world = bool(opts.get("xw", True))
     cfg.device = str(opts.get("device") or "")
     return cfg
-
-
-def run(binary_path, model_path, human_player=None,
-        human_deck="delver", model_deck="delver", bo3=True, analysis=False):
-    """Back-compat delegate: the app shell (MainWindow + menus + sessions)
-    lives in gui_main now. Same signature/semantics as tui_game.run."""
-    import gui_main
-    return gui_main.run(binary_path, model_path, human_player=human_player,
-                        human_deck=human_deck, model_deck=model_deck,
-                        bo3=bo3, analysis=analysis)
-
-
-def run_launcher(binary_path=None):
-    """Back-compat delegate to gui_main.run_launcher (the no-arguments entry
-    point: MainWindow on the welcome pane + the New Play Session dialog)."""
-    import gui_main
-    return gui_main.run_launcher(binary_path)
-
-
-if __name__ == "__main__":
-    # Run with no game arguments -> the app shell's launcher flow. (play.py
-    # --gui is the flagged entry point that starts a game directly.)
-    sys.exit(run_launcher())
