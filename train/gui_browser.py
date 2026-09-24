@@ -53,7 +53,7 @@ import browse_session as bs
 import decode
 import shard_probes
 import tree_rebuild
-from cli_spec import BINARY, is_bo3
+from cli_spec import ANALYSIS_TUI_TOOL, BINARY, is_bo3, sub_defaults
 from env import STATE_SIZE
 from game_driver import stack_target_refs
 from gui_game import (CardRow, CardWidget, HAND_CARD_H, HAND_CARD_W,
@@ -99,18 +99,14 @@ def _tree_ready_status(ev):
             else "Tree ready (rebuilt, verified)")
 
 # Namespace dests per cli_spec.ANALYSIS_TUI_TOOL (the schema _load_model_and_env
-# consumes): opts-dict key -> default.
-_ARG_DEFAULTS = {
-    "player_a": "gen", "player_b": "scripted", "deck_a": None, "deck_b": None,
-    "binary": BINARY, "format": "bo3", "think_time": None, "match_clock": None,
-    "games": 20, "seed": 1, "shards": None, "seat": "A", "no_net": False,
-}
+# consumes): opts-dict key -> default, the browse flags' own defaults.
+_ARG_DEFAULTS = dict(sub_defaults(ANALYSIS_TUI_TOOL.subs[0]), binary=BINARY)
 
 
 def _make_args(opts):
     """An argparse-style namespace for analysis._load_model_and_env, built from
     the analysis-session dialog's opts dict. The pane keeps this namespace as
-    EngineCore's OWN copy (the loader mutates it: _apply_search_budget_flags
+    EngineCore's OWN copy (the loader mutates it: _apply_search_knob_flags
     self-clears, deck_a/deck_b are written back)."""
     return argparse.Namespace(
         **{k: opts.get(k, d) for k, d in _ARG_DEFAULTS.items()})

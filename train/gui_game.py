@@ -7,10 +7,10 @@ in train/game_driver.py — this module only draws the board and marshals input.
 
 Launch it via::
 
-    train/.venv/bin/python train/play.py --gui --player-b scripted \
+    train/.venv/bin/python train/play.py --player-b scripted \
         --deck-a delver --deck-b mav --format bo1
 
-(`--gui` takes precedence over `--tui`; any opponent spec the TUI accepts —
+(--board gui is play.py's default; any opponent spec the TUI accepts —
 scripted tiers, a checkpoint path, az:/mcts: search wrappers — works here too.)
 
 Phase B is a fully playable skeleton with **text-placeholder** cards: the
@@ -35,7 +35,6 @@ stats during the smoke.
 """
 
 import html
-import json
 import os
 import threading
 import time
@@ -53,13 +52,15 @@ from PySide6.QtWidgets import (QApplication, QWidget, QLabel,
                                QGroupBox, QSpinBox, QDoubleSpinBox, QCheckBox)
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
-from cli_spec import HUMAN_SPEC, resolve_play_seats
+from cli_spec import (HUMAN_SPEC, apply_search_knobs, is_bo3, is_search_spec,
+                      resolve_play_seats, scan_decks)
+import launcher_config
 import decode
 import scryfall_cache
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, action_zone, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
-                         _STEP_ABBR)
+                         _STEP_ABBR, resolve_opponent_spec)
 
 # ── Card geometry ─────────────────────────────────────────────────────────────
 # Untapped cards are portrait at the real 63:88 Magic aspect; a tapped card is
@@ -1101,50 +1102,9 @@ class PlayPane(QWidget):
         # enriches the opponent's searched ones with the visit posterior.
         self.recorder = None
         if getattr(session, "record_dir", None):
-            from shard_record import ShardRecorder
-            # Replay sidecar wiring: absolute-seat decks + the env's actual
-            # seed (read lazily at flush — reset happens on the worker thread
-            # after this constructor) make each match's shard exactly
-            # replayable in the browser (replay-to-step MCTS analysis).
-            human_is_a = not self._opp_is_a
-            env = session.env
-            ctrl = getattr(session, "controller", None)
-            # A search opponent's static provenance (spec, checkpoint hash,
-            # knobs, device) rides in the .rmplay sidecar; scripted opponents
-            # have none.
-            prov_fn = getattr(ctrl, "search_provenance", None)
-            provenance = prov_fn() if callable(prov_fn) else None
-            self.recorder = ShardRecorder(
-                session.record_dir,
-                replay_meta={
-                    "deck_a": (self._human_deck if human_is_a
-                               else self._opp_deck),
-                    "deck_b": (self._opp_deck if human_is_a
-                               else self._human_deck),
-                    "human_deck": self._human_deck,
-                    "opp_deck": self._opp_deck,
-                    "human_is_a": human_is_a,
-                    "bo3": self._bo3,
-                    "opponent_spec": getattr(session, "opponent_spec", None),
-                    "binary": getattr(env, "binary_path", None),
-                    "search_provenance": provenance,
-                },
-                seed_fn=lambda: getattr(env, "last_engine_seed", None),
-                replay_prefix=replay_actions)
-            self._driver.step_observer = self.recorder.observe_step
-            if ctrl is not None and hasattr(ctrl, "on_followed"):
-                ctrl.on_followed = self.recorder.on_followed
-            if ctrl is not None and hasattr(ctrl, "on_result"):
-                prev_sink = ctrl.on_result
-                rec_tap = self.recorder.on_search_result
-                if prev_sink is None:
-                    ctrl.on_result = rec_tap
-                else:
-                    def _fanout(obs, num, result, chosen,
-                                _rec=rec_tap, _prev=prev_sink):
-                        _rec(obs, num, result, chosen)
-                        _prev(obs, num, result, chosen)
-                    ctrl.on_result = _fanout
+            from shard_record import attach_recorder
+            self.recorder = attach_recorder(session, self._driver,
+                                            replay_actions=replay_actions)
             self._append_log(f"Recording shards to {session.record_dir}")
 
         # Whether this pane is the window's active mode. Gates the app-wide
@@ -2009,15 +1969,11 @@ def _smoke_n_from_env():
 
 # ── Launcher (intro screen) ───────────────────────────────────────────────────
 
-# Where the launcher remembers the last-used options so they autofill next time.
-_LAUNCHER_CONFIG = os.path.join(
-    os.path.expanduser("~"), ".robomage", "gui_launcher.json")
-
-# Opponent presets offered in the launcher's editable combo. The value is the
-# raw spec passed straight through to build_session (== play.py's --model): "gen"
-# is the one generalist model, "scripted*" the rule-based tiers, "az:/azraw:/
-# mcts:" the search wrappers. The combo stays editable so a checkpoint path or a
-# spec with knobs (e.g. "az:gen?sims=200") can be typed in.
+# Opponent presets offered in the seat combos. The value is the raw agent spec
+# (play.py's --player-a/--player-b): "gen" is the one generalist model,
+# "scripted*" the rule-based tiers, "az:/azraw:/mcts:" the search wrappers. The
+# combo stays editable so a checkpoint path or a spec with knobs (e.g.
+# "az:gen?sims=200") can be typed in.
 _OPPONENT_PRESETS = [
     ("Generalist model (gen)", "gen"),
     ("Scripted — hard (heuristic)", "scripted:hard"),
@@ -2037,61 +1993,19 @@ _ANALYSIS_EVAL_PRESETS = [
     ("Uniform (no model)", "uniform"),
 ]
 
-# Deck subfolders hidden from the launcher dropdowns (mirrors tui.py's scan).
-_DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
-
-# Shipped defaults — what a fresh install (no ~/.robomage/gui_launcher.json yet)
-# shows in the launcher. This is the release's recommended matchup: a league deck
-# on both seats (the roster the released generalist was trained on) against the AZ
-# net with MCTS, on a 25-minute bo3 match clock, with the analysis window open.
-# A saved config overrides every one of these, key by key.
-_LAUNCHER_DEFAULTS = {
-    "player_a": "human",                     # play.py --player-a/--player-b
-    "player_b": "az:gen",
-    "deck_a": "league/bug",
-    "deck_b": "league/ur_delver",
-    "format": "bo3",
-    "human_clock": None,                     # your own bank: unset = untimed
-    "hard_timeout": False,                   # an empty bank only informs, by default
-    "sims": None,                            # no sims cap — the match clock paces it
-    "worlds": 8,
-    "think_time": None,
-    "search_procs": None,                    # auto: half the cores, capped at worlds
-    "match_clock": 1500.0,                   # 25 min of thinking for the whole bo3
-    "paced": True,
-    "record_shards": False,
-    "search_xw": True,                       # cross-world batched leaf eval (identical visits)
-    "search_device": "",                     # "" = CPU (or ROBOMAGE_EVAL_DEVICE); "cuda" = GPU
-    "analysis_enabled": True,
-    "analysis_evaluator": "az:gen",
-    "analysis_worlds": 4,
-    "analysis_procs": None,                  # auto: half the cores, capped at worlds
-    "analysis_cap": 2000,
-    "analysis_auto": True,
-    "analysis_xw": True,                     # cross-world batched leaf eval
-    "analysis_device": "",                   # evaluator device, as search_device
-}
-
-
-def _cfg_get(cfg, key):
-    """A launcher field's starting value: the saved config's, else the shipped
-    default. A saved key is honored even when its value is None (that is the
-    user having parked a knob on '(default)')."""
-    return cfg[key] if key in cfg else _LAUNCHER_DEFAULTS[key]
-
-
-def is_search_spec(spec):
-    """az:/mcts: run a tree search (search knobs apply); azraw: is the raw
-    policy (no search), so it — like scripted/gen — takes no search knobs."""
-    return (spec or "").strip().lower().startswith(("az:", "mcts:"))
+_FORMAT_LABELS = {"bo3": "Best of three (with sideboarding)",
+                  "bo1": "Single game"}
+_DEVICE_LABELS = {None: "Default (CPU, or ROBOMAGE_EVAL_DEVICE)",
+                  "cpu": "CPU", "cuda": "GPU (cuda / ROCm)"}
 
 
 def sync_clock_sims_exclusivity(owner, sims, clock):
     """Enforce Match clock XOR Simulations on a dialog's two spinboxes:
-    whichever is set disables the other (parked on its "(default)" sentinel).
-    Clock checked first, so a persisted clock beats a persisted sims value at
-    dialog load. ``owner`` carries the re-entrancy guard (the setValue calls
-    re-fire the valueChanged signals this is connected to)."""
+    whichever is set disables the other (parked on its minimum — "(default)"
+    for sims, "(no clock)" for the clock). Clock checked first, so a persisted
+    clock beats a persisted sims value at dialog load. ``owner`` carries the
+    re-entrancy guard (the setValue calls re-fire the valueChanged signals
+    this is connected to)."""
     if getattr(owner, "_excl_guard", False):
         return
     owner._excl_guard = True
@@ -2111,145 +2025,197 @@ def sync_clock_sims_exclusivity(owner, sims, clock):
         owner._excl_guard = False
 
 
-def search_knob_pairs(*, sims=None, worlds=None, time_val=None, procs=None,
-                      clock=None, xw_on=True, device="", paced=None):
-    """(key, value) query pairs for a search spec from a launcher's search
-    fields (None = "(default)" = omit). Keys match the spec query grammar
-    make_controller parses (time=/procs=/…), mirroring how play.py appends
-    --think-time/--search-procs/etc.
-
-    ``procs=None`` means AUTO for interactive front ends (not the spec grammar's
-    procs=1): fan the worlds across half the cores, capped at the world count
-    in effect, as play.py's --search-procs default does. Cross-world batching
-    defaults ON in the controller, so only the off position needs a knob; the
-    device knob is appended only when set. ``paced``: explicit True/False wins;
-    None mirrors play.py and turns pacing on whenever the search has a variable
-    time budget (think time / clock)."""
-    if procs is None:
-        from opponents import default_search_procs, DEFAULT_SEARCH_WORLDS
-        procs = default_search_procs(
-            worlds if worlds is not None else DEFAULT_SEARCH_WORLDS)
-    pairs = [("sims", sims), ("worlds", worlds), ("time", time_val),
-             ("procs", procs), ("clock", clock)]
-    pairs = [(k, v) for k, v in pairs if v is not None]
-    if not xw_on:
-        pairs.append(("xw", 0))
-    if device:
-        pairs.append(("device", device))
-    has_variable_budget = time_val is not None or clock is not None
-    if paced is False:
-        pairs.append(("paced", 0))
-    elif paced is True or (paced is None and has_variable_budget):
-        pairs.append(("paced", 1))
-    return pairs
+def analysis_opts(values):
+    """The analysis-window options dict (the ``analysis`` key of a play
+    session's opts, persisted in .rmplay files; see ``_analysis_cfg_from``)
+    for a set of play.py flag values, or None when the window is off. An
+    unset --analysis is on (the GUI board's default)."""
+    if values.get("analysis") is False:
+        return None
+    return dict(evaluator=values.get("analysis_evaluator") or "az:gen",
+                worlds=values.get("analysis_worlds"),
+                procs=values.get("analysis_procs"),
+                max_sims=values.get("analysis_cap"),
+                auto=values.get("analysis_auto", True) is not False,
+                xw=values.get("analysis_xw", True) is not False,
+                device=values.get("analysis_device") or "")
 
 
-def with_spec_query(spec, pairs):
-    """Append `pairs` to a controller spec's ?k=v&… query (later keys win in
-    make_controller's parser, so appending is always safe)."""
-    if not pairs:
-        return spec
-    sep = "&" if "?" in spec else "?"
-    return spec + sep + "&".join(f"{k}={v}" for k, v in pairs)
+class LauncherDialog(QDialog):
+    """Base of the launcher dialogs: every field IS a command-line flag.
 
+    A subclass names its launcher_config ``SECTION``; each field it builds is
+    registered under the flag's dest (``_register``), starts from the saved /
+    cli_spec-default value (``self._values``), carries the flag's help as its
+    tooltip, and is persisted back under that dest on accept. The field set
+    must equal the section's table (checked at construction), which the
+    default ``make check`` tier checks against cli_spec."""
 
-def _scan_decks():
-    """All .dk deck stems under bin/resources/decks/ (recursive), decks/-relative
-    (e.g. 'delver', 'league/ur_delver'). Mirrors tui.py._scan_decks so the GUI
-    launcher offers the same decks the TUI form does, without importing textual."""
-    from cli_spec import REPO_ROOT
-    decks_dir = os.path.join(REPO_ROOT, "bin", "resources", "decks")
-    out = []
-    for root, dirs, files in os.walk(decks_dir):
-        dirs[:] = sorted(d for d in dirs if d not in _DECK_SCAN_EXCLUDE)
-        rel_dir = os.path.relpath(root, decks_dir).replace(os.sep, "/")
-        for fname in files:
-            if fname.endswith(".dk"):
-                stem = os.path.splitext(fname)[0]
-                out.append(stem if rel_dir == "." else f"{rel_dir}/{stem}")
-    return sorted(out, key=lambda rel: (rel.count("/"), rel))
-
-
-def _load_launcher_config(path=_LAUNCHER_CONFIG):
-    try:
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
-        return data if isinstance(data, dict) else {}
-    except (OSError, ValueError):
-        return {}
-
-
-def _save_launcher_config(cfg, path=_LAUNCHER_CONFIG):
-    try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(cfg, f, indent=2)
-    except OSError:
-        pass                                 # persistence is best-effort
-
-
-class NewPlaySessionDialog(QDialog):
-    """The File ▸ New Session ▸ Play… dialog (also the no-arguments intro).
-
-    Exposes the same game-running knobs as the TUI play form — player A and
-    player B (play.py --player-a/--player-b: exactly one is 'human', the other
-    the opponent controller), their decks (--deck-a/--deck-b), the match
-    format, and the human's own chess clock (play.py --human-clock /
-    --hard-timeout) — and seeds every field from the last session's choices
-    (persisted to ~/.robomage/gui_launcher.json under the flag dests). On Start
-    it hands a plain options dict back to the host (gui_main.SessionManager),
-    which assembles the session and shows the board."""
+    SECTION = None
 
     def __init__(self, binary_path, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("RoboMage — New Play Session")
         self.setModal(True)
         self._binary = binary_path
-        cfg = _load_launcher_config()
-        decks = _scan_decks()
+        self._args = launcher_config.section_args(self.SECTION)
+        self._values = launcher_config.load_section(self.SECTION)
+        self._getters = {}
+
+    def _check_fields(self):
+        missing = set(self._args) ^ set(self._getters)
+        assert not missing, f"{self.SECTION} dialog fields != table: {missing}"
+
+    def _register(self, dest, widget, getter):
+        widget.setToolTip(self._args[dest].help)
+        self._getters[dest] = getter
+        return widget
+
+    def field_values(self):
+        """``{dest: value}`` for every field — play.py flag values."""
+        return {dest: get() for dest, get in self._getters.items()}
+
+    def _save_fields(self):
+        launcher_config.save_section(self.SECTION, self.field_values())
+
+    # ----- field factories (one per flag kind) -----
+
+    def _spin(self, dest, *, special=None, minimum=0, maximum=1_000_000):
+        """A spinbox for an int/float flag. A flag whose default is None
+        (unset) parks on its minimum shown as '(default)' and reads back None;
+        otherwise ``special`` labels the minimum (a real value)."""
+        arg = self._args[dest]
+        unset = arg.default is None
+        if arg.kind == "float":
+            sb = QDoubleSpinBox()
+            sb.setDecimals(1)
+            sb.setSingleStep(0.5)
+        else:
+            sb = QSpinBox()
+        sb.setRange(minimum, maximum)
+        if unset or special:
+            sb.setSpecialValueText("(default)" if unset else special)
+        value = self._values[dest]
+        sb.setValue(minimum if value is None else value)
+
+        def get():
+            if unset and sb.value() == sb.minimum():
+                return None
+            return sb.value()
+        return self._register(dest, sb, get)
+
+    def _check(self, dest, text, default_on=False):
+        """A checkbox for a flag / bool flag (``default_on``: an unset bool
+        reads as checked)."""
+        cb = QCheckBox(text)
+        value = self._values[dest]
+        cb.setChecked(default_on if value is None else bool(value))
+        return self._register(dest, cb, cb.isChecked)
+
+    def _choice(self, dest, labels):
+        """A combo over a choice / tri-state flag: ``labels`` maps each value
+        (None = unset) to its display text, in order."""
+        combo = QComboBox()
+        for value, label in labels.items():
+            combo.addItem(label, value)
+        idx = combo.findData(self._values[dest])
+        combo.setCurrentIndex(idx if idx >= 0 else 0)
+        return self._register(dest, combo, combo.currentData)
+
+    def _device(self, dest):
+        return self._choice(dest, _DEVICE_LABELS)
+
+    def _format(self, dest="format"):
+        return self._choice(dest, _FORMAT_LABELS)
+
+    def _deck(self, dest, decks, blank=False):
+        """An editable deck combo (``blank``: a leading empty entry = unset)."""
+        combo = QComboBox()
+        combo.setEditable(True)
+        if blank:
+            combo.addItem("")
+        combo.addItems(decks)
+        current = self._values[dest] or ""
+        # Keep the remembered value even if it isn't a scanned stem (e.g. a
+        # hand-typed temp deck) by setting the edit text directly.
+        idx = combo.findText(current)
+        if idx >= 0:
+            combo.setCurrentIndex(idx)
+        else:
+            combo.setEditText(current)
+        return self._register(
+            dest, combo, lambda: combo.currentText().strip() or None)
+
+    def _spec(self, dest, presets, human=False):
+        """An editable agent-spec combo over ``presets`` (plus 'human')."""
+        combo = QComboBox()
+        combo.setEditable(True)
+        if human:
+            combo.addItem("Human (you)", HUMAN_SPEC)
+        for label, preset in presets:
+            combo.addItem(label, preset)
+        _set_combo_spec(combo, self._values[dest] or "")
+        return self._register(dest, combo, lambda: _combo_spec(combo) or None)
+
+
+def _set_combo_spec(combo, spec):
+    idx = combo.findData(spec)
+    if idx >= 0:
+        combo.setCurrentIndex(idx)
+    else:
+        combo.setEditText(spec)
+
+
+def _combo_spec(combo):
+    """The combo's spec: a preset's data when the visible text still matches
+    that preset's label, else the raw typed text."""
+    idx = combo.currentIndex()
+    if idx >= 0 and combo.itemText(idx) == combo.currentText():
+        return combo.itemData(idx)
+    return combo.currentText().strip()
+
+
+class NewPlaySessionDialog(LauncherDialog):
+    """The File ▸ New Session ▸ Play… dialog.
+
+    The play.py command line as a form (launcher_config.PLAY_FIELDS): player
+    A and player B (exactly one 'human', the other the opponent controller),
+    their decks, the match format, your own chess clock, shard recording, the
+    search-opponent knobs, and the analysis window — each seeded from the last
+    session's choices (the play section of ~/.robomage/gui_launcher.json),
+    else the play.py default. On Start it hands a plain options dict back to
+    the host (gui_main.SessionManager), which assembles the session and shows
+    the board."""
+
+    SECTION = launcher_config.PLAY_SECTION
+
+    def __init__(self, binary_path, parent=None):
+        super().__init__(binary_path, parent)
+        self.setWindowTitle("RoboMage — New Play Session")
+        decks = scan_decks()
 
         form = QFormLayout()
         form.setSpacing(8)
-
-        self._player_a = self._player_combo(_cfg_get(cfg, "player_a"))
-        self._deck_a = self._deck_combo(decks, _cfg_get(cfg, "deck_a"))
-        self._player_b = self._player_combo(_cfg_get(cfg, "player_b"))
-        self._deck_b = self._deck_combo(decks, _cfg_get(cfg, "deck_b"))
+        self._player_a = self._spec("player_a", _OPPONENT_PRESETS, human=True)
+        self._player_b = self._spec("player_b", _OPPONENT_PRESETS, human=True)
         form.addRow("Player A (on the play)", self._player_a)
-        form.addRow("Player A deck", self._deck_a)
+        form.addRow("Player A deck", self._deck("deck_a", decks))
         form.addRow("Player B", self._player_b)
-        form.addRow("Player B deck", self._deck_b)
-
-        self._format = QComboBox()
-        self._format.addItem("Best of three (with sideboarding)", "bo3")
-        self._format.addItem("Single game", "bo1")
-        self._format.setCurrentIndex(
-            max(0, self._format.findData(_cfg_get(cfg, "format"))))
-        form.addRow("Match format", self._format)
-
+        form.addRow("Player B deck", self._deck("deck_b", decks))
+        form.addRow("Match format", self._format())
         # YOUR own chess clock — the mirror of the search opponent's "Match
         # clock (s)", but it applies whatever the opponent is, so it lives here
         # in Game setup rather than in the search-only group.
-        self._human_clock = self._float_field(
-            _cfg_get(cfg, "human_clock"),
-            "Your whole-match thinking bank in seconds, debited by the time "
-            "you spend on each of your own decisions (chess clock; 1500 = 25 "
-            "min for a bo3). '(default)' = untimed.")
-        self._hard_timeout = QCheckBox("Hard timeout — running out loses the match")
-        self._hard_timeout.setChecked(bool(_cfg_get(cfg, "hard_timeout")))
-        self._hard_timeout.setToolTip(
-            "A seat that reaches its own decision with an empty bank concedes "
-            "the match (CR 104.3a). Applies to your clock above AND to a "
-            "search opponent's match clock, which is otherwise SOFT (an empty "
-            "bank just makes it think faster).")
-        form.addRow("Your clock (s)", self._human_clock)
-        form.addRow(self._hard_timeout)
-
+        form.addRow("Your clock (s)", self._spin("human_clock",
+                                                 maximum=100_000))
+        form.addRow(self._check("hard_timeout",
+                                "Hard timeout — running out loses the match"))
+        form.addRow(self._check("record_shards", "Record shards for analysis"))
         box = QGroupBox("Game setup")
         box.setLayout(form)
 
-        self._search_box = self._build_search_box(cfg)
-        self._analysis_box = self._build_analysis_box(cfg)
+        self._search_box = self._build_search_box()
+        self._analysis_box = self._build_analysis_box()
+        self._check_fields()
 
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
@@ -2277,235 +2243,72 @@ class NewPlaySessionDialog(QDialog):
         self._player_b.currentTextChanged.connect(self._update_search_visibility)
         self._update_search_visibility()
 
-    def _build_search_box(self, cfg):
-        """The az:/mcts:-only search-tuning group (hidden for other opponents).
-        Each field's '(default)' sentinel (a spinbox at its minimum) means 'omit
-        the knob'; set values are appended to the spec query the same way
-        play.py's --sims/--worlds/--think-time/--search-procs/--match-clock do.
-        Search procs is the one exception: unset means AUTO (half the cores,
-        capped at the world count), matching play.py's interactive default."""
+    def _build_search_box(self):
+        """The az:/mcts:-only search-tuning group (hidden for other opponents):
+        play.py's search-knob flags, folded into the opponent spec's query on
+        Start exactly as play.py folds them (cli_spec.apply_search_knobs)."""
         form = QFormLayout()
         form.setSpacing(8)
-        self._sims = self._int_field(
-            _cfg_get(cfg, "sims"), "MCTS simulations per decision (more = stronger, slower).")
-        self._worlds = self._int_field(
-            _cfg_get(cfg, "worlds"),
-            "Determinized worlds per decision (sims split across them).")
-        self._think_time = self._float_field(
-            _cfg_get(cfg, "think_time"), "Wall-clock seconds per decision — runs as many "
-            "sims as fit in this budget (overrides the sims terminator).")
-        self._search_procs = self._int_field(
-            _cfg_get(cfg, "search_procs"), "Engine processes to fan the worlds across "
-            "(world-parallel search). '(default)' means AUTO: half the visible "
-            "cores, capped at the world count. Set a value to override.")
-        self._match_clock = self._float_field(
-            _cfg_get(cfg, "match_clock"), "Whole-match thinking bank in seconds (chess "
-            "clock; 1500 = 25 min for a bo3). Each decision draws a variable budget. "
-            "Mutually exclusive with a Simulations cap — a clocked search is paced "
-            "by the clock alone.")
+        self._sims = self._spin("sims")
+        self._match_clock = self._spin("match_clock", special="(no clock)",
+                                       maximum=100_000)
         # Match clock and a fixed sims budget are mutually exclusive: setting one
-        # parks the other on its "(default)" sentinel and disables it. On load a
-        # persisted clock wins over a persisted sims value (no silent cap).
+        # parks the other on its minimum and disables it. On load a persisted
+        # clock wins over a persisted sims value (no silent cap).
         self._sims.valueChanged.connect(self._sync_clock_sims_exclusivity)
         self._match_clock.valueChanged.connect(self._sync_clock_sims_exclusivity)
         self._sync_clock_sims_exclusivity()
-        self._paced = QComboBox()
-        self._paced.addItem("Default (on with a time/clock budget)", None)
-        self._paced.addItem("On — mask response-timing tells", True)
-        self._paced.addItem("Off — instant obvious decisions", False)
-        self._paced.setCurrentIndex(
-            {None: 0, True: 1, False: 2}.get(_cfg_get(cfg, "paced"), 0))
-        self._record = QCheckBox("Record shards for analysis")
-        self._record.setChecked(bool(_cfg_get(cfg, "record_shards")))
-        self._record.setToolTip(
-            "Record every decision of the match into trainer-schema shard "
-            "files (train/az_data/recorded/rec_*): the opponent's searched "
-            "decisions with their full visit posterior and root value, every "
-            "other decision (yours included) as a one-hot row. Analyze them "
-            "live from View ▸ Analyze Recording… (F10), or later with the "
-            "analysis browser / az-inspect pointed at the directory.")
-        self._search_device = self._device_combo(
-            _cfg_get(cfg, "search_device"),
-            "Torch device for the opponent's net forwards: CPU, or the GPU "
-            "(cuda — the Radeon under the ROCm torch build; the RDNA2 env "
-            "defaults are applied in-process). The GPU pays in proportion to "
-            "the rows per forward, i.e. together with cross-world batching "
-            "and higher world counts.")
-        self._search_xw = QCheckBox("Cross-world batched leaf evaluation")
-        self._search_xw.setChecked(bool(_cfg_get(cfg, "search_xw")))
-        self._search_xw.setToolTip(
-            "Batch each round's leaf evaluations (one per determinized world) "
-            "into a single net forward. Visit counts are arithmetically "
-            "identical to the sequential search — this is pure speed. "
-            "Uncheck only to debug.")
         form.addRow("Simulations", self._sims)
-        form.addRow("Worlds", self._worlds)
-        form.addRow("Think time (s)", self._think_time)
-        form.addRow("Search procs", self._search_procs)
+        form.addRow("Worlds", self._spin("worlds", minimum=1))
+        form.addRow("Think time (s)", self._spin("think_time", maximum=100_000))
+        form.addRow("Search procs", self._spin("search_procs"))
         form.addRow("Match clock (s)", self._match_clock)
-        form.addRow("Eval device", self._search_device)
-        form.addRow(self._search_xw)
-        form.addRow("Paced responses", self._paced)
-        form.addRow(self._record)
+        form.addRow("Eval device", self._device("search_device"))
+        form.addRow(self._check("search_xw",
+                                "Cross-world batched leaf evaluation"))
+        form.addRow("Paced responses", self._choice("paced", {
+            None: "Default (on with a time/clock budget)",
+            True: "On — mask response-timing tells",
+            False: "Off — instant obvious decisions"}))
         box = QGroupBox("Search opponent settings")
         box.setLayout(form)
         return box
 
-    @staticmethod
-    def _device_combo(current, tooltip):
-        combo = QComboBox()
-        combo.addItem("CPU (default)", "")
-        combo.addItem("GPU (cuda / ROCm)", "cuda")
-        idx = combo.findData(current or "")
-        combo.setCurrentIndex(idx if idx >= 0 else 0)
-        combo.setToolTip(tooltip)
-        return combo
-
-    def _build_analysis_box(self, cfg):
+    def _build_analysis_box(self):
         """The analysis-window group: enable + evaluator + search knobs. Unlike
         the search box this applies to every opponent type (the analysis runs on
         its own detached engine), so it is always visible."""
         form = QFormLayout()
         form.setSpacing(8)
-        self._analysis_enable = QCheckBox("Open the analysis window (F9 toggles in-game)")
-        self._analysis_enable.setChecked(bool(_cfg_get(cfg, "analysis_enabled")))
-        self._analysis_eval = QComboBox()
-        self._analysis_eval.setEditable(True)
-        for label, spec in _ANALYSIS_EVAL_PRESETS:
-            self._analysis_eval.addItem(label, spec)
-        self._set_combo_spec(self._analysis_eval,
-                             _cfg_get(cfg, "analysis_evaluator"))
-        self._analysis_eval.setToolTip(
-            "Evaluator behind the analysis search: az:gen (AZ net, calibrated "
-            "win%), mcts:gen (PPO heads), uniform (no model), or a checkpoint "
-            "path.")
-        self._analysis_worlds = self._int_field(
-            _cfg_get(cfg, "analysis_worlds"),
-            "Determinized worlds per analysis run (hidden-zone samples).")
-        self._analysis_procs = self._int_field(
-            _cfg_get(cfg, "analysis_procs"),
-            "Detached analysis engines to fan the worlds across "
-            "((default) = half the cores, capped at the world count). "
-            "The merged result is the same either way — just faster.")
-        self._analysis_cap = QSpinBox()
-        self._analysis_cap.setRange(-1, 1_000_000)
-        self._analysis_cap.setSpecialValueText("(default)")
-        cap = _cfg_get(cfg, "analysis_cap")
-        self._analysis_cap.setValue(-1 if cap is None else int(cap))
-        self._analysis_cap.setToolTip(
-            "Simulation cap per analysis run (0 = run until stopped; "
-            "adjustable in the window too).")
-        self._analysis_auto = QCheckBox("Auto-analyze each decision")
-        self._analysis_auto.setChecked(bool(_cfg_get(cfg, "analysis_auto")))
-        self._analysis_device = self._device_combo(
-            _cfg_get(cfg, "analysis_device"),
-            "Torch device for the analysis evaluator's net forwards (az:/"
-            "checkpoint specs; uniform and mcts: stay on CPU). GPU pays "
-            "together with cross-world batching and higher world counts.")
-        self._analysis_xw = QCheckBox("Cross-world batched leaf evaluation")
-        self._analysis_xw.setChecked(bool(_cfg_get(cfg, "analysis_xw")))
-        self._analysis_xw.setToolTip(
-            "Batch each analysis round's leaf evaluations (one per world) "
-            "into a single net forward — identical visit counts, faster "
-            "chunks. Uncheck only to debug.")
-        form.addRow(self._analysis_enable)
-        form.addRow("Evaluator", self._analysis_eval)
-        form.addRow("Worlds", self._analysis_worlds)
-        form.addRow("Search procs", self._analysis_procs)
-        form.addRow("Sims cap", self._analysis_cap)
-        form.addRow("Eval device", self._analysis_device)
-        form.addRow(self._analysis_xw)
-        form.addRow(self._analysis_auto)
+        form.addRow(self._check("analysis",
+                                "Open the analysis window (F9 toggles in-game)",
+                                default_on=True))
+        form.addRow("Evaluator", self._spec("analysis_evaluator",
+                                            _ANALYSIS_EVAL_PRESETS))
+        form.addRow("Worlds", self._spin("analysis_worlds", minimum=1))
+        form.addRow("Search procs", self._spin("analysis_procs"))
+        form.addRow("Sims cap", self._spin("analysis_cap",
+                                           special="until stopped"))
+        form.addRow("Eval device", self._device("analysis_device"))
+        form.addRow(self._check("analysis_xw",
+                                "Cross-world batched leaf evaluation"))
+        form.addRow(self._check("analysis_auto", "Auto-analyze each decision"))
         box = QGroupBox("Analysis window (MCTS evaluation of your decisions)")
         box.setLayout(form)
         return box
-
-    @staticmethod
-    def _set_combo_spec(combo, spec):
-        idx = combo.findData(spec)
-        if idx >= 0:
-            combo.setCurrentIndex(idx)
-        else:
-            combo.setEditText(spec)
-
-    @staticmethod
-    def _combo_spec(combo):
-        """The combo's spec: a preset's data when the visible text still matches
-        that preset's label, else the raw typed text."""
-        idx = combo.currentIndex()
-        if idx >= 0 and combo.itemText(idx) == combo.currentText():
-            return combo.itemData(idx)
-        return combo.currentText().strip()
-
-    @staticmethod
-    def _int_field(value, tooltip):
-        sb = QSpinBox()
-        sb.setRange(0, 1_000_000)            # 0 == minimum == "(default)" sentinel
-        sb.setSpecialValueText("(default)")
-        sb.setValue(int(value) if value else 0)
-        sb.setToolTip(tooltip)
-        return sb
-
-    @staticmethod
-    def _float_field(value, tooltip):
-        sb = QDoubleSpinBox()
-        sb.setRange(0.0, 100_000.0)          # 0.0 == minimum == "(default)" sentinel
-        sb.setDecimals(1)
-        sb.setSingleStep(0.5)
-        sb.setSpecialValueText("(default)")
-        sb.setValue(float(value) if value else 0.0)
-        sb.setToolTip(tooltip)
-        return sb
-
-    @staticmethod
-    def _spin_value(sb):
-        """A spinbox's value, or None when it's parked on its '(default)' sentinel."""
-        return sb.value() if sb.value() != sb.minimum() else None
 
     def _sync_clock_sims_exclusivity(self, *_):
         sync_clock_sims_exclusivity(self, self._sims, self._match_clock)
 
     def _update_search_visibility(self, *_):
-        self._search_box.setVisible(self._is_search_spec(self._opponent_spec()))
+        self._search_box.setVisible(is_search_spec(self._opponent_spec()))
         self.adjustSize()
-
-    @staticmethod
-    def _is_search_spec(spec):
-        return is_search_spec(spec)
-
-    @staticmethod
-    def _deck_combo(decks, current):
-        combo = QComboBox()
-        combo.setEditable(True)
-        combo.addItems(decks)
-        # Keep the remembered value even if it isn't a scanned stem (e.g. a
-        # hand-typed temp deck) by setting the edit text directly.
-        idx = combo.findText(current)
-        if idx >= 0:
-            combo.setCurrentIndex(idx)
-        else:
-            combo.setEditText(current)
-        return combo
-
-    def _player_combo(self, spec):
-        """An editable seat combo: 'human' (you) plus the opponent presets."""
-        combo = QComboBox()
-        combo.setEditable(True)
-        combo.addItem("Human (you)", HUMAN_SPEC)
-        for label, preset in _OPPONENT_PRESETS:
-            combo.addItem(label, preset)
-        self._set_combo_spec(combo, spec)
-        combo.setToolTip(
-            "'Human (you)' on exactly one seat; the other seat is the opponent "
-            "controller: 'gen' (the generalist model), a scripted tier, an "
-            "az:/azraw:/mcts: search spec, or an explicit checkpoint path.")
-        return combo
 
     def _seats(self):
         """(human_seat, opponent_spec) per cli_spec.resolve_play_seats;
         raises ValueError unless exactly one seat is 'human'."""
-        return resolve_play_seats(self._combo_spec(self._player_a) or None,
-                                  self._combo_spec(self._player_b) or None)
+        return resolve_play_seats(self._getters["player_a"](),
+                                  self._getters["player_b"]())
 
     def _opponent_spec(self):
         """The non-human seat's spec ('' while the seats are not exactly one
@@ -2515,28 +2318,9 @@ class NewPlaySessionDialog(QDialog):
         except ValueError:
             return ""
 
-    def _search_knobs(self):
-        """(key, value) query pairs for the set search fields (empty ones omitted).
-        Keys match the spec query grammar make_controller parses (time=/procs=/…),
-        mirroring how play.py appends --think-time/--search-procs/etc."""
-        return search_knob_pairs(
-            sims=self._spin_value(self._sims),
-            worlds=self._spin_value(self._worlds),
-            time_val=self._spin_value(self._think_time),
-            procs=self._spin_value(self._search_procs),
-            clock=self._spin_value(self._match_clock),
-            xw_on=self._search_xw.isChecked(),
-            device=self._search_device.currentData(),
-            paced=self._paced.currentData())
-
-    @staticmethod
-    def _with_query(spec, pairs):
-        return with_spec_query(spec, pairs)
-
     def _on_accept(self):
-        deck_a = self._deck_a.currentText().strip()
-        deck_b = self._deck_b.currentText().strip()
-        if not deck_a or not deck_b:
+        values = self.field_values()
+        if not values["deck_a"] or not values["deck_b"]:
             QMessageBox.warning(self, "Missing deck",
                                 "Pick a deck for both player A and player B.")
             return
@@ -2549,97 +2333,37 @@ class NewPlaySessionDialog(QDialog):
             QMessageBox.warning(self, "Missing opponent",
                                 "Pick or type an opponent.")
             return
-        human_deck, model_deck = ((deck_a, deck_b) if player == "A"
-                                  else (deck_b, deck_a))
+        human_deck, model_deck = ((values["deck_a"], values["deck_b"])
+                                  if player == "A"
+                                  else (values["deck_b"], values["deck_a"]))
         # A search opponent carries its tuning knobs in the spec query; other
         # opponents ignore the (hidden) fields entirely.
-        spec = opponent
-        if self._is_search_spec(opponent):
-            spec = self._with_query(opponent, self._search_knobs())
+        spec = apply_search_knobs(opponent, values)
         # Resolve the generalist up front so a missing checkpoint fails on the
         # launcher (with a clear message) rather than deep in build_session.
         try:
-            model_path = _resolve_opponent_spec(spec)
+            model_path = resolve_opponent_spec(spec)
         except Exception as exc:                          # noqa: BLE001
             QMessageBox.critical(self, "Opponent unavailable", str(exc))
             return
-
-        analysis = None
-        if self._analysis_enable.isChecked():
-            evaluator = self._combo_spec(self._analysis_eval) or "az:gen"
-            cap = self._analysis_cap.value()
-            analysis = dict(evaluator=evaluator,
-                            worlds=self._spin_value(self._analysis_worlds),
-                            procs=self._spin_value(self._analysis_procs),
-                            max_sims=None if cap < 0 else cap,
-                            auto=self._analysis_auto.isChecked(),
-                            xw=self._analysis_xw.isChecked(),
-                            device=self._analysis_device.currentData() or "")
-
-        bo3 = self._format.currentData() == "bo3"
-        record = self._record.isChecked() and self._is_search_spec(opponent)
-        human_clock = self._spin_value(self._human_clock)
-        hard_timeout = self._hard_timeout.isChecked()
         self._options = dict(binary=self._binary, model_path=model_path,
                              human_player=player, human_deck=human_deck,
-                             model_deck=model_deck, bo3=bo3, analysis=analysis,
-                             record_shards=record,
-                             human_clock_s=human_clock,
-                             hard_timeout=hard_timeout)
+                             model_deck=model_deck,
+                             bo3=is_bo3(values),
+                             analysis=analysis_opts(values),
+                             record_shards=values["record_shards"],
+                             human_clock_s=values["human_clock"],
+                             hard_timeout=values["hard_timeout"])
         # Persist the BASE opponent + individual knobs (not the composed spec) so
         # the fields autofill cleanly next session without double-appending.
-        _save_launcher_config(dict(
-            player_a=self._combo_spec(self._player_a),
-            player_b=self._combo_spec(self._player_b),
-            deck_a=deck_a, deck_b=deck_b, format=self._format.currentData(),
-            human_clock=human_clock, hard_timeout=hard_timeout,
-            sims=self._spin_value(self._sims), worlds=self._spin_value(self._worlds),
-            think_time=self._spin_value(self._think_time),
-            search_procs=self._spin_value(self._search_procs),
-            match_clock=self._spin_value(self._match_clock),
-            paced=self._paced.currentData(),
-            record_shards=self._record.isChecked(),
-            search_xw=self._search_xw.isChecked(),
-            search_device=self._search_device.currentData() or "",
-            analysis_xw=self._analysis_xw.isChecked(),
-            analysis_device=self._analysis_device.currentData() or "",
-            analysis_enabled=self._analysis_enable.isChecked(),
-            analysis_evaluator=self._combo_spec(self._analysis_eval),
-            analysis_worlds=self._spin_value(self._analysis_worlds),
-            analysis_procs=self._spin_value(self._analysis_procs),
-            analysis_cap=None if self._analysis_cap.value() < 0
-            else self._analysis_cap.value(),
-            analysis_auto=self._analysis_auto.isChecked()))
+        self._save_fields()
         self.accept()
 
     def options(self):
         return self._options
 
 
-def _resolve_opponent_spec(spec):
-    """Turn the launcher's opponent spec into the model_path build_session wants.
-
-    Scripted / search / play specs pass straight through (build_session +
-    make_controller understand them). A model spec ('gen' or an explicit path) is
-    resolved and existence-checked here so a missing generalist checkpoint is
-    reported cleanly instead of crashing later in _load_model."""
-    from opponents import is_scripted_spec, resolve_checkpoint
-    s = spec.strip()
-    low = s.lower()
-    if is_scripted_spec(s) or low.startswith(("az:", "azraw:", "mcts:",
-                                              "play:", "actions:", "human",
-                                              "auto")):
-        return s
-    path = resolve_checkpoint(s)             # 'gen' -> newest gen snapshot path
-    if not path or not os.path.exists(path):
-        raise ValueError(
-            f"No checkpoint found for opponent {s!r}. Train the generalist first "
-            f"(train/train.py train --deck-a <deck> --deck-b <opp>), pick a "
-            f"scripted opponent, or type an explicit .zip path.")
-    return path
-
-
-# ── Entry point (called by play.py --gui) ─────────────────────────────────────
+# ── Entry point (play.py --board gui) ─────────────────────────────────────────
 
 def _ensure_app():
     """The styled shared QApplication (created once)."""

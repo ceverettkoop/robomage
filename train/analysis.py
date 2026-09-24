@@ -76,7 +76,8 @@ from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
-from cli_spec import (ANALYSIS_TOOL, append_spec_knob, apply_to_parser,
+from cli_spec import (ANALYSIS_TOOL, SEARCH_KNOB_KEYS, search_knob_pairs,
+                      with_spec_query, apply_to_parser,
                       DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS, is_bo3)
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
@@ -454,40 +455,46 @@ def load_inspection_model(spec):
     return _AZModelAdapter(model) if kind == MODEL_KIND_AZ else model
 
 
-def _apply_search_budget_flags(args):
-    """Fold the --think-time / --match-clock convenience flags into the specs.
+def _apply_search_knob_flags(args):
+    """Fold the search-knob flags (cli_spec.search_knob_args: --think-time /
+    --match-clock, and on the browser also --sims / --worlds / --search-procs /
+    --search-xw / --search-device) into the specs.
 
     Mirrors play.py's flags of the same names, but applies to EVERY seat whose
-    spec is a search spec (an az:/mcts: --player-a or --player-b) — appended last so
-    they override any time=/clock= knob already in the spec. Rewrites
-    ``args.player_a`` / ``args.player_b`` in place (and clears the flags, so a
-    second call — e.g. an args namespace reused across a re-simulate — is a
-    no-op instead of appending the knobs again)."""
-    think_time = getattr(args, "think_time", None)
-    match_clock = getattr(args, "match_clock", None)
-    if think_time is None and match_clock is None:
+    spec is a search spec (an az:/mcts: --player-a or --player-b) — appended
+    last so they override the same knob already in the spec. A tool that
+    offers --search-procs defaults it to AUTO (cli_spec.search_knob_pairs).
+    Rewrites ``args.player_a`` / ``args.player_b`` in place and marks the
+    namespace folded, so a second call — e.g. an args namespace reused across
+    a re-simulate — is a no-op instead of appending the knobs again."""
+    if getattr(args, "_search_knobs_folded", False):
         return
+    values = {dest: getattr(args, dest) for dest, _key in SEARCH_KNOB_KEYS
+              if hasattr(args, dest)}
+    set_knobs = [d for d, v in values.items()
+                 if v is not None and not (d == "search_xw" and v is True)]
+    auto_procs = "search_procs" in values
     seats = [s for s in ("player_a", "player_b") if _is_search_spec(getattr(args, s))]
-    if not seats:
-        print("--think-time/--match-clock only apply to a search seat "
+    if set_knobs and not seats:
+        flags = "/".join("--" + d.replace("_", "-") for d in set_knobs)
+        print(f"{flags} only apply to a search seat "
               "(an az:/mcts: --player-a or --player-b spec).", file=sys.stderr)
         sys.exit(1)
+    if not set_knobs and not (auto_procs and seats):
+        return
     for seat in seats:
-        spec = getattr(args, seat)
-        if think_time is not None:
-            spec = append_spec_knob(spec, "time", think_time)
-        if match_clock is not None:
-            spec = append_spec_knob(spec, "clock", match_clock)
+        spec = with_spec_query(getattr(args, seat),
+                               search_knob_pairs(values, auto_procs=auto_procs))
         setattr(args, seat, spec)
-        print(f"  {seat} search budget: {spec}")
-    args.think_time = args.match_clock = None
+        print(f"  {seat} search knobs: {spec}")
+    args._search_knobs_folded = True
 
 
 def _load_model_and_env(args):
     """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
     from opponents import is_scripted_spec
 
-    _apply_search_budget_flags(args)
+    _apply_search_knob_flags(args)
     binary = getattr(args, "binary", BINARY)
 
     # The INSPECTION net is the net the spec names (opponents.parse_model_spec:

@@ -30,14 +30,13 @@ from textual.widgets import (Button, Checkbox, Footer, Header, Input, Label,
                              ListItem, ListView, Select, SelectionList, Static,
                              Tree)
 
-from cli_spec import (ALL_TOOLS, HARNESS_DEFAULT_PLAYER, HUMAN_SPEC, REPO_ROOT,
-                      MutexGroup)
+from cli_spec import (ALL_TOOLS, DECKS_DIR, HARNESS_DEFAULT_PLAYER, HUMAN_SPEC,
+                      REPO_ROOT, MutexGroup, scan_decks)
 # Curriculum plans: stdlib-only module (cli_spec + progress_io), so the launcher
 # can list/read/write plan files without pulling in the ML stack.
 import curriculum
 
 VENV_PY = sys.executable
-_DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
 _CKPT_DIR = os.path.join(REPO_ROOT, "train", "checkpoints")
 
 # Rolling per-command output logs: one file per run, newest 50 kept.
@@ -79,39 +78,17 @@ def _prune_command_logs():
             pass
 
 
-# Deck subfolders hidden from the dropdowns: temp/ holds auto-generated test
-# decks (see test_harness.py), not_used/ parked development stubs.
-_DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
-
-
 def _grouped_sort_key(rel):
     """Sort decks/checkpoints top-level first, then grouped by subfolder,
     alphabetical within each group."""
     return (rel.count("/"), rel)
 
 
-def _scan_decks():
-    """All .dk decks under decks/ (recursive), as decks/-relative stems.
-
-    Subfolder decks are offered in the 'league/ur_delver' path-relative form
-    that train.py and the engine accept alongside top-level stems like
-    'delver'. temp/ and not_used/ are excluded."""
-    out = []
-    for root, dirs, files in os.walk(_DECKS_DIR):
-        dirs[:] = sorted(d for d in dirs if d not in _DECK_SCAN_EXCLUDE)
-        rel_dir = os.path.relpath(root, _DECKS_DIR).replace(os.sep, "/")
-        for fname in files:
-            if fname.endswith(".dk"):
-                stem = os.path.splitext(fname)[0]
-                out.append(stem if rel_dir == "." else f"{rel_dir}/{stem}")
-    return sorted(out, key=_grouped_sort_key)
-
-
 def _scan_league_decks():
     # League roster decks live in decks/league/; reference them as 'league/<stem>'
     # so the engine loads decks/league/<stem>.dk (matches train.league() default).
     return sorted("league/" + os.path.splitext(os.path.basename(p))[0]
-                  for p in glob.glob(os.path.join(_DECKS_DIR, "league", "*.dk")))
+                  for p in glob.glob(os.path.join(DECKS_DIR, "league", "*.dk")))
 
 
 def _scan_checkpoints():
@@ -175,7 +152,7 @@ def _expand_checkpoint(val):
 # --load resume, --from-ppo); 'agent' adds the az:/azraw:/mcts: gen entries for
 # fields that go through make_controller (observe's players, baseline's model);
 # 'az_checkpoint' is bare AZ .pt paths.
-_SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
+_SCANNERS = {"deck": scan_decks, "league_deck": _scan_league_decks,
              "checkpoint": _scan_checkpoints, "agent": _scan_agents,
              "az_checkpoint": _scan_az_checkpoints,
              "curriculum": _scan_curricula}
@@ -287,6 +264,15 @@ class ArgFormMixin:
         if a.kind == "flag":
             w = Checkbox(value=bool(default), compact=True)
             self._fields.append({"kind": "flag", "arg": a, "widget": w})
+        elif a.kind == "bool":
+            # --name / --no-name: a checkbox, or an on/off select whose blank
+            # is the flag's unset (None) default.
+            if default is None:
+                w = Select([("on", "on"), ("off", "off")], allow_blank=True,
+                           compact=True)
+            else:
+                w = Checkbox(value=bool(default), compact=True)
+            self._fields.append({"kind": "bool", "arg": a, "widget": w})
         elif a.kind == "choice":
             opts = [(c, c) for c in a.choices]
             kwargs = {"allow_blank": not a.required, "compact": True}
@@ -342,6 +328,10 @@ class ArgFormMixin:
         kind = f["kind"]
         if kind == "flag":
             return bool(w.value)
+        if kind == "bool":
+            if isinstance(w, Checkbox):
+                return bool(w.value)
+            return {"on": True, "off": False}.get(w.value)
         if kind in ("mutex", "choice", "pick"):
             v = w.value
             return v if isinstance(v, str) and v else None
@@ -373,6 +363,13 @@ class ArgFormMixin:
             w = f["widget"]
             if f["kind"] == "flag":
                 w.value = bool(val)
+            elif f["kind"] == "bool":
+                if isinstance(w, Checkbox):
+                    w.value = bool(val)
+                elif val is None:
+                    w.clear()
+                else:
+                    w.value = "on" if val else "off"
             elif f["kind"] == "multipick":
                 picks = ([v.strip() for v in str(val).split(",") if v.strip()]
                          if not isinstance(val, (list, tuple)) else list(val))
@@ -593,7 +590,8 @@ class LauncherApp(ArgFormMixin, App):
         return os.path.join(REPO_ROOT, self._tool.script)
 
     # Scripts that take over the whole terminal with their own Textual app:
-    # play.py launches the game board (tui_game.py) and tui_analysis.py is the
+    # play.py launches a game board (--board tui is tui_game.py; gui and text
+    # also own the terminal while they run) and tui_analysis.py is the
     # analysis browser. Teeing either through `script` would fill the log with
     # terminal escape sequences, so they run without logging.
     _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py",
@@ -627,7 +625,19 @@ class LauncherApp(ArgFormMixin, App):
                 if val:
                     argv.append(a.name)
                 continue
+            if f["kind"] == "bool":
+                if val is not None and val != a.default:
+                    argv.append(a.name if val else "--no-" + a.name[2:])
+                continue
             if val in (None, []):
+                continue
+            # A value left at the flag's own default is omitted: the script
+            # parses the same default, and the command stays explicit only
+            # about what the form changed (play.py lets a spec's own knobs
+            # win over un-given defaults, and rejects given GUI-only flags on
+            # the tui board).
+            if (not a.is_positional and f["kind"] != "multipick"
+                    and a.default is not None and str(val) == str(a.default)):
                 continue
             if f["kind"] == "multipick":   # multi-select roster -> comma-joined
                 text = ",".join(val)

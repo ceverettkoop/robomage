@@ -959,7 +959,7 @@ class EngineCore:
     """Owns model/env/opp_model exclusively; every method is a synchronous job
     run on the front end's single engine worker thread, streaming events
     through `emit`. `args` is an ANALYSIS_TUI_TOOL-style namespace the core
-    may mutate (_apply_search_budget_flags self-clears; deck_a/deck_b are
+    may mutate (_apply_search_knob_flags self-clears; deck_a/deck_b are
     written back) — hand it a dedicated copy. `preloaded=(model, env,
     opp_model)` skips _load_model_and_env (the test seam)."""
 

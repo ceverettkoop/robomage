@@ -622,21 +622,34 @@ injects one for the human seat. Regression `train/test_concede.py` (`make check`
 ### Interactive front ends: TUI, GUI, and the analysis window
 
 `./tui.sh` (`train/tui.py`) is the overall Textual control panel (deck management, training,
-league runs, observing, launching play) — separate from the two *game board* front ends below.
-`./gui.sh` launches `train/gui_main.py` on its welcome pane (sessions start via File ▸ New Session).
+league runs, observing, launching play) — separate from the game boards below.
 
-Both game boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a
-worker thread reporting `StateUpdate`s to a sink; `build_session` assembles env + opponent
-controller). The engine is always a `--machine` subprocess; the opponent is any
+`train/play.py` is the ONE entry point for play: `--board gui|tui|text` (default `gui`, falling
+back to `tui` with a printed notice when PySide6 is missing). Seats are `--player-a`/`--player-b`,
+exactly one of them the spec `human` (default: human on A vs `az:gen` on B; e.g.
+`--player-a az:gen --player-b human` to be on the draw); decks `--deck-a`/`--deck-b` (default
+`league/bug` vs `league/ur_delver`). Every flag works on every board that can honour it and
+errors on one that cannot (`--analysis*` are GUI-only; `--human-clock`/`--hard-timeout`/
+`--record-shards` need a GameDriver board, gui or tui; `--seed` works everywhere). The GameDriver
+boards share one front-end-agnostic loop — `train/game_driver.py` (`GameDriver` on a worker
+thread reporting `StateUpdate`s to a sink; `build_session` assembles env + opponent controller,
+seed, and recording dir). The engine is always a `--machine` subprocess; the opponent is any
 `opponents.make_controller` spec (scripted tiers, `gen`, `az:`/`azraw:`/`mcts:` wrappers).
 
-- **TUI board**: `train/play.py --deck-a X --deck-b Y` (default), or via `./tui.sh`. Seats are
-  `--player-a`/`--player-b`, exactly one of them the spec `human` (default: human on A vs the
-  generalist on B; e.g. `--player-a az:gen --player-b human` to be on the draw).
-- **GUI board** (PySide6): `play.py ... --gui`, or `python train/gui_main.py` / `./gui.sh` with
-  no args for the app shell's welcome pane — File ▸ New Session opens the play/analysis dialogs
-  (player A/B + deck A/B + format pickers + search and analysis settings, persisted to
-  `~/.robomage/gui_launcher.json` under the flag dests). Falls back to the TUI if PySide6 is missing.
+- **GUI board** (PySide6, `train/gui_main.py` app shell over `train/gui_game.py`): `play.py
+  --deck-a X --deck-b Y` goes straight into a game; `./gui.sh` (= `play.py --board gui` with no
+  seat/deck flags) opens the app's welcome pane — File ▸ New Session opens the play/analysis
+  dialogs. **The GUI mirrors the CLI**: the Play dialog's fields ARE `play.py`'s flags and the
+  Analysis dialog's are the browser's (`analysis-tui browse`) — same dests, same cli_spec
+  defaults — listed in `train/launcher_config.py` (Qt-free; `test_cli_spec.py` asserts every
+  field ↔ flag with equal defaults). Settings persist to ONE file,
+  `~/.robomage/gui_launcher.json`, a section per dialog; unknown / ill-typed keys are ignored. A
+  new GUI knob gets a cli_spec flag first, then a field. The search-knob fold (flag → `az:`/`mcts:`
+  spec query, AUTO `--search-procs`, paced default) is `cli_spec.search_knob_pairs` /
+  `apply_search_knobs` — shared by play.py, both dialogs and the analysis loader.
+- **TUI board**: `play.py --board tui ...`, or `./tui.sh`'s play entry (the same PLAY_TOOL form).
+- **Text board**: `play.py --board text ...` — `runner.run_games` with a `HumanController` seat
+  (action number or semantic spec, `concede`) vs `make_controller(opponent spec)`.
 - **Standalone analysis browser** (`train/tui_analysis.py`, Textual, not on `game_driver.py`):
   simulates N games vs an opponent and lets you page board states, seek via a clickable V(s)
   histogram, run any `analysis.py` REPL view, and branch `whatif` counterfactuals. Launch via
@@ -647,8 +660,8 @@ controller). The engine is always a `--machine` subprocess; the opponent is any
   exits 0; add `ROBOMAGE_ANALYSIS_SMOKE=1` to force the analysis window on and fail unless it
   delivered stats.
 
-**The analysis window** (`train/gui_analysis.py`, GUI only; enable via launcher checkbox or
-`play.py --gui --analysis`; F9 toggle, F5 analyze, F6 review opponent's last decision, Shift+F5
+**The analysis window** (`train/gui_analysis.py`, GUI only; on by default on the GUI board —
+`--no-analysis` / the launcher checkbox turn it off, `--analysis-*` flags tune it; F9 toggle, F5 analyze, F6 review opponent's last decision, Shift+F5
 stop): live chess-engine-style MCTS on the current decision. Runs `mcts.IncrementalSearch`
 (chunked, cancellable, bit-identical to `run_search` for the same world seeds; holds its root
 snapshot open for `pv()`/`walk()`) on a **detached analysis engine**
@@ -665,8 +678,9 @@ and marks the played action `▶`. Qt-free core in `train/analysis_session.py`; 
 `train/test_analysis_session.py` is the **opt-in** `ci_check.py --tier analysis` (not in default
 `make check`).
 
-**Shard recording of GUI play** (`train/shard_record.py`; launcher's "Record shards" checkbox —
-search opponents only — or `play.py --gui --record-shards`): records a session into
+**Shard recording of play** (`train/shard_record.py`; launcher's "Record shards" checkbox or
+`play.py --record-shards`, gui or tui board; `shard_record.attach_recorder` wires it into the
+board's driver): records a session into
 **trainer-schema shards** (`az_selfplay.SHARD_KEYS`, one dir per session under
 `train/az_data/recorded/rec_*`; `ROBOMAGE_RECORD_DIR` overrides). A search opponent's decisions
 land with full visit posterior / root value / explored flag (via `SearchController.on_result`,
@@ -732,7 +746,10 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   sidecar reader/writer shared by the league, exploiter, az-league, and curriculum drivers
 - `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates a matchup, inspects play (card importance, SHAP, value swings, regret, entropy, calibration, a REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a window) with terminal fallbacks. The inspected model is `--player-a` (`gen`, a `.zip`/`.pt` path, or `az:gen`/`azraw:gen`), its opponent `--player-b` (default `scripted`); a model encodes **no deck**, so `--deck-a`/`--deck-b` are required for any model seat (a scripted `--player-b` mirrors `--deck-a`).
 - `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
-- `train/play.py` — interactive human-vs-model play (text mode, `--tui`, `--gui`, `--analysis`)
+- `train/play.py` — interactive human-vs-model play (`--board gui|tui|text`; no seat/deck flags on
+  the GUI board = the app's welcome pane)
+- `train/launcher_config.py` — the GUI launcher dialogs' field tables (flag dests) and their one
+  settings file; Qt-free
 - `train/game_driver.py` — front-end-agnostic play loop + `build_session`; `StateUpdate` carries
   an obs COPY plus `search_safe`/`history_len` for the analysis window
 - `train/tui_game.py` / `train/gui_game.py` — the Textual and PySide6 boards over that driver

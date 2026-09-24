@@ -155,27 +155,30 @@ controller spec is accepted: `az:gen?sims=128&worlds=4` (with search) or `azraw:
 ## Play against model
 
 ```bash
-train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck)                  # TUI game board (default); you are player A, the generalist (gen) pilots --deck-b
-train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck) --gui            # PySide6 desktop board (needs requirements-gui.txt)
-train/.venv/bin/python train/gui_main.py                                              # GUI launcher — pick decks/opponent/format/analysis in a dialog
-./gui.sh                                                                              # shortcut for the line above, run from the repo root
+./gui.sh                                                                              # GUI app on its welcome pane — File ▸ New Session opens the play/analysis dialogs
+train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck)                  # straight into a game on the GUI board; you are player A vs az:gen on --deck-b
+train/.venv/bin/python train/play.py --deck-a (deck) --deck-b (deck) --board tui      # Textual terminal board
+train/.venv/bin/python train/play.py --board text --player-b scripted                 # plain-text board (type an action number or 'cast:bolt')
 ```
 
-**`./gui.sh`**, run from the repo root, is the GUI-board equivalent of `./tui.sh` — it launches
-`train/gui_main.py` with no arguments, which opens the launcher dialog (needs
-`requirements-gui.txt`; falls back to the TUI if PySide6 is missing). The launcher's "Game
-setup" group picks player A and player B (the same `--player-a`/`--player-b` specs as
-`play.py`: `Human (you)` on one seat, the opponent — `gen`, a scripted tier, or an
-`az:`/`azraw:`/`mcts:` search spec — on the other), their decks, and bo3-vs-single-game format; choices persist to `~/.robomage/gui_launcher.json` for next time. When the opponent is
-a search spec (`az:`/`mcts:`), a "Search opponent settings" group appears with tuning knobs
-(each defaults to "omit the knob" unless set): simulations per decision, determinized worlds,
-think-time-per-decision (overrides the sims cap with a wall-clock budget), search procs
-(engine processes to fan worlds across), a whole-match thinking clock, and whether to pace
-responses to mask which decisions were easy/hard.
+`play.py --board gui|tui|text` picks the front end (default `gui`, which falls back to the TUI
+with a notice when PySide6 — `requirements-gui.txt` — is missing). **`./gui.sh`**, run from the
+repo root, is `play.py --board gui` with no seat or deck flags: the GUI app opens on its welcome
+pane, and File ▸ New Session ▸ Play… opens the launcher dialog. **The dialog is the `play.py`
+command line as a form**: every field is a `play.py` flag with the same name and default —
+player A and player B (`--player-a`/`--player-b`: `Human (you)` on one seat, the opponent —
+`gen`, a scripted tier, or an `az:`/`azraw:`/`mcts:` search spec — on the other), their decks,
+`--format`, your own clock, shard recording, the search-opponent knobs (`--sims`, `--worlds`,
+`--think-time`, `--search-procs`, `--match-clock`, `--search-device`, `--search-xw`,
+`--paced`; shown for an `az:`/`mcts:` opponent) and the analysis window (`--analysis`,
+`--analysis-evaluator/-worlds/-procs/-cap/-device/-xw/-auto`). The shipped defaults are one
+matchup on both: `league/bug` vs `league/ur_delver` against `az:gen` searching 8 worlds on a
+25-minute match clock, analysis window on. Choices persist to `~/.robomage/gui_launcher.json`
+(one section per dialog) for next time.
 
-The GUI also has an always-available **analysis window** (launcher's "Analysis window" group,
-or `--gui --analysis`; F9 toggles it in-game): live MCTS evaluation of your current decision on
-a separate, detached engine copy that never blocks the live game. 
+The GUI's **analysis window** (F9 toggles it in-game; `--no-analysis` to start without it) is
+live MCTS evaluation of your current decision on a separate, detached engine copy that never
+blocks the live game. It is GUI-only; `--board tui`/`text` reject the `--analysis*` flags.
 
 ## Run N games and analyze them (interactive)
 

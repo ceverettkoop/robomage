@@ -14,6 +14,12 @@
 * Every game/match count is ``--games`` and the PUCT constant ``--c-puct``;
   ``--seed`` defaults to 1 on test/eval/inspection tools and to None (random,
   printed) on long training runs (``SEED_DEFAULTS``).
+* The GUI launcher dialogs mirror the CLI: every field of
+  ``launcher_config``'s Play / Analysis tables is a play.py / browser flag
+  with the same dest and default (and every flag is a field or listed as
+  CLI-only); the one settings file ignores unknown / ill-typed keys.
+* The search-knob fold (``cli_spec.search_knob_pairs`` / play.py's
+  ``search_values``) and play's per-board option errors.
 
 The cli_spec parsers are built in-process exactly as the scripts build them
 (``apply_to_parser``); the standalone scripts are exercised as subprocesses.
@@ -493,6 +499,176 @@ def test_scripts():
           f"eval_search_gate --help should list --c-puct only (rc={rc})")
 
 
+# ── GUI launcher mirrors the CLI ──────────────────────────────────────────────
+
+def test_launcher_mirror():
+    print("GUI launcher fields mirror the CLI flags (dest + default)")
+    import tempfile
+    import launcher_config as lc
+    from cli_spec import arg_default, sub_defaults
+    for section, sub, cli_only in (
+            (lc.PLAY_SECTION, cli_spec.PLAY_TOOL.subs[0], lc.PLAY_CLI_ONLY),
+            (lc.ANALYSIS_SECTION, cli_spec.ANALYSIS_TUI_TOOL.subs[0],
+             lc.ANALYSIS_CLI_ONLY)):
+        flags = {a.dest: a for a in iter_args(sub)}
+        fields = set(lc.section_args(section))
+        check(fields <= set(flags),
+              f"{section}: fields that are no flag: {fields - set(flags)}")
+        check(not fields & set(cli_only),
+              f"{section}: CLI-only dests that are fields: "
+              f"{fields & set(cli_only)}")
+        check(fields | set(cli_only) == set(flags),
+              f"{section}: flags neither a field nor CLI-only: "
+              f"{set(flags) - fields - set(cli_only)}")
+        defaults = lc.section_defaults(section)
+        for dest in fields:
+            want = arg_default(flags[dest])
+            if section == lc.PLAY_SECTION and dest in ("player_a", "player_b"):
+                human, opp = cli_spec.resolve_play_seats(
+                    flags["player_a"].default, flags["player_b"].default)
+                opp = opp or cli_spec.DEFAULT_PLAY_OPPONENT
+                want = ({"A": cli_spec.HUMAN_SPEC, "B": opp} if human == "A"
+                        else {"A": opp, "B": cli_spec.HUMAN_SPEC})[dest[-1].upper()]
+            check(defaults[dest] == want,
+                  f"{section}.{dest}: launcher default {defaults[dest]!r} != "
+                  f"CLI default {want!r}")
+        check(sub_defaults(sub)["format"] == "bo3", f"{section}: bo3 default")
+
+    print("the launcher settings file: sections, junk keys ignored")
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "gui_launcher.json")
+        check(lc.load_section(lc.PLAY_SECTION, path)
+              == lc.section_defaults(lc.PLAY_SECTION), "no file -> defaults")
+        values = dict(lc.section_defaults(lc.PLAY_SECTION), worlds=16,
+                      match_clock=0.0, sims=200, analysis=False,
+                      search_device="cuda", player_b="scripted")
+        lc.save_section(lc.PLAY_SECTION, values, path)
+        lc.save_section(lc.ANALYSIS_SECTION,
+                        dict(lc.section_defaults(lc.ANALYSIS_SECTION),
+                             games=3), path)
+        check(lc.load_section(lc.PLAY_SECTION, path) == values,
+              "play section round-trips")
+        check(lc.load_section(lc.ANALYSIS_SECTION, path)["games"] == 3,
+              "analysis section kept alongside play")
+        import json
+        with open(path, "w") as f:
+            json.dump({"play": {"worlds": "eight", "search_device": "tpu",
+                                "analysis_enabled": True, "deck_a": 5,
+                                "player_b": None, "analysis_cap": None,
+                                "sims": None, "paced": True},
+                       "stale_section": {"x": 1}}, f)
+        got = lc.load_section(lc.PLAY_SECTION, path)
+        base = lc.section_defaults(lc.PLAY_SECTION)
+        check(got == dict(base, paced=True),
+              f"ill-typed / unknown / None-on-set keys ignored: {got}")
+        with open(path, "w") as f:
+            f.write("not json")
+        check(lc.load_section(lc.PLAY_SECTION, path) == base,
+              "an unreadable file -> defaults")
+
+
+# ── Search knobs and play's boards ────────────────────────────────────────────
+
+def test_search_knobs():
+    print("search-knob fold: pairs, auto procs, paced, clock 0")
+    pairs = cli_spec.search_knob_pairs
+    check(pairs({"sims": 64, "search_procs": 2}) == [("sims", 64), ("procs", 2)],
+          "set knobs fold in SEARCH_KNOB_KEYS order")
+    got = dict(pairs({"worlds": 1}))
+    check(got.get("procs") == 1, f"auto procs is capped at the worlds: {got}")
+    check("procs" not in dict(pairs({}, auto_procs=False)),
+          "no auto procs when the tool has no --search-procs")
+    check(dict(pairs({"search_xw": False, "search_procs": 1}))["xw"] == 0
+          and "xw" not in dict(pairs({"search_xw": True, "search_procs": 1})),
+          "only --no-search-xw folds")
+    check(dict(pairs({"match_clock": 1500.0, "paced": None,
+                      "search_procs": 1}))["paced"] == 1,
+          "unset paced turns on with a clock")
+    got = dict(pairs({"match_clock": 0.0, "paced": None, "search_procs": 1}))
+    check("clock" not in got and got["paced"] == 0,
+          f"--match-clock 0 is no clock (and no pacing): {got}")
+    check(cli_spec.apply_search_knobs("scripted", {"sims": 5}) == "scripted",
+          "a non-search spec passes through")
+    check(cli_spec.apply_search_knobs("az:gen?sims=2", {"sims": 5,
+                                                         "search_procs": 1})
+          == "az:gen?sims=2&sims=5&procs=1", "knobs append last")
+    check(cli_spec.spec_query_keys("az:gen?Sims=2&worlds=3") == {"sims", "worlds"},
+          "spec_query_keys")
+    check(cli_spec.is_search_spec("mcts:uniform")
+          and not cli_spec.is_search_spec("azraw:gen"), "is_search_spec")
+
+    print("play.py: explicit flags, spec knobs, and defaults")
+    import play
+    parser = play.build_parser()
+
+    def values(argv, spec):
+        args = parser.parse_args(argv)
+        return play.search_values(parser, args,
+                                  cli_spec.explicit_dests(parser, argv), spec)
+
+    v = values([], "az:gen")
+    check(v["worlds"] == cli_spec.DEFAULT_PLAY_WORLDS
+          and v["match_clock"] == cli_spec.DEFAULT_PLAY_MATCH_CLOCK,
+          f"play defaults fill a bare search spec: {v}")
+    v = values([], "az:gen?worlds=2&sims=32")
+    check("worlds" not in v and v["match_clock"] is None,
+          f"a spec's own knobs beat the defaults; its sims drop the clock: {v}")
+    v = values(["--worlds", "3"], "az:gen?worlds=2")
+    check(v["worlds"] == 3, "an explicit flag beats the spec's knob")
+    v = values(["--sims", "50"], "az:gen")
+    check(v["sims"] == 50 and v["match_clock"] is None,
+          "an explicit --sims drops the default clock")
+    check(values([], "scripted") == {}, "no knobs for a non-search opponent")
+    code, err = parse_error_fn(lambda: values(["--sims", "5"], "scripted"))
+    check(code == 2 and "only apply to a search opponent" in err,
+          f"an explicit knob on a non-search opponent errors ({err!r})")
+    code, err = parse_error_fn(lambda: values(
+        ["--sims", "5", "--match-clock", "60"], "az:gen"))
+    check(code == 2 and "mutually exclusive" in err, "--sims + --match-clock")
+    check(cli_spec.explicit_dests(parser, ["--no-paced", "--deck-a", "x"])
+          == {"paced", "deck_a"}, "explicit_dests")
+
+
+def parse_error_fn(fn):
+    """(exit code, stderr) of calling ``fn``; code None if it returned."""
+    err = io.StringIO()
+    try:
+        with redirect_stderr(err), redirect_stdout(io.StringIO()):
+            fn()
+    except SystemExit as exc:
+        return exc.code, err.getvalue()
+    return None, err.getvalue()
+
+
+def test_play_boards():
+    print("play.py rejects options its board cannot honour")
+    base = ("train/play.py", "--player-b", "scripted")
+    cases = [
+        (("train/play.py", "--gui"), "--gui was removed; use --board gui"),
+        (("train/play.py", "--tui"), "--tui was removed; use --board tui"),
+        ((*base, "--board", "text", "--record-shards"),
+         "--record-shards need the gui or tui board"),
+        ((*base, "--board", "text", "--human-clock", "60"),
+         "--human-clock need the gui or tui board"),
+        ((*base, "--board", "tui", "--analysis"), "--analysis need the gui board"),
+        ((*base, "--board", "tui", "--analysis-worlds", "2"),
+         "--analysis-worlds need the gui board"),
+        ((*base, "--board", "tui", "--sims", "4"),
+         "only apply to a search opponent"),
+    ]
+    try:
+        import PySide6  # noqa: F401  (without it --board gui falls back to tui)
+        cases.append((("train/play.py", "--board", "gui", "--format", "bo1"),
+                      "--format need a session"))
+    except ImportError:
+        pass
+    for argv, needle in cases:
+        rc, out = run_script(*argv)
+        check(rc == 2 and needle in out,
+              f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
+              f"{out[-600:]}")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -504,7 +680,10 @@ def main():
     test_count_puct_seed_vocabulary()
     test_harness_parity()
     test_harness_script_then_players()
+    test_launcher_mirror()
+    test_search_knobs()
     test_scripts()
+    test_play_boards()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")
         return 1

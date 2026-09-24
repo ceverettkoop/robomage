@@ -99,15 +99,18 @@ harness, the TUI, and `play.py` — accepts:
     --search-procs <n>` is the CLI front door. e.g. `az:gen?time=2&procs=4`.
     The **spec-grammar default stays 1** (gates / eval / parity reproducibility),
     but the INTERACTIVE front doors default it to AUTO when neither the spec nor
-    the flag names one: `play.py` (hence `./tui.sh`'s play entry) and the GUI
-    play launcher append `procs=min(worlds, max(1, cpu_count//2))`
-    (`opponents.default_search_procs`); an explicit `procs=` / `--search-procs`
+    the flag names one: every tool offering `--search-procs` — `play.py`
+    (hence `./tui.sh`'s play entry and the GUI play launcher, whose field IS
+    that flag) and the analysis browser — appends
+    `procs=min(worlds, max(1, cpu_count//2))` (`cli_spec.search_knob_pairs` via
+    `opponents.default_search_procs`); an explicit `procs=` / `--search-procs`
     / a set launcher field always wins.
 - a prebuilt `Controller` instance (passed through)
 
-The human-in-a-Textual-TUI seat is the exception: the TUI (`tui_game.py`,
-launched via `play.py --tui` / `./tui.sh`) hosts its own UI-coupled loop and
-queues human clicks; its *opponent* seat uses the same spec grammar above.
+The human-on-a-board seat is the exception: the TUI and GUI boards
+(`tui_game.py` / `gui_game.py`, launched via `play.py --board tui|gui`,
+`./tui.sh`, `./gui.sh`) host their own UI-coupled loop (`game_driver.GameDriver`)
+and queue human clicks; the *opponent* seat uses the same spec grammar above.
 
 ## Scripting games: `runner.run_match`
 
@@ -183,9 +186,10 @@ benches, az_inspect) but to a **random, printed** seed on long training runs
   with `az_inspect`/the shard browsers; never pooled into training;
   `--no-record` to skip). Implementation: `train/az_baseline.py`.
 - **`play.py`** — human vs model: `--player-a`/`--player-b` are agent specs,
-  exactly one of them `human` (default: human on A vs the generalist on B),
-  with `--deck-a`/`--deck-b`. Text mode = runner + `HumanController`
-  (semantic input, `--seed`); `--tui` = Textual board.
+  exactly one of them `human` (default: human on A vs `az:gen` on B),
+  with `--deck-a`/`--deck-b`. `--board text` = `run_games` with a
+  `HumanController` seat (semantic input) vs `make_controller(opponent)`;
+  `--board tui|gui` (default gui) = the GameDriver boards.
 - **`fuzz_campaign.py`** — explore-tier fuzz sweeps for one matchup;
   `run_games` verbose transcripts to a file.
 - **`ci_check.py`** — the `make check` gate; league smoke + fuzz tiers run

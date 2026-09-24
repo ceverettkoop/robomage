@@ -15,6 +15,7 @@ front end consumes. The module-level helpers (`decode_human_frame`,
 presentation logic both boards reuse; a front end adds any markup itself.
 """
 
+import os
 import random
 import re
 import time
@@ -956,8 +957,8 @@ class Session:
     controller: object = None    # the opponent Controller (analysis hooks)
     analysis_cfg: object = None  # AnalysisConfig when the front end enables it
     engine_seed: object = None   # force the engine --seed (saved-session restore)
-    record_dir: object = None    # shard-recording directory (front end sets it;
-    #                              the pane builds a shard_record.ShardRecorder)
+    record_dir: object = None    # shard-recording directory (build_session sets
+    #                              it; the board attaches a ShardRecorder)
     opponent_spec: object = None  # the agent spec string the opponent was built
     #                               from (recorder sidecar / value-net derivation)
     # Hard-clock settings for the GameDriver this session builds (see its
@@ -969,7 +970,7 @@ class Session:
 def build_session(binary_path, model_path, human_player=None,
                   human_deck="delver", model_deck="delver", bo3=True,
                   analysis=False, step_pacing=False, engine_seed=None,
-                  human_clock_s=None, hard_timeout=False):
+                  human_clock_s=None, hard_timeout=False, record_shards=False):
     """Assemble the engine env, opponent controller, and seat/clock/pace plumbing
     for one session (front-end-agnostic). Returns a Session.
 
@@ -987,7 +988,10 @@ def build_session(binary_path, model_path, human_player=None,
     forces the engine --seed on reset (saved-session restore); None lets the
     env pick its own. `human_clock_s`/`hard_timeout` are carried on the Session
     for the front end to hand to its GameDriver (see GameDriver's docstring);
-    both default to today's untimed, soft behaviour.
+    both default to today's untimed, soft behaviour. `record_shards=True` sets
+    the Session's ``record_dir`` to a fresh recording directory
+    (shard_record.default_recording_dir); the front end attaches the recorder
+    to its driver with shard_record.attach_recorder.
     """
     from opponents import make_controller, is_scripted_spec
 
@@ -1034,11 +1038,41 @@ def build_session(binary_path, model_path, human_player=None,
     if isinstance(getattr(ctrl, "stats", None), dict) and ctrl.stats.get("clock_bank"):
         clock_fn = lambda: ctrl.stats.get("clock_remaining")  # noqa: E731
 
+    record_dir = None
+    if record_shards:
+        from shard_record import default_recording_dir
+        record_dir = default_recording_dir()
+
     opp_label = "Model" if is_model else "Scripted"
     return Session(env=env, opp_act=opp_act, opp_is_a=opp_is_a, is_model=is_model,
                    opp_label=opp_label, human_deck=human_deck, opp_deck=model_deck,
                    bo3=bo3, clock_fn=clock_fn,
                    pace_idle=getattr(ctrl, "pace_idle", None),
                    controller=ctrl, engine_seed=engine_seed,
+                   record_dir=record_dir,
                    opponent_spec=(spec if isinstance(spec, str) else None),
                    human_clock_s=human_clock_s, hard_timeout=hard_timeout)
+
+
+def resolve_opponent_spec(spec):
+    """Turn an opponent agent spec into the ``model_path`` build_session
+    wants, failing early and clearly on a missing checkpoint.
+
+    Scripted / search / script specs pass straight through (build_session +
+    make_controller understand them). A model spec ('gen' or an explicit path)
+    is resolved and existence-checked here so a missing generalist checkpoint
+    is reported before any engine starts. Raises ValueError."""
+    from opponents import is_scripted_spec, resolve_checkpoint
+    s = spec.strip()
+    low = s.lower()
+    if is_scripted_spec(s) or low.startswith(("az:", "azraw:", "mcts:",
+                                              "play:", "actions:", "human",
+                                              "auto")):
+        return s
+    path = resolve_checkpoint(s)             # 'gen' -> newest gen snapshot path
+    if not path or not os.path.exists(path):
+        raise ValueError(
+            f"No checkpoint found for opponent {s!r}. Train the generalist first "
+            f"(train/train.py train --deck-a <deck> --deck-b <opp>), pick a "
+            f"scripted or az: opponent, or give an explicit .zip path.")
+    return path

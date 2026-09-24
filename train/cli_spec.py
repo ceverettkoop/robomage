@@ -493,6 +493,37 @@ def format_name(bo3: bool) -> str:
     return FORMAT_BO3 if bo3 else FORMAT_BO1
 
 
+# ── Interactive play (play.py and the GUI launcher) ──────────────────────────
+#
+# play.py's flags and the GUI's New Play Session dialog share these defaults
+# (the dialog's fields are the PLAY_TOOL flags, keyed by dest; see
+# launcher_config.py). The shipped matchup is the release's recommended one: a
+# league deck on both seats against the AZ net searching on a 25-minute bo3
+# match clock, with the analysis window open on the GUI board.
+
+BOARD_GUI = "gui"
+BOARD_TUI = "tui"
+BOARD_TEXT = "text"
+BOARD_CHOICES = (BOARD_GUI, BOARD_TUI, BOARD_TEXT)
+DEFAULT_BOARD = BOARD_GUI
+DEFAULT_PLAY_OPPONENT = "az:gen"
+DEFAULT_PLAY_DECK_A = "league/bug"
+DEFAULT_PLAY_DECK_B = "league/ur_delver"
+DEFAULT_PLAY_WORLDS = 8
+DEFAULT_PLAY_MATCH_CLOCK = 1500.0       # 25 min of thinking for the whole bo3
+# The analysis window (GUI board only): --analysis/--no-analysis defaults to
+# None = on for the GUI board (the other boards have no analysis window).
+DEFAULT_ANALYSIS_EVALUATOR = "az:gen"
+DEFAULT_ANALYSIS_WORLDS = 4
+DEFAULT_ANALYSIS_CAP = 2000
+# Evaluator torch devices a search / analysis net may run on (unset = the
+# ROBOMAGE_EVAL_DEVICE environment variable, else cpu).
+EVAL_DEVICE_CHOICES = ("cpu", "cuda")
+# The analysis browser's (tui_analysis / the GUI's New Analysis Session)
+# default inspected deck.
+DEFAULT_BROWSE_DECK_A = "league/ur_delver"
+
+
 # ── Removed flags / env vars ──────────────────────────────────────────────────
 #
 # A flag that was renamed or folded into another must ERROR with a pointer to
@@ -545,6 +576,8 @@ REMOVED_FLAGS = (
     RemovedFlag("--scripted", "use --player-b scripted", scopes=("play",)),
     RemovedFlag("--player", "use --player-a human or --player-b human",
                 scopes=("play",)),
+    RemovedFlag("--gui", "use --board gui (the default)", scopes=("play",)),
+    RemovedFlag("--tui", "use --board tui", scopes=("play",)),
     RemovedFlag("model", "use --player-a SPEC",
                 scopes=("analysis", "analysis-tui", "train/baseline")),
     # The harness's seat agents are --player-a / --player-b; --play / --actions
@@ -648,8 +681,9 @@ class Arg:
     """One CLI argument.
 
     ``name`` with a leading ``--`` is an optional flag; otherwise it is a
-    positional.  ``kind`` is one of ``str``, ``int``, ``flag`` (store_true), or
-    ``choice`` (requires ``choices``).
+    positional.  ``kind`` is one of ``str``, ``int``, ``float``, ``flag``
+    (store_true), ``bool`` (a ``--name`` / ``--no-name`` pair; default True,
+    False, or None = unset), or ``choice`` (requires ``choices``).
     """
     name: str
     kind: str = "str"
@@ -1035,28 +1069,182 @@ def append_spec_knob(spec: str, key, value) -> str:
     return spec + ("&" if "?" in spec else "?") + f"{key}={value}"
 
 
-def search_budget_args():
-    """--think-time / --match-clock convenience flags for the analysis sim args.
+# ── Search knobs (flags folded into an az:/mcts: spec's ?query) ───────────────
+#
+# One home for the search-seat convenience flags every interactive front end
+# offers — play.py, the analysis browser, and the GUI dialogs that mirror them.
+# Each flag dest maps to the spec-query key make_controller parses; the fold is
+# ``apply_search_knobs``. A flag applies to EVERY seat whose spec is a search
+# spec, appended last so it overrides the same key already in the spec (put the
+# knobs in the specs themselves for per-seat budgets).
 
-    Mirror play.py's flags of the same names, but where play.py has one search
-    seat these apply to EVERY seat whose spec is a search spec (an az:/mcts:
-    --player-a or --player-b), appended last so they override any time=/clock=
-    knob already in the spec. For per-seat budgets, put the knobs in the specs
-    directly and skip the flags."""
-    return [
+# flag dest -> spec query key, in the order the knobs are appended.
+SEARCH_KNOB_KEYS = (("sims", "sims"), ("worlds", "worlds"),
+                    ("think_time", "time"), ("search_procs", "procs"),
+                    ("match_clock", "clock"), ("search_xw", "xw"),
+                    ("search_device", "device"), ("paced", "paced"))
+SEARCH_SPEC_PREFIXES = ("az:", "mcts:")
+
+
+def is_search_spec(spec) -> bool:
+    """True for an agent spec that runs a tree search (az:/mcts:), which is
+    what the search knobs apply to. azraw: is the raw AZ policy (no search),
+    so it — like scripted tiers and PPO models — takes no search knobs."""
+    return isinstance(spec, str) and spec.strip().lower().startswith(
+        SEARCH_SPEC_PREFIXES)
+
+
+def search_knob_args(*, worlds=None, match_clock=None, paced=False,
+                     budget_only=False):
+    """The search-knob flags. ``worlds`` / ``match_clock`` are the tool's
+    defaults for those two (play's shipped matchup sets both); ``paced`` adds
+    --paced/--no-paced (human-facing play only); ``budget_only`` keeps just the
+    --think-time / --match-clock wall-clock budget pair (the batch analysis
+    subcommands). --search-procs unset means AUTO (half the visible cores,
+    capped at the world count) wherever the flag is offered."""
+    budget = [
         Arg("--think-time", "float", default=None,
-            help="Search seats only (an az:/mcts: --player-a/--player-b): wall-clock "
-                 "seconds per decision — the search runs as many simulations as "
-                 "fit in this budget. Applied to every search-spec seat, "
-                 "overriding any time= already in the spec (put time= knobs in "
-                 "the specs instead for per-seat budgets)."),
-        Arg("--match-clock", "float", default=None,
+            help="Search seats only (an az:/mcts: player spec): wall-clock "
+                 "seconds per decision — the search runs as many simulations "
+                 "as fit in this budget (more time = stronger play), "
+                 "overriding sims as the terminator"),
+        Arg("--match-clock", "float", default=match_clock,
             help="Search seats only: whole-match chess-clock bank in seconds "
                  "(1500 = 25 min for a bo3); each decision draws a variable "
-                 "budget from it. Applied to every search-spec seat, overriding "
-                 "any clock= already in the spec (put clock= knobs in the specs "
-                 "instead for per-seat clocks)."),
+                 "budget from it — harder decisions earn more time, obvious "
+                 "ones stop early; 0 = no clock. Mutually exclusive with "
+                 "--sims"
+                 + (f" (default {match_clock:g}; an explicit --sims drops it)"
+                    if match_clock is not None else "")),
     ]
+    if budget_only:
+        return budget
+    args = [
+        Arg("--sims", "int", default=None,
+            help="Search seats only: MCTS simulations per decision"),
+        Arg("--worlds", "int", default=worlds,
+            help="Search seats only: determinized worlds per decision (sims "
+                 "are split across them; default "
+                 + (f"{worlds}" if worlds is not None
+                    else "the spec's own, 4") + ")"),
+        budget[0],
+        Arg("--search-procs", "int", default=None,
+            help="Search seats only: engine processes to fan the determinized "
+                 "worlds across (world-parallel; more procs = more sims per "
+                 "decision in the same wall-clock). Default AUTO: half the "
+                 "visible cores, capped at the world count"),
+        budget[1],
+        Arg("--search-xw", "bool", default=True,
+            help="Search seats only: cross-world batched leaf evaluation — one "
+                 "net forward per round over every world's leaf. Visit counts "
+                 "are identical to the sequential search (pure speed); "
+                 "--no-search-xw only to debug"),
+        Arg("--search-device", "choice", choices=EVAL_DEVICE_CHOICES,
+            default=None,
+            help="Search seats only: torch device for the search net's "
+                 "forwards — cpu, or cuda (the Radeon under the ROCm torch "
+                 "build). Unset = ROBOMAGE_EVAL_DEVICE, else cpu. The GPU pays "
+                 "together with cross-world batching and higher world counts"),
+    ]
+    if paced:
+        args.append(Arg(
+            "--paced", "bool", default=None,
+            help="Search opponent only: mask response-timing tells — a small "
+                 "jittered (~0.02-0.05s) floor on every decision plus "
+                 "occasional 0.2-0.5s fake-think pauses when the opponent was "
+                 "never even offered a decision. Unset = on whenever the "
+                 "search has a variable budget (--match-clock/--think-time); "
+                 "--no-paced forces instant obvious decisions"))
+    return args
+
+
+def search_budget_args():
+    """--think-time / --match-clock alone (the batch analysis subcommands)."""
+    return search_knob_args(budget_only=True)
+
+
+def search_knob_pairs(values, *, auto_procs=True):
+    """``[(query_key, value)]`` for a dict of search-knob dests (see
+    ``SEARCH_KNOB_KEYS``; absent / None dests are omitted).
+
+    ``auto_procs``: an unset ``search_procs`` becomes AUTO — half the visible
+    cores, capped at the world count in effect (the spec grammar's own default
+    stays procs=1 so gates/eval stay reproducible). ``search_xw`` appends only
+    its off position (the controller batches by default). ``paced`` is folded
+    only when the dict carries the key: True/False wins, None turns pacing on
+    whenever the search has a variable time budget (think time / clock). A
+    ``match_clock`` of 0 is no clock."""
+    values = dict(values)
+    if not values.get("match_clock"):
+        values["match_clock"] = None
+    if auto_procs and values.get("search_procs") is None:
+        from opponents import default_search_procs, DEFAULT_SEARCH_WORLDS
+        worlds = values.get("worlds")
+        values["search_procs"] = default_search_procs(
+            worlds if worlds is not None else DEFAULT_SEARCH_WORLDS)
+    xw = values.get("search_xw")
+    values["search_xw"] = 0 if xw is False else None
+    if "paced" in values:
+        paced = values["paced"]
+        if paced is None:
+            paced = (values.get("think_time") is not None
+                     or values.get("match_clock") is not None)
+        values["paced"] = int(bool(paced))
+    return [(key, values[dest]) for dest, key in SEARCH_KNOB_KEYS
+            if values.get(dest) is not None]
+
+
+def with_spec_query(spec: str, pairs) -> str:
+    """Append ``pairs`` to a controller spec's ``?k=v&…`` query (later keys
+    win in make_controller's parser, so appending is always safe)."""
+    for key, value in pairs:
+        spec = append_spec_knob(spec, key, value)
+    return spec
+
+
+def apply_search_knobs(spec, values, *, auto_procs=True):
+    """``spec`` with the search-knob ``values`` folded into its query when it
+    is a search spec; any other spec is returned unchanged."""
+    if not is_search_spec(spec):
+        return spec
+    return with_spec_query(spec, search_knob_pairs(values,
+                                                   auto_procs=auto_procs))
+
+
+def spec_query_keys(spec) -> set:
+    """The knob keys a controller spec's ``?k=v&…`` query already carries."""
+    if not isinstance(spec, str) or "?" not in spec:
+        return set()
+    query = spec.split("?", 1)[1]
+    return {part.split("=", 1)[0].strip().lower()
+            for part in query.split("&") if part.strip()}
+
+
+# ── Deck scan (the "deck" suggestion source) ─────────────────────────────────
+
+DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
+# Deck subfolders hidden from deck pickers: temp/ holds auto-generated test
+# decks (see test_harness.py), not_used/ parked development stubs.
+DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
+
+
+def scan_decks():
+    """All .dk decks under decks/ (recursive), as decks/-relative stems.
+
+    Subfolder decks are offered in the 'league/ur_delver' path-relative form
+    that train.py and the engine accept alongside top-level stems like
+    'delver'. temp/ and not_used/ are excluded. Sorted top-level first, then
+    grouped by subfolder, alphabetical within each group. Shared by the TUI
+    form and the GUI dialogs so both offer the same decks."""
+    out = []
+    for root, dirs, files in os.walk(DECKS_DIR):
+        dirs[:] = sorted(d for d in dirs if d not in DECK_SCAN_EXCLUDE)
+        rel_dir = os.path.relpath(root, DECKS_DIR).replace(os.sep, "/")
+        for fname in files:
+            if fname.endswith(".dk"):
+                stem = os.path.splitext(fname)[0]
+                out.append(stem if rel_dir == "." else f"{rel_dir}/{stem}")
+    return sorted(out, key=lambda rel: (rel.count("/"), rel))
 
 
 def sb_search_args():
@@ -2007,11 +2195,17 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
         items=[
             # --player-a (the inspected model) doubles as the shard mode's
             # value-net spec, so it gets a 'gen' default (live mode resolves
-            # that to the one generalist anyway).
+            # that to the one generalist anyway); --deck-a defaults to a
+            # league deck so a bare launch simulates straight away. The GUI's
+            # New Analysis Session dialog mirrors these flags (see
+            # launcher_config.py).
             *[replace(a, required=False, default="gen")
-              if a.name == "--player-a" else a
+              if a.name == "--player-a" else
+              replace(a, default=DEFAULT_BROWSE_DECK_A,
+                      help=a.help + f" (default {DEFAULT_BROWSE_DECK_A})")
+              if a.name == "--deck-a" else a
               for a in sim_args() if a.name not in ("--out", "--show")],
-            *search_budget_args(),
+            *search_knob_args(),
             Arg("--games", "int", default=20,
                 help="Games to simulate on startup — each a whole match under "
                      "--format bo3 (default: 20). In --shards mode: the maximum "
@@ -2033,94 +2227,102 @@ ANALYSIS_TUI_TOOL = Tool("analysis-tui", "train/tui_analysis.py", flat=True, sub
         ]),
 ])
 
-# play.py — interactive game; the TUI path delegates to tui_game.py (placeholder).
+# play.py — interactive human-vs-opponent play on one of three boards: the
+# PySide6 GUI (gui_main.py), the Textual TUI (tui_game.py), or plain text on
+# the shared runner loop. The GUI's New Play Session dialog mirrors these flags
+# field for field (same dests, same defaults; see launcher_config.py).
 PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
     Sub("play", "Play interactively against a trained model", mode="interactive", items=[
+        Arg("--board", "choice", choices=BOARD_CHOICES, default=DEFAULT_BOARD,
+            help="Game board: gui (PySide6 desktop board — falls back to the "
+                 "TUI with a notice when PySide6 is missing), tui (Textual "
+                 "terminal board), or text (plain transcript with typed "
+                 "actions). --board gui with no --player-a/-b or --deck-a/-b "
+                 f"opens the GUI app on its welcome pane (default {DEFAULT_BOARD})"),
         Arg("--player-a", "str", default=None, suggest="agent",
             help="Player A (on the play in game 1): 'human' for you, or any "
                  "opponents.make_controller spec for the opponent — 'gen', a "
                  "model .zip path, az:gen (MCTS+AZNet), azraw:gen (raw AZ "
                  "policy), mcts:gen, scripted:<tier>. Exactly one seat is "
                  "'human'; an omitted seat is the human when the other names "
-                 "the opponent, else the default opponent (the generalist "
-                 "gen__final.zip, else the newest gen__v*.zip). Default: human"),
+                 "the opponent, else the default opponent "
+                 f"({DEFAULT_PLAY_OPPONENT}). Default: human"),
         Arg("--player-b", "str", default=None, suggest="agent",
             help="Player B: 'human' or an opponent spec, as for --player-a "
-                 "(default: the generalist, or the human when --player-a "
-                 "names the opponent)"),
-        Arg("--deck-a", "str", required=True, suggest="deck",
-            help="Player A's deck (stem of .dk file)"),
-        Arg("--deck-b", "str", required=True, suggest="deck",
-            help="Player B's deck (stem of .dk file)"),
-        Arg("--sims", "int", default=None,
-            help="Search opponent only (an az:/mcts: player spec): MCTS simulations "
-                 "per decision; overrides any sims= already in the spec (TUI only)"),
-        Arg("--worlds", "int", default=None,
-            help="Search opponent only: determinized worlds per decision "
-                 "(sims are split across worlds); overrides the spec's worlds= (TUI only)"),
-        Arg("--think-time", "float", default=None,
-            help="Search opponent only (an az:/mcts: player spec): wall-clock seconds "
-                 "per decision — the search runs as many simulations as fit in "
-                 "this budget (more time = stronger play); overrides sims= as the "
-                 "terminator (TUI only)"),
-        Arg("--search-procs", "int", default=None,
-            help="Search opponent only (an az:/mcts: player spec): number of engine "
-                 "processes to fan the determinized worlds across for a faster "
-                 "search (world-parallel; more procs = more sims/decision in the "
-                 "same wall-clock). Default for interactive play is AUTO — half "
-                 "the visible cores, capped at the world count (TUI only)"),
-        Arg("--match-clock", "float", default=None,
-            help="Search opponent only: total wall-clock thinking bank in "
-                 "seconds for the WHOLE match (chess clock; 1500 = 25 min for "
-                 "a bo3). Each decision draws a variable budget from the bank "
-                 "— harder decisions earn more time, obvious ones stop early. "
-                 "Appends clock= to the spec (TUI only)"),
+                 f"(default: {DEFAULT_PLAY_OPPONENT}, or the human when "
+                 "--player-a names the opponent)"),
+        Arg("--deck-a", "str", default=DEFAULT_PLAY_DECK_A, suggest="deck",
+            help=f"Player A's deck (.dk stem; default {DEFAULT_PLAY_DECK_A})"),
+        Arg("--deck-b", "str", default=DEFAULT_PLAY_DECK_B, suggest="deck",
+            help=f"Player B's deck (.dk stem; default {DEFAULT_PLAY_DECK_B})"),
+        format_arg(),
         Arg("--human-clock", "float", default=None,
             help="Arm YOUR OWN chess clock: total wall-clock thinking bank in "
                  "seconds for the whole match, debited by the time you spend "
                  "on each of your decisions (the opponent's bank is the "
                  "separate --match-clock). Unset = untimed. On its own the "
                  "bank is only a readout; add --hard-timeout to make it "
-                 "decisive (TUI/GUI only)"),
+                 "decisive (gui/tui boards)"),
         Arg("--hard-timeout", "flag",
             help="Losing on time is real: a seat that reaches its own decision "
                  "with an empty bank concedes the match (CR 104.3a). Applies to "
                  "both your --human-clock and a search opponent's --match-clock, "
-                 "whose bank is otherwise SOFT (it just thinks faster). "
-                 "TUI/GUI only"),
-        Arg("--paced", "flag",
-            help="Mask opponent response-timing tells: a small jittered "
-                 "(~0.02-0.05s) floor on every decision, plus occasional "
-                 "0.2-0.5s fake-think pauses when the opponent was never even "
-                 "offered a decision (default ON for a search opponent with "
-                 "--match-clock/--think-time; TUI only)"),
-        Arg("--no-paced", "flag",
-            help="Disable the paced-response floor (instant obvious decisions)"),
-        Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
-        Arg("--gui", "flag",
-            help="Launch the PySide6 desktop game board (train/gui_main.py). "
-                 "Takes precedence over --tui. Needs PySide6 (pip install -r "
-                 "train/requirements-gui.txt); if it is missing, falls back to "
-                 "the TUI when --tui is also set, else errors with the install hint."),
-        Arg("--analysis", "flag",
-            help="GUI only: open the analysis window (live MCTS evaluation of "
-                 "your decisions on a detached engine copy; default evaluator "
-                 "az:gen). The no-args GUI launcher has its own checkbox for this."),
+                 "whose bank is otherwise SOFT (it just thinks faster) "
+                 "(gui/tui boards)"),
+        *search_knob_args(worlds=DEFAULT_PLAY_WORLDS,
+                          match_clock=DEFAULT_PLAY_MATCH_CLOCK, paced=True),
         Arg("--record-shards", "flag",
-            help="GUI only: record every decision of the session into "
-                 "trainer-schema shard files under train/az_data/recorded/ — "
-                 "a search opponent's searched decisions with their full "
-                 "visit posterior, everything else as one-hot rows. Browse "
-                 "them live via View ▸ Analyze Recording… (F10), or later "
+            help="Record every decision of the session into trainer-schema "
+                 "shard files under train/az_data/recorded/ — a search "
+                 "opponent's searched decisions with their full visit "
+                 "posterior, everything else as one-hot rows. Browse them "
                  "with the analysis browser / az-inspect / tui_analysis "
-                 "pointed at the directory. The launcher dialog has its own "
-                 "checkbox for this."),
-        format_arg(),
+                 "pointed at the directory (on the GUI board also live via "
+                 "View ▸ Analyze Recording…, F10) (gui/tui boards)"),
+        Arg("--analysis", "bool", default=None,
+            help="The analysis window: live MCTS evaluation of your "
+                 "decisions on a detached engine copy (F9 toggles it). GUI "
+                 "board only; unset = on for the GUI board"),
+        Arg("--analysis-evaluator", "str", default=DEFAULT_ANALYSIS_EVALUATOR,
+            help="Analysis window evaluator: az:gen (AZ net, calibrated win rate), "
+                 "mcts:gen (PPO heads), uniform (no model), or a checkpoint "
+                 f"path (default {DEFAULT_ANALYSIS_EVALUATOR})"),
+        Arg("--analysis-worlds", "int", default=DEFAULT_ANALYSIS_WORLDS,
+            help="Analysis window: determinized worlds per analysis run "
+                 f"(default {DEFAULT_ANALYSIS_WORLDS})"),
+        Arg("--analysis-procs", "int", default=None,
+            help="Analysis window: detached engines to fan the worlds across "
+                 "(default AUTO: half the visible cores, capped at the world "
+                 "count; the merged result is the same, just faster)"),
+        Arg("--analysis-cap", "int", default=DEFAULT_ANALYSIS_CAP,
+            help="Analysis window: simulation cap per analysis run (0 = run "
+                 f"until stopped; default {DEFAULT_ANALYSIS_CAP})"),
+        Arg("--analysis-auto", "bool", default=True,
+            help="Analysis window: start a run at every new analyzable "
+                 "decision (default on; --no-analysis-auto = only on F5)"),
+        Arg("--analysis-xw", "bool", default=True,
+            help="Analysis window: cross-world batched leaf evaluation "
+                 "(identical visits, faster chunks; default on — "
+                 "--no-analysis-xw only to debug)"),
+        Arg("--analysis-device", "choice", choices=EVAL_DEVICE_CHOICES,
+            default=None,
+            help="Analysis window: torch device for the evaluator's forwards "
+                 "(az:/checkpoint specs; uniform and mcts: stay on cpu). "
+                 "Unset = ROBOMAGE_EVAL_DEVICE, else cpu"),
         Arg("--seed", "int", default=None,
-            help="Engine RNG seed for a reproducible game (CLI text mode; default: random)"),
+            help="Engine RNG seed for a reproducible game (default: random)"),
         Arg("--binary", "str", default=INTERACTIVE_BINARY, help="Path to robomage binary"),
     ]),
 ])
+
+# play.py's dests that name the session (seats / decks): a --board gui launch
+# with none of them opens the GUI app's welcome pane instead of a game.
+PLAY_SESSION_DESTS = frozenset({"player_a", "player_b", "deck_a", "deck_b"})
+# The analysis-window dests (GUI board only), minus the on/off switch itself.
+PLAY_ANALYSIS_DESTS = ("analysis_evaluator", "analysis_worlds", "analysis_procs",
+                       "analysis_cap", "analysis_auto", "analysis_xw",
+                       "analysis_device")
+
 
 HUMAN_SPEC = "human"
 
@@ -2306,8 +2508,13 @@ ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, ANALYSIS_TUI_TOOL, AZ_INSPECT_TOOL,
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────
 
 def _add_one(target, a: Arg):
+    import argparse
     if a.kind == "flag":
         target.add_argument(a.name, action="store_true", help=a.help)
+        return
+    if a.kind == "bool":
+        target.add_argument(a.name, action=argparse.BooleanOptionalAction,
+                            default=a.default, help=a.help)
         return
     kwargs = {"help": a.help}
     if a.metavar is not None:
@@ -2357,3 +2564,32 @@ def iter_args(sub: Sub):
             yield from item.args
         else:
             yield item
+
+
+def sub_defaults(sub: Sub) -> dict:
+    """``{dest: default}`` for every Arg in a Sub (the values a bare
+    invocation parses to — a store_true flag's is False)."""
+    return {a.dest: arg_default(a) for a in iter_args(sub)}
+
+
+def arg_default(a: Arg):
+    """The value an Arg parses to when it is not given."""
+    return bool(a.default) if a.kind == "flag" else a.default
+
+
+def explicit_dests(parser, argv=None) -> set:
+    """The dests ``argv`` sets on the command line (as opposed to leaving at
+    their defaults) — re-parses with every default swapped for a marker."""
+    import argparse
+    marker = object()
+    saved = {}
+    for act in parser._actions:
+        if act.dest != argparse.SUPPRESS and act.default is not argparse.SUPPRESS:
+            saved[act] = act.default
+            act.default = marker
+    try:
+        ns, _extra = parser.parse_known_args(argv)
+    finally:
+        for act, default in saved.items():
+            act.default = default
+    return {k for k, v in vars(ns).items() if v is not marker}

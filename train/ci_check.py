@@ -28,7 +28,10 @@ fails, so one invocation reports every finding):
           prefix check (train/test_curriculum.py). Stdlib-only, instant.
   clispec The shared CLI vocabulary (train/test_cli_spec.py): removed flags
           error with their replacement hint and stay out of --help and the
-          TUI forms; --format defaults to bo3 on every tool. Torch-free.
+          TUI forms; --format defaults to bo3 on every tool; the GUI
+          launcher dialogs' fields mirror the play.py / browser flags (same
+          dests and defaults); play's search-knob fold and per-board option
+          errors. Torch-free.
   gatesprt The AZ promotion gate's sequential test (train/gate_sprt.py): the
           hypotheses are symmetric about 0.5, draws score half/half, the
           verdict is monotone and mirror-symmetric, the round cap's tie-break
@@ -665,7 +668,7 @@ def tier_gui(rep):
     legs = [
         ("play smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8"),
-         [sys.executable, "train/play.py", "--gui",
+         [sys.executable, "train/play.py", "--no-analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1"]),
         # Recording leg: the driver step-observer records every >1-choice
@@ -674,18 +677,18 @@ def tier_gui(rep):
         # RECORD SMOKE check fails the leg when no shard was written.
         ("record-shards smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=rec_dir),
-         [sys.executable, "train/play.py", "--gui",
+         [sys.executable, "train/play.py", "--no-analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1",
           "--record-shards"]),
         ("analysis-window smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_ANALYSIS_SMOKE="1"),
-         [sys.executable, "train/play.py", "--gui", "--analysis",
+         [sys.executable, "train/play.py", "--analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick", "--player-b", "scripted", "--format", "bo1"]),
         ("session save/reopen smoke",
          dict(env, ROBOMAGE_GUI_SESSION_SMOKE="1"),
-         [sys.executable, "train/gui_main.py"]),
+         [sys.executable, "train/play.py"]),
         ("trace open smoke",
          dict(env, ROBOMAGE_GUI_TRACE_SMOKE="1"),
          [sys.executable, "train/gui_main.py"]),
@@ -700,7 +703,7 @@ def tier_gui(rep):
         # visits) and expands one root action on the engine.
         ("record-search smoke",
          dict(env, ROBOMAGE_GUI_SMOKE="8", ROBOMAGE_RECORD_DIR=tree_rec_dir),
-         [sys.executable, "train/play.py", "--gui",
+         [sys.executable, "train/play.py", "--no-analysis",
           "--deck-a", "league/ur_delver",
           "--deck-b", "league/gw_maverick",
           "--player-b", "mcts:uniform?sims=32&worlds=2", "--search-procs", "1",

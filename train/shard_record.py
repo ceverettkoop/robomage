@@ -286,6 +286,57 @@ def default_recording_dir(base_dir=None):
     return os.path.join(base_dir, f"rec_{ts}_{os.getpid()}")
 
 
+def attach_recorder(session, driver, replay_actions=None):
+    """Build a :class:`ShardRecorder` for a play ``session`` (a
+    game_driver.Session whose ``record_dir`` is set) and wire it into the
+    session's ``driver`` (a game_driver.GameDriver) — shared by both boards.
+
+    The driver's step observer commits every decision (searched or not); a
+    search opponent's ``on_result`` tap enriches its searched ones with the
+    visit posterior, CHAINED in front of any sink already installed (the GUI's
+    analysis window), and its ``on_followed`` tap records tree-followed
+    decisions. The replay sidecar carries absolute-seat decks plus the env's
+    actual seed (read lazily at flush — reset happens on the driver thread),
+    so each match's shard is exactly replayable. The caller closes the
+    recorder once the driver has stopped."""
+    human_is_a = not session.opp_is_a
+    env = session.env
+    ctrl = getattr(session, "controller", None)
+    # A search opponent's static provenance (spec, checkpoint hash, knobs,
+    # device) rides in the .rmplay sidecar; scripted opponents have none.
+    prov_fn = getattr(ctrl, "search_provenance", None)
+    provenance = prov_fn() if callable(prov_fn) else None
+    recorder = ShardRecorder(
+        session.record_dir,
+        replay_meta={
+            "deck_a": session.human_deck if human_is_a else session.opp_deck,
+            "deck_b": session.opp_deck if human_is_a else session.human_deck,
+            "human_deck": session.human_deck,
+            "opp_deck": session.opp_deck,
+            "human_is_a": human_is_a,
+            "bo3": session.bo3,
+            "opponent_spec": getattr(session, "opponent_spec", None),
+            "binary": getattr(env, "binary_path", None),
+            "search_provenance": provenance,
+        },
+        seed_fn=lambda: getattr(env, "last_engine_seed", None),
+        replay_prefix=replay_actions)
+    driver.step_observer = recorder.observe_step
+    if ctrl is not None and hasattr(ctrl, "on_followed"):
+        ctrl.on_followed = recorder.on_followed
+    if ctrl is not None and hasattr(ctrl, "on_result"):
+        prev_sink = ctrl.on_result
+        rec_tap = recorder.on_search_result
+        if prev_sink is None:
+            ctrl.on_result = rec_tap
+        else:
+            def _fanout(obs, num, result, chosen, _rec=rec_tap, _prev=prev_sink):
+                _rec(obs, num, result, chosen)
+                _prev(obs, num, result, chosen)
+            ctrl.on_result = _fanout
+    return recorder
+
+
 class ShardRecorder:
     """Accumulate play-session decisions and write trainer-schema shards.
 

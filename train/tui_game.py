@@ -1,6 +1,6 @@
 """Interactive RoboMage game board as a full-screen Textual TUI.
 
-Reimplements the human-vs-opponent play loop (see play.py's CLI mode) as
+Reimplements the human-vs-opponent play loop (see play.py's text board) as
 a terminal UI: rendered battlefield, hand, stack, graveyards, life/mana, phase
 strip, and a numbered action list. The human acts either by clicking a card/zone
 or by choosing a numbered option.
@@ -13,7 +13,7 @@ The opponent is either a trained model (MaskablePPO checkpoint) or the rule-base
 scripted agent when `model_path` is None or "scripted" (any
 opponents.make_controller spec works — checkpoint shorthand or scripted tier).
 
-Invoked via `play.py --tui` (and the tui.py launcher's Play entry).
+Invoked via `play.py --board tui` (and the tui.py launcher's play entry).
 """
 
 import time
@@ -329,9 +329,17 @@ class GameApp(App):
             is_model=session.is_model, opp_label=session.opp_label,
             bo3=session.bo3, sink=_AppSink(self),
             clock_fn=session.clock_fn, pace_idle=session.pace_idle,
+            reset_options=({"engine_seed": session.engine_seed}
+                           if session.engine_seed is not None else None),
             controller=session.controller,
             human_clock_s=session.human_clock_s,
             hard_timeout=session.hard_timeout)
+        # Shard recording (play.py --record-shards): the driver's step
+        # observer commits every decision; closed in on_unmount.
+        self.recorder = None
+        if session.record_dir:
+            from shard_record import attach_recorder
+            self.recorder = attach_recorder(session, self._game_driver)
         self._actions = []
         self._awaiting = False
         # Set by on_game_over — after it, conceding is meaningless (and the
@@ -391,6 +399,8 @@ class GameApp(App):
                   "Keys: digits = pick, space = pass, p = autopass, "
                   "hold q or right-click a card = show oracle text, "
                   "ctrl+r = concede, ctrl+q = quit.")
+        if self.recorder is not None:
+            self._log(f"Recording shards to {self.recorder.out_dir}")
         self._drive()
 
     # ----- the driver (background thread) -----
@@ -761,6 +771,8 @@ class GameApp(App):
 
     def on_unmount(self) -> None:
         self._env.close()
+        if self.recorder is not None:
+            self.recorder.close()          # flush the final rows
 
     # ----- helpers -----
 
@@ -891,11 +903,12 @@ class GameApp(App):
         return label
 
 
-# ── Entry point (called by play.py --tui) ─────────────────────────────────────
+# ── Entry point (play.py --board tui) ─────────────────────────────────────────
 
 def run(binary_path, model_path, human_player=None,
         human_deck="delver", model_deck="delver", bo3=True,
-        human_clock_s=None, hard_timeout=False):
+        human_clock_s=None, hard_timeout=False, engine_seed=None,
+        record_shards=False):
     """Launch the TUI. `model_path` of None/"scripted" ⇒ rule-based opponent.
 
     Any agent spec ``opponents.make_controller`` accepts works here — a
@@ -908,10 +921,13 @@ def run(binary_path, model_path, human_player=None,
     `human_clock_s` arms the human's own chess-clock bank (play.py
     ``--human-clock``); with `hard_timeout` (``--hard-timeout``) an exhausted
     bank concedes the match for whichever seat ran out. Both default off, so an
-    untimed session behaves exactly as before.
+    untimed session behaves exactly as before. `engine_seed` (``--seed``)
+    forces the engine seed; `record_shards` (``--record-shards``) records the
+    session into trainer-schema shards (shard_record.default_recording_dir).
     """
     GameApp(build_session(binary_path, model_path, human_player=human_player,
                           human_deck=human_deck, model_deck=model_deck,
                           bo3=bo3, human_clock_s=human_clock_s,
-                          hard_timeout=hard_timeout)).run()
+                          hard_timeout=hard_timeout, engine_seed=engine_seed,
+                          record_shards=record_shards)).run()
     return 0
