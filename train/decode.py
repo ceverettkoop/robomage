@@ -182,6 +182,22 @@ def card_index_to_name(idx):
     return f"?({idx})"
 
 
+# Sideboard reports pool every fetchland into one fungible card class: swapping
+# one fetch for another is mana-base tuning, not a card-choice signal. Shared
+# by analysis.py's sbvalue net-impact table and az_inspect's sbreport view.
+FETCHLAND_NAMES = frozenset({
+    "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills",
+    "Misty Rainforest", "Windswept Heath", "Bloodstained Mire",
+    "Verdant Catacombs", "Arid Mesa", "Marsh Flats", "Prismatic Vista",
+})
+FETCHLAND_CLASS = "Fetchland (any)"
+
+
+def sb_card_class(name):
+    """The sideboard-report class of a card name (fetchlands pooled)."""
+    return FETCHLAND_CLASS if name in FETCHLAND_NAMES else name
+
+
 # ── Oracle-text lookup (for the TUI card-inspect popup) ────────────────────────
 
 import os  # noqa: E402

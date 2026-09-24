@@ -1,4 +1,5 @@
-"""Regression for the AZ checkpoint inspector (az_inspect.py + tui_az_inspect.py).
+"""Regression for the AZ checkpoint inspector (az_inspect.py, whose `tui`
+subcommand runs tui_az_inspect.InspectApp).
 
 Runs every view against a FRESH AZNet and a synthetic shard directory, so it
 needs neither a trained checkpoint nor recorded self-play — the point is that the
@@ -32,8 +33,12 @@ Checks:
              in-dim, the numpy entity-encoder mirror matches the torch module,
              spectra/value-geometry/zone/selectivity shapes, PopArt PPO-only
   render     every render_* returns non-empty display lines
-  tui        the Textual app's parser comes from the shared spec, and its view
-             tables dispatch to real implementations
+  folded     project/drift --chart (movement-PC exactness, PNGs saved
+             headless), sbreport's session statistics, and shard selection
+  cli        one subcommand per view from cli_spec.AZ_INSPECT_TOOL; removed
+             spellings error with their replacement
+  tui        `az_inspect.py tui` parses from the shared spec, and the app's
+             view tables dispatch to real implementations
 
 Run standalone:  train/.venv/bin/python train/test_az_inspect.py
 Or as the opt-in ci tier:  train/.venv/bin/python train/ci_check.py --tier azinspect
@@ -714,20 +719,186 @@ def test_renders(net, path, sample, mat):
                    + (f" (bad: {bad})" if bad else ""))
 
 
+def _sb_row(main, sideboard_phase=True, balanced=True, swaps=0.0):
+    """One observation row for the sbreport session reader: the viewer's live
+    maindeck block holds ``main`` ({vocab idx: copies}) as (id, count/4)
+    slots."""
+    o = np.zeros(env.OBS_SIZE, dtype=np.float32)
+    o[env._IS_SIDEBOARD_IDX] = 1.0 if sideboard_phase else 0.0
+    o[env._SELF_IS_A_IDX] = 1.0
+    o[env._EXTRAS_SB_SWAPS] = swaps
+    o[env._EXTRAS_SB_DELTA] = 0.5 if balanced else 0.9
+    for k, (idx, ct) in enumerate(sorted(main.items())):
+        o[env._SELF_DECK_MAIN_START + 2 * k] = idx / azi.N_CARD_TYPES
+        o[env._SELF_DECK_MAIN_START + 2 * k + 1] = ct / 4.0
+    return o
+
+
+def test_folded(net, tmp, data_dir):
+    """The views folded in from az_embed_viz (project/drift --chart) and
+    sb_shard_report (sbreport), plus shard selection."""
+    import argparse
+    import copy
+    import torch
+    import viz
+
+    # Movement PCs are an exact decomposition of each card's movement.
+    rng = np.random.default_rng(3)
+    delta = rng.normal(size=(20, 8))
+    proj, energy = azi.movement_pcs(delta)
+    check(np.allclose((proj ** 2).sum(axis=1), (delta ** 2).sum(axis=1))
+          and abs(float(energy.sum()) - 1.0) < 1e-9,
+          "movement-PC projections sum to each card's squared movement")
+    ids = azi.named_card_ids()[:20]
+    lines = azi.render_movement_pcs(proj, energy, ids)
+    check(lines and all(isinstance(x, str) for x in lines),
+          "render_movement_pcs returns display lines")
+
+    # "Ever trained" is exact: only the perturbed row survives.
+    ckpt_dir = os.path.join(tmp, "folded")
+    os.makedirs(ckpt_dir, exist_ok=True)
+    base = os.path.join(ckpt_dir, "gen__azv5.pt")
+    later = os.path.join(ckpt_dir, "gen__azv6.pt")
+    net.save(base, 5)
+    moved = copy.deepcopy(net)
+    bolt = azi.resolve_card(_PLANTED)
+    with torch.no_grad():
+        moved.trunk.card_emb.weight[bolt + 1] += 0.25
+    moved.save(later, 6)
+    tids, movement, _ = azi.trained_card_ids(later, baseline=base)
+    check(list(tids) == [bolt] and movement[0] > 0,
+          f"trained_card_ids keeps exactly the moved row (got {list(tids)})")
+
+    # The charts save headless under --out.
+    out = os.path.join(tmp, "charts")
+    args = argparse.Namespace(out=out, show=False)
+    if viz.pyplot() is None:
+        check(True, "matplotlib unavailable — chart saving skipped")
+    else:
+        saved = azi.chart_movement_map(proj, energy, ids, np.abs(proj).sum(1),
+                                       top=5, args=args)
+        check(saved is not None and os.path.isfile(saved),
+              "drift --chart saves the movement map PNG")
+        mat = azi.card_matrix(net)[ids]
+        coords, axes = azi.project_2d(mat, "pca")
+        saved = azi.chart_projection(coords, ids, np.linspace(0, 1, len(ids)),
+                                     azi.card_labels("color", ids), axes,
+                                     args=args)
+        check(saved is not None and os.path.isfile(saved),
+              "project --chart saves the scatter PNG")
+
+    # sbreport: two sessions, a fetch-for-fetch swap nets to zero.
+    tarn = azi.resolve_card("Scalding Tarn")
+    strand = azi.resolve_card("Flooded Strand")
+    cs = azi.resolve_card("Counterspell")
+    before = {bolt: 4, tarn: 1}
+    after = {bolt: 3, cs: 1, strand: 1}
+    obs = np.stack([_sb_row(before), _sb_row(after, swaps=0.2),
+                    _sb_row(after, sideboard_phase=False),
+                    _sb_row(before), _sb_row(after, swaps=0.2)])
+    sb_dir = os.path.join(tmp, "sb_shards")
+    os.makedirs(sb_dir, exist_ok=True)
+    np.savez_compressed(os.path.join(sb_dir, "shard_sb_0.npz"), obs=obs)
+    paths = azi.select_shards(sb_dir)
+    groups, n_with = azi.sb_report(paths, league={})
+    check(n_with == 1 and sum(g["sessions"] for g in groups.values()) == 2,
+          "sbreport finds both sessions in the shard")
+    g = next(iter(groups.values()))
+    check(dict(g["in"]) == {"Counterspell": 2}
+          and dict(g["out"]) == {"Lightning Bolt": 2}
+          and g["swap_counts"] == [1, 1] and g["unbalanced"] == 0,
+          f"sbreport recovers the swaps with fetchlands pooled ({dict(g['in'])}"
+          f" / {dict(g['out'])})")
+    text = "\n".join(azi.render_sb_report(groups, len(paths), n_with))
+    check("2 session(s) total" in text and "Counterspell" in text
+          and "in +1.00" in text and decode.FETCHLAND_CLASS not in text,
+          "render_sb_report prints per-session averages")
+    hidden = "\n".join(azi.render_sb_report(groups, len(paths), n_with,
+                                            min_sessions=3))
+    check("2 session(s) total" in hidden and "Counterspell" not in hidden,
+          "--min-sessions hides the matchup but the header counts it")
+    js = azi.sb_report_json(groups)
+    check(next(iter(js.values()))["avg_in"] == {"Counterspell": 1.0},
+          "sb_report_json carries the per-session averages")
+
+    # Shard selection: a directory, a comma list of files, the newest window.
+    all_paths = azi.shard_paths(data_dir)
+    check(len(azi.select_shards(data_dir, window=2)) == 2
+          and azi.select_shards(data_dir, window=2) == all_paths[-2:],
+          "--window keeps the newest N shards")
+    check(azi.shard_paths(",".join(all_paths[:2])) == all_paths[:2],
+          "--shards also takes comma-separated .npz files")
+
+
+def test_cli():
+    """Every view is a subcommand built from cli_spec; removed spellings error
+    with their replacement."""
+    import contextlib
+    import io
+    from cli_spec import (AZ_INSPECT_TOOL, DEFAULT_AZI_BLOCK_ROWS,
+                          DEFAULT_AZI_COUNT_ROWS, DEFAULT_AZI_MAX_ROWS,
+                          DEFAULT_AZI_NEIGHBORS)
+    ap = azi.build_parser()
+    subs = {s.name for s in AZ_INSPECT_TOOL.subs}
+    check({"tui", "sbreport", "project", "drift"} <= subs,
+          "tui / sbreport and the chart views are subcommands")
+    a = ap.parse_args(["neighbors", "Bolt"])
+    check(a.neighbors == DEFAULT_AZI_NEIGHBORS and a.shards is None
+          and a.count_rows == DEFAULT_AZI_COUNT_ROWS and a.seed == 1,
+          "neighbors defaults (weights only)")
+    t = ap.parse_args(["tui"])
+    c = ap.parse_args(["calib"])
+    b = ap.parse_args(["blocks"])
+    check(t.max_rows == c.max_rows == DEFAULT_AZI_MAX_ROWS
+          and t.block_rows == b.block_rows == DEFAULT_AZI_BLOCK_ROWS
+          and t.count_rows == DEFAULT_AZI_COUNT_ROWS,
+          "one default per shard-limit flag across the CLI views and the TUI")
+    p = ap.parse_args(["project", "--chart", "--method", "tsne"])
+    check(p.chart and p.method == "tsne" and p.mark == "color",
+          "project carries the chart flags")
+    for argv, needle in (
+            (["neighbors", "x", "-k", "3"], "-k was removed; use --neighbors"),
+            (["structure", "-k", "3"], "-k was removed; use --knn"),
+            (["clusters", "-k", "3"], "-k was removed; use --clusters"),
+            (["clusters", "--cluster-seed", "2"], "use --seed"),
+            (["blocks", "--rows", "5"], "--rows was removed; use --block-rows"),
+            (["overview", "--no-shards"], "--no-shards was removed"),
+            (["tui", "--with-shards"], "--with-shards was removed"),
+            (["project", "--with-counts"], "--with-counts was removed"),
+            (["occur", "--max-rows", "5"], "--max-rows was removed"),
+            (["drift", "--map-top", "5"], "--map-top was removed; use --top"),
+            (["sbreport", "--dir", "x"], "--dir was removed; use --shards"),
+            (["sbreport", "--last", "3"], "--last was removed; use --window")):
+        err = io.StringIO()
+        code = None
+        try:
+            with contextlib.redirect_stderr(err):
+                ap.parse_args(argv)
+        except SystemExit as exc:
+            code = exc.code
+        check(code == 2 and needle in err.getvalue(),
+              f"{' '.join(argv)} errors with {needle!r}")
+
+
+def tui_args(*argv):
+    """The ``az_inspect.py tui`` namespace for ``argv``."""
+    return azi.build_parser().parse_args(["tui", *argv])
+
+
 def test_tui_wiring():
     import tui_az_inspect as tui
     from cli_spec import ALL_TOOLS, AZ_INSPECT_TOOL, iter_args
     check(AZ_INSPECT_TOOL in ALL_TOOLS,
           "the inspector is registered in cli_spec.ALL_TOOLS (./tui.sh menu)")
-    args = tui.build_parser().parse_args([])
-    spec_dests = {a.dest for a in iter_args(AZ_INSPECT_TOOL.subs[0])}
+    args = tui_args()
+    tui_sub = next(s for s in AZ_INSPECT_TOOL.subs if s.name == "tui")
+    spec_dests = {a.dest for a in iter_args(tui_sub)}
     check(spec_dests <= set(vars(args)),
-          "the script's parser is built from the shared spec (no drift)")
-    check(args.model == "gen", "the spec's defaults reach the parser")
+          "the tui subcommand's parser is built from the shared spec (no drift)")
+    check(args.model == "gen" and args.shards is None,
+          "the spec's defaults reach the parser")
 
     app = tui.InspectApp(args)
-    check(app._args.shards == azi.AZ_DATA_DIR,
-          "an unset --shards falls back to the recorded self-play directory")
     # The default is weights-only: no shard load, no Probes pane, and the
     # sidebar offers only views this session can actually compute.
     check(not app._with_shards
@@ -744,12 +915,10 @@ def test_tui_wiring():
           == [k for k, _ in tui._WEIGHT_VIEWS]
           and not (wkeys & (tui._NEEDS_SHARDS | tui._NEEDS_NET)),
           "every Weights view is offered without shards and without an AZ net")
-    with_shards = tui.InspectApp(tui.build_parser().parse_args(["--with-shards"]))
-    check(with_shards._panes == ("emb", "critic", "weights", "probe"),
-          "--with-shards restores the Probes pane")
-    implied = tui.InspectApp(tui.build_parser().parse_args(["--shards", "/tmp/x"]))
-    check(implied._with_shards,
-          "naming an explicit --shards directory implies --with-shards")
+    with_shards = tui.InspectApp(tui_args("--shards", "/tmp/x"))
+    check(with_shards._with_shards
+          and with_shards._panes == ("emb", "critic", "weights", "probe"),
+          "--shards DIR loads self-play and restores the Probes pane")
 
     views = ([k for k, _ in tui._EMB_VIEWS] + [k for k, _ in tui._CRITIC_VIEWS]
              + [k for k, _ in tui._WEIGHT_VIEWS]
@@ -805,7 +974,7 @@ async def _drive_app(app, pilot, label):
 
 def test_tui_end_to_end(net, tmp):
     """Drive the Textual app headlessly against a synthetic checkpoint+shards,
-    in BOTH modes: the weights-only default and the full --with-shards run."""
+    in BOTH modes: the weights-only default and the full --shards run."""
     import asyncio
     import tui_az_inspect as tui
 
@@ -825,7 +994,7 @@ def test_tui_end_to_end(net, tmp):
 
     for label, extra in (("weights-only", []),
                          ("with-shards", ["--shards", data_dir])):
-        app = tui.InspectApp(tui.build_parser().parse_args(common + extra))
+        app = tui.InspectApp(tui_args(*common, *extra))
 
         async def run(app=app, label=label):
             async with app.run_test(size=(120, 40)) as pilot:
@@ -855,7 +1024,7 @@ def test_tui_ppo_fallback(net, tmp):
 
     azi.load_net = _miss
     try:
-        app = tui.InspectApp(tui.build_parser().parse_args(["--model", ckpt]))
+        app = tui.InspectApp(tui_args("--model", ckpt))
 
         async def run():
             async with app.run_test(size=(120, 40)) as pilot:
@@ -922,6 +1091,10 @@ def main():
         print("\n[renders]")
         ckpt = os.path.join(tmp, "same_a__azv1.pt")
         test_renders(net, ckpt, sample, mat)
+        print("\n[folded: charts + sbreport]")
+        test_folded(net, tmp, data_dir)
+        print("\n[cli]")
+        test_cli()
         print("\n[tui wiring]")
         test_tui_wiring()
         print("\n[tui end-to-end]")

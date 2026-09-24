@@ -2100,19 +2100,10 @@ def _sim_sideboard_report(games):
 
 _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE
 
-# Fungible card classes for the NET sideboard-impact table: swapping one
-# fetchland for another is mana-base tuning, not a card-choice signal, so all
-# fetches pool into one class (a fetch-for-fetch swap nets to zero). Applies
-# only to the net-impact section of sbvalue — the per-swap preference tables
-# above it stay per-name.
-_SB_FUNGIBLE = {
-    name: "Fetchland (any)"
-    for name in (
-        "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills",
-        "Misty Rainforest", "Windswept Heath", "Bloodstained Mire",
-        "Verdant Catacombs", "Arid Mesa", "Marsh Flats", "Prismatic Vista",
-    )
-}
+# The NET sideboard-impact table pools card classes through
+# decode.sb_card_class (every fetchland is one fungible class, so a
+# fetch-for-fetch swap nets to zero). Applies only to the net-impact section of
+# sbvalue — the per-swap preference tables above it stay per-name.
 
 
 def _analyze_sbvalue(games, verbose=True):
@@ -2137,7 +2128,7 @@ def _analyze_sbvalue(games, verbose=True):
     A final NET-impact table works at GAME granularity: every post-board game
     is bucketed, per card class, by the class's cumulative net copies in the
     deck for that game (boarded in minus out over the phases played so far in
-    the match; fetchlands pooled as one fungible class per `_SB_FUNGIBLE`),
+    the match; fetchlands pooled as one fungible class per `decode.sb_card_class`),
     and compares the post-board GAME win rate when the card was net-in vs
     net-out vs net-zero. Per-game outcomes are reconstructed from the match
     win counters at each game's first decision (the match winner takes the
@@ -2196,7 +2187,7 @@ def _analyze_sbvalue(games, verbose=True):
                         key = (cat, name)
                         p = float(probs[k]) if probs is not None and k < len(probs) else 0.0
                         dec_mass[key] = dec_mass.get(key, 0.0) + p
-                        offered_cls.setdefault(_SB_FUNGIBLE.get(name, name), set()).add(gi)
+                        offered_cls.setdefault(decode.sb_card_class(name), set()).add(gi)
             # P(done) at the phase's first decision = confidence in the current 60.
             if probs is not None and (si == 0 or not _match_meta(obs_list[si - 1])[3]):
                 for k in range(ncs[si]):
@@ -2223,7 +2214,7 @@ def _analyze_sbvalue(games, verbose=True):
                     phase_swaps += 1
                     if si + 1 < len(vals):
                         dv.setdefault(key, []).append(vals[si + 1] - vals[si])
-                    cls = _SB_FUNGIBLE.get(name, name)
+                    cls = decode.sb_card_class(name)
                     swap_events.append((meta[0], cls,
                                         1 if cat == _CAT_SB_IN else -1))
         if in_phase:  # trace ended inside a sideboard phase

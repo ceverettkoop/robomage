@@ -155,12 +155,13 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           along the PV return boards, and a tree-followed row resolves to its
           origin search (train/test_tree_rebuild.py). Torch-free; needs
           bin/robomage.
-  azinspect The AZ checkpoint inspector (az_inspect.py / tui_az_inspect.py):
+  azinspect The AZ checkpoint inspector (az_inspect.py, incl. its tui view):
           every view computed against a FRESH AZNet and synthetic shards, so it
           needs neither a trained checkpoint nor recorded self-play. Pins the
           views to the real observation layout — the block partition covers
           [0, OBS_SIZE), the card embedding's padding offset, the swap probe's
           swap-for-itself-is-zero invariant, the sweep normalizers — plus the
+          folded chart / sbreport views, the removed-flag errors and the
           ./tui.sh spec wiring (train/test_az_inspect.py). Needs torch (self-
           skips without it); no engine binary.
 

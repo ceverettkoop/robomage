@@ -25,19 +25,30 @@ printed-property buffer (card_props codegen). The embedding views default to
 the residual table (that is what training moves); pass ``--space props`` /
 ``--space full`` to measure the frozen block or the concatenation instead.
 
-Views (all also exposed as CLI subcommands, ``--help`` on each):
+Views (each a CLI subcommand, ``--help`` on each; flags live in
+``cli_spec.AZ_INSPECT_TOOL``, which ``./tui.sh`` renders too):
 
+  tui          the full-screen Textual inspector over every view below
+               (tui_az_inspect.InspectApp); weights-only unless --shards
   overview     checkpoint meta, value-bucket coverage, shard availability
   neighbors    cosine nearest neighbours of a card in embedding space
   structure    kNN label purity — how much real card structure the embedding recovers
   clusters     k-means over the embedding, members named
-  project      PCA-to-2D terminal scatter, marked by color / type
+  project      PCA-to-2D terminal scatter, marked by color / type; --chart
+               saves a PCA / t-SNE chart of the rows that ever trained
   occur        how many recorded states contain each card (trained-on counts)
+  exposure     which embedding rows / critic columns received gradient
+  drift        signed per-dimension embedding movement since the origin;
+               --chart maps it across the movement matrix's own PCs
   catemb       full cosine matrix of the small action-category embedding
   buckets      per-matchup critic column map (norm, constant, dead)
   calib        per-bucket value calibration against the shards' outcomes
   divergence   raw-net priors vs the search posterior, by action category
+  sbreport     between-games sideboarding sessions recovered from the shards'
+               observations: average cards in / out per session, by matchup
   diff         two checkpoints: per-tensor, per-card and per-bucket movement
+  state / blocks / readout / swap / sweep
+               per-decision probes of recorded states
   firstlayer   which input columns each encoder's first layer actually reads
   bodylayer    what the policy/value bodies read from the pooled features —
                incl. the archetype one-hots (named) and decklist aggregates
@@ -48,6 +59,12 @@ Views (all also exposed as CLI subcommands, ``--help`` on each):
   valuegeom    value-head row geometry — which matchups share a value direction
   zoneemb      full cosine matrix of the small zone-ref embedding
   cardsel      entity-encoder units ranked by card selectivity
+
+``--model`` resolves through ``opponents.parse_model_spec``
+(:func:`resolve_model_path`): a bare name / ``az:`` spec is the AZ checkpoint,
+else the AZNet warm-started from the PPO gen; ``mcts:`` / a ``.zip`` is the PPO
+net. ``--shards DIR`` names recorded self-play (absent = weights only on the
+views that can run without it; the shard-only views then read az_data/gen).
 
 The weight-space views (firstlayer, bodylayer, unit, pathto, spectra, popart,
 valuegeom, zoneemb, cardsel, and diff) read EITHER checkpoint family: an AZ ``.pt``, or a PPO ``.zip`` whose
@@ -62,10 +79,14 @@ of a data-only ``compute``-style function, so the TUI (``tui_az_inspect.py``)
 renders exactly what the CLI prints.
 
 Run from the repo root:
+    train/.venv/bin/python train/az_inspect.py tui
+    train/.venv/bin/python train/az_inspect.py tui --shards train/az_data/gen
     train/.venv/bin/python train/az_inspect.py overview
-    train/.venv/bin/python train/az_inspect.py neighbors "Lightning Bolt" -k 12
-    train/.venv/bin/python train/az_inspect.py buckets
+    train/.venv/bin/python train/az_inspect.py neighbors "Lightning Bolt" --neighbors 12
+    train/.venv/bin/python train/az_inspect.py project --chart --method tsne
+    train/.venv/bin/python train/az_inspect.py drift --chart --top 60
     train/.venv/bin/python train/az_inspect.py calib --max-rows 4000
+    train/.venv/bin/python train/az_inspect.py sbreport --window 50
 """
 
 import argparse
@@ -85,6 +106,7 @@ from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as VOCAB_NAMES,
                         _CARD_COST_MATRIX as CARD_COST_MATRIX,
                         _LAND_VOCAB_IDS as LAND_VOCAB_IDS)
 from card_props import N_CARD_PROPS, _PROP_NAMES
+from cli_spec import AZI_CARD_SPACES, AZI_LABEL_KINDS
 from _enums import (_CAT_NAMES, _OBS_KEYWORDS, _REF_NAMES, N_OBS_KEYWORDS,
                     N_REF_ZONES, STACK_QUAL_FIELDS, MAX_STACK_MODES,
                     MAX_STACK_TGTS)
@@ -200,7 +222,7 @@ def card_labels(kind, ids=None):
                      "(color | type | cmc | land)")
 
 
-LABEL_KINDS = ("color", "type", "cmc", "land")
+LABEL_KINDS = AZI_LABEL_KINDS
 
 
 # ----------------------------------------------------------------------
@@ -226,21 +248,16 @@ def resolve_spec(spec="gen", checkpoint_dir=AZ_CKPT_DIR, prefer="final"):
     return None
 
 
-def load_net(spec="gen", checkpoint_dir=AZ_CKPT_DIR, prefer="final"):
-    """Resolve a net spec and load it as an AZNet. Returns ``(net, path)``.
+def resolve_model_path(spec="gen", checkpoint_dir=AZ_CKPT_DIR, prefer="final"):
+    """The checkpoint path a ``--model`` spec names, or None — THE resolution
+    every view shares, on ``opponents.parse_model_spec``.
 
-    A bare name is read as an ``az:`` spec. The AZ checkpoint
+    A bare name is read as an ``az:`` spec: the AZ checkpoint
     (:func:`resolve_spec`, which also takes snapshot names inside
     ``checkpoint_dir``) when one exists, else the shared warm-start ladder's
-    rung (``opponents.resolve_model_checkpoint``, as ``load_az_evaluator``):
-    an AZNet transcribed from the PPO checkpoint via ``az_net.from_ppo`` —
-    ``path`` is then that ``.zip``. A ``mcts:`` / bare ``.zip`` spec names a
-    PPO net (``opponents.parse_model_spec``) and always loads that way.
-    Raises FileNotFoundError when neither family has a checkpoint.
-
-    torch is imported lazily so the vocab-side helpers above stay importable in a
-    torch-free environment."""
-    from az_net import from_ppo, load_az
+    rung (``opponents.resolve_model_checkpoint``) — the PPO ``.zip`` the AZNet
+    warm-starts from. A ``mcts:`` / bare ``.zip`` spec names a PPO net and an
+    ``az:``/``azraw:``/``.pt`` spec an AZ one."""
     from opponents import (MODEL_KIND_AZ, MODEL_KIND_PPO, parse_model_spec,
                            resolve_model_checkpoint)
     ms = parse_model_spec(spec)
@@ -257,7 +274,20 @@ def load_net(spec="gen", checkpoint_dir=AZ_CKPT_DIR, prefer="final"):
             path = resolve_model_checkpoint(ms)
         except ValueError:
             path = None
-    if path and os.path.isfile(path):
+    return path if path and os.path.isfile(path) else None
+
+
+def load_net(spec="gen", checkpoint_dir=AZ_CKPT_DIR, prefer="final"):
+    """Resolve a net spec (:func:`resolve_model_path`) and load it as an AZNet.
+    Returns ``(net, path)`` — for a PPO checkpoint, the AZNet transcribed via
+    ``az_net.from_ppo`` and ``path`` that ``.zip``. Raises FileNotFoundError
+    when neither family has a checkpoint.
+
+    torch is imported lazily so the vocab-side helpers above stay importable in a
+    torch-free environment."""
+    from az_net import from_ppo, load_az
+    path = resolve_model_path(spec, checkpoint_dir=checkpoint_dir, prefer=prefer)
+    if path is not None:
         if path.endswith(".pt"):
             return load_az(path), path
         return from_ppo(path), path
@@ -302,7 +332,7 @@ def card_property_block(net):
     return np.array(w[1:], dtype=np.float64)
 
 
-CARD_SPACES = ("identity", "props", "full")
+CARD_SPACES = AZI_CARD_SPACES
 
 
 def card_matrix(net, space="identity"):
@@ -414,10 +444,18 @@ def pca2(mat):
 # Self-play shards
 # ----------------------------------------------------------------------
 
-def shard_paths(data_dir=AZ_DATA_DIR):
-    """Recorded self-play shards, oldest first (mtime order, as az_train windows)."""
-    return sorted(glob.glob(os.path.join(data_dir, "shard_*.npz")),
-                  key=os.path.getmtime)
+def shard_paths(spec=AZ_DATA_DIR):
+    """Recorded self-play shards, oldest first (mtime order, as az_train windows).
+
+    ``spec`` is a directory of ``shard_*.npz`` (None = the generalist's
+    self-play pool) or one or more comma-separated ``.npz`` files."""
+    spec = spec or AZ_DATA_DIR
+    if os.path.isdir(spec):
+        paths = glob.glob(os.path.join(spec, "shard_*.npz"))
+    else:
+        paths = [p for p in (t.strip() for t in str(spec).split(","))
+                 if p and os.path.isfile(p)]
+    return sorted(paths, key=os.path.getmtime)
 
 
 # Shard columns this reader gathers: the four the analysis views need, plus the
@@ -1384,27 +1422,10 @@ def _load_raw_state(path):
     return torch.load(path, map_location="cpu")
 
 
-def resolve_weights_spec(spec="gen", checkpoint_dir=AZ_CKPT_DIR):
-    """Checkpoint path for a weight-space view: an explicit ``.zip``/``.pt``
-    path passes through; otherwise the AZ resolution is tried first and — since
-    the trunk is shared and the AZ net is always warm-started from the PPO gen —
-    the spec falls back to the PPO resolution (``gen`` → ``gen__final.zip``)
-    when no AZ checkpoint exists yet."""
-    s = str(spec)
-    if s.endswith((".zip", ".pt")):
-        return s if os.path.isfile(s) else None
-    path = resolve_spec(s, checkpoint_dir)
-    if path is not None:
-        return path
-    from opponents import resolve_checkpoint
-    ppo = resolve_checkpoint(s)
-    return ppo if ppo and os.path.isfile(ppo) else None
-
-
 def load_weight_state(spec="gen", checkpoint_dir=AZ_CKPT_DIR):
-    """Resolve, load, and normalize a checkpoint of either family.
-    Returns ``(state_dict, path, kind)``."""
-    path = resolve_weights_spec(spec, checkpoint_dir)
+    """Resolve (:func:`resolve_model_path`), load, and normalize a checkpoint
+    of either family. Returns ``(state_dict, path, kind)``."""
+    path = resolve_model_path(spec, checkpoint_dir)
     if path is None:
         raise FileNotFoundError(
             f"no checkpoint for {spec!r} — want an AZ .pt, a PPO .zip, or "
@@ -1910,7 +1931,9 @@ def _bar(frac, width=12, ch="█"):
     return ch * n + "·" * (width - n)
 
 
-def render_overview(net, path, sample=None):
+def render_overview(net, path, sample=None, shards=None):
+    """Checkpoint meta, critic coverage, and the shard pool at ``shards``
+    (default: the generalist's self-play pool)."""
     meta = checkpoint_meta(path)
     rows = bucket_table(net)
     live = [r for r in rows if not r["dead"]]
@@ -1927,8 +1950,8 @@ def render_overview(net, path, sample=None):
     if top:
         lines.append("  strongest columns: "
                      + ", ".join(f"{r['name']}({r['norm']:.2f})" for r in top))
-    paths = shard_paths()
-    lines.append(f"shards     : {len(paths)} in {AZ_DATA_DIR}"
+    paths = shard_paths(shards)
+    lines.append(f"shards     : {len(paths)} in {shards or AZ_DATA_DIR}"
                  + (f" (newest {os.path.basename(paths[-1])})" if paths else ""))
     if sample is not None:
         lines.append(f"sample     : {sample['obs'].shape[0]} decisions from "
@@ -2596,20 +2619,415 @@ def render_card_selectivity(sel, top_units=12, counts=None):
 
 
 # ----------------------------------------------------------------------
-# CLI
+# Embedding charts (project / drift --chart)
 # ----------------------------------------------------------------------
 
-def _add_shard_args(p, default_rows=4000):
-    p.add_argument("--shards", default=AZ_DATA_DIR,
-                   help=f"directory of shard_*.npz self-play records "
-                        f"(default: {AZ_DATA_DIR})")
-    p.add_argument("--max-rows", type=int, default=default_rows,
-                   help="max recorded decisions to sample")
-    p.add_argument("--window", type=int, default=None,
-                   help="use only the newest N shards")
-    p.add_argument("--seed", type=int, default=1,
-                   help="sampling seed (default: 1)")
+def trained_card_ids(path, baseline=None):
+    """``(vocab ids whose embedding row ever moved, per-id movement, exposure)``
+    over the named vocab. "Ever" is cumulative: the baseline defaults to the
+    net's origin (:func:`resolve_origin` — the PPO warm-start, else the oldest
+    older snapshot), not the newest snapshot :func:`card_exposure` prefers."""
+    if baseline is None:
+        baseline, _ = resolve_origin(path)
+        if baseline is None:
+            raise FileNotFoundError(
+                "no baseline checkpoint to measure exposure against — need the "
+                "PPO gen warm-start or an earlier gen__azv* snapshot (or pass "
+                "--baseline)")
+    exp = card_exposure(path, baseline=baseline)
+    ids = named_card_ids()
+    delta = exp["delta"]
+    keep = ids[np.array([delta[i] > 0.0 for i in ids])]
+    return keep, np.array([delta[i] for i in keep]), exp
 
+
+def movement_pcs(delta):
+    """SVD of the movement matrix, UNCENTERED so the decomposition is exact:
+    per card, the squared projections across all PCs sum to its squared total
+    movement. Returns ``(proj (n, d), energy_frac (d,))`` — proj[i, k] is card
+    i's movement along movement-PC k."""
+    u, s, _ = np.linalg.svd(delta, full_matrices=False)
+    proj = u * s
+    energy = s ** 2
+    return proj, energy / energy.sum() if energy.sum() > 0 else energy
+
+
+def render_movement_pcs(proj, energy, ids, top_cards=6, top_pcs=8):
+    """Terminal companion to the movement heatmap: for each leading
+    movement-PC, the cards moving furthest along it (signed — opposite signs
+    moved opposite ways along the same axis)."""
+    lines = [f"movement-PC loadings — top {top_pcs} PCs carry "
+             f"{energy[:top_pcs].sum() * 100:.1f}% of movement energy"]
+    for k in range(min(top_pcs, proj.shape[1])):
+        lead = np.argsort(-np.abs(proj[:, k]))[:top_cards]
+        cards = ", ".join(f"{card_name(ids[j])}({proj[j, k]:+.3f})"
+                          for j in lead)
+        lines.append(f"  PC{k:<2} {energy[k] * 100:5.1f}%  {cards}")
+    return lines
+
+
+def chart_movement_map(proj, energy, ids, movement, top=0, args=None):
+    """Heatmap of |movement| per card per movement-PC (rows sorted by total
+    movement, ``top`` > 0 keeps the most-moved), with the per-PC energy scree
+    above it. Returns the saved PNG path (or None)."""
+    import viz
+    plt = viz.pyplot(show=viz.want_show(args))
+    if plt is None:
+        print("matplotlib is unavailable — no chart")
+        return None
+    order = np.argsort(-movement)
+    if top > 0:
+        order = order[:top]
+    mag = np.abs(proj[order])
+    names = [card_name(ids[j]) for j in order]
+    d = proj.shape[1]
+
+    # Adaptive row height/font so the map stays legible from a few dozen rows
+    # up to the whole trained vocab.
+    row_in = 0.22 if len(order) <= 60 else 0.16
+    font = 6 if len(order) <= 60 else 5
+    fig, (ax_scree, ax_map) = plt.subplots(
+        2, 1, figsize=(16, 3.0 + row_in * len(order)),
+        gridspec_kw={"height_ratios": [1, max(3, (row_in / 2.5) * len(order))]},
+        sharex=True)
+    ax_scree.bar(np.arange(d), energy * 100.0, color="#4878a8")
+    ax_scree.plot(np.arange(d), np.cumsum(energy) * 100.0, "k.-", ms=3, lw=0.8)
+    ax_scree.set_ylabel("% of movement\nenergy")
+    scope = (f"all {len(order)} trained cards" if top <= 0
+             else f"top {len(order)} movers")
+    ax_scree.set_title(f"card movement across movement-PCs — {scope}; "
+                       "scree = per-PC share (line: cumulative)")
+
+    im = ax_map.imshow(mag, aspect="auto", cmap="magma",
+                       interpolation="nearest")
+    ax_map.set_yticks(np.arange(len(order)))
+    ax_map.set_yticklabels([f"{n}  ({movement[j]:.3f})"
+                            for n, j in zip(names, order)], fontsize=font)
+    ax_map.set_xticks(np.arange(0, d, 2))
+    ax_map.set_xlabel("movement PC (SVD of the delta matrix, uncentered — "
+                      "row energies sum to total movement²)")
+    fig.colorbar(im, ax=ax_map, label="|Δ along PC|", pad=0.01)
+    fig.tight_layout()
+    return viz.save_or_show(plt, fig, "az_embed_movement_map", args)
+
+
+def project_2d(mat, method="pca", seed=0, perplexity=30.0):
+    """2D coordinates for the rows of ``mat`` plus the two axis titles."""
+    if method == "pca":
+        coords, frac = pca2(mat)
+        return coords, (f"PC1 {frac[0] * 100:.1f}%", f"PC2 {frac[1] * 100:.1f}%")
+    if method == "tsne":
+        from sklearn.manifold import TSNE
+        # Cosine metric to match the neighbour/cluster views, which all
+        # compare directions, not magnitudes.
+        coords = TSNE(n_components=2, metric="cosine", init="pca",
+                      perplexity=min(perplexity, (len(mat) - 1) / 3.0),
+                      random_state=seed).fit_transform(mat)
+        return np.asarray(coords, dtype=np.float64), ("t-SNE 1", "t-SNE 2")
+    raise ValueError(f"unknown method {method!r} (pca | tsne)")
+
+
+def chart_projection(coords, ids, movement, labels, axes, space="identity",
+                     method="pca", mark="color", label_top=30, args=None):
+    """Scatter a projection: color = label class, size = row movement,
+    annotate the ``label_top`` most-moved cards. Returns the saved PNG path
+    (or None)."""
+    import viz
+    plt = viz.pyplot(show=viz.want_show(args))
+    if plt is None:
+        print("matplotlib is unavailable — no chart; the terminal scatter "
+              "above is the fallback")
+        return None
+    fig, ax = plt.subplots(figsize=(13, 9))
+
+    uniq = sorted(set(str(l) for l in labels))
+    cmap = plt.get_cmap("tab20" if len(uniq) > 10 else "tab10")
+    color_of = {lab: cmap(i % cmap.N) for i, lab in enumerate(uniq)}
+
+    # Area 20..320 pt^2 across the movement range, so the most-trained cards
+    # dominate the eye the way they dominated the gradient.
+    mv = movement / movement.max() if movement.max() > 0 else movement
+    sizes = 20.0 + 300.0 * mv
+
+    for lab in uniq:
+        m = np.array([str(l) == lab for l in labels])
+        ax.scatter(coords[m, 0], coords[m, 1], s=sizes[m], c=[color_of[lab]],
+                   alpha=0.75, edgecolors="none", label=f"{lab} ({m.sum()})")
+
+    for j in np.argsort(-movement)[:max(0, label_top)]:
+        ax.annotate(card_name(ids[j]), (coords[j, 0], coords[j, 1]),
+                    fontsize=7, alpha=0.85,
+                    xytext=(3, 3), textcoords="offset points")
+
+    ax.set_xlabel(axes[0])
+    ax.set_ylabel(axes[1])
+    ax.set_title(f"AZ card-identity embedding ({space} space, {method}) — "
+                 f"{len(ids)} trained cards; size = row movement since "
+                 "baseline")
+    ax.legend(loc="best", fontsize=8, framealpha=0.9)
+    fig.tight_layout()
+    return viz.save_or_show(plt, fig, f"az_embed_{space}_{method}_{mark}",
+                            args)
+
+
+# ----------------------------------------------------------------------
+# Sideboard report (sbreport): boarding sessions recovered from the obs
+# ----------------------------------------------------------------------
+#
+# A session is one player's boarding stage before game 2/3 of a bo3. Its swaps
+# are recovered from the observation itself, not from the recorded policy: the
+# viewer's LIVE maindeck block tracks each completed swap mid-phase, so diffing
+# the deck configuration at the session's first row against its last balanced
+# row yields exactly the completed swaps. Rows group into sessions by the
+# is_sideboard_phase flag, with a boundary whenever the viewer seat flips, the
+# swaps-completed counter resets, or a non-sideboard row intervenes. Decks are
+# identified by matching the (boarding-invariant) main+side 75 against the
+# league decklists, falling back to the matchup tail's archetype one-hot.
+
+_LEAGUE_DECKS_DIR = os.path.join(os.path.dirname(_TRAIN_DIR), "bin", "resources",
+                                 "decks", "league")
+
+
+def _norm_card_name(name):
+    return "".join(c for c in str(name).lower() if c.isalnum())
+
+
+def sb_card_label(idx):
+    """A vocab card's sideboard-report label (fetchlands pooled)."""
+    if 0 <= idx < len(VOCAB_NAMES):
+        return decode.sb_card_class(VOCAB_NAMES[idx])
+    return f"card#{idx}"
+
+
+def decode_deck_slots(vec):
+    """A (card_id, count) slot block -> Counter{vocab_idx: count}."""
+    import collections
+    out = collections.Counter()
+    for i in range(0, len(vec), 2):
+        idx = int(round(float(vec[i]) * N_CARD_TYPES))
+        if idx < 0:
+            continue
+        ct = int(round(float(vec[i + 1]) * 4.0))
+        if ct > 0:
+            out[idx] += ct
+    return out
+
+
+def load_league_decks(decks_dir=_LEAGUE_DECKS_DIR):
+    """{deck_stem: Counter(vocab_idx -> count over the full 75)}."""
+    import collections
+    import re
+    norm_to_idx = {_norm_card_name(n): i for i, n in enumerate(VOCAB_NAMES)}
+    decks = {}
+    for path in sorted(glob.glob(os.path.join(decks_dir, "*.dk"))):
+        stem = os.path.splitext(os.path.basename(path))[0]
+        counts = collections.Counter()
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.upper().startswith("SIDEBOARD"):
+                    continue
+                m = re.match(r"^(\d+)\s+(.+)$", line)
+                if not m:
+                    continue
+                idx = norm_to_idx.get(_norm_card_name(m.group(2)))
+                if idx is not None:
+                    counts[idx] += int(m.group(1))
+        decks[stem] = counts
+    return decks
+
+
+def identify_deck(seventy_five, league, arch_onehot):
+    """Best league-deck stem for a 75 multiset; archetype fallback."""
+    best, best_ov = None, -1
+    for stem, counts in league.items():
+        ov = sum((seventy_five & counts).values())
+        if ov > best_ov:
+            best, best_ov = stem, ov
+    total = sum(seventy_five.values())
+    if best is not None and total and best_ov >= 0.8 * total:
+        return best
+    names = archetypes.ARCHETYPES
+    a = int(np.argmax(arch_onehot)) if arch_onehot.max() > 0.5 else len(names)
+    return names[a] if a < len(names) else archetypes.UNKNOWN_NAME
+
+
+def iter_sb_sessions(obs):
+    """Yield the row indices of each sideboarding session in ``obs``."""
+    import env
+    cur, cur_viewer, prev_swaps = [], None, -1.0
+    for i in range(obs.shape[0]):
+        row = obs[i]
+        if row[env._IS_SIDEBOARD_IDX] <= 0.5:
+            if cur:
+                yield cur
+            cur, cur_viewer, prev_swaps = [], None, -1.0
+            continue
+        viewer = row[env._SELF_IS_A_IDX] > 0.5
+        swaps = float(row[env._EXTRAS_SB_SWAPS])
+        if cur and (viewer != cur_viewer or swaps < prev_swaps - 1e-6):
+            yield cur
+            cur = []
+        cur.append(i)
+        cur_viewer, prev_swaps = viewer, swaps
+    if cur:
+        yield cur
+
+
+def analyze_sb_session(obs, rows):
+    """One session -> ``(self_75, opp_75, self_arch_onehot, opp_arch_onehot,
+    in_counts, out_counts)`` with fetchlands pooled; None if unusable (no
+    balanced row)."""
+    import collections
+    import env
+    first = obs[rows[0]]
+    # The last row where the config is balanced (drift float at its 0.5 midpoint).
+    last = None
+    for i in reversed(rows):
+        if abs(float(obs[i][env._EXTRAS_SB_DELTA]) - 0.5) < 0.1:
+            last = obs[i]
+            break
+    if last is None:
+        return None
+
+    def main_cfg(row):
+        return decode_deck_slots(
+            row[env._SELF_DECK_MAIN_START:env._SELF_DECK_MAIN_END])
+
+    def pooled(counter):
+        out = collections.Counter()
+        for idx, ct in counter.items():
+            out[sb_card_label(idx)] += ct
+        return out
+
+    before, after = pooled(main_cfg(first)), pooled(main_cfg(last))
+    ins = collections.Counter(dict(after - before))
+    outs = collections.Counter(dict(before - after))
+    self75 = (main_cfg(first) + decode_deck_slots(
+        first[env._SELF_DECK_SIDE_START:env._SELF_DECK_SIDE_END]))
+    opp75 = (decode_deck_slots(first[env._OPP_DECK_MAIN_START:env._OPP_DECK_MAIN_END])
+             + decode_deck_slots(first[env._OPP_DECK_SIDE_START:env._OPP_DECK_SIDE_END]))
+    n_arch = len(archetypes.ARCHETYPES) + 1
+    self_oh = first[env.ARCH_ONEHOT_START:env.ARCH_ONEHOT_START + n_arch]
+    opp_oh = first[env.ARCH_ONEHOT_START + n_arch:env.ARCH_ONEHOT_END]
+    return self75, opp75, self_oh, opp_oh, ins, outs
+
+
+def sb_report(paths, league=None):
+    """Aggregate sideboarding sessions across shard ``paths``.
+    Returns ``({(self_deck, opp_deck): stats}, n_shards_with_sessions)``."""
+    import collections
+    league = load_league_decks() if league is None else league
+    groups = {}
+    n_with_sb = 0
+    for path in paths:
+        try:
+            obs = np.load(path)["obs"]
+        except Exception as e:  # unreadable / truncated shard
+            print(f"[warn] skipping {path}: {e}", file=sys.stderr)
+            continue
+        found = False
+        for rows in iter_sb_sessions(obs):
+            res = analyze_sb_session(obs, rows)
+            if res is None:
+                continue
+            self75, opp75, self_oh, opp_oh, ins, outs = res
+            found = True
+            key = (identify_deck(self75, league, self_oh),
+                   identify_deck(opp75, league, opp_oh))
+            g = groups.setdefault(key, {
+                "sessions": 0, "in": collections.Counter(),
+                "out": collections.Counter(), "swap_counts": [],
+                "unbalanced": 0,
+            })
+            g["sessions"] += 1
+            g["in"] += ins
+            g["out"] += outs
+            g["swap_counts"].append(sum(ins.values()))
+            if sum(ins.values()) != sum(outs.values()):
+                g["unbalanced"] += 1
+        n_with_sb += found
+    return groups, n_with_sb
+
+
+def render_sb_report(groups, n_paths, n_with_sb, label="", min_sessions=1):
+    """The sbreport lines: per matchup (most sessions first), the average
+    swaps per session, the unbalanced-session count, and each card's average
+    copies in / out per session. The header counts every session scanned;
+    matchups under ``min_sessions`` are hidden."""
+    title = f"Sideboard report{' — ' + label if label else ''}"
+    lines = [title, "=" * len(title)]
+    total = sum(g["sessions"] for g in groups.values())
+    lines.append(f"{n_paths} shard(s) scanned, {n_with_sb} with sideboard "
+                 f"sessions, {total} session(s) total. Fetchlands fungible.")
+    shown = {k: g for k, g in groups.items() if g["sessions"] >= min_sessions}
+    for (me, opp), g in sorted(shown.items(), key=lambda kv: -kv[1]["sessions"]):
+        n = g["sessions"]
+        avg_swaps = np.mean(g["swap_counts"]) if g["swap_counts"] else 0.0
+        lines.append("")
+        lines.append(f"{me} vs {opp}  —  {n} sessions, avg {avg_swaps:.2f} "
+                     "swaps/session"
+                     + (f", {g['unbalanced']} unbalanced" if g["unbalanced"]
+                        else ""))
+        cards = sorted(set(g["in"]) | set(g["out"]),
+                       key=lambda c: (-(g["in"][c] + g["out"][c]), c))
+        for c in cards:
+            i, o = g["in"][c] / n, g["out"][c] / n
+            marks = []
+            if i:
+                marks.append(f"in {i:+.2f}")
+            if o:
+                marks.append(f"out {-o:+.2f}")
+            lines.append(f"    {c:<32} {'  '.join(marks)}")
+    return lines
+
+
+def sb_report_json(groups):
+    """The per-matchup stats as a JSON-ready dict (every matchup)."""
+    out = {}
+    for (me, opp), g in groups.items():
+        n = g["sessions"]
+        out[f"{me} vs {opp}"] = {
+            "self_deck": me, "opp_deck": opp, "sessions": n,
+            "avg_swaps": (float(np.mean(g["swap_counts"]))
+                          if g["swap_counts"] else 0.0),
+            "unbalanced": g["unbalanced"],
+            "avg_in": {c: ct / n for c, ct in sorted(g["in"].items())},
+            "avg_out": {c: ct / n for c, ct in sorted(g["out"].items())},
+        }
+    return out
+
+
+def parse_when(text, flag):
+    """A 'YYYY-mm-dd[ HH:MM[:SS]]' time as a Unix timestamp (exits naming
+    ``flag`` on a bad value)."""
+    import datetime
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.datetime.strptime(text, fmt).timestamp()
+        except ValueError:
+            continue
+    raise SystemExit(f"{flag}: unrecognized time {text!r} "
+                     "(want 'YYYY-mm-dd[ HH:MM[:SS]]')")
+
+
+def select_shards(spec=None, window=None, after=None, before=None):
+    """Shard paths for ``spec`` (see :func:`shard_paths`), oldest first,
+    filtered to modification times in [after, before) and then to the newest
+    ``window``."""
+    paths = shard_paths(spec)
+    if after is not None:
+        paths = [p for p in paths if os.path.getmtime(p) >= after]
+    if before is not None:
+        paths = [p for p in paths if os.path.getmtime(p) < before]
+    if window:
+        paths = paths[-int(window):]
+    return paths
+
+
+# ----------------------------------------------------------------------
+# CLI (flags: cli_spec.AZ_INSPECT_TOOL — shared with ./tui.sh)
+# ----------------------------------------------------------------------
 
 def _sample(args):
     return load_shard_sample(args.shards, max_rows=args.max_rows,
@@ -2617,8 +3035,8 @@ def _sample(args):
 
 
 def _maybe_counts(args):
-    """Occurrence counts when the caller asked for them, else None."""
-    if not getattr(args, "with_counts", False):
+    """Occurrence counts when --shards names recorded self-play, else None."""
+    if not args.shards:
         return None
     s = load_shard_sample(args.shards, max_rows=args.count_rows,
                           window=args.window, seed=args.seed)
@@ -2626,203 +3044,98 @@ def _maybe_counts(args):
     return counts
 
 
-def _add_count_args(p):
-    p.add_argument("--with-counts", action="store_true",
-                   help="annotate/filter by how often each card appears in "
-                        "recorded self-play (loads shards)")
-    p.add_argument("--count-rows", type=int, default=800,
-                   help="states to decode for occurrence counts (default: 800)")
-    p.add_argument("--min-seen", type=int, default=0,
-                   help="with --with-counts: drop cards seen fewer than N times")
+def _require_model_path(spec):
+    """The checkpoint path ``spec`` resolves to, or exit naming it."""
+    path = resolve_model_path(spec)
+    if path is None:
+        raise SystemExit(f"could not resolve checkpoint {spec!r}")
+    return path
 
 
 def build_parser():
+    """The az_inspect parser, built from cli_spec.AZ_INSPECT_TOOL (the same
+    definition ./tui.sh renders its forms from)."""
+    from cli_spec import AZ_INSPECT_TOOL, apply_to_parser
     ap = argparse.ArgumentParser(
         prog="az_inspect",
         description="Inspect an AlphaZero checkpoint's weights and recorded "
-                    "self-play — no games played.")
-    ap.add_argument("--model", default="gen",
-                    help="AZ checkpoint spec: 'gen' (the generalist) or a "
-                         "path. The weight-space views (firstlayer, bodylayer, "
-                         "spectra, popart, valuegeom, zoneemb, cardsel, diff) "
-                         "also take a PPO .zip, and their 'gen' falls back to "
-                         "the PPO generalist when no AZ checkpoint exists")
+                    "self-play — no games played. `tui` opens the full-screen "
+                    "inspector over the same views.")
     sub = ap.add_subparsers(dest="cmd", required=True)
-
-    p = sub.add_parser("overview", help="checkpoint meta + critic + shard status")
-    _add_shard_args(p)
-    p.add_argument("--no-shards", action="store_true",
-                   help="skip the shard sample (weights only)")
-
-    def _add_space_arg(p):
-        p.add_argument("--space", default="identity", choices=CARD_SPACES,
-                       help="card space to measure: the trainable identity "
-                            "table (default), the frozen printed-property "
-                            "block, or the full concatenation")
-
-    p = sub.add_parser("neighbors", help="nearest cards in embedding space")
-    p.add_argument("card", help="card name (exact or unique substring)")
-    p.add_argument("-k", type=int, default=15, help="neighbours to show")
-    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
-
-    p = sub.add_parser("structure", help="kNN label purity of the embedding")
-    p.add_argument("-k", type=int, default=10, help="neighbours per card")
-    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
-
-    p = sub.add_parser("clusters", help="k-means over the card embedding")
-    p.add_argument("-k", type=int, default=8, help="clusters")
-    p.add_argument("--cluster-seed", type=int, default=1,
-                   help="k-means seed (default: 1)")
-    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
-
-    p = sub.add_parser("project", help="PCA-to-2D terminal scatter")
-    p.add_argument("--mark", default="color", choices=LABEL_KINDS)
-    p.add_argument("--width", type=int, default=78)
-    p.add_argument("--height", type=int, default=24)
-    _add_shard_args(p); _add_count_args(p); _add_space_arg(p)
-
-    p = sub.add_parser("occur", help="how often each card appears in self-play")
-    _add_shard_args(p)
-    p.add_argument("--count-rows", type=int, default=1500,
-                   help="states to decode (default: 1500)")
-    p.add_argument("--top", type=int, default=25)
-
-    p = sub.add_parser("exposure",
-                       help="which embedding rows / critic columns actually "
-                            "trained (weights only, no shards)")
-    p.add_argument("--baseline", default=None,
-                   help="checkpoint to measure against (default: the previous "
-                        "gen__azv* snapshot, else the PPO gen warm-start)")
-    p.add_argument("--top", type=int, default=20)
-
-    p = sub.add_parser("drift",
-                       help="signed per-dimension embedding movement since "
-                            "the origin; all cards ranked by total |shift|")
-    p.add_argument("--baseline", default=None,
-                   help="checkpoint to measure against (default: the PPO gen "
-                        "warm-start, else the oldest gen__azv* snapshot; "
-                        "'init' = a fresh untrained seed-0 net)")
-    p.add_argument("--top", type=int, default=0,
-                   help="cards listed (default: 0 = all)")
-
-    sub.add_parser("catemb", help="action-category embedding neighbours")
-
-    p = sub.add_parser("buckets", help="per-matchup critic column map")
-    _add_shard_args(p)
-    p.add_argument("--no-shards", action="store_true",
-                   help="skip the sampled-bucket census (weights only)")
-
-    p = sub.add_parser("calib", help="per-bucket value calibration vs outcomes")
-    _add_shard_args(p)
-
-    p = sub.add_parser("divergence", help="net priors vs search posterior")
-    _add_shard_args(p)
-    p.add_argument("--top", type=int, default=12)
-
-    p = sub.add_parser("diff", help="compare two checkpoints")
-    p.add_argument("other", help="second checkpoint spec/path (B); --model is A")
-    p.add_argument("--top", type=int, default=15)
-
-    p = sub.add_parser("state", help="browse one recorded decision")
-    _add_shard_args(p)
-    p.add_argument("--row", type=int, default=0, help="which sampled decision")
-    p.add_argument("--top", type=int, default=12)
-
-    p = sub.add_parser("blocks", help="permutation importance of obs blocks")
-    _add_shard_args(p)
-    p.add_argument("--row", type=int, default=None,
-                   help="attribute ONE recorded decision instead of the mean "
-                        "over many")
-    p.add_argument("--rows", type=int, default=150,
-                   help="states averaged when --row is not given")
-    p.add_argument("--donors", type=int, default=3,
-                   help="donor states per block")
-    p.add_argument("--only-active", default=None, metavar="BLOCK",
-                   help="restrict states and donors to those where BLOCK "
-                        "(name or unique substring) is non-empty — scores a "
-                        "sparse block on the states where it exists")
-    p.add_argument("--sort", choices=("v", "pi"), default="v",
-                   help="rank by value shift (v) or policy shift (pi)")
-    p.add_argument("--top", type=int, default=20)
-
-    p = sub.add_parser("readout", help="one state's V under every matchup "
-                                       "critic column (read-out vs prior)")
-    _add_shard_args(p)
-    p.add_argument("--row", type=int, default=0, help="which sampled decision")
-    p.add_argument("--top", type=int, default=None,
-                   help="show only the top-N columns by V (default: all)")
-
-    p = sub.add_parser("swap", help="per-slot card valuation by identity swap")
-    _add_shard_args(p)
-    p.add_argument("--row", type=int, default=0, help="which sampled decision")
-    p.add_argument("--site", type=int, default=None,
-                   help="index into the state's card-identity sites "
-                        "(omit to list them)")
-    p.add_argument("--top", type=int, default=12)
-
-    p = sub.add_parser("sweep", help="V across single scalars (life, hand, turn)")
-    _add_shard_args(p)
-    p.add_argument("--row", type=int, default=0, help="which sampled decision")
-    p.add_argument("--field", default=None,
-                   help="one field (default: every sweepable field)")
-
-    p = sub.add_parser("firstlayer",
-                       help="first-layer input-column attribution per encoder")
-    p.add_argument("--encoder", default=None,
-                   help="one encoder (e.g. perm_encoder; default: all)")
-    p.add_argument("--top", type=int, default=10,
-                   help="named columns to show per encoder")
-
-    p = sub.add_parser("bodylayer",
-                       help="policy/value body first-layer attribution "
-                            "(arch one-hots + decklist aggregates)")
-    p.add_argument("--top-arch", type=int, default=16,
-                   help="archetype columns to name (default: all 16)")
-
-    p = sub.add_parser("unit",
-                       help="one hidden unit's signed input-variable profile")
-    p.add_argument("layer",
-                   help="layer name: perm_encoder, stack_encoder, "
-                        "entity_encoder, decklist_encoder, revealed_encoder, "
-                        "action_encoder, policy_body, value_body")
-    p.add_argument("unit", type=int, help="unit (row) index in that layer")
-    p.add_argument("--top", type=int, default=12,
-                   help="inputs to show per sign")
-
-    p = sub.add_parser("pathto",
-                       help="weights-only input connectivity of one value "
-                            "bucket's head column")
-    p.add_argument("bucket",
-                   help="bucket index or name substring "
-                        "(e.g. doomsday_vs_burn)")
-    p.add_argument("--top", type=int, default=15,
-                   help="widest individual input columns to show")
-
-    sub.add_parser("spectra",
-                   help="singular-value spectrum / effective rank per "
-                        "weight matrix")
-
-    sub.add_parser("popart",
-                   help="PPO PopArt per-bucket value statistics (PPO .zip)")
-
-    p = sub.add_parser("valuegeom",
-                       help="value-head row geometry (which matchups share "
-                            "a value direction)")
-    p.add_argument("--top", type=int, default=12)
-
-    sub.add_parser("zoneemb", help="zone-ref embedding neighbours")
-
-    p = sub.add_parser("cardsel",
-                       help="entity-encoder units ranked by card selectivity")
-    p.add_argument("--units", type=int, default=12, help="units to show")
-    p.add_argument("--cards", type=int, default=6,
-                   help="top cards listed per unit")
+    for s in AZ_INSPECT_TOOL.subs:
+        apply_to_parser(sub.add_parser(s.name, help=s.help), s)
     return ap
+
+
+def _run_embedding_chart(args, net, path):
+    """project --chart: the trained-rows-only 2D chart."""
+    ids, movement, exp = trained_card_ids(path, baseline=args.baseline)
+    n_named = len(named_card_ids())
+    print(f"checkpoint : {path}")
+    print(f"baseline   : {exp['baseline']} ({exp['kind']})")
+    print(f"trained    : {len(ids)}/{n_named} named cards "
+          f"({n_named - len(ids)} never received gradient — excluded)")
+    if len(ids) < 3:
+        raise SystemExit("fewer than 3 trained cards — nothing to chart")
+    mat = card_matrix(net, args.space)[ids]
+    coords, axes = project_2d(mat, args.method, seed=args.seed,
+                              perplexity=args.perplexity)
+    saved = chart_projection(coords, ids, movement,
+                             card_labels(args.mark, ids), axes,
+                             space=args.space, method=args.method,
+                             mark=args.mark, label_top=args.label_top,
+                             args=args)
+    return 0 if saved or args.show else 1
+
+
+def _run_drift_chart(args, drift):
+    """drift --chart: the movement-PC loadings and heatmap over every card
+    whose row moved."""
+    ids = named_card_ids()
+    norms = np.linalg.norm(drift["delta"][ids], axis=1)
+    ids, movement = ids[norms > 0.0], norms[norms > 0.0]
+    if len(ids) < 2:
+        raise SystemExit("fewer than 2 moved cards — nothing to chart")
+    proj, energy = movement_pcs(drift["delta"][ids].astype(np.float64))
+    print()
+    print("\n".join(render_movement_pcs(proj, energy, ids)))
+    saved = chart_movement_map(proj, energy, ids, movement, top=args.top,
+                               args=args)
+    return 0 if saved or args.show else 1
+
+
+def _run_sbreport(args):
+    after = (None if args.mtime_after is None
+             else parse_when(args.mtime_after, "--mtime-after"))
+    before = (None if args.mtime_before is None
+              else parse_when(args.mtime_before, "--mtime-before"))
+    paths = select_shards(args.shards, window=args.window, after=after,
+                          before=before)
+    if not paths:
+        print("no shards matched", file=sys.stderr)
+        return 1
+    groups, n_with_sb = sb_report(paths)
+    print("\n".join(render_sb_report(groups, len(paths), n_with_sb, args.label,
+                                     min_sessions=args.min_sessions)))
+    if args.json:
+        with open(args.json, "w") as f:
+            json.dump({"label": args.label, "n_shards": len(paths),
+                       "matchups": sb_report_json(groups)}, f, indent=2)
+        print(f"\nJSON written to {args.json}")
+    return 0
 
 
 def main(argv=None):
     args = build_parser().parse_args(argv)
     cmd = args.cmd
+
+    if cmd == "tui":
+        from tui_az_inspect import InspectApp
+        InspectApp(args).run()
+        return 0
+
+    if cmd == "sbreport":
+        return _run_sbreport(args)
 
     if cmd == "catemb":
         net, _ = load_net(args.model)
@@ -2830,8 +3143,8 @@ def main(argv=None):
         return 0
 
     if cmd == "diff":
-        a = resolve_weights_spec(args.model)
-        b = resolve_weights_spec(args.other)
+        a = resolve_model_path(args.model)
+        b = resolve_model_path(args.other)
         if a is None or b is None:
             raise SystemExit(f"could not resolve both checkpoints "
                              f"({args.model!r} -> {a}, {args.other!r} -> {b})")
@@ -2891,8 +3204,7 @@ def main(argv=None):
         return 0
 
     if cmd == "occur":
-        s = load_shard_sample(args.shards, max_rows=max(args.max_rows,
-                                                        args.count_rows),
+        s = load_shard_sample(args.shards, max_rows=args.count_rows,
                               window=args.window, seed=args.seed)
         emb, rev, n = card_occurrence_split(s["obs"], limit=args.count_rows,
                                             seed=args.seed)
@@ -2901,32 +3213,26 @@ def main(argv=None):
         return 0
 
     if cmd == "exposure":
-        path = resolve_spec(args.model)
-        if path is None:
-            raise SystemExit(f"could not resolve checkpoint {args.model!r}")
+        path = _require_model_path(args.model)
         print("\n".join(render_exposure(card_exposure(path, args.baseline),
                                         top_n=args.top)))
         return 0
 
     if cmd == "drift":
-        path = resolve_spec(args.model)
-        if path is None:
-            raise SystemExit(f"could not resolve checkpoint {args.model!r}")
-        print("\n".join(render_drift(embedding_drift(path, args.baseline),
-                                     top_n=args.top)))
-        return 0
+        path = _require_model_path(args.model)
+        drift = embedding_drift(path, args.baseline)
+        print("\n".join(render_drift(drift, top_n=args.top)))
+        return _run_drift_chart(args, drift) if args.chart else 0
 
     net, path = load_net(args.model)
 
     if cmd == "overview":
-        sample = None if args.no_shards else _sample(args)
-        print("\n".join(render_overview(net, path, sample)))
+        sample = _sample(args) if args.shards else None
+        print("\n".join(render_overview(net, path, sample, args.shards)))
         return 0
 
     if cmd == "buckets":
-        sb = None
-        if not args.no_shards:
-            sb = obs_buckets(net, _sample(args)["obs"])
+        sb = obs_buckets(net, _sample(args)["obs"]) if args.shards else None
         print("\n".join(render_buckets(net, sb)))
         return 0
 
@@ -2941,7 +3247,7 @@ def main(argv=None):
 
     if cmd in ("state", "blocks", "swap", "sweep", "readout"):
         s = _sample(args)
-        row = getattr(args, "row", 0)
+        row = args.row
         if row is not None and not 0 <= row < s["obs"].shape[0]:
             raise SystemExit(f"--row {row} out of range "
                              f"(0..{s['obs'].shape[0] - 1} in this sample)")
@@ -2952,7 +3258,7 @@ def main(argv=None):
                 value_readouts(net, s["obs"][row]), top_n=args.top)))
         elif cmd == "blocks":
             if args.row is None:
-                imp = block_importance(net, s, n_rows=args.rows,
+                imp = block_importance(net, s, n_rows=args.block_rows,
                                        donors=args.donors, seed=args.seed,
                                        only_active=args.only_active)
                 print("\n".join(render_block_importance(imp, top_n=args.top,
@@ -2988,32 +3294,38 @@ def main(argv=None):
                                           fields)))
         return 0
 
-    mat = card_matrix(net, getattr(args, "space", "identity"))
+    mat = card_matrix(net, args.space)
     counts = _maybe_counts(args)
-    # Without --with-counts, annotate/filter with the weights-only exposure
-    # instead of loading shards (same signal the TUI defaults to).
+    # Without --shards, annotate/filter with the weights-only exposure instead
+    # (same signal the TUI defaults to).
     exposure = None if counts is not None else exposure_counts_or_none(path)
     filt = filter_vector(counts, exposure)
 
     if cmd == "neighbors":
-        idx = resolve_card(args.card)
+        try:
+            idx = resolve_card(args.card)
+        except ValueError as e:
+            raise SystemExit(str(e))
         cand = None
         if filt is not None and args.min_seen > 0:
             cand = np.array([i for i in named_card_ids()
                              if filt[i] >= args.min_seen])
-        print("\n".join(render_neighbors(mat, idx, k=args.k, counts=counts,
-                                         candidates=cand, exposure=exposure)))
+        print("\n".join(render_neighbors(mat, idx, k=args.neighbors,
+                                         counts=counts, candidates=cand,
+                                         exposure=exposure)))
     elif cmd == "structure":
-        print("\n".join(render_structure(mat, k=args.k, counts=filt,
+        print("\n".join(render_structure(mat, k=args.knn, counts=filt,
                                          min_seen=args.min_seen)))
     elif cmd == "clusters":
-        print("\n".join(render_clusters(mat, k=args.k, seed=args.cluster_seed,
+        print("\n".join(render_clusters(mat, k=args.clusters, seed=args.seed,
                                         counts=filt, min_seen=args.min_seen)))
     elif cmd == "project":
         print("\n".join(render_projection(mat, width=args.width,
                                           height=args.height, mark=args.mark,
                                           counts=filt,
                                           min_seen=args.min_seen)))
+        if args.chart:
+            return _run_embedding_chart(args, net, path)
     return 0
 
 

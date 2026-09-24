@@ -704,7 +704,7 @@ land with full visit posterior / root value / explored flag (via `SearchControll
 chained with the analysis window's sink); every other >1-choice decision (the human's included)
 lands as a one-hot behavior row (`q=NaN`) via the driver's `step_observer`. One file per match,
 atomically rewritten at each game boundary, so every shard consumer (`az_train.load_window`,
-`az_inspect`/`tui_az_inspect`/`tui_analysis --shards`, the GUI browser) always sees a valid dir
+`az_inspect` (CLI views and `az_inspect.py tui`)/`tui_analysis --shards`, the GUI browser) always sees a valid dir
 (in-progress rows carry `z=0`). Each shard gets a same-stem **`.rmplay` replay sidecar** (seed +
 full action log + per-row positions) attached by `shard_replay.load_replay_sidecars`, making a
 recording **exactly replayable**: both browsers' `search` entry (**F6**,
@@ -806,17 +806,22 @@ search line per decision. Regressions: `test_tree_cache.py` (default tier `treec
   REINFORCE-style against the realized next-game z (`az-train --sb-batch-frac/--sb-loss-coef`);
   gates/eval/analysis/play always use the multi-world plan search. See docs/alphazero_status.md.
 - `train/test_analysis_session.py` — analysis-core regression (opt-in ci tier `analysis`)
-- `train/az_inspect.py` — **static** inspection of an AZ checkpoint (never a played game).
-  Weights-only views: card-embedding neighbours / purity / clusters / PCA (rows align with
-  `src/card_vocab.h`), per-matchup value-head column map, checkpoint diffs, and **`exposure`**
-  (which embedding rows / critic columns received gradient). Shard-backed views (`az_data/gen/*.npz`):
-  per-card counts, calibration vs realized outcomes, KL(search‖net) by category, per-decision
-  probes (permutation importance, card-swap, scalar sweeps). Each view = data fn + `render_*`, so
-  CLI and TUI can't diverge.
-- `train/tui_az_inspect.py` — Textual front end over those views (Embedding / Critic panes,
-  clickable embedding drill-down); `./tui.sh`'s `az-inspect → inspect` menu entry. **Opens
-  weights-only** (~1s, no shard pool needed) and lists only the views it can compute;
-  `--with-shards` loads recorded self-play and adds the Probes pane
+- `train/az_inspect.py` — **static** inspection of an AZ checkpoint (never a played game), ONE
+  command: a subcommand per view, flags in `cli_spec.AZ_INSPECT_TOOL` (so `./tui.sh`'s
+  `az-inspect` menu renders the same definition). `--model` resolves via
+  `opponents.parse_model_spec`; `--shards DIR` names recorded self-play (absent = weights only;
+  the shard-only views then read `az_data/gen`). Weights-only views: card-embedding neighbours /
+  purity / clusters / PCA (rows align with `src/card_vocab.h`; `project --chart` saves a
+  PCA/t-SNE PNG of the rows that ever trained), per-matchup value-head column map, checkpoint
+  diffs, **`exposure`** (which embedding rows / critic columns received gradient) and `drift`
+  (`--chart`: the movement-PC heatmap). Shard-backed views: per-card counts, calibration vs
+  realized outcomes, KL(search‖net) by category, per-decision probes (permutation importance,
+  card-swap, scalar sweeps), and `sbreport` (between-games sideboard swaps per matchup,
+  fetchlands pooled via `decode.sb_card_class`). Each view = data fn + `render_*`, so CLI and
+  TUI can't diverge. **`az_inspect.py tui`** launches the Textual front end
+  (`tui_az_inspect.InspectApp`: Embedding / Critic / Weights panes, clickable embedding
+  drill-down); it **opens weights-only** (~1s, no shard pool needed) and lists only the views it
+  can compute; `--shards DIR` adds the Probes pane
 - `train/test_az_inspect.py` — inspector regression against a fresh net + synthetic shards
   (opt-in ci tier `azinspect`; needs torch, no engine binary)
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`

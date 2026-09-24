@@ -218,11 +218,16 @@ SEED_DEFAULTS = {
     ("train", "observe"): 1, ("train", "baseline"): 1, ("train", "az-eval"): 1,
     ("analysis", "report"): 1, ("analysis", "interactive"): 1,
     ("analysis", "search"): 1, ("analysis-tui", "browse"): 1,
-    ("az-inspect", "inspect"): 1, ("harness", "harness"): None,
+    ("harness", "harness"): None,
     ("play", "play"): None,
     ("train", "az-selfplay"): None, ("train", "az-train"): None,
     ("train", "az"): None, ("train", "az-league"): None,
     ("train", "bench-actor"): 1, ("train", "bench-workers"): 1,
+    # az_inspect: every view that samples shards (or seeds k-means / t-SNE).
+    **{("az-inspect", s): 1 for s in (
+        "tui", "overview", "neighbors", "structure", "clusters", "project",
+        "occur", "buckets", "calib", "divergence", "state", "blocks",
+        "readout", "swap", "sweep")},
 }
 
 # Count flags other than --games, each naming a DIFFERENT count.
@@ -266,11 +271,11 @@ def test_count_puct_seed_vocabulary():
     p = build(subs[("analysis", "search")])
     ns = p.parse_args(["--player-a", "gen", "--c-puct", "3.5", "--games", "2"])
     check(ns.c_puct == 3.5 and ns.games == 2, "search --c-puct/--games parse")
-    # Standalone inspector: sampling and k-means seeds default to 1.
+    # The inspector's one --seed drives sampling and k-means alike.
     import az_inspect
     ns = az_inspect.build_parser().parse_args(["clusters"])
-    check(ns.seed == 1 and ns.cluster_seed == 1,
-          f"az_inspect clusters seeds {ns.seed}/{ns.cluster_seed} != 1/1")
+    check(ns.seed == 1 and not hasattr(ns, "cluster_seed"),
+          f"az_inspect clusters --seed defaults to 1 ({ns})")
 
 
 def test_scoped_removal():
@@ -795,6 +800,20 @@ def test_benches():
           f"bench-workers --dry-run plans a leg (rc={rc}):\n{out[-600:]}")
 
 
+def test_az_inspect_entry():
+    print("az_inspect is one command; the folded scripts point at it")
+    for script, needle in (
+            ("train/tui_az_inspect.py", "use `az_inspect.py tui`"),
+            ("train/az_embed_viz.py", "use `az_inspect.py project --chart`"),
+            ("train/sb_shard_report.py", "use `az_inspect.py sbreport`")):
+        rc, out = run_script(script, "--help")
+        check(rc == 1 and "was removed" in out and needle in out,
+              f"{script} should exit 1 naming az_inspect (rc={rc}):\n{out[-600:]}")
+    rc, out = run_script("train/az_inspect.py", "tui", "--with-shards")
+    check(rc == 2 and "--with-shards was removed; use --shards DIR" in out,
+          f"az_inspect tui --with-shards should error (rc={rc}):\n{out[-600:]}")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -813,6 +832,7 @@ def main():
     test_baseline_players()
     test_benches()
     test_play_boards()
+    test_az_inspect_entry()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")
         return 1

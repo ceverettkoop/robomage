@@ -617,6 +617,28 @@ REMOVED_FLAGS = (
                 scopes=("train/bench-workers",)),
     RemovedFlag("--envs", "use --n-envs (comma-separated n_envs values)",
                 scopes=("train/bench-nenvs",)),
+    # az_inspect: one --shards DIR (absent = weights only), one long name per
+    # count, and the folded az_embed_viz / sb_shard_report flags.
+    RemovedFlag("--with-shards", "use --shards DIR (e.g. train/az_data/gen)",
+                scopes=("az-inspect",)),
+    RemovedFlag("--no-shards", "omit --shards (absent = weights only)",
+                scopes=("az-inspect",)),
+    RemovedFlag("--with-counts", "use --shards DIR (occurrence counts come "
+                                 "from that shard directory)",
+                scopes=("az-inspect",)),
+    RemovedFlag("-k", "use --neighbors", scopes=("az-inspect/neighbors",)),
+    RemovedFlag("-k", "use --knn", scopes=("az-inspect/structure",)),
+    RemovedFlag("-k", "use --clusters", scopes=("az-inspect/clusters",)),
+    RemovedFlag("--cluster-seed", "use --seed", scopes=("az-inspect/clusters",)),
+    RemovedFlag("--rows", "use --block-rows", scopes=("az-inspect/blocks",)),
+    RemovedFlag("--max-rows", "the embedding views sample --count-rows states "
+                              "for their occurrence counts",
+                scopes=tuple(f"az-inspect/{s}" for s in
+                             ("neighbors", "structure", "clusters", "project",
+                              "occur"))),
+    RemovedFlag("--map-top", "use --top", scopes=("az-inspect/drift",)),
+    RemovedFlag("--dir", "use --shards", scopes=("az-inspect/sbreport",)),
+    RemovedFlag("--last", "use --window", scopes=("az-inspect/sbreport",)),
 )
 
 # Environment variables that duplicated a flag: name -> hint appended to
@@ -2684,49 +2706,299 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
     ]),
 ])
 
-# tui_az_inspect.py — static AZ checkpoint inspector (flat parser, no
-# subcommand). Mirrors tui_az_inspect.build_parser(); the individual views are
-# also available non-interactively as az_inspect.py subcommands.
-AZ_INSPECT_TOOL = Tool("az-inspect", "train/tui_az_inspect.py", flat=True, subs=[
-    Sub("inspect",
-        "Inspect an AZ checkpoint's weights and recorded self-play — card "
-        "embedding space, the per-matchup critic, and per-decision probes. "
-        "No games are played",
-        mode="interactive", items=[
-        Arg("--model", "str", default="gen", suggest="az_checkpoint",
-            help="AZ checkpoint: 'gen' (the generalist), a snapshot stem "
-                 "(gen__azv384000), or a path"),
-        Arg("--with-shards", "flag",
-            help="Also load recorded self-play, adding the views that need it: "
-                 "occurrences, value calibration, priors-vs-search divergence "
-                 "and the whole Probes pane. Off by default — the weights-only "
-                 "views load in a second and need no shard pool"),
-        Arg("--shards", "str", default=None,
-            help="Directory of recorded self-play shard_*.npz to use with "
-                 "--with-shards, which it implies "
-                 "(default: train/az_data/gen)"),
-        Arg("--max-rows", "int", default=3000,
-            help="Recorded decisions to sample (default: 3000)"),
-        Arg("--count-rows", "int", default=800,
-            help="States decoded for per-card occurrence counts (default: 800)"),
-        Arg("--window", "int", default=None,
-            help="Use only the newest N shards"),
-        Arg("--seed", "int", default=1, help="Sampling seed (default: 1)"),
-        Arg("--min-seen", "int", default=0,
-            help="Drop cards seen fewer than N times from the embedding views "
-                 "(their rows never trained)"),
-        Arg("--neighbors", "int", default=20, help="Neighbours listed per card"),
-        Arg("--knn", "int", default=10, help="k for the label-purity view"),
-        Arg("--clusters", "int", default=8, help="k for k-means"),
-        Arg("--mark", "choice", choices=("color", "type", "cmc", "land"),
-            default="color", help="Marker label for the PCA scatter"),
-        Arg("--top", "int", default=25,
-            help="Rows in the occurrence / divergence / probe tables"),
-        Arg("--block-rows", "int", default=120,
-            help="States averaged by the mean block-attribution probe"),
-        Arg("--donors", "int", default=3,
-            help="Donor states per block in that average"),
+# az_inspect.py — static AZ checkpoint inspector: one subcommand per view (each
+# prints its lines to the terminal), plus `tui`, the Textual front end
+# (tui_az_inspect.InspectApp) over the same views. No games are played.
+
+AZI_LABEL_KINDS = ("color", "type", "cmc", "land")
+AZI_CARD_SPACES = ("identity", "props", "full")
+# Shared shard-sample sizes (one default each, CLI views and the TUI alike).
+DEFAULT_AZI_MAX_ROWS = 4000
+DEFAULT_AZI_COUNT_ROWS = 1500
+DEFAULT_AZI_BLOCK_ROWS = 150
+DEFAULT_AZI_DONORS = 3
+DEFAULT_AZI_NEIGHBORS = 20
+DEFAULT_AZI_KNN = 10
+DEFAULT_AZI_CLUSTERS = 8
+
+
+def _azi_model():
+    return Arg("--model", "str", default="gen", suggest="az_checkpoint",
+               help="Checkpoint to inspect (an opponents.parse_model_spec "
+                    "spec): 'gen' / az:gen (the AZ generalist, else the AZNet "
+                    "warm-started from the PPO gen), a snapshot stem "
+                    "(gen__azv384000), an AZ .pt path, or mcts:gen / a PPO "
+                    ".zip (default: gen)")
+
+
+def _azi_shards(optional):
+    """--shards DIR. ``optional``: the view runs weights-only without it (and
+    adds the shard-backed parts with it); otherwise the view needs recorded
+    self-play and an absent --shards reads train/az_data/gen."""
+    what = ("Recorded self-play shard directory (shard_*.npz) — or one or more "
+            "comma-separated .npz files — ")
+    if optional:
+        return Arg("--shards", "str", default=None,
+                   help=what + "adding the shard-backed views/annotations. "
+                               "Absent = weights only")
+    return Arg("--shards", "str", default=None,
+               help=what + "to sample (default: train/az_data/gen)")
+
+
+def _azi_window():
+    return Arg("--window", "int", default=None,
+               help="Use only the newest N shards (default: all)")
+
+
+def _azi_seed():
+    return Arg("--seed", "int", default=1,
+               help="Sampling / k-means / t-SNE seed (default: 1)")
+
+
+def _azi_sample_args(optional=False):
+    """The shard-sample args of a view that reads a random row sample."""
+    return [_azi_shards(optional),
+            Arg("--max-rows", "int", default=DEFAULT_AZI_MAX_ROWS,
+                help=f"Recorded decisions to sample (default: "
+                     f"{DEFAULT_AZI_MAX_ROWS})"),
+            _azi_window(), _azi_seed()]
+
+
+def _azi_count_rows():
+    return Arg("--count-rows", "int", default=DEFAULT_AZI_COUNT_ROWS,
+               help="States decoded for per-card occurrence counts (default: "
+                    f"{DEFAULT_AZI_COUNT_ROWS})")
+
+
+def _azi_embedding_args():
+    """An embedding view: weights-only, annotated/filtered by occurrence
+    counts from --shards when given, else by the weights-only exposure."""
+    return [_azi_model(), _azi_shards(True), _azi_window(), _azi_seed(),
+            _azi_count_rows(),
+            Arg("--min-seen", "int", default=0,
+                help="Drop cards seen fewer than N times (occurrence counts "
+                     "with --shards, else 1 = the row ever trained)"),
+            Arg("--space", "choice", choices=AZI_CARD_SPACES,
+                default="identity",
+                help="Card space to measure: the trainable identity table "
+                     "(default), the frozen printed-property block, or the "
+                     "full concatenation")]
+
+
+def _azi_mark(help_extra=""):
+    return Arg("--mark", "choice", choices=AZI_LABEL_KINDS, default="color",
+               help="Card label used as the scatter marker / chart color "
+                    "(default: color)" + help_extra)
+
+
+def _azi_top(default, what="Rows shown"):
+    return Arg("--top", "int", default=default,
+               help=f"{what} (default: {default})")
+
+
+def _azi_row():
+    return Arg("--row", "int", default=0,
+               help="Which sampled decision (default: 0)")
+
+
+def _azi_baseline(help_text):
+    return Arg("--baseline", "str", default=None, help=help_text)
+
+
+def _azi_chart_args(what):
+    return [Arg("--chart", "flag",
+                help=f"Also save {what} as a PNG chart (matplotlib, "
+                     "headless-safe) under --out"),
+            Arg("--out", "str", default=None,
+                help="Directory for saved charts (default: train/analysis_out/)"),
+            Arg("--show", "flag",
+                help="With --chart: also open the chart in a GUI window (needs "
+                     "a local display)")]
+
+
+_AZI_ORIGIN_HELP = ("Checkpoint to measure against (default: the PPO gen "
+                    "warm-start, else the oldest gen__azv* snapshot; 'init' = "
+                    "a fresh untrained seed-0 net)")
+
+
+def _azi_weights_sub(name, help_text, *items):
+    """A weight-space view: reads an AZ .pt or a PPO .zip, never shards."""
+    return Sub(name, help_text, items=[_azi_model(), *items])
+
+
+AZ_INSPECT_TOOL = Tool("az-inspect", "train/az_inspect.py", subs=[
+    Sub("tui",
+        "Full-screen inspector (Textual): card embedding space with a "
+        "clickable drill-down, the per-matchup critic, the weight-space views "
+        "and — with --shards — per-decision probes. Opens weights-only in "
+        "about a second", mode="interactive", items=[
+            _azi_model(), *_azi_sample_args(optional=True), _azi_count_rows(),
+            Arg("--min-seen", "int", default=0,
+                help="Drop cards seen fewer than N times from the embedding "
+                     "views (their rows never trained)"),
+            Arg("--neighbors", "int", default=DEFAULT_AZI_NEIGHBORS,
+                help=f"Neighbours listed per card (default: "
+                     f"{DEFAULT_AZI_NEIGHBORS})"),
+            Arg("--knn", "int", default=DEFAULT_AZI_KNN,
+                help=f"k for the label-purity view (default: {DEFAULT_AZI_KNN})"),
+            Arg("--clusters", "int", default=DEFAULT_AZI_CLUSTERS,
+                help=f"k for k-means (default: {DEFAULT_AZI_CLUSTERS})"),
+            _azi_mark(),
+            _azi_top(25, "Rows in the occurrence / divergence / probe tables"),
+            Arg("--block-rows", "int", default=DEFAULT_AZI_BLOCK_ROWS,
+                help="States averaged by the mean block-attribution probe "
+                     f"(default: {DEFAULT_AZI_BLOCK_ROWS})"),
+            Arg("--donors", "int", default=DEFAULT_AZI_DONORS,
+                help=f"Donor states per block (default: {DEFAULT_AZI_DONORS})"),
+        ]),
+    Sub("overview", "Checkpoint meta + critic coverage (+ shard status with "
+                    "--shards)",
+        items=[_azi_model(), *_azi_sample_args(optional=True)]),
+    Sub("neighbors", "Nearest cards in embedding space", items=[
+        Arg("card", "str", required=True,
+            help="Card name (exact or unique substring)"),
+        Arg("--neighbors", "int", default=DEFAULT_AZI_NEIGHBORS,
+            help=f"Neighbours to show (default: {DEFAULT_AZI_NEIGHBORS})"),
+        *_azi_embedding_args()]),
+    Sub("structure", "kNN label purity of the embedding", items=[
+        Arg("--knn", "int", default=DEFAULT_AZI_KNN,
+            help=f"Neighbours per card (default: {DEFAULT_AZI_KNN})"),
+        *_azi_embedding_args()]),
+    Sub("clusters", "k-means over the card embedding", items=[
+        Arg("--clusters", "int", default=DEFAULT_AZI_CLUSTERS,
+            help=f"Number of clusters (default: {DEFAULT_AZI_CLUSTERS})"),
+        *_azi_embedding_args()]),
+    Sub("project", "PCA-to-2D terminal scatter; --chart saves a PCA/t-SNE "
+                   "chart of the TRAINED rows only", items=[
+        _azi_mark(),
+        Arg("--width", "int", default=78, help="Terminal scatter width (default: 78)"),
+        Arg("--height", "int", default=24, help="Terminal scatter height (default: 24)"),
+        *_azi_embedding_args(),
+        *_azi_chart_args("the 2D projection of every card whose row ever "
+                         "trained (size = movement since --baseline)"),
+        Arg("--method", "choice", choices=("pca", "tsne"), default="pca",
+            help="Chart projection (default: pca)"),
+        Arg("--perplexity", "float", default=30.0,
+            help="Chart t-SNE perplexity (auto-capped for small sets; "
+                 "default: 30)"),
+        Arg("--label-top", "int", default=30,
+            help="Chart: annotate the N most-moved cards (default: 30)"),
+        _azi_baseline("Chart: checkpoint 'ever trained' is measured against "
+                      "(default: the PPO gen warm-start, else the oldest "
+                      "gen__azv* snapshot)"),
     ]),
+    Sub("occur", "How often each card appears in recorded self-play", items=[
+        _azi_model(), _azi_shards(False), _azi_window(), _azi_seed(),
+        _azi_count_rows(), _azi_top(25)]),
+    Sub("exposure", "Which embedding rows / critic columns actually trained "
+                    "(weights only)", items=[
+        _azi_model(),
+        _azi_baseline("Checkpoint to measure against (default: the previous "
+                      "gen__azv* snapshot, else the PPO gen warm-start)"),
+        _azi_top(20)]),
+    Sub("drift", "Signed per-dimension embedding movement since the origin; "
+                 "all cards ranked by total |shift|; --chart maps it across "
+                 "the movement matrix's own PCs", items=[
+        _azi_model(), _azi_baseline(_AZI_ORIGIN_HELP),
+        _azi_top(0, "Cards listed / charted (0 = all)"),
+        *_azi_chart_args("a per-card heatmap of |movement| along each "
+                         "movement-PC (with the per-PC energy scree)")]),
+    Sub("catemb", "Action-category embedding neighbours", items=[_azi_model()]),
+    Sub("buckets", "Per-matchup critic column map (+ the sampled-bucket census "
+                   "with --shards)",
+        items=[_azi_model(), *_azi_sample_args(optional=True)]),
+    Sub("calib", "Per-bucket value calibration vs recorded outcomes",
+        items=[_azi_model(), *_azi_sample_args()]),
+    Sub("divergence", "Net priors vs the search posterior, by action category",
+        items=[_azi_model(), *_azi_sample_args(), _azi_top(12)]),
+    Sub("sbreport", "Between-games sideboarding sessions in recorded shards: "
+                    "average cards brought in / cut per session, by matchup "
+                    "(fetchlands fungible)", items=[
+        _azi_shards(False), _azi_window(),
+        Arg("--mtime-after", "str", default=None, metavar="'YYYY-mm-dd HH:MM'",
+            help="Only shards modified at or after this time"),
+        Arg("--mtime-before", "str", default=None, metavar="'YYYY-mm-dd HH:MM'",
+            help="Only shards modified before this time"),
+        Arg("--min-sessions", "int", default=1,
+            help="Hide matchups with fewer sessions than this (default: 1)"),
+        Arg("--label", "str", default="", help="Report title suffix"),
+        Arg("--json", "str", default=None, metavar="PATH",
+            help="Also write the report as JSON to PATH"),
+    ]),
+    Sub("diff", "Compare two checkpoints (either family)", items=[
+        Arg("other", "str", required=True,
+            help="Second checkpoint spec/path (B); --model is A"),
+        _azi_model(), _azi_top(15)]),
+    Sub("state", "Browse one recorded decision", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(), _azi_top(12)]),
+    Sub("blocks", "Permutation importance of obs blocks", items=[
+        _azi_model(), *_azi_sample_args(),
+        Arg("--row", "int", default=None,
+            help="Attribute ONE recorded decision instead of the mean over "
+                 "--block-rows states"),
+        Arg("--block-rows", "int", default=DEFAULT_AZI_BLOCK_ROWS,
+            help="States averaged when --row is not given (default: "
+                 f"{DEFAULT_AZI_BLOCK_ROWS})"),
+        Arg("--donors", "int", default=DEFAULT_AZI_DONORS,
+            help=f"Donor states per block (default: {DEFAULT_AZI_DONORS})"),
+        Arg("--only-active", "str", default=None, metavar="BLOCK",
+            help="Restrict states and donors to those where BLOCK (name or "
+                 "unique substring) is non-empty — scores a sparse block on "
+                 "the states where it exists"),
+        Arg("--sort", "choice", choices=("v", "pi"), default="v",
+            help="Rank by value shift (v) or policy shift (pi)"),
+        _azi_top(20)]),
+    Sub("readout", "One state's V under every matchup critic column", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(),
+        Arg("--top", "int", default=None,
+            help="Show only the top-N columns by V (default: all)")]),
+    Sub("swap", "Per-slot card valuation by identity swap", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(),
+        Arg("--site", "int", default=None,
+            help="Index into the state's card-identity sites (omit to list "
+                 "them)"),
+        _azi_top(12)]),
+    Sub("sweep", "V across single scalars (life, hand, turn)", items=[
+        _azi_model(), *_azi_sample_args(), _azi_row(),
+        Arg("--field", "str", default=None,
+            help="One field (default: every sweepable field)")]),
+    _azi_weights_sub("firstlayer", "First-layer input-column attribution per "
+                                   "encoder",
+                     Arg("--encoder", "str", default=None,
+                         help="One encoder (e.g. perm_encoder; default: all)"),
+                     _azi_top(10, "Named columns shown per encoder")),
+    _azi_weights_sub("bodylayer", "Policy/value body first-layer attribution "
+                                  "(arch one-hots + decklist aggregates)",
+                     Arg("--top-arch", "int", default=16,
+                         help="Archetype columns to name (default: 16)")),
+    _azi_weights_sub("unit", "One hidden unit's signed input-variable profile",
+                     Arg("layer", "str", required=True,
+                         help="Layer name: perm_encoder, stack_encoder, "
+                              "entity_encoder, decklist_encoder, "
+                              "revealed_encoder, action_encoder, policy_body, "
+                              "value_body"),
+                     Arg("unit", "int", required=True,
+                         help="Unit (row) index in that layer"),
+                     _azi_top(12, "Inputs shown per sign")),
+    _azi_weights_sub("pathto", "Weights-only input connectivity of one value "
+                               "bucket's head column",
+                     Arg("bucket", "str", required=True,
+                         help="Bucket index or name substring "
+                              "(e.g. doomsday_vs_burn)"),
+                     _azi_top(15, "Widest individual input columns shown")),
+    _azi_weights_sub("spectra", "Singular-value spectrum / effective rank per "
+                                "weight matrix"),
+    _azi_weights_sub("popart", "PPO PopArt per-bucket value statistics "
+                               "(PPO .zip)"),
+    _azi_weights_sub("valuegeom", "Value-head row geometry (which matchups "
+                                  "share a value direction)", _azi_top(12)),
+    _azi_weights_sub("zoneemb", "Zone-ref embedding neighbours"),
+    _azi_weights_sub("cardsel", "Entity-encoder units ranked by card "
+                                "selectivity",
+                     Arg("--units", "int", default=12,
+                         help="Units to show (default: 12)"),
+                     Arg("--cards", "int", default=6,
+                         help="Top cards listed per unit (default: 6)")),
 ])
 
 ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, ANALYSIS_TUI_TOOL, AZ_INSPECT_TOOL,

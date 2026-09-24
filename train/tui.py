@@ -592,16 +592,22 @@ class LauncherApp(ArgFormMixin, App):
     # Scripts that take over the whole terminal with their own Textual app:
     # play.py launches a game board (--board tui is tui_game.py; gui and text
     # also own the terminal while they run) and tui_analysis.py is the
-    # analysis browser. Teeing either through `script` would fill the log with
+    # analysis browser, and az_inspect.py's `tui` subcommand is the checkpoint
+    # inspector. Teeing any of them through `script` would fill the log with
     # terminal escape sequences, so they run without logging.
-    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py",
-                                     "tui_az_inspect.py"})
+    _FULLSCREEN_SCRIPTS = frozenset({"play.py", "tui_analysis.py"})
+    _FULLSCREEN_SUBS = frozenset({("az_inspect.py", "tui")})
 
     def _is_play_mode(self):
         """True when the selected command is itself a full-screen Textual app
-        (see _FULLSCREEN_SCRIPTS) — it runs in the terminal without logging."""
-        return bool(self._tool) and (os.path.basename(self._tool.script)
-                                     in self._FULLSCREEN_SCRIPTS)
+        (see _FULLSCREEN_SCRIPTS / _FULLSCREEN_SUBS) — it runs in the terminal
+        without logging."""
+        if not self._tool:
+            return False
+        script = os.path.basename(self._tool.script)
+        return (script in self._FULLSCREEN_SCRIPTS
+                or (script, getattr(self._sub, "name", None))
+                in self._FULLSCREEN_SUBS)
 
     def _collect(self):
         """Return (argv, missing_required_names) for the selected command."""
