@@ -188,11 +188,19 @@ az_inspect) but to a **random, printed** seed on long training runs
   included), 10 bo3 matches per matchup, seats alternating. Runs on the C++
   actor (`bin/az_actor --search` eval mode + the scripted oracle + the GPU eval
   server, 48 legs in flight) — NOT on `drive_game`; PPO `.zip` models,
-  `mcts:` specs and `--no-actor` fall back to the runner-based
-  `train.baseline_sweep`. `--player-a` is the model under test (player A
-  is the side under test, not a fixed physical seat), `--deck-a` narrows to
-  one piloted deck (mirror unless `--deck-b`), `--games`/`--sims`/
-  `--worlds`/`--workers` scale it, `--seed` reproduces. Every run appends its report to `checkpoints/baseline_report.log`
+  `mcts:`/`azraw:` specs, a `--player-b` other than scripted:hard, and
+  `--no-actor` fall back to the runner-based `train.baseline_sweep` (fresh
+  controllers per unit of work; a matchup splits into contiguous game chunks
+  when there are fewer matchups than `--workers`). `--player-a` is the agent
+  under test and `--player-b` the reference (default scripted:hard; players
+  alternate physical seats), `--deck-a` narrows to one piloted deck (mirror
+  unless `--deck-b`), `--games`/`--sims`/`--worlds`/`--workers` scale it
+  (`--sims`/`--worlds`/`--c-puct`/`--sb-*` fill every search seat's
+  unspecified knobs), `--seed` reproduces. The search A/B gate — search vs
+  the same checkpoint's raw policy — is `baseline --player-a mcts:gen
+  --player-b gen --deck-a <deck>`. The report ends with player A's score
+  against the 55% promotion bar (PASS/FAIL plus the gate's SPRT reading) and,
+  on the Python backend, each search seat's counters and safe fraction. Every run appends its report to `checkpoints/baseline_report.log`
   (override with `--log`), and the actor path records the net's searched
   decisions as shards under `az_data/baseline/baseline_<stamp>/` (analyzable
   with `az_inspect`/the shard browsers; never pooled into training;

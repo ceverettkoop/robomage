@@ -1984,22 +1984,25 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
 def baseline(binary_path: str, model, n_games: int = 100,
              deck: str | None = None, opp_deck: str | None = None,
              seed: int | None = None, quiet: bool = False, bo3: bool = False,
-             split_out: dict | None = None):
-    """Evaluate a model's win rate vs the scripted HARD agent.
+             split_out: dict | None = None, opponent="scripted:hard",
+             first_game: int = 0):
+    """Evaluate a model's win rate vs an opponent agent (default scripted:hard).
 
-    ``model`` is any ``opponents.make_controller`` model spec — ``'gen'`` (the
-    PPO generalist), an explicit ``.zip``/``.pt`` path (e.g. an ``exp_*``
-    exploiter checkpoint), or a search spec (``az:gen``, ``mcts:gen``,
-    ``azraw:gen``, with the usual ``?sims=...`` knobs) — or a pre-built
-    ``Controller`` instance (``baseline_sweep`` passes one so the checkpoint
-    loads once for a whole sequential sweep).
+    ``model`` and ``opponent`` are any ``opponents.make_controller`` specs —
+    ``'gen'`` (the PPO generalist), an explicit ``.zip``/``.pt`` path (e.g. an
+    ``exp_*`` exploiter checkpoint), a search spec (``az:gen``, ``mcts:gen``,
+    ``azraw:gen``, with the usual ``?sims=...`` knobs), a scripted tier — or a
+    pre-built ``Controller`` instance (``baseline_sweep`` builds them once per
+    unit of work).
 
     The model pilots ``deck`` (REQUIRED — a checkpoint no longer encodes a deck;
-    the one generalist pilots whatever deck you name) and faces scripted:hard
-    piloting ``opp_deck`` (defaults to ``deck`` — a mirror match). Seats alternate
-    each game (model is Player A in even games) so neither side gets a systematic
-    on-the-play edge. ``seed`` makes the run reproducible (game ``i`` uses
-    ``seed + i``; None = random per game).
+    the one generalist pilots whatever deck you name) and the opponent pilots
+    ``opp_deck`` (defaults to ``deck`` — a mirror match). Seats alternate each
+    game (model is Player A in even-indexed games) so neither side gets a
+    systematic on-the-play edge. Games are indexed ``first_game ..
+    first_game + n_games - 1`` and game ``i`` uses seed ``seed + i`` (None =
+    random per game), so a matchup split into contiguous chunks plays exactly
+    the games one unsplit run would.
 
     ``bo3`` plays best-of-three MATCHES (sideboarding between games) instead of
     single games, and additionally reports the pre-board vs post-board win-rate
@@ -2016,8 +2019,7 @@ def baseline(binary_path: str, model, n_games: int = 100,
     Returns ``(wins, losses, draws)`` from the model's perspective.
     """
     import runner
-    from opponents import make_controller, ScriptedController
-    from scripted_agent import make_agent
+    from opponents import make_controller
 
     if not deck:
         raise ValueError(
@@ -2025,11 +2027,14 @@ def baseline(binary_path: str, model, n_games: int = 100,
             "deck it pilots. Pass the deck the generalist should play "
             "(e.g. baseline --player-a gen --deck-a league/ur_delver).")
     model_name = model if isinstance(model, str) else getattr(model, "label", "model")
+    opp_name = (opponent if isinstance(opponent, str)
+                else getattr(opponent, "label", "opponent"))
     ctrl_model = make_controller(model, checkpoint_resolver=_resolve_model,
                                  deterministic=True)
+    ctrl_opp = make_controller(opponent, checkpoint_resolver=_resolve_model,
+                               deterministic=True)
     if opp_deck is None:
         opp_deck = deck
-    ctrl_scripted = ScriptedController(make_agent("scripted:hard"), label="Scripted")
     wins = losses = draws = 0
     # Per-game-index tallies in the MODEL's perspective. tally_per_game scores for
     # Player A by default and the seats alternate every game, so ask it to flip on
@@ -2043,17 +2048,17 @@ def baseline(binary_path: str, model, n_games: int = 100,
             if dest is not None:
                 runner.merge_per_game(dest, tally)
 
-    for i in range(n_games):
+    for n, i in enumerate(range(first_game, first_game + n_games), 1):
         model_is_a = (i % 2 == 0)
-        ctrl_a, ctrl_b = ((ctrl_model, ctrl_scripted) if model_is_a
-                          else (ctrl_scripted, ctrl_model))
-        # The model always pilots `deck`; the scripted opponent always `opp_deck`.
+        ctrl_a, ctrl_b = ((ctrl_model, ctrl_opp) if model_is_a
+                          else (ctrl_opp, ctrl_model))
+        # The model always pilots `deck`; the opponent always `opp_deck`.
         deck_a, deck_b = ((deck, opp_deck) if model_is_a else (opp_deck, deck))
         records = []
         w, l, d = runner.run_games(
             ctrl_a, ctrl_b,
-            label_a="Model" if model_is_a else "Scripted",
-            label_b="Scripted" if model_is_a else "Model",
+            label_a="Model" if model_is_a else "Opponent",
+            label_b="Opponent" if model_is_a else "Model",
             binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
             n_games=1, seed=(seed + i) if seed is not None else None,
             transcript="quiet", bo3=bo3, on_game_end=records.append)
@@ -2062,16 +2067,16 @@ def baseline(binary_path: str, model, n_games: int = 100,
         losses += l if model_is_a else w
         draws += d
         if not quiet:
-            print(f"\rGame {i+1}/{n_games}  W:{wins} L:{losses} D:{draws}",
+            print(f"\rGame {n}/{n_games}  W:{wins} L:{losses} D:{draws}",
                   end="", flush=True)
 
     if not quiet:
         print()
-        vs = (f"scripted:hard ({opp_deck})" if opp_deck != deck else "scripted:hard")
+        vs = f"{opp_name} ({opp_deck})" if opp_deck != deck else opp_name
         unit = "matches" if bo3 else "games"
         print(f"{os.path.basename(model_name)} ({deck or 'default deck'}) vs "
               f"{vs} over {n_games} {unit}: {wins}W / {losses}L / {draws}D "
-              f"({100 * wins / n_games:.1f}% win rate)")
+              f"({100 * wins / max(1, n_games):.1f}% win rate)")
         for line in runner.format_per_game_split(per_game, subject="model"):
             print(f"  {line}")
     return wins, losses, draws
@@ -2096,10 +2101,11 @@ def _wld_line(w: int, l: int, d: int) -> str:
     return f"{w}W/{l}L/{d}D  {pct:.1f}% win rate"
 
 
-# Per-process controller cache for baseline_sweep's --workers pool: each spawned
-# worker builds the controller (checkpoint load) once and reuses it for every
-# matchup it is handed.
-_WORKER_CTRLS: dict = {}
+# Search-controller counters a baseline sweep sums across its units of work
+# (``opponents.SearchController.stats``); the report derives the safe fraction
+# (searched / (searched + fallback)) from the first two.
+_SEARCH_STAT_KEYS = ("searched", "fallback", "trivial", "followed", "sims",
+                     "sim_steps", "sb_searched")
 
 
 def _baseline_worker_init():
@@ -2114,78 +2120,133 @@ def _baseline_worker_init():
         pass
 
 
-def _baseline_matchup_worker(binary_path: str, spec: str, deck: str, opp: str,
-                             n_games: int, seed: int | None, bo3: bool):
-    """One (model deck, opponent deck) cell of a baseline sweep, run
-    inside a pool worker. Returns ``(w, l, d, per_game_split)``."""
+def _search_stats(ctrl) -> dict:
+    """A controller's summable search counters ({} for a non-search agent)."""
+    stats = getattr(ctrl, "stats", None) or {}
+    return {k: int(stats[k]) for k in _SEARCH_STAT_KEYS if k in stats}
+
+
+def _merge_search_stats(dest: dict, stats: dict) -> None:
+    for k, v in stats.items():
+        dest[k] = dest.get(k, 0) + v
+
+
+def _baseline_unit(binary_path: str, spec: str, opponent: str, deck: str,
+                   opp: str, first_game: int, n_games: int, seed: int | None,
+                   bo3: bool, quiet: bool = True) -> tuple:
+    """One unit of a baseline sweep: games ``first_game ..`` ``+ n_games - 1``
+    of the ``(deck, opp)`` matchup, on freshly built controllers (a search
+    controller's RNG advances game to game, so a unit's result depends only
+    on its own game range, never on which worker ran what before it).
+    Returns ``(w, l, d, per_game_split, stats_a, stats_b)``."""
     from opponents import make_controller
 
-    ctrl = _WORKER_CTRLS.get(spec)
-    if ctrl is None:
-        ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
-                               deterministic=True)
-        _WORKER_CTRLS[spec] = ctrl
+    ctrl_a = make_controller(spec, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
+    ctrl_b = make_controller(opponent, checkpoint_resolver=_resolve_model,
+                             deterministic=True)
     split: dict = {}
-    w, l, d = baseline(binary_path, ctrl, n_games=n_games, deck=deck,
-                       opp_deck=opp, seed=seed, quiet=True, bo3=bo3,
-                       split_out=split)
-    return w, l, d, split
+    w, l, d = baseline(binary_path, ctrl_a, n_games=n_games, deck=deck,
+                       opp_deck=opp, seed=seed, quiet=quiet, bo3=bo3,
+                       split_out=split, opponent=ctrl_b, first_game=first_game)
+    return w, l, d, split, _search_stats(ctrl_a), _search_stats(ctrl_b)
+
+
+def _baseline_units(matchups: list, n_games: int, workers: int) -> list:
+    """``(deck, opp, first_game, count)`` units of work: one per matchup, or —
+    with fewer matchups than workers — each matchup split into contiguous game
+    chunks (at most one per worker it can use, never below one game)."""
+    chunks = 1
+    if workers > 1 and matchups:
+        chunks = max(1, min(n_games, -(-workers // len(matchups))))
+    units = []
+    for deck, opp in matchups:
+        start = 0
+        for c in range(chunks):
+            count = n_games // chunks + (1 if c < n_games % chunks else 0)
+            if count:
+                units.append((deck, opp, start, count))
+            start += count
+    return units
 
 
 def baseline_sweep(binary_path: str, spec: str, matchups: list,
                    n_games: int, seed: int | None, bo3: bool,
-                   workers: int = 1) -> tuple:
-    """Play every ``(model deck, scripted deck)`` matchup vs scripted:hard on
-    the runner-based Python backend (the ``train.py baseline`` path for PPO
-    ``.zip`` models, ``mcts:`` specs and ``--no-actor``; ``az_baseline`` owns
-    the report and the actor backend).
+                   workers: int = 1, opponent: str = "scripted:hard") -> tuple:
+    """Play every ``(model deck, opponent deck)`` matchup of ``spec`` vs
+    ``opponent`` on the runner-based Python backend (the ``train.py baseline``
+    path for PPO ``.zip`` models, ``mcts:``/``azraw:`` specs, a non-scripted
+    opponent and ``--no-actor``; ``az_baseline`` owns the report and the actor
+    backend).
 
-    ``spec`` is any ``make_controller`` model spec. Returns ``(results,
-    per_game)`` — ``results[(deck, opp)] = (w, l, d)`` from the model's view and
-    ``per_game`` the pooled ``runner.tally_per_game`` split (bo3 only).
+    ``spec``/``opponent`` are any ``make_controller`` specs. Returns
+    ``(results, per_game, stats)`` — ``results[(deck, opp)] = (w, l, d)`` from
+    the model's view, ``per_game`` the pooled ``runner.tally_per_game`` split
+    (bo3 only), and ``stats = {"a": {...}, "b": {...}}`` each side's summed
+    search counters (empty for a non-search agent).
 
-    ``workers > 1`` runs that many matchups concurrently in a spawn-based
-    process pool (one Python driver + one engine subprocess per worker; the
-    matchup grid is embarrassingly parallel). Seeds mean the same thing in both
-    modes — every matchup plays games ``seed .. seed+n_games-1`` — so a
-    parallel run is game-for-game reproducible against a sequential one; only
-    the progress-line completion order varies.
+    ``workers > 1`` runs units of work (see :func:`_baseline_units`)
+    concurrently in a spawn-based process pool (one Python driver + one engine
+    subprocess per worker). Every matchup plays games ``seed .. seed+n_games-1``
+    whatever the split, so the seeds mean the same thing in both modes; every
+    unit builds fresh controllers, so a result depends only on how the games
+    were chunked (fixed by ``workers`` and the matchup count), not on
+    completion order.
     """
     import runner
-    from opponents import make_controller
 
+    units = _baseline_units(matchups, n_games, workers)
+    tallies = {m: [0, 0, 0] for m in matchups}
+    units_left = {m: 0 for m in matchups}
+    for deck, opp, _first, _count in units:
+        units_left[(deck, opp)] += 1
     results: dict[tuple, tuple] = {}
     per_game_all: dict[int, list[int]] = {}
-    if workers > 1 and len(matchups) > 1:
+    stats = {"a": {}, "b": {}}
+    total = [0, 0, 0]
+
+    def _fold(unit, out):
+        deck, opp, first, count = unit
+        w, l, d, split, sa, sb = out
+        t = tallies[(deck, opp)]
+        for tally in (t, total):
+            tally[0] += w; tally[1] += l; tally[2] += d
+        runner.merge_per_game(per_game_all, split)
+        _merge_search_stats(stats["a"], sa)
+        _merge_search_stats(stats["b"], sb)
+        units_left[(deck, opp)] -= 1
+        if units_left[(deck, opp)] == 0:
+            results[(deck, opp)] = tuple(t)
+        return w, l, d
+
+    if workers > 1 and len(units) > 1:
         import concurrent.futures as cf
         import multiprocessing as mp
 
         ctx = mp.get_context("spawn")
-        with cf.ProcessPoolExecutor(max_workers=min(workers, len(matchups)),
+        with cf.ProcessPoolExecutor(max_workers=min(workers, len(units)),
                                     mp_context=ctx,
                                     initializer=_baseline_worker_init) as pool:
-            futs = {pool.submit(_baseline_matchup_worker, binary_path, spec,
-                                deck, opp, n_games, seed, bo3): (deck, opp)
-                    for deck, opp in matchups}
+            futs = {pool.submit(_baseline_unit, binary_path, spec, opponent,
+                                *unit, seed, bo3): unit
+                    for unit in units}
             for done, fut in enumerate(cf.as_completed(futs), 1):
-                deck, opp = futs[fut]
-                w, l, d, split = fut.result()
-                results[(deck, opp)] = (w, l, d)
-                runner.merge_per_game(per_game_all, split)
-                print(f"  [{done}/{len(matchups)}] {spec} piloting {deck} vs "
-                      f"{opp}: " + _wld_line(w, l, d), flush=True)
+                unit = futs[fut]
+                deck, opp, first, count = unit
+                w, l, d = _fold(unit, fut.result())
+                span = (f" games {first + 1}-{first + count}"
+                        if count < n_games else "")
+                print(f"  [{done}/{len(units)}] {spec} piloting {deck} vs "
+                      f"{opponent} {opp}{span}: " + _wld_line(w, l, d)
+                      + f"   (running total: {_wld_line(*total)})", flush=True)
     else:
-        # Build the controller ONCE (loads the checkpoint once); baseline()
-        # accepts a pre-built Controller and reuses it for every matchup.
-        ctrl = make_controller(spec, checkpoint_resolver=_resolve_model,
-                               deterministic=True)
-        for deck, opp in matchups:
-            print(f"\n  {spec} (model) piloting {deck} vs {opp} (scripted:hard):",
-                  flush=True)
-            results[(deck, opp)] = baseline(
-                binary_path, ctrl, n_games=n_games, deck=deck, opp_deck=opp,
-                seed=seed, bo3=bo3, split_out=per_game_all)
-    return results, per_game_all
+        for unit in units:
+            deck, opp, first, count = unit
+            print(f"\n  {spec} (player A) piloting {deck} vs {opp} "
+                  f"({opponent}):", flush=True)
+            _fold(unit, _baseline_unit(binary_path, spec, opponent, deck, opp,
+                                       first, count, seed, bo3, quiet=False))
+    return results, per_game_all, stats
 
 
 def observe(binary_path: str,

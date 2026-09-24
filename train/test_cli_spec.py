@@ -484,8 +484,6 @@ def test_scripts():
          "--n-games was removed; use --games"),
         (("train/analysis.py", "search", "--player-a", "gen", "--c", "2"),
          "--c was removed; use --c-puct"),
-        (("train/eval_search_gate.py", "--checkpoint", "gen", "--deck-a", "d",
-          "--c", "2"), "--c was removed; use --c-puct"),
         (("train/train.py", "observe", "--n-games", "3"),
          "--n-games was removed; use --games"),
     ]
@@ -494,9 +492,6 @@ def test_scripts():
         check(rc == 2 and needle in out,
               f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
               f"{out[-600:]}")
-    rc, out = run_script("train/eval_search_gate.py", "--help")
-    check(rc == 0 and "--c-puct" in out and not _mentions(out, "--c"),
-          f"eval_search_gate --help should list --c-puct only (rc={rc})")
 
 
 # ── GUI launcher mirrors the CLI ──────────────────────────────────────────────
@@ -694,6 +689,47 @@ def test_observe_fuzz_bench():
               f"{script} should exit 1 naming observe (rc={rc}):\n{out[-600:]}")
 
 
+def test_baseline_players():
+    print("baseline seats any agent pair; eval_search_gate points at it")
+    import az_baseline
+    sub = next(s for _, s in all_subs() if (s.tool, s.name) == ("train", "baseline"))
+    args = build(sub).parse_args([])
+    check((args.player_a, args.player_b)
+          == (cli_spec.DEFAULT_BASELINE_MODEL, cli_spec.DEFAULT_BASELINE_OPPONENT),
+          f"baseline seat defaults ({args.player_a}, {args.player_b})")
+    for spec, oracle in (("scripted", True), ("scripted:hard", True),
+                         ("hard", True), ("scripted:easy", False),
+                         ("gen", False), ("mcts:gen", False)):
+        check(az_baseline.is_oracle_opponent(spec) == oracle,
+              f"is_oracle_opponent({spec!r}) should be {oracle}")
+    args = build(sub).parse_args(["--sims", "16", "--worlds", "2"])
+    kind, _ckpt, _base, params = az_baseline.classify_model("mcts:gen?worlds=3")
+    budget = az_baseline.seat_budget(args, "mcts:gen?worlds=3", params)
+    spec = az_baseline.python_spec_with_budget("mcts:gen?worlds=3", kind, budget)
+    from opponents import _parse_spec_query
+    knobs = _parse_spec_query(spec)[1]
+    check(kind == "python" and knobs["sims"] == "16" and knobs["worlds"] == "3",
+          f"mcts: seat takes the flag budget, its own knobs winning ({spec})")
+    check(az_baseline.python_spec_with_budget("gen", "python", budget) == "gen",
+          "a non-search seat takes no budget knobs")
+    rc, out = run_script("train/train.py", "baseline", "--actor",
+                         "--player-b", "gen")
+    check(rc != 0 and "needs the Python backend" in out,
+          f"baseline --actor with a non-scripted --player-b should refuse "
+          f"(rc={rc}):\n{out[-600:]}")
+    rc, out = run_script("train/eval_search_gate.py", "--games", "3")
+    check(rc == 1 and "was removed" in out
+          and "train.py baseline --player-a mcts:gen --player-b gen" in out,
+          f"eval_search_gate.py should exit 1 naming baseline (rc={rc}):\n"
+          f"{out[-600:]}")
+    from train import _baseline_units
+    units = _baseline_units([("d", "o")], 5, 4)
+    check([u[2:] for u in units] == [(0, 2), (2, 1), (3, 1), (4, 1)],
+          f"one matchup over 4 workers splits into contiguous chunks ({units})")
+    check(len(_baseline_units([("d", "o")] * 3, 5, 1)) == 3,
+          "workers=1 plays one unit per matchup")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -709,6 +745,7 @@ def main():
     test_search_knobs()
     test_scripts()
     test_observe_fuzz_bench()
+    test_baseline_players()
     test_play_boards()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")

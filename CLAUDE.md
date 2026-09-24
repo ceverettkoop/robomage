@@ -84,7 +84,9 @@ just built** — every `train/` entry point resolves its engine binary through `
 - **Release by default** (`bin/release/robomage`, `bin/release/az_actor`) — the GUI, the
   standalone TUI analysis browser, every PPO/AZ training driver, and `baseline`'s default
   C++-actor path (`train/az_baseline.py`: `az:gen` at the full league search budget vs
-  scripted:hard over the league grid, report appended to `checkpoints/baseline_report.log`).
+  scripted:hard over the league grid, report appended to `checkpoints/baseline_report.log`;
+  `--player-b SPEC` swaps the reference agent — e.g. `--player-a mcts:gen --player-b gen` on
+  one `--deck-a` is the search-vs-raw-policy A/B gate, which runs on the Python fallback).
 
 **Override**: `ROBOMAGE_BUILD=debug|release` forces every tool onto one config (e.g. to reproduce
 a debug-only assertion failure); each subcommand also takes `--binary <path>` as a per-invocation

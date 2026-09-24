@@ -254,6 +254,7 @@ DEFAULT_AZ_EVAL_WORLDS = DEFAULT_AZ_WORLDS
 # actor with 48 legs in flight (the engines are CPU-bound; more clients only
 # fill GPU batches, they do not add throughput).
 DEFAULT_BASELINE_MODEL = "az:gen"
+DEFAULT_BASELINE_OPPONENT = "scripted:hard"
 DEFAULT_BASELINE_GAMES = 10
 DEFAULT_BASELINE_WORKERS = 48
 DEFAULT_AZ_PROMOTE_THRESHOLD = 0.55   # SPRT's H1; H0 is its mirror, 0.45
@@ -595,8 +596,7 @@ REMOVED_FLAGS = (
                 scopes=("train/observe",)),
     # Every game/match count is --games; the PUCT constant is --c-puct.
     RemovedFlag("--n-games", "use --games"),
-    RemovedFlag("--c", "use --c-puct",
-                scopes=("analysis/search", "eval-search-gate")),
+    RemovedFlag("--c", "use --c-puct", scopes=("analysis/search",)),
 )
 
 # Environment variables that duplicated a flag: name -> hint appended to
@@ -1617,49 +1617,57 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *common_args(),
     ]),
     Sub("baseline",
-        "Evaluate the AZ generalist (full search, C++ actor) vs scripted:hard over "
-        "the league matchup grid; report appended to checkpoints/baseline_report.log",
+        "Evaluate --player-a vs --player-b (default: the AZ generalist under full "
+        "search, C++ actor, vs scripted:hard) over the league matchup grid or one "
+        "--deck-a/--deck-b cell; report appended to checkpoints/baseline_report.log",
         items=[
         Arg("--player-a", "str", default=DEFAULT_BASELINE_MODEL, suggest="agent",
-            help="Model to evaluate — player A, the side under test "
-                 "(scripted:hard is always player B; the two alternate "
+            help="Agent under test — player A (the two players alternate "
                  f"physical seats). Default {DEFAULT_BASELINE_MODEL} = the "
-                 "incumbent gen__azfinal.pt under search). An 'az:' spec or a .pt "
-                 "path runs on the C++ actor; its ?sims=&worlds=&c=&sb_* knobs "
-                 "override the --sims/--worlds/--c-puct/--sb-* flags. 'gen' (the "
-                 "PPO generalist), a .zip path, or an 'mcts:'/'azraw:' spec runs on "
-                 "the Python backend instead"),
+                 "incumbent gen__azfinal.pt under search. An 'az:' spec or a .pt "
+                 "path runs on the C++ actor when --player-b is scripted:hard; "
+                 "any other pair (a PPO 'gen'/.zip, an 'mcts:'/'azraw:' spec, "
+                 "or a non-scripted --player-b) runs on the Python backend"),
+        Arg("--player-b", "str", default=DEFAULT_BASELINE_OPPONENT, suggest="agent",
+            help="The reference agent — player B (default "
+                 f"{DEFAULT_BASELINE_OPPONENT}). Any agent spec: e.g. --player-a "
+                 "mcts:gen --player-b gen measures what search adds over the "
+                 "raw policy (the search A/B gate)"),
         Arg("--games", "int", default=DEFAULT_BASELINE_GAMES,
             help=f"Matches per matchup — single games under --format bo1 "
                  f"(default {DEFAULT_BASELINE_GAMES}); seats "
-                 "alternate within each matchup (net in seat A for the first "
-                 "half, rounded up)"),
+                 "alternate within each matchup (player A in seat A for the "
+                 "first half, rounded up)"),
         Arg("--deck-a", "str", default=None, suggest="deck",
             help="Restrict the grid to this deck piloted by --player-a (a "
-                 "mirror match unless --deck-b names the scripted deck). "
+                 "mirror match unless --deck-b names player B's deck). "
                  "Default: every league deck piloted vs every league deck — the "
                  "full N×N grid, mirrors included"),
         Arg("--deck-b", "str", default=None, suggest="deck",
-            help="Restrict the scripted:hard side (player B) to this deck "
-                 "(alone: every league deck vs it; with --deck-a: that one cell)"),
+            help="Restrict player B to this deck (alone: every league deck vs "
+                 "it; with --deck-a: that one cell)"),
         Arg("--all", "flag",
             help="Force the full league grid even when --deck-a/--deck-b are "
                  "given (the grid is already the default without them)"),
         Arg("--mirrors", "flag",
-            help="Only the grid's diagonal: every league deck piloted vs "
-                 "scripted:hard on the same deck (one leg per deck, all sharing "
-                 "the run's single eval server)"),
+            help="Only the grid's diagonal: every league deck piloted by both "
+                 "players (one leg per deck, all sharing the run's single eval "
+                 "server)"),
         Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
             help=f"PUCT simulations per decision, TOTAL across --worlds (default "
-                 f"{DEFAULT_AZ_SIMS}, the league budget)"),
+                 f"{DEFAULT_AZ_SIMS}, the league budget). This and --worlds / "
+                 "--c-puct / --sb-* apply to every search seat (az:/mcts:/.pt) "
+                 "whose spec does not carry that ?knob itself"),
         Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS,
             help=f"Determinized worlds per search (default {DEFAULT_AZ_WORLDS})"),
         _c_puct(),
         *sb_search_args(),
         Arg("--workers", "int", default=DEFAULT_BASELINE_WORKERS,
             help="Actor legs (each one engine + search process) or Python "
-                 f"matchup workers in flight at once (default "
-                 f"{DEFAULT_BASELINE_WORKERS})"),
+                 "workers in flight at once (default "
+                 f"{DEFAULT_BASELINE_WORKERS}). The Python backend splits a "
+                 "matchup into contiguous game chunks when there are fewer "
+                 "matchups than workers"),
         Arg("--log", "str", default=None,
             help="Report file (default: checkpoints/baseline_report.log, appended)"),
         Arg("--record-dir", "str", default=None,

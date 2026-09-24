@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Baseline sweep: the AZ generalist under full search vs scripted:hard.
+"""Baseline sweep: any agent (``--player-a``) vs a reference agent
+(``--player-b``), by default the AZ generalist under full search vs
+scripted:hard.
 
 The engine behind ``train.py baseline`` (:func:`run`). By default ``az:gen``
 (``gen__azfinal.pt``) at the league search budget (``DEFAULT_AZ_SIMS`` sims x
@@ -8,14 +10,19 @@ against scripted:hard piloting every league deck — the full N x N grid, mirror
 included — for ``DEFAULT_BASELINE_GAMES`` bo3 matches per matchup, seats
 alternating within each matchup so neither side gets a systematic on-the-play
 edge. The report (per matchup, per piloted deck, per opponent deck, per value
-bucket, per game index) is appended to ``checkpoints/baseline_report.log`` and
+bucket, per game index, the verdict against the promotion bar, and each search
+seat's counters) is appended to ``checkpoints/baseline_report.log`` and
 printed. ``--deck-a`` narrows the grid to one piloted deck (a mirror unless
-``--deck-b`` names the scripted deck); ``--player-a`` is the model under test.
+``--deck-b`` names player B's deck); ``--player-a`` is the agent under test and
+``--player-b`` the reference. The search A/B gate — search vs the same
+checkpoint's raw policy on a mirror — is ``--player-a mcts:gen --player-b gen
+--deck-a <deck>``.
 
-Two backends, chosen by the model spec and the --actor/--no-actor pair:
+Two backends, chosen by the specs and the --actor/--no-actor pair:
 
-* ACTOR — the default whenever ``bin/az_actor`` is built and the model is an
-  AZ net (an ``az:`` spec, ``gen``'s AZ checkpoint, or a ``.pt`` path). Each
+* ACTOR — the default whenever ``bin/az_actor`` is built, player A is an
+  AZ net (an ``az:`` spec, ``gen``'s AZ checkpoint, or a ``.pt`` path) and
+  player B is scripted:hard (the actor's scripted oracle). Each
   matchup becomes two ``bin/az_actor --search`` legs — the actor's EVAL mode
   (no root Dirichlet noise, argmax(visits), exactly what the promotion gate
   plays) — with scripted:hard on the other seat through train/scripted_oracle.py
@@ -27,14 +34,18 @@ Two backends, chosen by the model spec and the --actor/--no-actor pair:
   ``--no-record``) into a fresh ``az_data/baseline/baseline_<stamp>/`` — one
   flat directory for az_inspect / shard_replay / the shard browsers, and
   deliberately outside the ``az_data/gen`` training pool.
-* PYTHON — PPO ``.zip`` models, ``mcts:`` specs, or ``--no-actor``: the
-  runner-based path in train.py (``baseline`` / ``baseline_all``), one Python
-  driver plus one engine per worker. Several times slower at the full budget.
+* PYTHON — every other pair (PPO ``.zip`` models, ``mcts:``/``azraw:`` specs,
+  a player B other than scripted:hard) or ``--no-actor``: the runner-based
+  path in train.py (``baseline_sweep``), one Python driver plus one engine per
+  worker; a matchup is split into game chunks when there are fewer matchups
+  than workers. Several times slower at the full budget.
 
 Run from the repo root:
     train/.venv/bin/python train/train.py baseline
     train/.venv/bin/python train/train.py baseline --deck-a league/ur_delver --games 20
     train/.venv/bin/python train/train.py baseline --sims 256 --worlds 4 --workers 16
+    train/.venv/bin/python train/train.py baseline --player-a mcts:gen \
+        --player-b gen --deck-a league/ur_delver --games 192 --sims 128 --worlds 4
 """
 from __future__ import annotations
 
@@ -49,8 +60,11 @@ import time
 from typing import Callable, Optional
 
 import archetypes
-from cli_spec import (BIN_DIR, DEFAULT_BASELINE_MODEL, DEFAULT_AZ_TD_N,
-                      append_spec_knob, is_bo3)
+from cli_spec import (BIN_DIR, DEFAULT_AZ_GATE_ALPHA,
+                      DEFAULT_AZ_PROMOTE_THRESHOLD, DEFAULT_AZ_TD_N,
+                      DEFAULT_BASELINE_MODEL, DEFAULT_BASELINE_OPPONENT,
+                      append_spec_knob, is_bo3, is_search_spec)
+from gate_sprt import sprt_verdict
 
 from az_selfplay import _ACTOR_BIN   # the build-tier actor (bin/<config>/az_actor)
 
@@ -68,13 +82,13 @@ RECORD_ROOT = os.path.join(_HERE, "az_data", "baseline")
 def resolve_matchups(deck: Optional[str], opponent: Optional[str],
                      all_flag: bool, roster: list,
                      mirrors: bool = False) -> list:
-    """The ``(piloted deck, scripted deck)`` cells to play.
+    """The ``(player A deck, player B deck)`` cells to play.
 
     No ``deck`` (or ``--all``) is the full roster grid, every ordered pair
     including mirrors. ``mirrors`` is the grid's diagonal only — every roster
     deck vs itself. A ``deck`` alone is its mirror; ``deck`` + ``opponent``
     one cross cell; ``opponent`` alone is every roster deck vs that one
-    scripted deck."""
+    player B deck."""
     if mirrors:
         return [(d, d) for d in roster]
     if all_flag or (not deck and not opponent):
@@ -84,21 +98,36 @@ def resolve_matchups(deck: Optional[str], opponent: Optional[str],
     return [(d, opponent) for d in roster]
 
 
+# Player-B specs the actor's scripted oracle plays (train/scripted_oracle.py
+# runs the hard tier): the bare/"scripted:" forms of the hard preset.
+_ORACLE_SUFFIXES = frozenset({"scripted", "hard", "heuristic"})
+
+
+def is_oracle_opponent(spec: str) -> bool:
+    """True when ``spec`` is scripted:hard, the only player B the actor
+    backend can seat (through its scripted oracle)."""
+    s = (spec or "").strip().lower()
+    suffix = s.split(":", 1)[1] if s.startswith("scripted:") else s
+    return suffix in _ORACLE_SUFFIXES
+
+
 def classify_model(spec: str) -> tuple:
-    """Split a baseline model spec into ``(kind, az_ckpt, base, params)``.
+    """Split a baseline seat spec into ``(kind, az_ckpt, base, params)``.
 
     ``kind`` is ``"az"`` when the spec names an AZ net the actor can load —
     ``az:<base>[?knobs]`` (``az:gen`` resolving to the incumbent
     ``gen__azfinal.pt``) or a bare ``.pt`` path — else ``"python"`` (a bare
     ``gen`` stays the PPO generalist, as everywhere else in make_controller;
-    ``.zip`` paths, ``mcts:``/``azraw:`` specs). ``az_ckpt`` is the resolved
-    ``.pt`` for ``"az"`` kinds; ``params`` are the spec's ``?k=v`` knobs
-    (sims/worlds/c/sb_* override the command-line budget)."""
+    ``.zip`` paths, ``mcts:``/``azraw:`` specs, scripted tiers). ``az_ckpt`` is
+    the resolved ``.pt`` for ``"az"`` kinds; ``params`` are the spec's ``?k=v``
+    knobs for a search spec (sims/worlds/c/sb_* override the command-line
+    budget), else ``{}``."""
     from opponents import _parse_spec_query
     from az_net import resolve_az_checkpoint
     prefix, _, rest = spec.partition(":")
     if not ((prefix == "az" and rest) or spec.endswith(".pt")):
-        return "python", None, spec, {}
+        params = _parse_spec_query(rest)[1] if is_search_spec(spec) else {}
+        return "python", None, spec, params
     base, params = _parse_spec_query(rest if prefix == "az" else spec)
     ckpt = resolve_az_checkpoint(base)
     if ckpt is None:
@@ -126,13 +155,23 @@ def search_budget(params: dict, spec: str, *, sims: int, worlds: int,
                                     sb_rollout_turns, int, spec))
 
 
+def seat_budget(args, spec: str, params: dict) -> dict:
+    """:func:`search_budget` for one seat from the command-line flags."""
+    return search_budget(params, spec, sims=args.sims, worlds=args.worlds,
+                         c_puct=args.c_puct, sb_branches=args.sb_branches,
+                         sb_worlds=args.sb_worlds,
+                         sb_rollout_turns=args.sb_rollout_turns)
+
+
 def python_spec_with_budget(spec: str, kind: str, budget: dict) -> str:
     """The controller spec the PYTHON backend should build for ``spec``: an AZ
-    kind becomes an explicit ``az:`` search spec carrying the whole budget as
-    knobs (appended last, so they win); other specs pass through unchanged."""
-    if kind != "az":
+    kind becomes an explicit ``az:`` search spec, and it or any other search
+    spec (``mcts:``) carries the whole budget as knobs (appended last, so they
+    win — the budget already folds in the spec's own knobs); non-search specs
+    pass through unchanged."""
+    if kind != "az" and not is_search_spec(spec):
         return spec
-    base = spec if spec.startswith("az:") else f"az:{spec}"
+    base = spec if (kind != "az" or spec.startswith("az:")) else f"az:{spec}"
     for key, val in (("sims", budget["sims"]), ("worlds", budget["worlds"]),
                      ("c", budget["c_puct"]),
                      ("sb_branches", budget["sb_branches"]),
@@ -522,12 +561,48 @@ def format_per_game_index(per_game: dict, subject: str = "model") -> list:
             "   [g1 vs g2-3 alone is confounded by the play/draw rule]"]
 
 
+def verdict_line(w: int, l: int, d: int,
+                 threshold: float = DEFAULT_AZ_PROMOTE_THRESHOLD,
+                 alpha: float = DEFAULT_AZ_GATE_ALPHA) -> str:
+    """Player A's overall score against the promotion bar: PASS iff the
+    draw-adjusted score reaches ``threshold``, plus the gate's SPRT reading of
+    the same tally (gate_sprt: H1 p=threshold vs H0 p=1-threshold) — accept /
+    reject when the sample is already decisive, continue when it is too small
+    to say."""
+    r = sprt_verdict(w, l, d, threshold=threshold, alpha=alpha)
+    return (f"bar {r['p1']:.0%}: score {r['score']:.3f} over {r['n']} -> "
+            f"{'PASS' if r['n'] and r['score'] >= r['p1'] - 1e-12 else 'FAIL'};"
+            f"  SPRT (H1 p={r['p1']:.2f} vs H0 p={r['p0']:.2f}, alpha={alpha:g}) "
+            f"llr={r['llr']:+.2f} in [{r['lower']:.2f}, {r['upper']:.2f}] -> "
+            f"{r['verdict']}")
+
+
+def search_stats_lines(stats: dict, labels: dict) -> list:
+    """One line per search seat from a ``{"a": counters, "b": counters}`` sum
+    (``train.baseline_sweep``): the counters plus the safe fraction — the
+    share of non-trivial decisions the search actually answered rather than
+    falling back to the raw policy. Seats with no counters are skipped."""
+    lines = []
+    for seat in ("a", "b"):
+        st = stats.get(seat) or {}
+        if not st:
+            continue
+        judged = st.get("searched", 0) + st.get("fallback", 0)
+        counters = " ".join(f"{k}={v}" for k, v in st.items())
+        lines.append(f"search stats (player {seat.upper()}, {labels[seat]}): "
+                     f"{counters}  safe-fraction="
+                     f"{st.get('searched', 0) / max(1, judged):.1%}")
+    return lines
+
+
 def build_report(display: str, matchups: list, results: dict, *,
-                 n_games: int, bo3: bool, seed, split_lines=()) -> str:
+                 n_games: int, bo3: bool, seed, split_lines=(),
+                 opponent: str = DEFAULT_BASELINE_OPPONENT) -> str:
     """The baseline report text: a header, one line per matchup (win rates
-    from the model's view), the per-game lines, and — for a multi-cell grid —
+    from player A's view), the per-game lines, and — for a multi-cell grid —
     per-piloted-deck rows, per-opponent-deck rows, and the value-bucket /
-    self-archetype pooling the multi-head critic is split along."""
+    self-archetype pooling the multi-head critic is split along; last, the
+    overall tally and its :func:`verdict_line`. ``opponent`` labels player B."""
     piloted, opps = [], []
     for d, o in matchups:
         if d not in piloted:
@@ -538,7 +613,7 @@ def build_report(display: str, matchups: list, results: dict, *,
     unit = "matches" if bo3 else "games"
     grid = (f"{len(piloted)}x{len(opps)} matchups" if len(matchups) > 1
             else f"{matchups[0][0]} vs {matchups[0][1]}")
-    lines = [f"=== {display} baseline vs scripted:hard ({grid}) — {stamp} — "
+    lines = [f"=== {display} baseline vs {opponent} ({grid}) — {stamp} — "
              f"{n_games} {unit}/matchup, seed={seed} ==="]
     per_model = {d: [0, 0, 0] for d in piloted}
     per_opp = {o: [0, 0, 0] for o in opps}
@@ -552,7 +627,7 @@ def build_report(display: str, matchups: list, results: dict, *,
             total = w + l + d
             pct = 100 * w / total if total else 0
             row.append(f"{opp}={w}W/{l}L/{d}D({pct:.0f}%)")
-            lines.append(f"{display} piloting {deck:<22} vs scripted:hard "
+            lines.append(f"{display} piloting {deck:<22} vs {opponent} "
                          f"{opp:<22} " + _wld_line(w, l, d))
             bucket = archetypes.bucket_index(deck, opp)
             for tally in (per_model[deck], per_opp[opp],
@@ -566,10 +641,10 @@ def build_report(display: str, matchups: list, results: dict, *,
         lines.append("")
     if len(matchups) > 1:
         lines.append(f"per model deck ({display} piloting it vs the whole "
-                     f"scripted field):")
+                     f"{opponent} field):")
         for deck, (w, l, d) in per_model.items():
             lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
-        lines.append("per opponent deck (scripted:hard piloting it vs every "
+        lines.append(f"per opponent deck ({opponent} piloting it vs every "
                      "model deck; win rate is still the model's):")
         for deck, (w, l, d) in per_opp.items():
             lines.append(f"  {deck:<22} " + _wld_line(w, l, d))
@@ -591,7 +666,8 @@ def build_report(display: str, matchups: list, results: dict, *,
     tw = sum(v[0] for v in results.values())
     tl = sum(v[1] for v in results.values())
     td = sum(v[2] for v in results.values())
-    lines.append(f"overall ({display} vs scripted:hard): " + _wld_line(tw, tl, td))
+    lines.append(f"overall ({display} vs {opponent}): " + _wld_line(tw, tl, td))
+    lines.append(verdict_line(tw, tl, td))
     return "\n".join(lines)
 
 
@@ -611,9 +687,10 @@ def append_report(text: str, log_path: str) -> None:
 
 def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     """``train.py baseline`` dispatch. ``python_sweep(binary, spec, matchups,
-    n_games, seed, bo3, workers) -> (results, per_game)`` is the runner-based
-    matchup sweep (train.baseline_sweep) the Python backend uses; its
-    ``per_game`` is the ``runner.tally_per_game`` shape."""
+    n_games, seed, bo3, workers, opponent=) -> (results, per_game, stats)`` is
+    the runner-based matchup sweep (train.baseline_sweep) the Python backend
+    uses; its ``per_game`` is the ``runner.tally_per_game`` shape and
+    ``stats`` each seat's summed search counters."""
     from az_selfplay import league_roster, resolve_seed, _resolve_use_actor
     from az_selfplay import resolve_eval_server
     from opponents import make_controller
@@ -628,15 +705,20 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     bo3 = is_bo3(args)
     log_path = args.log or DEFAULT_LOG_PATH
     spec = args.player_a or DEFAULT_BASELINE_MODEL
+    spec_b = args.player_b or DEFAULT_BASELINE_OPPONENT
+    use_actor = _resolve_use_actor(args)
+    oracle_b = is_oracle_opponent(spec_b)
+    if use_actor is True and not oracle_b:
+        raise SystemExit(f"baseline: --actor seats player B through its "
+                         f"scripted:hard oracle; --player-b {spec_b!r} needs the "
+                         f"Python backend (drop --actor)")
     try:
         kind, ckpt, base, params = classify_model(spec)
+        kind_b, _ckpt_b, _base_b, params_b = classify_model(spec_b)
+        budget = seat_budget(args, spec, params)
+        budget_b = seat_budget(args, spec_b, params_b)
     except ValueError as exc:
-        raise SystemExit(str(exc))
-    budget = search_budget(params, spec, sims=args.sims, worlds=args.worlds,
-                           c_puct=args.c_puct, sb_branches=args.sb_branches,
-                           sb_worlds=args.sb_worlds,
-                           sb_rollout_turns=args.sb_rollout_turns)
-    use_actor = _resolve_use_actor(args)
+        raise SystemExit(f"baseline: {exc}")
     actor_built = os.path.exists(_ACTOR_BIN)
     if use_actor is True and kind != "az":
         raise SystemExit(f"baseline: --actor needs an AZ net (az:gen, gen's AZ "
@@ -644,8 +726,9 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
     if use_actor is True and not actor_built:
         raise SystemExit(f"baseline: --actor requested but {_ACTOR_BIN} is not "
                          f"built (run `make actor`)")
-    backend = "actor" if (kind == "az" and use_actor is not False and actor_built) else "python"
-    if kind == "az" and backend == "python" and use_actor is None:
+    actor_ok = kind == "az" and oracle_b
+    backend = "actor" if (actor_ok and use_actor is not False and actor_built) else "python"
+    if actor_ok and backend == "python" and use_actor is None:
         print(f"[baseline] actor AUTO: {_ACTOR_BIN} not built — Python backend "
               f"(several times slower at this budget)", flush=True)
     seed = resolve_seed(args, label="baseline")
@@ -671,22 +754,29 @@ def run(args, *, python_sweep: Callable, resolve_model: Callable) -> None:
         split = format_per_game_index(per_game) if bo3 else []
         if record_dir:
             extra.append(f"shards: {n_shards} file(s) under {record_dir}")
+        opp_display = "scripted:hard"
     else:
         if not args.no_record:
             print("[baseline] shard recording is actor-only; the Python backend "
                   "records nothing", flush=True)
         py_spec = python_spec_with_budget(spec, kind, budget)
+        py_spec_b = python_spec_with_budget(spec_b, kind_b, budget_b)
         try:
             # Build once here so a bad spec dies as a usage error, not mid-run.
-            make_controller(py_spec, checkpoint_resolver=resolve_model,
-                            deterministic=True)
+            for s in (py_spec, py_spec_b):
+                make_controller(s, checkpoint_resolver=resolve_model,
+                                deterministic=True)
         except ValueError as exc:
             raise SystemExit(f"baseline: {exc}")
         display = py_spec + " [python]"
-        results, pooled = python_sweep(args.binary, py_spec, matchups, n_games,
-                                       seed, bo3, args.workers)
+        opp_display = py_spec_b
+        results, pooled, stats = python_sweep(
+            args.binary, py_spec, matchups, n_games, seed, bo3, args.workers,
+            opponent=py_spec_b)
         import runner
         split = runner.format_per_game_split(pooled, subject="model") if bo3 else []
+        extra += search_stats_lines(stats, {"a": py_spec, "b": py_spec_b})
     append_report(build_report(display, matchups, results, n_games=n_games,
-                               bo3=bo3, seed=seed, split_lines=split + extra),
+                               bo3=bo3, seed=seed, split_lines=split + extra,
+                               opponent=opp_display),
                   log_path)
