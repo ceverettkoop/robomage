@@ -520,6 +520,8 @@ DEFAULT_ANALYSIS_CAP = 2000
 # Evaluator torch devices a search / analysis net may run on (unset = the
 # ROBOMAGE_EVAL_DEVICE environment variable, else cpu).
 EVAL_DEVICE_CHOICES = ("cpu", "cuda")
+# bench-actor's --player-b value for pure self-play (the net on both seats).
+BENCH_PLAYER_SELF = "self"
 # The analysis browser's (tui_analysis / the GUI's New Analysis Session)
 # default inspected deck.
 DEFAULT_BROWSE_DECK_A = "league/ur_delver"
@@ -597,6 +599,24 @@ REMOVED_FLAGS = (
     # Every game/match count is --games; the PUCT constant is --c-puct.
     RemovedFlag("--n-games", "use --games"),
     RemovedFlag("--c", "use --c-puct", scopes=("analysis/search",)),
+    # The bench scripts' flags, renamed to the az-* / training vocabulary.
+    RemovedFlag("--scripted", "use --player-b scripted",
+                scopes=("train/bench-actor",)),
+    RemovedFlag("--device", "use --actor-device", scopes=("train/bench-actor",)),
+    RemovedFlag("--cross", "the cross-world leg runs by default "
+                           "(--no-cross-world skips it)",
+                scopes=("train/bench-actor",)),
+    RemovedFlag("--counts", "use --workers (comma-separated worker counts)",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--repeats", "use --exhaustive-repeats",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--train-window", "use --window", scopes=("train/bench-workers",)),
+    RemovedFlag("--train-batches", "use --batches",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--train-deck", "use --deck-a (the az-eval leg's deck)",
+                scopes=("train/bench-workers",)),
+    RemovedFlag("--envs", "use --n-envs (comma-separated n_envs values)",
+                scopes=("train/bench-nenvs",)),
 )
 
 # Environment variables that duplicated a flag: name -> hint appended to
@@ -834,6 +854,27 @@ def train_opts_except(*dests):
     ``--total-timesteps`` rather than offering two budget flags)."""
     skip = set(dests)
     return [a for a in train_opts() if a.dest not in skip]
+
+
+def train_opts_only(*dests):
+    """The named ``train_opts()`` args — lets bench-nenvs build its throwaway
+    model with the same knobs (and defaults) a training run takes."""
+    keep = set(dests)
+    return [a for a in train_opts() if a.dest in keep]
+
+
+def parse_int_list(text, flag: str) -> list:
+    """A bench sweep's comma-separated positive ints -> list. Exits with an
+    error naming ``flag`` when the list is empty or holds a bad value."""
+    try:
+        values = [int(t) for t in str(text).split(",") if t.strip()]
+    except ValueError:
+        raise SystemExit(f"error: {flag}: expected comma-separated integers, "
+                         f"got {text!r}")
+    if not values or any(v < 1 for v in values):
+        raise SystemExit(f"error: {flag}: expected one or more integers >= 1, "
+                         f"got {text!r}")
+    return values
 
 
 def _opponent_mode():
@@ -2157,6 +2198,167 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _actor_device(),
         _eval_server(),
         _no_cross_world(),
+    ]),
+    # ── Throughput benchmarks ─────────────────────────────────────────────────
+    Sub("bench-actor",
+        "Benchmark AZ self-play: the C++ az_actor legs (batch sweep, "
+        "cross-world, central eval server) vs the in-process Python "
+        "az_selfplay leg on the same net and workload", items=[
+        Arg("--deck-a", "str", default="league/ur_delver", suggest="deck",
+            help="Player A deck (default league/ur_delver)"),
+        Arg("--deck-b", "str", default=None, suggest="deck",
+            help="Player B deck (default: mirror = --deck-a)"),
+        Arg("--player-b", "choice", default=BENCH_PLAYER_SELF,
+            choices=(BENCH_PLAYER_SELF, "scripted"),
+            help=f"Player B: '{BENCH_PLAYER_SELF}' (default) = pure self-play, "
+                 "the net+MCTS on both seats; 'scripted' = scripted:hard on "
+                 "seat B (the C++ legs via the scripted oracle, the Python leg "
+                 "in-process) with the net+MCTS on seat A — both legs the same "
+                 "workload"),
+        Arg("--games", "int", default=4,
+            help="Matches per leg (per actor process with --fleet; default 4)"),
+        Arg("--sims", "int", default=DEFAULT_AZ_FAST_SIMS,
+            help="PUCT simulations per decision, TOTAL across --worlds "
+                 f"(default {DEFAULT_AZ_FAST_SIMS}, the fast budget — the "
+                 "Python leg makes the league budget impractically slow)"),
+        Arg("--worlds", "int", default=4,
+            help="Determinized worlds per search (default 4)"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed (actor process i uses seed + i*100000; "
+                 "default 1)"),
+        Arg("--batch", "str", default="1", metavar="K[,K...]",
+            help="Comma-separated actor --batch values, one C++ leg each "
+                 "(K>1 = virtual-loss batched leaf evaluation; default 1)"),
+        _no_cross_world(),
+        Arg("--no-python", "flag",
+            help="Skip the Python az_selfplay leg (C++ legs only)"),
+        _actor_device(),
+        _eval_server(),
+        Arg("--eval-server-device", "choice", default=None,
+            choices=EVAL_DEVICE_CHOICES,
+            help="Device of the eval-server leg's az_eval_server (default: "
+                 "--actor-device, cpu -> cuda, as the az-* commands start it; "
+                 "cpu exercises the Stage C socket path without a GPU)"),
+        Arg("--fleet", "int", default=1,
+            help="Concurrent actor processes per C++ leg (each plays --games "
+                 "matches on a disjoint seed range); with the eval server this "
+                 "measures the fleet-wide batching the server exists for "
+                 "(default 1)"),
+    ]),
+    Sub("bench-workers",
+        "Benchmark AZ self-play throughput across worker counts (bo3, shards "
+        "pooled for the next az-train; optional az-train + az-eval legs)",
+        items=[
+        Arg("--workers", "str", default="32,48,64,74", metavar="N[,N...]",
+            help="Comma-separated worker counts, one self-play leg each "
+                 "(default 32,48,64,74)"),
+        Arg("--random-draw", "flag",
+            help="Use the random --mirror-frac draw schedule of --games "
+                 "matches instead of the default --exhaustive-selfplay matrix "
+                 "(what the az-league curriculum slots run)"),
+        Arg("--exhaustive-repeats", "int", default=DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+            help="Exhaustive mode: play every self-play cell N times per leg "
+                 f"(default {DEFAULT_AZ_EXHAUSTIVE_REPEATS})"),
+        Arg("--scripted-cells", "int", default=DEFAULT_AZ_SCRIPTED_CELLS,
+            help="Exhaustive mode: rotating vs-scripted:hard cells per leg "
+                 f"(default {DEFAULT_AZ_SCRIPTED_CELLS}); the slot index "
+                 "advances per leg so legs tile different cells"),
+        Arg("--slot-base", "int", default=0,
+            help="Exhaustive mode: slot index of the FIRST leg for the "
+                 "rotating scripted-cell slice (leg i uses slot-base+i)"),
+        Arg("--games", "int", default=148,
+            help="Matches per leg under --random-draw (default 148; keep it >= "
+                 "the largest worker count or generate() clamps workers down "
+                 "to it). Ignored by the exhaustive matrix, which fixes the "
+                 "count itself"),
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
+            help="Comma-separated focus-deck pool (default: every deck in "
+                 "decks/league/ — the most distinct actor matchup groups, so "
+                 "high worker counts can bind)"),
+        Arg("--sims", "int", default=DEFAULT_AZ_SIMS,
+            help="PUCT simulations per decision, TOTAL across --worlds "
+                 f"(default {DEFAULT_AZ_SIMS})"),
+        Arg("--worlds", "int", default=DEFAULT_AZ_WORLDS,
+            help=f"Determinized worlds per search (default {DEFAULT_AZ_WORLDS})"),
+        _c_puct(),
+        Arg("--mirror-frac", "float", default=DEFAULT_AZ_MIRROR_FRAC,
+            help="--random-draw only: P(opponent deck == focus deck) per match "
+                 f"(default {DEFAULT_AZ_MIRROR_FRAC})"),
+        Arg("--td-n", "int", default=DEFAULT_AZ_TD_N, help=_TD_N_HELP),
+        Arg("--checkpoint", "str", default=None, suggest="az_checkpoint",
+            help="AZ (.pt) / PPO (.zip) ckpt or 'gen' (default: generalist AZ "
+                 "ckpt, else gen PPO warm-start)"),
+        Arg("--seed", "int", default=1,
+            help="Base RNG seed; leg i uses seed + i*1000003 so every leg "
+                 "plays fresh games (default 1)"),
+        Arg("--out", "str", default=None,
+            help="Shard output dir (default: the az_data/gen training pool, "
+                 "so the next az-train incorporates the shards; point elsewhere "
+                 "to keep the bench data OUT of the pool)"),
+        _actor_mode(),
+        _actor_device(),
+        _eval_server(),
+        _no_cross_world(),
+        Arg("--train", "flag",
+            help="After all legs, run `train.py az-train` over the fresh shards "
+                 f"(AUTO batches: --epoch-frac {DEFAULT_AZ_EPOCH_FRAC}, "
+                 f"--q-mix {DEFAULT_AZ_Q_MIX} — the az-train defaults), then "
+                 "`train.py az-eval` gating the candidate at the training "
+                 "budget with one panel round"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="The az-eval leg's --deck-a (default delver; the az-train "
+                 "shard pool is deck-agnostic)"),
+        Arg("--window", "int", default=0,
+            help="az-train --window (default 0 = AUTO: this benchmark's shards "
+                 "PLUS --pool-extra shards, else 2x the bench shards)"),
+        Arg("--pool-extra", "str", default="auto",
+            help="Pre-existing pool shards the AUTO --window also covers. "
+                 "'auto' (default) counts the most recent az-league run's "
+                 "shards (its completed slots from the league progress "
+                 "sidecar, plus the pooled gate shards and an interrupted "
+                 "slot's partial shards); an integer sets the count; 0 "
+                 "disables"),
+        Arg("--batches", "int", default=DEFAULT_AZ_CYCLE_BATCHES,
+            help=f"az-train --batches (default {DEFAULT_AZ_CYCLE_BATCHES} = "
+                 "AUTO, as in the az cycle)"),
+        Arg("--eval-games", "int", default=DEFAULT_AZ_EVAL_GAMES,
+            help=f"az-eval --games (default {DEFAULT_AZ_EVAL_GAMES})"),
+        Arg("--no-eval", "flag", help="With --train: skip the az-eval leg"),
+        Arg("--no-promote", "flag",
+            help="Do NOT pass --promote to az-eval (default passes it, like the "
+                 "az cycle's gate; the sequential test + floor still decide)"),
+        _no_gate_shards(),
+        Arg("--dry-run", "flag",
+            help="Print each leg's plan (schedule size, distinct matchup "
+                 "groups, effective concurrency cap) and the train/eval argv, "
+                 "then exit without playing anything"),
+    ]),
+    Sub("bench-nenvs",
+        "Benchmark PPO training throughput vs --n-envs to size it for this "
+        "machine (steps/s, per-env steps/s, peak RAM; nothing is saved)",
+        items=[
+        Arg("--mode", "choice", default="self-play",
+            choices=("league", "self-play", "scripted"),
+            help="Training path to benchmark: league (the PFSP league pool, "
+                 "mixed self-deck — what 'train.py league' runs), self-play "
+                 "(default; needs a gen checkpoint, else it silently measures "
+                 "the scripted fallback) or scripted"),
+        Arg("--deck-a", "str", default="delver", suggest="deck",
+            help="Deck the learner pilots (ignored by --mode league)"),
+        Arg("--deck-b", "str", default=None, suggest="deck",
+            help="Opponent deck (default: mirror = --deck-a; ignored by "
+                 "--mode league)"),
+        Arg("--n-envs", "str", default=None, metavar="N[,N...]",
+            help="Comma-separated n_envs values to sweep (default: derived "
+                 "from the CPU count)"),
+        Arg("--timesteps", "int", default=250_000,
+            help="Env steps in the timed phase per n_envs point, after a "
+                 "1-rollout warmup (rounded up to whole rollouts; default "
+                 "250000)"),
+        *train_opts_only("embed_dim", "popart"),
+        Arg("--ram-budget-gb", "float", default=None,
+            help="Recommend the fastest n_envs whose peak RAM stays under this"),
+        *common_args(INTERACTIVE_BINARY),
     ]),
 ])
 

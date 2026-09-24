@@ -50,7 +50,8 @@ FAILURES = []
 FORMAT_SUBS = {
     ("train", s) for s in ("train", "league", "exploiter", "sweep",
                            "fixed-model", "alternate", "observe", "baseline",
-                           "az-selfplay", "az-eval", "az", "az-league")
+                           "az-selfplay", "az-eval", "az", "az-league",
+                           "bench-nenvs")
 } | {("analysis", s) for s in ("report", "interactive", "search")} | {
     ("analysis-tui", "browse"), ("play", "play"), ("harness", "harness")}
 
@@ -221,6 +222,7 @@ SEED_DEFAULTS = {
     ("play", "play"): None,
     ("train", "az-selfplay"): None, ("train", "az-train"): None,
     ("train", "az"): None, ("train", "az-league"): None,
+    ("train", "bench-actor"): 1, ("train", "bench-workers"): 1,
 }
 
 # Count flags other than --games, each naming a DIFFERENT count.
@@ -730,6 +732,69 @@ def test_baseline_players():
           "workers=1 plays one unit per matchup")
 
 
+def test_benches():
+    print("train.py bench-* carry the bench scripts in the az-* vocabulary")
+    subs = {s.name: s for _, s in all_subs() if s.tool == "train"}
+    args = build(subs["bench-actor"]).parse_args([])
+    check((args.player_b, args.no_cross_world, args.eval_server,
+           args.no_eval_server, args.actor_device, args.batch, args.sims)
+          == (cli_spec.BENCH_PLAYER_SELF, False, False, False, "cpu", "1",
+              cli_spec.DEFAULT_AZ_FAST_SIMS),
+          f"bench-actor defaults: self-play, cross-world on, eval server AUTO "
+          f"({args})")
+    args = build(subs["bench-workers"]).parse_args([])
+    check((args.sims, args.worlds, args.c_puct, args.td_n,
+           args.exhaustive_repeats, args.scripted_cells, args.batches,
+           args.eval_games)
+          == (cli_spec.DEFAULT_AZ_SIMS, cli_spec.DEFAULT_AZ_WORLDS,
+              cli_spec.DEFAULT_AZ_C_PUCT, cli_spec.DEFAULT_AZ_TD_N,
+              cli_spec.DEFAULT_AZ_EXHAUSTIVE_REPEATS,
+              cli_spec.DEFAULT_AZ_SCRIPTED_CELLS,
+              cli_spec.DEFAULT_AZ_CYCLE_BATCHES, cli_spec.DEFAULT_AZ_EVAL_GAMES),
+          f"bench-workers takes the az-* defaults ({args})")
+    train_help = next(a.help for a in iter_args(subs["bench-workers"])
+                      if a.name == "--train")
+    check(f"--epoch-frac {cli_spec.DEFAULT_AZ_EPOCH_FRAC}" in train_help
+          and f"--q-mix {cli_spec.DEFAULT_AZ_Q_MIX}" in train_help,
+          f"bench-workers --train help quotes the live az-train defaults "
+          f"({train_help!r})")
+    args = build(subs["bench-nenvs"]).parse_args(["--n-envs", "4,8", "--popart"])
+    check((args.n_envs, args.popart, args.format)
+          == ("4,8", True, cli_spec.DEFAULT_FORMAT),
+          f"bench-nenvs parses the training flags ({args})")
+    check(cli_spec.parse_int_list("32, 48,64", "--workers") == [32, 48, 64],
+          "parse_int_list")
+    for bad in ("", "4,x", "0"):
+        try:
+            cli_spec.parse_int_list(bad, "--workers")
+            check(False, f"parse_int_list({bad!r}) should exit")
+        except SystemExit as exc:
+            check("--workers" in str(exc), f"parse_int_list({bad!r}): {exc}")
+    for name, argv, needle in (
+            ("bench-actor", ["--scripted"], "--scripted was removed; use --player-b scripted"),
+            ("bench-actor", ["--device", "cuda"], "--device was removed; use --actor-device"),
+            ("bench-actor", ["--cross"], "--cross was removed; the cross-world leg"),
+            ("bench-workers", ["--counts", "4"], "--counts was removed; use --workers"),
+            ("bench-workers", ["--repeats", "1"], "--repeats was removed; use --exhaustive-repeats"),
+            ("bench-workers", ["--train-window", "5"], "--train-window was removed; use --window"),
+            ("bench-workers", ["--train-batches", "5"], "--train-batches was removed; use --batches"),
+            ("bench-workers", ["--train-deck", "x"], "--train-deck was removed; use --deck-a"),
+            ("bench-nenvs", ["--envs", "4"], "--envs was removed; use --n-envs")):
+        code, err = parse_error(build(subs[name]), argv)
+        check(code == 2 and needle in err,
+              f"{name} {argv[0]} should error with {needle!r} ({err!r})")
+    for script, cmd in (("train/bench_actor.py", "bench-actor"),
+                        ("train/bench_az_workers.py", "bench-workers"),
+                        ("train/bench_nenvs.py", "bench-nenvs")):
+        rc, out = run_script(script, "--games", "3")
+        check(rc == 1 and "was removed" in out and f"train.py {cmd}" in out,
+              f"{script} should exit 1 naming {cmd} (rc={rc}):\n{out[-600:]}")
+    rc, out = run_script("train/train.py", "bench-workers", "--workers", "2",
+                         "--decks", "delver", "--dry-run")
+    check(rc == 0 and "leg 1: workers=2" in out and "dry run" in out,
+          f"bench-workers --dry-run plans a leg (rc={rc}):\n{out[-600:]}")
+
+
 def main():
     test_removed_flags_error()
     test_removed_flags_hidden()
@@ -746,6 +811,7 @@ def main():
     test_scripts()
     test_observe_fuzz_bench()
     test_baseline_players()
+    test_benches()
     test_play_boards()
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S)")

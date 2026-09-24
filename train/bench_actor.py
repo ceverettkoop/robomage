@@ -17,12 +17,14 @@ to .ts.pt for C++ and loaded via load_az for Python). Single-thread on both side
 (torch.set_num_threads(1)) so the comparison measures the engine/search path, not
 BLAS parallelism.
 
-Run:
-  train/.venv/bin/python train/bench_actor.py --games 2 --sims 32 --worlds 2
-  train/.venv/bin/python train/bench_actor.py --games 2 --sims 128 --worlds 4
+  Leg C — (the eval server, AUTO like the az-* commands) the C++ actor fleet
+          evaluating over one central az_eval_server's socket.
+
+Run (``train.py bench-actor`` is the entry point; flags in cli_spec):
+  train/.venv/bin/python train/train.py bench-actor --games 2 --sims 32 --worlds 2
+  train/.venv/bin/python train/train.py bench-actor --games 2 --batch 1,4 --no-python
 """
 
-import argparse
 import os
 import re
 import subprocess
@@ -37,39 +39,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from az_net import (AZNet, obs_space_from_const, load_az, AZEvaluator,
                     save_torchscript, torchscript_export_path)
-from cli_spec import BIN_DIR, BUILD_DIR, add_removed_flags
+from cli_spec import (BENCH_PLAYER_SELF, BIN_DIR, INTERACTIVE_BINARY,
+                      INTERACTIVE_BUILD_DIR, parse_int_list)
 import az_selfplay
 
-# BUILD_DIR (bin/<config>/) is where the actor binary lives; BIN_DIR (bin/) stays
-# the launch cwd used below for resource lookup.
-ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
+# Both legs run the release-by-default tier the self-play drivers use
+# (ROBOMAGE_BUILD overrides); BIN_DIR (bin/) stays the launch cwd used below
+# for resource lookup.
+ACTOR_BIN = os.path.join(INTERACTIVE_BUILD_DIR, "az_actor")
 _TOTAL = re.compile(r"^SELFPLAY: total_samples=(\d+) shards=(\d+)$")
-
-
-def _gpu_env():
-    """Env for anything touching the Radeon (mirrors az_selfplay's launcher)."""
-    env = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
-    env.setdefault("HSA_OVERRIDE_GFX_VERSION", "10.3.0")
-    env.setdefault("HIP_VISIBLE_DEVICES", "0")
-    return env
-
-
-def _start_eval_server(ts_path, sock, device):
-    """Start train/az_eval_server.py, wait for READY. None if it died first."""
-    server_py = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                             "az_eval_server.py")
-    proc = subprocess.Popen([sys.executable, server_py, "--model", ts_path,
-                             "--socket", sock, "--device", device],
-                            env=_gpu_env(), text=True, bufsize=1,
-                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    for line in proc.stdout:
-        if line.startswith("READY "):
-            import threading
-            threading.Thread(target=lambda: [None for _ in proc.stdout],
-                             daemon=True).start()
-            return proc
-    proc.wait()
-    return None
 
 
 def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False,
@@ -95,8 +73,10 @@ def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False,
             device=device, eval_server=eval_server,
             scripted_seat=("B" if scripted else None),
             scripted_oracle=(oracle[1] if scripted else None))
-    env = _gpu_env() if (device != "cpu" and not eval_server) else dict(
-        os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
+    # Single-thread BLAS; a local-GPU leg also needs the ROCm overrides.
+    base = (az_selfplay.actor_gpu_env() if (device != "cpu" and not eval_server)
+            else os.environ)
+    env = dict(base, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     t0 = time.perf_counter()
     try:
         procs = [subprocess.Popen(_cmd(i), cwd=BIN_DIR, stdout=subprocess.PIPE,
@@ -130,7 +110,8 @@ def _python_leg(ckpt, out_dir, args, scripted=False):
     rng = np.random.default_rng(args.seed + 100003)
     from search_env import SearchRoboMageEnv
     deck_b = getattr(args, "deck_b", None) or args.deck_a
-    env = SearchRoboMageEnv(deck_a=args.deck_a, deck_b=deck_b)
+    env = SearchRoboMageEnv(deck_a=args.deck_a, deck_b=deck_b,
+                            binary_path=INTERACTIVE_BINARY)
     agent = None
     if scripted:
         from scripted_agent import make_agent
@@ -162,47 +143,13 @@ def _row(name, games, dt, decisions):
             "decisions": decisions, "ms_dec": mspd}
 
 
-def main():
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--games", type=int, default=4)
-    ap.add_argument("--sims", type=int, default=128)
-    ap.add_argument("--worlds", type=int, default=4)
-    ap.add_argument("--deck-a", default="league/ur_delver",
-                    help="Player A deck")
-    ap.add_argument("--deck-b", default=None,
-                    help="Player B deck (default: mirror = --deck-a)")
-    ap.add_argument("--seed", type=int, default=1)
-    ap.add_argument("--batch", type=int, nargs="+", default=[1],
-                    help="actor --batch values to sweep on the C++ leg "
-                         "(K>1 = virtual-loss batched leaf evaluation)")
-    ap.add_argument("--cross", action="store_true",
-                    help="add a --cross-world leg (round-robin worlds, one "
-                         "leaf per world per forward, no virtual loss)")
-    ap.add_argument("--no-python", action="store_true",
-                    help="skip leg B (Python az_selfplay) — batch-sweep only")
-    ap.add_argument("--scripted", action="store_true",
-                    help="bench the vs-scripted mode instead of pure self-play: "
-                         "net+MCTS on seat A, scripted:hard on seat B (the C++ "
-                         "leg via the scripted oracle, the Python leg "
-                         "in-process) — both legs the same workload")
-    ap.add_argument("--device", default="cpu", choices=["cpu", "cuda"],
-                    help="local eval device for the C++ legs (Stage A; cuda = "
-                         "the Radeon under the ROCm build)")
-    ap.add_argument("--eval-server", default=None, metavar="DEV",
-                    choices=["cpu", "cuda"],
-                    help="add a Stage C leg: one central az_eval_server on DEV, "
-                         "actors evaluate over its socket")
-    ap.add_argument("--fleet", type=int, default=1,
-                    help="concurrent actor processes per C++ leg (each plays "
-                         "--games games on a disjoint seed range); with "
-                         "--eval-server this measures the fleet-wide batching "
-                         "the server exists for")
-    add_removed_flags(ap, "bench")
-    args = ap.parse_args()
-
+def run(args):
+    """``train.py bench-actor`` entry; returns the process exit code."""
+    batches = parse_int_list(args.batch, "--batch")
+    scripted = args.player_b != BENCH_PLAYER_SELF
     if not os.path.exists(ACTOR_BIN):
-        print(f"FAIL: {ACTOR_BIN} not found — build it with `make actor`",
+        print(f"FAIL: {ACTOR_BIN} not found — build it with `make actor "
+              "BUILD=RELEASE` (or set ROBOMAGE_BUILD=debug)",
               file=sys.stderr)
         return 1
 
@@ -218,63 +165,65 @@ def main():
         ts_path = torchscript_export_path(ckpt)
         save_torchscript(net, ts_path)
 
-        scripted = bool(args.scripted)
         # Fleet legs play fleet * games games total; _row needs the real count.
         leg_games = args.games * args.fleet
-        dev_lbl = "" if args.device == "cpu" else f" {args.device}"
+        dev_lbl = "" if args.actor_device == "cpu" else f" {args.actor_device}"
         fleet_lbl = "" if args.fleet == 1 else f" n={args.fleet}"
         scr_lbl = ", scripted B" if scripted else ""
         rows = []
-        for k in args.batch:
+        for k in batches:
             print(f"[bench] leg A: C++ bin/az_actor --selfplay (batch={k}"
                   f"{dev_lbl}{fleet_lbl}{scr_lbl}) ...", flush=True)
             a = _cpp_leg(ts_path, os.path.join(td, f"cpp_b{k}"), args, batch=k,
-                         device=args.device, fleet=args.fleet,
+                         device=args.actor_device, fleet=args.fleet,
                          scripted=scripted)
             if a is None:
                 return 1
             rows.append(_row(f"C++ b={k}{dev_lbl}{fleet_lbl}", leg_games,
                              a[0], a[1]))
-        if args.cross:
+        if not args.no_cross_world:
             print(f"[bench] leg A: C++ bin/az_actor --selfplay (cross-world"
                   f"{dev_lbl}{fleet_lbl}{scr_lbl}) ...", flush=True)
             a = _cpp_leg(ts_path, os.path.join(td, "cpp_xw"), args,
-                         cross_world=True, device=args.device,
+                         cross_world=True, device=args.actor_device,
                          fleet=args.fleet, scripted=scripted)
             if a is None:
                 return 1
             rows.append(_row(f"C++ b=xw{dev_lbl}{fleet_lbl}", leg_games,
                              a[0], a[1]))
-        if args.eval_server:
+        eval_server = az_selfplay.resolve_eval_server(args)
+        if eval_server is not False:
             # Stage C: one server owns the device; the whole fleet shares it.
             # Cross-world keeps each actor's request K = worlds with no quality
             # cost, so it is the natural pairing.
-            sock = os.path.join(td, "evs")
-            print(f"[bench] leg C: az_eval_server({args.eval_server}) + "
+            srv_dev = _server_device(args)
+            print(f"[bench] leg C: az_eval_server({srv_dev}) + "
                   f"{args.fleet} actor(s), cross-world ...", flush=True)
-            server = _start_eval_server(ts_path, sock, args.eval_server)
-            if server is None:
-                print("FAIL: az_eval_server died before READY (no usable "
-                      "GPU?)", file=sys.stderr)
-                return 1
             try:
-                a = _cpp_leg(ts_path, os.path.join(td, "cpp_srv"), args,
-                             cross_world=True, eval_server=sock,
-                             fleet=args.fleet)
-            finally:
-                server.terminate()
-                try:
-                    server.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    server.kill()
-            if a is None:
+                server, sock, server_dir = az_selfplay.start_eval_server(
+                    ts_path, device=srv_dev, forced=bool(eval_server),
+                    tag="bench")
+            except RuntimeError as exc:
+                print(f"FAIL: {exc} (no usable GPU?)", file=sys.stderr)
                 return 1
-            rows.append(_row(f"C++ xw srv-{args.eval_server}{fleet_lbl}",
-                             leg_games, a[0], a[1]))
+            if server is None:
+                print("[bench] eval-server AUTO: the server failed to start "
+                      "(no usable GPU?) — skipping leg C", flush=True)
+            else:
+                try:
+                    a = _cpp_leg(ts_path, os.path.join(td, "cpp_srv"), args,
+                                 cross_world=True, eval_server=sock,
+                                 fleet=args.fleet, scripted=scripted)
+                finally:
+                    az_selfplay.stop_eval_server(server, server_dir)
+                if a is None:
+                    return 1
+                rows.append(_row(f"C++ xw srv-{srv_dev}{fleet_lbl}",
+                                 leg_games, a[0], a[1]))
         rb = None
         if not args.no_python:
             print(f"[bench] leg B: Python az_selfplay (in-process, 1 worker"
-                  f"{', scripted B' if scripted else ''}) ...", flush=True)
+                  f"{scr_lbl}) ...", flush=True)
             b = _python_leg(ckpt, os.path.join(td, "py"), args,
                             scripted=scripted)
             rb = _row("Python (az_selfplay)", args.games, b[0], b[1])
@@ -306,5 +255,14 @@ def main():
     return 0
 
 
+def _server_device(args):
+    """The eval-server leg's device: --eval-server-device, else the az-*
+    commands' rule (--actor-device, with cpu meaning a cuda server)."""
+    if args.eval_server_device:
+        return args.eval_server_device
+    return args.actor_device if args.actor_device != "cpu" else "cuda"
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit("bench_actor.py was removed; use `train.py bench-actor` "
+             "(e.g. --games 2 --sims 32 --worlds 2)")

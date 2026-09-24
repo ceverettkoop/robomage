@@ -974,7 +974,7 @@ def _limit_worker_threads():
     league / random-model pools). Left at torch's default (≈ physical core
     count), N worker processes each spawn ≈cores intra-op threads, so N envs
     oversubscribe the machine by ≈N× — aggregate throughput then *falls* as envs
-    are added instead of rising (measurable with train/bench_nenvs.py). Data
+    are added instead of rising (measurable with `train.py bench-nenvs`). Data
     parallelism here should come from the number of envs, not threads per env, so
     each worker is pinned to a single math thread by default.
 
@@ -2552,3 +2552,12 @@ if __name__ == "__main__":
     elif args.command == "az-league":
         import az_train
         az_train.run_league(args)
+    elif args.command == "bench-actor":
+        import bench_actor
+        sys.exit(bench_actor.run(args))
+    elif args.command == "bench-workers":
+        import bench_az_workers
+        bench_az_workers.run(args)
+    elif args.command == "bench-nenvs":
+        import bench_nenvs
+        bench_nenvs.run(args)

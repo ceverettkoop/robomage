@@ -158,8 +158,8 @@ Every Python tool that plays games takes the same match-format flag,
 error with a pointer to it). A game/match count is always `--games` (whole
 matches under bo3; each tool's help says what it counts), the PUCT constant is
 always `--c-puct`, and `--seed` defaults to **1** on every test, eval and
-inspection tool (observe, baseline, az-eval, analysis, the harness, benches,
-az_inspect) but to a **random, printed** seed on long training runs
+inspection tool (observe, baseline, az-eval, analysis, the harness, the
+`bench-actor` / `bench-workers` benchmarks, az_inspect) but to a **random, printed** seed on long training runs
 (az-selfplay, az-train, az, az-league).
 
 - **`test_harness.py`** — state sculpting (hands/zones/scenarios); a global

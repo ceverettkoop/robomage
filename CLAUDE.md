@@ -140,6 +140,12 @@ background** and make the live output inspectable by the user:
  (`explore:patient` = big-mana mode). **Engine throughput benchmark**: `observe --format bo1
  --games 40 --max-decisions 4000 --quiet --timing` (games/s, decisions/s, ms/decision; with
  `--quiet` the engine runs without narrative).
+ **Training throughput benchmarks** are `train.py` subcommands (flags in `cli_spec`, the az-*
+ vocabulary): `bench-actor` (C++ `az_actor` legs — `--batch` sweep, cross-world, the eval
+ server — vs the in-process Python self-play leg, same net and workload; `--player-b scripted`
+ for the vs-scripted mode), `bench-workers` (az self-play throughput per `--workers` count on
+ the curriculum's exhaustive matrix, shards pooled; `--train` adds az-train + az-eval legs) and
+ `bench-nenvs` (PPO steps/s and peak RAM per `--n-envs` value, to size `--n-envs`).
 -**Running games programmatically: `runner.run_match`.** `runner.run_match(agent_a, agent_b,
  deck_a=…, deck_b=…, games=, bo3=True, seed=1, transcript="compact|verbose|narrative|quiet",
  out=…)` — agent specs are scripted tiers ("scripted"/"hard", "easy", "random", "explore"),
