@@ -13,6 +13,11 @@ trainer ingests unchanged.
   4. Assert az_train.load_window ingests the temp dir and returns concatenated
      arrays of the same length.
 
+Every actor run passes --max-decisions test_actor_parity.PARITY_MAX_DECISIONS, so
+each game (bo1) / match (--bo3) of the randomly initialized net is bounded: the
+(N+1)-th real decision concedes the match, the conceded game is priced like any
+other loss, and the test notes each cap hit.
+
 Run: train/.venv/bin/python train/test_actor_shards.py
 """
 
@@ -35,6 +40,7 @@ from cli_spec import BIN_DIR, BUILD_DIR
 from shard_replay import shard_sort_key as _shard_sort_key
 from az_selfplay import SHARD_KEYS
 import az_train
+from test_actor_parity import PARITY_MAX_DECISIONS
 
 DECK = "league/ur_delver"
 SEED = 1
@@ -53,20 +59,36 @@ BO3_SB_ROLLOUT_TURNS = 2  # small pin: exercises the plan-pricing rollout cheapl
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 
+# The actor's stderr line when a game (bo1) / match (--bo3) reaches --max-decisions.
+_CAP_LINE = "reached; conceding the match"
+
 _TALLY = re.compile(r"^SELFPLAY: game (\d+) samples=(\d+) winner=(A|B|DRAW)$")
+
+
+def _run_actor(cmd, tag):
+    """Run one az_actor self-play command. Returns (stdout, cap_hits) — cap_hits
+    counts the games (bo1) / matches (--bo3) the actor conceded at the
+    --max-decisions cap — or None when the actor exits nonzero."""
+    proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
+    stderr = proc.stderr.decode("utf-8", "replace")
+    if proc.returncode != 0:
+        print(f"FAIL: az_actor{tag} exited nonzero:\n" + stderr, file=sys.stderr)
+        return None
+    cap_hits = sum(1 for line in stderr.splitlines() if _CAP_LINE in line)
+    if cap_hits:
+        print(f"NOTE: az_actor{tag} hit the {PARITY_MAX_DECISIONS}-decision cap "
+              f"in {cap_hits} {'match(es)' if '--bo3' in cmd else 'game(s)'} "
+              f"(conceded there)")
+    return proc.stdout.decode("utf-8", "replace"), cap_hits
 
 
 def _run_selfplay(ts_path, out_dir):
     cmd = [ACTOR_BIN, "--selfplay", "--deck", DECK, "--seed", str(SEED),
            "--games", str(GAMES), "--sims", str(SIMS), "--worlds", str(WORLDS),
-           "--model", ts_path, "--out-dir", out_dir]
-    proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE)
-    if proc.returncode != 0:
-        print("FAIL: az_actor exited nonzero:\n"
-              + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
-        return None
-    return proc.stdout.decode("utf-8", "replace")
+           "--model", ts_path, "--out-dir", out_dir,
+           "--max-decisions", str(PARITY_MAX_DECISIONS)]
+    return _run_actor(cmd, "")
 
 
 def _run_selfplay_bo3(ts_path, out_dir):
@@ -76,14 +98,9 @@ def _run_selfplay_bo3(ts_path, out_dir):
            str(BO3_WORLDS), "--sb-branches", str(BO3_SB_BRANCHES),
            "--sb-worlds", str(BO3_SB_WORLDS),
            "--sb-rollout-turns", str(BO3_SB_ROLLOUT_TURNS),
-           "--model", ts_path, "--out-dir", out_dir]
-    proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE)
-    if proc.returncode != 0:
-        print("FAIL: az_actor --bo3 exited nonzero:\n"
-              + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
-        return None
-    return proc.stdout.decode("utf-8", "replace")
+           "--model", ts_path, "--out-dir", out_dir,
+           "--max-decisions", str(PARITY_MAX_DECISIONS)]
+    return _run_actor(cmd, " --bo3")
 
 
 def _load_pooled(out_dir):
@@ -102,7 +119,7 @@ def _load_pooled(out_dir):
             np.concatenate(z), np.concatenate(mask))
 
 
-def _verify_bo3(stdout, out_dir):
+def _verify_bo3(stdout, out_dir, cap_hits):
     """Verify the actor's bo3 selfplay next-game sample flush.
 
     The actor buffers a bo3 game's samples and prices+flushes them at the game
@@ -113,7 +130,10 @@ def _verify_bo3(stdout, out_dir):
     segmenting by the per-game `SELFPLAY: game N samples=K winner=W` tallies
     recovers each game's rows. Within a game segment the sideboard rows (obs
     is_sideboard flag set) sit at the front; we assert each such row's z equals
-    that game's winner priced from the row's own mover seat.
+    that game's winner priced from the row's own mover seat. When the actor
+    conceded a match at the decision cap (cap_hits > 0) before any sideboard
+    phase, the run may hold no sideboard rows; that case prints a NOTE instead
+    of failing.
 
     Returns 0 on success (with a printed REPORT of what was checked), 1 on failure.
     """
@@ -174,6 +194,11 @@ def _verify_bo3(stdout, out_dir):
                 return 1
         sb_total += len(sb_rows)
 
+    if sb_total == 0 and cap_hits:
+        print(f"NOTE [bo3]: no sideboard-phase samples — the decision cap "
+              f"({PARITY_MAX_DECISIONS}) ended {cap_hits} match(es) early; "
+              f"sideboard-row checks skipped")
+        return 0
     if sb_total == 0:
         print("FAIL [bo3]: no sideboard-phase samples found (obs is_sideboard "
               "flag never set) — the bo3 sideboard roots weren't searched/stored",
@@ -203,9 +228,10 @@ def main():
         save_torchscript(net, ts_path)
 
         out_dir = os.path.join(td, "shards")
-        stdout = _run_selfplay(ts_path, out_dir)
-        if stdout is None:
+        run = _run_selfplay(ts_path, out_dir)
+        if run is None:
             return 1
+        stdout, _cap_hits = run
 
         # 2) Parse per-game tallies.
         tallies = []
@@ -369,10 +395,10 @@ def main():
         # shards don't mix with the bo1 pool above.
         bo3_dir = os.path.join(td, "shards_bo3")
         os.makedirs(bo3_dir, exist_ok=True)
-        bo3_stdout = _run_selfplay_bo3(ts_path, bo3_dir)
-        if bo3_stdout is None:
+        bo3_run = _run_selfplay_bo3(ts_path, bo3_dir)
+        if bo3_run is None:
             return 1
-        rc = _verify_bo3(bo3_stdout, bo3_dir)
+        rc = _verify_bo3(bo3_run[0], bo3_dir, bo3_run[1])
         if rc:
             return rc
     return 0
