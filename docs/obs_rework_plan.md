@@ -1,7 +1,31 @@
-# Observation rework plan (draft, 2026-09-24)
+# Observation rework plan (2026-09-24)
 
-Status: **design under refinement — nothing implemented.** This is a single `STATE_SIZE` layout
-break: every checkpoint and shard is invalidated, so land all items together.
+Status: **IMPLEMENTED** on branch `obs/rework` (one `STATE_SIZE` layout break: 6354 → 6516,
+`OBS_SIZE` 6755 → 6917; every checkpoint and shard is invalidated). The design text below is
+kept as written; the status list maps each section to its commit.
+
+| Item | Commit |
+|---|---|
+| §1 remove the action-history block (obs, engine ring, sideboard keep lists) | `53e2ae1` |
+| §2 pass flags, §3 `is_priority_window`, M1 mulligan state; drop `viewer_has_priority`, R2 `max_affordable_cmc_proxy`, R3 `is_post_board`; R5 seat flag masked out of both trunks | `94d68ac` |
+| §4 per-turn counters + spell colors; R1, M5, M6 and the §4 per-permanent fields | `a9f58d0` |
+| §5 pending delayed triggers + `pending_delayed_subject` | `1432f73` |
+| §6 pending-decision source at every mid-flow prompt; scripted Wrath check | `b37652e` |
+| R4 opponent reveals → `revealed` bit on the opp decklist slots | `e6558cf` |
+| M2/M3 graveyard and exile slots with play permissions | `7865236` |
+| M4 player-effects block | `d813fa1` |
+| M9 Thespian's Stage copy verified; copy reverted on leaving play, reveal/chooser fixes | `97e6ca9` |
+| Follow-ups 1–2 unless-cost / yes-no label builder, vanished-token LKI | `dfd8637` |
+| Follow-up 3 once-each-turn activation reset for every permanent | `0119762` |
+| Follow-up 4 actor parity replays the actor's actions, near-ties (with the decision caps `9629642`, `80bba10`, `082309d`) | `606f984` |
+| Follow-ups 5–7 shared counter-protection query, mirrored view swaps every per-player key, monarch ordering approved | `5868a07` |
+| Follow-ups 8–9 Veil protects spells only (Stifle hits abilities), mirrored `is_active_player` | `521fc17` |
+
+Also on the branch (found during the work): dig narrative names the looker (`181eb8c`),
+last-known information tied to the object it describes — `departed_lki_for` (`533b46f`),
+rearranged / scry / surveil picks land on the known top as chosen (`75e8a24`, `287e827`), and
+the scrying player makes scry choices (`b83e780`). The replay corpus is re-recorded in its own
+commit at the end of the branch.
 
 Goal: train on the board as observed. Remove the action-history block, which lets the net
 memorize sequences and leaks hidden information. Replace the few real facts it carried with
@@ -348,28 +372,28 @@ matchup-memorization channel, kept by design for the per-deck value heads.
 
 ## Lockstep checklist (per CLAUDE.md "Source of truth" + memory "AZ obs 4-way sync")
 
-- [ ] `src/machine_io.h`: layout comment, widths, `OFFSET_CHAIN`, `STATE_SIZE`,
+- [x] `src/machine_io.h`: layout comment, widths, `OFFSET_CHAIN`, `STATE_SIZE`,
       normalizer int constants
-- [ ] `src/classes/gamestate.h` + `src/machine_io.cpp` serializer (`populate_gamestate`,
+- [x] `src/classes/gamestate.h` + `src/machine_io.cpp` serializer (`populate_gamestate`,
       `serialize_state`)
-- [ ] `src/actor/obs_builder.cpp` (sideboard `keep_range` list)
-- [ ] `train/_enums.py` via `gen_enums.py` (`make`)
-- [ ] `train/env.py` offset chain; `train/extractor.py` (drop `hist_recent`; add encoders for
+- [x] `src/actor/obs_builder.cpp` (sideboard `keep_range` list)
+- [x] `train/_enums.py` via `gen_enums.py` (`make`)
+- [x] `train/env.py` offset chain; `train/extractor.py` (drop `hist_recent`; add encoders for
       the new scalars and the delayed-trigger slots, with card ids through the embedding like
       the stack slots); `az_net.py` ScriptTrunk if it mirrors the extractor
-- [ ] R5 seat mask shared by `extractor.py` and `az_net.py`
-- [ ] `decode.py` (history, revealed, post-board, new blocks — the transcript decoder); `az_inspect.py`
+- [x] R5 seat mask shared by `extractor.py` and `az_net.py`
+- [x] `decode.py` (history, revealed, post-board, new blocks — the transcript decoder); `az_inspect.py`
       block-label table
-- [ ] `train/test_obs_invariants.py`:
+- [x] `train/test_obs_invariants.py`:
   - pass flags are 0 outside priority windows
   - counters are ≥ 0
   - delayed slots are packed with no holes
   - every `state=1` entry's `stack_ref` points at a stack slot whose card id is the creator's,
     or the source for the change-zone case — decide which
-- [ ] replay corpus: **re-record** — the §6 pending-source fill changes the `Pending:`
+- [x] replay corpus: **re-record** — the §6 pending-source fill changes the `Pending:`
       transcript lines (intentional; see `docs/ci.md` for the re-record recipe)
-- [ ] `make check`, plus `ci_check --tier actor` (obs parity C++ vs Python)
-- [ ] docs: CLAUDE.md bo3 state-vector notes, `docs/alphazero_status.md` if it mentions history
+- [x] `make check`, plus `ci_check --tier actor` (obs parity C++ vs Python)
+- [x] docs: CLAUDE.md bo3 state-vector notes, `docs/alphazero_status.md` if it mentions history
 
 ## Decisions so far
 
