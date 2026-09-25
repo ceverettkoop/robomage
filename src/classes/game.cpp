@@ -181,13 +181,17 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // Second part of the untap step (CR 502.2 / 731.2): the day/night turn-based
                     // check, based on the turn that just ended. Runs after phasing, before untap.
                     day_night_untap_transition();
-                    // Untap all permanents controlled by active player; reset per-turn counters
+                    // Untap all permanents controlled by active player. Once-each-turn activation
+                    // gates (ActivationLimit$, CR 602.5b; loyalty, CR 606.3) reset for EVERY
+                    // battlefield permanent: "each turn" includes the opponent's turns. A
+                    // phased-out permanent is skipped; it phases in only at its controller's
+                    // untap step, where this loop then resets it.
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
-                        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+                        if (!is_battlefield_permanent(entity)) continue;
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
+                        reset_permanent_activations_this_turn(permanent);
                         if (permanent.controller == active_player) {
-                            if (permanent.is_phased_out) continue;  // don't untap phased-out permanents
                             // Untap-prevention (Choke; rule 614.1d) is a replacement effect:
                             // dispatch an UNTAP event and skip untapping if it is replaced.
                             ReplacementEvent rev;
@@ -211,8 +215,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                 }
                             }
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
-                            for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
-                            permanent.loyalty_ability_activated_this_turn = false;  // 606.3 resets each of the controller's turns
                         }
                     }
                     cur_step = UPKEEP;

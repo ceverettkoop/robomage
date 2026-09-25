@@ -509,11 +509,19 @@ int ability_resolutions_this_turn(Entity source);
 // Activations counted against a permanent's once-per-turn gates: every ability's
 // ActivationLimit$ counter (Ability::activations_this_turn, only advanced for a limited
 // ability) summed, plus 1 if one of its loyalty abilities was activated (CR 606.3). Both
-// reset at the controller's untap step.
+// reset for every battlefield permanent at each untap step (reset_permanent_activations_this_turn).
 inline int permanent_activations_this_turn(const Permanent &perm) {
     int n = perm.loyalty_ability_activated_this_turn ? 1 : 0;
     for (const auto &ab : perm.abilities) n += ab.activations_this_turn;
     return n;
+}
+
+// Clear the once-per-turn activation gates counted by permanent_activations_this_turn. Called
+// for every battlefield permanent, whichever player controls it, as each turn begins: "Activate
+// only once each turn" (CR 602.5b) counts the opponent's turns too.
+inline void reset_permanent_activations_this_turn(Permanent &perm) {
+    for (auto &ab : perm.abilities) ab.activations_this_turn = 0;
+    perm.loyalty_ability_activated_this_turn = false;
 }
 
 // All live battlefield permanents (phased-out excluded), optionally only those

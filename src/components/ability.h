@@ -172,7 +172,7 @@ struct Ability{
     // then carries only the SIGN (-1 minus / +1 plus). Never stoi("X") at parse time.
     bool loyalty_cost_is_x = false;
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
-    int activations_this_turn = 0;      // runtime counter, reset at UNTAP
+    int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
     // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",
     // X = Count$Valid Creature.Legendary+YouCtrl): the GENERIC portion of
     // activation_mana_cost is reduced by this amount at activation time (CR 601.2f —

@@ -123,8 +123,8 @@
 //                  [20] activations_this_turn / PER_TURN_COUNT_NORMALIZER — activations
 //                       counted against this permanent's once-per-turn gates: the
 //                       ActivationLimit$ counters of all its abilities summed, plus 1 if
-//                       a loyalty ability was activated (CR 606.3). Both reset at the
-//                       controller's untap step (permanent_activations_this_turn)
+//                       a loyalty ability was activated (CR 606.3). Both reset for every
+//                       permanent at each untap step (permanent_activations_this_turn)
 //                  [21] cant_be_blocked_this_turn — a "can't be blocked this turn"
 //                       effect applies (Kappa Cannoneer, Manifold Key)
 //                  [22] combat_damage_prevented — the permanent is the creature of an
