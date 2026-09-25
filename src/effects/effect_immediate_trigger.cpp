@@ -64,15 +64,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
                 // repoint-and-restore), with the ability's source as the
                 // pending-decision source.
                 std::string prompt = "Pay " + std::to_string(ab.energy_cost) + " energy";
-                std::vector<LegalAction> yn;
-                LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-                decline.category = ActionCategory::OPTIONAL_YESNO;
-                decline.option_ordinal = 0;  // 0 = decline
-                yn.push_back(decline);
-                LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-                accept.category = ActionCategory::OPTIONAL_YESNO;
-                accept.option_ordinal = 1;  // 1 = accept
-                yn.push_back(accept);
+                std::vector<LegalAction> yn = optional_yesno_menu(prompt);
                 int yc = ctx.ask(std::move(yn), ab.controller, ab.source);
                 if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
                 if (yc == 1 && pay_energy(pl, ab.energy_cost)) {

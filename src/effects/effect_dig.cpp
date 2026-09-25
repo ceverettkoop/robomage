@@ -23,6 +23,32 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static Zone::ZoneValue dig_chosen_destination(const Ability &ab);
+static bool dig_chosen_on_bottom(const Ability &ab);
+static Zone::ZoneValue dig_rest_destination(const Ability &ab);
+static bool dig_rest_on_bottom(const Ability &ab);
+
+// Where the chosen cards go: DestinationZone$, else the hand.
+static Zone::ZoneValue dig_chosen_destination(const Ability &ab) {
+    return ab.dig_destination >= 0 ? static_cast<Zone::ZoneValue>(ab.dig_destination) : Zone::HAND;
+}
+
+// Whether chosen cards put into a library go on the bottom (LibraryPosition$ 0 = top). Only
+// meaningful with DestinationZone$ set.
+static bool dig_chosen_on_bottom(const Ability &ab) {
+    return ab.dig_destination >= 0 && ab.dig_library_position != 0;
+}
+
+// Where the unchosen rest go: DestinationZone2$, else the library.
+static Zone::ZoneValue dig_rest_destination(const Ability &ab) {
+    return ab.dig_rest_destination >= 0 ? static_cast<Zone::ZoneValue>(ab.dig_rest_destination)
+                                        : Zone::LIBRARY;
+}
+
+// Whether the unchosen rest go on the bottom of the library (LibraryPosition2$ 0 keeps them on
+// top — Fateseal).
+static bool dig_rest_on_bottom(const Ability &ab) { return ab.dig_rest_library_position != 0; }
+
 namespace effects {
 
 HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -161,7 +187,11 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     for (; rt.pick < rt.take_count; ++rt.pick) {
         std::vector<LegalAction> dig_actions;
         if (rt.optional) {
-            LegalAction la(PASS_PRIORITY, "Take nothing");
+            // The decline entry names where the picks and the unchosen rest go (Fateseal: "Put
+            // nothing on the bottom of library (rest stay on top of library)").
+            LegalAction la(PASS_PRIORITY, dig_decline_label(dig_chosen_destination(ab), dig_chosen_on_bottom(ab),
+                                                            dig_rest_destination(ab), dig_rest_on_bottom(ab),
+                                                            !rt.chosen.empty()));
             la.category = ActionCategory::DIG_CHOICE;
             dig_actions.push_back(la);
         }
@@ -192,14 +222,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         rt.pool.erase(std::remove(rt.pool.begin(), rt.pool.end(), sel), rt.pool.end());
     }
 
-    // Determine destination: default is HAND, but DestinationZone$ can override
-    Zone::ZoneValue chosen_dest = Zone::HAND;
-    bool on_bottom = false;
-    if (ab.dig_destination >= 0) {
-        chosen_dest = static_cast<Zone::ZoneValue>(ab.dig_destination);
-        // LibraryPosition$ 0 = top of library
-        on_bottom = (ab.dig_library_position != 0);
-    }
+    Zone::ZoneValue chosen_dest = dig_chosen_destination(ab);
+    bool on_bottom = dig_chosen_on_bottom(ab);
     for (Entity chosen : rt.chosen) {
         orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees);
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
@@ -238,8 +262,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     }
     // DestinationZone2$ routes the unchosen remainder somewhere other than the library
     // (Malevolent Rumble: "Put the rest into your graveyard"). Default (-1) stays the library.
-    if (ab.dig_rest_destination >= 0 && ab.dig_rest_destination != Zone::LIBRARY) {
-        Zone::ZoneValue rest_dest = static_cast<Zone::ZoneValue>(ab.dig_rest_destination);
+    if (dig_rest_destination(ab) != Zone::LIBRARY) {
+        Zone::ZoneValue rest_dest = dig_rest_destination(ab);
         for (auto e : remaining) {
             orderer->add_to_zone(false, e, rest_dest, owner_sees);
             auto &cd = global_coordinator.GetComponent<CardData>(e);
@@ -252,7 +276,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     }
     // Unchosen cards normally go to the bottom; LibraryPosition2$ 0 (Fateseal) keeps
     // them on top instead (i.e. you may bottom the looked-at card, else it stays put).
-    bool rest_on_bottom = (ab.dig_rest_library_position != 0);
+    bool rest_on_bottom = dig_rest_on_bottom(ab);
     for (auto e : remaining) {
         orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, owner_sees);
     }

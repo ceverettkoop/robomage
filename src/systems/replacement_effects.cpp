@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../classes/action.h"
+#include "../choice_labels.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
@@ -429,15 +430,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                     int choice = -1;
                     if (!pq_take_latched(key, &choice)) {
                         if (in_main_loop()) {
-                            std::vector<LegalAction> yn;
-                            LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-                            decline.category = ActionCategory::OPTIONAL_YESNO;
-                            decline.option_ordinal = 0;  // 0 = decline
-                            yn.push_back(decline);
-                            LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-                            accept.category = ActionCategory::OPTIONAL_YESNO;
-                            accept.option_ordinal = 1;  // 1 = accept
-                            yn.push_back(accept);
+                            std::vector<LegalAction> yn = optional_yesno_menu(prompt);
                             // Park the choice and suspend mid-apply: dispatch()
                             // and its SBE caller early-return cooperatively
                             // before the Permanent is created.

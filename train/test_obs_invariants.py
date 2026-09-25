@@ -78,8 +78,7 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     CAT_PASS_PRIORITY, CAT_DISCARD, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS,
                     CAT_KEEP_LEGEND, CAT_ORDER_TRIGGERS, CAT_CHOOSE_REPLACEMENT,
-                    CAT_PAY_UNLESS, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_U,
-                    CAT_MANA_B, CAT_MANA_R, CAT_MANA_G, CAT_MANA_C, _MC_NAMES,
+                    _MC_NAMES,
                     SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
                     LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
@@ -938,9 +937,6 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
 # their own categories).
 
 _MC_CLEANUP_DISCARD = _MC_NAMES.index("Cleanup Discard")
-# A pay-unless menu: the pay / decline entries plus the tap-for-mana entries.
-_PAY_UNLESS_MENU_CATS = {CAT_PAY_UNLESS, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_U,
-                         CAT_MANA_B, CAT_MANA_R, CAT_MANA_G, CAT_MANA_C}
 
 # User-approved source-less decision kinds: label -> predicate(cats, obs).
 _SOURCELESS_APPROVED = {
@@ -979,11 +975,6 @@ _SOURCELESS_PROVISIONAL = {
     # 616.1 choice among several applicable replacement effects (each menu
     # entry names its replacement's source).
     "616.1 replacement choice": lambda cats, obs: set(cats) == {CAT_CHOOSE_REPLACEMENT},
-    # A pay-unless menu (PAY_UNLESS plus tap-for-mana entries) whose resolving
-    # ability's source no longer exists: The Tabernacle at Pendrell Vale's
-    # granted upkeep trigger resolving after its token creature ceased to exist.
-    "pay-unless with a vanished source": lambda cats, obs: (
-        CAT_PAY_UNLESS in cats and set(cats) <= _PAY_UNLESS_MENU_CATS),
 }
 
 

@@ -39,6 +39,7 @@ extern Game cur_game;
 // ── Static helpers ────────────────────────────────────────────────────────────
 
 static int token_vocab_idx(Entity e);
+static int last_known_vocab_idx(Entity e);
 static int get_card_vocab_idx(Entity e);
 static int slot_ref_of(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
@@ -104,6 +105,17 @@ static int token_vocab_idx(Entity e) {
     return TOKEN_SENTINEL;
 }
 
+// Vocab index of an object that left the battlefield and ceased to exist (a token, CR 111.7),
+// from its last-known information: a token's token-band index (else TOKEN_SENTINEL), a card's
+// name index. -1 when no last-known information was captured.
+static int last_known_vocab_idx(Entity e) {
+    const LastKnownInfo *lki = lki_for(e);
+    if (!lki || lki->name.empty()) return -1;
+    if (!lki->is_token) return card_name_to_index(lki->name);
+    int idx = token_script_to_index(lki->token_script);
+    return idx >= 0 ? idx : TOKEN_SENTINEL;
+}
+
 static int get_card_vocab_idx(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto& perm = global_coordinator.GetComponent<Permanent>(e);
@@ -137,8 +149,12 @@ int action_card_vocab_idx(Entity e) {
         // a lingering Token component still identifies it as a token (stack extractor case).
         if (global_coordinator.entity_has_component<Token>(src))
             return token_vocab_idx(src);
+        // A source token that has ceased to exist entirely: its last-known identity.
+        return last_known_vocab_idx(src);
     }
-    return -1;
+    // An object with no live components left (a token that ceased to exist, CR 111.7) is
+    // identified by its last-known information.
+    return last_known_vocab_idx(e);
 }
 
 // Record one announced target of a stack object into the entry's next free target
@@ -156,6 +172,9 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
     } else if (global_coordinator.entity_has_component<Zone>(tgt)) {
         // Non-permanent target (a spell on the stack, a graveyard card): its owner.
         ctrl = global_coordinator.GetComponent<Zone>(tgt).owner;
+    } else if (const LastKnownInfo *lki = lki_for(tgt)) {
+        // A target token that ceased to exist (CR 111.7): its last-known controller.
+        ctrl = lki->controller;
     }
     st.controller_is_self = (ctrl == viewer);
     // Instance-level join: which serialized slot the target occupies (-1 for players
@@ -753,6 +772,9 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             // stack (CR 707.10); its controller is the Spell's caster.
             gs->pending_decision_ctrl_is_self =
                 (global_coordinator.GetComponent<Spell>(pd).caster == viewer);
+        else if (const LastKnownInfo *lki = lki_for(pd))
+            // A source token that ceased to exist (CR 111.7): its last-known controller.
+            gs->pending_decision_ctrl_is_self = (lki->controller == viewer);
         else if (sideboard_phase)
             // A sideboard IN/OUT source is a bare load_card template entity with
             // neither Permanent nor Zone; the sideboarding player owns it.

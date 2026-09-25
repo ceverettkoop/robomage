@@ -7,6 +7,7 @@
 
 #include "card_vocab.h"
 #include "classes/game.h"
+#include "choice_labels.h"
 #include "cli_output.h"
 #include "components/carddata.h"
 #include "components/ability.h"
@@ -515,15 +516,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
 }
 
 bool request_optional_yesno(Zone::Ownership chooser, const std::string& prompt) {
-    std::vector<LegalAction> yn;
-    LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-    decline.category = ActionCategory::OPTIONAL_YESNO;
-    decline.option_ordinal = 0;  // 0 = decline
-    yn.push_back(decline);
-    LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-    accept.category = ActionCategory::OPTIONAL_YESNO;
-    accept.option_ordinal = 1;  // 1 = accept
-    yn.push_back(accept);
+    std::vector<LegalAction> yn = optional_yesno_menu(prompt);
     bool prev_priority = cur_game.player_a_has_priority;
     cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
     int choice = InputLogger::instance().get_input(yn);

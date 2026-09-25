@@ -28,10 +28,17 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
 // rather than inline in game_queries.h so the header does not need to depend on game.h (and the
 // cur_game.last_known_info store).
 
-// Look up a leaving-the-battlefield snapshot, if one was captured for `e`.
-static const LastKnownInfo *lki_for(Entity e) {
+// Look up a leaving-the-battlefield snapshot, if one was captured for `e` (declared in
+// game_queries.h).
+const LastKnownInfo *lki_for(Entity e) {
     auto it = cur_game.last_known_info.find(e);
     return it == cur_game.last_known_info.end() ? nullptr : &it->second;
+}
+
+std::string last_known_name(Entity e) {
+    const LastKnownInfo *lki = lki_for(e);
+    if (!lki || lki->name.empty()) return "";
+    return lki->is_token ? lki->name + " token" : lki->name;
 }
 
 int effective_power(Entity e) {
@@ -103,12 +110,14 @@ std::string entity_name(Entity e) {
         if (ab.source != 0 && ab.source != e &&
             (global_coordinator.entity_has_component<Permanent>(ab.source) ||
              global_coordinator.entity_has_component<CardData>(ab.source) ||
-             global_coordinator.entity_has_component<Token>(ab.source)))
+             global_coordinator.entity_has_component<Token>(ab.source) ||
+             !last_known_name(ab.source).empty()))
             return entity_name(ab.source) + "'s ability";
         if (!ab.category.empty()) return ab.category + " ability";
         return "an ability";
     }
-    return "<unknown>";
+    std::string lk = last_known_name(e);
+    return lk.empty() ? "<unknown>" : lk;
 }
 
 // Strip Permanent/Creature/Damage from a card no longer on the battlefield (or re-entering it as

@@ -97,6 +97,12 @@ struct DelayedTrigger {
 struct CardData;
 
 struct LastKnownInfo {
+    std::string name;                      // Permanent name as it left play: a token that then ceases
+                                           // to exist (CR 111.7) keeps its identity for a prompt or
+                                           // observation that still refers to it
+    bool is_token = false;                 // it was a token (CR 111.1)
+    std::string token_script;              // a token's script stem (Token::script_name), the key of its
+                                           // token-band vocab index
     int power = 0;
     int toughness = 0;
     std::vector<std::string> type_names;   // type/subtype/supertype names

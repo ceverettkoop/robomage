@@ -249,8 +249,10 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
                 game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
                          entity_name(ab.source).c_str());
             bool suspended = false;
-            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source,
-                                             ab.source, ctx, suspended, UnlessPayKind::MANA, &ab.unless_cost_pips);
+            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ab.source, ctx,
+                                             suspended,
+                                             UnlessSubject{UnlessEffect::COPY, ab.source, ab.unless_switched},
+                                             UnlessPayKind::MANA, &ab.unless_cost_pips);
             if (suspended) return HandlerResult::SUSPENDED;
             bool paid = !prevented;
             // UnlessSwitched$ True: copy only if paid. Otherwise copy unless paid.

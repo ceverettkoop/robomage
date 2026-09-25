@@ -115,8 +115,9 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                         game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
                 }
                 bool suspended = false;
-                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target,
-                                             ab.source, ctx, suspended, kind);
+                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target, ab.source, ctx,
+                                             suspended, UnlessSubject{UnlessEffect::COUNTER, ab.target, false},
+                                             kind);
                 if (suspended) return HandlerResult::SUSPENDED;
             }
 

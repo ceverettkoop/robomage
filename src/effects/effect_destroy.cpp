@@ -92,8 +92,8 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             game_log("%s may pay to prevent %s from being destroyed:\n",
                      player_name(payer).c_str(), entity_name(tgt).c_str());
         bool suspended = false;
-        bool do_destroy = run_unless_loop(ab.unless_generic_cost, payer, orderer, tgt,
-                                          ab.source, ctx, suspended, kind);
+        bool do_destroy = run_unless_loop(ab.unless_generic_cost, payer, orderer, tgt, ab.source, ctx,
+                                          suspended, UnlessSubject{UnlessEffect::DESTROY, tgt, false}, kind);
         if (suspended) return HandlerResult::SUSPENDED;
         if (!do_destroy) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is destroyed
     }

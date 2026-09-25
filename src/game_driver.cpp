@@ -14,6 +14,7 @@
 #include "classes/game.h"
 #include "classes/match_context.h"
 #include "classes/match_state.h"
+#include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
@@ -920,15 +921,7 @@ static void pregame_opening_actions(EcsSystems &sys) {
             // The y/n is seated on `player` with the request_optional_yesno
             // convention (priority save/set/restore + the exact same two-option
             // menu), but emitted through the loop gate so it is loop-safe.
-            std::vector<LegalAction> yn;
-            LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-            decline.category = ActionCategory::OPTIONAL_YESNO;
-            decline.option_ordinal = 0;  // 0 = decline
-            yn.push_back(decline);
-            LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-            accept.category = ActionCategory::OPTIONAL_YESNO;
-            accept.option_ordinal = 1;  // 1 = accept
-            yn.push_back(accept);
+            std::vector<LegalAction> yn = optional_yesno_menu(prompt);
             // The card is the pending-decision source. The baseline is reset to 0 first
             // (nothing is pending in the pregame): a SNAPSHOT here captures the scoped value,
             // and without the reset a RESTORE's recreated scope would capture it as its prev

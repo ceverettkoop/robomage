@@ -162,6 +162,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         lki = LastKnownInfo{};
         lki.type_names = names;
         lki.controller = global_coordinator.GetComponent<Permanent>(target).controller;
+        // Identity (name, token-ness, token script): a token ceases to exist once it leaves the
+        // battlefield (CR 111.7), taking every component with it, but an unless-cost prompt or a
+        // pending decision can still refer to it.
+        lki.name = global_coordinator.GetComponent<Permanent>(target).name;
+        lki.is_token = global_coordinator.GetComponent<Permanent>(target).is_token;
+        if (global_coordinator.entity_has_component<Token>(target))
+            lki.token_script = global_coordinator.GetComponent<Token>(target).script_name;
         // Snapshot the cards this permanent had exiled (CR 608.2h last-known info): a
         // leaves-the-battlefield ability that creates a token sized/owned by an exiled card
         // (Skyclave Apparition) still needs them after the Permanent component is stripped.

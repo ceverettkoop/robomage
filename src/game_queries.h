@@ -181,9 +181,20 @@ std::set<Colors> effective_colors(Entity e);
 // a battlefield object's Permanent name (a token is tagged " token"), then the card's
 // printed CardData name, then a lingering Token component (a token that already left the
 // battlefield keeps only Token), then a standalone ability entity described via its source
-// card ("Sylvan Library's ability") or its effect category. "<unknown>" only when the
-// entity carries no name-bearing component at all. Defined in game_queries.cpp.
+// card ("Sylvan Library's ability") or its effect category, then the last-known name of a
+// permanent that left play and ceased to exist (a token, CR 111.7). "<unknown>" only when the
+// entity carries no name-bearing component and no last-known information. Defined in
+// game_queries.cpp.
 std::string entity_name(Entity e);
+
+// The leaving-the-battlefield snapshot (CR 608.2h) captured for `e` as it last left play, or
+// null if none was captured. Defined in game_queries.cpp.
+struct LastKnownInfo;
+const LastKnownInfo *lki_for(Entity e);
+
+// The display name `e` had as it last left the battlefield ("Construct token" for a token),
+// from its last-known information; empty when none was captured.
+std::string last_known_name(Entity e);
 
 // Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
 // longer on the battlefield — clearing its equipment/aura attachment links first so no dangling

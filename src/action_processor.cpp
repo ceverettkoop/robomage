@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "classes/match_state.h"
+#include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
@@ -96,7 +97,6 @@ static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
                                                       std::vector<size_t> &mode_indices);
 static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster);
-static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt);
 static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
                            Zone::Ownership chooser, Entity decision_source);
 static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
@@ -1530,24 +1530,6 @@ static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership contro
 // (delve, mana, sac/exile, alt pitch/return) still pass through BLOCKING inside
 // their steps, exactly as today — Batches 10-11 convert them.
 
-// Build the exact two-option menu request_optional_yesno presents (Decline
-// first, Accept second, OPTIONAL_YESNO ordinals 0/1), so a converted cast-time
-// y/n prompt arms the byte-identical menu the blocking helper asked with.
-// (request_optional_yesno itself stays blocking — Batch 8 finding g — so the
-// cast prompts build their own menus here.)
-static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt) {
-    std::vector<LegalAction> yn;
-    LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-    decline.category = ActionCategory::OPTIONAL_YESNO;
-    decline.option_ordinal = 0;  // 0 = decline
-    yn.push_back(decline);
-    LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-    accept.category = ActionCategory::OPTIONAL_YESNO;
-    accept.option_ordinal = 1;  // 1 = accept
-    yn.push_back(accept);
-    return yn;
-}
-
 // Park a cast-time prompt (tag CAST) for the main loop to emit. Priority
 // already sits with the caster at every cast-time prompt (the CAST_SPELL
 // action was chosen at the caster's own priority window and nothing repoints
@@ -2449,8 +2431,10 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.kicker_idx++;
                     continue;
                 }
-                std::string prompt = "pay kicker " + std::to_string(ki + 1) +
+                std::string prompt = "pay kicker " + mana_value_text(card_data.kicker_costs[ki]) +
                     " for " + card_data.name;
+                if (card_data.kicker_costs.size() > 1)
+                    prompt += " (kicker " + std::to_string(ki + 1) + ")";
                 arm_cast_query(game, optional_yesno_menu(prompt), caster, spell_entity);
                 return;
             }
@@ -2483,8 +2467,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                                  pc.replicate_count);
                         continue;
                     }
-                    std::string prompt = "pay replicate cost for " + card_data.name +
-                        " (paid " + std::to_string(pc.replicate_count) + ")";
+                    std::string prompt = "pay replicate " + mana_value_text(card_data.replicate_cost) +
+                        " for " + card_data.name + " (paid " + std::to_string(pc.replicate_count) + ")";
                     arm_cast_query(game, optional_yesno_menu(prompt), caster, spell_entity);
                     return;
                 }
@@ -3838,15 +3822,8 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
                                ? global_coordinator.GetComponent<CardData>(card).name
                                : "the card";
 
-    std::vector<LegalAction> yn;
-    LegalAction decline(PASS_PRIORITY, std::string("Don't reveal ") + nm + " (miracle)");
-    decline.category = ActionCategory::OPTIONAL_YESNO;
-    decline.option_ordinal = 0;  // 0 = decline
-    yn.push_back(decline);
-    LegalAction accept(PASS_PRIORITY, std::string("Reveal ") + nm + " for its miracle cost");
-    accept.category = ActionCategory::OPTIONAL_YESNO;
-    accept.option_ordinal = 1;  // 1 = accept (reveal)
-    yn.push_back(accept);
+    std::vector<LegalAction> yn =
+        yesno_menu("Don't reveal " + nm + " (miracle)", "Reveal " + nm + " for its miracle cost");
 
     // Point the input query at the OWNER (the drawer), who need not be the priority holder — the
     // shared chooser-scope pattern (mirrors CLEANUP_DISCARD): machine mode then serializes the state
@@ -3908,17 +3885,11 @@ static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer) {
     ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, owner);
     bool affordable = alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
 
-    std::vector<LegalAction> menu;
-    LegalAction decline(PASS_PRIORITY, std::string("Do not cast ") + nm + " (miracle)");
-    decline.category = ActionCategory::OPTIONAL_YESNO;
-    decline.option_ordinal = 0;  // 0 = do not cast
-    menu.push_back(decline);
-    if (affordable) {
-        LegalAction accept(PASS_PRIORITY, card, std::string("Cast ") + nm + " for its miracle cost");
-        accept.category = ActionCategory::OPTIONAL_YESNO;
-        accept.option_ordinal = 1;  // 1 = cast now for the miracle cost
-        menu.push_back(accept);
-    }
+    // Decline (0) = do not cast; accept (1) = cast now for the miracle cost, dropped when the
+    // miracle cost is unaffordable.
+    std::vector<LegalAction> menu =
+        yesno_menu("Do not cast " + nm + " (miracle)", "Cast " + nm + " for its miracle cost", card);
+    if (!affordable) menu.pop_back();
 
     // Present to the OWNER (seat repointed, loop-safe — same pattern as cleanup discard / the reveal).
     bool prev_priority = game.player_a_has_priority;
