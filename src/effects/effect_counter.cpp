@@ -125,15 +125,16 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             // can't be countered" self replacement), a continuous battlefield static covering the
             // spell (Hexing Squelcher: "Spells you control can't be countered", CR 614.13), or a
             // protection covering every spell the controller controls (the shared
-            // player_spells_cant_be_countered query the observation also reads). A non-spell
-            // target (an ability, Stifle) is covered only by the Veil of Summer player grant.
+            // player_spells_cant_be_countered query the observation also reads). Each of these
+            // protects spells only: a non-spell target (an activated or triggered ability, Stifle)
+            // stays counterable even while its controller's spells can't be countered (Veil of
+            // Summer).
             bool target_is_spell = global_coordinator.entity_has_component<Spell>(ab.target);
             if (do_counter &&
                 ((target_is_spell && global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
                  spell_uncounterable_by_static(ab.target, orderer->mEntities) ||
                  spell_uncounterable_by_own_condition(ab.target, orderer->mEntities) ||
-                 (target_is_spell ? player_spells_cant_be_countered(target_controller, orderer->mEntities)
-                                  : cur_game.cant_counter_spells_of.count(target_controller) > 0))) {
+                 (target_is_spell && player_spells_cant_be_countered(target_controller, orderer->mEntities)))) {
                 std::string name = entity_name(ab.target);
                 game_log("%s can't be countered\n", name.c_str());
                 do_counter = false;

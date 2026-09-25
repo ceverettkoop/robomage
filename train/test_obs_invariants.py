@@ -1532,9 +1532,9 @@ def check_squelcher_player_effects():
 # private knowledge (a mirrored front end hides it), and the blocks that carry
 # perspective-relative battlefield slot refs (stack targets, delayed-trigger and
 # pending-decision refs).
-_MIRROR_EXEMPT_KEYS = {"priority_player", "priority_is_a", "is_active_player",
-                       "self_hand", "known_top_library", "opp_known_hand",
-                       "opp_revealed", "stack", "delayed_triggers", "pending_decision"}
+_MIRROR_EXEMPT_KEYS = {"priority_player", "priority_is_a", "self_hand",
+                       "known_top_library", "opp_known_hand", "opp_revealed",
+                       "stack", "delayed_triggers", "pending_decision"}
 # Engine seeds of the scripted games check_mirrored_view drives.
 _MIRROR_SEEDS = (1, 2, 3, 4, 5, 6, 7, 8)
 # Extras that legitimately differ across a priority hand-off (the passing seat's

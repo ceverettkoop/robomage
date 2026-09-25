@@ -960,11 +960,20 @@ SELF_OPP_PAIRS = {
                ("self_mulligans", "opp_mulligans")),
 }
 
+# Top-level per-player booleans decode_game_state emits as ONE key relative to
+# the priority player (true for self means false for the opponent), so
+# swap_self_opp inverts them rather than swapping a pair.
+SELF_RELATIVE_FLAGS = ("is_active_player",)
+
 
 def swap_self_opp(gs):
     """Swap every SELF_OPP_PAIRS pair of a decode_game_state dict in place (a
-    missing half moves to the other key) and return it: the decode seen from
-    the other seat, apart from the viewer-only keys."""
+    missing half moves to the other key), invert every SELF_RELATIVE_FLAGS
+    flag, and return it: the decode seen from the other seat, apart from the
+    viewer-only keys."""
+    for k in SELF_RELATIVE_FLAGS:
+        if k in gs:
+            gs[k] = not gs[k]
     for group, pairs in SELF_OPP_PAIRS.items():
         d = gs if group is None else gs[group]
         for a, b in pairs:
