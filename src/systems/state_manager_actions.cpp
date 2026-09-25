@@ -555,6 +555,16 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity priority_player_entity = get_player_entity(priority_player);
 
+    // Graveyard / exile cards the priority player has some play route for (the shared
+    // card_play_permission predicate, which ignores timing and cost), in ascending entity
+    // order, with their route bits. Every graveyard / exile play loop below walks this list
+    // and applies its own timing, cost and target gates.
+    std::vector<std::pair<Entity, unsigned>> zone_play_routes;
+    for (auto e : orderer->mEntities) {
+        unsigned routes = card_play_permission(e, priority_player).sources;
+        if (routes) zone_play_routes.emplace_back(e, routes);
+    }
+
     // PASS PRIORITY
     LegalAction la(PASS_PRIORITY, "Pass priority");
     la.category = ActionCategory::PASS_PRIORITY;
@@ -567,8 +577,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Effective land play allowance (base 1 + AdjustLandPlays statics) minus the
         // lands already played, through the shared rules_mod expression the ML
         // observation's mana-development block reports.
-        bool may_play_from_graveyard = rules_mod::may_play_lands_from_graveyard(priority_player);
-
         if (rules_mod::land_drops_remaining(priority_player) > 0) {
             // Check hand for lands
             auto hand = orderer->get_hand(priority_player);
@@ -588,22 +596,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 la.play_back_face = back_face;
                 actions.push_back(la);
             }
-            // Check graveyard for lands if MayPlay from graveyard is active
-            if (may_play_from_graveyard) {
-                Entity max_e = global_coordinator.GetMaxIssuedEntity();
-                for (Entity gy_e = 0; gy_e < max_e; ++gy_e) {
-                    if (!global_coordinator.entity_has_component<Zone>(gy_e)) continue;
-                    auto &gz = global_coordinator.GetComponent<Zone>(gy_e);
-                    if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
-                    if (!global_coordinator.entity_has_component<CardData>(gy_e)) continue;
-                    auto &gcd = global_coordinator.GetComponent<CardData>(gy_e);
-                    if (is_land_card(gcd)) {
-                        std::string desc = "Play " + gcd.name + " (from graveyard)";
-                        LegalAction la(SPECIAL_ACTION, gy_e, desc);
-                        la.category = ActionCategory::PLAY_LAND;
-                        actions.push_back(la);
-                    }
-                }
+            // Lands in the graveyard while a play-lands-from-graveyard static applies
+            // (the GRAVEYARD_LAND route).
+            for (const auto &[gy_e, routes] : zone_play_routes) {
+                if (!(routes & CardPlayPermission::GRAVEYARD_LAND)) continue;
+                auto &gcd = global_coordinator.GetComponent<CardData>(gy_e);
+                std::string desc = "Play " + gcd.name + " (from graveyard)";
+                LegalAction la(SPECIAL_ACTION, gy_e, desc);
+                la.category = ActionCategory::PLAY_LAND;
+                actions.push_back(la);
             }
         }
     }
@@ -825,14 +826,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // Modal DFC nonland back faces: offer the BACK face as a CAST_SPELL (the front face's normal
     // cast and the land-back PLAY_LAND were handled in the hand loop above).
     offer_modal_back_face_casts(actions, game, priority_player, orderer, stack_empty);
-    // checking graveyard for flashback spells
-    for (auto gy_entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
-        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
-        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
-        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+    // checking graveyard for flashback spells (the FLASHBACK route)
+    for (const auto &[gy_entity, routes] : zone_play_routes) {
+        if (!(routes & CardPlayPermission::FLASHBACK)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-        if (!gcd.has_flashback) continue;
 
         bool is_instant = false;
         for (auto &type : gcd.types) {
@@ -892,13 +889,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // card is an instant. Nethergoyf's additional cost is ExileFromGrave with a "≥N card types
     // among the chosen cards" constraint, so the cast is only legal when OTHER cards in the
     // caster's graveyard collectively cover those N types (otherwise the cost is unpayable).
-    for (auto gy_entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
-        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
-        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
-        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+    // The permission itself is the ESCAPE route.
+    for (const auto &[gy_entity, routes] : zone_play_routes) {
+        if (!(routes & CardPlayPermission::ESCAPE)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-        if (!gcd.has_escape) continue;
 
         bool esc_is_instant = card_has_type(gcd, "Instant");
         // Teferi opponent sorcery-speed lock: even an escape instant is sorcery-timed (CR 601.3a).
@@ -948,15 +942,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     }
     // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
     // been granted permission to cast this turn (CR 601.3e). It is cast from the graveyard
-    // for its normal cost, at the timing its type allows. Only the granting player may
-    // cast it, so filter the permission set by graveyard owner.
-    for (auto gy_entity : cur_game.may_cast_this_turn) {
-        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
-        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
-        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
-        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+    // for its normal cost, at the timing its type allows. The GRAVEYARD_CAST route covers
+    // only the graveyard owner and never a land (601.1).
+    for (const auto &[gy_entity, routes] : zone_play_routes) {
+        if (!(routes & CardPlayPermission::GRAVEYARD_CAST)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-        if (is_land_card(gcd)) continue;  // lands aren't cast (601.1)
 
         // Flash / instant cards may be cast anytime; everything else is sorcery-speed.
         bool can_cast_at_instant_speed = card_has_type(gcd, "Instant");
@@ -997,12 +987,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // controller may cast, paying an alternative RESOURCE cost (energy or life equal to its
     // mana value) instead of its mana cost (CR 707 / 118.9). Cast from EXILE at the timing its
     // type allows; only the granted player may cast it, and only if they can pay the resource.
-    for (const auto &[ex_entity, perm_grant] : cur_game.impulse_cast_permission) {
-        if (perm_grant.caster != priority_player) continue;
-        if (!global_coordinator.entity_has_component<Zone>(ex_entity)) continue;
-        auto &ez = global_coordinator.GetComponent<Zone>(ex_entity);
-        if (ez.location != Zone::EXILE) continue;  // must still be in exile
-        if (!global_coordinator.entity_has_component<CardData>(ex_entity)) continue;
+    // The EXILE_GRANT route covers a card still in exile whose grant names this player (and
+    // a land only under a NORMAL grant that allows lands).
+    for (const auto &[ex_entity, routes] : zone_play_routes) {
+        if (!(routes & CardPlayPermission::EXILE_GRANT)) continue;
+        const auto &perm_grant = cur_game.impulse_cast_permission.at(ex_entity);
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
 
         bool main_phase_window =
@@ -1012,10 +1001,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // A LAND among the exiled cards: only a NORMAL "play" permission (Light Up the Stage's
         // "you may PLAY those cards") may play it — a land play, sorcery-timing, own main phase,
         // empty stack, and a land drop remaining (CR 305.2 / 601.3e). A free/energy/life "cast"
-        // grant (Ugin -11 / Amped Raptor) can't play a land (601.1), so those skip it.
+        // grant (Ugin -11 / Amped Raptor) can't play a land (601.1), and card_play_permission
+        // reports no route for a land under one.
         if (is_land_card(ecd)) {
-            if (perm_grant.resource != Game::ImpulseCastPermission::NORMAL || !perm_grant.allow_land)
-                continue;
             if (!main_phase_window) continue;
             // Same shared land-drop expression the hand loop above uses.
             if (rules_mod::land_drops_remaining(priority_player) <= 0) continue;

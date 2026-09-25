@@ -132,7 +132,7 @@ _SELF_PERM_SLOTS = _ENV_PERM_SLOTS        # 48: slots 0-47 = self, 48-95 = oppon
 _PERM_LOYALTY_OFF = _OFF_LOYALTY
 _GY_START_OBS    = _GY_START
 _GY_SLOTS        = _GY_SLOTS_TOTAL        # 128
-_GY_SLOT_SZ      = _GY_SLOT_SIZE          # 1
+_GY_SLOT_SZ      = _GY_SLOT_SIZE          # card id first, then the play-permission flags
 _GY_SELF_SLOTS   = _GY_SLOTS_TOTAL // 2   # slots 0-63 = self GY, 64-127 = opp GY
 
 # Stack layout: 12 slots x 37 floats. Per slot: controller_is_self(1), card id(1),

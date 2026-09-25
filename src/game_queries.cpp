@@ -11,6 +11,7 @@
 #include "ecs/events.h"
 #include "machine_io.h"
 #include "svar_eval.h"
+#include "systems/rules_modifying.h"
 
 extern Coordinator global_coordinator;
 
@@ -581,6 +582,55 @@ Entity returnable_exiled_card(Entity host) {
         }
     }
     return 0;
+}
+
+CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
+    CardPlayPermission out;
+    if (!global_coordinator.entity_has_component<Zone>(card)) return out;
+    if (!global_coordinator.entity_has_component<CardData>(card)) return out;
+    const auto &zone = global_coordinator.GetComponent<Zone>(card);
+    const auto &cd = global_coordinator.GetComponent<CardData>(card);
+    // A source that outlives this turn's cleanup clears this; it starts true and is only
+    // reported when some source applies.
+    bool all_expire = true;
+    if (zone.location == Zone::GRAVEYARD) {
+        if (zone.owner != player) return out;
+        bool land = is_land_card(cd);
+        if (cd.has_flashback) { out.sources |= CardPlayPermission::FLASHBACK; all_expire = false; }
+        if (cd.has_escape) { out.sources |= CardPlayPermission::ESCAPE; all_expire = false; }
+        if (!land && cur_game.may_cast_this_turn.count(card))
+            out.sources |= CardPlayPermission::GRAVEYARD_CAST;
+        if (land && rules_mod::may_play_lands_from_graveyard(player)) {
+            out.sources |= CardPlayPermission::GRAVEYARD_LAND;
+            all_expire = false;
+        }
+    } else if (zone.location == Zone::EXILE) {
+        auto it = cur_game.impulse_cast_permission.find(card);
+        if (it == cur_game.impulse_cast_permission.end()) return out;
+        const Game::ImpulseCastPermission &g = it->second;
+        if (g.caster != player) return out;
+        if (is_land_card(cd) &&
+            (g.resource != Game::ImpulseCastPermission::NORMAL || !g.allow_land))
+            return out;
+        out.sources |= CardPlayPermission::EXILE_GRANT;
+        // Mirrors the cleanup expiry in game.cpp: a warp grant lasts while the card stays
+        // in exile; an until-the-end-of-your-next-turn grant lapses at a later turn's cleanup
+        // whose active player is its caster; every other grant lapses at this cleanup.
+        Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+        bool expires = !g.warp && (!g.persist_until_end_of_next_turn ||
+                                   (g.caster == active && cur_game.turn > g.grant_turn));
+        if (!expires) all_expire = false;
+    }
+    out.expires_this_turn = out.playable() && all_expire;
+    return out;
+}
+
+int exiled_card_counters(Entity card) {
+    int n = 0;
+    auto it = cur_game.suspend_time_counters.find(card);
+    if (it != cur_game.suspend_time_counters.end() && it->second > 0) n += it->second;
+    if (cur_game.void_countered.count(card)) n += 1;
+    return n;
 }
 
 static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt) {

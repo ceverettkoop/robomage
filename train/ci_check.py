@@ -905,6 +905,8 @@ _CHAIN_PAIRS = [
     ("_GLOBAL_SIZE",            "STATE_HEADER_SIZE"),
     ("_PERM_SLOT_SIZE",         "PERM_SLOT_SIZE"),
     ("_STACK_SLOT_SIZE",        "STACK_SLOT_SIZE"),
+    ("_GY_SLOT_SIZE",           "GY_SLOT_SIZE"),
+    ("_EXILE_SLOT_SIZE",        "EXILE_SLOT_SIZE"),
     ("_SELF_PERM_START",        "SELF_PERM_START"),
     ("_OPP_PERM_START",         "OPP_PERM_START"),
     ("_STACK_START",            "STACK_START"),

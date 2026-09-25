@@ -58,6 +58,9 @@ static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity 
 static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
                                   const std::vector<Entity>& stack_delayed);
 static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry& d);
+static void fill_zone_card(ZoneCardEntry& z, Entity e, Zone::Ownership viewer,
+                           Zone::Ownership opp_view, bool hide_face_down);
+static void push_zone_card(std::vector<float>& out, const ZoneCardEntry& z, bool with_counters);
 static void fill_decklist_block(int* ids, int* counts, int n_slots,
                                 const std::vector<DecklistEntry>& entries,
                                 const char* block_name);
@@ -588,6 +591,40 @@ static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
     for (int i = 0; i < n; i++) gs->delayed[i] = entries[static_cast<size_t>(i)].second;
 }
 
+// One graveyard / exile slot. An opponent's face-down exiled card (CR 708.2, The Creation
+// of Avacyn chapter I) is hidden from the viewer: the slot keeps the unknown-id sentinel
+// and zeroed flags and counters, so it shows only that a card is there. The owner still
+// sees its own face-down card in full. get_card_vocab_idx guards a missing CardData (a
+// token resolves via its Token band / TOKEN_SENTINEL).
+static void fill_zone_card(ZoneCardEntry& z, Entity e, Zone::Ownership viewer,
+                           Zone::Ownership opp_view, bool hide_face_down) {
+    z = ZoneCardEntry{};
+    z.card_idx = -1;
+    if (hide_face_down && global_coordinator.GetComponent<Zone>(e).is_face_down) return;
+    z.card_idx = get_card_vocab_idx(e);
+    CardPlayPermission self_perm = card_play_permission(e, viewer);
+    CardPlayPermission opp_perm = card_play_permission(e, opp_view);
+    z.playable_by_self = self_perm.playable();
+    z.playable_by_opp = opp_perm.playable();
+    // Expires only when every permission covering the card, for either player, lapses.
+    z.play_expires_this_turn = (z.playable_by_self || z.playable_by_opp) &&
+                               (!z.playable_by_self || self_perm.expires_this_turn) &&
+                               (!z.playable_by_opp || opp_perm.expires_this_turn);
+    if (global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE)
+        z.counters = exiled_card_counters(e);
+}
+
+// Serialize one graveyard slot (card_id, playable_by_self, playable_by_opp,
+// play_expires_this_turn) or, with_counters, one exile slot (the same + counters).
+static void push_zone_card(std::vector<float>& out, const ZoneCardEntry& z, bool with_counters) {
+    out.push_back(norm_card_id(z.card_idx));
+    out.push_back(z.playable_by_self ? 1.0f : 0.0f);
+    out.push_back(z.playable_by_opp ? 1.0f : 0.0f);
+    out.push_back(z.play_expires_this_turn ? 1.0f : 0.0f);
+    if (with_counters)
+        out.push_back(static_cast<float>(z.counters) / static_cast<float>(ZONE_COUNTER_NORMALIZER));
+}
+
 // Pushes DELAYED_SLOT_SIZE floats (per-slot offsets documented in machine_io.h). Empty slot =
 // zeros with the two card-id sentinels.
 static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry& d) {
@@ -624,10 +661,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     }
     for (int i = 0; i < MAX_HAND_SLOTS; i++) { gs->self_hand[i] = -1; gs->opp_known_hand[i] = -1; }
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        gs->self_graveyard[i] = -1;
-        gs->opp_graveyard[i]  = -1;
-        gs->self_exile[i]     = -1;
-        gs->opp_exile[i]      = -1;
+        gs->self_graveyard[i].card_idx = -1;
+        gs->opp_graveyard[i].card_idx  = -1;
+        gs->self_exile[i].card_idx     = -1;
+        gs->opp_exile[i].card_idx      = -1;
     }
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) gs->known_top_library_self[i] = -1;
     // Deck-identity tail blocks: id = -1 (empty sentinel), count 0.
@@ -795,8 +832,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     StackItem stack_items[MAX_STACK_DISPLAY + 8];
     int stack_item_count = 0;
 
-    // Graveyard/exile cards as (distance_from_top, vocab id), sorted for recency order.
-    struct GyItem { size_t dist; int vocab_idx; };
+    // Graveyard/exile cards as (distance_from_top, entity), sorted for recency order.
+    struct GyItem { size_t dist; Entity ent; };
     std::vector<GyItem> self_gy_items, opp_gy_items;
     std::vector<GyItem> self_exile_items, opp_exile_items;
     self_gy_items.reserve(MAX_GY_SLOTS);
@@ -860,22 +897,13 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 break;
 
             case Zone::GRAVEYARD:
-                if (is_self) self_gy_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
-                else         opp_gy_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
+                (is_self ? self_gy_items : opp_gy_items).push_back({zone.distance_from_top, e});
                 break;
 
             case Zone::EXILE:
-                // Collected per-owner in recency order, exactly like the graveyard.
-                // Most exile is public, so both sides are serialized. The exception is a card
-                // exiled FACE DOWN (CR 708.2, The Creation of Avacyn chapter I): its identity is
-                // hidden from the opponent, so an opponent-owned face-down exile emits the unknown
-                // id sentinel (-1) — the viewer still sees a card is there, just not which. The
-                // owner (who exiled it from their own library) still sees its true identity.
-                // get_card_vocab_idx guards a missing CardData (a token that ever
-                // sits here resolves via its Token band / TOKEN_SENTINEL, no crash).
-                if (is_self) self_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
-                else         opp_exile_items.push_back({zone.distance_from_top,
-                                 zone.is_face_down ? -1 : get_card_vocab_idx(e)});
+                // Collected per-owner in recency order, exactly like the graveyard (the
+                // face-down masking is applied in fill_zone_card).
+                (is_self ? self_exile_items : opp_exile_items).push_back({zone.distance_from_top, e});
                 break;
 
             case Zone::STACK:
@@ -953,19 +981,23 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_mana_dev(gs->opponent, opp_view, opp_entity);
     }
 
-    // Graveyards in RECENCY order: slot 0 = most recent arrival (lowest distance_from_top)
-    auto fill_graveyard = [](int* slots, std::vector<GyItem>& items) {
-        std::sort(items.begin(), items.end(),
-                  [](const GyItem& a, const GyItem& b) { return a.dist < b.dist; });
-        int n = std::min(static_cast<int>(items.size()), MAX_GY_SLOTS);
-        for (int i = 0; i < n; i++) slots[i] = items[static_cast<size_t>(i)].vocab_idx;
-    };
-    fill_graveyard(gs->self_graveyard, self_gy_items);
-    fill_graveyard(gs->opp_graveyard, opp_gy_items);
-
-    // Exile zones in the same RECENCY order (slot 0 = most recent arrival).
-    fill_graveyard(gs->self_exile, self_exile_items);
-    fill_graveyard(gs->opp_exile, opp_exile_items);
+    // Graveyards and exile in RECENCY order: slot 0 = most recent arrival (lowest
+    // distance_from_top).
+    {
+        Zone::Ownership opp_view = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        auto fill_zone = [&](ZoneCardEntry* slots, std::vector<GyItem>& items, bool hide_face_down) {
+            std::sort(items.begin(), items.end(),
+                      [](const GyItem& a, const GyItem& b) { return a.dist < b.dist; });
+            int n = std::min(static_cast<int>(items.size()), MAX_GY_SLOTS);
+            for (int i = 0; i < n; i++)
+                fill_zone_card(slots[i], items[static_cast<size_t>(i)].ent, viewer, opp_view,
+                               hide_face_down);
+        };
+        fill_zone(gs->self_graveyard, self_gy_items, false);
+        fill_zone(gs->opp_graveyard, opp_gy_items, false);
+        fill_zone(gs->self_exile, self_exile_items, false);
+        fill_zone(gs->opp_exile, opp_exile_items, true);
+    }
 
     // ── Deck-identity tail blocks ─────────────────────────────────────────────
     // Self LIVE library (packed ascending by vocab id from the std::map tally).
@@ -1160,21 +1192,12 @@ const std::vector<float>& serialize_state(const GameState* gs) {
         }
     }
 
-    // Self graveyard (64 x 1 = 64)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->self_graveyard[i]));
-
-    // Opp graveyard (64 x 1 = 64)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->opp_graveyard[i]));
-
-    // Self exile (64 x 1 = 64), recency-ordered (slot 0 = most recent arrival)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->self_exile[i]));
-
-    // Opp exile (64 x 1 = 64)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->opp_exile[i]));
+    // Graveyards (64 x GY_SLOT_SIZE per side), then exile (64 x EXILE_SLOT_SIZE per
+    // side), self first, recency-ordered (slot 0 = most recent arrival).
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->self_graveyard[i], false);
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->opp_graveyard[i], false);
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->self_exile[i], true);
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->opp_exile[i], true);
 
     // Self hand (10 x 1 = 10)
     for (int i = 0; i < MAX_HAND_SLOTS; i++)

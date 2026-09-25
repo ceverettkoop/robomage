@@ -557,6 +557,51 @@ void refresh_city_blessing(const std::set<Entity> &entities);
 // game_queries.cpp (needs cur_game.delayed_triggers).
 Entity returnable_exiled_card(Entity host);
 
+// ── Play permissions from the graveyard and exile ────────────────────────────
+// Whether `player` has a permission to play (cast, or play as a land) the card `card`
+// from the zone it is in, IGNORING timing, cost affordability, targets and cast
+// prohibitions: those stay in the legal-action enumeration. The single source for
+// "which play routes exist for this card": the enumeration's graveyard/exile loops gate on
+// its `sources` bits, and the ML observation's graveyard/exile playable flags read it, so
+// the two cannot disagree about which cards are playable from those zones.
+// Sources covered:
+//   FLASHBACK         a graveyard card its owner may cast with flashback (CR 702.34)
+//   ESCAPE            a graveyard card its owner may cast with escape (CR 702.139)
+//   GRAVEYARD_CAST    a nonland graveyard card in Game::may_cast_this_turn (Emry's grant;
+//                     the owner, this turn)
+//   GRAVEYARD_LAND    a land card in its owner's graveyard while a static lets the owner play
+//                     lands from the graveyard (Icetill Explorer, Mole Man)
+//   EXILE_GRANT       an exiled card with a Game::impulse_cast_permission whose caster is
+//                     `player` (Light Up the Stage, Ugin's -11, Amped Raptor, a suspend free
+//                     cast, warp); a land only under a NORMAL grant that allows lands
+// Not covered: a suspended card still carrying time counters (no permission until the last
+// counter is removed), a void-countered card (Dauthi Voidwalker's ability plays its chosen
+// card during resolution, so no standing permission exists), graveyard-activated abilities
+// such as unearth (they activate an ability, not play the card), and hand casts.
+// expires_this_turn is true when the card is playable and EVERY source covering it lapses at
+// this turn's cleanup (Emry's grant, a "this turn" exile grant, or a Light Up the Stage grant
+// during the caster's next turn); false for a static or keyword source or a grant that
+// outlives this turn. Defined in game_queries.cpp (needs cur_game and rules_mod).
+struct CardPlayPermission {
+    enum Source : unsigned {
+        FLASHBACK      = 1u << 0,
+        ESCAPE         = 1u << 1,
+        GRAVEYARD_CAST = 1u << 2,
+        GRAVEYARD_LAND = 1u << 3,
+        EXILE_GRANT    = 1u << 4,
+    };
+    unsigned sources = 0;
+    bool expires_this_turn = false;
+    bool playable() const { return sources != 0; }
+};
+CardPlayPermission card_play_permission(Entity card, Zone::Ownership player);
+
+// Counters on a card in exile: its suspend time counters (Game::suspend_time_counters) plus
+// 1 for a void counter (Game::void_countered, Dauthi Voidwalker). An exiled card is not a
+// permanent, so these live in Game rather than Permanent::counters. Defined in
+// game_queries.cpp.
+int exiled_card_counters(Entity card);
+
 // ── Delayed triggers (CR 603.7) ──────────────────────────────────────────────
 struct DelayedTrigger;
 

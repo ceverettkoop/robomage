@@ -29,7 +29,9 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _STACK_XAMT_OFF, _STACK_QUAL_START, _STACK_QUALS,
                  _STACK_MODE_START, _STACK_TGT_START,
                  _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
-                 _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
+                 _GY_SLOT_SIZE, _EXILE_SLOT_SIZE, _HAND_SLOT_SIZE,
+                 ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF, ZONE_PLAYABLE_OPP_OFF,
+                 ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF, ZONE_COUNTER_NORMALIZER,
                  _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
                  _KNOWN_TOP_LIB_SLOT_SIZE,
                  _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
@@ -74,11 +76,12 @@ from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
 
 # ── Engine constants (card identity is a single normalized id float per slot) ──
 STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + x/quals + modes + targets (37)
-GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card-id only
+GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card id + 3 play-permission flags
+EXILE_SLOT_SIZE = _EXILE_SLOT_SIZE                 # the graveyard fields + counters
 _OPP_GY_START = _GY_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp gy begins after the self slots
-# Exile blocks mirror the graveyard layout (MAX_GY_SLOTS card-id slots per side,
-# recency-ordered); the shared _decode_graveyard decoder handles them too.
-_OPP_EXILE_START = _EXILE_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp exile after the self slots
+# Exile blocks follow the graveyard layout (MAX_GY_SLOTS recency-ordered slots per
+# side, one extra counters float); the shared _decode_graveyard decoder handles them too.
+_OPP_EXILE_START = _EXILE_START + MAX_GY_SLOTS * EXILE_SLOT_SIZE  # opp exile after the self slots
 
 # State-vector context indices (derived from env layout)
 _IDX_SELF_LIB = _LIBRARY_CTX_START                 # self_library_ct / 60
@@ -457,14 +460,14 @@ def hidden_info_fingerprint(state):
     _add(self_counts, _HAND_START, MAX_HAND_SLOTS, _HAND_SLOT_SIZE)
     _add(self_counts, _SELF_PERM_START + _OFF_CARD_ID, _PERM_SLOTS,
          PERM_SLOT_SIZE)
-    _add(self_counts, _GY_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
-    _add(self_counts, _EXILE_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(self_counts, _GY_START + ZONE_CARD_ID_OFF, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(self_counts, _EXILE_START + ZONE_CARD_ID_OFF, MAX_GY_SLOTS, EXILE_SLOT_SIZE)
     _add(self_counts, _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
          _KNOWN_TOP_LIB_SLOT_SIZE)
     _add(opp_counts, _OPP_PERM_START + _OFF_CARD_ID, _PERM_SLOTS,
          PERM_SLOT_SIZE)
-    _add(opp_counts, _OPP_GY_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
-    _add(opp_counts, _OPP_EXILE_START, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(opp_counts, _OPP_GY_START + ZONE_CARD_ID_OFF, MAX_GY_SLOTS, GY_SLOT_SIZE)
+    _add(opp_counts, _OPP_EXILE_START + ZONE_CARD_ID_OFF, MAX_GY_SLOTS, EXILE_SLOT_SIZE)
     _add(opp_counts, _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
          _OPP_KNOWN_HAND_SLOT_SIZE)
     for i in range(_STACK_SLOTS):
@@ -769,15 +772,47 @@ def _decode_hand(state):
     return cards
 
 
-def _decode_graveyard(state, start):
-    """Decode a graveyard zone (MAX_GY_SLOTS slots, 1 normalized card-id float
-    each) into card names."""
+def _decode_graveyard(state, start, slot_size=GY_SLOT_SIZE):
+    """Decode a graveyard or exile zone (MAX_GY_SLOTS slots of `slot_size`
+    floats, card id first) into card names. A hidden slot (an opponent's
+    face-down exiled card) decodes as nothing, like an empty one."""
     cards = []
     for i in range(MAX_GY_SLOTS):
-        card = onehot_to_card(state, start + i * GY_SLOT_SIZE)
+        card = onehot_to_card(state, start + i * slot_size + ZONE_CARD_ID_OFF)
         if card is not None:
             cards.append(card)
     return cards
+
+
+def _decode_zone_marks(state, start, slot_size, labels):
+    """Per-card annotations for a graveyard / exile zone, aligned with
+    `_decode_graveyard`'s names: "" or a compact string naming who may play the
+    card from there (`play:self` / `play:opponent`, `/eot` when every permission
+    lapses at this turn's cleanup) and, for exile, its counters (`N ctr`)."""
+    marks = []
+    for i in range(MAX_GY_SLOTS):
+        base = start + i * slot_size
+        if onehot_to_card(state, base + ZONE_CARD_ID_OFF) is None:
+            continue
+        parts = []
+        who = [labels["self"]] if state[base + ZONE_PLAYABLE_SELF_OFF] > 0.5 else []
+        if state[base + ZONE_PLAYABLE_OPP_OFF] > 0.5:
+            who.append(labels["opponent"])
+        if who:
+            parts.append("play:" + "+".join(who)
+                         + ("/eot" if state[base + ZONE_EXPIRES_OFF] > 0.5 else ""))
+        if slot_size > EXILE_COUNTERS_OFF:
+            n = int(round(float(state[base + EXILE_COUNTERS_OFF]) * ZONE_COUNTER_NORMALIZER))
+            if n:
+                parts.append(f"{n} ctr")
+        marks.append(", ".join(parts))
+    return marks
+
+
+def fmt_zone_cards(names, marks):
+    """Join a zone's card names, appending each non-empty mark as ` [mark]`."""
+    marks = marks or [""] * len(names)
+    return ", ".join(f"{n} [{m}]" if m else n for n, m in zip(names, marks))
 
 
 def _decode_known_top_library(state):
@@ -934,8 +969,16 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
-        "self_exile": _decode_graveyard(state, _EXILE_START),
-        "opp_exile": _decode_graveyard(state, _OPP_EXILE_START),
+        "self_exile": _decode_graveyard(state, _EXILE_START, EXILE_SLOT_SIZE),
+        "opp_exile": _decode_graveyard(state, _OPP_EXILE_START, EXILE_SLOT_SIZE),
+        # Aligned with the four name lists above (see _decode_zone_marks).
+        "zone_marks": {
+            "self_graveyard": _decode_zone_marks(state, _GY_START, GY_SLOT_SIZE, labels),
+            "opp_graveyard": _decode_zone_marks(state, _OPP_GY_START, GY_SLOT_SIZE, labels),
+            "self_exile": _decode_zone_marks(state, _EXILE_START, EXILE_SLOT_SIZE, labels),
+            "opp_exile": _decode_zone_marks(state, _OPP_EXILE_START, EXILE_SLOT_SIZE,
+                                            labels),
+        },
         "known_top_library": _decode_known_top_library(state),
         "opp_known_hand": _decode_opp_known_hand(state),
         "opp_revealed": _decode_opp_revealed(state),
@@ -1630,14 +1673,11 @@ def format_state_lines(gs):
     if pend:
         lines.append(f"Pending: {pend['name']}"
                      f" ({'self' if pend['is_self'] else 'opp'})")
-    if gs["self_graveyard"]:
-        lines.append(f"Self GY: {', '.join(gs['self_graveyard'])}")
-    if gs["opp_graveyard"]:
-        lines.append(f"Opp GY:  {', '.join(gs['opp_graveyard'])}")
-    if gs.get("self_exile"):
-        lines.append(f"Self exile: {', '.join(gs['self_exile'])}")
-    if gs.get("opp_exile"):
-        lines.append(f"Opp exile:  {', '.join(gs['opp_exile'])}")
+    marks = gs.get("zone_marks") or {}
+    for label, key in (("Self GY: ", "self_graveyard"), ("Opp GY:  ", "opp_graveyard"),
+                       ("Self exile: ", "self_exile"), ("Opp exile:  ", "opp_exile")):
+        if gs.get(key):
+            lines.append(label + fmt_zone_cards(gs[key], marks.get(key)))
     # Belief-state blocks (shown only when the viewer actually knows something).
     if gs.get("known_top_library"):
         lines.append(f"Known top: {', '.join(gs['known_top_library'])}")

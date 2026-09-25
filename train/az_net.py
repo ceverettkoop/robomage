@@ -157,7 +157,8 @@ class ScriptTrunk(nn.Module):
         "PERM_RETURNABLE_OFF", "PERM_CARD_OFF", "STACK_START", "STACK_END",
         "STACK_SLOTS", "STACK_SLOT_SIZE", "STACK_XAMT_OFF", "STACK_MODE_OFF",
         "STACK_TGT_OFF", "STACK_TGT_SLOTS", "STACK_TGT_FIELDS", "GY_START",
-        "GY_END", "GY_SLOTS", "EXILE_START", "EXILE_END", "EXILE_SLOTS",
+        "GY_END", "GY_SLOTS", "GY_SLOT_SIZE", "EXILE_START", "EXILE_END", "EXILE_SLOTS",
+        "EXILE_SLOT_SIZE", "ZONE_CARD_OFF",
         "HAND_START", "HAND_END", "HAND_SLOTS", "OPP_KNOWN_HAND_START",
         "OPP_KNOWN_HAND_END", "OPP_KNOWN_HAND_SLOTS", "SELF_LIVE_LIB_START",
         "SELF_LIVE_LIB_END", "SELF_DECK_MAIN_START", "SELF_DECK_MAIN_END",
@@ -188,6 +189,7 @@ class ScriptTrunk(nn.Module):
         self.perm_encoder = fe.perm_encoder
         self.stack_encoder = fe.stack_encoder
         self.delayed_encoder = fe.delayed_encoder
+        self.zone_card_encoder = fe.zone_card_encoder
         self.entity_encoder = fe.entity_encoder
         self.decklist_encoder = fe.decklist_encoder
         self.ref_combiner = fe.ref_combiner
@@ -246,9 +248,12 @@ class ScriptTrunk(nn.Module):
         self.GY_START = int(_ex._GY_START)
         self.GY_END = int(_ex._GY_END)
         self.GY_SLOTS = int(_ex._GY_SLOTS)
+        self.GY_SLOT_SIZE = int(_ex._GY_SLOT_SIZE)
         self.EXILE_START = int(_ex._EXILE_START)
         self.EXILE_END = int(_ex._EXILE_END)
         self.EXILE_SLOTS = int(_ex._EXILE_SLOTS)
+        self.EXILE_SLOT_SIZE = int(_ex._EXILE_SLOT_SIZE)
+        self.ZONE_CARD_OFF = int(_ex._ZONE_CARD_OFF)
         self.HAND_START = int(_ex._HAND_START)
         self.HAND_END = int(_ex._HAND_END)
         self.HAND_SLOTS = int(_ex._HAND_SLOTS)
@@ -336,8 +341,10 @@ class ScriptTrunk(nn.Module):
             -1, self.PERM_SLOTS, self.PERM_SLOT_SIZE)
         stack = obs[:, self.STACK_START:self.STACK_END].reshape(
             -1, self.STACK_SLOTS, self.STACK_SLOT_SIZE)
-        graveyard = obs[:, self.GY_START:self.GY_END].reshape(-1, self.GY_SLOTS, 1)
-        exile = obs[:, self.EXILE_START:self.EXILE_END].reshape(-1, self.EXILE_SLOTS, 1)
+        graveyard = obs[:, self.GY_START:self.GY_END].reshape(
+            -1, self.GY_SLOTS, self.GY_SLOT_SIZE)
+        exile = obs[:, self.EXILE_START:self.EXILE_END].reshape(
+            -1, self.EXILE_SLOTS, self.EXILE_SLOT_SIZE)
         hand = obs[:, self.HAND_START:self.HAND_END].reshape(-1, self.HAND_SLOTS, 1)
         opp_hand = obs[:, self.OPP_KNOWN_HAND_START:self.OPP_KNOWN_HAND_END].reshape(
             -1, self.OPP_KNOWN_HAND_SLOTS, 1)
@@ -387,11 +394,11 @@ class ScriptTrunk(nn.Module):
                            delayed[:, :, self.DT_SUBJECT_ID_OFF + 1:],
                            dt_creator_emb, dt_subject_emb], dim=-1)
 
-        gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
-        ex_emb_in, ex_present = self._embed_ids(exile[:, :, 0])
+        gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, self.ZONE_CARD_OFF])
+        ex_emb_in, ex_present = self._embed_ids(exile[:, :, self.ZONE_CARD_OFF])
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
         # Combined hand + known-top-library block with the draw-distance column
-        # (0.0 in hand / every other entity_encoder zone; (i+1)/5 for top slot i).
+        # (0.0 in hand and for the known opponent hand; (i+1)/5 for top slot i).
         hl_emb, hl_present = self._embed_ids(
             torch.cat([hand[:, :, 0], top_lib[:, :, 0]], dim=1))
         hl_dist = hl_emb.new_zeros(hl_emb.shape[0],
@@ -402,8 +409,9 @@ class ScriptTrunk(nn.Module):
         hl_in = torch.cat([hl_emb, hl_dist], dim=-1)
         next_draw_feat = hl_emb[:, self.HAND_SLOTS]
         zero_dist = hl_emb.new_zeros(hl_emb.shape[0], 1, 1)
-        gy_in = torch.cat([gy_emb_in, zero_dist.expand(-1, self.GY_SLOTS, -1)], dim=-1)
-        ex_in = torch.cat([ex_emb_in, zero_dist.expand(-1, self.EXILE_SLOTS, -1)], dim=-1)
+        gy_in = torch.cat([gy_emb_in, graveyard[:, :, 1:],
+                           torch.zeros_like(graveyard[:, :, :1])], dim=-1)
+        ex_in = torch.cat([ex_emb_in, exile[:, :, 1:]], dim=-1)
         opp_hand_in = torch.cat(
             [opp_hand_emb_in,
              zero_dist.expand(-1, self.OPP_KNOWN_HAND_SLOTS, -1)], dim=-1)
@@ -430,8 +438,8 @@ class ScriptTrunk(nn.Module):
         perm_emb = self.perm_encoder(perm_in)
         stk_emb = self.stack_encoder(stk_in)
         dt_emb = self.delayed_encoder(dt_in)
-        gy_emb = self.entity_encoder(gy_in)
-        ex_emb = self.entity_encoder(ex_in)
+        gy_emb = self.zone_card_encoder(gy_in)
+        ex_emb = self.zone_card_encoder(ex_in)
         hand_lib_emb = self.entity_encoder(hl_in)
         opp_hand_emb = self.entity_encoder(opp_hand_in)
         self_lib_enc = self.decklist_encoder(self_lib_in)

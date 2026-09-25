@@ -151,6 +151,17 @@ typedef struct DelayedTriggerEntry_tag {
     bool fires_this_turn;      // a waiting phase trigger scheduled later this turn
 } DelayedTriggerEntry;
 
+// One graveyard or exile card (card_play_permission and exiled_card_counters in
+// game_queries.h). A hidden-identity slot (an opponent's face-down exiled card) keeps
+// card_idx -1 and every other field 0.
+typedef struct ZoneCardEntry_tag {
+    int  card_idx;               // card_vocab_idx, -1 = empty / hidden
+    bool playable_by_self;       // the viewer has a play permission covering it
+    bool playable_by_opp;        // the viewer's opponent has one
+    bool play_expires_this_turn; // every permission covering it lapses at this turn's cleanup
+    int  counters;               // exile only: suspend time counters + void counter
+} ZoneCardEntry;
+
 typedef enum ActionRefZone_tag {
     REF_NONE = 0,
     REF_SELF_BATTLEFIELD,
@@ -202,13 +213,13 @@ typedef struct GameState_tag {
     // Pending delayed triggers, ascending by registration seq (packed, no holes).
     DelayedTriggerEntry delayed[MAX_DELAYED_TRIGGER_SLOTS];
 
-    int  self_graveyard[MAX_GY_SLOTS];   // card_vocab_idx, -1 = empty
-    int  opp_graveyard[MAX_GY_SLOTS];
-    // Exile is collected + serialized in RECENCY order (slot 0 = most recent
-    // arrival, sorted by Zone::distance_from_top). All exile is public in this
-    // engine, so both zones are fully visible. card_vocab_idx, -1 = empty.
-    int  self_exile[MAX_GY_SLOTS];
-    int  opp_exile[MAX_GY_SLOTS];
+    // Graveyards and exile, collected per owner in RECENCY order (slot 0 = most
+    // recent arrival, sorted by Zone::distance_from_top). Exile is public except an
+    // opponent's face-down card, whose slot is hidden (see ZoneCardEntry).
+    ZoneCardEntry self_graveyard[MAX_GY_SLOTS];
+    ZoneCardEntry opp_graveyard[MAX_GY_SLOTS];
+    ZoneCardEntry self_exile[MAX_GY_SLOTS];
+    ZoneCardEntry opp_exile[MAX_GY_SLOTS];
 
     int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
     // Opponent-hand cards whose identity the viewer knows (revealed in hand by

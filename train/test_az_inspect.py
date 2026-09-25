@@ -602,7 +602,7 @@ def test_weight_views(net, tmp):
 
     attr = azi.first_layer_attribution(sd)   # the width asserts run inside
     encs = {a["encoder"] for a in attr}
-    check({"perm_encoder", "stack_encoder", "entity_encoder",
+    check({"perm_encoder", "stack_encoder", "zone_card_encoder", "entity_encoder",
            "decklist_encoder", "action_encoder"} <= encs,
           "firstlayer covers every trunk encoder incl. the per-action head")
     check(all(abs(sum(g["share"] for g in a["groups"]) - 1.0) < 1e-6
@@ -616,7 +616,7 @@ def test_weight_views(net, tmp):
                   for a in battr),
           "bodylayer tiles both bodies' in-dim and names every arch column")
 
-    for layer in ("perm_encoder", "entity_encoder", "policy_body",
+    for layer in ("perm_encoder", "zone_card_encoder", "entity_encoder", "policy_body",
                   "value_body"):
         names, prefix = azi.layer_column_names(sd, layer)
         check(len(names) == sd[prefix + ".weight"].shape[1],

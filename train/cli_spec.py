@@ -3271,7 +3271,7 @@ AZ_INSPECT_TOOL = Tool("az-inspect", "train/az_inspect.py", subs=[
     _azi_weights_sub("unit", "One hidden unit's signed input-variable profile",
                      Arg("layer", "str", required=True,
                          help="Layer name: perm_encoder, stack_encoder, "
-                              "entity_encoder, decklist_encoder, "
+                              "zone_card_encoder, entity_encoder, decklist_encoder, "
                               "action_encoder, policy_body, value_body"),
                      Arg("unit", "int", required=True,
                          help="Unit (row) index in that layer"),

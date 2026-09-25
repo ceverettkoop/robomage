@@ -385,8 +385,8 @@ def _controls_card(obs: np.ndarray, cid: int) -> bool:
 def _gy_has_any(obs: np.ndarray, ids: frozenset) -> bool:
     """True if EITHER graveyard holds a card whose vocab id is in ``ids``.
 
-    The self and opponent graveyard blocks are contiguous card-id slots
-    (self first), so one scan over 2*MAX_GY_SLOTS covers both. Both sides
+    The self and opponent graveyard blocks are contiguous slots (self first,
+    card id at each slot's start), so one scan over 2*MAX_GY_SLOTS covers both. Both sides
     matter to the caller (Reanimate can take a creature from any graveyard).
     """
     for slot in range(2 * MAX_GY_SLOTS):

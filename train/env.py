@@ -106,6 +106,9 @@ try:
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
+        GY_SLOT_SIZE, EXILE_SLOT_SIZE, ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
+        ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
+        ZONE_COUNTER_NORMALIZER,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
         STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
@@ -138,6 +141,9 @@ except ImportError:
         KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
+        GY_SLOT_SIZE, EXILE_SLOT_SIZE, ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
+        ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
+        ZONE_COUNTER_NORMALIZER,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
         STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
@@ -457,9 +463,11 @@ _STACK_TGT_START        = _STACK_MODE_START + _STACK_MODE_SLOTS               # 
 # then target sub-slots (37 total)
 _STACK_SLOT_SIZE        = _STACK_TGT_START + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 _GY_SLOTS_TOTAL         = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent
-_GY_SLOT_SIZE           = CARD_ID_SLOT_SIZE    # card id only
-_EXILE_SLOTS_TOTAL      = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent (same layout as GY)
-_EXILE_SLOT_SIZE        = CARD_ID_SLOT_SIZE    # card id only
+# Graveyard slot: card id (FIRST) + playable_by_self + playable_by_opp +
+# play_expires_this_turn; an exile slot appends counters / ZONE_COUNTER_NORMALIZER.
+_GY_SLOT_SIZE           = GY_SLOT_SIZE
+_EXILE_SLOTS_TOTAL      = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent
+_EXILE_SLOT_SIZE        = EXILE_SLOT_SIZE
 _HAND_SLOTS_TOTAL       = MAX_HAND_SLOTS
 _HAND_SLOT_SIZE         = CARD_ID_SLOT_SIZE
 _MATCH_CTX_SIZE         = MATCH_CTX_SIZE       # game_number, self_wins, opp_wins, sideboard_phase
@@ -678,7 +686,7 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # state vector describes the STALE terminal board of the previous game — noise
 # for a sideboarding decision. When is_sideboard_phase (state[_MATCH_CTX_START+3])
 # is set we zero every block except the ones that actually inform sideboarding:
-# graveyards + exile ("how the game went"), match/library/turn context (game
+# the graveyard + exile card ids ("how the game went"), match/library/turn context (game
 # number => play/draw), the opponent's registered decklist with its revealed bits (the primary signal), and the pending-decision
 # context (which IN card the OUT query is cutting for). The global-extras block
 # (lands played, monarch, day/night, MandatoryChoice one-hot, ...) describes the
@@ -699,7 +707,6 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 def _build_sideboard_mask():
     keep = np.zeros(STATE_SIZE, dtype=bool)
     for lo, hi in (
-        (_GY_START, _HAND_START),                   # graveyards + exile (self + opp)
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
         # The opponent's REGISTERED decklist and its revealed bits are exactly what
@@ -717,6 +724,13 @@ def _build_sideboard_mask():
         (_EXTRAS_PLAYS_FIRST, _EXTRAS_END),
     ):
         keep[lo:hi] = True
+    # Graveyards + exile ("how the game went"): only the card ids survive. The
+    # play-permission flags and the exile counters describe the ended game's
+    # permissions, so they mask to 0.0.
+    for s in range(_GY_SLOTS_TOTAL):
+        keep[_GY_START + s * _GY_SLOT_SIZE + ZONE_CARD_ID_OFF] = True
+    for s in range(_EXILE_SLOTS_TOTAL):
+        keep[_EXILE_START + s * _EXILE_SLOT_SIZE + ZONE_CARD_ID_OFF] = True
     # The "self is Player A" flag MUST survive the mask: it is the seat-routing
     # signal for every obs consumer (runner.drive_game's controller pick, the
     # training envs' opponent-turn gate, decode's seat labels). The engine sets

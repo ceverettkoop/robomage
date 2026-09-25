@@ -120,9 +120,9 @@ static void write_matchup_tail(float* o, bool self_is_a) {
 // between-games sideboard phase the engine keeps the ended game's ECS alive, so
 // the raw state vector describes the STALE terminal board — noise for a
 // sideboarding decision. env.py zeroes every state block except the ones that
-// inform sideboarding (graveyards+exile, match/library/turn ctx,
-// the opponent revealed multi-hot, the pending-decision context, and BOTH opponent
-// static-decklist blocks), plus the self-is-A seat flag; card-id positions inside
+// inform sideboarding (graveyard+exile card ids, match/library/turn ctx,
+// the pending-decision context, and BOTH opponent static-decklist blocks with their
+// revealed bits), plus the self-is-A seat flag; card-id positions inside
 // masked blocks are filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 (0.0
 // decodes to real vocab index 0). We build the identical keep/fill pair once.
 // The MANA DEVELOPMENT block is board state of the ENDED game (untapped sources, lands
@@ -146,7 +146,13 @@ static const SideboardMask& sideboard_mask() {
         auto keep_range = [&](int lo, int hi) {
             for (int i = lo; i < hi; i++) m.keep[static_cast<size_t>(i)] = true;
         };
-        keep_range(GY_START, HAND_START);                   // graveyards + exile (self + opp)
+        // Graveyards + exile (self + opp): only the card ids survive. The play-permission
+        // flags and the exile counters describe the ended game's permissions, so they
+        // are masked to 0.0.
+        for (int s = 0; s < 2 * MAX_GY_SLOTS; s++) {
+            m.keep[static_cast<size_t>(GY_START + s * GY_SLOT_SIZE + ZONE_CARD_ID_OFF)] = true;
+            m.keep[static_cast<size_t>(EXILE_START + s * EXILE_SLOT_SIZE + ZONE_CARD_ID_OFF)] = true;
+        }
         keep_range(MATCH_CTX_START, KNOWN_TOP_LIB_START);   // match + library ctx + current turn
         keep_range(PENDING_DECISION_START, PENDING_DECISION_END);  // pending-decision context
         keep_range(OPP_DECK_MAIN_START, OPP_DECK_SIDE_END); // opponent registered decklist + revealed bits

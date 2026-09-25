@@ -83,9 +83,17 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     LIFE_NORMALIZER, LIBRARY_NORMALIZER, MULLIGAN_NORMALIZER,
                     LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
                     PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS,
-                    N_DELAYED_FIRE_KINDS)
+                    N_DELAYED_FIRE_KINDS, ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
+                    ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
+                    ZONE_COUNTER_NORMALIZER, CAT_CAST_SPELL, CAT_PLAY_LAND, CAT_SELECT_TARGET,
+                    _REF_NAMES)
 from opponents import make_controller
 from scripted_agent import scripted_action
+
+# ActionRefZone values of the graveyard / exile zones, by their generated display names.
+_REF_BY_NAME = {name: v for v, name in _REF_NAMES.items()}
+_REF_SELF_GY, _REF_OPP_GY = _REF_BY_NAME["own gy"], _REF_BY_NAME["opp gy"]
+_REF_SELF_EXILE, _REF_OPP_EXILE = _REF_BY_NAME["own ex"], _REF_BY_NAME["opp ex"]
 
 # Card-id decode: sentinel (empty/unknown) -> -1; a real id -> [0, N_CARD_TYPES).
 _CARD_ID_SENTINEL = -1
@@ -140,11 +148,11 @@ def _card_id_slots():
             yield f"stack.tgt{t}.card_id", s, tbase + (_STACK_TGT_FIELDS - 1)
     for name, start in (("self_gy", _GY_START), ("opp_gy", _OPP_GY_START)):
         for i in range(MAX_GY_SLOTS):
-            yield name, i, start + i * _GY_SLOT_SIZE
+            yield name, i, start + i * _GY_SLOT_SIZE + ZONE_CARD_ID_OFF
     for name, start in (("self_exile", _EXILE_START),
                         ("opp_exile", _OPP_EXILE_START)):
         for i in range(MAX_GY_SLOTS):
-            yield name, i, start + i * _EXILE_SLOT_SIZE
+            yield name, i, start + i * _EXILE_SLOT_SIZE + ZONE_CARD_ID_OFF
     for i in range(MAX_HAND_SLOTS):
         yield "self_hand", i, _HAND_START + i * _HAND_SLOT_SIZE
     for i, off in enumerate(range(_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END)):
@@ -236,9 +244,84 @@ def _ref_slots():
         yield "delayed.subject_ref", s, base + _DT_SUBJECT_REF
 
 
-def _zone_block_offsets(start):
-    """Absolute offsets of a MAX_GY_SLOTS-wide recency-packed zone block."""
-    return [start + i * _GY_SLOT_SIZE for i in range(MAX_GY_SLOTS)]
+def _zone_block_offsets(start, slot_size):
+    """Absolute card-id offsets of a MAX_GY_SLOTS-wide recency-packed zone block."""
+    return [start + i * slot_size + ZONE_CARD_ID_OFF for i in range(MAX_GY_SLOTS)]
+
+
+# The four graveyard / exile blocks: (name, start, slot width, has a counters float).
+_ZONE_BLOCKS = (("self_gy", _GY_START, _GY_SLOT_SIZE, False),
+                ("opp_gy", _OPP_GY_START, _GY_SLOT_SIZE, False),
+                ("self_exile", _EXILE_START, _EXILE_SLOT_SIZE, True),
+                ("opp_exile", _OPP_EXILE_START, _EXILE_SLOT_SIZE, True))
+_ZONE_FLAG_OFFS = (("playable_by_self", ZONE_PLAYABLE_SELF_OFF),
+                   ("playable_by_opp", ZONE_PLAYABLE_OPP_OFF),
+                   ("play_expires_this_turn", ZONE_EXPIRES_OFF))
+
+
+def _check_zone_slots(decision_idx, seat, obs, state, num_choices):
+    """Graveyard / exile slot scalars (16):
+      - each play-permission flag is exactly 0.0 or 1.0, and 0.0 on a slot whose
+        card id is the sentinel (empty, or a hidden face-down card);
+      - play_expires_this_turn implies one of the playable flags;
+      - an exile slot's counters float decodes to a whole count >= 0, and is 0 on
+        a sentinel slot;
+      - in the sideboard phase every flag and counter is masked to 0.0;
+      - a cast / land play the menu offers from a graveyard or exile (zone ref
+        own/opp gy or exile) names a card that some slot of that zone holds with
+        playable_by_self set (skipped when that zone is at its slot cap, where
+        the card may sit past the truncation)."""
+    sideboarding = state[_IS_SIDEBOARD_IDX] > 0.5
+    playable_ids = {}
+    for block, start, size, has_counters in _ZONE_BLOCKS:
+        ids = set()
+        filled = 0
+        for i in range(MAX_GY_SLOTS):
+            base = start + i * size
+            empty = _decode_card_id(state[base + ZONE_CARD_ID_OFF]) == _CARD_ID_SENTINEL
+            filled += 0 if empty else 1
+            for label, off in _ZONE_FLAG_OFFS:
+                v = float(state[base + off])
+                if v not in (0.0, 1.0):
+                    _fail(decision_idx, seat, f"{block}.{label}", i, v, "flag is not 0/1")
+                if v and (empty or sideboarding):
+                    _fail(decision_idx, seat, f"{block}.{label}", i, v,
+                          "flag set on a sentinel slot" if empty
+                          else "flag set during the sideboard phase")
+            if (state[base + ZONE_EXPIRES_OFF] > 0.5
+                    and state[base + ZONE_PLAYABLE_SELF_OFF] < 0.5
+                    and state[base + ZONE_PLAYABLE_OPP_OFF] < 0.5):
+                _fail(decision_idx, seat, f"{block}.play_expires_this_turn", i,
+                      state[base + ZONE_EXPIRES_OFF], "expiry set on an unplayable card")
+            if has_counters:
+                n = _decode_whole_count(decision_idx, seat, state[base + EXILE_COUNTERS_OFF],
+                                        ZONE_COUNTER_NORMALIZER, f"{block}.counters")
+                if n and (empty or sideboarding):
+                    _fail(decision_idx, seat, f"{block}.counters", i,
+                          state[base + EXILE_COUNTERS_OFF],
+                          "counters on a sentinel slot or during the sideboard phase")
+            if not empty and state[base + ZONE_PLAYABLE_SELF_OFF] > 0.5:
+                ids.add(_decode_card_id(state[base + ZONE_CARD_ID_OFF]))
+        playable_ids[block] = (ids, filled >= MAX_GY_SLOTS)
+    if not num_choices:
+        return
+    zone_block = {_REF_SELF_GY: "self_gy", _REF_OPP_GY: "opp_gy",
+                  _REF_SELF_EXILE: "self_exile", _REF_OPP_EXILE: "opp_exile"}
+    cats = decode.action_categories(obs, num_choices)
+    zones = decode.action_zone_refs(obs, num_choices)
+    ids = decode.action_card_ids(obs)
+    for i in range(num_choices):
+        if int(cats[i]) not in (CAT_CAST_SPELL, CAT_PLAY_LAND):
+            continue
+        block = zone_block.get(int(zones[i]))
+        if block is None:
+            continue
+        cid = _decode_card_id(ids[i])
+        held, capped = playable_ids[block]
+        if cid not in held and not capped:
+            _fail(decision_idx, seat, f"action[{i}]", int(zones[i]), cid,
+                  f"menu plays card {cid} from {block} but no {block} slot holding it "
+                  "has playable_by_self")
 
 
 # ── The invariant checks (all read `state` = obs[:STATE_SIZE]) ─────────────────
@@ -574,10 +657,9 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
                   f"entity ref {ref} out of range [{_REF_MIN},{_REF_MAX}]")
 
     # (3) GY/exile blocks are sentinel-suffixed (recency-packed, no holes).
-    for block, start in (("self_gy", _GY_START), ("opp_gy", _OPP_GY_START),
-                        ("self_exile", _EXILE_START), ("opp_exile", _OPP_EXILE_START)):
+    for block, start, size, _ in _ZONE_BLOCKS:
         seen_empty = False
-        for i, off in enumerate(_zone_block_offsets(start)):
+        for i, off in enumerate(_zone_block_offsets(start, size)):
             empty = _decode_card_id(state[off]) == _CARD_ID_SENTINEL
             if seen_empty and not empty:
                 _fail(decision_idx, seat, block, i, state[off],
@@ -587,7 +669,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # (4) A non-sentinel returnable-exile id implies that id is in an exile block.
     exile_ids = set()
     for start in (_EXILE_START, _OPP_EXILE_START):
-        for off in _zone_block_offsets(start):
+        for off in _zone_block_offsets(start, _EXILE_SLOT_SIZE):
             cid = _decode_card_id(state[off])
             if cid != _CARD_ID_SENTINEL:
                 exile_ids.add(cid)
@@ -795,6 +877,9 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # (15) Priority-window context and mulligan state agree with the menu.
     if num_choices:
         _check_priority_and_mulligan(decision_idx, seat, obs, state, num_choices)
+
+    # (16) Graveyard / exile play-permission flags and exile counters.
+    _check_zone_slots(decision_idx, seat, obs, state, num_choices)
 
 
 # ── Pending-decision source (14) ──────────────────────────────────────────────
@@ -1046,6 +1131,85 @@ def check_walker_activation_ordinals():
             env.step(0)
         raise InvariantError(
             "staged Jace never offered >= 2 loyalty activations in 120 decisions")
+    finally:
+        env.close()
+
+
+def _zone_slot_flags(state, start, size, card_idx):
+    """(playable_by_self, playable_by_opp, play_expires_this_turn) of the first
+    slot of a graveyard / exile block holding `card_idx`, or None."""
+    for i in range(MAX_GY_SLOTS):
+        base = start + i * size
+        if _decode_card_id(state[base + ZONE_CARD_ID_OFF]) == card_idx:
+            return tuple(bool(state[base + off] > 0.5) for _, off in _ZONE_FLAG_OFFS)
+    return None
+
+
+def check_graveyard_play_permissions():
+    """Guaranteed coverage for invariant (16)'s flag semantics: seat A starts with
+    Emry, Lurker of the Loch in play and Mishra's Bauble + Deep Analysis in its
+    graveyard. Deep Analysis (flashback, a keyword route) must read playable by
+    its owner only, never expiring — playable_by_self from A's view,
+    playable_by_opp from B's. A activates Emry targeting the Bauble; once the
+    grant resolves the Bauble reads playable by A (by the opponent from B's view)
+    with play_expires_this_turn set, and the flags are gone after that turn's
+    cleanup. Every decision also runs the full
+    check_decision battery. Returns (Deep Analysis decisions, granted-Bauble
+    decisions)."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    emry = names["Emry, Lurker of the Loch"]
+    bauble = names["Mishra's Bauble"]
+    analysis = names["Deep Analysis"]
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Emry Lurker of the Loch",
+                      graveyard_a="Mishras Bauble,Deep Analysis", bo3=False)
+    n_analysis = n_granted = 0
+    activated = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(300):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            a_gy = _GY_START if priority_is_a else _OPP_GY_START
+            da = _zone_slot_flags(state, a_gy, _GY_SLOT_SIZE, analysis)
+            if da is not None:
+                want = (True, False, False) if priority_is_a else (False, True, False)
+                if da != want:
+                    raise InvariantError(
+                        f"Deep Analysis (flashback) flags {da}, expected {want}")
+                n_analysis += 1
+            bb = _zone_slot_flags(state, a_gy, _GY_SLOT_SIZE, bauble)
+            if bb is not None and any(bb):
+                want = (True, False, True) if priority_is_a else (False, True, True)
+                if not activated or bb != want:
+                    raise InvariantError(
+                        f"Mishra's Bauble flags {bb}, expected {want} and only after "
+                        "Emry's activation")
+                n_granted += 1
+            elif bb is not None and n_granted:
+                return n_analysis, n_granted   # the grant lapsed at cleanup
+            choice = 0
+            ids = decode.action_card_ids(obs)
+            if priority_is_a:
+                for a in range(num):
+                    cat, cid = int(cats[a]), _decode_card_id(ids[a])
+                    if not activated and cat == CAT_ACTIVATE_ABILITY and cid == emry:
+                        choice = a
+                        activated = True
+                        break
+                    if cat == CAT_SELECT_TARGET and cid == bauble:
+                        choice = a
+                        break
+            env.step(choice)
+        raise InvariantError(
+            f"Emry's grant never observed and lapsed within 300 decisions "
+            f"(activated={activated}, granted decisions={n_granted})")
     finally:
         env.close()
 
@@ -1773,6 +1937,14 @@ def main():
         return 1
     print(f"ok    walker activation ordinals: {n_loyal} distinct loyalty "
           "activations on one Jace", flush=True)
+
+    try:
+        n_da, n_granted = check_graveyard_play_permissions()
+    except InvariantError as e:
+        print(f"FAIL  graveyard play permissions\n  {e}", flush=True)
+        return 1
+    print(f"ok    graveyard play permissions: flashback card flagged at {n_da} "
+          f"decisions, Emry's grant at {n_granted} then lapsed", flush=True)
 
     try:
         n_wait, n_stack = check_delayed_trigger_lifecycle()

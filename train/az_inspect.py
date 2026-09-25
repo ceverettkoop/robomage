@@ -1515,6 +1515,11 @@ def _encoder_specs(sd):
     delayed += _card_feat_cols("subject", card_dim)
     specs.append(("delayed_encoder", delayed))
 
+    specs.append(("zone_card_encoder",
+                  _card_feat_cols("card", card_dim)
+                  + [("play permission", 3,
+                      ["playable_by_self", "playable_by_opp", "expires_this_turn"]),
+                     ("exile counters", 1, ["counters"])]))
     specs.append(("entity_encoder",
                   _card_feat_cols("card", card_dim)
                   + [("draw distance", 1, ["draw_dist"])]))
@@ -1699,7 +1704,7 @@ _META_CTX_NAMES = ("game_number", "self_match_wins", "opp_match_wins",
 def layer_column_names(sd, layer):
     """``(column labels, state-dict key prefix)`` for a first layer whose input
     columns are nameable: a trunk encoder (perm_encoder, stack_encoder,
-    entity_encoder, decklist_encoder, action_encoder) or a
+    zone_card_encoder, entity_encoder, decklist_encoder, action_encoder) or a
     body (policy_body, value_body). Columns without an individual name (learned
     embedding dims, pooled-aggregate dims) get ``group[j]`` labels so every
     label still says which input the column came from."""
@@ -1899,8 +1904,7 @@ def entity_unit_activations(sd):
     ``(N_CARD_TYPES, embed_dim)`` unit-activation matrix. A pure numpy mirror
     of ``trunk.entity_encoder`` on ``[card_emb | card_props | draw_dist=0]``
     rows (row i = vocab card i; the padding row is dropped; distance 0 = the
-    "in hand" reading, the value every zone except the known top-of-library
-    feeds) — no game state involved, since that encoder consumes card identity
+    "in hand" reading, the value the hand and known opponent hand feed) — no game state involved, since that encoder consumes card identity
     plus that one scalar and nothing else."""
     ident = _t2np(sd["trunk.card_emb.weight"])[1:]
     x = np.concatenate([ident, _t2np(sd["trunk.card_props"])[1:],

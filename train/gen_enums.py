@@ -114,10 +114,13 @@ _MACHINE_INTS = ["STATE_SIZE", "N_CARD_TYPES", "PERM_SLOT_SIZE", "OPTION_ORDINAL
                  # a literal, so a width change propagates to every consumer.
                  # Only PLAIN-LITERAL constants belong here: parse_int_constant
                  # matches `NAME = <digits>`, so a constant defined in terms of
-                 # others (STATE_HEADER_SIZE, STACK_SLOT_SIZE, GY_SLOT_SIZE, the
-                 # whole offset chain) must be re-derived on the Python side.
+                 # others (STATE_HEADER_SIZE, STACK_SLOT_SIZE, the whole offset
+                 # chain) must be re-derived on the Python side.
                  "PLAYER_BLOCK_SIZE", "STEP_ONEHOT_SIZE", "HEADER_FLAGS",
-                 "CARD_ID_SLOT_SIZE", "STACK_HEAD_FIELDS", "STACK_XAMT_FIELDS",
+                 "CARD_ID_SLOT_SIZE", "GY_SLOT_SIZE", "EXILE_SLOT_SIZE",
+                 "ZONE_CARD_ID_OFF", "ZONE_PLAYABLE_SELF_OFF", "ZONE_PLAYABLE_OPP_OFF",
+                 "ZONE_EXPIRES_OFF", "EXILE_COUNTERS_OFF", "ZONE_COUNTER_NORMALIZER",
+                 "STACK_HEAD_FIELDS", "STACK_XAMT_FIELDS",
                  "STACK_QUAL_FIELDS", "STACK_TGT_FIELDS",
                  "MATCH_CTX_SIZE", "LIBRARY_CTX_SIZE", "CUR_TURN_SIZE",
                  "PENDING_DECISION_SIZE", "EXTRAS_SCALARS", "EXTRAS_PRIORITY_SIZE",

@@ -295,6 +295,9 @@ def decode_human_frame(u):
                      ("self_battlefield", "opp_battlefield"),
                      ("self_graveyard", "opp_graveyard")):
             gs[a], gs[b] = gs[b], gs[a]
+        marks = gs["zone_marks"]
+        marks["self_graveyard"], marks["opp_graveyard"] = (
+            marks["opp_graveyard"], marks["self_graveyard"])
         # Match wins are viewer-relative too — swap so self_wins == YOU.
         m = gs["match"]
         m["self_wins"], m["opp_wins"] = m["opp_wins"], m["self_wins"]
