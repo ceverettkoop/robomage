@@ -295,10 +295,10 @@ def _extract_interpretable(obs):
     for j in range(_STEP_ONEHOT_SIZE):
         f[i] = obs[_STEP_ONEHOT_START + j]; i += 1
 
-    # Library counts and post-board flag (mirror env.py _LIBRARY_CTX_START)
+    # Library counts (mirror env.py _LIBRARY_CTX_START); post-board = game 2+ of a bo3
     f[i] = obs[_LIBRARY_CTX_START]     * 60.0; i += 1  # self_library_size
     f[i] = obs[_LIBRARY_CTX_START + 1] * 60.0; i += 1  # opp_library_size
-    f[i] = 1.0 if obs[_LIBRARY_CTX_START + 2] > 0.5 else 0.0; i += 1  # is_post_board
+    f[i] = 1.0 if int(round(obs[_MATCH_CTX_START] * 3.0)) > 0 else 0.0; i += 1  # is_post_board
     f[i] = 1.0 if obs[_MATCH_CTX_START + 3] > 0.5 else 0.0; i += 1  # is_sideboard
 
     # Current game turn (obs stores turn / 50, mirror machine_io.h TURN_NORMALIZER)
@@ -1569,14 +1569,14 @@ def _decode_board_state(obs, value=None):
     opp_mana     = [obs[_OPP_BLOCK_START + _PB_MANA + j] * 10.0 for j in range(6)]
     stack_size   = int(round(obs[_STACK_SIZE_IDX] * 10.0))
 
-    # Match context (_MATCH_CTX_START .. +4) and library/post-board (_LIBRARY_CTX_START .. +3)
+    # Match context (_MATCH_CTX_START .. +4) and library counts (_LIBRARY_CTX_START .. +2)
     game_number      = int(round(obs[_MATCH_CTX_START]     * 3.0))
     self_match_wins  = int(round(obs[_MATCH_CTX_START + 1] * 2.0))
     opp_match_wins   = int(round(obs[_MATCH_CTX_START + 2] * 2.0))
     is_sideboard     = obs[_MATCH_CTX_START + 3] > 0.5
     self_library_ct  = int(round(obs[_LIBRARY_CTX_START]     * 60.0))
     opp_library_ct   = int(round(obs[_LIBRARY_CTX_START + 1] * 60.0))
-    is_post_board    = obs[_LIBRARY_CTX_START + 2] > 0.5
+    is_post_board    = game_number > 0
 
     step_idx  = int(np.argmax(obs[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))
     step_name = _INTERP_STEP_NAMES[step_idx] if step_idx < len(_INTERP_STEP_NAMES) else f"?{step_idx}"

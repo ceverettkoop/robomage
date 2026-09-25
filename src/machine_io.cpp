@@ -25,6 +25,7 @@
 #include "components/spell.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_driver.h"                  // priority_window_open
 #include "game_queries.h"
 #include "mana_system.h"                    // mana_potential (mana-development block)
 #include "systems/rules_modifying.h"        // rules_mod::land_drops_remaining
@@ -230,10 +231,6 @@ static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
         out.push_back(static_cast<float>(ps.lands_in_hand) / count_norm);
     out.push_back(static_cast<float>(ps.land_drops_remaining) /
                   static_cast<float>(LAND_DROPS_NORMALIZER));
-    // max_affordable_cmc_proxy: no payment solver here, so the honest available bound
-    // is the total mana this player could float. Documented as a proxy in machine_io.h;
-    // the slot exists so a real payer-based value can land without a layout break.
-    out.push_back(static_cast<float>(ps.mana_potential_total) / count_norm);
 }
 
 // Pushes one player's half of the LOG VITALS block: LOG_VITALS_PLAYER_SIZE floats,
@@ -459,7 +456,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->cur_step            = cur_game.cur_step;
     gs->turn                = static_cast<int>(cur_game.turn);
     gs->is_active_player    = (viewer == active_owner);
-    gs->viewer_has_priority = (viewer == priority_owner);
     gs->self_is_player_a    = (viewer == Zone::PLAYER_A);
 
     // Pending decision context: the spell/ability currently making a mid-resolution choice
@@ -560,6 +556,26 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->is_day   = (cur_game.day_night == Game::DN_DAY);
     gs->is_night = (cur_game.day_night == Game::DN_NIGHT);
     gs->pending_choice_kind = static_cast<int>(cur_game.pending_choice);
+
+    // Priority-window context: the pass flags are meaningful only in an ordinary
+    // priority window (UNTAP/CLEANUP set both as a step-advance device, and a mid-flow
+    // prompt leaves whatever the interrupted round had), so outside one all three stay 0.
+    if (priority_window_open()) {
+        gs->is_priority_window = true;
+        gs->self_has_passed = viewer_is_player_a ? cur_game.a_has_passed : cur_game.b_has_passed;
+        gs->opp_has_passed  = viewer_is_player_a ? cur_game.b_has_passed : cur_game.a_has_passed;
+    }
+
+    // Mulligan state. Game::pregame is the game this observation's board belongs to,
+    // which during the sideboard phase is the game that just ended, so the phase
+    // leaves the fields at 0.
+    if (!sideboard_phase) {
+        const Game::PregameState &pg = cur_game.pregame;
+        gs->self_mulligans_taken = viewer_is_player_a ? pg.mulls_a : pg.mulls_b;
+        gs->opp_mulligans_taken  = viewer_is_player_a ? pg.mulls_b : pg.mulls_a;
+        if (pg.stage == Game::PregameState::MULL_BOTTOM && pg.bottoming_owner == viewer)
+            gs->self_bottom_remaining = pg.bottom_remaining;
+    }
 
     // ── Pass A (collect) ─────────────────────────────────────────────────────
     // One ascending-entity-ID scan collects the entities of every serialized zone;
@@ -955,10 +971,9 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->match_wins_opp) / 2.0f);
     state.push_back(gs->is_sideboard_phase ? 1.0f : 0.0f);
 
-    // Library counts & post-board flag (3 floats)
+    // Library counts (2 floats)
     state.push_back(static_cast<float>(gs->self_library_ct) / static_cast<float>(LIBRARY_NORMALIZER));
     state.push_back(static_cast<float>(gs->opp_library_ct) / static_cast<float>(LIBRARY_NORMALIZER));
-    state.push_back(gs->match_game_number > 0 ? 1.0f : 0.0f);
 
     // Current turn (1 float)
     state.push_back(static_cast<float>(gs->turn) / TURN_NORMALIZER);
@@ -985,13 +1000,12 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(norm_card_id(gs->pending_decision_card));
     state.push_back(gs->pending_decision_ctrl_is_self ? 1.0f : 0.0f);
 
-    // Global extras (22 floats): lands played, priority, monarch, city's blessing,
-    // revolt, pending extra turns, day/night, mandatory-choice one-hot, then
-    // self_plays_first and the two sideboard-phase progress scalars. See the
-    // [5955-5976] block in machine_io.h.
+    // Global extras (27 floats): lands played, monarch, city's blessing, revolt,
+    // pending extra turns, day/night, the priority-window context, the mulligan
+    // state, the mandatory-choice one-hot, then self_plays_first and the two
+    // sideboard-phase progress scalars. See the [5442-5468] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
-    state.push_back(gs->viewer_has_priority ? 1.0f : 0.0f);
     state.push_back(gs->self.is_monarch ? 1.0f : 0.0f);
     state.push_back(gs->opponent.is_monarch ? 1.0f : 0.0f);
     state.push_back(gs->self.city_blessing ? 1.0f : 0.0f);
@@ -1002,6 +1016,13 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->opponent.extra_turns_pending) / 3.0f);
     state.push_back(gs->is_day ? 1.0f : 0.0f);
     state.push_back(gs->is_night ? 1.0f : 0.0f);
+    state.push_back(gs->self_has_passed ? 1.0f : 0.0f);
+    state.push_back(gs->opp_has_passed ? 1.0f : 0.0f);
+    state.push_back(gs->is_priority_window ? 1.0f : 0.0f);
+    const float mull_norm = static_cast<float>(MULLIGAN_NORMALIZER);
+    state.push_back(static_cast<float>(gs->self_mulligans_taken) / mull_norm);
+    state.push_back(static_cast<float>(gs->opp_mulligans_taken) / mull_norm);
+    state.push_back(static_cast<float>(gs->self_bottom_remaining) / mull_norm);
     // MandatoryChoice one-hot, NONE at index 0 (see the enum in classes/game.h).
     // N_MANDATORY_CHOICES tracks the enum, so adding a choice kind widens this
     // one-hot and machine_io.h's offset chain shifts every later block with it.
@@ -1014,7 +1035,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // unbalanced poles sit symmetrically either side of it.
     state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
 
-    // ── Deck-identity tail blocks (see machine_io.h [5977-6328]) ───────────────
+    // ── Deck-identity tail blocks (see machine_io.h [5469-5820]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
     // normalized /4.0. Slots are packed ascending by vocab id with no holes.
     auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {
@@ -1033,12 +1054,12 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Opponent STATIC sideboard (15 x 2 = 30)
     push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);
 
-    // ── Mana development (see machine_io.h [6329-6349]) ───────────────────────
-    // Self (11 floats) then opponent (10 — no lands_in_hand, which is hidden).
+    // ── Mana development (see machine_io.h [5821-5839]) ───────────────────────
+    // Self (10 floats) then opponent (9 — no lands_in_hand, which is hidden).
     push_mana_dev_block(state, gs->self, /*with_lands_in_hand=*/true);
     push_mana_dev_block(state, gs->opponent, /*with_lands_in_hand=*/false);
 
-    // ── Log-scaled vitals (see machine_io.h [6350-6353]) ──────────────────────
+    // ── Log-scaled vitals (see machine_io.h [5840-5843]) ──────────────────────
     // The same life/library counts already emitted linearly above (player blocks,
     // library-context block), re-warped through log1p so the near-zero region —
     // where the game is decided and the linear floats have their least resolution —

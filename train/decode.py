@@ -44,12 +44,16 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _OFF_P1P1_NET, _OFF_OTHER_COUNTERS, _OFF_ATTACHED_TO,
                  _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
                  _OFF_IS_BLOCKED, _OFF_IS_PHASED_OUT, _OFF_KEYWORDS_START,
-                 _EXTRAS_LANDS_SELF, _EXTRAS_LANDS_OPP, _EXTRAS_HAS_PRIORITY,
+                 _EXTRAS_LANDS_SELF, _EXTRAS_LANDS_OPP,
                  _EXTRAS_MONARCH_SELF, _EXTRAS_MONARCH_OPP,
                  _EXTRAS_BLESSING_SELF, _EXTRAS_BLESSING_OPP,
                  _EXTRAS_REVOLT_SELF, _EXTRAS_REVOLT_OPP,
                  _EXTRAS_EXTRA_TURNS_SELF, _EXTRAS_EXTRA_TURNS_OPP,
                  _EXTRAS_IS_DAY, _EXTRAS_IS_NIGHT, _EXTRAS_MC_ONEHOT_START,
+                 _EXTRAS_SELF_PASSED, _EXTRAS_OPP_PASSED,
+                 _EXTRAS_IS_PRIORITY_WINDOW, _EXTRAS_SELF_MULLIGANS,
+                 _EXTRAS_OPP_MULLIGANS, _EXTRAS_SELF_BOTTOM_REMAINING,
+                 MULLIGAN_NORMALIZER,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
                         _CARD_COST_MATRIX, _LAND_VOCAB_IDS)
@@ -65,7 +69,6 @@ _OPP_EXILE_START = _EXILE_START + MAX_GY_SLOTS * GY_SLOT_SIZE  # opp exile after
 # State-vector context indices (derived from env layout)
 _IDX_SELF_LIB = _LIBRARY_CTX_START                 # self_library_ct / 60
 _IDX_OPP_LIB = _LIBRARY_CTX_START + 1              # opp_library_ct  / 60
-_IDX_POST_BOARD = _LIBRARY_CTX_START + 2           # is_post_board (0/1; game 2+ of bo3)
 _IDX_TURN = _CUR_TURN_IDX                          # turn / 50
 
 # Bo3 match-context indices (self-perspective; see src/machine_io.h layout).
@@ -897,11 +900,11 @@ def _decode_extras(state):
     """Decode the global-extras block into a dict of NON-DEFAULT values only.
 
     Keys are present only when the value differs from its default (0 / False /
-    priority held), so an empty dict means "nothing notable" and callers can
-    render it compactly. Boolean keys hold True when set; `has_priority` is the
-    one inverted case — it appears (as False) only when the viewer does NOT
-    hold priority. `mandatory_choice` is the pending MandatoryChoice display
-    name (_MC_NAMES; absent when NONE)."""
+    an ordinary priority window), so an empty dict means "nothing notable" and
+    callers can render it compactly. Boolean keys hold True when set;
+    `not_priority_window` is the one inverted case — it appears (as True) only
+    when the decision is NOT an ordinary priority window. `mandatory_choice` is
+    the pending MandatoryChoice display name (_MC_NAMES; absent when NONE)."""
     ex = {}
     lands = int(round(float(state[_EXTRAS_LANDS_SELF]) * 10))
     if lands:
@@ -909,8 +912,6 @@ def _decode_extras(state):
     lands = int(round(float(state[_EXTRAS_LANDS_OPP]) * 10))
     if lands:
         ex["opp_lands_played"] = lands
-    if state[_EXTRAS_HAS_PRIORITY] < 0.5:
-        ex["has_priority"] = False
     if state[_EXTRAS_MONARCH_SELF] > 0.5:
         ex["self_monarch"] = True
     if state[_EXTRAS_MONARCH_OPP] > 0.5:
@@ -933,6 +934,18 @@ def _decode_extras(state):
         ex["day"] = True
     if state[_EXTRAS_IS_NIGHT] > 0.5:
         ex["night"] = True
+    if state[_EXTRAS_SELF_PASSED] > 0.5:
+        ex["self_passed"] = True
+    if state[_EXTRAS_OPP_PASSED] > 0.5:
+        ex["opp_passed"] = True
+    if state[_EXTRAS_IS_PRIORITY_WINDOW] < 0.5:
+        ex["not_priority_window"] = True
+    for key, idx in (("self_mulligans", _EXTRAS_SELF_MULLIGANS),
+                     ("opp_mulligans", _EXTRAS_OPP_MULLIGANS),
+                     ("bottom_remaining", _EXTRAS_SELF_BOTTOM_REMAINING)):
+        n = int(round(float(state[idx]) * MULLIGAN_NORMALIZER))
+        if n:
+            ex[key] = n
     mc_vec = state[_EXTRAS_MC_ONEHOT_START:_EXTRAS_MC_ONEHOT_START + len(_MC_NAMES)]
     mc = int(np.argmax(mc_vec))
     if mc > 0 and mc_vec[mc] > 0.5:               # NONE (index 0) is the default
@@ -946,15 +959,17 @@ def _decode_match_context(state):
     Returns {"game_number", "self_wins", "opp_wins", "is_sideboard",
     "is_post_board"}. In a single-game (bo1) match every field is 0 / False, so
     callers can treat a game_number of 0 as "not a bo3 match". is_post_board is
-    True in game 2+ of a bo3 (a game played after sideboarding). self_wins/opp_wins
+    True in game 2+ of a bo3 (a game played after sideboarding), derived from
+    game_number (the obs carries no separate flag). self_wins/opp_wins
     are viewer-relative (like the rest of the state vector) — a mirrored decode
     must swap them."""
+    game_number = int(round(float(state[_IDX_GAME_NUMBER]) * 3))
     return {
-        "game_number": int(round(float(state[_IDX_GAME_NUMBER]) * 3)),
+        "game_number": game_number,
         "self_wins": int(round(float(state[_IDX_SELF_WINS]) * 2)),
         "opp_wins": int(round(float(state[_IDX_OPP_WINS]) * 2)),
         "is_sideboard": float(state[_IDX_SIDEBOARD]) > 0.5,
-        "is_post_board": float(state[_IDX_POST_BOARD]) > 0.5,
+        "is_post_board": game_number > 0,
     }
 
 

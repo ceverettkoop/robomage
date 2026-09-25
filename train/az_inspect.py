@@ -1706,10 +1706,10 @@ def body_layer_attribution(sd):
 
 
 # The match/library/turn context scalars, in serialized order (machine_io.h:
-# match context ×4, library counts & post-board ×3, current turn).
+# match context ×4, library counts ×2, current turn).
 _META_CTX_NAMES = ("game_number", "self_match_wins", "opp_match_wins",
                    "is_sideboard_phase", "self_library_ct", "opp_library_ct",
-                   "is_post_board", "turn")
+                   "turn")
 
 
 def layer_column_names(sd, layer):

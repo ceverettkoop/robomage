@@ -109,6 +109,7 @@ try:
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
         STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+        EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
@@ -136,6 +137,7 @@ except ImportError:
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
         STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
+        EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
@@ -416,7 +418,9 @@ _STEP_ONEHOT_SIZE  = STEP_ONEHOT_SIZE          # UNTAP..CLEANUP, incl. FIRST_STR
 _STEP_FIRST_MAIN_IDX  = _STEP_ONEHOT_START + 3                       # 23
 _STEP_SECOND_MAIN_IDX = _STEP_ONEHOT_START + 10                      # 30
 _IS_ACTIVE_IDX  = _STEP_ONEHOT_START + _STEP_ONEHOT_SIZE            # 33: priority player is active
-_SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1                                # 34: "self" is Player A
+# 34: "self" is Player A. Seat routing for the drivers only — both networks zero
+# it out of their input (extractor.network_global_ctx).
+_SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1
 _STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack size / 10
 _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
 # HEADER_FLAGS (machine_io.h) counts those three trailing scalars; if a fourth is
@@ -450,7 +454,7 @@ _EXILE_SLOT_SIZE        = CARD_ID_SLOT_SIZE    # card id only
 _HAND_SLOTS_TOTAL       = MAX_HAND_SLOTS
 _HAND_SLOT_SIZE         = CARD_ID_SLOT_SIZE
 _MATCH_CTX_SIZE         = MATCH_CTX_SIZE       # game_number, self_wins, opp_wins, sideboard_phase
-_LIBRARY_CTX_SIZE       = LIBRARY_CTX_SIZE     # self_lib/60, opp_lib/60, is_post_board
+_LIBRARY_CTX_SIZE       = LIBRARY_CTX_SIZE     # self_lib/60, opp_lib/60
 _CUR_TURN_SIZE          = CUR_TURN_SIZE        # current turn / 50
 _KNOWN_TOP_LIB_SLOTS    = KNOWN_TOP_LIBRARY_SIZE  # serialized known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = CARD_ID_SLOT_SIZE   # card id per slot
@@ -489,28 +493,43 @@ _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOW
 _PENDING_DECISION_START = _OPP_KNOWN_HAND_END
 _PENDING_DECISION_SIZE  = PENDING_DECISION_SIZE  # source card id + ctrl_is_self
 _PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE
-# Global extras (see machine_io.h [5955-5976]): self/opp lands_played/10,
-# viewer_has_priority, self/opp is_monarch, self/opp city's blessing, self/opp
-# revolt, self/opp pending extra turns/3, is_day, is_night, then the
-# MandatoryChoice one-hot (NONE at index 0).
+# Global extras (see machine_io.h's global-extras block): self/opp
+# lands_played/10, self/opp is_monarch, self/opp city's blessing, self/opp revolt,
+# self/opp pending extra turns/3, is_day, is_night, then the priority-window
+# context, the mulligan state, and the MandatoryChoice one-hot (NONE at index 0).
 _EXTRAS_START        = _PENDING_DECISION_END
 _EXTRAS_LANDS_SELF   = _EXTRAS_START + 0
 _EXTRAS_LANDS_OPP    = _EXTRAS_START + 1
-_EXTRAS_HAS_PRIORITY = _EXTRAS_START + 2
-_EXTRAS_MONARCH_SELF = _EXTRAS_START + 3
-_EXTRAS_MONARCH_OPP  = _EXTRAS_START + 4
-_EXTRAS_BLESSING_SELF = _EXTRAS_START + 5
-_EXTRAS_BLESSING_OPP = _EXTRAS_START + 6
-_EXTRAS_REVOLT_SELF  = _EXTRAS_START + 7
-_EXTRAS_REVOLT_OPP   = _EXTRAS_START + 8
-_EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 9
-_EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 10
-_EXTRAS_IS_DAY       = _EXTRAS_START + 11
-_EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
-# EXTRAS_SCALARS (machine_io.h) = the 13 scalar/flag floats enumerated above, so
-# the one-hot's start follows a width change engine-side instead of a bare 13.
-_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + EXTRAS_SCALARS
-assert _EXTRAS_MC_ONEHOT_START == _EXTRAS_IS_NIGHT + 1, _EXTRAS_MC_ONEHOT_START
+_EXTRAS_MONARCH_SELF = _EXTRAS_START + 2
+_EXTRAS_MONARCH_OPP  = _EXTRAS_START + 3
+_EXTRAS_BLESSING_SELF = _EXTRAS_START + 4
+_EXTRAS_BLESSING_OPP = _EXTRAS_START + 5
+_EXTRAS_REVOLT_SELF  = _EXTRAS_START + 6
+_EXTRAS_REVOLT_OPP   = _EXTRAS_START + 7
+_EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 8
+_EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 9
+_EXTRAS_IS_DAY       = _EXTRAS_START + 10
+_EXTRAS_IS_NIGHT     = _EXTRAS_START + 11
+# EXTRAS_SCALARS (machine_io.h) = the 12 scalar/flag floats enumerated above.
+assert _EXTRAS_IS_NIGHT + 1 == _EXTRAS_START + EXTRAS_SCALARS, EXTRAS_SCALARS
+# Priority-window context. All three are 0.0 unless the decision is an ordinary
+# priority window: the viewer's and the other seat's has-passed flags (opp 1.0 =
+# passing now resolves the top of the stack or ends the step), then
+# is_priority_window itself.
+_EXTRAS_PRIORITY_START = _EXTRAS_START + EXTRAS_SCALARS
+_EXTRAS_SELF_PASSED  = _EXTRAS_PRIORITY_START + 0
+_EXTRAS_OPP_PASSED   = _EXTRAS_PRIORITY_START + 1
+_EXTRAS_IS_PRIORITY_WINDOW = _EXTRAS_PRIORITY_START + 2
+assert _EXTRAS_IS_PRIORITY_WINDOW + 1 == _EXTRAS_PRIORITY_START + EXTRAS_PRIORITY_SIZE
+# Mulligan state, each / MULLIGAN_NORMALIZER: mulligans the viewer and the opponent
+# have taken this game, and the cards the viewer still has to bottom (0 outside the
+# viewer's bottoming). All 0.0 during a bo3 sideboard phase.
+_EXTRAS_MULLIGAN_START = _EXTRAS_PRIORITY_START + EXTRAS_PRIORITY_SIZE
+_EXTRAS_SELF_MULLIGANS = _EXTRAS_MULLIGAN_START + 0
+_EXTRAS_OPP_MULLIGANS  = _EXTRAS_MULLIGAN_START + 1
+_EXTRAS_SELF_BOTTOM_REMAINING = _EXTRAS_MULLIGAN_START + 2
+assert _EXTRAS_SELF_BOTTOM_REMAINING + 1 == _EXTRAS_MULLIGAN_START + EXTRAS_MULLIGAN_SIZE
+_EXTRAS_MC_ONEHOT_START = _EXTRAS_MULLIGAN_START + EXTRAS_MULLIGAN_SIZE
 # self_plays_first: the viewer is the starting player of the game this observation
 # pertains to — the current game in-game, the UPCOMING game during a bo3 sideboard
 # phase (whose starting player is already fixed before either sideboard stage runs).
@@ -526,7 +545,7 @@ _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
 # progress scalars — the three floats indexed immediately above.
 assert _EXTRAS_END == _EXTRAS_PLAYS_FIRST + EXTRAS_SB_CTX_SIZE, _EXTRAS_END
 
-# ── Deck-identity tail blocks (mirror machine_io.h [5977-6328]) ──────────────
+# ── Deck-identity tail blocks (mirror machine_io.h's deck-identity tail) ──────────────
 # Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
 # count normalized /4.0. Slots packed ascending by vocab id, no holes.
 #   SELF_LIVE_LIBRARY : the viewer's LIBRARY zone tallied live (viewer-only).
@@ -551,9 +570,8 @@ _OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST
 # ── Mana development (mirrors machine_io.h's MANA DEVELOPMENT block) ─────────
 # The one summary of each player's mana BASE: per-color untapped-source potential
 # (W,U,B,R,G,C), the total source count + floating pool, lands in play, lands in
-# hand (self only — hidden for the opponent), land drops still available this turn
-# (the same expression the PLAY_LAND legal-action gate uses), and the reserved
-# max-affordable-CMC proxy (currently == potential_total; see machine_io.h).
+# hand (self only — hidden for the opponent), and land drops still available this
+# turn (the same expression the PLAY_LAND legal-action gate uses).
 # Sub-offsets within one half; the opponent half omits lands_in_hand, so its later
 # fields sit one earlier — never index the opp block with the self offsets.
 _MD_POTENTIAL_START = 0                     # 6 floats: W, U, B, R, G, C
@@ -561,14 +579,12 @@ _MD_POTENTIAL_TOTAL = MANA_DEV_COLORS       # 6
 _MD_LANDS_IN_PLAY   = _MD_POTENTIAL_TOTAL + 1
 _MD_SELF_LANDS_IN_HAND = _MD_LANDS_IN_PLAY + 1        # SELF half only
 _MD_SELF_LAND_DROPS    = _MD_SELF_LANDS_IN_HAND + 1
-_MD_SELF_MAX_CMC       = _MD_SELF_LAND_DROPS + 1
 _MD_OPP_LAND_DROPS     = _MD_LANDS_IN_PLAY + 1        # opp half: no lands_in_hand
-_MD_OPP_MAX_CMC        = _MD_OPP_LAND_DROPS + 1
 _MANA_DEV_START      = _OPP_DECK_SIDE_END
 _MANA_DEV_OPP_START  = _MANA_DEV_START + MANA_DEV_SELF_SIZE
 _MANA_DEV_END        = _MANA_DEV_OPP_START + MANA_DEV_OPP_SIZE
-assert _MD_SELF_MAX_CMC + 1 == MANA_DEV_SELF_SIZE, MANA_DEV_SELF_SIZE
-assert _MD_OPP_MAX_CMC + 1 == MANA_DEV_OPP_SIZE, MANA_DEV_OPP_SIZE
+assert _MD_SELF_LAND_DROPS + 1 == MANA_DEV_SELF_SIZE, MANA_DEV_SELF_SIZE
+assert _MD_OPP_LAND_DROPS + 1 == MANA_DEV_OPP_SIZE, MANA_DEV_OPP_SIZE
 
 # ── Log-scaled vitals (mirrors machine_io.h's LOG VITALS block) ──────────────
 # log1p re-warpings of the SAME life/library counts the player blocks and the

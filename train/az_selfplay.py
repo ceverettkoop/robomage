@@ -674,7 +674,7 @@ def _search_and_sample(env, evaluator, rng, knobs, *, num_choices,
 
     # A bo3 sideboard root is searched by the flat plan search, not PUCT
     # (see the plan-search section of train/mcts.py). Key ONLY off
-    # is_sideboard_phase — is_post_board / game_number still reflect the
+    # is_sideboard_phase — game_number still reflects the
     # just-ended game at a g1->g2 root. No root noise there: the coverage
     # pass already evaluates every first pick.
     full = True
@@ -876,8 +876,8 @@ def _play_match(env, evaluator, rng, *, sims, worlds,
     naturally carries ``game_idx == k+1`` (the UPCOMING game) — so
     ``_backfill_and_pack`` prices it by that game's winner — and the
     exploration clock treats it as turn 0 of that game (:func:`obs_turn`).
-    (Do NOT key off ``is_post_board``/``game_number``: at a game-1->2
-    sideboard root those still reflect the ENDED game.)
+    (Do NOT key off ``game_number``: at a game-1->2
+    sideboard root it still reflects the ENDED game.)
 
     Exploration clock (``explore_full_turns``/``explore_decay_turns``/
     ``explore_floor``, see :func:`explore_prob`): each learner searched root

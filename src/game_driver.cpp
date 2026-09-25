@@ -225,6 +225,12 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
 static bool g_in_main_loop = false;
 bool in_main_loop() { return g_in_main_loop; }
 
+// Set around the main loop's priority-decision emission (see priority_window_open
+// in game_driver.h). A search RESTORE applies at the loop top, after the emitting
+// get_input has returned and cleared this, so a restored state never inherits it.
+static bool g_priority_window_open = false;
+bool priority_window_open() { return g_priority_window_open; }
+
 // The StateManager the post-restore hook recomputes through; rebound by every
 // init_ecs so the hook always targets the current game's system instance.
 static std::shared_ptr<StateManager> g_hook_state_manager;
@@ -619,7 +625,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             if (machine_mode && broadcast_steps_mode && !search_restore_pending()
                 && !search_any_snapshot_live()) {
                 Query q;
+                g_priority_window_open = true;
                 populate_gamestate(&gs, viewer);
+                g_priority_window_open = false;
                 populate_query(&q, legal_actions);
                 cli_emit_machine_bstate(&q, &gs);
             }
@@ -631,6 +639,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // In machine mode this populate is redundant: print_game_state early-returns,
         // and InputLogger::get_input re-runs populate_gamestate into its own buffer.
         // Skip the wasted full-entity scan + memset on every machine-mode decision.
+        g_priority_window_open = true;
         if (!machine_mode) {
             populate_gamestate(&gs, viewer);
             print_game_state(&gs);
@@ -640,6 +649,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // same decision (the snapshot round-trip CI test proves it byte-for-byte).
         search_set_loop_safe(true);
         int choice = InputLogger::instance().get_input(legal_actions);
+        g_priority_window_open = false;
         search_set_loop_safe(false);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }

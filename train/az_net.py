@@ -59,7 +59,7 @@ except ImportError:  # pragma: no cover
     from gym import spaces
 
 import extractor as _ex
-from extractor import CardGameExtractor, _ActionScorer
+from extractor import CardGameExtractor, _ActionScorer, network_global_ctx
 try:
     from env import OBS_SIZE, MAX_ACTIONS, make_observation_space
     from card_costs import N_CARD_TYPES
@@ -146,7 +146,7 @@ class ScriptTrunk(nn.Module):
 
     __constants__ = [
         "N_CARD_TYPES", "ACTION_CATEGORY_MAX", "REF_ZONE_MAX",
-        "GLOBAL_SIZE", "MATCH_CTX_START", "KNOWN_TOP_LIB_START",
+        "GLOBAL_SIZE", "SEAT_FLAG_IDX", "MATCH_CTX_START", "KNOWN_TOP_LIB_START",
         "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "REVEALED_START",
         "REVEALED_END", "PENDING_START", "PENDING_END", "EXTRAS_START",
         "EXTRAS_END", "MANA_DEV_START", "MANA_DEV_END",
@@ -201,6 +201,7 @@ class ScriptTrunk(nn.Module):
         self.ACTION_CATEGORY_MAX = int(ACTION_CATEGORY_MAX)
         self.REF_ZONE_MAX = int(REF_ZONE_MAX)
         self.GLOBAL_SIZE = int(_ex._GLOBAL_SIZE)
+        self.SEAT_FLAG_IDX = int(_ex._SEAT_FLAG_IDX)
         self.MATCH_CTX_START = int(_ex._MATCH_CTX_START)
         self.KNOWN_TOP_LIB_START = int(_ex._KNOWN_TOP_LIB_START)
         self.KNOWN_TOP_LIB_END = int(_ex._KNOWN_TOP_LIB_END)
@@ -304,7 +305,7 @@ class ScriptTrunk(nn.Module):
         return torch.cat([masked_mean, masked_max], dim=-1)
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
-        global_ctx = obs[:, :self.GLOBAL_SIZE]
+        global_ctx = network_global_ctx(obs, self.GLOBAL_SIZE, self.SEAT_FLAG_IDX)
         meta_ctx = obs[:, self.MATCH_CTX_START:self.KNOWN_TOP_LIB_START]
         revealed = obs[:, self.REVEALED_START:self.REVEALED_END]
         pending = obs[:, self.PENDING_START:self.PENDING_END]

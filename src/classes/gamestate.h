@@ -158,7 +158,6 @@ typedef struct GameState_tag {
     int         turn;
     Step        cur_step;
     bool        is_active_player;  // true when the viewer (self) is the active player
-    bool        viewer_has_priority; // true when the viewer (self) currently holds priority
     bool        self_is_player_a;
     int         stack_size;
 
@@ -210,6 +209,18 @@ typedef struct GameState_tag {
     bool is_day;               // game designation is day (CR 731.1)
     bool is_night;             // game designation is night
     int  pending_choice_kind;  // MandatoryChoice enum value (NONE = 0)
+    // Priority-window context: the viewer's and the other seat's pass flags, and
+    // whether the current decision is an ordinary priority window. All false unless
+    // it is (see priority_window_open in game_driver.h).
+    bool self_has_passed;
+    bool opp_has_passed;
+    bool is_priority_window;
+    // Mulligan state (Game::pregame): mulligans each player has taken this game, and
+    // the cards the viewer still has to bottom (0 outside the viewer's bottoming).
+    // All 0 during a bo3 sideboard phase.
+    int  self_mulligans_taken;
+    int  opp_mulligans_taken;
+    int  self_bottom_remaining;
     // The viewer is the starting player of the game this observation pertains to:
     // the current game in-game, the UPCOMING game during a bo3 sideboard phase.
     bool self_plays_first;

@@ -47,6 +47,9 @@ from env import (
     _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END,
     _PENDING_DECISION_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
+    _EXTRAS_SELF_PASSED, _EXTRAS_OPP_PASSED, _EXTRAS_IS_PRIORITY_WINDOW,
+    _EXTRAS_SELF_MULLIGANS, _EXTRAS_OPP_MULLIGANS, _EXTRAS_SELF_BOTTOM_REMAINING,
+    _MATCH_CTX_START,
     _SELF_BLOCK_START, _OPP_BLOCK_START, _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
     _MANA_DEV_START, _MANA_DEV_OPP_START,
     _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
@@ -67,7 +70,7 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
                     LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
-                    LIFE_NORMALIZER, LIBRARY_NORMALIZER,
+                    LIFE_NORMALIZER, LIBRARY_NORMALIZER, MULLIGAN_NORMALIZER,
                     LOG_LIFE_DENOM, LOG_LIBRARY_DENOM)
 from opponents import make_controller
 from scripted_agent import scripted_action
@@ -540,6 +543,10 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     if num_choices:
         _check_pending_source(decision_idx, seat, obs, state, num_choices)
 
+    # (15) Priority-window context and mulligan state agree with the menu.
+    if num_choices:
+        _check_priority_and_mulligan(decision_idx, seat, obs, state, num_choices)
+
 
 # ── Pending-decision source (14) ──────────────────────────────────────────────
 #
@@ -623,6 +630,63 @@ def _check_pending_source(decision_idx, seat, obs, state, num_choices):
               state[_PENDING_DECISION_START],
               f"non-priority decision without a pending-decision source "
               f"(menu categories {sorted(set(cats))})")
+
+
+# ── Priority-window context + mulligan state (15) ────────────────────────────
+#
+# is_priority_window is set by the engine (priority_window_open) independently of
+# the menu, so it is checked against the menu's own signature of a priority window
+# (the PASS_PRIORITY category). The pass flags are 0 outside a priority window,
+# the mandatory-choice one-hot is NONE inside one, and the mulligan floats are
+# whole counts in range with bottom_remaining nonzero exactly while bottoming.
+
+def _decode_flag(decision_idx, seat, state, idx, label):
+    v = float(state[idx])
+    if v not in (0.0, 1.0):
+        _fail(decision_idx, seat, label, "-", v, "flag must be exactly 0.0 or 1.0")
+    return v == 1.0
+
+
+def _decode_mulligan_count(decision_idx, seat, state, idx, label):
+    v = float(state[idx]) * MULLIGAN_NORMALIZER
+    n = int(round(v))
+    if abs(v - n) > 1e-4 or not (0 <= n <= MULLIGAN_NORMALIZER):
+        _fail(decision_idx, seat, label, "-", v,
+              f"mulligan count must be a whole number in [0,{MULLIGAN_NORMALIZER}]")
+    return n
+
+
+def _check_priority_and_mulligan(decision_idx, seat, obs, state, num_choices):
+    cats = [int(c) for c in decode.action_categories(obs, num_choices)]
+    window = _decode_flag(decision_idx, seat, state, _EXTRAS_IS_PRIORITY_WINDOW,
+                          "extras.is_priority_window")
+    if window != is_priority_window(cats):
+        _fail(decision_idx, seat, "extras.is_priority_window", "-", window,
+              f"is_priority_window disagrees with the menu (categories "
+              f"{sorted(set(cats))})")
+    for idx, label in ((_EXTRAS_SELF_PASSED, "extras.self_has_passed"),
+                       (_EXTRAS_OPP_PASSED, "extras.opp_has_passed")):
+        if _decode_flag(decision_idx, seat, state, idx, label) and not window:
+            _fail(decision_idx, seat, label, "-", 1.0,
+                  "pass flag set outside a priority window")
+    if window and np.any(state[_EXTRAS_MC_ONEHOT_START + 1:
+                               _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES] > 0.5):
+        _fail(decision_idx, seat, "mandatory_choice_onehot", "-", "set",
+              "a mandatory choice is pending at a priority window")
+
+    self_mulls = _decode_mulligan_count(decision_idx, seat, state,
+                                        _EXTRAS_SELF_MULLIGANS, "extras.self_mulligans")
+    _decode_mulligan_count(decision_idx, seat, state, _EXTRAS_OPP_MULLIGANS,
+                           "extras.opp_mulligans")
+    bottom = _decode_mulligan_count(decision_idx, seat, state,
+                                    _EXTRAS_SELF_BOTTOM_REMAINING,
+                                    "extras.self_bottom_remaining")
+    if (bottom > 0) != bool(decode.is_bottom(cats)):
+        _fail(decision_idx, seat, "extras.self_bottom_remaining", "-", bottom,
+              "bottom_remaining must be nonzero exactly at a bottoming decision")
+    if bottom > self_mulls:
+        _fail(decision_idx, seat, "extras.self_bottom_remaining", "-", bottom,
+              f"bottom_remaining {bottom} exceeds the viewer's mulligans {self_mulls}")
 
 
 # ── Game driving ──────────────────────────────────────────────────────────────
@@ -836,7 +900,6 @@ def check_opponent_decklist_frozen():
                       auto_sideboard=False)
     first = {}                        # seat -> (main_block, side_block) at first sight
     swaps = 0
-    saw_sideboard = False
     post_board = 0
     # Log-vitals coverage over this bo3: the main invariant loop is bo1 only, so
     # this is where the block's SIDEBOARD-phase form (masked to zeros) is exercised
@@ -872,9 +935,10 @@ def check_opponent_decklist_frozen():
             if any(c in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT) for c in cats) and \
                     not any(c == CAT_SIDEBOARD_DONE for c in cats):
                 swaps += 1
-            if obs[_IS_SIDEBOARD_IDX] > 0.5:
-                saw_sideboard = True
-            elif saw_sideboard:
+            # A post-board decision: game 2+ of the bo3 (game_number is 0-based),
+            # outside the sideboard phase itself.
+            if (obs[_IS_SIDEBOARD_IDX] <= 0.5
+                    and int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0):
                 post_board += 1
                 if post_board >= _SB_POST_BOARD_MIN:
                     break
@@ -1275,7 +1339,7 @@ def check_sideboard_self_context():
       (iii) the self-deck blocks actually MOVE during a sideboard phase (they are
             the live view; the complement of the frozen opponent blocks);
       (iv)  at a sideboard root the match context describes the UPCOMING game
-            (game_number advanced, is_post_board set), not the one that just ended;
+            (game_number advanced), not the one that just ended;
       (v)   the two seats disagree about self_plays_first at the same boundary —
             exactly one of them is on the play next.
 
@@ -1329,13 +1393,12 @@ def check_sideboard_self_context():
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 sb_decisions += 1
                 match = decode._decode_match_context(obs[:STATE_SIZE])
-                # (iv) boarding for game 2 means game_number 1 (0-based) and a
-                # post-board game ahead. Reading the ended game would give 0/False.
-                if match["game_number"] <= 0 or not match["is_post_board"]:
+                # (iv) boarding for game 2 means game_number 1 (0-based). Reading
+                # the ended game would give 0.
+                if match["game_number"] <= 0:
                     raise InvariantError(
                         f"seat {seat}: sideboard root reports game_number "
-                        f"{match['game_number']} / is_post_board "
-                        f"{match['is_post_board']} — it must describe the UPCOMING "
+                        f"{match['game_number']} — it must describe the UPCOMING "
                         "game, not the one that just ended")
                 plays_first_at_boundary.setdefault(
                     seat, bool(obs[_EXTRAS_PLAYS_FIRST] > 0.5))
