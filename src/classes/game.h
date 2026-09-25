@@ -209,6 +209,9 @@ struct Game {
         // turns; empty in a fresh Game.
         std::vector<Zone::Ownership> extra_turns;
         std::vector<DelayedTrigger> delayed_triggers;
+        // Next DelayedTriggerLink::seq register_delayed_trigger hands out (monotonic per game,
+        // starting at 1 so 0 stays "not a delayed trigger").
+        uint32_t next_delayed_seq = 1;
         // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
         // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
         // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;

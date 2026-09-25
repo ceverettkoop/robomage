@@ -817,7 +817,8 @@ def obs_blocks():
         ("global extras", e._EXTRAS_START, e._MANA_DEV_START),
         ("mana development", e._MANA_DEV_START, e._LOG_VITALS_START),
         ("log vitals", e._LOG_VITALS_START, e._PER_TURN_START),
-        ("per-turn counters", e._PER_TURN_START, e.STATE_SIZE),
+        ("per-turn counters", e._PER_TURN_START, e._DELAYED_START),
+        ("delayed triggers", e._DELAYED_START, e.STATE_SIZE),
         ("action categories", e.ACT_CATS_START, e.ACT_CATS_START + e.MAX_ACTIONS),
         ("action card ids", e.ACT_IDS_START, e.ACT_IDS_START + e.MAX_ACTIONS),
         ("action controllers", e.ACT_CTRL_START, e.ACT_CTRL_START + e.MAX_ACTIONS),
@@ -1484,9 +1485,9 @@ _PERM_SCALAR_NAMES = [
     "other_counters", "ref attached_to", "ref attached_by", "ref attack_tgt",
     "ref blocking_tgt", "is_blocked", "is_phased_out", "entered_this_turn",
     "resolutions_this_turn", "activations_this_turn", "cant_be_blocked",
-    "combat_dmg_prevented",
+    "combat_dmg_prevented", "pending_delayed_subject",
 ] + ["kw " + k for k in _OBS_KEYWORDS]
-assert len(_PERM_SCALAR_NAMES) == 23 + N_OBS_KEYWORDS
+assert len(_PERM_SCALAR_NAMES) == 24 + N_OBS_KEYWORDS
 
 # Cast-qualifier flags in STACK_QUAL_FIELDS order (machine_io.h).
 _STACK_QUAL_NAMES = ["is_copy", "kicked", "flashback", "evoke", "escape",
@@ -1529,6 +1530,17 @@ def _encoder_specs(sd):
     stack += _card_feat_cols("object", card_dim)
     stack += _card_feat_cols("tgts-mean", card_dim)
     specs.append(("stack_encoder", stack))
+
+    # Delayed-trigger slot scalars in the extractor's dt_in column order (the
+    # slot's present flag and its two card ids are not scalar inputs).
+    delayed_scalars = (["ctrl_is_self", "on_stack", "stack_ref", "creator_ref",
+                        "subject_ref"]
+                       + ["fire upkeep", "fire end step", "fire end of combat",
+                          "fire leaves bf", "fires_this_turn"])
+    delayed = [("scalars", len(delayed_scalars), delayed_scalars)]
+    delayed += _card_feat_cols("creator", card_dim)
+    delayed += _card_feat_cols("subject", card_dim)
+    specs.append(("delayed_encoder", delayed))
 
     specs.append(("entity_encoder",
                   _card_feat_cols("card", card_dim)
@@ -1644,6 +1656,7 @@ def _body_segments(sd):
         ("perm agg",           2 * E),
         ("stack agg",          2 * E),
         ("top-of-stack",       E),
+        ("delayed agg",        E),
         ("graveyard agg",      2 * E),
         ("exile agg",          2 * E),
         ("hand+top-lib agg",   2 * E),

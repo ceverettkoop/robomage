@@ -151,6 +151,8 @@ class ScriptTrunk(nn.Module):
         "REVEALED_END", "PENDING_START", "PENDING_END", "EXTRAS_START",
         "EXTRAS_END", "MANA_DEV_START", "MANA_DEV_END",
         "LOG_VITALS_START", "LOG_VITALS_END", "PER_TURN_START", "PER_TURN_END",
+        "DELAYED_START", "DELAYED_END", "DELAYED_SLOTS", "DELAYED_SLOT_SIZE",
+        "DT_PRESENT_OFF", "DT_CREATOR_ID_OFF", "DT_SUBJECT_ID_OFF",
         "STATE_END", "PERM_START", "PERM_END", "PERM_SLOTS",
         "PERM_SLOT_SIZE", "PERM_STATUS_FLOATS", "PERM_CHOSEN_NAME_OFF",
         "PERM_RETURNABLE_OFF", "PERM_CARD_OFF", "STACK_START", "STACK_END",
@@ -185,6 +187,7 @@ class ScriptTrunk(nn.Module):
         self.register_buffer("card_props", fe.card_props)
         self.perm_encoder = fe.perm_encoder
         self.stack_encoder = fe.stack_encoder
+        self.delayed_encoder = fe.delayed_encoder
         self.entity_encoder = fe.entity_encoder
         self.decklist_encoder = fe.decklist_encoder
         self.revealed_encoder = fe.revealed_encoder
@@ -218,6 +221,13 @@ class ScriptTrunk(nn.Module):
         self.LOG_VITALS_END = int(_ex._LOG_VITALS_END)
         self.PER_TURN_START = int(_ex._PER_TURN_START)
         self.PER_TURN_END = int(_ex._PER_TURN_END)
+        self.DELAYED_START = int(_ex._DELAYED_START)
+        self.DELAYED_END = int(_ex._DELAYED_END)
+        self.DELAYED_SLOTS = int(_ex._DELAYED_SLOTS)
+        self.DELAYED_SLOT_SIZE = int(_ex._DELAYED_SLOT_SIZE)
+        self.DT_PRESENT_OFF = int(_ex._DT_PRESENT_OFF)
+        self.DT_CREATOR_ID_OFF = int(_ex._DT_CREATOR_ID_OFF)
+        self.DT_SUBJECT_ID_OFF = int(_ex._DT_SUBJECT_ID_OFF)
         self.STATE_END = int(_ex._STATE_END)
         self.PERM_START = int(_ex._PERM_START)
         self.PERM_END = int(_ex._PERM_END)
@@ -369,6 +379,16 @@ class ScriptTrunk(nn.Module):
         stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_xquals, stk_modes,
                             stk_tgt_scalars, stk_pos, stk_card_emb, stk_tgt_agg], dim=-1)
 
+        delayed = obs[:, self.DELAYED_START:self.DELAYED_END].reshape(
+            -1, self.DELAYED_SLOTS, self.DELAYED_SLOT_SIZE)
+        dt_creator_emb, _ = self._embed_ids(delayed[:, :, self.DT_CREATOR_ID_OFF])
+        dt_subject_emb, _ = self._embed_ids(delayed[:, :, self.DT_SUBJECT_ID_OFF])
+        dt_present = delayed[:, :, self.DT_PRESENT_OFF] > 0.5
+        dt_in = torch.cat([delayed[:, :, 1:self.DT_CREATOR_ID_OFF],
+                           delayed[:, :, self.DT_CREATOR_ID_OFF + 1:self.DT_SUBJECT_ID_OFF],
+                           delayed[:, :, self.DT_SUBJECT_ID_OFF + 1:],
+                           dt_creator_emb, dt_subject_emb], dim=-1)
+
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
         ex_emb_in, ex_present = self._embed_ids(exile[:, :, 0])
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
@@ -408,6 +428,7 @@ class ScriptTrunk(nn.Module):
 
         perm_emb = self.perm_encoder(perm_in)
         stk_emb = self.stack_encoder(stk_in)
+        dt_emb = self.delayed_encoder(dt_in)
         gy_emb = self.entity_encoder(gy_in)
         ex_emb = self.entity_encoder(ex_in)
         hand_lib_emb = self.entity_encoder(hl_in)
@@ -486,6 +507,7 @@ class ScriptTrunk(nn.Module):
         perm_agg = self._mean_max(perm_att, perm_present)
         stk_agg = self._mean_max(stk_att, stk_present)
         top_stack_feat = stk_att[:, 0]
+        delayed_agg = self._mean_max(dt_emb, dt_present)
         gy_agg = self._mean_max(gy_emb, gy_present)
         ex_agg = self._mean_max(ex_emb, ex_present)
         hand_lib_agg = self._mean_max(hand_lib_emb, hl_present)
@@ -501,7 +523,8 @@ class ScriptTrunk(nn.Module):
                           revealed_agg, pending_feat, extras, mana_dev, log_vitals,
                           per_turn,
                           arch_onehot,
-                          perm_agg, stk_agg, top_stack_feat, gy_agg, ex_agg,
+                          perm_agg, stk_agg, top_stack_feat, delayed_agg,
+                          gy_agg, ex_agg,
                           hand_lib_agg, next_draw_feat, opp_hand_agg,
                           self_lib_agg, self_main_agg, self_side_agg,
                           opp_main_agg, opp_side_agg], dim=-1)

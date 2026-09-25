@@ -151,7 +151,7 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     dt.fire_on_turn = cur_game.turn;
     dt.watch_entity = host;
     dt.fire_on_leave_battlefield = true;
-    cur_game.delayed_triggers.push_back(dt);
+    register_delayed_trigger(dt, host);
 }
 
 // A library search reveals the chosen card when it must satisfy a restriction

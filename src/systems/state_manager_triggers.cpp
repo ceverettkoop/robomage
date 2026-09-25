@@ -220,6 +220,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Determine controller from owner_entity
                 Zone::Ownership ctrl = (dt.owner_entity == game.player_a_entity)
                                        ? Zone::PLAYER_A : Zone::PLAYER_B;
+                // The copy carries dt.ability.delayed_link (seq, creator, subjects) onto the
+                // stack object, so the observation's delayed-trigger block keeps following
+                // this trigger until its stack object leaves the stack.
                 Ability trigger_ab = dt.ability;
                 trigger_ab.controller = ctrl;
                 // Defined$ TriggeredCardController (Searing Blood): bind the fire ability's player

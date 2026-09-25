@@ -59,7 +59,11 @@ from env import (
     _PT_INSTANT_SORCERY, _PT_CARDS_DRAWN, _PT_LIFE_GAINED, _PT_LIFE_LOST,
     _PT_COLORS_START, _OFF_IS_CREATURE, _OFF_ENTERED_THIS_TURN,
     _OFF_RESOLUTIONS_THIS_TURN, _OFF_ACTIVATIONS_THIS_TURN, _OFF_CANT_BE_BLOCKED,
-    _OFF_COMBAT_DMG_PREVENTED,
+    _OFF_COMBAT_DMG_PREVENTED, _OFF_PENDING_DELAYED_SUBJECT,
+    _DELAYED_START, _DELAYED_SLOTS, _DELAYED_SLOT_SIZE,
+    _DT_PRESENT, _DT_CTRL_SELF, _DT_STATE, _DT_STACK_REF, _DT_CREATOR_ID,
+    _DT_CREATOR_REF, _DT_SUBJECT_REF, _DT_SUBJECT_ID, _DT_FIRE_ONEHOT_START,
+    _DT_FIRES_THIS_TURN, _MISHRAS_BAUBLE_VOCAB_IDX,
     _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START, _REVEALED_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
@@ -77,7 +81,8 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
                     LIFE_NORMALIZER, LIBRARY_NORMALIZER, MULLIGAN_NORMALIZER,
                     LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
-                    PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS)
+                    PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS,
+                    N_DELAYED_FIRE_KINDS)
 from opponents import make_controller
 from scripted_agent import scripted_action
 
@@ -146,6 +151,10 @@ def _card_id_slots():
     for i, off in enumerate(range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END)):
         yield "opp_known_hand", i, off
     yield "pending_decision", 0, _PENDING_DECISION_START
+    for s in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        yield "delayed.creator_id", s, base + _DT_CREATOR_ID
+        yield "delayed.subject_id", s, base + _DT_SUBJECT_ID
     # Deck-identity tail blocks: card id is the first float of each (card_id, count) slot.
     for name, start, n in _DECKLIST_BLOCKS:
         for s in range(n):
@@ -188,6 +197,11 @@ def _ref_slots():
         for t in range(_STACK_TGT_SLOTS):
             tbase = base + _STACK_TGT_START + t * _STACK_TGT_FIELDS
             yield f"stack.tgt{t}.slot_ref", s, tbase + 3   # [+3]=slot_ref
+    for s in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        yield "delayed.stack_ref", s, base + _DT_STACK_REF
+        yield "delayed.creator_ref", s, base + _DT_CREATOR_REF
+        yield "delayed.subject_ref", s, base + _DT_SUBJECT_REF
 
 
 def _zone_block_offsets(start):
@@ -383,6 +397,122 @@ def _check_per_turn(decision_idx, seat, state):
                       "can't-be-blocked set on a non-creature")
 
 
+# Running tallies of the delayed-trigger entries check_decision has validated
+# (reported by main so a run that never exercised the block is visible).
+DELAYED_SEEN = {"waiting": 0, "on_stack": 0}
+
+
+def _ref_slot_card_id(state, ref):
+    """Card id serialized at an entity-slot ref (perm or stack slot)."""
+    if ref < _PERM_SLOTS:
+        return _decode_card_id(state[_SELF_PERM_START + ref * _PERM_SLOT_SIZE + _PERM_CARD_OFF])
+    if ref < 2 * _PERM_SLOTS:
+        return _decode_card_id(state[_OPP_PERM_START + (ref - _PERM_SLOTS) * _PERM_SLOT_SIZE
+                                     + _PERM_CARD_OFF])
+    return _decode_card_id(state[_STACK_START + (ref - 2 * _PERM_SLOTS) * _STACK_SLOT_SIZE + 1])
+
+
+def _check_delayed(decision_idx, seat, state):
+    """Invariant (17): the PENDING DELAYED TRIGGERS block and the per-permanent
+    pending_delayed_subject bit.
+
+    - Slots are packed (no present slot after an empty one) and an empty slot is
+      all zeros except the two card-id sentinels.
+    - Flags are exactly 0/1 and at most one fire_on bit is set.
+    - A waiting entry (state 0) has stack_ref 0. An on-stack entry (state 1) whose
+      stack_ref resolves points at a FILLED stack slot whose card id is the
+      creator's or the subject's (exile-until-host-leaves puts the exiled card's
+      ability on the stack, its creator being the host); fires_this_turn is 0.
+    - creator_ref, when set, points at a filled battlefield/stack slot holding the
+      creator's card id; subject_ref, when set, at a filled battlefield slot.
+    - Registration order is not observable from the obs; the packing check is the
+      part of "ascending seq" the obs can witness.
+    - pending_delayed_subject is only set on a filled permanent slot, and only when
+      some waiting entry exists."""
+    seen_empty = False
+    any_waiting = False
+    for s in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        label = f"delayed[{s}]"
+        present = _decode_flag(decision_idx, seat, state, base + _DT_PRESENT, f"{label}.present")
+        if not present:
+            seen_empty = True
+            for off in range(_DELAYED_SLOT_SIZE):
+                if off in (_DT_CREATOR_ID, _DT_SUBJECT_ID):
+                    if _decode_card_id(state[base + off]) != _CARD_ID_SENTINEL:
+                        _fail(decision_idx, seat, label, off, state[base + off],
+                              "empty delayed slot carries a card id")
+                elif float(state[base + off]) != 0.0:
+                    _fail(decision_idx, seat, label, off, state[base + off],
+                          "empty delayed slot carries a non-zero field")
+            continue
+        if seen_empty:
+            _fail(decision_idx, seat, label, s, 1.0,
+                  "present delayed slot after an empty one (block must be packed)")
+        _decode_flag(decision_idx, seat, state, base + _DT_CTRL_SELF, f"{label}.ctrl")
+        on_stack = _decode_flag(decision_idx, seat, state, base + _DT_STATE, f"{label}.state")
+        fires = _decode_flag(decision_idx, seat, state, base + _DT_FIRES_THIS_TURN,
+                             f"{label}.fires_this_turn")
+        fire_bits = sum(_decode_flag(decision_idx, seat, state,
+                                     base + _DT_FIRE_ONEHOT_START + k, f"{label}.fire{k}")
+                        for k in range(N_DELAYED_FIRE_KINDS))
+        if fire_bits > 1:
+            _fail(decision_idx, seat, label, "fire_on", fire_bits,
+                  "more than one fire_on bit set")
+        creator_id = _decode_card_id(state[base + _DT_CREATOR_ID])
+        subject_id = _decode_card_id(state[base + _DT_SUBJECT_ID])
+        stack_ref = _decode_ref(state[base + _DT_STACK_REF])
+        if not on_stack:
+            any_waiting = True
+            DELAYED_SEEN["waiting"] += 1
+            if stack_ref != -1:
+                _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                      "waiting delayed trigger carries a stack_ref")
+        else:
+            DELAYED_SEEN["on_stack"] += 1
+            if fires:
+                _fail(decision_idx, seat, label, "fires_this_turn", 1.0,
+                      "on-stack delayed trigger has fires_this_turn set")
+            if stack_ref != -1:
+                if not (2 * _PERM_SLOTS <= stack_ref < N_ENTITY_REF_SLOTS):
+                    _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                          "stack_ref is not a stack slot")
+                sid = _ref_slot_card_id(state, stack_ref)
+                if sid == _CARD_ID_SENTINEL:
+                    _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                          "stack_ref points at an empty stack slot")
+                if sid not in (creator_id, subject_id):
+                    _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                          f"stack slot card id {sid} is neither the creator's "
+                          f"({creator_id}) nor the subject's ({subject_id})")
+        creator_ref = _decode_ref(state[base + _DT_CREATOR_REF])
+        if creator_ref != -1 and _ref_slot_card_id(state, creator_ref) != creator_id:
+            _fail(decision_idx, seat, label, "creator_ref", creator_ref,
+                  f"creator_ref slot does not hold the creator card id {creator_id}")
+        subject_ref = _decode_ref(state[base + _DT_SUBJECT_REF])
+        if subject_ref != -1:
+            if subject_ref >= 2 * _PERM_SLOTS:
+                _fail(decision_idx, seat, label, "subject_ref", subject_ref,
+                      "subject_ref is not a battlefield slot")
+            if _ref_slot_card_id(state, subject_ref) == _CARD_ID_SENTINEL:
+                _fail(decision_idx, seat, label, "subject_ref", subject_ref,
+                      "subject_ref points at an empty permanent slot")
+    for side, start in (("self_perm", _SELF_PERM_START),
+                        ("opp_perm", _OPP_PERM_START)):
+        for s in range(_PERM_SLOTS):
+            base = start + s * _PERM_SLOT_SIZE
+            bit = _decode_flag(decision_idx, seat, state, base + _OFF_PENDING_DELAYED_SUBJECT,
+                               f"{side}[{s}].pending_delayed_subject")
+            if not bit:
+                continue
+            if _decode_card_id(state[base + _PERM_CARD_OFF]) == _CARD_ID_SENTINEL:
+                _fail(decision_idx, seat, side, s, 1.0,
+                      "pending_delayed_subject set on an empty slot")
+            if not any_waiting:
+                _fail(decision_idx, seat, side, s, 1.0,
+                      "pending_delayed_subject set but no delayed trigger is waiting")
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -569,6 +699,11 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # (16) Per-turn counters and the per-permanent per-turn statuses: whole counts,
     # binary flags, nested spell counts, colors only alongside a cast.
     _check_per_turn(decision_idx, seat, state)
+
+    # (17) Pending delayed triggers: packed slots, sentinel-clean empties, the
+    # on-stack stack_ref link, creator/subject refs, and the per-permanent
+    # pending_delayed_subject bit only on filled slots.
+    _check_delayed(decision_idx, seat, state)
 
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
@@ -870,6 +1005,65 @@ def check_walker_activation_ordinals():
             env.step(0)
         raise InvariantError(
             "staged Jace never offered >= 2 loyalty activations in 120 decisions")
+    finally:
+        env.close()
+
+
+def check_delayed_trigger_lifecycle():
+    """Guaranteed coverage for invariant (17): stage two Mishra's Baubles for
+    seat A, activate one, and follow its "draw at the beginning of the next
+    turn's upkeep" delayed trigger through the observation — waiting (fire_on
+    upkeep, creator in the graveyard so creator_ref is none), then on the stack
+    at the next upkeep (seat A holds the second Bauble, so it gets a decision
+    there) with a stack_ref naming a Bauble stack slot, then gone once it has
+    resolved. Every decision also runs the full check_decision battery. Returns
+    (waiting decisions, on-stack decisions)."""
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Mishras Bauble,Mishras Bauble", bo3=False)
+    waiting = on_stack = 0
+    activated = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(200):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            base = _DELAYED_START
+            if state[base + _DT_PRESENT] > 0.5:
+                if _decode_card_id(state[base + _DT_CREATOR_ID]) != _MISHRAS_BAUBLE_VOCAB_IDX:
+                    raise InvariantError("delayed entry's creator is not Mishra's Bauble")
+                if state[base + _DT_STATE] < 0.5:
+                    if state[base + _DT_FIRE_ONEHOT_START] < 0.5:
+                        raise InvariantError("waiting Bauble trigger does not fire on upkeep")
+                    if _decode_ref(state[base + _DT_CREATOR_REF]) != -1:
+                        raise InvariantError("sacrificed Bauble still has a creator_ref")
+                    waiting += 1
+                else:
+                    ref = _decode_ref(state[base + _DT_STACK_REF])
+                    if ref < 0 or _ref_slot_card_id(state, ref) != _MISHRAS_BAUBLE_VOCAB_IDX:
+                        raise InvariantError(
+                            f"on-stack Bauble trigger's stack_ref {ref} is not a Bauble stack slot")
+                    on_stack += 1
+            elif on_stack:
+                return waiting, on_stack           # resolved: the entry is gone
+            choice = 0
+            ids = decode.action_card_ids(obs)
+            for a in range(num):
+                cat = int(cats[a])
+                if (priority_is_a and not activated and cat == CAT_ACTIVATE_ABILITY
+                        and _decode_card_id(ids[a]) == _MISHRAS_BAUBLE_VOCAB_IDX):
+                    choice = a
+                    activated = True
+                    break
+            env.step(choice)
+        raise InvariantError(
+            f"Bauble delayed trigger not followed to resolution in 200 decisions "
+            f"(waiting {waiting}, on stack {on_stack}, activated {activated})")
     finally:
         env.close()
 
@@ -1523,6 +1717,14 @@ def main():
           "activations on one Jace", flush=True)
 
     try:
+        n_wait, n_stack = check_delayed_trigger_lifecycle()
+    except InvariantError as e:
+        print(f"FAIL  delayed-trigger lifecycle\n  {e}", flush=True)
+        return 1
+    print(f"ok    delayed-trigger lifecycle: Bauble trigger waiting at {n_wait} "
+          f"decisions, on the stack at {n_stack}, then gone", flush=True)
+
+    try:
         n_swaps, n_post, lv_live, lv_masked = check_opponent_decklist_frozen()
     except InvariantError as e:
         print(f"FAIL  opponent decklist frozen across bo3\n  {e}", flush=True)
@@ -1563,6 +1765,9 @@ def main():
         return 1
     print(f"ok    sideboard forced out: in-first pairing with the lock held; card "
           f"{fo_id} stranded, force-cut as a swap, then Done-only", flush=True)
+
+    print(f"ok    delayed triggers: {DELAYED_SEEN['waiting']} waiting and "
+          f"{DELAYED_SEEN['on_stack']} on-stack entries checked", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

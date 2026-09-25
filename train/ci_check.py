@@ -939,6 +939,8 @@ _CHAIN_PAIRS = [
     ("_PER_TURN_START",         "PER_TURN_START"),
     ("_PER_TURN_OPP_START",     "PER_TURN_OPP_START"),
     ("_PER_TURN_END",           "PER_TURN_END"),
+    ("_DELAYED_START",          "DELAYED_START"),
+    ("_DELAYED_END",            "DELAYED_END"),
 ]
 
 

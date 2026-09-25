@@ -15,6 +15,8 @@ extern "C" {
 #define N_OBS_KEYWORDS 16  // keyword multi-hot width per permanent slot (OBS_KEYWORDS in machine_io.h)
 #define MAX_STACK_MODES 6  // chosen-mode multi-hot width per stack entry
 #define MAX_STACK_TGTS 4   // announced targets serialized per stack entry (truncated)
+#define MAX_DELAYED_TRIGGER_SLOTS 16  // pending delayed triggers serialized (truncated, seq order)
+#define N_DELAYED_FIRE_KINDS 4  // fire_on one-hot: upkeep, end step, end of combat, leaves battlefield
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
 #define DECKLIST_MAIN_SLOTS 48  // distinct-name slots: self live library + opp maindeck
@@ -96,6 +98,8 @@ typedef struct PermanentState_tag {
                                  // (ActivationLimit$ counters summed + loyalty activation)
     bool cant_be_blocked_this_turn; // a "can't be blocked this turn" effect applies
     bool combat_damage_prevented;   // it is the creature of a combat-damage prevention shield
+    bool pending_delayed_subject;   // watched by / a subject of a WAITING delayed trigger
+                                    // (is_waiting_delayed_trigger_subject)
     bool keywords[N_OBS_KEYWORDS];  // effective keyword multi-hot (OBS_KEYWORDS order)
     char token_name[PERM_TOKEN_NAME_LEN]; // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
     char counters[PERM_COUNTERS_LEN]; // compact typed-counter summary ("charge:2, +1/+1:3"), empty = none
@@ -132,6 +136,21 @@ typedef struct StackEntry_tag {
                                          // primary, sub-abilities', chosen modes'
     char target_name[48]; // display name of first target, empty = no target (display only)
 } StackEntry;
+
+// One pending delayed trigger (CR 603.7): a record still waiting in
+// Game::delayed_triggers, or its fired ability on the stack (DelayedTriggerLink::seq != 0).
+typedef struct DelayedTriggerEntry_tag {
+    bool present;
+    bool controller_is_self;
+    bool on_stack;             // false = waiting to fire, true = fired, its ability on the stack
+    int  stack_ref;            // the stack object's slot ref when on_stack (-1 = none/truncated)
+    int  creator_card_idx;     // vocab idx of the card whose ability set it up (-1 = none)
+    int  creator_ref;          // creator's battlefield/stack slot ref (-1 = elsewhere)
+    int  subject_ref;          // first watched / affected permanent's battlefield slot ref (-1 = none)
+    int  subject_card_idx;     // vocab idx of the first subject (-1 = none)
+    int  fire_kind;            // DelayedTriggerLink::FireKind (-1 = no one-hot column)
+    bool fires_this_turn;      // a waiting phase trigger scheduled later this turn
+} DelayedTriggerEntry;
 
 typedef enum ActionRefZone_tag {
     REF_NONE = 0,
@@ -180,6 +199,9 @@ typedef struct GameState_tag {
     PermanentState opp_permanents[MAX_BATTLEFIELD_SLOTS];
 
     StackEntry  stack[MAX_STACK_DISPLAY];
+
+    // Pending delayed triggers, ascending by registration seq (packed, no holes).
+    DelayedTriggerEntry delayed[MAX_DELAYED_TRIGGER_SLOTS];
 
     int  self_graveyard[MAX_GY_SLOTS];   // card_vocab_idx, -1 = empty
     int  opp_graveyard[MAX_GY_SLOTS];

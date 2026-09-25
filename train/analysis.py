@@ -118,16 +118,17 @@ _FEAT = {name: i for i, name in enumerate(_INTERP_FEATURE_NAMES)}
 # single normalized id float per slot; decode via _slot_card_idx (round(val*N)).
 _PERM_START   = _SELF_PERM_START          # 36 (self slots first, then opponent)
 _PERM_SLOTS   = _ENV_PERM_SLOTS * 2       # 96 = 48 self + 48 opponent
-_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 42 (status + counters + refs + per-turn statuses + keywords + chosen-name id + returnable-exile id + card id)
+_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 43 (status + counters + refs + per-turn statuses + pending-delayed-subject + keywords + chosen-name id + returnable-exile id + card id)
 _SELF_PERM_SLOTS = _ENV_PERM_SLOTS        # 48: slots 0-47 = self, 48-95 = opponent
 # Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
 #                   sickness(5), damage(6), is_creature(7 = _OFF_IS_CREATURE),
 #                   is_land(8 = _OFF_IS_LAND), loyalty(9 = _OFF_LOYALTY), then the
 #                   enriched fields — counters (10-11), attachment/combat refs
 #                   (12-15), is_blocked(16), is_phased_out(17 = _OFF_IS_PHASED_OUT),
-#                   per-turn statuses (18-22), keyword multi-hot (23-38),
-#                   chosen-name id(39), returnable-exile id(40), and
-#                   card_id(41 = _PERM_CARD_OFF from env.py, LAST)
+#                   per-turn statuses (18-22), pending_delayed_subject(23),
+#                   keyword multi-hot (24-39), chosen-name id(40),
+#                   returnable-exile id(41), and
+#                   card_id(42 = _PERM_CARD_OFF from env.py, LAST)
 _PERM_LOYALTY_OFF = _OFF_LOYALTY
 _GY_START_OBS    = _GY_START
 _GY_SLOTS        = _GY_SLOTS_TOTAL        # 128

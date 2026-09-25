@@ -178,6 +178,11 @@ static const SideboardMask& sideboard_mask() {
             for (int t = 0; t < STACK_TGT_SLOTS; t++)
                 card_id_slot(tgt0 + t * STACK_TGT_FIELDS + STACK_TGT_ID_OFF);
         }
+        // Delayed-trigger slots: creator and subject card ids.
+        for (int s = 0; s < DELAYED_SLOTS; s++) {
+            card_id_slot(DELAYED_START + s * DELAYED_SLOT_SIZE + DELAYED_CREATOR_ID_OFF);
+            card_id_slot(DELAYED_START + s * DELAYED_SLOT_SIZE + DELAYED_SUBJECT_ID_OFF);
+        }
         for (int i = HAND_START; i < HAND_START + MAX_HAND_SLOTS; i++) card_id_slot(i);       // self hand
         for (int i = KNOWN_TOP_LIB_START; i < KNOWN_TOP_LIB_END; i++) card_id_slot(i);        // known top-5
         for (int i = OPP_KNOWN_HAND_START; i < OPP_KNOWN_HAND_END; i++) card_id_slot(i);      // known opp hand

@@ -116,6 +116,7 @@ try:
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
         LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
         PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
+        MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -146,6 +147,7 @@ except ImportError:
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
         LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
         PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
+        MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -433,12 +435,12 @@ _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full h
 assert _GLOBAL_SIZE == 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS, _GLOBAL_SIZE
 _PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + opp)
 # 10 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
-# + 5 per-turn statuses + keyword multi-hot + chosen-name id + returnable-exile id
-# + card id (LAST) = 42. No controller flag: the blocks are split by controller.
+# + 5 per-turn statuses + pending_delayed_subject + keyword multi-hot + chosen-name
+# id + returnable-exile id + card id (LAST) = 43. No controller flag: the blocks are split by controller.
 # Keep the derived formula and cross-check it against the engine's PERM_SLOT_SIZE
 # (machine_io.h) so a change to either side is caught here. The three id-family
 # floats sit last: chosen_name_id then returnable_exile_id then card_id.
-_PERM_SLOT_SIZE         = 23 + N_OBS_KEYWORDS + 3
+_PERM_SLOT_SIZE         = 24 + N_OBS_KEYWORDS + 3
 assert _PERM_SLOT_SIZE == PERM_SLOT_SIZE, (_PERM_SLOT_SIZE, PERM_SLOT_SIZE)
 _STACK_SLOTS            = MAX_STACK_DISPLAY
 _STACK_XAMT_OFF         = STACK_HEAD_FIELDS    # x_or_amount / 10 within a stack slot
@@ -625,16 +627,39 @@ _PER_TURN_START     = _LOG_VITALS_END
 _PER_TURN_OPP_START = _PER_TURN_START + PER_TURN_PLAYER_SIZE
 _PER_TURN_END       = _PER_TURN_OPP_START + PER_TURN_PLAYER_SIZE
 
-assert _PER_TURN_END == STATE_SIZE, (_PER_TURN_END, STATE_SIZE)
+# ── Pending delayed triggers (mirrors machine_io.h's DELAYED TRIGGERS block) ─
+# A derived view of every delayed trigger from registration until it resolves:
+# records still waiting to fire plus the fired stack objects, packed in ascending
+# registration order. Per slot: present, controller_is_self, state (0 waiting /
+# 1 on the stack), stack_ref (norm_ref), creator card id, creator_ref (norm_ref),
+# subject_ref (norm_ref), subject card id, fire_on one-hot (upkeep, end step, end
+# of combat, leaves the battlefield), fires_this_turn.
+_DELAYED_SLOTS          = MAX_DELAYED_TRIGGER_SLOTS
+_DELAYED_SLOT_SIZE      = DELAYED_SLOT_SIZE
+_DT_PRESENT             = 0
+_DT_CTRL_SELF           = 1
+_DT_STATE               = 2
+_DT_STACK_REF           = 3
+_DT_CREATOR_ID          = 4
+_DT_CREATOR_REF         = 5
+_DT_SUBJECT_REF         = 6
+_DT_SUBJECT_ID          = 7
+_DT_FIRE_ONEHOT_START   = 8                    # N_DELAYED_FIRE_KINDS floats
+_DT_FIRES_THIS_TURN     = _DT_FIRE_ONEHOT_START + N_DELAYED_FIRE_KINDS
+assert _DT_FIRES_THIS_TURN + 1 == DELAYED_SLOT_SIZE, DELAYED_SLOT_SIZE
+_DELAYED_START          = _PER_TURN_END
+_DELAYED_END            = _DELAYED_START + _DELAYED_SLOTS * _DELAYED_SLOT_SIZE
+
+assert _DELAYED_END == STATE_SIZE, (_DELAYED_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
 # card, Petrified Hamlet named land), then the returnable-exile id (the card this
 # permanent has exiled that still has a return path — Static Prison / Phelia), then
 # the card id.
-_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3    # 39
-_PERM_RETURNABLE_OFF = _PERM_SLOT_SIZE - 2     # 40
-_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 41 (card id is always LAST)
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3    # 40
+_PERM_RETURNABLE_OFF = _PERM_SLOT_SIZE - 2     # 41
+_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 42 (card id is always LAST)
 
 # Unified entity-reference slot space (machine_io.h): 0-47 self perm slots,
 # 48-95 opp perm slots, 96-107 stack slots, -1 = none. In the float state
@@ -662,7 +687,8 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # survive; the log copy does not, so during the sideboard phase the two encodings are
 # deliberately not redundant — test_obs_invariants asserts the zeroed block there
 # rather than the log identity.) The PER-TURN COUNTERS block is masked as well: its
-# spell/draw/life tallies describe the ended game's last turn. Card-id slots
+# spell/draw/life tallies describe the ended game's last turn, and so is the
+# DELAYED TRIGGERS block (the ended game's pending triggers). Card-id slots
 # must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
 # to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():
@@ -713,6 +739,10 @@ def _build_sideboard_mask():
         card_id_idx.append(i)
     for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
         card_id_idx.append(i)
+    for s in range(_DELAYED_SLOTS):                                    # delayed-trigger ids
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        card_id_idx.append(base + _DT_CREATOR_ID)
+        card_id_idx.append(base + _DT_SUBJECT_ID)
     # Card id is the first float of each (card_id, count) slot; the count masks to
     # 0.0. Listing every decklist block keeps this "all card-id positions" rather
     # than "the masked ones" — the `if not keep[i]` guard below skips the kept
@@ -762,7 +792,8 @@ _OFF_RESOLUTIONS_THIS_TURN = 19  # triggered-ability resolutions from it / PER_T
 _OFF_ACTIVATIONS_THIS_TURN = 20  # once-per-turn-gated activations / PER_TURN_COUNT_NORMALIZER
 _OFF_CANT_BE_BLOCKED = 21     # a "can't be blocked this turn" effect applies
 _OFF_COMBAT_DMG_PREVENTED = 22  # creature of a combat-damage prevention shield
-_OFF_KEYWORDS_START = 23 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
+_OFF_PENDING_DELAYED_SUBJECT = 23  # watched by / a subject of a waiting delayed trigger
+_OFF_KEYWORDS_START = 24 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
                          # _OBS_KEYWORDS order from _enums.py)
 assert _OFF_KEYWORDS_START + N_OBS_KEYWORDS == _PERM_CHOSEN_NAME_OFF
 
@@ -1393,7 +1424,7 @@ _CARD_COLORED_COSTS = {
 
 # ── Battlefield layout (aliases of the unified state offsets above) ─────────
 _BF_START         = _SELF_PERM_START           # 36
-_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 42
+_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 43
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)

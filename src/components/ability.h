@@ -7,6 +7,7 @@
 #include "static_ability.h"
 #include "types.h"
 #include "zone.h"
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <variant>
@@ -19,6 +20,31 @@ class Orderer;
 // types in the declarations below.
 enum class ResolveStatus;
 class FrameCtx;
+
+// Identity of a delayed triggered ability (CR 603.7), stamped once by
+// register_delayed_trigger (game_queries.h) onto the DelayedTrigger's fire ability. It rides
+// the fire ability unchanged when the trigger fires onto the stack, so the observation's
+// delayed-trigger block can follow one trigger from registration until its stack object
+// resolves, is countered, or fizzles. seq == 0 marks an ability that is not a delayed trigger.
+struct DelayedTriggerLink {
+    // How the trigger fires; indexes the observation's fire_on one-hot (DELAYED_FIRE_KINDS).
+    enum FireKind : int {
+        FIRE_OTHER = -1,        // a phase the one-hot has no column for (e.g. the draw step)
+        FIRE_UPKEEP = 0,
+        FIRE_END_STEP = 1,
+        FIRE_END_OF_COMBAT = 2,
+        FIRE_LEAVES_BATTLEFIELD = 3,
+    };
+    uint32_t seq = 0;          // registration order (Game::next_delayed_seq); 0 = not delayed
+    Entity creator = 0;        // the card whose ability set the trigger up
+    int creator_vocab_idx = -1;  // creator's vocab idx captured at registration (tokens: token band)
+    // The objects the trigger acts on or watches (a blinked/exiled card, the tokens it will
+    // sacrifice or exile, the watched land). subject_vocab_idx is subjects[0]'s vocab idx,
+    // captured at registration so a token that has since ceased to exist keeps its identity.
+    std::vector<Entity> subjects;
+    int subject_vocab_idx = -1;
+    FireKind fire_kind = FIRE_OTHER;
+};
 
 struct Ability{
 
@@ -590,6 +616,9 @@ struct Ability{
     // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
     // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
     std::vector<Entity> restore_remembered_exiled_with;
+
+    // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
+    DelayedTriggerLink delayed_link;
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True

@@ -50,6 +50,12 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer);
 static void fill_permanent_state(PermanentState& ps, Entity e);
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
+static int battlefield_slot_ref_of(Entity e);
+static int creator_slot_ref(const DelayedTriggerLink& link);
+static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity watched);
+static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
+                                  const std::vector<Entity>& stack_delayed);
+static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry& d);
 static void fill_decklist_block(int* ids, int* counts, int n_slots,
                                 const std::vector<DecklistEntry>& entries,
                                 const char* block_name);
@@ -262,8 +268,8 @@ static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps) 
         out.push_back(ps.spell_colors_cast_this_turn[i] ? 1.0f : 0.0f);
 }
 
-// Pushes PERM_SLOT_SIZE floats (39 status + chosen-name id + returnable-exile id + card-id;
-// per-slot offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 39 zeros
+// Pushes PERM_SLOT_SIZE floats (40 status + chosen-name id + returnable-exile id + card-id;
+// per-slot offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 40 zeros
 // + THREE id-family empty sentinels (chosen-name, returnable-exile, card-id; a 0.0 pad would
 // alias vocab index 0 and defeat empty-slot masking).
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
@@ -298,11 +304,12 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(static_cast<float>(p.activations_this_turn) / count_norm);
     out.push_back(p.cant_be_blocked_this_turn ? 1.0f : 0.0f);
     out.push_back(p.combat_damage_prevented ? 1.0f : 0.0f);
+    out.push_back(p.pending_delayed_subject ? 1.0f : 0.0f);
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         out.push_back(p.keywords[k] ? 1.0f : 0.0f);
-    out.push_back(norm_card_id(p.chosen_name_idx));      // [39] chosen-name id
-    out.push_back(norm_card_id(p.returnable_exile_idx)); // [40] returnable-exile id
-    out.push_back(norm_card_id(p.card_vocab_idx));       // [41] card id (LAST)
+    out.push_back(norm_card_id(p.chosen_name_idx));      // [40] chosen-name id
+    out.push_back(norm_card_id(p.returnable_exile_idx)); // [41] returnable-exile id
+    out.push_back(norm_card_id(p.card_vocab_idx));       // [42] card id (LAST)
 }
 
 // Pass-B fill of one battlefield permanent's PermanentState. Runs after the
@@ -370,6 +377,7 @@ static void fill_permanent_state(PermanentState& ps, Entity e) {
     ps.cant_be_blocked_this_turn =
         ps.is_creature && global_coordinator.GetComponent<Creature>(e).cant_be_blocked_this_turn;
     ps.combat_damage_prevented = cur_game.combat_damage_shielded(e);
+    ps.pending_delayed_subject = is_waiting_delayed_trigger_subject(e);
 
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         ps.keywords[k] = permanent_has_keyword(e, OBS_KEYWORDS[k]);
@@ -439,6 +447,109 @@ static void fill_decklist_block(int* ids, int* counts, int n_slots,
         ids[i]    = entries[i].vocab_idx;
         counts[i] = entries[i].count;
     }
+}
+
+// Slot ref of `e` restricted to the battlefield part of the ref space (-1 otherwise).
+static int battlefield_slot_ref_of(Entity e) {
+    int r = slot_ref_of(e);
+    return (r >= 0 && r < 2 * MAX_BATTLEFIELD_SLOTS) ? r : -1;
+}
+
+// The delayed trigger's creator slot when it is on the battlefield or the stack. The entity
+// must still be the same card (its vocab idx matches the one captured at registration), so a
+// creator that left play and whose entity id was reused never points at an unrelated object.
+static int creator_slot_ref(const DelayedTriggerLink& link) {
+    if (link.creator == 0 || action_card_vocab_idx(link.creator) != link.creator_vocab_idx) return -1;
+    return slot_ref_of(link.creator);
+}
+
+// Battlefield slot of the watched object if it is there, else of the first subject still there.
+static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity watched) {
+    int r = battlefield_slot_ref_of(watched);
+    if (r >= 0) return r;
+    for (Entity s : link.subjects) {
+        r = battlefield_slot_ref_of(s);
+        if (r >= 0) return r;
+    }
+    return -1;
+}
+
+// Pass-B fill of the delayed-trigger block: the waiting Game::delayed_triggers records plus
+// the fired stack objects in `stack_delayed`, packed in ascending seq and truncated at
+// MAX_DELAYED_TRIGGER_SLOTS. Needs the entity->slot map for the refs.
+static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
+                                  const std::vector<Entity>& stack_delayed) {
+    Entity viewer_entity = (viewer == Zone::PLAYER_A) ? cur_game.player_a_entity
+                                                      : cur_game.player_b_entity;
+    std::vector<std::pair<uint32_t, DelayedTriggerEntry>> entries;
+    entries.reserve(cur_game.delayed_triggers.size() + stack_delayed.size());
+    for (const auto& dt : cur_game.delayed_triggers) {
+        const DelayedTriggerLink& link = dt.ability.delayed_link;
+        DelayedTriggerEntry d{};
+        d.present            = true;
+        d.controller_is_self = (dt.owner_entity == viewer_entity);
+        d.on_stack           = false;
+        d.stack_ref          = -1;
+        d.creator_card_idx   = link.creator_vocab_idx;
+        d.creator_ref        = creator_slot_ref(link);
+        d.subject_ref        = first_subject_battlefield_ref(link, dt.watch_entity);
+        d.subject_card_idx   = link.subject_vocab_idx;
+        d.fire_kind          = link.fire_kind;
+        d.fires_this_turn    = delayed_trigger_fires_this_turn(dt);
+        entries.push_back({link.seq, d});
+    }
+    for (Entity e : stack_delayed) {
+        const DelayedTriggerLink& link = global_coordinator.GetComponent<Ability>(e).delayed_link;
+        DelayedTriggerEntry d{};
+        d.present            = true;
+        d.controller_is_self = (global_coordinator.GetComponent<Zone>(e).owner == viewer);
+        d.on_stack           = true;
+        d.stack_ref          = slot_ref_of(e);
+        d.creator_card_idx   = link.creator_vocab_idx;
+        d.creator_ref        = creator_slot_ref(link);
+        d.subject_ref        = first_subject_battlefield_ref(link, 0);
+        d.subject_card_idx   = link.subject_vocab_idx;
+        d.fire_kind          = link.fire_kind;
+        d.fires_this_turn    = false;
+        entries.push_back({link.seq, d});
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const std::pair<uint32_t, DelayedTriggerEntry>& a,
+                 const std::pair<uint32_t, DelayedTriggerEntry>& b) { return a.first < b.first; });
+#ifndef NDEBUG
+    if (static_cast<int>(entries.size()) > MAX_DELAYED_TRIGGER_SLOTS)
+        // The observation drops the newest entries past the block width — make it observable.
+        fprintf(stderr,
+                "WARNING: %zu pending delayed triggers; observation truncated to "
+                "MAX_DELAYED_TRIGGER_SLOTS=%d\n",
+                entries.size(), MAX_DELAYED_TRIGGER_SLOTS);
+#endif
+    int n = std::min(static_cast<int>(entries.size()), MAX_DELAYED_TRIGGER_SLOTS);
+    for (int i = 0; i < n; i++) gs->delayed[i] = entries[static_cast<size_t>(i)].second;
+}
+
+// Pushes DELAYED_SLOT_SIZE floats (per-slot offsets documented in machine_io.h). Empty slot =
+// zeros with the two card-id sentinels.
+static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry& d) {
+    if (!d.present) {
+        out.insert(out.end(), 4, 0.0f);
+        out.push_back(norm_card_id(-1));  // creator_card_id sentinel
+        out.insert(out.end(), 2, 0.0f);
+        out.push_back(norm_card_id(-1));  // subject_card_id sentinel
+        out.insert(out.end(), DELAYED_FIRE_KINDS + 1, 0.0f);
+        return;
+    }
+    out.push_back(1.0f);
+    out.push_back(d.controller_is_self ? 1.0f : 0.0f);
+    out.push_back(d.on_stack ? 1.0f : 0.0f);
+    out.push_back(d.on_stack ? norm_ref(d.stack_ref) : 0.0f);
+    out.push_back(norm_card_id(d.creator_card_idx));
+    out.push_back(norm_ref(d.creator_ref));
+    out.push_back(norm_ref(d.subject_ref));
+    out.push_back(norm_card_id(d.subject_card_idx));
+    for (int k = 0; k < DELAYED_FIRE_KINDS; k++)
+        out.push_back(d.fire_kind == k ? 1.0f : 0.0f);
+    out.push_back(d.fires_this_turn ? 1.0f : 0.0f);
 }
 
 // ── populate_gamestate ────────────────────────────────────────────────────────
@@ -650,6 +761,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     int self_bf = 0, opp_bf = 0;
     int self_hand_idx = 0;
     int opp_known_hand_idx = 0;
+    // Stack objects that are fired delayed triggers (any depth, not only the displayed 12).
+    std::vector<Entity> stack_delayed;
 
     // Use high-water-mark instead of MAX_ENTITIES to skip unallocated slots.
     Entity max_e = global_coordinator.GetMaxIssuedEntity();
@@ -713,6 +826,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 gs->stack_size++;
                 if (stack_item_count < MAX_STACK_DISPLAY + 8)
                     stack_items[stack_item_count++] = {zone.distance_from_top, e};
+                // A fired delayed trigger's stack object (delayed-trigger block).
+                if (global_coordinator.entity_has_component<Ability>(e) &&
+                    global_coordinator.GetComponent<Ability>(e).delayed_link.seq != 0)
+                    stack_delayed.push_back(e);
                 break;
 
             case Zone::BATTLEFIELD:
@@ -755,6 +872,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_permanent_state(gs->opp_permanents[i], opp_ents[i]);
     for (int i = 0; i < stored_stack; i++)
         fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
+    fill_delayed_triggers(gs, viewer, stack_delayed);
 
     // ── Mana development ──────────────────────────────────────────────────────
     // Reuses the battlefield entities pass A already collected (both sides in one
@@ -936,11 +1054,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(gs->self_is_player_a ? 1.0f : 0.0f);
     state.push_back(static_cast<float>(gs->stack_size) / 10.0f);
 
-    // Self permanents (48 x 42 = 2016)
+    // Self permanents (48 x 43 = 2064)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->self_permanents[i]);
 
-    // Opp permanents (48 x 42 = 2016)
+    // Opp permanents (48 x 43 = 2064)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
@@ -1074,7 +1192,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // unbalanced poles sit symmetrically either side of it.
     state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
 
-    // ── Deck-identity tail blocks (see machine_io.h [5853-6204]) ───────────────
+    // ── Deck-identity tail blocks (see machine_io.h [5949-6300]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
     // normalized /4.0. Slots are packed ascending by vocab id with no holes.
     auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {
@@ -1093,12 +1211,12 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Opponent STATIC sideboard (15 x 2 = 30)
     push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);
 
-    // ── Mana development (see machine_io.h [6205-6223]) ───────────────────────
+    // ── Mana development (see machine_io.h [6301-6319]) ───────────────────────
     // Self (10 floats) then opponent (9 — no lands_in_hand, which is hidden).
     push_mana_dev_block(state, gs->self, /*with_lands_in_hand=*/true);
     push_mana_dev_block(state, gs->opponent, /*with_lands_in_hand=*/false);
 
-    // ── Log-scaled vitals (see machine_io.h [6224-6227]) ──────────────────────
+    // ── Log-scaled vitals (see machine_io.h [6320-6323]) ──────────────────────
     // The same life/library counts already emitted linearly above (player blocks,
     // library-context block), re-warped through log1p so the near-zero region —
     // where the game is decided and the linear floats have their least resolution —
@@ -1107,11 +1225,15 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     push_log_vitals_block(state, gs->self.life, gs->self_library_ct);
     push_log_vitals_block(state, gs->opponent.life, gs->opp_library_ct);
 
-    // ── Per-turn counters (see machine_io.h [6228-6249]) ──────────────────────
+    // ── Per-turn counters (see machine_io.h [6324-6345]) ──────────────────────
     // Self (11 floats) then opponent (11): the per-turn counts and the spell-color
     // multi-hot.
     push_per_turn_block(state, gs->self);
     push_per_turn_block(state, gs->opponent);
+
+    // ── Pending delayed triggers (see machine_io.h [6346-6553]) ───────────────
+    for (int i = 0; i < DELAYED_SLOTS; i++)
+        push_delayed_slot(state, gs->delayed[i]);
 
     // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
     // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is

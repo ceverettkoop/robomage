@@ -46,8 +46,12 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _OFF_IS_BLOCKED, _OFF_IS_PHASED_OUT, _OFF_KEYWORDS_START,
                  _OFF_ENTERED_THIS_TURN, _OFF_RESOLUTIONS_THIS_TURN,
                  _OFF_ACTIVATIONS_THIS_TURN, _OFF_CANT_BE_BLOCKED,
-                 _OFF_COMBAT_DMG_PREVENTED,
+                 _OFF_COMBAT_DMG_PREVENTED, _OFF_PENDING_DELAYED_SUBJECT,
                  _PER_TURN_START, _PER_TURN_OPP_START,
+                 _DELAYED_START, _DELAYED_SLOTS, _DELAYED_SLOT_SIZE,
+                 _DT_PRESENT, _DT_CTRL_SELF, _DT_STATE, _DT_STACK_REF,
+                 _DT_CREATOR_ID, _DT_CREATOR_REF, _DT_SUBJECT_REF, _DT_SUBJECT_ID,
+                 _DT_FIRE_ONEHOT_START, _DT_FIRES_THIS_TURN, N_DELAYED_FIRE_KINDS,
                  _PT_SPELLS, _PT_NONCREATURE, _PT_INSTANT_SORCERY, _PT_CARDS_DRAWN,
                  _PT_LIFE_GAINED, _PT_LIFE_LOST, _PT_COLORS_START,
                  PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS, LIFE_NORMALIZER,
@@ -85,7 +89,7 @@ _IDX_OPP_WINS    = _MATCH_CTX_START + 2            # opp_match_wins  / 2
 _IDX_SIDEBOARD   = _MATCH_CTX_START + 3            # is_sideboard_phase (0/1)
 
 # Permanent slot field offsets (src/machine_io.h perm-slot layout; the enriched
-# fields at 10-22, the keyword multi-hot at 23-38 and the id family at 39-41 are
+# fields at 10-23, the keyword multi-hot at 24-39 and the id family at 40-42 are
 # imported from env.py above — _OFF_P1P1_NET .. _OFF_KEYWORDS_START).
 _OFF_POWER = 0
 _OFF_TOUGHNESS = 1
@@ -97,9 +101,13 @@ _OFF_DAMAGE = 6
 _OFF_IS_CREATURE = 7
 _OFF_IS_LAND = 8
 _OFF_LOYALTY = 9                                   # planeswalker loyalty (loyalty/10)
-_OFF_CHOSEN_NAME = _PERM_CHOSEN_NAME_OFF           # chosen-name card-id float (3rd-last in the slot, 39)
-_OFF_RETURNABLE = _PERM_RETURNABLE_OFF             # returnable-exile card-id float (2nd-last in the slot, 40)
-_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (41)
+_OFF_CHOSEN_NAME = _PERM_CHOSEN_NAME_OFF           # chosen-name card-id float (3rd-last in the slot, 40)
+_OFF_RETURNABLE = _PERM_RETURNABLE_OFF             # returnable-exile card-id float (2nd-last in the slot, 41)
+_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (42)
+
+# Delayed-trigger fire_on one-hot display names, in serialized order.
+_DELAYED_FIRE_NAMES = ("upkeep", "end step", "end of combat", "leaves bf")
+assert len(_DELAYED_FIRE_NAMES) == N_DELAYED_FIRE_KINDS
 
 # Stack-slot cast-qualifier display names, in serialized order (the stack slot's
 # [4-10] flags; see src/machine_io.h). All 0.0 for abilities.
@@ -401,6 +409,9 @@ def _build_state_ref_field_idx():
         tgt0 = _STACK_START + s * STACK_SLOT_SIZE + _STACK_TGT_START
         idx.extend(tgt0 + t * _STACK_TGT_FIELDS + _STACK_TGT_REF_OFF
                    for t in range(_STACK_TGT_SLOTS))
+    for s in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        idx.extend((base + _DT_STACK_REF, base + _DT_CREATOR_REF, base + _DT_SUBJECT_REF))
     return np.asarray(idx, dtype=np.intp)
 
 
@@ -409,7 +420,8 @@ _STATE_REF_FIELD_IDX = _build_state_ref_field_idx()
 
 def state_ref_targets(state):
     """The set of entity-slot indices some in-state ref field points at
-    (attachments, attack/blocking targets, announced stack targets)."""
+    (attachments, attack/blocking targets, announced stack targets, delayed
+    triggers' stack objects / creators / subjects)."""
     refs = np.round(np.asarray(state)[_STATE_REF_FIELD_IDX]
                     * N_ENTITY_REF_SLOTS).astype(int) - 1
     return set(refs[refs >= 0].tolist())
@@ -733,6 +745,8 @@ def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_nam
             p["unblockable"] = True
         if state[base + _OFF_COMBAT_DMG_PREVENTED] > 0.5:
             p["combat_damage_prevented"] = True
+        if state[base + _OFF_PENDING_DELAYED_SUBJECT] > 0.5:
+            p["delayed_subject"] = True           # watched by / subject of a waiting delayed trigger
         kws = [_OBS_KEYWORDS[k] for k in range(len(_OBS_KEYWORDS))
                if state[base + _OFF_KEYWORDS_START + k] > 0.5]
         if kws:
@@ -913,7 +927,59 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "extras": _decode_extras(state),
         "self_this_turn": _decode_per_turn(state, _PER_TURN_START),
         "opp_this_turn": _decode_per_turn(state, _PER_TURN_OPP_START),
+        "delayed_triggers": _decode_delayed_triggers(state, labels),
     }
+
+
+def _decode_delayed_triggers(state, labels=SELF_OPP_LABELS):
+    """Decode the pending delayed-trigger block (16 slots x 13, packed in
+    registration order) into a list of dicts: creator / subject names (subject
+    None when the trigger has none), controller label, fire timing, state
+    ("waiting" / "on stack"), the stack / creator / subject slot refs (-1 = none)
+    and fires_this_turn."""
+    out = []
+    for i in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + i * _DELAYED_SLOT_SIZE
+        if state[base + _DT_PRESENT] < 0.5:
+            continue
+        fire = [_DELAYED_FIRE_NAMES[k] for k in range(N_DELAYED_FIRE_KINDS)
+                if state[base + _DT_FIRE_ONEHOT_START + k] > 0.5]
+        subject_idx = onehot_to_index(state, base + _DT_SUBJECT_ID)
+        subject_slot = decode_slot_ref(state[base + _DT_SUBJECT_REF])
+        out.append({
+            "creator": onehot_to_card(state, base + _DT_CREATOR_ID) or "?",
+            "creator_slot": decode_slot_ref(state[base + _DT_CREATOR_REF]),
+            "subject": card_index_to_name(subject_idx) if subject_idx >= 0 else None,
+            "subject_slot": subject_slot,
+            # What the subject ref points at (the watched permanent, which is not
+            # the subject card for an exile-until-host-leaves trigger).
+            "subject_slot_name": slot_ref_card_name(state, subject_slot),
+            "controller": labels["self"] if state[base + _DT_CTRL_SELF] > 0.5
+                          else labels["opponent"],
+            "fire_on": fire[0] if fire else "other",
+            "on_stack": bool(state[base + _DT_STATE] > 0.5),
+            "stack_slot": decode_slot_ref(state[base + _DT_STACK_REF]),
+            "fires_this_turn": bool(state[base + _DT_FIRES_THIS_TURN] > 0.5),
+        })
+    return out
+
+
+def fmt_delayed_trigger(d):
+    """Compact display of one decoded delayed trigger: creator -> subject
+    (controller, timing, state), each name suffixed "@<slot ref>" when that
+    object is serialized on the battlefield / stack."""
+    s = d["creator"] + (f"@{d['creator_slot']}" if d["creator_slot"] >= 0 else "")
+    if d["subject"]:
+        s += f" -> {d['subject']}"
+    if d["subject_slot"] >= 0:
+        watched = d.get("subject_slot_name")
+        s += (f"@{d['subject_slot']}" if watched == d["subject"]
+              else f" (watching {watched or '?'}@{d['subject_slot']})")
+    when = d["fire_on"] + (" this turn" if d["fires_this_turn"] else "")
+    where = (f"on stack #{d['stack_slot'] - 2 * _PERM_SLOTS}"
+             if d["on_stack"] and d["stack_slot"] >= 0
+             else ("on stack" if d["on_stack"] else "waiting"))
+    return f"{s} ({d['controller']}, {when}, {where})"
 
 
 _SPELL_COLOR_LETTERS = "WUBRG"
@@ -1538,6 +1604,9 @@ def format_state_lines(gs):
         lines.append(f"Opp BF:   {' | '.join(fmt_perm(p) for p in gs['opp_battlefield'])}")
     if gs["stack"]:
         lines.append(f"Stack: {' -> '.join(fmt_stack_entry(e) for e in gs['stack'])}")
+    if gs.get("delayed_triggers"):
+        lines.append("Delayed: " + " | ".join(fmt_delayed_trigger(d)
+                                              for d in gs["delayed_triggers"]))
     # Source of the current mid-resolution choice (may not be on the stack yet,
     # since targets are announced before the spell moves there).
     pend = gs.get("pending_decision")
@@ -1676,6 +1745,8 @@ def fmt_perm(p):
         flags.append("UNBLOCKABLE")
     if p.get("combat_damage_prevented"):
         flags.append("NO-COMBAT-DMG")
+    if p.get("delayed_subject"):
+        flags.append("DELAYED")
     if "resolutions" in p:
         flags.append(f"res {p['resolutions']}")
     if "activations" in p:
