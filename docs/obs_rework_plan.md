@@ -436,3 +436,31 @@ reported to the user for review.
 | ability resolved N times this turn | Scythecat Cub (`Count$ResolvedThisTurn`) | per-permanent `ability_resolutions_this_turn` |
 | revolt | Fatal Push | extras (present) |
 | delirium / threshold | DRC, Unholy Heat, Cabal Ritual | derivable from the graveyard blocks |
+
+## Queued follow-ups (run after the plan units, before the final `make check`)
+
+Found while reviewing unit A's "FOR USER REVIEW" item 5 (Tabernacle at Pendrell Vale). Offering the
+pay-unless choice after its object has left the battlefield is CORRECT per CR 118.12/118.12a and
+608.2b–d (an untargeted ability still resolves, and its unless-cost is still offered even though the
+effect can no longer find the object, CR 400.7). Do NOT suppress that choice. Two real defects to fix:
+
+1. **Unless-cost decline labels describe the actual effect, consistently.** The decline option
+   reads "Don't pay (spell is countered)" for Tabernacle's DESTROY-unless. Fix this with one shared
+   label builder used by EVERY unless-cost prompt (`run_unless_loop`, `run_discard_unless` and any
+   other pay/decline menu in `components/ability.cpp` and elsewhere). The builder describes what
+   declining causes from the ability's category and its affected object, e.g. "Don't pay (Grizzly
+   Bears is destroyed)", "Don't pay (Counterspell target is countered)". Audit every existing
+   pay/decline and yes/no label for the same copy-paste mismatch and route all of them through the
+   builder, rather than patching this one string.
+2. **A token that ceased to exist keeps its identity at the prompt.** When the unless-cost's object
+   (or the ability's source) was a token that left the battlefield, the prompt shows `<unknown>` and
+   the pending-decision source serializes as null. Use the last-known information (name, and the
+   token vocab id via `token_vocab_idx` / LKI) for both the prompt text and the pending-decision
+   source. Then REMOVE the broad "pay-unless with no source" allowance from
+   `test_obs_invariants.py`'s `_SOURCELESS_PROVISIONAL` table.
+
+Repro (non-token variant): `test_harness.py --format bo1 --battlefield-a "The Tabernacle at Pendrell
+Vale,Grizzly Bears,Forest" --hand-a "Forest" --hand-b "Swords to Plowshares" --battlefield-b
+"Plains" --play "A:keep,B:keep,B:cast:Swords to Plowshares,B:target:Grizzly Bears@opp"
+--max-decisions 12`. For the token variant, get a token under Tabernacle (e.g. an Urza's Saga
+construct, or a token maker in the vocab) and remove it in response to its upkeep trigger.
