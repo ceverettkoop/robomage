@@ -706,6 +706,14 @@ struct Ability{
     // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
     std::vector<Ability> effect_floating_triggers;
+    // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
+    // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
+    // GrantCast handler on the copy it pushes into cur_game.floating_triggers, with its vocab idx
+    // captured at that moment. 0 / -1 on every other ability. Read by the observation's
+    // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
+    // a floating trigger (the trigger itself has no source object).
+    Entity floating_creator = 0;
+    int floating_creator_vocab_idx = -1;
 
     // DB$ Effect | ReplacementEffects$ <SVar> where the named SVar is a CR 614.13/CantHappen
     // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen" (Veil of Summer:

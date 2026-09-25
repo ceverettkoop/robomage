@@ -791,7 +791,8 @@ def obs_blocks():
         ("mana development", e._MANA_DEV_START, e._LOG_VITALS_START),
         ("log vitals", e._LOG_VITALS_START, e._PER_TURN_START),
         ("per-turn counters", e._PER_TURN_START, e._DELAYED_START),
-        ("delayed triggers", e._DELAYED_START, e.STATE_SIZE),
+        ("delayed triggers", e._DELAYED_START, e._PLAYER_EFFECTS_START),
+        ("player effects", e._PLAYER_EFFECTS_START, e.STATE_SIZE),
         ("action categories", e.ACT_CATS_START, e.ACT_CATS_START + e.MAX_ACTIONS),
         ("action card ids", e.ACT_IDS_START, e.ACT_IDS_START + e.MAX_ACTIONS),
         ("action controllers", e.ACT_CTRL_START, e.ACT_CTRL_START + e.MAX_ACTIONS),
@@ -1515,6 +1516,17 @@ def _encoder_specs(sd):
     delayed += _card_feat_cols("subject", card_dim)
     specs.append(("delayed_encoder", delayed))
 
+    # Player-effect flags in the extractor's pe_in column order, then the summed
+    # emblem embeds and the floating-trigger source embed.
+    pe_flags = (["protection_from_everything", "cant_gain_life"]
+                + [f"hexproof_from {c}" for c in "WUBRG"]
+                + ["spells_cant_be_countered", "may_cast_sorceries_as_flash",
+                   "restricted_to_sorcery_speed"])
+    pe = [("flags", len(pe_flags), pe_flags)]
+    pe += _card_feat_cols("emblems-sum", card_dim)
+    pe += _card_feat_cols("floating-src", card_dim)
+    specs.append(("player_effects_encoder", pe))
+
     specs.append(("zone_card_encoder",
                   _card_feat_cols("card", card_dim)
                   + [("play permission", 3,
@@ -1629,6 +1641,7 @@ def _body_segments(sd):
         ("stack agg",          2 * E),
         ("top-of-stack",       E),
         ("delayed agg",        E),
+        ("player effects",     E),
         ("graveyard agg",      2 * E),
         ("exile agg",          2 * E),
         ("hand+top-lib agg",   2 * E),

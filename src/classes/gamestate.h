@@ -16,6 +16,7 @@ extern "C" {
 #define MAX_STACK_MODES 6  // chosen-mode multi-hot width per stack entry
 #define MAX_STACK_TGTS 4   // announced targets serialized per stack entry (truncated)
 #define MAX_DELAYED_TRIGGER_SLOTS 16  // pending delayed triggers serialized (truncated, seq order)
+#define MAX_EMBLEM_SLOTS 2  // emblem card ids serialized per player (distinct creators, creation order)
 #define N_DELAYED_FIRE_KINDS 4  // fire_on one-hot: upkeep, end step, end of combat, leaves battlefield
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
@@ -58,6 +59,16 @@ typedef struct PlayerState_tag {
     int  life_gained_this_turn;
     int  life_lost_this_turn;
     bool spell_colors_cast_this_turn[5]; // W, U, B, R, G
+    // ── Player effects (serialized as the state vector's PLAYER EFFECTS block; filled from
+    // player_effects() in game_queries.h, field meanings documented in machine_io.h) ──
+    bool protection_from_everything;
+    bool cant_gain_life;
+    bool hexproof_from[5];               // W, U, B, R, G
+    bool spells_cant_be_countered;
+    bool may_cast_sorceries_as_flash;
+    bool restricted_to_sorcery_speed;
+    int  emblem_card_idx[MAX_EMBLEM_SLOTS];  // -1 = empty
+    int  floating_trigger_source_idx;        // -1 = none
 } PlayerState;
 
 typedef struct PermanentState_tag {

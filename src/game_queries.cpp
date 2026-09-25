@@ -692,6 +692,35 @@ bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt) {
     return cur_game.cur_step < delayed_fire_step(dt.fire_on);
 }
 
+PlayerEffects player_effects(Zone::Ownership player) {
+    PlayerEffects fx;
+    for (const auto &p : cur_game.player_protection_from_everything)
+        if (p.player == player) fx.protection_from_everything = true;
+    fx.cant_gain_life = player_cant_gain_life(get_player_entity(player));
+    const Colors wubrg[5] = {WHITE, BLUE, BLACK, RED, GREEN};
+    for (const auto &h : cur_game.hexproof_from_colors_this_turn) {
+        if (h.player != player) continue;
+        for (int i = 0; i < 5; i++)
+            if (h.colors.count(wubrg[i])) fx.hexproof_from[i] = true;
+    }
+    fx.spells_cant_be_countered = cur_game.cant_counter_spells_of.count(player) > 0;
+    for (const auto &perm : cur_game.cast_with_flash_permissions)
+        if (perm.controller == player) fx.may_cast_sorceries_as_flash = true;
+    fx.restricted_to_sorcery_speed = rules_mod::opponent_sorcery_speed_locked(player);
+    for (const auto &emb : cur_game.emblems) {
+        if (emb.controller != player || emb.source_vocab_idx < 0) continue;
+        if (std::find(fx.emblem_vocab_idx.begin(), fx.emblem_vocab_idx.end(),
+                      emb.source_vocab_idx) == fx.emblem_vocab_idx.end())
+            fx.emblem_vocab_idx.push_back(emb.source_vocab_idx);
+    }
+    for (const auto &ft : cur_game.floating_triggers) {
+        if (ft.controller != player || ft.floating_creator_vocab_idx < 0) continue;
+        fx.floating_trigger_vocab_idx = ft.floating_creator_vocab_idx;
+        break;
+    }
+    return fx;
+}
+
 static Zone::Ownership opponent_of(Zone::Ownership p) {
     if (p == Zone::PLAYER_A) return Zone::PLAYER_B;
     if (p == Zone::PLAYER_B) return Zone::PLAYER_A;

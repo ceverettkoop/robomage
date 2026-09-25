@@ -121,6 +121,7 @@ try:
         LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
         PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
         MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
+        MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -156,6 +157,7 @@ except ImportError:
         LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
         PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
         MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
+        MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -663,7 +665,26 @@ assert _DT_FIRES_THIS_TURN + 1 == DELAYED_SLOT_SIZE, DELAYED_SLOT_SIZE
 _DELAYED_START          = _PER_TURN_END
 _DELAYED_END            = _DELAYED_START + _DELAYED_SLOTS * _DELAYED_SLOT_SIZE
 
-assert _DELAYED_END == STATE_SIZE, (_DELAYED_END, STATE_SIZE)
+# ── Player effects (mirrors machine_io.h's PLAYER EFFECTS block) ────────────
+# Per player (self half, then the opponent's): protection_from_everything,
+# cant_gain_life, hexproof_from W/U/B/R/G, spells_cant_be_countered,
+# may_cast_sorceries_as_flash, restricted_to_sorcery_speed, then MAX_EMBLEM_SLOTS
+# emblem card ids and the floating-trigger source card id.
+_PE_PROTECTION          = 0
+_PE_CANT_GAIN_LIFE      = 1
+_PE_HEXPROOF_START      = 2                    # W, U, B, R, G
+_PE_UNCOUNTERABLE       = 7
+_PE_SORCERY_FLASH       = 8
+_PE_SORCERY_SPEED_LOCK  = 9
+_PE_EMBLEM_OFF          = PLAYER_EFFECTS_FLAGS
+_PE_FLOATING_OFF        = _PE_EMBLEM_OFF + MAX_EMBLEM_SLOTS
+assert _PE_SORCERY_SPEED_LOCK + 1 == PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_FLAGS
+assert _PE_FLOATING_OFF + 1 == PLAYER_EFFECTS_PLAYER_SIZE, PLAYER_EFFECTS_PLAYER_SIZE
+_PLAYER_EFFECTS_START     = _DELAYED_END
+_PLAYER_EFFECTS_OPP_START = _PLAYER_EFFECTS_START + PLAYER_EFFECTS_PLAYER_SIZE
+_PLAYER_EFFECTS_END       = _PLAYER_EFFECTS_OPP_START + PLAYER_EFFECTS_PLAYER_SIZE
+
+assert _PLAYER_EFFECTS_END == STATE_SIZE, (_PLAYER_EFFECTS_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
@@ -700,8 +721,9 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # survive; the log copy does not, so during the sideboard phase the two encodings are
 # deliberately not redundant — test_obs_invariants asserts the zeroed block there
 # rather than the log identity.) The PER-TURN COUNTERS block is masked as well: its
-# spell/draw/life tallies describe the ended game's last turn, and so is the
-# DELAYED TRIGGERS block (the ended game's pending triggers). Card-id slots
+# spell/draw/life tallies describe the ended game's last turn, and so are the
+# DELAYED TRIGGERS block (the ended game's pending triggers) and the PLAYER EFFECTS
+# block (the ended game's player-scoped grants, emblems and floating triggers). Card-id slots
 # must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
 # to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():
@@ -761,6 +783,10 @@ def _build_sideboard_mask():
         base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
         card_id_idx.append(base + _DT_CREATOR_ID)
         card_id_idx.append(base + _DT_SUBJECT_ID)
+    for base in (_PLAYER_EFFECTS_START, _PLAYER_EFFECTS_OPP_START):   # player-effect ids
+        for e in range(MAX_EMBLEM_SLOTS):
+            card_id_idx.append(base + _PE_EMBLEM_OFF + e)
+        card_id_idx.append(base + _PE_FLOATING_OFF)
     # Card id is the first float of each (card_id, count) slot; the count masks to
     # 0.0. Listing every decklist block keeps this "all card-id positions" rather
     # than "the masked ones" — the `if not keep[i]` guard below skips the kept

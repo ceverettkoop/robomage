@@ -64,6 +64,9 @@ from env import (
     _DT_PRESENT, _DT_CTRL_SELF, _DT_STATE, _DT_STACK_REF, _DT_CREATOR_ID,
     _DT_CREATOR_REF, _DT_SUBJECT_REF, _DT_SUBJECT_ID, _DT_FIRE_ONEHOT_START,
     _DT_FIRES_THIS_TURN, _MISHRAS_BAUBLE_VOCAB_IDX,
+    _PLAYER_EFFECTS_START, _PLAYER_EFFECTS_OPP_START, _PE_HEXPROOF_START,
+    _PE_UNCOUNTERABLE, _PE_SORCERY_FLASH, _PE_SORCERY_SPEED_LOCK, _PE_EMBLEM_OFF,
+    _PE_FLOATING_OFF, _CUR_TURN_IDX,
     _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
@@ -83,7 +86,8 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     LIFE_NORMALIZER, LIBRARY_NORMALIZER, MULLIGAN_NORMALIZER,
                     LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
                     PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS,
-                    N_DELAYED_FIRE_KINDS, ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
+                    N_DELAYED_FIRE_KINDS, MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS,
+                    ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
                     ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
                     ZONE_COUNTER_NORMALIZER, CAT_CAST_SPELL, CAT_PLAY_LAND, CAT_SELECT_TARGET,
                     _REF_NAMES)
@@ -164,6 +168,11 @@ def _card_id_slots():
         base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
         yield "delayed.creator_id", s, base + _DT_CREATOR_ID
         yield "delayed.subject_id", s, base + _DT_SUBJECT_ID
+    for side, start in (("self_effects", _PLAYER_EFFECTS_START),
+                        ("opp_effects", _PLAYER_EFFECTS_OPP_START)):
+        for e in range(MAX_EMBLEM_SLOTS):
+            yield f"{side}.emblem_id", e, start + _PE_EMBLEM_OFF + e
+        yield f"{side}.floating_trigger_source", 0, start + _PE_FLOATING_OFF
     # Deck-identity tail blocks: card id is the first float of each slot.
     for name, start, n, slot_size in _DECKLIST_BLOCKS:
         for s in range(n):
@@ -628,6 +637,40 @@ def _check_delayed(decision_idx, seat, state):
                       "pending_delayed_subject set but no delayed trigger is waiting")
 
 
+# Running tally of decisions at which some player effect was active (reported by
+# main so a run whose games never exercised the block is visible).
+PLAYER_EFFECTS_SEEN = {"active": 0}
+
+
+def _check_player_effects(decision_idx, seat, state):
+    """Invariant (18): the PLAYER EFFECTS block. Every flag is exactly 0/1 and
+    every card id is valid-or-sentinel (the id range is checked with the other
+    id floats, invariant (1)). The emblem ids are packed (a filled second slot
+    needs a filled first) and distinct. During the sideboard phase the whole
+    block is masked: flags 0.0, ids the empty sentinel."""
+    sideboarding = state[_IS_SIDEBOARD_IDX] > 0.5
+    for label, start in (("self_effects", _PLAYER_EFFECTS_START),
+                         ("opp_effects", _PLAYER_EFFECTS_OPP_START)):
+        flags = [_decode_flag(decision_idx, seat, state, start + f, f"{label}.flag{f}")
+                 for f in range(PLAYER_EFFECTS_FLAGS)]
+        emblems = [_decode_card_id(state[start + _PE_EMBLEM_OFF + e])
+                   for e in range(MAX_EMBLEM_SLOTS)]
+        floating = _decode_card_id(state[start + _PE_FLOATING_OFF])
+        filled = [e for e in emblems if e != _CARD_ID_SENTINEL]
+        if emblems[:len(filled)] != filled:
+            _fail(decision_idx, seat, f"{label}.emblems", "-", emblems,
+                  "emblem ids must be packed (no filled slot after an empty one)")
+        if len(set(filled)) != len(filled):
+            _fail(decision_idx, seat, f"{label}.emblems", "-", emblems,
+                  "emblem ids must be distinct")
+        active = any(flags) or filled or floating != _CARD_ID_SENTINEL
+        if sideboarding and active:
+            _fail(decision_idx, seat, label, "-", (flags, emblems, floating),
+                  "player effects set during the sideboard phase (block is masked)")
+        if active:
+            PLAYER_EFFECTS_SEEN["active"] += 1
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -828,6 +871,10 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # pending_delayed_subject bit only on filled slots.
     _check_delayed(decision_idx, seat, state)
 
+    # (18) Player effects: binary flags, packed distinct emblem ids, masked in the
+    # sideboard phase.
+    _check_player_effects(decision_idx, seat, state)
+
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
     # block, normalized (ord + 1) / (OPTION_ORDINAL_MAX + 1) so -1 (n/a) -> 0.0.
@@ -917,10 +964,10 @@ _SOURCELESS_PROVISIONAL = {
     # 704.5j legend-rule keep: an SBA, asked on behalf of no card (each menu
     # entry names one of the conflicting legends).
     "legend rule keep": lambda cats, obs: set(cats) == {CAT_KEEP_LEGEND},
-    # 603.3b ordering whose leading trigger has no source object (a floating
-    # trigger such as Tamiyo, Seasoned Scholar's +2 effect, or the monarch's
-    # inherent triggers); the ordering source is the leading menu entry's.
-    "sourceless trigger ordering": lambda cats, obs: (
+    # 603.3b ordering led by one of the monarch's inherent triggers (CR 725.2),
+    # which have no source object and no creating card. (A floating trigger names
+    # the card whose effect created it as the ordering source.)
+    "monarch trigger ordering": lambda cats, obs: (
         set(cats) == {CAT_ORDER_TRIGGERS}
         and _decode_card_id(decode.action_card_ids(obs)[0]) == _CARD_ID_SENTINEL),
     # Draw-step dredge (CR 702.52a): the turn-based draw's replacement choice
@@ -1269,6 +1316,175 @@ def check_delayed_trigger_lifecycle():
         raise InvariantError(
             f"Bauble delayed trigger not followed to resolution in 200 decisions "
             f"(waiting {waiting}, on stack {on_stack}, activated {activated})")
+    finally:
+        env.close()
+
+
+def _player_effects_half(state, start):
+    """(flags tuple, emblem ids tuple, floating-trigger source id) of one half."""
+    flags = tuple(bool(state[start + f] > 0.5) for f in range(PLAYER_EFFECTS_FLAGS))
+    emblems = tuple(_decode_card_id(state[start + _PE_EMBLEM_OFF + e])
+                    for e in range(MAX_EMBLEM_SLOTS))
+    return flags, emblems, _decode_card_id(state[start + _PE_FLOATING_OFF])
+
+
+_NO_PLAYER_EFFECTS = ((False,) * PLAYER_EFFECTS_FLAGS,
+                      (_CARD_ID_SENTINEL,) * MAX_EMBLEM_SLOTS, _CARD_ID_SENTINEL)
+
+
+def _seat_effect_halves(state, priority_is_a):
+    """(player A's half, player B's half) of the player-effects block."""
+    self_half = _player_effects_half(state, _PLAYER_EFFECTS_START)
+    opp_half = _player_effects_half(state, _PLAYER_EFFECTS_OPP_START)
+    return (self_half, opp_half) if priority_is_a else (opp_half, self_half)
+
+
+def _write_veil_deck():
+    """A stacked temp deck for check_veil_player_effects: two Veil of Summer on top
+    (so both start in hand under no_shuffle), then Forests. Returns the deck spec."""
+    stem = "temp/obsinv_veil"
+    path = os.path.join(_DECKS_DIR, "temp", "obsinv_veil.dk")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        f.write("2 Veil of Summer\n58 Forest\n")
+    return stem
+
+
+def check_veil_player_effects():
+    """Guaranteed coverage for invariant (18)'s semantics: seat A (on the play, two
+    Forests in play, two Veil of Summer in its stacked opening hand) plays a land
+    and casts Veil of Summer. Before it resolves both halves of the block are
+    empty; afterwards player A's half reads exactly hexproof from blue and black
+    plus spells_cant_be_countered (A's self half, B's opp half) while B's is
+    empty; the next turn both are empty again. Every decision also runs the full
+    check_decision battery. Returns the number of decisions that saw the grant."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    veil = names["Veil of Summer"]
+    want = [False] * PLAYER_EFFECTS_FLAGS
+    want[_PE_HEXPROOF_START + 1] = True          # blue
+    want[_PE_HEXPROOF_START + 2] = True          # black
+    want[_PE_UNCOUNTERABLE] = True
+    want_a = (tuple(want),) + _NO_PLAYER_EFFECTS[1:]
+    env = RoboMageEnv(deck_a=_write_veil_deck(), deck_b="delver", no_shuffle=True,
+                      battlefield_a="Forest,Forest", bo3=False)
+    granted = 0
+    grant_turn = None
+    cast = played = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(300):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            turn = int(round(float(state[_CUR_TURN_IDX]) * 50))
+            a_half, b_half = _seat_effect_halves(state, priority_is_a)
+            if b_half != _NO_PLAYER_EFFECTS:
+                raise InvariantError(f"player B's effects half is set: {b_half}")
+            if a_half != _NO_PLAYER_EFFECTS:
+                if a_half != want_a:
+                    raise InvariantError(
+                        f"player A's effects after Veil of Summer {a_half}, expected {want_a}")
+                if not cast or (grant_turn is not None and turn != grant_turn):
+                    raise InvariantError(
+                        f"Veil of Summer grant seen outside its turn (turn {turn}, "
+                        f"cast={cast}, grant turn {grant_turn})")
+                grant_turn = turn
+                granted += 1
+            elif grant_turn is not None and turn > grant_turn:
+                return granted                     # lapsed at cleanup
+            choice = 0
+            if priority_is_a:
+                ids = decode.action_card_ids(obs)
+                for a in range(num):
+                    cat = int(cats[a])
+                    if not played and cat == CAT_PLAY_LAND:
+                        choice, played = a, True
+                        break
+                    if (played and not cast and cat == CAT_CAST_SPELL
+                            and _decode_card_id(ids[a]) == veil):
+                        choice, cast = a, True
+                        break
+            env.step(choice)
+        raise InvariantError(
+            f"Veil of Summer grant not seen and lapsed within 300 decisions "
+            f"(cast={cast}, granted decisions={granted})")
+    finally:
+        env.close()
+
+
+def check_teferi_player_effects():
+    """Guaranteed coverage for invariant (18)'s static-derived and grant fields:
+    seat A starts with Teferi, Time Raveler in play. Once the preset lands (after
+    the mulligans) player B's half reads restricted_to_sorcery_speed at every
+    decision (and A's never does). A
+    activates Teferi's lowest-ordinal loyalty ability (+1); once it resolves A's
+    half reads may_cast_sorceries_as_flash until A's next turn begins. Every
+    decision also runs the full check_decision battery. Returns (decisions with
+    the flash grant, decisions after it lapsed)."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    teferi = names["Teferi, Time Raveler"]
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Teferi Time Raveler", bo3=False)
+    flash = lapsed = 0
+    grant_turn = None
+    activated = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(400):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            turn = int(round(float(state[_CUR_TURN_IDX]) * 50))
+            (a_flags, _, _), (b_flags, _, _) = _seat_effect_halves(state, priority_is_a)
+            if decode.is_mulligan(cats) or decode.is_bottom(cats):
+                # The battlefield preset lands after the mulligans.
+                if a_flags != _NO_PLAYER_EFFECTS[0] or b_flags != _NO_PLAYER_EFFECTS[0]:
+                    raise InvariantError("player effects set before Teferi is in play")
+                env.step(0)
+                continue
+            if not b_flags[_PE_SORCERY_SPEED_LOCK] or a_flags[_PE_SORCERY_SPEED_LOCK]:
+                raise InvariantError(
+                    f"Teferi's static: restricted_to_sorcery_speed A={a_flags[_PE_SORCERY_SPEED_LOCK]} "
+                    f"B={b_flags[_PE_SORCERY_SPEED_LOCK]}, expected A=False B=True")
+            if b_flags[_PE_SORCERY_FLASH]:
+                raise InvariantError("player B reads may_cast_sorceries_as_flash")
+            if a_flags[_PE_SORCERY_FLASH]:
+                if not activated:
+                    raise InvariantError("flash grant set before Teferi's +1 was activated")
+                if grant_turn is None:
+                    grant_turn = turn
+                flash += 1
+            elif flash:
+                # Lapses as A's next turn begins (two turns after the grant).
+                if turn < grant_turn + 2:
+                    raise InvariantError(
+                        f"flash grant lapsed early (turn {turn}, granted turn {grant_turn})")
+                lapsed += 1
+                if lapsed >= 3:
+                    return flash, lapsed
+            choice = 0
+            if priority_is_a and not activated:
+                ids = decode.action_card_ids(obs)
+                ords = decode.action_ordinals(obs, num)
+                acts = [a for a in range(num) if int(cats[a]) == CAT_ACTIVATE_ABILITY
+                        and _decode_card_id(ids[a]) == teferi]
+                if acts:
+                    choice = min(acts, key=lambda a: int(ords[a]))
+                    activated = True
+            env.step(choice)
+        raise InvariantError(
+            f"Teferi's flash grant not followed to its lapse in 400 decisions "
+            f"(activated={activated}, flash decisions={flash}, lapsed={lapsed})")
     finally:
         env.close()
 
@@ -1955,6 +2171,22 @@ def main():
           f"decisions, on the stack at {n_stack}, then gone", flush=True)
 
     try:
+        n_veil = check_veil_player_effects()
+    except InvariantError as e:
+        print(f"FAIL  Veil of Summer player effects\n  {e}", flush=True)
+        return 1
+    print(f"ok    Veil of Summer player effects: hexproof U/B + uncounterable at "
+          f"{n_veil} decisions, empty before and after", flush=True)
+
+    try:
+        n_flash, n_lapsed = check_teferi_player_effects()
+    except InvariantError as e:
+        print(f"FAIL  Teferi player effects\n  {e}", flush=True)
+        return 1
+    print(f"ok    Teferi player effects: opponent sorcery-speed lock at every decision, "
+          f"+1 flash grant at {n_flash} decisions then lapsed", flush=True)
+
+    try:
         (n_swaps, n_post, lv_live, lv_masked,
          rev_sb, rev_post) = check_opponent_decklist_frozen()
     except InvariantError as e:
@@ -2001,6 +2233,8 @@ def main():
 
     print(f"ok    delayed triggers: {DELAYED_SEEN['waiting']} waiting and "
           f"{DELAYED_SEEN['on_stack']} on-stack entries checked", flush=True)
+    print(f"ok    player effects: active at {PLAYER_EFFECTS_SEEN['active']} "
+          f"player-halves checked", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

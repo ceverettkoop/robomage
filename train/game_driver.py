@@ -293,7 +293,8 @@ def decode_human_frame(u):
         for a, b in (("self", "opponent"),
                      ("self_library", "opp_library"),
                      ("self_battlefield", "opp_battlefield"),
-                     ("self_graveyard", "opp_graveyard")):
+                     ("self_graveyard", "opp_graveyard"),
+                     ("self_effects", "opp_effects")):
             gs[a], gs[b] = gs[b], gs[a]
         marks = gs["zone_marks"]
         marks["self_graveyard"], marks["opp_graveyard"] = (

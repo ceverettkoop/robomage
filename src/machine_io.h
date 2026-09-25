@@ -66,7 +66,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 6490 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6516 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -456,8 +456,34 @@
 //                       for leaves-the-battlefield watches and on-stack entries
 //                Empty slots: 4 zeros + creator_card_id sentinel + 2 zeros +
 //                subject_card_id sentinel + 5 zeros.
+//
+//  ── Player effects ───────────────────────────────────────────────────────────
+//  The continuous effects applying to each player as a whole (player_effects(),
+//  game_queries.h), all public. Self half then the opponent half, same fields:
+//                  [0]  protection_from_everything (The One Ring's ETB grant)
+//                  [1]  cant_gain_life (Roiling Vortex's {R}; player_cant_gain_life)
+//                  [2-6] hexproof_from W, U, B, R, G (Veil of Summer's turn-long grant;
+//                       covers the player and the permanents they control)
+//                  [7]  spells_cant_be_countered (Veil of Summer's turn-long grant; a
+//                       battlefield static such as Hexing Squelcher stays on its
+//                       permanent, since it is filter-qualified per spell)
+//                  [8]  may_cast_sorceries_as_flash (Teferi, Time Raveler's +1 grant)
+//                  [9]  restricted_to_sorcery_speed (an opponent's live OnlySorcerySpeed
+//                       static — Teferi, Time Raveler — via
+//                       rules_mod::opponent_sorcery_speed_locked)
+//                  [10-11] emblem card ids: the distinct cards that created this player's
+//                       emblems (Kaito, Bane of Nightmares; Tamiyo, Seasoned Scholar), in
+//                       creation order, captured at creation; sentinel = empty. Emblems
+//                       have no card of their own, so the creating card names them.
+//                  [12] floating_trigger_source card id: the card whose effect created
+//                       this player's first live floating trigger (Tamiyo, Seasoned
+//                       Scholar's +2, Forth Eorlingas!), captured at creation; sentinel =
+//                       none
+//
+//  [6490-6502]   Self player effects (13 floats)
+//  [6503-6515]   Opponent player effects (13 floats)
 
-static constexpr int STATE_SIZE             = 6490;
+static constexpr int STATE_SIZE             = 6516;
 // Max sideboard swaps a player may complete in one between-games phase. Both the
 // engine's phase cap and the normalizer for the serialized swaps-made scalar, so
 // the two can never drift apart.
@@ -576,6 +602,15 @@ static constexpr int DELAYED_SLOT_SIZE   = 13;  // present, ctrl_is_self, state,
 static_assert(DELAYED_SLOT_SIZE == 8 + DELAYED_FIRE_KINDS + 1, "delayed slot = 8 fields + fire one-hot + fires_this_turn");
 static constexpr int DELAYED_CREATOR_ID_OFF = 4;  // creator_card_id within a delayed slot
 static constexpr int DELAYED_SUBJECT_ID_OFF = 7;  // subject_card_id within a delayed slot
+// Player-effects block (see the layout comment above): per player, the scalar flags then
+// MAX_EMBLEM_SLOTS emblem card ids then the floating-trigger source card id.
+static constexpr int PLAYER_EFFECTS_FLAGS       = 10;  // protection, cant_gain_life, hexproof W/U/B/R/G,
+                                                       // uncounterable, sorceries as flash, sorcery-speed lock
+static constexpr int PLAYER_EFFECTS_EMBLEM_OFF  = PLAYER_EFFECTS_FLAGS;  // first emblem card id
+static constexpr int PLAYER_EFFECTS_FLOATING_OFF = PLAYER_EFFECTS_EMBLEM_OFF + MAX_EMBLEM_SLOTS;
+static constexpr int PLAYER_EFFECTS_PLAYER_SIZE = 13;
+static_assert(PLAYER_EFFECTS_PLAYER_SIZE == PLAYER_EFFECTS_FLOATING_OFF + 1,
+              "player effects = flags + emblem ids + floating-trigger source id");
 static const double LOG_LIFE_DENOM    = std::log1p(static_cast<double>(LIFE_NORMALIZER));
 static const double LOG_LIBRARY_DENOM = std::log1p(static_cast<double>(LIBRARY_NORMALIZER));
 
@@ -636,10 +671,14 @@ static constexpr int LOG_VITALS_END       = LOG_VITALS_OPP_START + LOG_VITALS_PL
 static constexpr int PER_TURN_START       = LOG_VITALS_END;
 static constexpr int PER_TURN_OPP_START   = PER_TURN_START + PER_TURN_PLAYER_SIZE;
 static constexpr int PER_TURN_END         = PER_TURN_OPP_START + PER_TURN_PLAYER_SIZE;
-// Pending delayed triggers close the vector.
+// Pending delayed triggers.
 static constexpr int DELAYED_START        = PER_TURN_END;
 static constexpr int DELAYED_END          = DELAYED_START + DELAYED_SLOTS * DELAYED_SLOT_SIZE;
-static_assert(DELAYED_END == STATE_SIZE,
+// Player effects close the vector (self half, then the opponent's).
+static constexpr int PLAYER_EFFECTS_START     = DELAYED_END;
+static constexpr int PLAYER_EFFECTS_OPP_START = PLAYER_EFFECTS_START + PLAYER_EFFECTS_PLAYER_SIZE;
+static constexpr int PLAYER_EFFECTS_END       = PLAYER_EFFECTS_OPP_START + PLAYER_EFFECTS_PLAYER_SIZE;
+static_assert(PLAYER_EFFECTS_END == STATE_SIZE,
               "state-vector offset chain must end exactly at STATE_SIZE — a block "
               "was added/resized/reordered without updating STATE_SIZE (and the "
               "layout comment above, train/env.py, and train/extractor.py)");

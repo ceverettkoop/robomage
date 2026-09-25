@@ -187,6 +187,11 @@ static const SideboardMask& sideboard_mask() {
             card_id_slot(DELAYED_START + s * DELAYED_SLOT_SIZE + DELAYED_CREATOR_ID_OFF);
             card_id_slot(DELAYED_START + s * DELAYED_SLOT_SIZE + DELAYED_SUBJECT_ID_OFF);
         }
+        // Player effects (self + opp): the emblem and floating-trigger source card ids.
+        for (int base : {PLAYER_EFFECTS_START, PLAYER_EFFECTS_OPP_START}) {
+            for (int e = 0; e < MAX_EMBLEM_SLOTS; e++) card_id_slot(base + PLAYER_EFFECTS_EMBLEM_OFF + e);
+            card_id_slot(base + PLAYER_EFFECTS_FLOATING_OFF);
+        }
         for (int i = HAND_START; i < HAND_START + MAX_HAND_SLOTS; i++) card_id_slot(i);       // self hand
         for (int i = KNOWN_TOP_LIB_START; i < KNOWN_TOP_LIB_END; i++) card_id_slot(i);        // known top-5
         for (int i = OPP_KNOWN_HAND_START; i < OPP_KNOWN_HAND_END; i++) card_id_slot(i);      // known opp hand

@@ -1293,8 +1293,10 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                 game_log("%s orders %zu simultaneous triggers (pick which goes on the stack next).\n",
                          player_name(owner).c_str(), group_size);
                 // The group's leading trigger source is the pending-decision source
-                // (each menu entry still carries its own trigger's source).
-                Entity order_source = tp.queue.front().source;
+                // (each menu entry still carries its own trigger's source). A floating
+                // trigger has no source object; the card whose effect created it stands in.
+                const PendingTriggerRT &lead = tp.queue.front();
+                Entity order_source = lead.source != 0 ? lead.source : lead.ab.floating_creator;
                 if (!suspendable) {
                     PendingDecisionScope pending(order_source);
                     pick = static_cast<size_t>(InputLogger::instance().get_input(choices));

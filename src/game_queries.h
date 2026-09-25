@@ -632,6 +632,36 @@ bool is_waiting_delayed_trigger_subject(Entity e);
 // not turn-scheduled and returns false. Defined in game_queries.cpp.
 bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt);
 
+// ── Player-scoped effects (the observation's PLAYER EFFECTS block) ───────────
+// The continuous effects currently applying to one player as a whole, each read from the
+// same state the rules consult:
+//   protection_from_everything  — a Game::player_protection_from_everything grant (The One Ring)
+//   cant_gain_life              — player_cant_gain_life (Roiling Vortex's {R})
+//   hexproof_from[W,U,B,R,G]    — the colors of this player's Game::hexproof_from_colors_this_turn
+//                                 grants (Veil of Summer)
+//   spells_cant_be_countered    — the player is in Game::cant_counter_spells_of (Veil of Summer).
+//                                 A battlefield static (Hexing Squelcher) is filter-qualified per
+//                                 spell and stays on its visible permanent.
+//   may_cast_sorceries_as_flash — a Game::cast_with_flash_permissions entry the player controls
+//                                 (Teferi, Time Raveler's +1)
+//   restricted_to_sorcery_speed — rules_mod::opponent_sorcery_speed_locked, derived from the live
+//                                 static (Teferi, Time Raveler on the opponent's battlefield)
+//   emblem_vocab_idx            — the distinct creating cards of the player's emblems, in creation
+//                                 order (the serializer keeps the first MAX_EMBLEM_SLOTS)
+//   floating_trigger_vocab_idx  — the creating card of the player's first live floating trigger
+//                                 (Tamiyo, Seasoned Scholar's +2, Forth Eorlingas!); -1 = none
+struct PlayerEffects {
+    bool protection_from_everything = false;
+    bool cant_gain_life = false;
+    bool hexproof_from[5] = {false, false, false, false, false};
+    bool spells_cant_be_countered = false;
+    bool may_cast_sorceries_as_flash = false;
+    bool restricted_to_sorcery_speed = false;
+    std::vector<int> emblem_vocab_idx;
+    int floating_trigger_vocab_idx = -1;
+};
+PlayerEffects player_effects(Zone::Ownership player);
+
 // The card `source` exiled and still tracks via Permanent::exiled_with — the association a Saga
 // records at chapter I so its later chapters can act on "the card exiled with this" (Defined$
 // ExiledWith / ExiledWith$CardManaCost, The Creation of Avacyn). Returns the most-recently exiled

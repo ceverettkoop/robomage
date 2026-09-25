@@ -10,6 +10,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
+#include "../machine_io.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -39,6 +40,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         Emblem emblem;
         emblem.controller = ab.controller;
         emblem.statics = ab.effect_emblem_statics;
+        emblem.source = ab.source;
+        emblem.source_vocab_idx = action_card_vocab_idx(ab.source);
         cur_game.emblems.push_back(std::move(emblem));
         game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
@@ -59,6 +62,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
             Ability ft = trig;
             ft.controller = ab.controller;
             ft.duration_until_your_next_turn = until_next_turn;
+            ft.floating_creator = ab.source;
+            ft.floating_creator_vocab_idx = action_card_vocab_idx(ab.source);
             cur_game.floating_triggers.push_back(ft);
         }
         game_log("A floating triggered ability is created%s.\n",

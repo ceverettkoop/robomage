@@ -27,8 +27,9 @@ DECKLIST_MAIN_SLOTS = 48  # src/classes/gamestate.h
 DECKLIST_SIDE_SLOTS = 16  # src/classes/gamestate.h
 MAX_DELAYED_TRIGGER_SLOTS = 16  # src/classes/gamestate.h
 N_DELAYED_FIRE_KINDS = 4  # src/classes/gamestate.h
+MAX_EMBLEM_SLOTS = 2  # src/classes/gamestate.h
 KNOWN_TOP_LIBRARY_SIZE = 5  # src/classes/game.h
-STATE_SIZE = 6490  # src/machine_io.h
+STATE_SIZE = 6516  # src/machine_io.h
 N_CARD_TYPES = 1024  # src/machine_io.h
 PERM_SLOT_SIZE = 43  # src/machine_io.h
 OPTION_ORDINAL_MAX = 63  # src/machine_io.h
@@ -75,6 +76,8 @@ PER_TURN_COLOR_FIELDS = 5  # src/machine_io.h
 PER_TURN_PLAYER_SIZE = 11  # src/machine_io.h
 PER_TURN_COUNT_NORMALIZER = 10  # src/machine_io.h
 DELAYED_SLOT_SIZE = 13  # src/machine_io.h
+PLAYER_EFFECTS_FLAGS = 10  # src/machine_io.h
+PLAYER_EFFECTS_PLAYER_SIZE = 13  # src/machine_io.h
 
 # Log1p denominators for the LOG VITALS block, derived from the mirrored
 # scales above exactly as machine_io.h derives its own (std::log1p of the

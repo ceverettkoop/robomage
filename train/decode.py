@@ -53,6 +53,10 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _OFF_ACTIVATIONS_THIS_TURN, _OFF_CANT_BE_BLOCKED,
                  _OFF_COMBAT_DMG_PREVENTED, _OFF_PENDING_DELAYED_SUBJECT,
                  _PER_TURN_START, _PER_TURN_OPP_START,
+                 _PLAYER_EFFECTS_START, _PLAYER_EFFECTS_OPP_START,
+                 _PE_PROTECTION, _PE_CANT_GAIN_LIFE, _PE_HEXPROOF_START,
+                 _PE_UNCOUNTERABLE, _PE_SORCERY_FLASH, _PE_SORCERY_SPEED_LOCK,
+                 _PE_EMBLEM_OFF, _PE_FLOATING_OFF, MAX_EMBLEM_SLOTS,
                  _DELAYED_START, _DELAYED_SLOTS, _DELAYED_SLOT_SIZE,
                  _DT_PRESENT, _DT_CTRL_SELF, _DT_STATE, _DT_STACK_REF,
                  _DT_CREATOR_ID, _DT_CREATOR_REF, _DT_SUBJECT_REF, _DT_SUBJECT_ID,
@@ -988,6 +992,8 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "self_this_turn": _decode_per_turn(state, _PER_TURN_START),
         "opp_this_turn": _decode_per_turn(state, _PER_TURN_OPP_START),
         "delayed_triggers": _decode_delayed_triggers(state, labels),
+        "self_effects": _decode_player_effects(state, _PLAYER_EFFECTS_START),
+        "opp_effects": _decode_player_effects(state, _PLAYER_EFFECTS_OPP_START),
     }
 
 
@@ -1043,6 +1049,35 @@ def fmt_delayed_trigger(d):
 
 
 _SPELL_COLOR_LETTERS = "WUBRG"
+
+
+def _decode_player_effects(state, start):
+    """Decode one player's half of the player-effects block into a list of
+    short strings, one per active effect (empty = none): the flags, then
+    "emblem: <card>" per emblem id and "floating trigger: <card>"."""
+    out = []
+    if state[start + _PE_PROTECTION] > 0.5:
+        out.append("protection from everything")
+    if state[start + _PE_CANT_GAIN_LIFE] > 0.5:
+        out.append("can't gain life")
+    hexproof = "".join(_SPELL_COLOR_LETTERS[c] for c in range(5)
+                       if state[start + _PE_HEXPROOF_START + c] > 0.5)
+    if hexproof:
+        out.append(f"hexproof from {hexproof}")
+    if state[start + _PE_UNCOUNTERABLE] > 0.5:
+        out.append("spells can't be countered")
+    if state[start + _PE_SORCERY_FLASH] > 0.5:
+        out.append("sorceries as flash")
+    if state[start + _PE_SORCERY_SPEED_LOCK] > 0.5:
+        out.append("sorcery speed only")
+    for e in range(MAX_EMBLEM_SLOTS):
+        name = onehot_to_card(state, start + _PE_EMBLEM_OFF + e)
+        if name:
+            out.append(f"emblem: {name}")
+    name = onehot_to_card(state, start + _PE_FLOATING_OFF)
+    if name:
+        out.append(f"floating trigger: {name}")
+    return out
 
 
 def _decode_per_turn(state, start):
@@ -1702,6 +1737,9 @@ def format_state_lines(gs):
             turn_parts.append(f"{label} " + " ".join(f"{k}={v}" for k, v in tt.items()))
     if turn_parts:
         lines.append(f"This turn: {' | '.join(turn_parts)}")
+    for label, key in (("Self", "self_effects"), ("Opp", "opp_effects")):
+        if gs.get(key):
+            lines.append(f"{label} effects: {', '.join(gs[key])}")
     extras = gs.get("extras") or {}
     if extras:
         # _decode_extras records only non-default values: a boolean True renders

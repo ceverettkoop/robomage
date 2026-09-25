@@ -46,6 +46,8 @@ static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
                                 bool with_lands_in_hand);
 static void push_log_vitals_block(std::vector<float>& out, int life, int library_ct);
 static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps);
+static void fill_player_effects(PlayerState& ps, Zone::Ownership player);
+static void push_player_effects_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
 static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
@@ -273,6 +275,36 @@ static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps) 
     out.push_back(static_cast<float>(ps.life_lost_this_turn) / life_norm);
     for (int i = 0; i < PER_TURN_COLOR_FIELDS; i++)
         out.push_back(ps.spell_colors_cast_this_turn[i] ? 1.0f : 0.0f);
+}
+
+// Copies player_effects(player) (game_queries.h) into the PlayerState's player-effects fields,
+// keeping the first MAX_EMBLEM_SLOTS emblem card ids.
+static void fill_player_effects(PlayerState& ps, Zone::Ownership player) {
+    const PlayerEffects fx = player_effects(player);
+    ps.protection_from_everything = fx.protection_from_everything;
+    ps.cant_gain_life = fx.cant_gain_life;
+    for (int i = 0; i < 5; i++) ps.hexproof_from[i] = fx.hexproof_from[i];
+    ps.spells_cant_be_countered = fx.spells_cant_be_countered;
+    ps.may_cast_sorceries_as_flash = fx.may_cast_sorceries_as_flash;
+    ps.restricted_to_sorcery_speed = fx.restricted_to_sorcery_speed;
+    for (int i = 0; i < MAX_EMBLEM_SLOTS; i++)
+        ps.emblem_card_idx[i] = i < static_cast<int>(fx.emblem_vocab_idx.size())
+                                    ? fx.emblem_vocab_idx[static_cast<size_t>(i)] : -1;
+    ps.floating_trigger_source_idx = fx.floating_trigger_vocab_idx;
+}
+
+// Pushes one player's half of the PLAYER EFFECTS block: PLAYER_EFFECTS_PLAYER_SIZE floats, the
+// PLAYER_EFFECTS_FLAGS flags then the emblem card ids and the floating-trigger source card id
+// (per-field offsets documented in machine_io.h).
+static void push_player_effects_block(std::vector<float>& out, const PlayerState& ps) {
+    out.push_back(ps.protection_from_everything ? 1.0f : 0.0f);
+    out.push_back(ps.cant_gain_life ? 1.0f : 0.0f);
+    for (int i = 0; i < 5; i++) out.push_back(ps.hexproof_from[i] ? 1.0f : 0.0f);
+    out.push_back(ps.spells_cant_be_countered ? 1.0f : 0.0f);
+    out.push_back(ps.may_cast_sorceries_as_flash ? 1.0f : 0.0f);
+    out.push_back(ps.restricted_to_sorcery_speed ? 1.0f : 0.0f);
+    for (int i = 0; i < MAX_EMBLEM_SLOTS; i++) out.push_back(norm_card_id(ps.emblem_card_idx[i]));
+    out.push_back(norm_card_id(ps.floating_trigger_source_idx));
 }
 
 // Pushes PERM_SLOT_SIZE floats (40 status + chosen-name id + returnable-exile id + card-id;
@@ -785,6 +817,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     };
     fill_player_stats(gs->self, viewer_entity);
     fill_player_stats(gs->opponent, opp_entity);
+    fill_player_effects(gs->self, viewer);
+    fill_player_effects(gs->opponent, viewer == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A);
 
     // Global extras (serialized at the end of the state vector; see machine_io.h)
     gs->self.is_monarch     = (cur_game.monarch_entity == viewer_entity);
@@ -1321,6 +1355,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // ── Pending delayed triggers (see machine_io.h [5386-5593]) ───────────────
     for (int i = 0; i < DELAYED_SLOTS; i++)
         push_delayed_slot(state, gs->delayed[i]);
+
+    // ── Player effects (see machine_io.h [6490-6515]) ─────────────────────────
+    // Self (13 floats) then opponent (13).
+    push_player_effects_block(state, gs->self);
+    push_player_effects_block(state, gs->opponent);
 
     // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
     // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is

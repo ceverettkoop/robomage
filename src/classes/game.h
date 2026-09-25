@@ -150,6 +150,11 @@ static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
 struct Emblem {
     Zone::Ownership controller = Zone::PLAYER_A;
     std::vector<StaticAbility> statics;
+    // The card whose ability created the emblem (Kaito, Bane of Nightmares; Tamiyo, Seasoned
+    // Scholar) and its vocab idx captured at creation. The emblem's identity in the observation's
+    // player-effects block.
+    Entity source = 0;
+    int source_vocab_idx = -1;
 };
 
 struct Game {

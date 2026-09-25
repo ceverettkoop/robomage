@@ -17,7 +17,7 @@ Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 looked up in a learned nn.Embedding. This decouples the observation size from the
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
-Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6490):
+Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6516):
   obs[0:36]            global context (player stats, step, flags, stack size); the
                          self_is_A seat flag [34] is zeroed before the network sees
                          it (network_global_ctx)
@@ -91,7 +91,12 @@ Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6490):
                          stack_ref, creator card id, creator_ref, subject_ref,
                          subject card id, fire_on one-hot(4), fires_this_turn),
                          packed in registration order
-  obs[6490:]           action metadata (cats|ids|ctrl|zone|refs|ords) + matchup
+  obs[6490:6516]       player effects: self then opponent, 13 floats each
+                         (protection_from_everything, cant_gain_life, hexproof
+                         from W,U,B,R,G, spells_cant_be_countered,
+                         may_cast_sorceries_as_flash, restricted_to_sorcery_speed,
+                         2 emblem card ids, floating-trigger source card id)
+  obs[6516:]           action metadata (cats|ids|ctrl|zone|refs|ords) + matchup
                          tail (appended by env.py; refs are normalized
                          entity-slot references, (idx+1)/108 with 0.0 = none)
 """
@@ -131,7 +136,9 @@ try:
                         OPP_DECKLIST_REVEALED_OFF,
                         MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
                         LOG_VITALS_PLAYER_SIZE, PER_TURN_PLAYER_SIZE,
-                        MAX_DELAYED_TRIGGER_SLOTS, DELAYED_SLOT_SIZE)
+                        MAX_DELAYED_TRIGGER_SLOTS, DELAYED_SLOT_SIZE,
+                        MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS,
+                        PLAYER_EFFECTS_PLAYER_SIZE)
 except ImportError:
     from train._enums import (ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
                              DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
@@ -148,7 +155,9 @@ except ImportError:
                              OPP_DECKLIST_REVEALED_OFF,
                              MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
                              LOG_VITALS_PLAYER_SIZE, PER_TURN_PLAYER_SIZE,
-                             MAX_DELAYED_TRIGGER_SLOTS, DELAYED_SLOT_SIZE)
+                             MAX_DELAYED_TRIGGER_SLOTS, DELAYED_SLOT_SIZE,
+                             MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS,
+                             PLAYER_EFFECTS_PLAYER_SIZE)
 
 
 def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -255,6 +264,15 @@ _DT_SUBJECT_ID_OFF   = 7
 # Scalar columns fed to the encoder: ctrl, state, stack_ref (1..3), creator_ref,
 # subject_ref (5..6), fire_on one-hot + fires_this_turn (8..end).
 _DT_SCALARS          = 3 + 2 + (DELAYED_SLOT_SIZE - 8)
+
+# Player-effects block (mirror machine_io.h's PLAYER EFFECTS block / env.py's _PE_*
+# offsets): per player the PLAYER_EFFECTS_FLAGS flags, then MAX_EMBLEM_SLOTS emblem
+# card ids, then the floating-trigger source card id. Self half, then the opponent's.
+_PE_FLAGS            = PLAYER_EFFECTS_FLAGS
+_PE_EMBLEM_OFF       = PLAYER_EFFECTS_FLAGS
+_PE_EMBLEM_SLOTS     = MAX_EMBLEM_SLOTS
+_PE_FLOATING_OFF     = _PE_EMBLEM_OFF + MAX_EMBLEM_SLOTS
+_PE_PLAYER_SIZE      = PLAYER_EFFECTS_PLAYER_SIZE
 
 _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 
@@ -414,7 +432,10 @@ _PER_TURN_END         = _PER_TURN_START + _PER_TURN_SIZE
 # Pending delayed triggers: 16 slots encoded by delayed_encoder and pooled.
 _DELAYED_START        = _PER_TURN_END
 _DELAYED_END          = _DELAYED_START + _DELAYED_SLOTS * _DELAYED_SLOT_SIZE
-_STATE_END            = _DELAYED_END
+# Player effects: two halves (self, opp) encoded by player_effects_encoder.
+_PLAYER_EFFECTS_START = _DELAYED_END
+_PLAYER_EFFECTS_END   = _PLAYER_EFFECTS_START + 2 * _PE_PLAYER_SIZE
+_STATE_END            = _PLAYER_EFFECTS_END
 # obs[_STATE_END:] = action metadata + cost features + matchup tail (env.py)
 # Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE and
 # the obs tail offsets; these asserts are the mirror check).
@@ -453,6 +474,8 @@ _ENV_CHAIN_PAIRS = [
     ("_PER_TURN_END",         _PER_TURN_END),
     ("_DELAYED_START",        _DELAYED_START),
     ("_DELAYED_END",          _DELAYED_END),
+    ("_PLAYER_EFFECTS_START", _PLAYER_EFFECTS_START),
+    ("_PLAYER_EFFECTS_END",   _PLAYER_EFFECTS_END),
 ]
 for _name, _mine in _ENV_CHAIN_PAIRS:
     _theirs = getattr(_env_mod, _name)
@@ -524,6 +547,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
       stack_agg(embed*2: attended rows are full-width) +
       top_stack_feat(embed: the attended top-of-stack row, positional) +
       delayed_agg(embed: masked mean+max of the embed//2 delayed-trigger rows) +
+      player_effects_feat(embed: player_effects_encoder rows, self | opp — flags,
+                          summed emblem embeds, floating-trigger source embed) +
       graveyard_agg(embed*2) + exile_agg(embed*2) +
       hand_lib_agg(embed*2: hand + known top-library combined, draw-distance
                    distinguished) +
@@ -576,6 +601,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim * 2                              # stack mean+max (attended, full width)
             + embed_dim                                  # top-of-stack attended row (positional)
             + embed_dim                                  # delayed triggers mean+max (half width)
+            + embed_dim                                  # player effects, self | opp (half width each)
             + embed_dim * 2                              # graveyard masked-mean + max
             + embed_dim * 2                              # exile masked-mean + max
             + embed_dim * 2                              # hand + known-top-library masked-mean + max
@@ -658,6 +684,17 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # embedding and the subject's card embedding.
         self.delayed_encoder = nn.Sequential(
             nn.Linear(_DT_SCALARS + 2 * card_feat, embed_dim),
+            nn.ReLU(),
+            nn.Linear(embed_dim, half),
+            nn.ReLU(),
+        )
+
+        # Shared encoder for each player's half of the player-effects block: the
+        # PLAYER_EFFECTS_FLAGS flags, the summed card embeddings of the emblem ids
+        # (empty slots embed to the zero padding row) and the floating-trigger
+        # source's card embedding.
+        self.player_effects_encoder = nn.Sequential(
+            nn.Linear(_PE_FLAGS + 2 * card_feat, embed_dim),
             nn.ReLU(),
             nn.Linear(embed_dim, half),
             nn.ReLU(),
@@ -834,6 +871,13 @@ class CardGameExtractor(BaseFeaturesExtractor):
                            delayed[:, :, _DT_SUBJECT_ID_OFF + 1:],
                            dt_creator_emb, dt_subject_emb], dim=-1)
 
+        # Player effects: per player (self, opp) the flags + summed emblem embeds +
+        # the floating-trigger source embed.
+        pe = obs[:, _PLAYER_EFFECTS_START:_PLAYER_EFFECTS_END].reshape(-1, 2, _PE_PLAYER_SIZE)
+        pe_emblem_emb, _ = self._embed_ids(pe[:, :, _PE_EMBLEM_OFF:_PE_FLOATING_OFF])
+        pe_floating_emb, _ = self._embed_ids(pe[:, :, _PE_FLOATING_OFF])
+        pe_in = torch.cat([pe[:, :, :_PE_FLAGS], pe_emblem_emb.sum(2), pe_floating_emb], dim=-1)
+
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, _ZONE_CARD_OFF])
         ex_emb_in, ex_present = self._embed_ids(exile[:, :, _ZONE_CARD_OFF])
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
@@ -889,6 +933,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perm_emb    = self.perm_encoder(perm_in)       # (B, 96, embed)
         stk_emb     = self.stack_encoder(stk_in)       # (B, 12, embed//2)
         dt_emb      = self.delayed_encoder(dt_in)      # (B, 16, embed//2)
+        pe_emb      = self.player_effects_encoder(pe_in)  # (B, 2, embed//2)
         gy_emb      = self.zone_card_encoder(gy_in)    # (B, 128, embed)
         ex_emb      = self.zone_card_encoder(ex_in)    # (B, 128, embed)  — shared weights
         hand_lib_emb = self.entity_encoder(hl_in)      # (B, 15, embed)  — shared weights
@@ -987,6 +1032,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         stk_agg     = _masked_mean_max(stk_att, stk_present)
         top_stack_feat = stk_att[:, 0]        # positional: what resolves NEXT
         delayed_agg = _masked_mean_max(dt_emb, dt_present)
+        player_effects_feat = pe_emb.flatten(1)  # positional: self half | opp half
         gy_agg      = _masked_mean_max(gy_emb,   gy_present)
         ex_agg      = _masked_mean_max(ex_emb,   ex_present)
         hand_lib_agg = _masked_mean_max(hand_lib_emb, hl_present)
@@ -1004,7 +1050,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
             # per-action encoder, so it is its only action channel).
             parts.append(obs[:, _STATE_END:_BUCKET_IDX])
         parts += [arch_onehot,
-                  perm_agg, stk_agg, top_stack_feat, delayed_agg, gy_agg, ex_agg,
+                  perm_agg, stk_agg, top_stack_feat, delayed_agg,
+                  player_effects_feat, gy_agg, ex_agg,
                   hand_lib_agg, next_draw_feat, opp_hand_agg,
                   self_lib_agg, self_main_agg, self_side_agg,
                   opp_main_agg, opp_side_agg]

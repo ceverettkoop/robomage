@@ -152,6 +152,8 @@ class ScriptTrunk(nn.Module):
         "LOG_VITALS_START", "LOG_VITALS_END", "PER_TURN_START", "PER_TURN_END",
         "DELAYED_START", "DELAYED_END", "DELAYED_SLOTS", "DELAYED_SLOT_SIZE",
         "DT_PRESENT_OFF", "DT_CREATOR_ID_OFF", "DT_SUBJECT_ID_OFF",
+        "PLAYER_EFFECTS_START", "PLAYER_EFFECTS_END", "PE_PLAYER_SIZE", "PE_FLAGS",
+        "PE_EMBLEM_OFF", "PE_FLOATING_OFF",
         "STATE_END", "PERM_START", "PERM_END", "PERM_SLOTS",
         "PERM_SLOT_SIZE", "PERM_STATUS_FLOATS", "PERM_CHOSEN_NAME_OFF",
         "PERM_RETURNABLE_OFF", "PERM_CARD_OFF", "STACK_START", "STACK_END",
@@ -189,6 +191,7 @@ class ScriptTrunk(nn.Module):
         self.perm_encoder = fe.perm_encoder
         self.stack_encoder = fe.stack_encoder
         self.delayed_encoder = fe.delayed_encoder
+        self.player_effects_encoder = fe.player_effects_encoder
         self.zone_card_encoder = fe.zone_card_encoder
         self.entity_encoder = fe.entity_encoder
         self.decklist_encoder = fe.decklist_encoder
@@ -227,6 +230,12 @@ class ScriptTrunk(nn.Module):
         self.DT_PRESENT_OFF = int(_ex._DT_PRESENT_OFF)
         self.DT_CREATOR_ID_OFF = int(_ex._DT_CREATOR_ID_OFF)
         self.DT_SUBJECT_ID_OFF = int(_ex._DT_SUBJECT_ID_OFF)
+        self.PLAYER_EFFECTS_START = int(_ex._PLAYER_EFFECTS_START)
+        self.PLAYER_EFFECTS_END = int(_ex._PLAYER_EFFECTS_END)
+        self.PE_PLAYER_SIZE = int(_ex._PE_PLAYER_SIZE)
+        self.PE_FLAGS = int(_ex._PE_FLAGS)
+        self.PE_EMBLEM_OFF = int(_ex._PE_EMBLEM_OFF)
+        self.PE_FLOATING_OFF = int(_ex._PE_FLOATING_OFF)
         self.STATE_END = int(_ex._STATE_END)
         self.PERM_START = int(_ex._PERM_START)
         self.PERM_END = int(_ex._PERM_END)
@@ -394,6 +403,13 @@ class ScriptTrunk(nn.Module):
                            delayed[:, :, self.DT_SUBJECT_ID_OFF + 1:],
                            dt_creator_emb, dt_subject_emb], dim=-1)
 
+        pe = obs[:, self.PLAYER_EFFECTS_START:self.PLAYER_EFFECTS_END].reshape(
+            -1, 2, self.PE_PLAYER_SIZE)
+        pe_emblem_emb, _ = self._embed_ids(pe[:, :, self.PE_EMBLEM_OFF:self.PE_FLOATING_OFF])
+        pe_floating_emb, _ = self._embed_ids(pe[:, :, self.PE_FLOATING_OFF])
+        pe_in = torch.cat([pe[:, :, :self.PE_FLAGS], pe_emblem_emb.sum(2),
+                           pe_floating_emb], dim=-1)
+
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, self.ZONE_CARD_OFF])
         ex_emb_in, ex_present = self._embed_ids(exile[:, :, self.ZONE_CARD_OFF])
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
@@ -438,6 +454,7 @@ class ScriptTrunk(nn.Module):
         perm_emb = self.perm_encoder(perm_in)
         stk_emb = self.stack_encoder(stk_in)
         dt_emb = self.delayed_encoder(dt_in)
+        pe_emb = self.player_effects_encoder(pe_in)
         gy_emb = self.zone_card_encoder(gy_in)
         ex_emb = self.zone_card_encoder(ex_in)
         hand_lib_emb = self.entity_encoder(hl_in)
@@ -517,6 +534,7 @@ class ScriptTrunk(nn.Module):
         stk_agg = self._mean_max(stk_att, stk_present)
         top_stack_feat = stk_att[:, 0]
         delayed_agg = self._mean_max(dt_emb, dt_present)
+        player_effects_feat = pe_emb.flatten(1)
         gy_agg = self._mean_max(gy_emb, gy_present)
         ex_agg = self._mean_max(ex_emb, ex_present)
         hand_lib_agg = self._mean_max(hand_lib_emb, hl_present)
@@ -532,7 +550,7 @@ class ScriptTrunk(nn.Module):
                           per_turn,
                           arch_onehot,
                           perm_agg, stk_agg, top_stack_feat, delayed_agg,
-                          gy_agg, ex_agg,
+                          player_effects_feat, gy_agg, ex_agg,
                           hand_lib_agg, next_draw_feat, opp_hand_agg,
                           self_lib_agg, self_main_agg, self_side_agg,
                           opp_main_agg, opp_side_agg], dim=-1)
