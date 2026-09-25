@@ -911,7 +911,6 @@ _CHAIN_PAIRS = [
     ("_GY_START",               "GY_START"),
     ("_EXILE_START",            "EXILE_START"),
     ("_HAND_START",             "HAND_START"),
-    ("_HIST_START",             "HIST_START"),
     ("_MATCH_CTX_START",        "MATCH_CTX_START"),
     ("_LIBRARY_CTX_START",      "LIBRARY_CTX_START"),
     ("_CUR_TURN_IDX",           "CUR_TURN_IDX"),

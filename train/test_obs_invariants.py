@@ -45,8 +45,7 @@ from env import (
     _HAND_START, _HAND_SLOT_SIZE, MAX_GY_SLOTS, MAX_HAND_SLOTS,
     _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END,
     _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END,
-    _PENDING_DECISION_START, _HIST_START, _ACTION_HISTORY_SIZE,
-    _ACTION_HISTORY_ENTRY, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
+    _PENDING_DECISION_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
     _SELF_BLOCK_START, _OPP_BLOCK_START, _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
     _MANA_DEV_START, _MANA_DEV_OPP_START,
@@ -138,8 +137,6 @@ def _card_id_slots():
     for i, off in enumerate(range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END)):
         yield "opp_known_hand", i, off
     yield "pending_decision", 0, _PENDING_DECISION_START
-    for e in range(_ACTION_HISTORY_SIZE):
-        yield "history.card_id", e, _HIST_START + e * _ACTION_HISTORY_ENTRY + 1
     # Deck-identity tail blocks: card id is the first float of each (card_id, count) slot.
     for name, start, n in _DECKLIST_BLOCKS:
         for s in range(n):

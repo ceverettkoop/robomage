@@ -2426,8 +2426,7 @@ def test_mulligan_pregame_roundtrip():
         _assert_same_query(q, pl0, nc0, "mulligan post-SNAPSHOT re-emit")
         # Divergent excursion: KEEP instead of the control's mulligan. The
         # divergent line must observably differ within a few decisions (the
-        # control's A hand was shuffled back and redrawn; here it never is —
-        # and the recorded action-history category already differs).
+        # control's A hand was shuffled back and redrawn; here it never is).
         dq = eng.play(0)
         diverged = False
         for i in range(4):

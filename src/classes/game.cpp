@@ -64,12 +64,6 @@ void Game::player_loses(Zone::Ownership loser) {
     winner = (loser == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 }
 
-void Game::record_action(int category, int card_vocab_idx, bool player_a) {
-    action_history[action_history_write] = {category, card_vocab_idx, player_a, static_cast<int>(turn)};
-    action_history_write = (action_history_write + 1) % ACTION_HISTORY_SIZE;
-    if (action_history_count < ACTION_HISTORY_SIZE) action_history_count++;
-}
-
 void Game::clear_known_top_library(bool player_a_owner) {
     int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) arr[i] = -1;

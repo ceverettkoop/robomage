@@ -44,7 +44,6 @@ static_assert(STACK_TGT_START == 17, "stack target sub-slots start at slot offse
 
 // Block ENDs the sideboard obs mask below needs; machine_io.h names each block's
 // start, and one block's end is the next one's start.
-static constexpr int HIST_END = MATCH_CTX_START;
 static constexpr int KNOWN_TOP_LIB_END = REVEALED_START;
 static constexpr int REVEALED_END = OPP_KNOWN_HAND_START;
 static constexpr int OPP_KNOWN_HAND_END = PENDING_DECISION_START;
@@ -122,7 +121,7 @@ static void write_matchup_tail(float* o, bool self_is_a) {
 // between-games sideboard phase the engine keeps the ended game's ECS alive, so
 // the raw state vector describes the STALE terminal board — noise for a
 // sideboarding decision. env.py zeroes every state block except the ones that
-// inform sideboarding (graveyards+exile, action history, match/library/turn ctx,
+// inform sideboarding (graveyards+exile, match/library/turn ctx,
 // the opponent revealed multi-hot, the pending-decision context, and BOTH opponent
 // static-decklist blocks), plus the self-is-A seat flag; card-id positions inside
 // masked blocks are filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 (0.0
@@ -149,7 +148,6 @@ static const SideboardMask& sideboard_mask() {
             for (int i = lo; i < hi; i++) m.keep[static_cast<size_t>(i)] = true;
         };
         keep_range(GY_START, HAND_START);                   // graveyards + exile (self + opp)
-        keep_range(HIST_START, HIST_END);                   // action history ring
         keep_range(MATCH_CTX_START, KNOWN_TOP_LIB_START);   // match + library ctx + current turn
         keep_range(REVEALED_START, REVEALED_END);           // opponent revealed multi-hot
         keep_range(PENDING_DECISION_START, PENDING_DECISION_END);  // pending-decision context

@@ -24,7 +24,6 @@ extern Game cur_game;
 static int get_int_input();
 static Zone::Ownership deciding_player();
 static int apply_concede_input(int choice);
-static void record_chosen_action(const std::vector<LegalAction> &actions, int choice);
 static void check_machine_choice(const std::vector<LegalAction> &actions, int choice);
 static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
 static std::string read_header_field(std::ifstream &file, const std::string &key);
@@ -291,23 +290,11 @@ static void check_machine_choice(const std::vector<LegalAction> &actions, int ch
                 std::string(step_to_string(cur_game.cur_step)) + ")" + menu);
 }
 
-static void record_chosen_action(const std::vector<LegalAction> &actions, int choice) {
-    if (choice < 0 || choice >= static_cast<int>(actions.size())) return;
-    const LegalAction &la = actions[static_cast<size_t>(choice)];
-    int cat = static_cast<int>(la.category);
-    // Same vocab-index chain populate_query emits for this action, so the logged id
-    // matches the queried id (previously this omitted the Permanent/token and
-    // ability-source-permanent cases, drifting from the BQUERY payload).
-    int vocab = action_card_vocab_idx(la);
-    cur_game.record_action(cat, vocab, cur_game.player_a_has_priority);
-}
-
 void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int choice) {
     if (log_file.is_open()) {
         log_file << choice << std::endl;
         log_file.flush();
     }
-    record_chosen_action(actions, choice);
 }
 
 int InputLogger::get_input(const std::vector<LegalAction> &actions) {
@@ -351,7 +338,6 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
         game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),
             player_name(priority).c_str(), choice);
-        record_chosen_action(actions, choice);
         return choice;
     }
 
@@ -368,7 +354,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         // choice directly from it — no query is emitted and stdin/stdout are not
         // touched. Runs AFTER the cooperative-unwind short-circuit above and BEFORE
         // the GameState/Query population + stdio loop. Falls through to the same
-        // commit_choice the stdio path uses so record_action stays correct. Unset in
+        // commit_choice the stdio path uses so the decision log stays complete. Unset in
         // bin/robomage, so this is a no-op there. The provider can consult
         // search_loop_safe() for restore-safety without any extra plumbing.
         if (input_provider) {

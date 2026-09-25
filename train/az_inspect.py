@@ -804,8 +804,7 @@ def obs_blocks():
         ("stack", e._STACK_START, e._GY_START),
         ("graveyards", e._GY_START, e._EXILE_START),
         ("exiles", e._EXILE_START, e._HAND_START),
-        ("hand", e._HAND_START, e._HIST_START),
-        ("action history", e._HIST_START, e._HIST_END),
+        ("hand", e._HAND_START, e._MATCH_CTX_START),
         ("match context", e._MATCH_CTX_START, e._LIBRARY_CTX_START),
         ("library context", e._LIBRARY_CTX_START, e._CUR_TURN_IDX),
         ("turn", e._CUR_TURN_IDX, e._KNOWN_TOP_LIB_START),
@@ -1622,15 +1621,12 @@ def _body_segments(sd):
     shapes (never a re-spelled literal). ``arch_offset`` is the start of the
     archetype one-hot block within the vector."""
     import env
-    from extractor import _HIST_RECENT_K
     E = int(sd["trunk.perm_encoder.0.weight"].shape[0])
     card_feat = (int(sd["trunk.card_emb.weight"].shape[1])
                  + int(sd["trunk.card_props"].shape[1]))
-    cat_dim = int(sd["trunk.action_cat_emb.weight"].shape[1])
     from extractor import _BOARD_COUNT_FEATS
     segments = [
         ("global ctx",         env._GLOBAL_SIZE),
-        ("history recent-K",   _HIST_RECENT_K * (cat_dim + card_feat + 2)),
         ("match/lib/turn ctx", env._KNOWN_TOP_LIB_START - env._MATCH_CTX_START),
         ("board counts",       _BOARD_COUNT_FEATS),
         ("revealed agg",       E),

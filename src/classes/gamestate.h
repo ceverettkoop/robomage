@@ -184,12 +184,6 @@ typedef struct GameState_tag {
     int  self_library_ct;
     int  opp_library_ct;
 
-    // Recent action history (newest first), 4 floats per entry:
-    //   category / ACTION_CATEGORY_MAX, card_vocab_idx / N_CARD_TYPES, is_self,
-    //   turn / 50.0
-    float action_history[ACTION_HISTORY_SIZE * 4];
-    int   action_history_len;  // valid entries (0 to ACTION_HISTORY_SIZE)
-
     // Known top-of-library cards (viewer's library only). Index 0 = top.
     // -1 = unknown.
     int known_top_library_self[KNOWN_TOP_LIBRARY_SIZE];

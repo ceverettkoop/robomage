@@ -97,9 +97,8 @@ static int get_card_vocab_idx(Entity e) {
 }
 
 // Vocab index for an action's source entity or a stack entity. The single chain
-// shared by populate_query (BQUERY) and record_chosen_action (action log) so the
-// two never disagree, and by the stack feature extractor (a stack entry is a spell
-// with CardData or a standalone ability whose source resolves the same way).
+// used by populate_query (BQUERY) and by the stack feature extractor (a stack entry
+// is a spell with CardData or a standalone ability whose source resolves the same way).
 int action_card_vocab_idx(Entity e) {
     if (e == 0) return -1;
     if (global_coordinator.entity_has_component<Permanent>(e)) {
@@ -739,32 +738,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     fill_graveyard(gs->self_exile, self_exile_items);
     fill_graveyard(gs->opp_exile, opp_exile_items);
 
-    // Action history: copy from ring buffer, newest first, with perspective normalization
-    gs->action_history_len = cur_game.action_history_count;
-    bool viewer_is_a = (viewer == Zone::PLAYER_A);
-    float cat_max = static_cast<float>(ACTION_CATEGORY_MAX);
-    float card_types = static_cast<float>(N_CARD_TYPES);
-    float id_null = -1.0f / card_types;
-    for (int i = 0; i < ACTION_HISTORY_SIZE; i++) {
-        int base = i * 4;
-        if (i < gs->action_history_len) {
-            // Read newest first: walk backwards from write position
-            int ring_idx = (cur_game.action_history_write - 1 - i + ACTION_HISTORY_SIZE) % ACTION_HISTORY_SIZE;
-            const auto& entry = cur_game.action_history[ring_idx];
-            gs->action_history[base + 0] = static_cast<float>(entry.category) / cat_max;
-            gs->action_history[base + 1] = entry.card_vocab_idx >= 0
-                ? static_cast<float>(entry.card_vocab_idx) / card_types
-                : id_null;
-            gs->action_history[base + 2] = (entry.player_a == viewer_is_a) ? 1.0f : 0.0f;
-            gs->action_history[base + 3] = static_cast<float>(entry.turn) / TURN_NORMALIZER;
-        } else {
-            gs->action_history[base + 0] = 0.0f;
-            gs->action_history[base + 1] = 0.0f;
-            gs->action_history[base + 2] = 0.0f;
-            gs->action_history[base + 3] = 0.0f;
-        }
-    }
-
     // ── Deck-identity tail blocks ─────────────────────────────────────────────
     // Self LIVE library (packed ascending by vocab id from the std::map tally).
     {
@@ -975,10 +948,6 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Self hand (10 x 1 = 10)
     for (int i = 0; i < MAX_HAND_SLOTS; i++)
         state.push_back(norm_card_id(gs->self_hand[i]));
-
-    // Action history (128 x 4 = 512, newest first)
-    for (int i = 0; i < ACTION_HISTORY_SIZE * 4; i++)
-        state.push_back(gs->action_history[i]);
 
     // Match context (4 floats, all 0.0 in single-game mode)
     state.push_back(gs->match_game_number >= 0 ? static_cast<float>(gs->match_game_number) / 3.0f : 0.0f);

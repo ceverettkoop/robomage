@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define ACTION_HISTORY_SIZE 128
 #define KNOWN_TOP_LIBRARY_SIZE 5
 
 #ifdef __cplusplus
@@ -141,13 +140,6 @@ enum MandatoryChoice {
 // shifts every later block via machine_io.h's offset chain) automatically.
 // Mirrored into Python by train/gen_enums.py, which counts the enum's members.
 static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
-
-struct ActionHistoryEntry {
-    int category;        // ActionCategory value
-    int card_vocab_idx;  // -1 for non-card entities
-    bool player_a;       // true if Player A took this action
-    int turn;            // cur_game.turn when the action was taken
-};
 
 // An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
 // and can't be removed. Created by an AB$ Effect with StaticAbilities$ + Duration$ Permanent
@@ -773,11 +765,6 @@ struct Game {
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
         std::map<Entity, Entity> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
 
-        // Recent action history ring buffer for ML observation
-        ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};
-        int action_history_write = 0;  // next write position (circular)
-        int action_history_count = 0;  // total entries written (capped at ACTION_HISTORY_SIZE)
-
         // Known top-of-library cards (one array per player). Index 0 is the top of the
         // library. -1 = unknown (default). Updated when a card is placed on top of a
         // library or when a card is removed from the top; cleared to all -1 on shuffle.
@@ -798,7 +785,6 @@ struct Game {
         // `ended`/`winner` inline.
         void player_loses(Zone::Ownership loser);
 
-        void record_action(int category, int card_vocab_idx, bool player_a);
         void clear_known_top_library(bool player_a_owner);
         void known_top_library_push(bool player_a_owner, int card_vocab_idx);
         void known_top_library_remove_pos(bool player_a_owner, int pos);

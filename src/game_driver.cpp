@@ -94,7 +94,7 @@ bool log_decisions_flag = false;
 // legal action is pass), emit a passive BSTATE frame — the BQUERY payload with
 // no stdin read — so an observing front end can render each step instead of
 // fast-forwarding to the next real decision. Consumes no input and records
-// nothing, so replays, action history, and search mirrors are unaffected.
+// nothing, so replays and search mirrors are unaffected.
 bool broadcast_steps_mode = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
@@ -1053,9 +1053,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     sideboard_phase_state = &st;
     // Repoint priority to the sideboarding player (the established engine pattern:
     // every prompt is issued with player_a_has_priority pointing at the chooser).
-    // record_chosen_action's actor stamp and populate_query's per-action
-    // controller_is_self flags both read this flag, so without the repoint both
-    // would carry whatever the just-ended game left behind. cur_game is discarded
+    // populate_query's per-action controller_is_self flags read this flag, so
+    // without the repoint they would carry whatever the just-ended game left behind. cur_game is discarded
     // (replaced by Game(seed)) when the next game starts, so nothing to restore.
     cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
     // Reset the pending-decision baseline to 0 for this phase. The OUT menu wraps

@@ -146,8 +146,7 @@ class ScriptTrunk(nn.Module):
 
     __constants__ = [
         "N_CARD_TYPES", "ACTION_CATEGORY_MAX", "REF_ZONE_MAX",
-        "GLOBAL_SIZE", "HIST_START", "HIST_END", "HIST_ENTRIES",
-        "HIST_ENTRY_SIZE", "HIST_RECENT_K", "KNOWN_TOP_LIB_START",
+        "GLOBAL_SIZE", "MATCH_CTX_START", "KNOWN_TOP_LIB_START",
         "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "REVEALED_START",
         "REVEALED_END", "PENDING_START", "PENDING_END", "EXTRAS_START",
         "EXTRAS_END", "MANA_DEV_START", "MANA_DEV_END",
@@ -202,11 +201,7 @@ class ScriptTrunk(nn.Module):
         self.ACTION_CATEGORY_MAX = int(ACTION_CATEGORY_MAX)
         self.REF_ZONE_MAX = int(REF_ZONE_MAX)
         self.GLOBAL_SIZE = int(_ex._GLOBAL_SIZE)
-        self.HIST_START = int(_ex._HIST_START)
-        self.HIST_END = int(_ex._HIST_END)
-        self.HIST_ENTRIES = int(_ex._HIST_ENTRIES)
-        self.HIST_ENTRY_SIZE = int(_ex._HIST_ENTRY_SIZE)
-        self.HIST_RECENT_K = int(_ex._HIST_RECENT_K)
+        self.MATCH_CTX_START = int(_ex._MATCH_CTX_START)
         self.KNOWN_TOP_LIB_START = int(_ex._KNOWN_TOP_LIB_START)
         self.KNOWN_TOP_LIB_END = int(_ex._KNOWN_TOP_LIB_END)
         self.KNOWN_TOP_LIB_SLOTS = int(_ex._KNOWN_TOP_LIB_SLOTS)
@@ -310,8 +305,7 @@ class ScriptTrunk(nn.Module):
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
         global_ctx = obs[:, :self.GLOBAL_SIZE]
-        hist_ctx = obs[:, self.HIST_START:self.HIST_END]
-        meta_ctx = obs[:, self.HIST_END:self.KNOWN_TOP_LIB_START]
+        meta_ctx = obs[:, self.MATCH_CTX_START:self.KNOWN_TOP_LIB_START]
         revealed = obs[:, self.REVEALED_START:self.REVEALED_END]
         pending = obs[:, self.PENDING_START:self.PENDING_END]
         extras = obs[:, self.EXTRAS_START:self.EXTRAS_END]
@@ -322,15 +316,6 @@ class ScriptTrunk(nn.Module):
         # encoder below); the tail's raw bucket float is stripped and only the
         # two archetype one-hots enter the base cat.
         arch_onehot = obs[:, self.ARCH_ONEHOT_START:self.ARCH_ONEHOT_END]
-
-        hist_entries = hist_ctx.reshape(-1, self.HIST_ENTRIES, self.HIST_ENTRY_SIZE)
-        recent = hist_entries[:, :self.HIST_RECENT_K]
-        rec_cat_idx = torch.round(recent[:, :, 0] * self.ACTION_CATEGORY_MAX).long(
-        ).clamp(0, self.ACTION_CATEGORY_MAX)
-        rec_cat_e = self.action_cat_emb(rec_cat_idx)
-        rec_card_e, _ = self._embed_ids(recent[:, :, 1])
-        hist_recent = torch.cat([rec_cat_e, rec_card_e, recent[:, :, 2:4]], dim=-1
-                                ).reshape(recent.shape[0], -1)
 
         pending_emb, _ = self._embed_ids(pending[:, 0])
         pending_feat = torch.cat([pending_emb, pending[:, 1:2]], dim=-1)
@@ -508,7 +493,7 @@ class ScriptTrunk(nn.Module):
         opp_main_agg = self._mean_max(opp_main_enc, opp_main_present)
         opp_side_agg = self._mean_max(opp_side_enc, opp_side_present)
 
-        base = torch.cat([global_ctx, hist_recent, meta_ctx, board_counts,
+        base = torch.cat([global_ctx, meta_ctx, board_counts,
                           revealed_agg, pending_feat, extras, mana_dev, log_vitals,
                           arch_onehot,
                           perm_agg, stk_agg, top_stack_feat, gy_agg, ex_agg,

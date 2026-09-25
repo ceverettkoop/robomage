@@ -89,7 +89,7 @@ except ImportError:
 
 # ACTION_CATEGORY_MAX is generated from the C++ ActionCategory enum (single source
 # of truth) by train/gen_enums.py — import it so this module never drifts from the
-# engine's category normalization (used for both the action block and history).
+# engine's category normalization (used for the action block).
 # Every value below is GENERATED from the C++ headers by train/gen_enums.py — the
 # single source of truth. Import them (never re-type the literals) so this module
 # cannot drift from the engine: the layout/size constants (STATE_SIZE, MAX_ACTIONS,
@@ -103,11 +103,11 @@ try:
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
-        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
-        STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
@@ -130,11 +130,11 @@ except ImportError:
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
-        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
-        STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
@@ -449,8 +449,6 @@ _EXILE_SLOTS_TOTAL      = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent (same lay
 _EXILE_SLOT_SIZE        = CARD_ID_SLOT_SIZE    # card id only
 _HAND_SLOTS_TOTAL       = MAX_HAND_SLOTS
 _HAND_SLOT_SIZE         = CARD_ID_SLOT_SIZE
-_ACTION_HISTORY_SIZE    = ACTION_HISTORY_SIZE  # entries in the action history ring (src/classes/game.h)
-_ACTION_HISTORY_ENTRY   = HIST_ENTRY_SIZE      # cat_norm, card_id, is_self, turn/50
 _MATCH_CTX_SIZE         = MATCH_CTX_SIZE       # game_number, self_wins, opp_wins, sideboard_phase
 _LIBRARY_CTX_SIZE       = LIBRARY_CTX_SIZE     # self_lib/60, opp_lib/60, is_post_board
 _CUR_TURN_SIZE          = CUR_TURN_SIZE        # current turn / 50
@@ -470,9 +468,7 @@ _STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE
 _GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE
 _EXILE_START         = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE
 _HAND_START          = _EXILE_START + _EXILE_SLOTS_TOTAL * _EXILE_SLOT_SIZE
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY
-_MATCH_CTX_START     = _HIST_END
+_MATCH_CTX_START     = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE
 # _MATCH_CTX layout: game_number, self_wins, opp_wins, is_sideboard_phase.
 # The sideboard flag is the single source of truth for "this decision is a bo3
 # sideboard root" (used by az_selfplay + opponents.SearchController budget selection).
@@ -613,9 +609,8 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # state vector describes the STALE terminal board of the previous game — noise
 # for a sideboarding decision. When is_sideboard_phase (state[_MATCH_CTX_START+3])
 # is set we zero every block except the ones that actually inform sideboarding:
-# graveyards + exile ("how the game went"), action history (last-game tempo + in-phase
-# swap context), match/library/turn context (game number => play/draw), the
-# opponent revealed-cards multi-hot (the primary signal), and the pending-decision
+# graveyards + exile ("how the game went"), match/library/turn context (game
+# number => play/draw), the opponent revealed-cards multi-hot (the primary signal), and the pending-decision
 # context (which IN card the OUT query is cutting for). The global-extras block
 # (lands played, monarch, day/night, MandatoryChoice one-hot, ...) describes the
 # stale ended game, so it stays masked; it holds no card-id slots. The MANA
@@ -634,7 +629,6 @@ def _build_sideboard_mask():
     keep = np.zeros(STATE_SIZE, dtype=bool)
     for lo, hi in (
         (_GY_START, _HAND_START),                   # graveyards + exile (self + opp)
-        (_HIST_START, _HIST_END),                   # action history ring
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
         (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context

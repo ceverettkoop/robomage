@@ -878,10 +878,6 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
             counters=perm_counters[1] if perm_counters else None,
             token_names=perm_token_names[1] if perm_token_names else None,
             slot_base=_PERM_SLOTS),
-        # NOTE: the action-history ring ([4394-4905] in src/machine_io.h — 128
-        # entries x 4 floats) is DELIBERATELY not decoded here. It is bulky, only
-        # useful for the policy network's temporal context, and never surfaced in
-        # the human-readable board dump; it is the one intentional coverage skip.
         "stack": _decode_stack(state, labels),
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
