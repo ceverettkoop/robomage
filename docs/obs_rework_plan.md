@@ -464,3 +464,13 @@ Vale,Grizzly Bears,Forest" --hand-a "Forest" --hand-b "Swords to Plowshares" --b
 "Plains" --play "A:keep,B:keep,B:cast:Swords to Plowshares,B:target:Grizzly Bears@opp"
 --max-decisions 12`. For the token variant, get a token under Tabernacle (e.g. an Urza's Saga
 construct, or a token maker in the vocab) and remove it in response to its upkeep trigger.
+
+3. **"Activate only once each turn" resets at every turn, not just the controller's untap.**
+   The `game.cpp` untap loop (~214) clears `Ability::activations_this_turn` and
+   `Permanent::loyalty_ability_activated_this_turn` only for the ACTIVE player's permanents. So
+   Scryb Ranger (`ActivationLimit$ 1`, "Activate only once each turn") used on its controller's
+   turn stays locked through the opponent's turn, and the obs `activations_this_turn` shows
+   stale loyalty use on the opponent's turn. Fix: reset both for ALL permanents at each turn
+   boundary. Loyalty (CR 606.3) is only ever activated on its controller's turn, so a per-turn
+   reset is behavior-identical for it. Add a harness regression: Scryb Ranger activated on its
+   controller's turn is offered again on the opponent's turn.
