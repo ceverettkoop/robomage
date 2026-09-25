@@ -20,14 +20,15 @@ extern Game cur_game;
 
 namespace effects {
 
-// Scry N (CR 701.18): the chosen player looks at the top N cards of their library, then
+// Scry N (CR 701.22a): the chosen player looks at the top N cards of their library, then
 // may put any number of them on the bottom of their library and the rest back on top in
 // any order. Modeled as a per-card top-or-bottom choice from the top down; cards left on
 // top keep their relative order (the optional reorder-among-kept is omitted as a
 // simplification). Each kept card goes on its owner's known-top cache at its depth as it
 // is kept, so the kept cards are visible for the remaining choices and afterwards. The
 // player is ValidTgts$ Player (ab.target); absent a target the source's controller
-// scries. After scrying, any SubAbility$ chains with the same target
+// scries. The scrying player sees the cards and makes every keep/bottom choice, so a
+// targeted opponent decides for their own library. After scrying, any SubAbility$ chains with the same target
 // (Kozilek's Command: "scries X, then draws a card" — DBDraw with Defined$ ParentTarget).
 HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
@@ -81,9 +82,10 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         // keys on category + card): keep = TOP_LIBRARY, bottom = BOTTOM_DECK_CARD.
         scry_actions[0].category = ActionCategory::TOP_LIBRARY;
         scry_actions[1].category = ActionCategory::BOTTOM_DECK_CARD;
-        // No priority repoint existed here — the resolving seat is ab.controller,
-        // so seating the ask there is a no-op swap.
-        int choice = ctx.ask(std::move(scry_actions), ab.controller, ab.source);
+        // Asked of the scrying player (CR 701.22a), who need not be the resolving seat
+        // (Kozilek's Command targeting an opponent); the ask repoints priority at them
+        // for the decision only.
+        int choice = ctx.ask(std::move(scry_actions), owner, ab.source);
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice == 1) {
             orderer->add_to_zone(true, card, Zone::LIBRARY);
