@@ -4,7 +4,8 @@
 // no stdio BQUERY round-trip: an InputLogger input-provider hook builds the
 // bit-exact observation in-process (obs_builder), runs a TorchScript-exported
 // AZNet (az_evaluator), and returns the greedy action. `--dump-obs` writes each
-// decision's observation to a binary file so train/test_actor_parity.py can prove
+// decision's observation and chosen action to a binary file so
+// train/test_actor_parity.py can replay the actor's actions and prove obs
 // bit-parity with the Python env pipeline.
 //
 // This binary links the engine objects MINUS obj/main.o (it provides its own
@@ -35,6 +36,8 @@
 #include "search_server.h"
 
 namespace {
+
+void write_dump_record(FILE* dump, const ActorObs& ob, int action);
 
 struct ActorConfig {
     std::string deck = "delver";
@@ -202,6 +205,15 @@ const char* need_arg(int argc, char const* argv[], int& i, const char* flag) {
         std::exit(2);
     }
     return argv[++i];
+}
+
+// One --dump-obs record: int32 num_choices, int32 chosen action, then
+// ACTOR_OBS_SIZE float32s (little-endian, raw append).
+void write_dump_record(FILE* dump, const ActorObs& ob, int action) {
+    int32_t header[2] = {static_cast<int32_t>(ob.num_choices),
+                         static_cast<int32_t>(action)};
+    std::fwrite(header, sizeof(int32_t), 2, dump);
+    std::fwrite(ob.obs.data(), sizeof(float), static_cast<size_t>(ACTOR_OBS_SIZE), dump);
 }
 
 }  // namespace
@@ -498,8 +510,8 @@ int main(int argc, char const* argv[]) {
         }
     }
 
-    // Optional binary obs dump: per decision, int32 num_choices then
-    // ACTOR_OBS_SIZE float32s (little-endian, raw append).
+    // Optional binary obs dump: one write_dump_record per provider call that
+    // returns an action (a --max-decisions concession writes none).
     FILE* dump = nullptr;
     if (!cfg.dump_obs.empty()) {
         dump = std::fopen(cfg.dump_obs.c_str(), "wb");
@@ -596,28 +608,30 @@ int main(int argc, char const* argv[]) {
                                      "conceding the match\n", cfg.max_decisions);
                 return CONCEDE_MATCH;
             }
-            if (dump) {
-                ActorObs ob = build_obs(actions);
-                int32_t nc = static_cast<int32_t>(ob.num_choices);
-                std::fwrite(&nc, sizeof(int32_t), 1, dump);
-                std::fwrite(ob.obs.data(), sizeof(float),
-                            static_cast<size_t>(ACTOR_OBS_SIZE), dump);
-            }
             if (mcts) {
+                // The obs is built before the search call advances the
+                // search state machine.
+                ActorObs ob{};
+                if (dump) ob = build_obs(actions);
                 int r = mcts->on_decision(actions);
                 if (mcts->at_real_decision()) real_decisions++;
+                if (dump) write_dump_record(dump, ob, r);
                 return r;
             }
             real_decisions++;
             ActorObs ob = build_obs(actions);
-            if (cfg.uniform) return 0;
-            // Greedy path: same per-seat selection as the search path — seat B's
-            // decisions use its own net when one was given.
-            AZEvaluator& e =
-                (eval_b_ptr != nullptr && ob.obs[ACTOR_SELF_IS_A_IDX] <= 0.5f)
-                    ? evaluator_b
-                    : evaluator;
-            return e.argmax_action(ob.obs.data(), ob.num_choices);
+            int choice = 0;
+            if (!cfg.uniform) {
+                // Greedy path: same per-seat selection as the search path — seat
+                // B's decisions use its own net when one was given.
+                AZEvaluator& e =
+                    (eval_b_ptr != nullptr && ob.obs[ACTOR_SELF_IS_A_IDX] <= 0.5f)
+                        ? evaluator_b
+                        : evaluator;
+                choice = e.argmax_action(ob.obs.data(), ob.num_choices);
+            }
+            if (dump) write_dump_record(dump, ob, choice);
+            return choice;
         });
 
     // Player A plays --deck; Player B plays --deck-b (defaults to --deck: mirror).
