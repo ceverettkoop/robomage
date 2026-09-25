@@ -474,3 +474,18 @@ construct, or a token maker in the vocab) and remove it in response to its upkee
    boundary. Loyalty (CR 606.3) is only ever activated on its controller's turn, so a per-turn
    reset is behavior-identical for it. Add a harness regression: Scryb Ranger activated on its
    controller's turn is offered again on the opponent's turn.
+
+4. **Actor parity: replay the actor's actions and allow near-ties** (`test_actor_parity.py` only;
+   runs after the 1000-decision cap change).
+   - The `az_actor --dump-obs` record becomes (int32 num_choices, int32 chosen action, float32[OBS]).
+     Grep for any other reader of the dump format and update it.
+   - The Python controller plays the actor's recorded action at decision i, so both sides stay on
+     one trajectory and obs parity covers the whole game. It still computes its own masked logits
+     and records its top pick and the top-2 gap.
+   - `_compare`, per decision:
+     - obs must be bit-exact and num_choices equal (checked before the replay step, so an
+       out-of-range recorded index fails cleanly);
+     - a top pick that differs from the actor's with top-2 gap >= 1e-6 FAILS;
+     - a differing pick with gap < 1e-6 is a tolerated near-tie, and the PASS line prints the
+       near-tie count.
+   - `test_mcts_parity` is unchanged (it compares visit counts and hasn't shown the near-tie issue).
