@@ -39,7 +39,7 @@ from env import (
     _SELF_PERM_START, _OPP_PERM_START, _PERM_SLOTS, _PERM_SLOT_SIZE,
     _PERM_CHOSEN_NAME_OFF, _PERM_RETURNABLE_OFF, _PERM_CARD_OFF,
     _OFF_ATTACHED_TO, _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
-    _STACK_START, _STACK_SLOTS, _STACK_SLOT_SIZE, _STACK_TGT_START,
+    _STACK_START, _STACK_SLOTS, _STACK_SLOT_SIZE, _STACK_TGT_START, _STACK_SIZE_IDX,
     _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
     _GY_START, _GY_SLOT_SIZE, _EXILE_START, _EXILE_SLOT_SIZE,
     _HAND_START, _HAND_SLOT_SIZE, MAX_GY_SLOTS, MAX_HAND_SLOTS,
@@ -955,6 +955,12 @@ _SOURCELESS_APPROVED = {
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS},
     "declare blockers": lambda cats, obs: set(cats) <= {
         CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS},
+    # 603.3b ordering led by one of the monarch's inherent triggers (CR 725.2),
+    # which have no source object and no creating card. (A floating trigger names
+    # the card whose effect created it as the ordering source.)
+    "monarch trigger ordering": lambda cats, obs: (
+        set(cats) == {CAT_ORDER_TRIGGERS}
+        and _decode_card_id(decode.action_card_ids(obs)[0]) == _CARD_ID_SENTINEL),
 }
 
 # PROVISIONAL source-less decision kinds found while adding this check, pending
@@ -964,12 +970,6 @@ _SOURCELESS_PROVISIONAL = {
     # 704.5j legend-rule keep: an SBA, asked on behalf of no card (each menu
     # entry names one of the conflicting legends).
     "legend rule keep": lambda cats, obs: set(cats) == {CAT_KEEP_LEGEND},
-    # 603.3b ordering led by one of the monarch's inherent triggers (CR 725.2),
-    # which have no source object and no creating card. (A floating trigger names
-    # the card whose effect created it as the ordering source.)
-    "monarch trigger ordering": lambda cats, obs: (
-        set(cats) == {CAT_ORDER_TRIGGERS}
-        and _decode_card_id(decode.action_card_ids(obs)[0]) == _CARD_ID_SENTINEL),
     # Draw-step dredge (CR 702.52a): the turn-based draw's replacement choice
     # (entry 0 = draw normally, carrying no card; each dredge entry names its
     # dredge card). A resolution-time draw names the resolving ability instead.
@@ -1487,6 +1487,155 @@ def check_teferi_player_effects():
             f"(activated={activated}, flash decisions={flash}, lapsed={lapsed})")
     finally:
         env.close()
+
+
+def check_squelcher_player_effects():
+    """Guaranteed coverage for invariant (18)'s battlefield-static source of
+    spells_cant_be_countered: seat A starts with Hexing Squelcher in play ("Spells
+    you control can't be countered"). At every decision player A's
+    spells_cant_be_countered flag is set exactly while the Squelcher is on A's
+    battlefield, and player B's never is (the static covers only its controller).
+    Before the preset lands (the mulligans) both halves are empty. Every decision
+    also runs the full check_decision battery. Returns the number of decisions
+    that saw the flag."""
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Hexing Squelcher", bo3=False)
+    flagged = 0
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(120):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
+            check_decision(i, obs, priority_is_a, {}, pregame, deck_blocks,
+                           num_choices=num)
+            (a_flags, _, _), (b_flags, _, _) = _seat_effect_halves(state, priority_is_a)
+            if b_flags[_PE_UNCOUNTERABLE]:
+                raise InvariantError("player B reads spells_cant_be_countered from "
+                                     "A's Hexing Squelcher")
+            gs = decode.decode_game_state(state)
+            a_bf = gs["self_battlefield"] if priority_is_a else gs["opp_battlefield"]
+            present = any(p["name"] == "Hexing Squelcher" for p in a_bf)
+            if a_flags[_PE_UNCOUNTERABLE] != present:
+                raise InvariantError(
+                    f"decision {i}: player A's spells_cant_be_countered="
+                    f"{a_flags[_PE_UNCOUNTERABLE]} with Hexing Squelcher "
+                    f"{'on' if present else 'not on'} A's battlefield")
+            flagged += present
+            _obs, _r, terminated, truncated, _info = env.step(0)
+            if terminated or truncated:
+                break
+        if flagged == 0:
+            raise InvariantError("Hexing Squelcher never seen on A's battlefield")
+        return flagged
+    finally:
+        env.close()
+
+
+# decode_game_state keys a mirrored view is NOT expected to reproduce from the
+# other seat's frame: the priority seat's identity flags, the priority player's
+# private knowledge (a mirrored front end hides it), and the blocks that carry
+# perspective-relative battlefield slot refs (stack targets, delayed-trigger and
+# pending-decision refs).
+_MIRROR_EXEMPT_KEYS = {"priority_player", "priority_is_a", "is_active_player",
+                       "self_hand", "known_top_library", "opp_known_hand",
+                       "opp_revealed", "stack", "delayed_triggers", "pending_decision"}
+# Engine seeds of the scripted games check_mirrored_view drives.
+_MIRROR_SEEDS = (1, 2, 3, 4, 5, 6, 7, 8)
+# Extras that legitimately differ across a priority hand-off (the passing seat's
+# pass flag is set only after it passed) or are viewer-only.
+_MIRROR_EXEMPT_EXTRAS = {"self_passed", "opp_passed", "bottom_remaining"}
+
+
+def _mirror_comparable(gs):
+    """A decode_game_state dict reduced to what a mirrored view must reproduce:
+    the exempt keys dropped and every perspective-relative slot ref ("slot" /
+    "*_slot" fields, numbered from the viewing seat's battlefield) removed."""
+    def strip_slots(v):
+        if isinstance(v, dict):
+            return {k: strip_slots(x) for k, x in v.items()
+                    if k != "slot" and not k.endswith("_slot")}
+        if isinstance(v, list):
+            return [strip_slots(x) for x in v]
+        return v
+    out = {k: strip_slots(v) for k, v in gs.items() if k not in _MIRROR_EXEMPT_KEYS}
+    out["extras"] = {k: v for k, v in out["extras"].items()
+                     if k not in _MIRROR_EXEMPT_EXTRAS}
+    return out
+
+
+def check_mirrored_view():
+    """The play boards' mirrored view (game_driver.decode_human_frame) swaps every
+    per-player key the decoder emits. Drives scripted bo1 games of the
+    exile-heavy bw_dnt vs ur_delver matchup (one per _MIRROR_SEEDS seed) and, at
+    every priority hand-off
+    where one seat PASSES and the other seat's priority window follows in the
+    same step with the same stack size (so only the viewer changed),
+    asserts that the second frame decoded mirrored (as seen by the passing seat)
+    equals the first frame decoded normally, for every key but the
+    _MIRROR_EXEMPT_KEYS / _MIRROR_EXEMPT_EXTRAS. Requires hand-offs where the
+    per-turn counters and the exile blocks differ between the players, so both
+    are exercised. Returns (hand-offs compared, with per-turn asymmetry, with
+    exile asymmetry)."""
+    from types import SimpleNamespace
+    from game_driver import decode_human_frame
+    deck_a, deck_b = "league/bw_dnt", "league/ur_delver"
+    prev = {}          # the previous decision: obs copy, seat, and whether it passed
+    counts = {"compared": 0, "per_turn": 0, "exile": 0}
+
+    def frame(o, mirrored):
+        return decode_human_frame(SimpleNamespace(
+            obs=o, opp_perspective=mirrored, perm_counters=None,
+            perm_token_names=None))[0]
+
+    def key(o):
+        st = o[:STATE_SIZE]
+        return (decode.decode_turn(st), decode.decode_step(st),
+                int(round(float(st[_STACK_SIZE_IDX]) * 10)))
+
+    def on_query(d):
+        o = np.array(d.obs, copy=True)
+        if (prev.get("passed") and prev["seat"] != d.priority_is_a
+                and prev["key"] == key(o)
+                and is_priority_window(decode.action_categories(o, d.num_choices))):
+            own = frame(prev["obs"], False)
+            mirrored = frame(o, True)
+            want, got = _mirror_comparable(own), _mirror_comparable(mirrored)
+            if want != got:
+                bad = sorted(k for k in want if want[k] != got.get(k))
+                raise InvariantError(
+                    f"decision {d.index}: mirrored view differs from the passing seat's "
+                    f"own view at {bad}: own={[want[k] for k in bad]} "
+                    f"mirrored={[got.get(k) for k in bad]}")
+            counts["compared"] += 1
+            counts["per_turn"] += own["self_this_turn"] != own["opp_this_turn"]
+            counts["exile"] += own["self_exile"] != own["opp_exile"]
+        prev.update(obs=o, seat=d.priority_is_a, key=key(o), passed=False)
+
+    def on_action(d, action):
+        cats = decode.action_categories(d.obs, d.num_choices)
+        prev["passed"] = int(cats[action]) == CAT_PASS_PRIORITY
+
+    for seed in _MIRROR_SEEDS:
+        env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=False)
+        obs, _ = env.reset(seed=seed)
+        random.seed(seed)
+        ctrl_a, ctrl_b = _make_scripted_pair(deck_a, deck_b)
+        prev.clear()
+        try:
+            runner.drive_game(env, obs, ctrl_a, ctrl_b, on_query=on_query,
+                              on_action=on_action)
+        finally:
+            env.close()
+    if not counts["per_turn"] or not counts["exile"]:
+        raise InvariantError(
+            f"mirrored-view check never saw asymmetric per-turn counters / exile "
+            f"({counts}); pick a matchup that exercises them")
+    return counts["compared"], counts["per_turn"], counts["exile"]
 
 
 # Bo3 sideboard-check tuning: swaps each seat makes per sideboard phase, how many
@@ -2177,6 +2326,23 @@ def main():
         return 1
     print(f"ok    Veil of Summer player effects: hexproof U/B + uncounterable at "
           f"{n_veil} decisions, empty before and after", flush=True)
+
+    try:
+        n_mir, n_mir_pt, n_mir_ex = check_mirrored_view()
+    except InvariantError as e:
+        print(f"FAIL  mirrored board view\n  {e}", flush=True)
+        return 1
+    print(f"ok    mirrored board view: {n_mir} priority hand-offs match the passing "
+          f"seat's own view ({n_mir_pt} with per-turn and {n_mir_ex} with exile "
+          f"asymmetry)", flush=True)
+
+    try:
+        n_squelch = check_squelcher_player_effects()
+    except InvariantError as e:
+        print(f"FAIL  Hexing Squelcher player effects\n  {e}", flush=True)
+        return 1
+    print(f"ok    Hexing Squelcher player effects: A uncounterable at {n_squelch} "
+          f"decisions with the Squelcher in play, B never", flush=True)
 
     try:
         n_flash, n_lapsed = check_teferi_player_effects()

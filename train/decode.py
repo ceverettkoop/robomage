@@ -933,6 +933,49 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
     return entries
 
 
+# Every per-player (self, opponent) key pair decode_game_state emits, grouped by
+# the dict that holds it (None = the top-level dict). swap_self_opp swaps exactly
+# these, so a new per-player key gets its entry here alongside its decoder. The
+# "extras" keys appear only when non-default, so a pair may be half-present.
+# Viewer-only keys with no counterpart (self_hand, known_top_library,
+# opp_known_hand, opp_revealed, extras' bottom_remaining) are not pairs: the
+# priority player's private knowledge, which a mirrored front end hides instead.
+SELF_OPP_PAIRS = {
+    None: (("self", "opponent"),
+           ("self_library", "opp_library"),
+           ("self_battlefield", "opp_battlefield"),
+           ("self_graveyard", "opp_graveyard"),
+           ("self_exile", "opp_exile"),
+           ("self_this_turn", "opp_this_turn"),
+           ("self_effects", "opp_effects")),
+    "zone_marks": (("self_graveyard", "opp_graveyard"),
+                   ("self_exile", "opp_exile")),
+    "match": (("self_wins", "opp_wins"),),
+    "extras": (("self_lands_played", "opp_lands_played"),
+               ("self_monarch", "opp_monarch"),
+               ("self_citys_blessing", "opp_citys_blessing"),
+               ("self_revolt", "opp_revolt"),
+               ("self_extra_turns", "opp_extra_turns"),
+               ("self_passed", "opp_passed"),
+               ("self_mulligans", "opp_mulligans")),
+}
+
+
+def swap_self_opp(gs):
+    """Swap every SELF_OPP_PAIRS pair of a decode_game_state dict in place (a
+    missing half moves to the other key) and return it: the decode seen from
+    the other seat, apart from the viewer-only keys."""
+    for group, pairs in SELF_OPP_PAIRS.items():
+        d = gs if group is None else gs[group]
+        for a, b in pairs:
+            va, vb = d.pop(a, None), d.pop(b, None)
+            if vb is not None:
+                d[a] = vb
+            if va is not None:
+                d[b] = va
+    return gs
+
+
 def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
                       perm_token_names=None):
     """Decode the full state vector into a human-readable dict.

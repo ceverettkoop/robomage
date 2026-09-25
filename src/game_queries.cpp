@@ -18,6 +18,9 @@ extern Coordinator global_coordinator;
 static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt);
 static Step delayed_fire_step(uint32_t fire_on);
 static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt);
+static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
+                                                 Zone::Ownership source_ctrl,
+                                                 Zone::Ownership player);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
@@ -692,7 +695,30 @@ bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt) {
     return cur_game.cur_step < delayed_fire_step(dt.fire_on);
 }
 
-PlayerEffects player_effects(Zone::Ownership player) {
+// True if `r` is a battlefield CANT_BE_COUNTERED replacement whose ValidSA$ filter is the bare
+// controller-scoped spell filter covering every spell `player` controls, given that the
+// replacement's source is controlled by `source_ctrl`.
+static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
+                                                 Zone::Ownership source_ctrl,
+                                                 Zone::Ownership player) {
+    if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) return false;
+    if (r.valid_sa_filter == "Spell.YouCtrl") return source_ctrl == player;
+    if (r.valid_sa_filter == "Spell.OppCtrl") return source_ctrl != player;
+    return false;
+}
+
+bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities) {
+    if (cur_game.cant_counter_spells_of.count(player) > 0) return true;
+    for (auto e : battlefield_permanents(entities)) {
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
+        for (const auto &r : global_coordinator.GetComponent<CardData>(e).replacement_effects)
+            if (unfiltered_counter_protection_covers(r, ctrl, player)) return true;
+    }
+    return false;
+}
+
+PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &entities) {
     PlayerEffects fx;
     for (const auto &p : cur_game.player_protection_from_everything)
         if (p.player == player) fx.protection_from_everything = true;
@@ -703,7 +729,7 @@ PlayerEffects player_effects(Zone::Ownership player) {
         for (int i = 0; i < 5; i++)
             if (h.colors.count(wubrg[i])) fx.hexproof_from[i] = true;
     }
-    fx.spells_cant_be_countered = cur_game.cant_counter_spells_of.count(player) > 0;
+    fx.spells_cant_be_countered = player_spells_cant_be_countered(player, entities);
     for (const auto &perm : cur_game.cast_with_flash_permissions)
         if (perm.controller == player) fx.may_cast_sorceries_as_flash = true;
     fx.restricted_to_sorcery_speed = rules_mod::opponent_sorcery_speed_locked(player);

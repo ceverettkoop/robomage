@@ -464,9 +464,10 @@
 //                  [1]  cant_gain_life (Roiling Vortex's {R}; player_cant_gain_life)
 //                  [2-6] hexproof_from W, U, B, R, G (Veil of Summer's turn-long grant;
 //                       covers the player and the permanents they control)
-//                  [7]  spells_cant_be_countered (Veil of Summer's turn-long grant; a
-//                       battlefield static such as Hexing Squelcher stays on its
-//                       permanent, since it is filter-qualified per spell)
+//                  [7]  spells_cant_be_countered (player_spells_cant_be_countered: Veil of
+//                       Summer's turn-long grant or an unfiltered "spells you control
+//                       can't be countered" static such as Hexing Squelcher; a per-card
+//                       or type-filtered form stays on its card/permanent)
 //                  [8]  may_cast_sorceries_as_flash (Teferi, Time Raveler's +1 grant)
 //                  [9]  restricted_to_sorcery_speed (an opponent's live OnlySorcerySpeed
 //                       static — Teferi, Time Raveler — via

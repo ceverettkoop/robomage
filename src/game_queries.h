@@ -639,9 +639,10 @@ bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt);
 //   cant_gain_life              — player_cant_gain_life (Roiling Vortex's {R})
 //   hexproof_from[W,U,B,R,G]    — the colors of this player's Game::hexproof_from_colors_this_turn
 //                                 grants (Veil of Summer)
-//   spells_cant_be_countered    — the player is in Game::cant_counter_spells_of (Veil of Summer).
-//                                 A battlefield static (Hexing Squelcher) is filter-qualified per
-//                                 spell and stays on its visible permanent.
+//   spells_cant_be_countered    — player_spells_cant_be_countered(): a Veil of Summer grant or an
+//                                 unfiltered "spells you control can't be countered" battlefield
+//                                 static (Hexing Squelcher). A per-card or type-filtered form covers
+//                                 only some spells and stays on its visible card/permanent.
 //   may_cast_sorceries_as_flash — a Game::cast_with_flash_permissions entry the player controls
 //                                 (Teferi, Time Raveler's +1)
 //   restricted_to_sorcery_speed — rules_mod::opponent_sorcery_speed_locked, derived from the live
@@ -660,7 +661,8 @@ struct PlayerEffects {
     std::vector<int> emblem_vocab_idx;
     int floating_trigger_vocab_idx = -1;
 };
-PlayerEffects player_effects(Zone::Ownership player);
+// `entities` must hold the battlefield permanents (e.g. the iterating system's mEntities).
+PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &entities);
 
 // The card `source` exiled and still tracks via Permanent::exiled_with — the association a Saga
 // records at chapter I so its later chapters can act on "the card exiled with this" (Defined$
@@ -819,6 +821,18 @@ inline bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &
     }
     return false;
 }
+
+// True if EVERY spell `player` controls is protected from being countered by an effect covering
+// the player as a whole (CR 614.13/CantHappen, "spells you control can't be countered"): a
+// Game::cant_counter_spells_of grant (Veil of Summer), or a live battlefield CANT_BE_COUNTERED
+// replacement whose ValidSA$ filter is the bare controller-scoped spell filter — "Spell.YouCtrl" on
+// a permanent `player` controls (Hexing Squelcher) or "Spell.OppCtrl" on one the opponent controls.
+// A spell's own "This spell can't be countered" and a type/color-narrowed filter cover only some
+// spells, so they are not player-level protection (the counter-resolution path checks those per
+// spell). Single source for the counter-resolution check on a spell and the observation's
+// spells_cant_be_countered flag. `entities` must hold the battlefield permanents (e.g. the
+// iterating system's mEntities). Defined in game_queries.cpp.
+bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities);
 
 // True if `e` is a spell that was cast via flashback. Such a spell is exiled
 // (rather than sent to the graveyard) when it leaves the stack — whether it

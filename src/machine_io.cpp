@@ -46,7 +46,8 @@ static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
                                 bool with_lands_in_hand);
 static void push_log_vitals_block(std::vector<float>& out, int life, int library_ct);
 static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps);
-static void fill_player_effects(PlayerState& ps, Zone::Ownership player);
+static void fill_player_effects(PlayerState& ps, Zone::Ownership player,
+                                const std::set<Entity>& bf_entities);
 static void push_player_effects_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
@@ -278,9 +279,11 @@ static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps) 
 }
 
 // Copies player_effects(player) (game_queries.h) into the PlayerState's player-effects fields,
-// keeping the first MAX_EMBLEM_SLOTS emblem card ids.
-static void fill_player_effects(PlayerState& ps, Zone::Ownership player) {
-    const PlayerEffects fx = player_effects(player);
+// keeping the first MAX_EMBLEM_SLOTS emblem card ids. `bf_entities` holds the battlefield
+// permanents the player-level statics are read from.
+static void fill_player_effects(PlayerState& ps, Zone::Ownership player,
+                                const std::set<Entity>& bf_entities) {
+    const PlayerEffects fx = player_effects(player, bf_entities);
     ps.protection_from_everything = fx.protection_from_everything;
     ps.cant_gain_life = fx.cant_gain_life;
     for (int i = 0; i < 5; i++) ps.hexproof_from[i] = fx.hexproof_from[i];
@@ -822,8 +825,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     };
     fill_player_stats(gs->self, viewer_entity);
     fill_player_stats(gs->opponent, opp_entity);
-    fill_player_effects(gs->self, viewer);
-    fill_player_effects(gs->opponent, viewer == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A);
 
     // Global extras (serialized at the end of the state vector; see machine_io.h)
     gs->self.is_monarch     = (cur_game.monarch_entity == viewer_entity);
@@ -997,11 +998,11 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
     fill_delayed_triggers(gs, viewer, stack_delayed);
 
-    // ── Mana development ──────────────────────────────────────────────────────
+    // ── Mana development + player effects ────────────────────────────────────
     // Reuses the battlefield entities pass A already collected (both sides in one
-    // set, since mana_potential re-guards by controller) instead of re-scanning the
-    // ECS. mana_potential applies the live-permanent guard itself, so the phased-out
-    // permanents deliberately kept in the serialized slots are excluded here.
+    // set, since mana_potential and player_effects re-guard by controller) instead
+    // of re-scanning the ECS. Both apply the live-permanent guard themselves, so the
+    // phased-out permanents deliberately kept in the serialized slots are excluded here.
     {
         std::set<Entity> bf_entities(self_ents, self_ents + self_bf);
         bf_entities.insert(opp_ents, opp_ents + opp_bf);
@@ -1018,6 +1019,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         Zone::Ownership opp_view = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
         fill_mana_dev(gs->self, viewer, viewer_entity);
         fill_mana_dev(gs->opponent, opp_view, opp_entity);
+        fill_player_effects(gs->self, viewer, bf_entities);
+        fill_player_effects(gs->opponent, opp_view, bf_entities);
     }
 
     // Graveyards and exile in RECENCY order: slot 0 = most recent arrival (lowest
