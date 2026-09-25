@@ -17,6 +17,11 @@ env's obs for the identical game:
   4. Assert identical decision count, identical num_choices per decision, and
      every observation row bit-exact (np.array_equal).
 
+Every game (bo1) / match (bo3) is capped at PARITY_MAX_DECISIONS real decisions on
+both sides (az_actor --max-decisions; runner.drive_game max_decisions), so a
+randomly initialized net that stumbles into a degenerate loop compares a bounded
+prefix instead of running unbounded.
+
 Run: train/.venv/bin/python train/test_actor_parity.py
 """
 
@@ -39,6 +44,13 @@ import runner
 DECK = "league/ur_delver"
 SEED = 1
 ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
+# Per-game (bo1) / per-match (bo3) decision cap shared by every actor parity test
+# (test_mcts_parity.py imports it): az_actor --max-decisions on the C++ side,
+# runner.drive_game(max_decisions=) on the Python side. Both count every real
+# decision of the game/match (both seats, sideboard and single-choice prompts
+# included; never search simulation steps), so the two capped streams are the
+# same prefix of the same game.
+PARITY_MAX_DECISIONS = 1000
 
 
 class AZRawController:
@@ -88,7 +100,8 @@ def _run_case(td, ts_path, bo3):
     # 1) C++ actor: one game (bo1) or one best-of-three match (--bo3), dumping obs.
     dump_path = os.path.join(td, f"actor_obs_{tag}.bin")
     cmd = [ACTOR_BIN, "--deck", DECK, "--seed", str(SEED),
-           "--model", ts_path, "--dump-obs", dump_path, "--games", "1"]
+           "--model", ts_path, "--dump-obs", dump_path, "--games", "1",
+           "--max-decisions", str(PARITY_MAX_DECISIONS)]
     if bo3:
         cmd.append("--bo3")
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
@@ -102,18 +115,19 @@ def _run_case(td, ts_path, bo3):
     # 2) Drive the SAME game/match through the Python env, both seats azraw.
     ctrl = AZRawController(ts_path)
     env = RoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
-    # The actor plays the whole game/match to the engine's natural end; disable the
-    # env's training-only step cap so the Python drive runs the identical game
-    # (rather than truncating mid-game and comparing an unequal root count). The bo1
-    # cap is 1000 decisions and the parity net is randomly initialized, so a game
-    # that happens to run one decision past it reported a bogus "decision count
-    # differs" — a cap artifact, never an obs mismatch.
+    # The decision cap is drive_game's max_decisions (the same count the actor's
+    # --max-decisions applies); the env's own training-only step truncation is
+    # disabled so it can never cut the drive at a different point.
     env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
     try:
         obs, _ = env.reset(options={"engine_seed": SEED})
-        runner.drive_game(env, obs, ctrl, ctrl)
+        rec = runner.drive_game(env, obs, ctrl, ctrl,
+                                max_decisions=PARITY_MAX_DECISIONS)
     finally:
         env.close()
+    if rec.capped:
+        print(f"NOTE [{tag}]: decision cap {PARITY_MAX_DECISIONS} reached — "
+              f"comparing the capped prefix")
     return actor_obs, ctrl.records
 
 

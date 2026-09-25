@@ -37,6 +37,15 @@ change the game), EXACT parity vs a two-controller Python gate reference
 (per-seat evaluators, shared global root counter), and a cross-world agreement
 report on the two-model game.
 
+Every game (bo1) / match (bo3) on both sides is capped at
+test_actor_parity.PARITY_MAX_DECISIONS real decisions (az_actor --max-decisions;
+runner.drive_game max_decisions), so the compared searched roots are those of
+that bounded prefix.
+
+The Python reference engines run with --search-server, whose debug build traces
+every simulated decision to stderr; that stream goes to per-run log files and
+only their tails are printed when the test fails.
+
 Run: train/.venv/bin/python train/test_mcts_parity.py
 """
 
@@ -56,6 +65,7 @@ from env import MAX_ACTIONS, _MATCH_CTX_START, _SELF_IS_A_IDX
 from cli_spec import BIN_DIR, BUILD_DIR, DEFAULT_AZ_C_PUCT
 import runner
 from search_env import SearchRoboMageEnv
+from test_actor_parity import PARITY_MAX_DECISIONS
 
 DECK = "league/ur_delver"
 # Opponent deck of the vs-scripted parity legs (cross-deck, so the scripted
@@ -82,6 +92,11 @@ SB_ROLLOUT_TURNS = 3
 # game_number, self_wins, opp_wins, sideboard_phase).
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
+# Engine-stderr capture for the Python reference envs: the directory the logs
+# go to (set by main) and every log written, in order.
+_ENGINE_LOG_DIR = [None]
+_ENGINE_LOGS = []
+ENGINE_LOG_TAIL_LINES = 60
 
 
 def _seeds_for(root_index: int) -> list:
@@ -223,6 +238,34 @@ class ParitySearchController:
         return chosen
 
 
+def _capture_engine_stderr(env):
+    """Point ``env``'s engine stderr at a fresh log file (see
+    _print_engine_log_tails). Returns the open file; the caller closes it
+    after the env."""
+    d = _ENGINE_LOG_DIR[0] or tempfile.gettempdir()
+    path = os.path.join(d, f"engine_stderr_{len(_ENGINE_LOGS):02d}.log")
+    fh = open(path, "wb")
+    _ENGINE_LOGS.append(path)
+    env.engine_stderr = fh
+    return fh
+
+
+def _print_engine_log_tails():
+    """Print the last ENGINE_LOG_TAIL_LINES lines of every captured engine
+    stderr log (the failure path's view of the reference engines)."""
+    for path in _ENGINE_LOGS:
+        try:
+            with open(path, "rb") as f:
+                lines = f.read().decode("utf-8", "replace").splitlines()
+        except OSError:
+            continue
+        print(f"--- engine stderr {os.path.basename(path)} ({len(lines)} lines, "
+              f"last {min(len(lines), ENGINE_LOG_TAIL_LINES)}) ---",
+              file=sys.stderr)
+        for line in lines[-ENGINE_LOG_TAIL_LINES:]:
+            print(line, file=sys.stderr)
+
+
 def _read_visits_dump(path):
     """Read --dump-visits: repeated (int32 root_index, int32 num_choices,
     record). A TREE root's record is int64[num_choices] visits; a PLAN
@@ -261,7 +304,8 @@ def _run_actor(ts_path, dump_path, batch, bo3=False,
            "--c", str(C_PUCT), "--batch", str(batch), "--world-seeds",
            str(SEED_BASE), "--deck", DECK, "--seed", str(SEED),
            "--dump-visits", dump_path, "--games", "1",
-           "--merge-dupes", str(int(merge_dupes))]
+           "--merge-dupes", str(int(merge_dupes)),
+           "--max-decisions", str(PARITY_MAX_DECISIONS)]
     if eval_server is not None:
         cmd += ["--eval-server", eval_server]
     else:
@@ -287,6 +331,9 @@ def _run_actor(ts_path, dump_path, batch, bo3=False,
         print("FAIL: az_actor exited nonzero:\n"
               + proc.stderr.decode("utf-8", "replace"), file=sys.stderr)
         return None
+    if b"--max-decisions" in proc.stderr:
+        print(f"NOTE: {os.path.basename(dump_path)}: actor reached the "
+              f"{PARITY_MAX_DECISIONS}-decision cap (capped prefix compared)")
     return _read_visits_dump(dump_path)
 
 
@@ -334,16 +381,19 @@ def _python_reference(ts_path, bo3, merge_dupes=True):
     ev = TSEvaluator(ts_path)
     ctrl = ParitySearchController(ev, merge_dupes=merge_dupes)
     env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
-    # The C++ actor plays to the engine's natural end (no decision cap); disable
-    # RoboMageEnv's training-only step truncation so both sides run the SAME full
-    # game/match and compare an equal number of searched roots.
+    # The decision cap is drive_game's max_decisions (the same count the actor's
+    # --max-decisions applies); RoboMageEnv's training-only step truncation is
+    # disabled so it can never cut the drive at a different point.
     env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    log = _capture_engine_stderr(env)
     ctrl.bind_env(env)
     try:
         obs, _ = env.reset(options={"engine_seed": SEED})
-        runner.drive_game(env, obs, ctrl, ctrl)
+        runner.drive_game(env, obs, ctrl, ctrl,
+                          max_decisions=PARITY_MAX_DECISIONS)
     finally:
         env.close()
+        log.close()
     return ctrl.records, ctrl.is_sb, ctrl.rep_records
 
 
@@ -363,12 +413,17 @@ def _python_reference_scripted(ts_path, deck_b, uniform=False):
     agent.set_deck_names(DECK, deck_b)
     env = SearchRoboMageEnv(deck_a=DECK, deck_b=deck_b)
     env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    log = _capture_engine_stderr(env)
     ctrl.bind_env(env)
     try:
         env.reset(options={"engine_seed": SEED})
         agent.new_game()
         done = False
-        while not done:
+        # Same cap and count as drive_game(max_decisions=): every decision of
+        # either seat, stopping before the (PARITY_MAX_DECISIONS+1)-th.
+        decisions = 0
+        while not done and decisions < PARITY_MAX_DECISIONS:
+            decisions += 1
             nc = env._num_choices
             o = env._obs
             if o[_SELF_IS_A_IDX] > 0.5:
@@ -379,6 +434,7 @@ def _python_reference_scripted(ts_path, deck_b, uniform=False):
             done = term or trunc
     finally:
         env.close()
+        log.close()
     return ctrl.records
 
 
@@ -393,13 +449,16 @@ def _python_reference_gate(ts_a, ts_b, bo3):
     ctrl_b = ParitySearchController(TSEvaluator(ts_b), share_with=ctrl_a)
     env = SearchRoboMageEnv(deck_a=DECK, deck_b=DECK, bo3=bo3)
     env.MAX_STEPS = env.MAX_STEPS_BO3 = 1 << 30
+    log = _capture_engine_stderr(env)
     ctrl_a.bind_env(env)
     ctrl_b.bind_env(env)
     try:
         obs, _ = env.reset(options={"engine_seed": SEED})
-        runner.drive_game(env, obs, ctrl_a, ctrl_b)
+        runner.drive_game(env, obs, ctrl_a, ctrl_b,
+                          max_decisions=PARITY_MAX_DECISIONS)
     finally:
         env.close()
+        log.close()
     return ctrl_a.records
 
 
@@ -664,7 +723,7 @@ def _gate_legs(td, ts_path, actor1):
     return 0
 
 
-def main():
+def _run_legs():
     import argparse
     ap = argparse.ArgumentParser(
         description="MCTS visit-parity gates (C++ actor vs Python reference)")
@@ -918,6 +977,21 @@ def main():
             oracle_proc.wait()
             shutil.rmtree(oracle_dir, ignore_errors=True)
     return 0
+
+
+def main():
+    """Run the legs with the Python reference engines' stderr captured to log
+    files, printing their tails only when a gate fails."""
+    with tempfile.TemporaryDirectory() as logdir:
+        _ENGINE_LOG_DIR[0] = logdir
+        try:
+            rc = _run_legs()
+        except BaseException:
+            _print_engine_log_tails()
+            raise
+        if rc:
+            _print_engine_log_tails()
+        return rc
 
 
 if __name__ == "__main__":

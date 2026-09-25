@@ -65,6 +65,12 @@ struct ActorConfig {
     unsigned int seed = 1;
     int games = 1;
     bool bo3 = false;  // --bo3: each of `games` units is a best-of-three MATCH
+    // --max-decisions N: cap each game (bo1) / match (--bo3) at N real
+    // decisions. The (N+1)-th real decision is answered with CONCEDE_MATCH
+    // (the deciding seat concedes, the engine unwinds normally) and is neither
+    // dumped nor searched. Simulation steps inside a search never count.
+    // 0 = uncapped.
+    int max_decisions = 0;
     bool uniform = false;
     // MCTS (--search) config.
     bool search = false;
@@ -148,6 +154,8 @@ void print_usage(const char* prog) {
                  "usage: %s --deck <name> [--deck-b <name>] [--seed N] [--games N] "
                  "[--bo3] [--model <path.ts.pt> | --uniform | --eval-server <socket>] "
                  "[--device cpu|cuda] [--dump-obs <file>]\n"
+                 "       [--max-decisions N] (per game, or per match with --bo3: "
+                 "the (N+1)-th real decision concedes the match; 0 = uncapped)\n"
                  "       [--model-b <path.ts.pt> | --eval-server-b <socket>] "
                  "(seat-B evaluator for two-model gate/eval matches; "
                  "incompatible with --selfplay/--uniform)\n"
@@ -220,6 +228,8 @@ int main(int argc, char const* argv[]) {
             cfg.seed = static_cast<unsigned int>(std::stoul(need_arg(argc, argv, i, "--seed")));
         } else if (a == "--games") {
             cfg.games = std::stoi(need_arg(argc, argv, i, "--games"));
+        } else if (a == "--max-decisions") {
+            cfg.max_decisions = std::stoi(need_arg(argc, argv, i, "--max-decisions"));
         } else if (a == "--bo3") {
             cfg.bo3 = true;
         } else if (a == "--model") {
@@ -573,8 +583,19 @@ int main(int argc, char const* argv[]) {
                      cfg.fast_sims);
     }
 
+    // Real decisions taken in the current game (bo1) / match (--bo3), for the
+    // --max-decisions cap. Under --search a real decision spans every provider
+    // call from the one that finds the search IDLE to the one that returns
+    // with it IDLE again (the committed pick); without it every call is real.
+    long real_decisions = 0;
     InputLogger::instance().set_input_provider(
         [&](const std::vector<LegalAction>& actions) -> int {
+            const bool real = !mcts || mcts->at_real_decision();
+            if (real && cfg.max_decisions > 0 && real_decisions >= cfg.max_decisions) {
+                std::fprintf(stderr, "az_actor: --max-decisions %d reached; "
+                                     "conceding the match\n", cfg.max_decisions);
+                return CONCEDE_MATCH;
+            }
             if (dump) {
                 ActorObs ob = build_obs(actions);
                 int32_t nc = static_cast<int32_t>(ob.num_choices);
@@ -582,7 +603,12 @@ int main(int argc, char const* argv[]) {
                 std::fwrite(ob.obs.data(), sizeof(float),
                             static_cast<size_t>(ACTOR_OBS_SIZE), dump);
             }
-            if (mcts) return mcts->on_decision(actions);
+            if (mcts) {
+                int r = mcts->on_decision(actions);
+                if (mcts->at_real_decision()) real_decisions++;
+                return r;
+            }
+            real_decisions++;
             ActorObs ob = build_obs(actions);
             if (cfg.uniform) return 0;
             // Greedy path: same per-seat selection as the search path — seat B's
@@ -680,6 +706,7 @@ int main(int argc, char const* argv[]) {
         for (int m = 0; m < cfg.games; m++) {
             unsigned int match_seed = cfg.seed + static_cast<unsigned int>(m) * 3u;
             std::srand(match_seed);
+            real_decisions = 0;
             if (recording) mcts->begin_match(match_seed);
             // agent.new_game() at match start + after every completed game —
             // the exact call sites az_selfplay._play_match uses (reset + each
@@ -700,6 +727,7 @@ int main(int argc, char const* argv[]) {
             // Mirror main.cpp's single-game setup: srand(seed), reset the
             // match-scoped revealed accumulator, fresh ECS, then Player A on the play.
             std::srand(seed_g);
+            real_decisions = 0;
             match_reset_revealed();
             EcsSystems sys = init_ecs();
             // Reset per-game move counter + samples; seed_g keys the cap coin

@@ -944,6 +944,11 @@ class RoboMageEnv(gym.Env):
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
         self.last_engine_seed = None  # engine --seed of the most recent reset()
+        # Where the engine subprocess's stderr goes (a Popen `stderr=` target,
+        # read at each reset()). None inherits the parent's stderr so engine
+        # errors are visible; a test can point it at a file to keep the debug
+        # build's per-decision search trace out of its own output.
+        self.engine_stderr = None
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -1006,7 +1011,7 @@ class RoboMageEnv(gym.Env):
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=None,  # inherit parent stderr so engine errors are visible
+            stderr=self.engine_stderr,
             bufsize=-1,  # binary mode, fully buffered
             cwd=BIN_DIR,  # game uses getcwd() to locate resources/
         )
