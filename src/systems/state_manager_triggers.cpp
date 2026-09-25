@@ -1289,17 +1289,19 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                 }
                 game_log("%s orders %zu simultaneous triggers (pick which goes on the stack next).\n",
                          player_name(owner).c_str(), group_size);
+                // The group's leading trigger source is the pending-decision source
+                // (each menu entry still carries its own trigger's source).
+                Entity order_source = tp.queue.front().source;
                 if (!suspendable) {
+                    PendingDecisionScope pending(order_source);
                     pick = static_cast<size_t>(InputLogger::instance().get_input(choices));
                 } else {
-                    // Park the ordering pick for the main loop. Byte-compat: this prompt
-                    // runs with pending_decision_source == 0 today (no PendingDecisionScope
-                    // wraps it), and the corpus decodes that state field — arm with 0.
+                    // Park the ordering pick for the main loop.
                     pq = PendingQuery{};
                     pq.tag = PendingQuery::TRIGGER_PLACE;
                     pq.menu = std::move(choices);
                     pq.chooser_is_a = (owner == Zone::PLAYER_A);
-                    pq.decision_source = 0;
+                    pq.decision_source = order_source;
                     pq.prev_priority = cur_game.player_a_has_priority;
                     pq.answered = false;
                     pq.answer = -1;

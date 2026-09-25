@@ -116,7 +116,7 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                 }
                 bool suspended = false;
                 do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target,
-                                             ctx, suspended, kind);
+                                             ab.source, ctx, suspended, kind);
                 if (suspended) return HandlerResult::SUSPENDED;
             }
 

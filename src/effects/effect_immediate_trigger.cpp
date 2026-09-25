@@ -61,7 +61,8 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
             } else {
                 // The request_optional_yesno menu, asked through ctx so it can
                 // suspend (same "Decline:/Accept:" entries, same chooser
-                // repoint-and-restore, ambient pending-decision source).
+                // repoint-and-restore), with the ability's source as the
+                // pending-decision source.
                 std::string prompt = "Pay " + std::to_string(ab.energy_cost) + " energy";
                 std::vector<LegalAction> yn;
                 LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
@@ -72,7 +73,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
                 accept.category = ActionCategory::OPTIONAL_YESNO;
                 accept.option_ordinal = 1;  // 1 = accept
                 yn.push_back(accept);
-                int yc = ctx.ask(std::move(yn), ab.controller, cur_game.pending_decision_source);
+                int yc = ctx.ask(std::move(yn), ab.controller, ab.source);
                 if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
                 if (yc == 1 && pay_energy(pl, ab.energy_cost)) {
                     game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.energy_cost);

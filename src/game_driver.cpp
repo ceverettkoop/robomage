@@ -919,9 +919,18 @@ static void pregame_opening_actions(EcsSystems &sys) {
             accept.category = ActionCategory::OPTIONAL_YESNO;
             accept.option_ordinal = 1;  // 1 = accept
             yn.push_back(accept);
+            // The card is the pending-decision source. The baseline is reset to 0 first
+            // (nothing is pending in the pregame): a SNAPSHOT here captures the scoped value,
+            // and without the reset a RESTORE's recreated scope would capture it as its prev
+            // and leak it past the answer.
             bool prev_priority = cur_game.player_a_has_priority;
             cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
-            int choice = pregame_ask(yn);
+            int choice;
+            {
+                cur_game.pending_decision_source = 0;
+                PendingDecisionScope pending(card);
+                choice = pregame_ask(yn);
+            }
             if (choice < 0) return;  // restore latched; state is about to be overwritten
             cur_game.player_a_has_priority = prev_priority;
             pg.oh_card_idx++;

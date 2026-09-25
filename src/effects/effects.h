@@ -41,9 +41,11 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 // true when every remaining draw completed (or the game ended mid-batch,
 // mirroring Orderer::draw's per-draw ended bail). Blocking contexts prompt
 // inline, byte-identical to Orderer::draw. Shared by effects::draw and
-// sylvan_library's draw-2. Defined in effect_draw.cpp.
+// sylvan_library's draw-2. `decision_source` (the resolving ability's source) is
+// the pending-decision context of each dredge question. Defined in effect_draw.cpp.
 bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                              Zone::Ownership owner, size_t &done, size_t total);
+                              Zone::Ownership owner, size_t &done, size_t total,
+                              Entity decision_source);
 HandlerResult gain_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult mill(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
@@ -302,8 +304,9 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY };
 // `cost_pips` (MANA kind only) overrides the default generic {cost} requirement with exact colored
 // pips (Chain Lightning: {R}{R}); when null/empty the cost is `cost` generic mana as before.
+// `decision_source` (the resolving ability's source) is the pending-decision context of every ask.
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-                     FrameCtx &ctx, bool &suspended, UnlessPayKind kind = UnlessPayKind::MANA,
+                     Entity decision_source, FrameCtx &ctx, bool &suspended, UnlessPayKind kind = UnlessPayKind::MANA,
                      const ManaValue *cost_pips = nullptr);
 
 #endif /* EFFECTS_H */

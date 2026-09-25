@@ -442,7 +442,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                             // and its SBE caller early-return cooperatively
                             // before the Permanent is created.
                             pq_arm_sbe(key, std::move(yn), ev.affected_player,
-                                       /*decision_source=*/0);
+                                       /*decision_source=*/ev.entity);
                             return;
                         }
                         // Blocking fallback for an SBE call outside the main loop
@@ -540,9 +540,14 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             choices.push_back(decline);
             // Blocking decision seated on the owner — this MOVE_TO_ZONE dispatch fires inside
             // Orderer::add_to_zone, the one remaining blocking replacement site (see choose_one).
+            // The entering card is the pending-decision source.
             bool prev_priority = cur_game.player_a_has_priority;
             cur_game.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
-            int pick = InputLogger::instance().get_input(choices);
+            int pick;
+            {
+                PendingDecisionScope pending(ev.entity);
+                pick = InputLogger::instance().get_input(choices);
+            }
             cur_game.player_a_has_priority = prev_priority;
             if (pick >= 0 && pick < static_cast<int>(discardable.size())) {
                 ev.pending_discard = discardable[static_cast<size_t>(pick)];  // caller discards it

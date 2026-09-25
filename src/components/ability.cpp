@@ -57,7 +57,8 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
 // The "unless they discard N cards" flavor of run_unless_loop (CR 701.8), suspendable via
 // FrameCtx. Forward-declared per CLAUDE.md.
 static bool run_discard_unless(size_t count, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended);
+                               std::shared_ptr<Orderer> orderer, Entity decision_source,
+                               FrameCtx &ctx, bool &suspended);
 
 // Category-aware detail suffix for the "Resolving ability" log line. Display-only.
 // Forward-declared per CLAUDE.md.
@@ -420,7 +421,8 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 // progress persist in the level's UnlessRt; the per-discard menu is intentionally rebuilt from
 // the LIVE hand each ask — between asks the hand only shrinks by the discards themselves.
 static bool run_discard_unless(size_t count, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended) {
+                               std::shared_ptr<Orderer> orderer, Entity decision_source,
+                               FrameCtx &ctx, bool &suspended) {
     suspended = false;
     UnlessRt local_rt;
     UnlessRt &rt = ctx.can_suspend() ? ctx.rt<UnlessRt>() : local_rt;
@@ -445,9 +447,7 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
         decline.option_ordinal = 0;  // 0 = don't pay
         actions.push_back(decline);
 
-        // Runs source-less today (no PendingDecisionScope at the old call site),
-        // so the ambient pending-decision value travels through the ask unchanged.
-        int choice = ctx.ask(actions, controller, cur_game.pending_decision_source);
+        int choice = ctx.ask(actions, controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -470,7 +470,7 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
             la.category = ActionCategory::DISCARD;
             dactions.push_back(la);
         }
-        int dchoice = ctx.ask(dactions, controller, cur_game.pending_decision_source);
+        int dchoice = ctx.ask(dactions, controller, decision_source);
         if (dchoice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -498,11 +498,11 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-    FrameCtx &ctx, bool &suspended, UnlessPayKind kind, const ManaValue *cost_pips) {
+    Entity decision_source, FrameCtx &ctx, bool &suspended, UnlessPayKind kind, const ManaValue *cost_pips) {
     suspended = false;
 
     if (kind == UnlessPayKind::DISCARD) {
-        return run_discard_unless(cost, controller, orderer, ctx, suspended);
+        return run_discard_unless(cost, controller, orderer, decision_source, ctx, suspended);
     }
 
     if (kind == UnlessPayKind::LIFE) {
@@ -524,9 +524,7 @@ bool run_unless_loop(
         decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
-        // Runs source-less today, so the ambient pending-decision value travels
-        // through the ask unchanged.
-        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        int choice = ctx.ask(std::move(unless_actions), controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -564,7 +562,7 @@ bool run_unless_loop(
         decline.option_ordinal = 0;  // 0 = don't pay
         unless_actions.push_back(decline);
 
-        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        int choice = ctx.ask(std::move(unless_actions), controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -627,10 +625,9 @@ bool run_unless_loop(
             unless_actions.push_back(decline);
         }
 
-        // Runs source-less today, so the ambient pending-decision value travels
-        // through the ask unchanged. Passed as an lvalue: the tap branch below
-        // still needs the menu to map the chosen action.
-        int choice = ctx.ask(unless_actions, controller, cur_game.pending_decision_source);
+        // Passed as an lvalue: the tap branch below still needs the menu to map
+        // the chosen action.
+        int choice = ctx.ask(unless_actions, controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -1638,9 +1635,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             accept.category = ActionCategory::OPTIONAL_YESNO;
             accept.option_ordinal = 1;  // 1 = accept
             yn.push_back(accept);
-            // Runs source-less today (no PendingDecisionScope), so the ambient
-            // pending-decision value travels through the ask unchanged.
-            int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+            int yc = ctx.ask(std::move(yn), controller, source);
             if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
             if (yc == 0) {
                 game_log("%s declines the optional triggered ability.\n", player_name(controller).c_str());
@@ -1687,7 +1682,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                 accept.category = ActionCategory::OPTIONAL_YESNO;
                 accept.option_ordinal = 1;  // 1 = accept
                 yn.push_back(accept);
-                int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+                int yc = ctx.ask(std::move(yn), controller, source);
                 if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
                 if (yc == 0) {
                     game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());

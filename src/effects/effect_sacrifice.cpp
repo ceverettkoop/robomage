@@ -117,7 +117,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
                          ab.unless_generic_cost);
             bool suspended = false;
             bool unpaid = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source,
-                                          ctx, suspended, UnlessPayKind::ENERGY);
+                                          ab.source, ctx, suspended, UnlessPayKind::ENERGY);
             if (suspended) return HandlerResult::SUSPENDED;
             if (!unpaid) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is sacrificed
         }

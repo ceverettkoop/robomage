@@ -3303,13 +3303,13 @@ PROMPT_SITE_WHITELIST = {
     #     were merged into a single per-move prompt; both halves of a swap now
     #     come through that one loop-safe site.
     #   action_processor.cpp: declare-attackers select, declare-blockers
-    #     select, cleanup discard, miracle reveal, miracle cast (5 of its 8) —
-    #     the miracle reveal and the miracle cast/do-not-cast decision (CR 702.94)
-    #     both ride the mandatory-choice channel via proc_mandatory_choice,
-    #     wrapped in search_set_loop_safe like cleanup discard, so they are
-    #     loop-top snapshot-safe emitters
+    #     select, cleanup discard, and the miracle ask (4 of its 7) — the
+    #     miracle reveal and the miracle cast/do-not-cast decision (CR 702.94)
+    #     share one ask_miracle_choice site and both ride the mandatory-choice
+    #     channel via proc_mandatory_choice, wrapped in search_set_loop_safe
+    #     like cleanup discard, so they are loop-top snapshot-safe emitters
     # (b) interactive-only (machine mode auto-resolves; never a search root):
-    #   action_processor.cpp: hybrid-pip interactive branch (1 of 6)
+    #   action_processor.cpp: hybrid-pip interactive branch (1 of 7)
     #   mana_system.cpp: interactive mana payment (1)
     # (c) blocking fallbacks / blocking-shim residuals:
     #   resolution_frame.cpp: FrameCtx::ask blocking path — serves every
@@ -3317,7 +3317,7 @@ PROMPT_SITE_WHITELIST = {
     #     SubAbility riders, pregame SBE, effect_choose_card mini-cast) (1)
     #   action_processor.cpp: BlockingTargetAsker + blocking
     #     announce_charm_modes — reachable only via effect_choose_card's
-    #     cast-from-exile mini-cast (2 of 6)
+    #     cast-from-exile mini-cast (2 of 7)
     #   state_manager.cpp / state_manager_statics.cpp /
     #     state_manager_triggers.cpp: outside-main-loop fallbacks (legend keep,
     #     ETB choose-type, ETB name-card, trigger ordering) — defensive,
@@ -3338,7 +3338,7 @@ PROMPT_SITE_WHITELIST = {
     "input_logger.cpp": 2,
     "game_driver.cpp": 4,
     "resolution_frame.cpp": 1,
-    "action_processor.cpp": 8,
+    "action_processor.cpp": 7,
     "mana_system.cpp": 1,
     os.path.join("systems", "replacement_effects.cpp"): 3,
     os.path.join("systems", "state_manager.cpp"): 1,

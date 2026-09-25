@@ -60,6 +60,11 @@ from env import (
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
+                    CAT_PASS_PRIORITY, CAT_DISCARD, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS,
+                    CAT_KEEP_LEGEND, CAT_ORDER_TRIGGERS, CAT_CHOOSE_REPLACEMENT,
+                    CAT_PAY_UNLESS, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_U,
+                    CAT_MANA_B, CAT_MANA_R, CAT_MANA_G, CAT_MANA_C, _MC_NAMES,
                     SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
                     LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
@@ -532,6 +537,95 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
                       f"duplicate ability ordinal {o} on entity slot {slot} — "
                       "same-permanent activations are indistinguishable")
             seen_by_slot[slot].add(o)
+
+    # (14) Every non-priority decision names its asking card in the
+    # pending-decision block, outside the listed source-less kinds.
+    if num_choices:
+        _check_pending_source(decision_idx, seat, obs, state, num_choices)
+
+
+# ── Pending-decision source (14) ──────────────────────────────────────────────
+#
+# Every decision that is not a priority window names its asking card in the
+# pending-decision block, except the decision kinds below. A priority window is
+# recognized by its menu: only determine_legal_actions emits the PASS_PRIORITY
+# *category* (scry/dig/yes-no prompts reuse the PASS_PRIORITY action type under
+# their own categories).
+
+_MC_CLEANUP_DISCARD = _MC_NAMES.index("Cleanup Discard")
+# A pay-unless menu: the pay / decline entries plus the tap-for-mana entries.
+_PAY_UNLESS_MENU_CATS = {CAT_PAY_UNLESS, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_U,
+                         CAT_MANA_B, CAT_MANA_R, CAT_MANA_G, CAT_MANA_C}
+
+# User-approved source-less decision kinds: label -> predicate(cats, obs).
+_SOURCELESS_APPROVED = {
+    "mulligan": lambda cats, obs: decode.is_mulligan(cats),
+    "mulligan bottoming": lambda cats, obs: decode.is_bottom(cats),
+    "sideboarding": lambda cats, obs: set(cats) <= {
+        CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE},
+    "cleanup discard": lambda cats, obs: (
+        set(cats) == {CAT_DISCARD}
+        and obs[_EXTRAS_MC_ONEHOT_START + _MC_CLEANUP_DISCARD] > 0.5),
+    "declare attackers": lambda cats, obs: set(cats) <= {
+        CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS},
+    "declare blockers": lambda cats, obs: set(cats) <= {
+        CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS},
+}
+
+# PROVISIONAL source-less decision kinds found while adding this check, pending
+# user review — each is a candidate for either a real source or promotion into
+# the approved table above.
+_SOURCELESS_PROVISIONAL = {
+    # 704.5j legend-rule keep: an SBA, asked on behalf of no card (each menu
+    # entry names one of the conflicting legends).
+    "legend rule keep": lambda cats, obs: set(cats) == {CAT_KEEP_LEGEND},
+    # 603.3b ordering whose leading trigger has no source object (a floating
+    # trigger such as Tamiyo, Seasoned Scholar's +2 effect, or the monarch's
+    # inherent triggers); the ordering source is the leading menu entry's.
+    "sourceless trigger ordering": lambda cats, obs: (
+        set(cats) == {CAT_ORDER_TRIGGERS}
+        and _decode_card_id(decode.action_card_ids(obs)[0]) == _CARD_ID_SENTINEL),
+    # Draw-step dredge (CR 702.52a): the turn-based draw's replacement choice
+    # (entry 0 = draw normally, carrying no card; each dredge entry names its
+    # dredge card). A resolution-time draw names the resolving ability instead.
+    "draw-step dredge": lambda cats, obs: (
+        set(cats) == {CAT_CHOOSE_REPLACEMENT}
+        and _decode_card_id(decode.action_card_ids(obs)[0]) == _CARD_ID_SENTINEL),
+    # 616.1 choice among several applicable replacement effects (each menu
+    # entry names its replacement's source).
+    "616.1 replacement choice": lambda cats, obs: set(cats) == {CAT_CHOOSE_REPLACEMENT},
+    # A pay-unless menu (PAY_UNLESS plus tap-for-mana entries) whose resolving
+    # ability's source no longer exists: The Tabernacle at Pendrell Vale's
+    # granted upkeep trigger resolving after its token creature ceased to exist.
+    "pay-unless with a vanished source": lambda cats, obs: (
+        CAT_PAY_UNLESS in cats and set(cats) <= _PAY_UNLESS_MENU_CATS),
+}
+
+
+def sourceless_kind(cats, obs):
+    """The allowed-exception label for a source-less decision, or None."""
+    for table in (_SOURCELESS_APPROVED, _SOURCELESS_PROVISIONAL):
+        for label, pred in table.items():
+            if pred(cats, obs):
+                return label
+    return None
+
+
+def is_priority_window(cats):
+    return any(int(c) == CAT_PASS_PRIORITY for c in cats)
+
+
+def _check_pending_source(decision_idx, seat, obs, state, num_choices):
+    cats = [int(c) for c in decode.action_categories(obs, num_choices)]
+    if is_priority_window(cats):
+        return
+    if _decode_card_id(state[_PENDING_DECISION_START]) != _CARD_ID_SENTINEL:
+        return
+    if sourceless_kind(cats, obs) is None:
+        _fail(decision_idx, seat, "pending_decision.source", "-",
+              state[_PENDING_DECISION_START],
+              f"non-priority decision without a pending-decision source "
+              f"(menu categories {sorted(set(cats))})")
 
 
 # ── Game driving ──────────────────────────────────────────────────────────────

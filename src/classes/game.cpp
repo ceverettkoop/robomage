@@ -645,8 +645,8 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
         }
         // Park the dredge question for the loop top (tag TURN_DRAW): persist
         // priority at the drawing player (the blocking prompt's repoint) and
-        // arm with the ambient pending-decision source (the blocking prompt
-        // ran scope-less — source 0 at a turn-based draw).
+        // arm with the ambient pending-decision source (0: a turn-based draw
+        // has no asking card; each dredge entry names its own card).
         PendingQuery &pq = game.pending_query;
         pq = PendingQuery{};
         pq.tag = PendingQuery::TURN_DRAW;

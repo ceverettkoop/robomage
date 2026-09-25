@@ -956,7 +956,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             // suspend mid-apply: the caller chain (this function, then
                             // state_based_effects) early-returns cooperatively.
                             pq_arm_sbe(key, std::move(type_choices), perm_ref.controller,
-                                       /*decision_source=*/0);
+                                       /*decision_source=*/entity);
                             return;
                         }
                         // Blocking fallback for an SBE call outside the main loop.
@@ -1004,7 +1004,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             game_log("Choose a card name for %s:\n", perm_ref.name.c_str());
                             if (in_main_loop()) {
                                 pq_arm_sbe(key, std::move(name_choices), perm_ref.controller,
-                                           /*decision_source=*/0);
+                                           /*decision_source=*/entity);
                                 return;
                             }
                             // Blocking fallback for an SBE call outside the main
