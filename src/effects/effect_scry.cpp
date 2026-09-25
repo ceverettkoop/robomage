@@ -24,8 +24,10 @@ namespace effects {
 // may put any number of them on the bottom of their library and the rest back on top in
 // any order. Modeled as a per-card top-or-bottom choice from the top down; cards left on
 // top keep their relative order (the optional reorder-among-kept is omitted as a
-// simplification). The player is ValidTgts$ Player (ab.target); absent a target the
-// source's controller scries. After scrying, any SubAbility$ chains with the same target
+// simplification). Each kept card goes on its owner's known-top cache at its depth as it
+// is kept, so the kept cards are visible for the remaining choices and afterwards. The
+// player is ValidTgts$ Player (ab.target); absent a target the source's controller
+// scries. After scrying, any SubAbility$ chains with the same target
 // (Kozilek's Command: "scries X, then draws a card" — DBDraw with Defined$ ParentTarget).
 HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
@@ -59,7 +61,10 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     }
 
     // Decide top-to-bottom per card. Bottomed cards move to the library bottom; cards left
-    // on top stay in place (their distance_from_top compacts as bottomed cards leave).
+    // on top stay in place (their distance_from_top compacts as bottomed cards leave), so a
+    // kept card already sits at its final depth when it is recorded as known. The record
+    // follows the answer with no suspension point between them, and a resume re-enters at
+    // the next card (rt.idx advances in the loop increment).
     for (; rt.idx < rt.lib.size(); ++rt.idx) {
         Entity card = rt.lib[rt.idx];
         auto &cd = global_coordinator.GetComponent<CardData>(card);
@@ -83,6 +88,8 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         if (choice == 1) {
             orderer->add_to_zone(true, card, Zone::LIBRARY);
             game_log("%s puts a card on the bottom of their library.\n", player_name(owner).c_str());
+        } else {
+            orderer->note_library_card_known(card);
         }
     }
     return HandlerResult::DONE_RUN_SUBS;

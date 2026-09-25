@@ -35,6 +35,7 @@
 // --- file-local helpers (forward declarations) ---
 static ColorIdentity color_identity_from(const CardData &cd);
 static void restore_printed_card(Entity target);
+static int card_vocab_of(Entity target);
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -267,11 +268,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // NOT see the card (the looker is the opponent), record an UNKNOWN marker (-1) instead of the
     // real identity, so the cache positions stay honest without leaking a card they never saw.
     if (!on_bottom && destination == Zone::LIBRARY) {
-        int vocab_idx = -1;
-        if (top_seen_by_owner && global_coordinator.entity_has_component<CardData>(target)) {
-            vocab_idx = card_name_to_index(
-                global_coordinator.GetComponent<CardData>(target).name);
-        }
+        int vocab_idx = top_seen_by_owner ? card_vocab_of(target) : -1;
         cur_game.known_top_library_push(target_zone.owner == Zone::PLAYER_A, vocab_idx);
     }
 
@@ -388,6 +385,35 @@ std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
     return contents;
 }
 
+void Orderer::note_library_card_known(Entity card) {
+    const auto &zone = global_coordinator.GetComponent<Zone>(card);
+    if (zone.location != Zone::LIBRARY) return;
+    cur_game.known_top_library_set(zone.owner == Zone::PLAYER_A,
+                                   static_cast<int>(zone.distance_from_top), card_vocab_of(card));
+}
+
+void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
+    add_to_zone(false, card, Zone::LIBRARY);
+    auto &zone = global_coordinator.GetComponent<Zone>(card);
+    // A replacement that redirected or prevented the move leaves nothing to sink.
+    if (zone.location != Zone::LIBRARY || zone.distance_from_top != 0 || depth == 0) return;
+    size_t sunk_to = 0;
+    for (auto &&other : mEntities) {
+        if (other == card) continue;
+        auto &oz = global_coordinator.GetComponent<Zone>(other);
+        if (oz.location != Zone::LIBRARY || oz.owner != zone.owner) continue;
+        if (oz.distance_from_top >= 1 && oz.distance_from_top <= depth) {
+            oz.distance_from_top--;
+            sunk_to++;
+        }
+    }
+    zone.distance_from_top = sunk_to;
+    bool is_a = zone.owner == Zone::PLAYER_A;
+    int vocab_idx = (is_a ? cur_game.known_top_library_a : cur_game.known_top_library_b)[0];
+    cur_game.known_top_library_remove_pos(is_a, 0);
+    cur_game.known_top_library_insert(is_a, static_cast<int>(sunk_to), vocab_idx);
+}
+
 void Orderer::shuffle_library(Zone::Ownership owner) {
     auto contents = get_library_contents(owner);
     size_t n = contents.size();
@@ -418,6 +444,12 @@ static ColorIdentity color_identity_from(const CardData &cd) {
     ColorIdentity ci;
     ci.colors = card_colors(cd);
     return ci;
+}
+
+// The card's vocab index, or -1 when it has no CardData (a token).
+static int card_vocab_of(Entity target) {
+    if (!global_coordinator.entity_has_component<CardData>(target)) return -1;
+    return card_name_to_index(global_coordinator.GetComponent<CardData>(target).name);
 }
 
 // Undo an in-place copy effect on a permanent leaving the battlefield: put the stashed printed

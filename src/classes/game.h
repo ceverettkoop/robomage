@@ -818,6 +818,12 @@ struct Game {
         void clear_known_top_library(bool player_a_owner);
         void known_top_library_push(bool player_a_owner, int card_vocab_idx);
         void known_top_library_remove_pos(bool player_a_owner, int pos);
+        // Records card_vocab_idx at `pos` without moving any entry (a card already sitting at
+        // that depth became known). No-op outside the tracked window.
+        void known_top_library_set(bool player_a_owner, int pos, int card_vocab_idx);
+        // Inserts card_vocab_idx at `pos`, shifting the entries at pos.. one deeper (the deepest
+        // falls off the window). No-op outside the tracked window.
+        void known_top_library_insert(bool player_a_owner, int pos, int card_vocab_idx);
 
         bool ready_to_resolve();
         // CR 615: is this combat damage prevented by an active combat-damage prevention shield?

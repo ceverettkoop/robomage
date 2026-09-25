@@ -44,6 +44,14 @@ public:
     // re-sorting inline at each call site.
     std::vector<Entity> get_library_top(Zone::Ownership owner, size_t n);
     std::vector<Entity> get_hand(Zone::Ownership owner);
+    // Records `card` (in a library) on its owner's known-top cache at its current depth,
+    // without moving it: the owner has looked at it and it stays where it is (a scry keep).
+    void note_library_card_known(Entity card);
+    // Puts `card` on its owner's library `depth` cards from the top (0 = the top), under the
+    // cards already there: a top placement through add_to_zone (the same zone-change semantics,
+    // known-top push included) that then sinks below the `depth` cards above it, carrying its
+    // known-top entry down with it. A depth past the library's end leaves it on the bottom.
+    void put_in_library_at_depth(Entity card, size_t depth);
     void shuffle_library(Zone::Ownership owner);
     void generate_libraries(const Deck &deck_a, const Deck &deck_b);
     void draw_hands();

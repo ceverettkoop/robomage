@@ -72,7 +72,7 @@ struct ScryRt {
 struct SurveilRt {
     bool init = false;            // slice fetched + look logs emitted
     std::vector<Entity> remaining;  // looked-at cards not yet assigned; pinned
-    std::vector<Entity> to_top;     // chosen to stay on top, in choice order; pinned
+    std::vector<Entity> to_top;     // kept on top, in choice order, each placed; pinned
 };
 struct RearrangeRt {
     bool init = false;            // slice fetched + look log emitted

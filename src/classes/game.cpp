@@ -90,6 +90,19 @@ void Game::known_top_library_remove_pos(bool player_a_owner, int pos) {
     arr[KNOWN_TOP_LIBRARY_SIZE - 1] = -1;
 }
 
+void Game::known_top_library_set(bool player_a_owner, int pos, int card_vocab_idx) {
+    if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
+    int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    arr[pos] = card_vocab_idx;
+}
+
+void Game::known_top_library_insert(bool player_a_owner, int pos, int card_vocab_idx) {
+    if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
+    int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    for (int i = KNOWN_TOP_LIBRARY_SIZE - 1; i > pos; i--) arr[i] = arr[i - 1];
+    arr[pos] = card_vocab_idx;
+}
+
 void Game::pass_priority() {
     if (player_a_has_priority) a_has_passed = true;
     if (!player_a_has_priority) b_has_passed = true;
