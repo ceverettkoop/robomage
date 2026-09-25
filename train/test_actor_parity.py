@@ -55,7 +55,7 @@ ACTOR_BIN = os.path.join(BUILD_DIR, "az_actor")
 # decision of the game/match (both seats, sideboard and single-choice prompts
 # included; never search simulation steps), so the two capped streams are the
 # same prefix of the same game.
-PARITY_MAX_DECISIONS = 1000
+PARITY_MAX_DECISIONS = 3000
 # Top-2 masked-logit gap below which a Python argmax that differs from the
 # actor's recorded pick is a tolerated near-tie rather than a failure.
 NEAR_TIE_GAP = 1e-6
