@@ -65,6 +65,13 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // looker and redacted from the owner.
     Zone::Ownership looker = ab.controller;
     bool owner_sees = (dig_owner == looker);
+    // Narrative actor: the ability's controller when the dug player is a chosen target (Jace
+    // +2 looks at the target's library), else the dug player acting on their own library
+    // (Goblin Guide: the defending player reveals and takes the card). Zones are the dig owner's
+    // ("their" when the actor owns them, else "Player B's").
+    Zone::Ownership actor = (ab.valid_tgts != "N_A") ? looker : dig_owner;
+    const std::string actor_name = player_name(actor);
+    const std::string owner_poss = owner_possessive(actor, dig_owner);
 
     // The revealed slice, the filtered pool, and the resolved take count are
     // computed ONCE (frozen) and persist in the frame rt so a suspended pick
@@ -138,7 +145,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             matching.push_back(e);
         }
 
-        game_log("%s looks at the top %zu card(s) of their library.\n", player_name(dig_owner).c_str(), rt.lib.size());
+        game_log("%s looks at the top %zu card(s) of %s library.\n", actor_name.c_str(), rt.lib.size(),
+                 owner_poss.c_str());
 
         // Reveal$ True (Goblin Guide): the looked-at cards are shown to ALL players. Log the
         // reveal publicly (visible to both seats, not redacted) and record it in the belief-state
@@ -147,8 +155,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         if (ab.dig_reveal) {
             for (auto e : rt.lib) {
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
-                game_log("%s reveals %s from the top of their library.\n", player_name(dig_owner).c_str(),
-                         cd.name.c_str());
+                game_log("%s reveals %s from the top of %s library.\n", actor_name.c_str(), cd.name.c_str(),
+                         owner_poss.c_str());
                 mark_card_revealed(e, dig_owner);
             }
         }
@@ -228,20 +236,21 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees);
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (chosen_dest == Zone::LIBRARY) {
-            game_log_private(looker, "%s puts %s on the %s of their library.\n", player_name(dig_owner).c_str(),
-                cd.name.c_str(), on_bottom ? "bottom" : "top");
-            game_log_redacted(looker, "%s puts a card on the %s of their library.\n",
-                player_name(dig_owner).c_str(), on_bottom ? "bottom" : "top");
+            game_log_private(looker, "%s puts %s on the %s of %s library.\n", actor_name.c_str(),
+                cd.name.c_str(), on_bottom ? "bottom" : "top", owner_poss.c_str());
+            game_log_redacted(looker, "%s puts a card on the %s of %s library.\n",
+                actor_name.c_str(), on_bottom ? "bottom" : "top", owner_poss.c_str());
         } else if (chosen_dest == Zone::BATTLEFIELD) {
             // Public information once it hits the battlefield.
-            game_log("%s puts %s onto the battlefield.\n", player_name(dig_owner).c_str(), cd.name.c_str());
+            game_log("%s puts %s onto the battlefield.\n", actor_name.c_str(), cd.name.c_str());
         } else {
-            const char *where = chosen_dest == Zone::EXILE       ? "exile"
-                                : chosen_dest == Zone::GRAVEYARD ? "their graveyard"
-                                                                 : "hand";
-            game_log_private(looker, "%s puts %s into %s.\n", player_name(dig_owner).c_str(),
-                cd.name.c_str(), where);
-            game_log_redacted(looker, "%s puts a card into %s.\n", player_name(dig_owner).c_str(), where);
+            const std::string where = chosen_dest == Zone::EXILE       ? std::string("exile")
+                                      : chosen_dest == Zone::GRAVEYARD ? owner_poss + " graveyard"
+                                      : actor == dig_owner             ? std::string("hand")
+                                                                       : owner_poss + " hand";
+            game_log_private(looker, "%s puts %s into %s.\n", actor_name.c_str(), cd.name.c_str(),
+                where.c_str());
+            game_log_redacted(looker, "%s puts a card into %s.\n", actor_name.c_str(), where.c_str());
         }
     }
 
@@ -267,7 +276,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         for (auto e : remaining) {
             orderer->add_to_zone(false, e, rest_dest, owner_sees);
             auto &cd = global_coordinator.GetComponent<CardData>(e);
-            game_log("%s puts %s into their %s.\n", player_name(dig_owner).c_str(), cd.name.c_str(),
+            game_log("%s puts %s into %s %s.\n", actor_name.c_str(), cd.name.c_str(), owner_poss.c_str(),
                      rest_dest == Zone::GRAVEYARD ? "graveyard"
                      : rest_dest == Zone::EXILE   ? "exile"
                                                   : "hand");
@@ -280,8 +289,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     for (auto e : remaining) {
         orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, owner_sees);
     }
-    game_log("%s puts %zu card(s) on the %s of their library.\n", player_name(dig_owner).c_str(),
-             remaining.size(), rest_on_bottom ? "bottom" : "top");
+    game_log("%s puts %zu card(s) on the %s of %s library.\n", actor_name.c_str(), remaining.size(),
+             rest_on_bottom ? "bottom" : "top", owner_poss.c_str());
     return HandlerResult::DONE_RUN_SUBS;
 }
 

@@ -36,7 +36,8 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         rt.lib = orderer->get_library_top(owner, num_cards);
         rt.remaining = rt.lib;
 
-        game_log("%s looks at the top %zu card(s) of their library.\n", player_name(owner).c_str(), rt.lib.size());
+        game_log("%s looks at the top %zu card(s) of %s library.\n", player_name(ab.controller).c_str(),
+                 rt.lib.size(), owner_possessive(ab.controller, owner).c_str());
         rt.init = true;
     }
     size_t actual = rt.lib.size();
@@ -94,7 +95,8 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         if (shuffle_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (shuffle_choice == 1) {
             orderer->shuffle_library(owner);
-            game_log("%s shuffles their library.\n", player_name(owner).c_str());
+            game_log("%s shuffles %s library.\n", player_name(ab.controller).c_str(),
+                     owner_possessive(ab.controller, owner).c_str());
         }
     }
     return HandlerResult::DONE_RUN_SUBS;

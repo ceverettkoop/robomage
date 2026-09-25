@@ -29,6 +29,9 @@ void cli_error(const std::string& msg);
 // Utility
 const char* step_to_string(Step step);
 std::string player_name(Zone::Ownership owner);
+// Possessive for a zone of `owner` in a line whose subject is `actor`: "their" when they are
+// the same player, else "Player B's" (e.g. "Player A looks at the top card of Player B's library").
+std::string owner_possessive(Zone::Ownership actor, Zone::Ownership owner);
 
 // Logging: printf in CLI; no-op in machine mode
 void game_log(const char* fmt, ...);
