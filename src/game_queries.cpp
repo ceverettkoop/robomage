@@ -31,9 +31,26 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
 // Look up a leaving-the-battlefield snapshot, if one was captured for `e` (declared in
 // game_queries.h).
 const LastKnownInfo *lki_for(Entity e) {
+    const LastKnownInfo *lki = departed_lki_for(e);
+    return (lki && !lki->superseded) ? lki : nullptr;
+}
+
+const LastKnownInfo *departed_lki_for(Entity e) {
     auto it = cur_game.last_known_info.find(e);
     return it == cur_game.last_known_info.end() ? nullptr : &it->second;
 }
+
+void supersede_last_known_info(Entity e) {
+    auto it = cur_game.last_known_info.find(e);
+    if (it != cur_game.last_known_info.end()) it->second.superseded = true;
+}
+
+void supersede_departed_cards() {
+    for (auto &kv : cur_game.last_known_info)
+        if (!kv.second.is_token) kv.second.superseded = true;
+}
+
+void forget_last_known_info(Entity e) { cur_game.last_known_info.erase(e); }
 
 std::string last_known_name(Entity e) {
     const LastKnownInfo *lki = lki_for(e);

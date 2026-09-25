@@ -1051,10 +1051,10 @@ size_t evaluate_dynamic_amount(
         // LKI fallback (CR 608.2h): the source has left the battlefield (Blast Zone is sacrificed
         // as part of its own activation cost before this DestroyAll bound resolves) — use the
         // counter count snapshotted as it left play.
-        auto li = cur_game.last_known_info.find(source);
-        if (li != cur_game.last_known_info.end()) {
-            auto ci = li->second.counters.find(ctype);
-            if (ci != li->second.counters.end() && ci->second > 0)
+        // The ability refers to the departed Blast Zone even if the card has since moved again.
+        if (const LastKnownInfo *lki = departed_lki_for(source)) {
+            auto ci = lki->counters.find(ctype);
+            if (ci != lki->counters.end() && ci->second > 0)
                 return static_cast<size_t>(ci->second);
         }
         return 0;

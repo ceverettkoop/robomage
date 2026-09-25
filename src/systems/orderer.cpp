@@ -125,6 +125,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         cur_game.pending_enters_transformed.erase(target);
     }
 
+    // CR 400.7: a card that already left the battlefield becomes a new object again with this
+    // move, so its snapshot from that exit no longer describes it (a departure from the
+    // battlefield replaces the snapshot below instead).
+    if (target_zone.location != Zone::BATTLEFIELD && target_zone.location != destination)
+        supersede_last_known_info(target);
+
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
         Entity owner_entity = target_zone.owner == Zone::PLAYER_A
@@ -167,6 +173,10 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         // pending decision can still refer to it.
         lki.name = global_coordinator.GetComponent<Permanent>(target).name;
         lki.is_token = global_coordinator.GetComponent<Permanent>(target).is_token;
+        // A card's snapshot is read as the departed object only by the resolution that moved it
+        // (CR 608.2h); a card leaving outside any resolution (a state-based death, a cost) is at
+        // once a new object to every general reader (CR 400.7). See lki_for.
+        lki.superseded = !lki.is_token && !cur_game.resolution.active;
         if (global_coordinator.entity_has_component<Token>(target))
             lki.token_script = global_coordinator.GetComponent<Token>(target).script_name;
         // Snapshot the cards this permanent had exiled (CR 608.2h last-known info): a

@@ -133,6 +133,11 @@ struct LastKnownInfo {
                                            // sacrificed as part of its own activation cost (Blast
                                            // Zone: "MV equal to the number of charge counters on it")
                                            // reads the last-known count (CR 608.2h).
+    bool superseded = false;               // the card is a new object to every later reader (CR 400.7):
+                                           // the resolution that moved it is over, or it moved again
+                                           // (see lki_for). General reads (lki_for) no longer see this
+                                           // snapshot; only look-backs at the departed object itself
+                                           // (departed_lki_for) still do (CR 608.2h).
     std::shared_ptr<const CardData> copied_card;  // the copied characteristics of a permanent that
                                                   // left play as an in-place copy (Thespian's
                                                   // Stage): the card itself reverts to its printed
@@ -255,7 +260,10 @@ struct Game {
         int converge = 0;
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
-                                            // effective_* accessors when the object is no longer in play
+                                            // effective_* accessors when the object is no longer in play.
+                                            // A card's entry is superseded once the card is a new
+                                            // object (see lki_for); every entry is erased when its
+                                            // entity id is issued again
         std::vector<Entity> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments

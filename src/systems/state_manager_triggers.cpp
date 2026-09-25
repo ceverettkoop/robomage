@@ -948,11 +948,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // The how-it-entered gates ("if you cast it", evoke, offspring) and the active DFC face
         // lived on the stripped Permanent; the look-back reads them from the LKI snapshot taken
         // as the permanent left the battlefield.
-        const LastKnownInfo *lki = nullptr;
-        {
-            auto lki_it = game.last_known_info.find(entity);
-            if (lki_it != game.last_known_info.end()) lki = &lki_it->second;
-        }
+        // A battlefield-departure event (or an ETB look-back) refers to the object that left
+        // play, so it reads that departed object's snapshot even if the card moved again within
+        // the same resolution (a flicker). A move between other zones is a new object's own
+        // event (CR 400.7) and sees only a current snapshot.
+        const LastKnownInfo *lki = (ev_origin == Zone::BATTLEFIELD || etb_lookback)
+                                       ? departed_lki_for(entity)
+                                       : lki_for(entity);
         // DisableTriggers (Doorkeeper Thrull) applies to the entering permanent's ETB triggers
         // exactly as in the battlefield scan.
         if (etb_lookback && rules_mod::etb_triggers_suppressed(entity)) continue;

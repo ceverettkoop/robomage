@@ -339,9 +339,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                     bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
                     bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
                     if (youctrl || oppctrl) {
-                        auto lit = cur_game.last_known_info.find(e);
-                        Zone::Ownership lc = lit != cur_game.last_known_info.end()
-                                                 ? lit->second.controller : Zone::UNKNOWN;
+                        const LastKnownInfo *lki = lki_for(e);
+                        Zone::Ownership lc = lki ? lki->controller : Zone::UNKNOWN;
                         bool ctrl_ok = youctrl ? (lc == caster)
                                                : (lc != caster && lc != Zone::UNKNOWN);
                         if (!ctrl_ok) continue;
@@ -374,8 +373,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
         if (global_coordinator.entity_has_component<Permanent>(ab.source))
             return global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
-        auto lit = cur_game.last_known_info.find(ab.source);
-        return lit != cur_game.last_known_info.end() && lit->second.cast_from_hand_by_controller;
+        const LastKnownInfo *lki = departed_lki_for(ab.source);
+        return lki && lki->cast_from_hand_by_controller;
     }
 
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
