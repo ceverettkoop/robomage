@@ -489,3 +489,23 @@ construct, or a token maker in the vocab) and remove it in response to its upkee
      - a differing pick with gap < 1e-6 is a tolerated near-tie, and the PASS line prints the
        near-tie count.
    - `test_mcts_parity` is unchanged (it compares visit counts and hasn't shown the near-tie issue).
+
+5. **`spells_cant_be_countered` from the engine's own counter check.** The M4 flag reads only
+   the Veil-style player grant (`Game::cant_counter_spells_of`). Hexing Squelcher's battlefield
+   replacement `R:Event$ Counter | ValidSA$ Spell.YouCtrl | ActiveZones$ Battlefield` ("Spells
+   you control can't be countered", league/wrb_energy) is the same player-level result but reads
+   0 today.
+   - Fix: derive the flag from ONE shared query ("is a spell controlled by this player protected
+     from being countered?"), shared with the counter-resolution path if possible, so the obs and
+     the rules agree.
+   - Include player grants and unfiltered `Spell.YouCtrl` battlefield statics.
+   - Exclude per-card or filtered statics (a card's own "This spell can't be countered", or
+     type-filtered ones).
+   - No layout change. Add an obs-invariant probe with Hexing Squelcher.
+6. **Mirrored board view swaps every per-player block.** `game_driver.decode_human_frame` doesn't
+   swap `self_this_turn` / the per-turn counters or the exile blocks (display only, not the obs).
+   Audit every self/opp pair the decoder emits and swap them all; add a unit check.
+7. **Monarch trigger ordering is an approved sourceless exception** (user, 2026-09-25). Move it
+   from `_SOURCELESS_PROVISIONAL` to the approved list in `test_obs_invariants.py`.
+
+Declined for now (user, 2026-09-25): a `companion_available` field; an emblem-count field.
