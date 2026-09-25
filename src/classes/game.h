@@ -94,6 +94,8 @@ struct DelayedTrigger {
 // "its controller gains life equal to its power", read from a creature it just exiled) uses
 // these last-known values rather than the printed base. While the object is still in its
 // expected zone, effective characteristics are read live from its components instead.
+struct CardData;
+
 struct LastKnownInfo {
     int power = 0;
     int toughness = 0;
@@ -125,6 +127,12 @@ struct LastKnownInfo {
                                            // sacrificed as part of its own activation cost (Blast
                                            // Zone: "MV equal to the number of charge counters on it")
                                            // reads the last-known count (CR 608.2h).
+    std::shared_ptr<const CardData> copied_card;  // the copied characteristics of a permanent that
+                                                  // left play as an in-place copy (Thespian's
+                                                  // Stage): the card itself reverts to its printed
+                                                  // CardData on leaving (CR 400.7), so the 603.10
+                                                  // look-back reads the copy's abilities from here.
+                                                  // Null for a permanent that was not a copy.
 };
 
 enum MandatoryChoice {

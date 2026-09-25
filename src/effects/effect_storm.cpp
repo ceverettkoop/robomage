@@ -46,7 +46,8 @@ HandlerResult effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         copy_spell_begin(rt, ab.source, static_cast<int>(ab.amount), ab.controller);
         if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (no CardData)
     }
-    ResolutionTargetAsker asker(ctx);
+    // The copies' new targets are chosen by the copies' controller (CR 707.10c).
+    ResolutionTargetAsker asker(ctx, rt.controller_is_a ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run_copy_spell(rt, asker, orderer) != TargetStatus::DONE)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;

@@ -745,6 +745,11 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         else if (global_coordinator.entity_has_component<Zone>(pd))
             gs->pending_decision_ctrl_is_self =
                 (global_coordinator.GetComponent<Zone>(pd).owner == viewer);
+        else if (global_coordinator.entity_has_component<Spell>(pd))
+            // A spell copy choosing its new targets has no Zone until it is placed on the
+            // stack (CR 707.10); its controller is the Spell's caster.
+            gs->pending_decision_ctrl_is_self =
+                (global_coordinator.GetComponent<Spell>(pd).caster == viewer);
         else if (sideboard_phase)
             // A sideboard IN/OUT source is a bare load_card template entity with
             // neither Permanent nor Zone; the sideboarding player owns it.

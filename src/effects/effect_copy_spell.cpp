@@ -264,7 +264,8 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (original gone)
     }
 
-    ResolutionTargetAsker asker(ctx);
+    // The copies' new targets are chosen by the copies' controller (CR 707.10c).
+    ResolutionTargetAsker asker(ctx, rt.controller_is_a ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run_copy_spell(rt, asker, orderer) != TargetStatus::DONE)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;

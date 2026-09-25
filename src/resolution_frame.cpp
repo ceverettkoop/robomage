@@ -187,10 +187,14 @@ ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel:
 // One target pick through the suspension machinery: consume-or-park via
 // FrameCtx::ask on the AMBIENT seat (the call site already seated the chooser,
 // so the ask's repoint/restore is a no-op — the asker itself never moves
-// priority, per the TargetAsker contract).
+// priority, per the TargetAsker contract), or on the explicit chooser of the
+// seated form, whose ask repoints priority at that chooser for the decision
+// only and restores it after.
 
 int ResolutionTargetAsker::ask(const std::vector<LegalAction> &menu, Entity decision_source) {
-    Zone::Ownership seat = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership seat = chooser;
+    if (seat != Zone::PLAYER_A && seat != Zone::PLAYER_B)
+        seat = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     return ctx.ask(menu, seat, decision_source);
 }
 

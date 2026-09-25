@@ -389,15 +389,21 @@ class FrameCtx {
 // FrameCtx::ask — consume-or-park with tag RESOLUTION — asking on the AMBIENT
 // seat, so it never repoints priority itself (Batch 5 finding: the call site
 // seats the chooser, exactly as blocking select_target expects; during a root
-// resolution the seat is already the resolving controller).
+// resolution the seat is already the resolving controller). The seated form
+// asks an explicit chooser instead — a spell copy's new targets are chosen by
+// the copy's controller (CR 707.10c), who need not hold priority while the
+// copying effect resolves (Chain Lightning copied by its target's player).
 class ResolutionTargetAsker final : public TargetAsker {
     public:
         explicit ResolutionTargetAsker(FrameCtx &ctx) : ctx(ctx) {}
+        ResolutionTargetAsker(FrameCtx &ctx, Zone::Ownership chooser)
+            : ctx(ctx), chooser(chooser) {}
         int ask(const std::vector<LegalAction> &menu, Entity decision_source) override;
         bool resuming() const override;
 
     private:
         FrameCtx &ctx;
+        Zone::Ownership chooser = Zone::UNKNOWN;  // UNKNOWN = the ambient priority seat
 };
 
 // Entities a suspended decision references, which determinization must pin in

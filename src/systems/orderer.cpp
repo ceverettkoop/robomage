@@ -1,6 +1,7 @@
 #include "orderer.h"
 
 #include <algorithm>
+#include <memory>
 #include <numeric>
 
 #include "../stable_rng.h"
@@ -20,6 +21,7 @@
 #include "../game_queries.h"
 #include "../components/player.h"
 #include "../components/effect.h"
+#include "../components/spell.h"
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -32,6 +34,7 @@
 
 // --- file-local helpers (forward declarations) ---
 static ColorIdentity color_identity_from(const CardData &cd);
+static void restore_printed_card(Entity target);
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -64,9 +67,12 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
         if (cmp_zone.location == Zone::STACK) cmp_zone.distance_from_top++;
     }
     global_coordinator.AddComponent(target, z);
-    // A stack object is public information (CR 400.2): record it in the owner's revealed set,
-    // the same chokepoint add_to_zone uses when a card enters a public zone.
-    mark_card_revealed(target, controller);
+    // A stack object is public information (CR 400.2), but a copy of a spell is not a card
+    // (CR 707.10) and reveals nothing from its controller's deck, so only a created object that
+    // is a card is recorded in the owner's revealed set.
+    bool is_spell_copy = global_coordinator.entity_has_component<Spell>(target) &&
+                         global_coordinator.GetComponent<Spell>(target).is_copy;
+    if (!is_spell_copy) mark_card_revealed(target, controller);
 }
 
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
@@ -193,6 +199,18 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         if (global_coordinator.entity_has_component<CardData>(target))
             lki.colors = card_colors(
                 active_face(target, global_coordinator.GetComponent<CardData>(target)));
+
+        // CR 400.7: a copy effect (Thespian's Stage's in-place Clone) ends as the permanent
+        // leaves the battlefield — the card arrives in its new zone as its printed self. Done
+        // after the LKI snapshot above so last-known information still reflects the copy
+        // (608.2h), and before the reveal bookkeeping below reads the card's name.
+        if (destination != Zone::BATTLEFIELD) {
+            if (global_coordinator.GetComponent<Permanent>(target).printed_card &&
+                global_coordinator.entity_has_component<CardData>(target))
+                lki.copied_card = std::make_shared<const CardData>(
+                    global_coordinator.GetComponent<CardData>(target));
+            restore_printed_card(target);
+        }
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
@@ -383,6 +401,22 @@ static ColorIdentity color_identity_from(const CardData &cd) {
     ColorIdentity ci;
     ci.colors = card_colors(cd);
     return ci;
+}
+
+// Undo an in-place copy effect on a permanent leaving the battlefield: put the stashed printed
+// CardData back on the card and its printed name/types on the (about-to-be-stripped) Permanent,
+// so every reader between now and the state-based strip sees the card itself. No-op for a
+// permanent that is not a copy.
+static void restore_printed_card(Entity target) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(target);
+    if (!perm.printed_card) return;
+    if (global_coordinator.entity_has_component<CardData>(target))
+        global_coordinator.GetComponent<CardData>(target) = *perm.printed_card;
+    perm.name = perm.printed_card->name;
+    perm.types = perm.printed_card->types;
+    perm.abilities.clear();
+    perm.static_abilities.clear();
+    perm.printed_card.reset();
 }
 
 void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {

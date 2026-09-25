@@ -956,9 +956,14 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // DisableTriggers (Doorkeeper Thrull) applies to the entering permanent's ETB triggers
         // exactly as in the battlefield scan.
         if (etb_lookback && rules_mod::etb_triggers_suppressed(entity)) continue;
-        const std::string ent_name = entity_name(entity);
-        // A transformed DFC functions with its active (back) face's abilities (CR 712.4).
-        const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+        const std::string ent_name =
+            (lki && lki->copied_card) ? lki->copied_card->name : entity_name(entity);
+        // A transformed DFC functions with its active (back) face's abilities (CR 712.4). A
+        // permanent that left play as an in-place copy looks back at the copy's
+        // characteristics (CR 603.10), not the printed card it reverted to (CR 400.7).
+        const CardData &cd = (lki && lki->copied_card)
+                                 ? *lki->copied_card
+                                 : global_coordinator.GetComponent<CardData>(entity);
         // Layer-6 ability removal (CR 613.1f / 305.7) via the LKI look-back (CR 603.10): a
         // permanent whose abilities were removed as it left play (Humility "lose all abilities")
         // had NO triggered abilities to fire on leaving — the look-back uses its last-known
