@@ -38,6 +38,14 @@ bool Game::combat_damage_prevented(Entity source, Entity target) const {
     return false;
 }
 
+bool Game::combat_damage_shielded(Entity creature) const {
+    if (creature == 0) return false;
+    for (const auto &shield : combat_damage_prevention_shields)
+        if (shield.creature == creature && (shield.prevent_as_source || shield.prevent_as_target))
+            return true;
+    return false;
+}
+
 void Game::generate_players(const Deck &deck_a, const Deck &deck_b) {
     player_a_entity = gen_player(deck_a);
     player_b_entity = gen_player(deck_b);

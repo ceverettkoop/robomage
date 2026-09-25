@@ -48,6 +48,15 @@ typedef struct PlayerState_tag {
     int  lands_in_play;        // battlefield lands this player controls
     int  lands_in_hand;        // land cards in hand — VIEWER ONLY (0 for the opponent)
     int  land_drops_remaining; // lands still playable this turn (rules_mod, clamped at 0)
+    // ── Per-turn counters (serialized as the state vector's PER-TURN COUNTERS block;
+    // field meanings and normalizers are documented in machine_io.h) ──
+    int  spells_cast_this_turn;
+    int  noncreature_spells_cast_this_turn;
+    int  instant_sorcery_spells_cast_this_turn;
+    int  cards_drawn_this_turn;
+    int  life_gained_this_turn;
+    int  life_lost_this_turn;
+    bool spell_colors_cast_this_turn[5]; // W, U, B, R, G
 } PlayerState;
 
 typedef struct PermanentState_tag {
@@ -59,7 +68,6 @@ typedef struct PermanentState_tag {
                                  // permanent that STILL has a return path (Static Prison holding a
                                  // real card, Flickerwisp/Phelia EOT blink); -1 = none (no return,
                                  // e.g. Skyclave Apparition). See returnable_exiled_card().
-    bool controller_is_self;
     bool is_tapped;
     bool is_creature;
     bool is_land;
@@ -81,6 +89,13 @@ typedef struct PermanentState_tag {
     int  blocking_target_ref;    // for blockers: slot of the attacker this creature blocks
     bool is_blocked;             // attacker was blocked at declare-blockers (CR 509.1h)
     bool is_phased_out;          // phased out (CR 702.26); serialized so the slot stays visible
+    bool entered_this_turn;      // entered the battlefield this turn (ThisTurnEntered)
+    int  ability_resolutions_this_turn; // triggered-ability resolutions from it this turn
+                                 // (Count$ResolvedThisTurn)
+    int  activations_this_turn;  // activations counted against its once-per-turn gates
+                                 // (ActivationLimit$ counters summed + loyalty activation)
+    bool cant_be_blocked_this_turn; // a "can't be blocked this turn" effect applies
+    bool combat_damage_prevented;   // it is the creature of a combat-damage prevention shield
     bool keywords[N_OBS_KEYWORDS];  // effective keyword multi-hot (OBS_KEYWORDS order)
     char token_name[PERM_TOKEN_NAME_LEN]; // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
     char counters[PERM_COUNTERS_LEN]; // compact typed-counter summary ("charge:2, +1/+1:3"), empty = none

@@ -150,7 +150,7 @@ class ScriptTrunk(nn.Module):
         "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "REVEALED_START",
         "REVEALED_END", "PENDING_START", "PENDING_END", "EXTRAS_START",
         "EXTRAS_END", "MANA_DEV_START", "MANA_DEV_END",
-        "LOG_VITALS_START", "LOG_VITALS_END",
+        "LOG_VITALS_START", "LOG_VITALS_END", "PER_TURN_START", "PER_TURN_END",
         "STATE_END", "PERM_START", "PERM_END", "PERM_SLOTS",
         "PERM_SLOT_SIZE", "PERM_STATUS_FLOATS", "PERM_CHOSEN_NAME_OFF",
         "PERM_RETURNABLE_OFF", "PERM_CARD_OFF", "STACK_START", "STACK_END",
@@ -216,6 +216,8 @@ class ScriptTrunk(nn.Module):
         self.MANA_DEV_END = int(_ex._MANA_DEV_END)
         self.LOG_VITALS_START = int(_ex._LOG_VITALS_START)
         self.LOG_VITALS_END = int(_ex._LOG_VITALS_END)
+        self.PER_TURN_START = int(_ex._PER_TURN_START)
+        self.PER_TURN_END = int(_ex._PER_TURN_END)
         self.STATE_END = int(_ex._STATE_END)
         self.PERM_START = int(_ex._PERM_START)
         self.PERM_END = int(_ex._PERM_END)
@@ -312,6 +314,7 @@ class ScriptTrunk(nn.Module):
         extras = obs[:, self.EXTRAS_START:self.EXTRAS_END]
         mana_dev = obs[:, self.MANA_DEV_START:self.MANA_DEV_END]
         log_vitals = obs[:, self.LOG_VITALS_START:self.LOG_VITALS_END]
+        per_turn = obs[:, self.PER_TURN_START:self.PER_TURN_END]
         # Mirror the extractor: the trunk is always per_action_head=True here, so
         # the raw action metadata never enters base (it feeds the per-action
         # encoder below); the tail's raw bucket float is stripped and only the
@@ -496,6 +499,7 @@ class ScriptTrunk(nn.Module):
 
         base = torch.cat([global_ctx, meta_ctx, board_counts,
                           revealed_agg, pending_feat, extras, mana_dev, log_vitals,
+                          per_turn,
                           arch_onehot,
                           perm_agg, stk_agg, top_stack_feat, gy_agg, ex_agg,
                           hand_lib_agg, next_draw_feat, opp_hand_agg,

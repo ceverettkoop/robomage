@@ -114,6 +114,8 @@ try:
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
+        LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
+        PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -142,6 +144,8 @@ except ImportError:
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
+        LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
+        PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -428,12 +432,13 @@ _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full h
 # shifting every block below.
 assert _GLOBAL_SIZE == 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS, _GLOBAL_SIZE
 _PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + opp)
-# 11 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
-# + keyword multi-hot + chosen-name id + returnable-exile id + card id (LAST) = 38.
+# 10 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
+# + 5 per-turn statuses + keyword multi-hot + chosen-name id + returnable-exile id
+# + card id (LAST) = 42. No controller flag: the blocks are split by controller.
 # Keep the derived formula and cross-check it against the engine's PERM_SLOT_SIZE
 # (machine_io.h) so a change to either side is caught here. The three id-family
 # floats sit last: chosen_name_id then returnable_exile_id then card_id.
-_PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 3
+_PERM_SLOT_SIZE         = 23 + N_OBS_KEYWORDS + 3
 assert _PERM_SLOT_SIZE == PERM_SLOT_SIZE, (_PERM_SLOT_SIZE, PERM_SLOT_SIZE)
 _STACK_SLOTS            = MAX_STACK_DISPLAY
 _STACK_XAMT_OFF         = STACK_HEAD_FIELDS    # x_or_amount / 10 within a stack slot
@@ -602,16 +607,34 @@ _LOG_VITALS_OPP_START = _LOG_VITALS_START + LOG_VITALS_PLAYER_SIZE
 _LOG_VITALS_END       = _LOG_VITALS_OPP_START + LOG_VITALS_PLAYER_SIZE
 assert _LV_LOG_LIBRARY + 1 == LOG_VITALS_PLAYER_SIZE, LOG_VITALS_PLAYER_SIZE
 
-assert _LOG_VITALS_END == STATE_SIZE, (_LOG_VITALS_END, STATE_SIZE)
+# ── Per-turn counters (mirrors machine_io.h's PER-TURN COUNTERS block) ───────
+# Each player's per-turn tallies (reset at cleanup, all public): spells cast,
+# noncreature spells, instant/sorcery spells, cards drawn (each /
+# PER_TURN_COUNT_NORMALIZER), life gained, life lost (each / LIFE_NORMALIZER), then
+# the W/U/B/R/G spell-color multi-hot. Self half then opponent half, same fields.
+_PT_SPELLS          = 0
+_PT_NONCREATURE     = 1
+_PT_INSTANT_SORCERY = 2
+_PT_CARDS_DRAWN     = 3
+_PT_LIFE_GAINED     = 4
+_PT_LIFE_LOST       = 5
+_PT_COLORS_START    = PER_TURN_COUNT_FIELDS    # 5 floats: W, U, B, R, G
+assert _PT_LIFE_LOST + 1 == PER_TURN_COUNT_FIELDS, PER_TURN_COUNT_FIELDS
+assert _PT_COLORS_START + PER_TURN_COLOR_FIELDS == PER_TURN_PLAYER_SIZE, PER_TURN_PLAYER_SIZE
+_PER_TURN_START     = _LOG_VITALS_END
+_PER_TURN_OPP_START = _PER_TURN_START + PER_TURN_PLAYER_SIZE
+_PER_TURN_END       = _PER_TURN_OPP_START + PER_TURN_PLAYER_SIZE
+
+assert _PER_TURN_END == STATE_SIZE, (_PER_TURN_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
 # card, Petrified Hamlet named land), then the returnable-exile id (the card this
 # permanent has exiled that still has a return path — Static Prison / Phelia), then
 # the card id.
-_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3    # 35
-_PERM_RETURNABLE_OFF = _PERM_SLOT_SIZE - 2     # 36
-_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 37 (card id is always LAST)
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3    # 39
+_PERM_RETURNABLE_OFF = _PERM_SLOT_SIZE - 2     # 40
+_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 41 (card id is always LAST)
 
 # Unified entity-reference slot space (machine_io.h): 0-47 self perm slots,
 # 48-95 opp perm slots, 96-107 stack slots, -1 = none. In the float state
@@ -638,7 +661,8 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # (The LINEAR library counts live inside the kept match/library-context range and DO
 # survive; the log copy does not, so during the sideboard phase the two encodings are
 # deliberately not redundant — test_obs_invariants asserts the zeroed block there
-# rather than the log identity.) Card-id slots
+# rather than the log identity.) The PER-TURN COUNTERS block is masked as well: its
+# spell/draw/life tallies describe the ended game's last turn. Card-id slots
 # must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
 # to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():
@@ -722,20 +746,25 @@ _OFF_IS_ATTACKING = 3
 _OFF_IS_BLOCKING  = 4
 _OFF_HAS_SICKNESS = 5
 _OFF_DAMAGE       = 6
-_OFF_CTRL_IS_SELF = 7
-_OFF_IS_CREATURE  = 8    # 1.0 if this slot is a creature
-_OFF_IS_LAND      = 9    # 1.0 if this slot is a land
-_OFF_LOYALTY      = 10   # loyalty / 10 (planeswalkers; 0 otherwise)
-_OFF_P1P1_NET     = 11   # net (+1/+1 minus -1/-1) counters / 10, SIGNED
-_OFF_OTHER_COUNTERS = 12 # total counters of every other kind / 10
-_OFF_ATTACHED_TO  = 13   # norm_ref: what this equipment/aura is attached to
-_OFF_ATTACHED_BY  = 14   # norm_ref: the equipment/aura attached to this
-_OFF_ATTACK_TGT   = 15   # norm_ref: attacked walker's slot (0.0 = the player)
-_OFF_BLOCKING_TGT = 16   # norm_ref: the attacker this blocker blocks
-_OFF_IS_BLOCKED   = 17   # attacker was blocked at declare-blockers (CR 509.1h)
-_OFF_IS_PHASED_OUT = 18  # phased-out permanents ARE serialized, with this set
-_OFF_KEYWORDS_START = 19 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
+_OFF_IS_CREATURE  = 7    # 1.0 if this slot is a creature
+_OFF_IS_LAND      = 8    # 1.0 if this slot is a land
+_OFF_LOYALTY      = 9    # loyalty / 10 (planeswalkers; 0 otherwise)
+_OFF_P1P1_NET     = 10   # net (+1/+1 minus -1/-1) counters / 10, SIGNED
+_OFF_OTHER_COUNTERS = 11 # total counters of every other kind / 10
+_OFF_ATTACHED_TO  = 12   # norm_ref: what this equipment/aura is attached to
+_OFF_ATTACHED_BY  = 13   # norm_ref: the equipment/aura attached to this
+_OFF_ATTACK_TGT   = 14   # norm_ref: attacked walker's slot (0.0 = the player)
+_OFF_BLOCKING_TGT = 15   # norm_ref: the attacker this blocker blocks
+_OFF_IS_BLOCKED   = 16   # attacker was blocked at declare-blockers (CR 509.1h)
+_OFF_IS_PHASED_OUT = 17  # phased-out permanents ARE serialized, with this set
+_OFF_ENTERED_THIS_TURN = 18   # entered the battlefield this turn
+_OFF_RESOLUTIONS_THIS_TURN = 19  # triggered-ability resolutions from it / PER_TURN_COUNT_NORMALIZER
+_OFF_ACTIVATIONS_THIS_TURN = 20  # once-per-turn-gated activations / PER_TURN_COUNT_NORMALIZER
+_OFF_CANT_BE_BLOCKED = 21     # a "can't be blocked this turn" effect applies
+_OFF_COMBAT_DMG_PREVENTED = 22  # creature of a combat-damage prevention shield
+_OFF_KEYWORDS_START = 23 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
                          # _OBS_KEYWORDS order from _enums.py)
+assert _OFF_KEYWORDS_START + N_OBS_KEYWORDS == _PERM_CHOSEN_NAME_OFF
 
 _SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
 _SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + _OFF_IS_CREATURE
@@ -1364,7 +1393,7 @@ _CARD_COLORED_COSTS = {
 
 # ── Battlefield layout (aliases of the unified state offsets above) ─────────
 _BF_START         = _SELF_PERM_START           # 36
-_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 36
+_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 42
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)

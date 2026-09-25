@@ -495,6 +495,27 @@ inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKN
     return true;
 }
 
+// True if a permanent whose Permanent::entered_on_turn is `entered_on_turn` entered the
+// battlefield during the current turn. The single "entered this turn" predicate: the
+// ThisTurnEntered filter qualifier and the observation's per-permanent entered_this_turn
+// flag both read it. Defined in game_queries.cpp (needs cur_game).
+bool entered_battlefield_this_turn(long entered_on_turn);
+
+// Number of this turn's triggered-ability resolutions whose source is `source`
+// (Game::ability_resolution_counts — the Count$ResolvedThisTurn value, Scythecat Cub).
+// Defined in game_queries.cpp (needs cur_game).
+int ability_resolutions_this_turn(Entity source);
+
+// Activations counted against a permanent's once-per-turn gates: every ability's
+// ActivationLimit$ counter (Ability::activations_this_turn, only advanced for a limited
+// ability) summed, plus 1 if one of its loyalty abilities was activated (CR 606.3). Both
+// reset at the controller's untap step.
+inline int permanent_activations_this_turn(const Permanent &perm) {
+    int n = perm.loyalty_ability_activated_this_turn ? 1 : 0;
+    for (const auto &ab : perm.abilities) n += ab.activations_this_turn;
+    return n;
+}
+
 // All live battlefield permanents (phased-out excluded), optionally only those
 // controlled by `ctrl`. Pass the iterating system's mEntities (or orderer->mEntities).
 // Prefer this over re-scanning entities inline when you need the whole set.

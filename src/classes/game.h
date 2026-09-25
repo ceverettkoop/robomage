@@ -795,6 +795,9 @@ struct Game {
         // would deal), or `target` is a shielded creature under a prevent-as-target shield (damage
         // it would be dealt). Consulted at each combat-damage assignment in deal_combat_damage.
         bool combat_damage_prevented(Entity source, Entity target) const;
+        // True when `creature` is the creature of any active combat-damage prevention shield,
+        // in either direction (damage it would deal or be dealt).
+        bool combat_damage_shielded(Entity creature) const;
         bool is_mandatory_choice_pending() const;
         void generate_players(const Deck &deck_a, const Deck &deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager, std::shared_ptr<class Orderer> orderer);

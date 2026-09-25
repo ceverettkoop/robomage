@@ -44,6 +44,13 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _OFF_P1P1_NET, _OFF_OTHER_COUNTERS, _OFF_ATTACHED_TO,
                  _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
                  _OFF_IS_BLOCKED, _OFF_IS_PHASED_OUT, _OFF_KEYWORDS_START,
+                 _OFF_ENTERED_THIS_TURN, _OFF_RESOLUTIONS_THIS_TURN,
+                 _OFF_ACTIVATIONS_THIS_TURN, _OFF_CANT_BE_BLOCKED,
+                 _OFF_COMBAT_DMG_PREVENTED,
+                 _PER_TURN_START, _PER_TURN_OPP_START,
+                 _PT_SPELLS, _PT_NONCREATURE, _PT_INSTANT_SORCERY, _PT_CARDS_DRAWN,
+                 _PT_LIFE_GAINED, _PT_LIFE_LOST, _PT_COLORS_START,
+                 PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS, LIFE_NORMALIZER,
                  _EXTRAS_LANDS_SELF, _EXTRAS_LANDS_OPP,
                  _EXTRAS_MONARCH_SELF, _EXTRAS_MONARCH_OPP,
                  _EXTRAS_BLESSING_SELF, _EXTRAS_BLESSING_OPP,
@@ -78,7 +85,7 @@ _IDX_OPP_WINS    = _MATCH_CTX_START + 2            # opp_match_wins  / 2
 _IDX_SIDEBOARD   = _MATCH_CTX_START + 3            # is_sideboard_phase (0/1)
 
 # Permanent slot field offsets (src/machine_io.h perm-slot layout; the enriched
-# fields at 11-18, the keyword multi-hot at 19-34 and the card id at 35 are
+# fields at 10-22, the keyword multi-hot at 23-38 and the id family at 39-41 are
 # imported from env.py above — _OFF_P1P1_NET .. _OFF_KEYWORDS_START).
 _OFF_POWER = 0
 _OFF_TOUGHNESS = 1
@@ -87,13 +94,12 @@ _OFF_ATTACKING = 3
 _OFF_BLOCKING = 4
 _OFF_SICKNESS = 5
 _OFF_DAMAGE = 6
-_OFF_CTRL = 7
-_OFF_IS_CREATURE = 8
-_OFF_IS_LAND = 9
-_OFF_LOYALTY = 10                                  # planeswalker loyalty (loyalty/10)
-_OFF_CHOSEN_NAME = _PERM_CHOSEN_NAME_OFF           # chosen-name card-id float (3rd-last in the slot, 35)
-_OFF_RETURNABLE = _PERM_RETURNABLE_OFF             # returnable-exile card-id float (2nd-last in the slot, 36)
-_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (37)
+_OFF_IS_CREATURE = 7
+_OFF_IS_LAND = 8
+_OFF_LOYALTY = 9                                   # planeswalker loyalty (loyalty/10)
+_OFF_CHOSEN_NAME = _PERM_CHOSEN_NAME_OFF           # chosen-name card-id float (3rd-last in the slot, 39)
+_OFF_RETURNABLE = _PERM_RETURNABLE_OFF             # returnable-exile card-id float (2nd-last in the slot, 40)
+_OFF_CARD_ID = _PERM_CARD_OFF                      # card-id float, always LAST in the slot (41)
 
 # Stack-slot cast-qualifier display names, in serialized order (the stack slot's
 # [4-10] flags; see src/machine_io.h). All 0.0 for abilities.
@@ -715,6 +721,18 @@ def _decode_permanents(state, start, count=_PERM_SLOTS, counters=None, token_nam
             p["blocked"] = True                   # attacker was blocked (CR 509.1h)
         if state[base + _OFF_IS_PHASED_OUT] > 0.5:
             p["phased_out"] = True
+        if state[base + _OFF_ENTERED_THIS_TURN] > 0.5:
+            p["entered_this_turn"] = True
+        n = int(round(float(state[base + _OFF_RESOLUTIONS_THIS_TURN]) * PER_TURN_COUNT_NORMALIZER))
+        if n:
+            p["resolutions"] = n                  # triggered-ability resolutions this turn
+        n = int(round(float(state[base + _OFF_ACTIVATIONS_THIS_TURN]) * PER_TURN_COUNT_NORMALIZER))
+        if n:
+            p["activations"] = n                  # once-per-turn-gated activations this turn
+        if state[base + _OFF_CANT_BE_BLOCKED] > 0.5:
+            p["unblockable"] = True
+        if state[base + _OFF_COMBAT_DMG_PREVENTED] > 0.5:
+            p["combat_damage_prevented"] = True
         kws = [_OBS_KEYWORDS[k] for k in range(len(_OBS_KEYWORDS))
                if state[base + _OFF_KEYWORDS_START + k] > 0.5]
         if kws:
@@ -893,7 +911,34 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "pending_decision": _decode_pending_decision(state),
         "match": _decode_match_context(state),
         "extras": _decode_extras(state),
+        "self_this_turn": _decode_per_turn(state, _PER_TURN_START),
+        "opp_this_turn": _decode_per_turn(state, _PER_TURN_OPP_START),
     }
+
+
+_SPELL_COLOR_LETTERS = "WUBRG"
+
+
+def _decode_per_turn(state, start):
+    """Decode one player's half of the per-turn counters block into a dict of
+    NON-ZERO values only (empty = nothing happened this turn). Keys: spells,
+    noncreature, instant_sorcery, drawn, life_gained, life_lost (ints) and
+    colors (a "WUBRG"-ordered letter string of the spell colors cast)."""
+    out = {}
+    for key, off, norm in (("spells", _PT_SPELLS, PER_TURN_COUNT_NORMALIZER),
+                           ("noncreature", _PT_NONCREATURE, PER_TURN_COUNT_NORMALIZER),
+                           ("instant_sorcery", _PT_INSTANT_SORCERY, PER_TURN_COUNT_NORMALIZER),
+                           ("drawn", _PT_CARDS_DRAWN, PER_TURN_COUNT_NORMALIZER),
+                           ("life_gained", _PT_LIFE_GAINED, LIFE_NORMALIZER),
+                           ("life_lost", _PT_LIFE_LOST, LIFE_NORMALIZER)):
+        n = int(round(float(state[start + off]) * norm))
+        if n:
+            out[key] = n
+    colors = "".join(_SPELL_COLOR_LETTERS[c] for c in range(PER_TURN_COLOR_FIELDS)
+                     if state[start + _PT_COLORS_START + c] > 0.5)
+    if colors:
+        out["colors"] = colors
+    return out
 
 
 def _decode_extras(state):
@@ -1524,6 +1569,13 @@ def format_state_lines(gs):
         if match.get("is_sideboard"):
             mstr += " | sideboarding"
         lines.append(mstr)
+    turn_parts = []
+    for label, key in (("self", "self_this_turn"), ("opp", "opp_this_turn")):
+        tt = gs.get(key) or {}
+        if tt:
+            turn_parts.append(f"{label} " + " ".join(f"{k}={v}" for k, v in tt.items()))
+    if turn_parts:
+        lines.append(f"This turn: {' | '.join(turn_parts)}")
     extras = gs.get("extras") or {}
     if extras:
         # _decode_extras records only non-default values: a boolean True renders
@@ -1618,6 +1670,16 @@ def fmt_perm(p):
         flags.append("SICK")
     if p.get("phased_out"):
         flags.append("PHASED")
+    if p.get("entered_this_turn"):
+        flags.append("NEW")
+    if p.get("unblockable"):
+        flags.append("UNBLOCKABLE")
+    if p.get("combat_damage_prevented"):
+        flags.append("NO-COMBAT-DMG")
+    if "resolutions" in p:
+        flags.append(f"res {p['resolutions']}")
+    if "activations" in p:
+        flags.append(f"act {p['activations']}")
     if flags:
         s += f" ({','.join(flags)})"
     return s

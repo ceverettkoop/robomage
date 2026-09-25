@@ -124,7 +124,9 @@ _MACHINE_INTS = ["STATE_SIZE", "N_CARD_TYPES", "PERM_SLOT_SIZE", "OPTION_ORDINAL
                  "DECKLIST_SLOT_SIZE", "MANA_DEV_COLORS", "MANA_DEV_SELF_SIZE",
                  "MANA_DEV_OPP_SIZE", "MANA_COUNT_NORMALIZER",
                  "LAND_DROPS_NORMALIZER", "LOG_VITALS_PLAYER_SIZE",
-                 "LIFE_NORMALIZER", "LIBRARY_NORMALIZER"]
+                 "LIFE_NORMALIZER", "LIBRARY_NORMALIZER",
+                 "PER_TURN_COUNT_FIELDS", "PER_TURN_COLOR_FIELDS",
+                 "PER_TURN_PLAYER_SIZE", "PER_TURN_COUNT_NORMALIZER"]
 
 # Float constants that C++ derives from a mirrored int SCALE via log1p (the LOG
 # VITALS block's denominators, machine_io.h). They cannot go through

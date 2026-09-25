@@ -58,7 +58,8 @@ from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
                  _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx,
                  _PERM_CARD_OFF, _CUR_TURN_IDX,
-                 _OFF_IS_PHASED_OUT, N_ENTITY_REF_SLOTS,
+                 _OFF_IS_PHASED_OUT, _OFF_IS_CREATURE, _OFF_IS_LAND, _OFF_LOYALTY,
+                 N_ENTITY_REF_SLOTS,
                  _SELF_BLOCK_START, _OPP_BLOCK_START,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
@@ -117,16 +118,17 @@ _FEAT = {name: i for i, name in enumerate(_INTERP_FEATURE_NAMES)}
 # single normalized id float per slot; decode via _slot_card_idx (round(val*N)).
 _PERM_START   = _SELF_PERM_START          # 36 (self slots first, then opponent)
 _PERM_SLOTS   = _ENV_PERM_SLOTS * 2       # 96 = 48 self + 48 opponent
-_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 38 (status + counters + refs + keywords + chosen-name id + returnable-exile id + card id)
+_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 42 (status + counters + refs + per-turn statuses + keywords + chosen-name id + returnable-exile id + card id)
 _SELF_PERM_SLOTS = _ENV_PERM_SLOTS        # 48: slots 0-47 = self, 48-95 = opponent
 # Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
-#                   sickness(5), damage(6), controller_is_self(7), is_creature(8),
-#                   is_land(9), loyalty(10), then the enriched fields — counters
-#                   (11-12), attachment/combat refs (13-16), is_blocked(17),
-#                   is_phased_out(18 = _OFF_IS_PHASED_OUT), keyword multi-hot
-#                   (19-34), chosen-name id(35), returnable-exile id(36), and
-#                   card_id(37 = _PERM_CARD_OFF from env.py, LAST)
-_PERM_LOYALTY_OFF = 10
+#                   sickness(5), damage(6), is_creature(7 = _OFF_IS_CREATURE),
+#                   is_land(8 = _OFF_IS_LAND), loyalty(9 = _OFF_LOYALTY), then the
+#                   enriched fields — counters (10-11), attachment/combat refs
+#                   (12-15), is_blocked(16), is_phased_out(17 = _OFF_IS_PHASED_OUT),
+#                   per-turn statuses (18-22), keyword multi-hot (23-38),
+#                   chosen-name id(39), returnable-exile id(40), and
+#                   card_id(41 = _PERM_CARD_OFF from env.py, LAST)
+_PERM_LOYALTY_OFF = _OFF_LOYALTY
 _GY_START_OBS    = _GY_START
 _GY_SLOTS        = _GY_SLOTS_TOTAL        # 128
 _GY_SLOT_SZ      = _GY_SLOT_SIZE          # 1
@@ -194,8 +196,8 @@ def _extract_interpretable(obs):
         tapped    = obs[base + 2] > 0.5
         attacking = obs[base + 3] > 0.5
         blocking  = obs[base + 4] > 0.5
-        is_creat  = obs[base + 8] > 0.5
-        is_land   = obs[base + 9] > 0.5
+        is_creat  = obs[base + _OFF_IS_CREATURE] > 0.5
+        is_land   = obs[base + _OFF_IS_LAND] > 0.5
 
         # Check if slot is occupied (card id present)
         if _slot_card_idx(obs, base + _PERM_CARD_OFF) < 0:
@@ -1506,7 +1508,7 @@ def _perm_summaries(obs, slot_range):
         blocking  = obs[base + 4] > 0.5
         sickness  = obs[base + 5] > 0.5
         damage    = obs[base + 6] * 10.0
-        is_creat  = obs[base + 8] > 0.5
+        is_creat  = obs[base + _OFF_IS_CREATURE] > 0.5
         loyalty   = obs[base + _PERM_LOYALTY_OFF] * 10.0
         phased    = obs[base + _OFF_IS_PHASED_OUT] > 0.5
         flags = []

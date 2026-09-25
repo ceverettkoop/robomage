@@ -936,6 +936,9 @@ _CHAIN_PAIRS = [
     ("_LOG_VITALS_START",       "LOG_VITALS_START"),
     ("_LOG_VITALS_OPP_START",   "LOG_VITALS_OPP_START"),
     ("_LOG_VITALS_END",         "LOG_VITALS_END"),
+    ("_PER_TURN_START",         "PER_TURN_START"),
+    ("_PER_TURN_OPP_START",     "PER_TURN_OPP_START"),
+    ("_PER_TURN_END",           "PER_TURN_END"),
 ]
 
 

@@ -816,7 +816,8 @@ def obs_blocks():
         # had their own row here; it stops at the mana-development block below.
         ("global extras", e._EXTRAS_START, e._MANA_DEV_START),
         ("mana development", e._MANA_DEV_START, e._LOG_VITALS_START),
-        ("log vitals", e._LOG_VITALS_START, e.STATE_SIZE),
+        ("log vitals", e._LOG_VITALS_START, e._PER_TURN_START),
+        ("per-turn counters", e._PER_TURN_START, e.STATE_SIZE),
         ("action categories", e.ACT_CATS_START, e.ACT_CATS_START + e.MAX_ACTIONS),
         ("action card ids", e.ACT_IDS_START, e.ACT_IDS_START + e.MAX_ACTIONS),
         ("action controllers", e.ACT_CTRL_START, e.ACT_CTRL_START + e.MAX_ACTIONS),
@@ -1479,11 +1480,13 @@ def _t2np(t):
 # perm-slot field offsets in env.py / machine_io.h), then the keyword multi-hot.
 _PERM_SCALAR_NAMES = [
     "power", "toughness", "tapped", "attacking", "blocking", "sickness",
-    "damage", "ctrl_is_self", "is_creature", "is_land", "loyalty", "p1p1_net",
+    "damage", "is_creature", "is_land", "loyalty", "p1p1_net",
     "other_counters", "ref attached_to", "ref attached_by", "ref attack_tgt",
-    "ref blocking_tgt", "is_blocked", "is_phased_out",
+    "ref blocking_tgt", "is_blocked", "is_phased_out", "entered_this_turn",
+    "resolutions_this_turn", "activations_this_turn", "cant_be_blocked",
+    "combat_dmg_prevented",
 ] + ["kw " + k for k in _OBS_KEYWORDS]
-assert len(_PERM_SCALAR_NAMES) == 19 + N_OBS_KEYWORDS
+assert len(_PERM_SCALAR_NAMES) == 23 + N_OBS_KEYWORDS
 
 # Cast-qualifier flags in STACK_QUAL_FIELDS order (machine_io.h).
 _STACK_QUAL_NAMES = ["is_copy", "kicked", "flashback", "evoke", "escape",
@@ -1634,6 +1637,7 @@ def _body_segments(sd):
         ("global extras",      env._EXTRAS_END - env._EXTRAS_START),
         ("mana development",   env._MANA_DEV_END - env._MANA_DEV_START),
         ("log vitals",         env._LOG_VITALS_END - env._LOG_VITALS_START),
+        ("per-turn counters",  env._PER_TURN_END - env._PER_TURN_START),
         # (the raw action-metadata passthrough exists only on the stock
         # per_action_head=False path, which AZNet never uses)
         ("arch one-hots",      env.ARCH_ONEHOT_END - env.ARCH_ONEHOT_START),

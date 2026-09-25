@@ -43,11 +43,12 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
                                 bool with_lands_in_hand);
 static void push_log_vitals_block(std::vector<float>& out, int life, int library_ct);
+static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
 static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer);
-static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership viewer);
+static void fill_permanent_state(PermanentState& ps, Entity e);
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
 static void fill_decklist_block(int* ids, int* counts, int n_slots,
                                 const std::vector<DecklistEntry>& entries,
@@ -244,8 +245,25 @@ static void push_log_vitals_block(std::vector<float>& out, int life, int library
     out.push_back(norm_log_count(library_ct, LOG_LIBRARY_DENOM));
 }
 
-// Pushes PERM_SLOT_SIZE floats (35 status + chosen-name id + returnable-exile id + card-id;
-// per-slot offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 35 zeros
+// Pushes one player's half of the PER-TURN COUNTERS block: PER_TURN_PLAYER_SIZE floats,
+// the six counts (spells, noncreature spells, instant/sorcery spells, cards drawn /
+// PER_TURN_COUNT_NORMALIZER; life gained, life lost / LIFE_NORMALIZER) then the W/U/B/R/G
+// spell-color multi-hot. All public, so both halves carry the same fields.
+static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps) {
+    const float count_norm = static_cast<float>(PER_TURN_COUNT_NORMALIZER);
+    const float life_norm  = static_cast<float>(LIFE_NORMALIZER);
+    out.push_back(static_cast<float>(ps.spells_cast_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.noncreature_spells_cast_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.instant_sorcery_spells_cast_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.cards_drawn_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.life_gained_this_turn) / life_norm);
+    out.push_back(static_cast<float>(ps.life_lost_this_turn) / life_norm);
+    for (int i = 0; i < PER_TURN_COLOR_FIELDS; i++)
+        out.push_back(ps.spell_colors_cast_this_turn[i] ? 1.0f : 0.0f);
+}
+
+// Pushes PERM_SLOT_SIZE floats (39 status + chosen-name id + returnable-exile id + card-id;
+// per-slot offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 39 zeros
 // + THREE id-family empty sentinels (chosen-name, returnable-exile, card-id; a 0.0 pad would
 // alias vocab index 0 and defeat empty-slot masking).
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
@@ -263,7 +281,6 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(p.is_blocking ? 1.0f : 0.0f);
     out.push_back(p.has_summoning_sickness ? 1.0f : 0.0f);
     out.push_back(static_cast<float>(p.damage) / 10.0f);
-    out.push_back(p.controller_is_self ? 1.0f : 0.0f);
     out.push_back(p.is_creature ? 1.0f : 0.0f);
     out.push_back(p.is_land ? 1.0f : 0.0f);
     out.push_back(static_cast<float>(p.loyalty) / 10.0f);
@@ -275,16 +292,22 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(norm_ref(p.blocking_target_ref));
     out.push_back(p.is_blocked ? 1.0f : 0.0f);
     out.push_back(p.is_phased_out ? 1.0f : 0.0f);
+    const float count_norm = static_cast<float>(PER_TURN_COUNT_NORMALIZER);
+    out.push_back(p.entered_this_turn ? 1.0f : 0.0f);
+    out.push_back(static_cast<float>(p.ability_resolutions_this_turn) / count_norm);
+    out.push_back(static_cast<float>(p.activations_this_turn) / count_norm);
+    out.push_back(p.cant_be_blocked_this_turn ? 1.0f : 0.0f);
+    out.push_back(p.combat_damage_prevented ? 1.0f : 0.0f);
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         out.push_back(p.keywords[k] ? 1.0f : 0.0f);
-    out.push_back(norm_card_id(p.chosen_name_idx));      // [35] chosen-name id
-    out.push_back(norm_card_id(p.returnable_exile_idx)); // [36] returnable-exile id
-    out.push_back(norm_card_id(p.card_vocab_idx));       // [37] card id (LAST)
+    out.push_back(norm_card_id(p.chosen_name_idx));      // [39] chosen-name id
+    out.push_back(norm_card_id(p.returnable_exile_idx)); // [40] returnable-exile id
+    out.push_back(norm_card_id(p.card_vocab_idx));       // [41] card id (LAST)
 }
 
 // Pass-B fill of one battlefield permanent's PermanentState. Runs after the
 // entity->slot map is built so the attachment/combat reference fields resolve.
-static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership viewer) {
+static void fill_permanent_state(PermanentState& ps, Entity e) {
     auto& perm = global_coordinator.GetComponent<Permanent>(e);
 
     ps.card_vocab_idx        = get_card_vocab_idx(e);
@@ -299,7 +322,6 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
     // persist, but the helper handles the token case regardless).
     Entity returnable = returnable_exiled_card(e);
     ps.returnable_exile_idx  = returnable == 0 ? -1 : get_card_vocab_idx(returnable);
-    ps.controller_is_self    = (perm.controller == viewer);
     ps.is_tapped             = perm.is_tapped;
     ps.has_summoning_sickness = perm.has_summoning_sickness;
     ps.is_creature           = global_coordinator.entity_has_component<Creature>(e);
@@ -341,6 +363,13 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
     ps.attached_to_ref = slot_ref_of(perm.equipped_to);
     ps.attached_by_ref = slot_ref_of(perm.equipped_by);
     ps.is_phased_out   = perm.is_phased_out;
+
+    ps.entered_this_turn = entered_battlefield_this_turn(static_cast<long>(perm.entered_on_turn));
+    ps.ability_resolutions_this_turn = ability_resolutions_this_turn(e);
+    ps.activations_this_turn = permanent_activations_this_turn(perm);
+    ps.cant_be_blocked_this_turn =
+        ps.is_creature && global_coordinator.GetComponent<Creature>(e).cant_be_blocked_this_turn;
+    ps.combat_damage_prevented = cur_game.combat_damage_shielded(e);
 
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         ps.keywords[k] = permanent_has_keyword(e, OBS_KEYWORDS[k]);
@@ -539,6 +568,16 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             if (idx >= 0 && idx < 6) mana_counts[idx]++;
         }
         for (int i = 0; i < 6; i++) ps.mana[i] = mana_counts[i];
+        ps.spells_cast_this_turn = static_cast<int>(p.spells_cast_this_turn);
+        ps.noncreature_spells_cast_this_turn = static_cast<int>(p.noncreature_spells_cast_this_turn);
+        ps.instant_sorcery_spells_cast_this_turn =
+            static_cast<int>(p.instant_sorcery_spells_cast_this_turn);
+        ps.cards_drawn_this_turn = static_cast<int>(p.cards_drawn_this_turn.size());
+        ps.life_gained_this_turn = p.life_gained_this_turn;
+        ps.life_lost_this_turn   = p.life_lost_this_turn;
+        const Colors spell_colors[5] = {WHITE, BLUE, BLACK, RED, GREEN};
+        for (int i = 0; i < 5; i++)
+            ps.spell_colors_cast_this_turn[i] = p.spell_colors_cast_this_turn.count(spell_colors[i]) > 0;
     };
     fill_player_stats(gs->self, viewer_entity);
     fill_player_stats(gs->opponent, opp_entity);
@@ -711,9 +750,9 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 
     // ── Pass B (fill) ────────────────────────────────────────────────────────
     for (int i = 0; i < self_bf; i++)
-        fill_permanent_state(gs->self_permanents[i], self_ents[i], viewer);
+        fill_permanent_state(gs->self_permanents[i], self_ents[i]);
     for (int i = 0; i < opp_bf; i++)
-        fill_permanent_state(gs->opp_permanents[i], opp_ents[i], viewer);
+        fill_permanent_state(gs->opp_permanents[i], opp_ents[i]);
     for (int i = 0; i < stored_stack; i++)
         fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
 
@@ -897,11 +936,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(gs->self_is_player_a ? 1.0f : 0.0f);
     state.push_back(static_cast<float>(gs->stack_size) / 10.0f);
 
-    // Self permanents (48 x 38 = 1824)
+    // Self permanents (48 x 42 = 2016)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->self_permanents[i]);
 
-    // Opp permanents (48 x 38 = 1824)
+    // Opp permanents (48 x 42 = 2016)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
@@ -1003,7 +1042,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Global extras (27 floats): lands played, monarch, city's blessing, revolt,
     // pending extra turns, day/night, the priority-window context, the mulligan
     // state, the mandatory-choice one-hot, then self_plays_first and the two
-    // sideboard-phase progress scalars. See the [5442-5468] block in machine_io.h.
+    // sideboard-phase progress scalars. See the [5826-5852] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
     state.push_back(gs->self.is_monarch ? 1.0f : 0.0f);
@@ -1035,7 +1074,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // unbalanced poles sit symmetrically either side of it.
     state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
 
-    // ── Deck-identity tail blocks (see machine_io.h [5469-5820]) ───────────────
+    // ── Deck-identity tail blocks (see machine_io.h [5853-6204]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
     // normalized /4.0. Slots are packed ascending by vocab id with no holes.
     auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {
@@ -1054,12 +1093,12 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Opponent STATIC sideboard (15 x 2 = 30)
     push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);
 
-    // ── Mana development (see machine_io.h [5821-5839]) ───────────────────────
+    // ── Mana development (see machine_io.h [6205-6223]) ───────────────────────
     // Self (10 floats) then opponent (9 — no lands_in_hand, which is hidden).
     push_mana_dev_block(state, gs->self, /*with_lands_in_hand=*/true);
     push_mana_dev_block(state, gs->opponent, /*with_lands_in_hand=*/false);
 
-    // ── Log-scaled vitals (see machine_io.h [5840-5843]) ──────────────────────
+    // ── Log-scaled vitals (see machine_io.h [6224-6227]) ──────────────────────
     // The same life/library counts already emitted linearly above (player blocks,
     // library-context block), re-warped through log1p so the near-zero region —
     // where the game is decided and the linear floats have their least resolution —
@@ -1067,6 +1106,12 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // encodings are kept deliberately; see the rationale in machine_io.h.
     push_log_vitals_block(state, gs->self.life, gs->self_library_ct);
     push_log_vitals_block(state, gs->opponent.life, gs->opp_library_ct);
+
+    // ── Per-turn counters (see machine_io.h [6228-6249]) ──────────────────────
+    // Self (11 floats) then opponent (11): the per-turn counts and the spell-color
+    // multi-hot.
+    push_per_turn_block(state, gs->self);
+    push_per_turn_block(state, gs->opponent);
 
     // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
     // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is

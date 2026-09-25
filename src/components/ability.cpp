@@ -1033,10 +1033,7 @@ bool Ability::is_target_valid() const {
 // Evaluates a condition SVar expression against cur_game state.
 static int evaluate_condition_svar(const std::string &expr, Entity src, Zone::Ownership ctrl = Zone::PLAYER_A,
     std::shared_ptr<Orderer> orderer = nullptr) {
-    if (expr == "Count$ResolvedThisTurn") {
-        auto it = cur_game.ability_resolution_counts.find(src);
-        return (it != cur_game.ability_resolution_counts.end()) ? it->second : 0;
-    }
+    if (expr == "Count$ResolvedThisTurn") return ability_resolutions_this_turn(src);
     // Delegate to evaluate_dynamic_amount for Count$ expressions
     if (orderer && expr.find("Count$") != std::string::npos) {
         return static_cast<int>(evaluate_dynamic_amount(expr, ctrl, orderer, 0));

@@ -55,6 +55,11 @@ from env import (
     _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
     _MD_SELF_LAND_DROPS, _MD_OPP_LAND_DROPS,
     _LOG_VITALS_START, _LOG_VITALS_OPP_START, _LV_LOG_LIFE, _LV_LOG_LIBRARY,
+    _PER_TURN_START, _PER_TURN_OPP_START, _PT_SPELLS, _PT_NONCREATURE,
+    _PT_INSTANT_SORCERY, _PT_CARDS_DRAWN, _PT_LIFE_GAINED, _PT_LIFE_LOST,
+    _PT_COLORS_START, _OFF_IS_CREATURE, _OFF_ENTERED_THIS_TURN,
+    _OFF_RESOLUTIONS_THIS_TURN, _OFF_ACTIVATIONS_THIS_TURN, _OFF_CANT_BE_BLOCKED,
+    _OFF_COMBAT_DMG_PREVENTED,
     _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START, _REVEALED_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
@@ -71,7 +76,8 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
                     LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
                     LIFE_NORMALIZER, LIBRARY_NORMALIZER, MULLIGAN_NORMALIZER,
-                    LOG_LIFE_DENOM, LOG_LIBRARY_DENOM)
+                    LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
+                    PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS)
 from opponents import make_controller
 from scripted_agent import scripted_action
 
@@ -314,6 +320,69 @@ def _check_log_vitals(decision_idx, seat, state):
                       f"(count recovered from this obs's linear float)")
 
 
+def _decode_whole_count(decision_idx, seat, v, norm, label):
+    """De-normalize a count float and require a whole number >= 0."""
+    x = float(v) * norm
+    n = int(round(x))
+    if not np.isfinite(x) or abs(x - n) > 1e-4 or n < 0:
+        _fail(decision_idx, seat, label, "-", float(v),
+              f"count de-normalizes to {x} (expected a whole number >= 0)")
+    return n
+
+
+def _check_per_turn(decision_idx, seat, state):
+    """Invariant (16): the PER-TURN COUNTERS block and the per-permanent per-turn
+    statuses. Every count de-normalizes to a whole number >= 0 and every flag is
+    exactly 0/1. Per player the spell counts nest (instant/sorcery spells are
+    noncreature spells, noncreature spells are spells — one cast-time increment
+    site feeds all three) and a spell color can only be recorded alongside a cast.
+    Per permanent, "can't be blocked this turn" is only ever set on a creature, and
+    an empty slot carries none of the new fields."""
+    for label, start in (("self_per_turn", _PER_TURN_START),
+                         ("opp_per_turn", _PER_TURN_OPP_START)):
+        counts = {}
+        for field, off, norm in (
+                ("spells", _PT_SPELLS, PER_TURN_COUNT_NORMALIZER),
+                ("noncreature", _PT_NONCREATURE, PER_TURN_COUNT_NORMALIZER),
+                ("instant_sorcery", _PT_INSTANT_SORCERY, PER_TURN_COUNT_NORMALIZER),
+                ("cards_drawn", _PT_CARDS_DRAWN, PER_TURN_COUNT_NORMALIZER),
+                ("life_gained", _PT_LIFE_GAINED, LIFE_NORMALIZER),
+                ("life_lost", _PT_LIFE_LOST, LIFE_NORMALIZER)):
+            counts[field] = _decode_whole_count(decision_idx, seat, state[start + off],
+                                                norm, f"{label}.{field}")
+        colors = [_decode_flag(decision_idx, seat, state, start + _PT_COLORS_START + c,
+                               f"{label}.color{c}")
+                  for c in range(PER_TURN_COLOR_FIELDS)]
+        if not (counts["instant_sorcery"] <= counts["noncreature"] <= counts["spells"]):
+            _fail(decision_idx, seat, label, "-", counts,
+                  "spell counts must nest: instant/sorcery <= noncreature <= spells")
+        if any(colors) and counts["spells"] == 0:
+            _fail(decision_idx, seat, f"{label}.colors", "-", colors,
+                  "a spell color is recorded but no spell was cast this turn")
+    for side, start in (("self_perm", _SELF_PERM_START),
+                        ("opp_perm", _OPP_PERM_START)):
+        for s in range(_PERM_SLOTS):
+            base = start + s * _PERM_SLOT_SIZE
+            empty = _decode_card_id(state[base + _PERM_CARD_OFF]) == _CARD_ID_SENTINEL
+            vals = []
+            for off, name in ((_OFF_ENTERED_THIS_TURN, "entered_this_turn"),
+                              (_OFF_CANT_BE_BLOCKED, "cant_be_blocked"),
+                              (_OFF_COMBAT_DMG_PREVENTED, "combat_damage_prevented")):
+                vals.append(_decode_flag(decision_idx, seat, state, base + off,
+                                         f"{side}[{s}].{name}"))
+            for off, name in ((_OFF_RESOLUTIONS_THIS_TURN, "resolutions_this_turn"),
+                              (_OFF_ACTIVATIONS_THIS_TURN, "activations_this_turn")):
+                vals.append(_decode_whole_count(decision_idx, seat, state[base + off],
+                                                PER_TURN_COUNT_NORMALIZER,
+                                                f"{side}[{s}].{name}"))
+            if empty and any(vals):
+                _fail(decision_idx, seat, side, s, vals,
+                      "per-turn permanent status set on an empty slot")
+            if vals[1] and state[base + _OFF_IS_CREATURE] < 0.5:
+                _fail(decision_idx, seat, f"{side}.cant_be_blocked", s, 1.0,
+                      "can't-be-blocked set on a non-creature")
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -496,6 +565,10 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # life/library float — the two encodings of one number, pinned to each other.
     # (Masked to zeros during the sideboard phase, which is asserted instead there.)
     _check_log_vitals(decision_idx, seat, state)
+
+    # (16) Per-turn counters and the per-permanent per-turn statuses: whole counts,
+    # binary flags, nested spell counts, colors only alongside a cast.
+    _check_per_turn(decision_idx, seat, state)
 
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata

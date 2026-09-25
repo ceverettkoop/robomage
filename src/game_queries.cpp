@@ -259,7 +259,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
                                 || v.owner != ctx.controller;
     if (q == "token")        return v.is_token;
     if (q == "nonToken" || q == "!token") return !v.is_token;
-    if (q == "ThisTurnEntered") return v.on_battlefield && v.entered_on_turn == static_cast<long>(cur_game.turn);
+    if (q == "ThisTurnEntered") return v.on_battlefield && entered_battlefield_this_turn(v.entered_on_turn);
     // live combat / tap state (e.g. Guide of Souls' ValidTgts$ Creature.attacking) — only a
     // battlefield permanent can be in these states; a card view leaves them false.
     if (q == "attacking") return v.is_attacking;
@@ -593,6 +593,15 @@ Zone::Ownership resolve_defined_player(const Ability &ab) {
     // check_triggered_abilities' delayed-trigger leave-battlefield path).
     if (ab.defined_triggered_card_controller) return ab.triggered_player;
     return Zone::UNKNOWN;
+}
+
+bool entered_battlefield_this_turn(long entered_on_turn) {
+    return entered_on_turn == static_cast<long>(cur_game.turn);
+}
+
+int ability_resolutions_this_turn(Entity source) {
+    auto it = cur_game.ability_resolution_counts.find(source);
+    return it != cur_game.ability_resolution_counts.end() ? it->second : 0;
 }
 
 // CR 702.131b: Ascend on a permanent — any time its controller controls ten or more
