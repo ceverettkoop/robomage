@@ -509,3 +509,11 @@ construct, or a token maker in the vocab) and remove it in response to its upkee
    from `_SOURCELESS_PROVISIONAL` to the approved list in `test_obs_invariants.py`.
 
 Declined for now (user, 2026-09-25): a `companion_available` field; an emblem-count field.
+
+8. **Veil of Summer's "can't be countered" protects spells only.** `src/effects/effect_counter.cpp`
+   applies the player grant (`cant_counter_spells_of`) to non-spell targets too, so Stifle-style
+   counters can't hit that player's abilities. Veil says "Spells you control can't be countered this
+   turn". Abilities stay counterable. Fix, with a harness regression: Veil active, and Stifle
+   counters that player's triggered ability.
+9. **The mirrored board view flips `is_active_player`.** Add it to `decode.SELF_OPP_PAIRS` /
+   `swap_self_opp` (or its equivalent) and to the `check_mirrored_view` comparison.
