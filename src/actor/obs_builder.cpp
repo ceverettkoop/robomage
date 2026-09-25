@@ -20,7 +20,7 @@
 // ── State-vector offsets ────────────────────────────────────────────────────
 // The actor no longer keeps its own copy of the offset chain. Every absolute
 // block offset it needs (SELF_PERM_START, HAND_START, MATCH_CTX_START,
-// REVEALED_START, EXTRAS_*, the deck-identity tail, ...) comes from the
+// OPP_KNOWN_HAND_START, EXTRAS_*, the deck-identity tail, ...) comes from the
 // OFFSET_CHAIN in src/machine_io.h, which is derived from that header's block
 // widths and pinned by its own `== STATE_SIZE` static_assert. train/env.py
 // derives the same chain from the same widths (mirrored by train/gen_enums.py),
@@ -44,8 +44,7 @@ static_assert(STACK_TGT_START == 17, "stack target sub-slots start at slot offse
 
 // Block ENDs the sideboard obs mask below needs; machine_io.h names each block's
 // start, and one block's end is the next one's start.
-static constexpr int KNOWN_TOP_LIB_END = REVEALED_START;
-static constexpr int REVEALED_END = OPP_KNOWN_HAND_START;
+static constexpr int KNOWN_TOP_LIB_END = OPP_KNOWN_HAND_START;
 static constexpr int OPP_KNOWN_HAND_END = PENDING_DECISION_START;
 static constexpr int PENDING_DECISION_END = EXTRAS_START;
 static constexpr int SELF_LIVE_LIB_END = SELF_DECK_MAIN_START;
@@ -149,9 +148,8 @@ static const SideboardMask& sideboard_mask() {
         };
         keep_range(GY_START, HAND_START);                   // graveyards + exile (self + opp)
         keep_range(MATCH_CTX_START, KNOWN_TOP_LIB_START);   // match + library ctx + current turn
-        keep_range(REVEALED_START, REVEALED_END);           // opponent revealed multi-hot
         keep_range(PENDING_DECISION_START, PENDING_DECISION_END);  // pending-decision context
-        keep_range(OPP_DECK_MAIN_START, OPP_DECK_SIDE_END); // opponent registered decklist (both blocks)
+        keep_range(OPP_DECK_MAIN_START, OPP_DECK_SIDE_END); // opponent registered decklist + revealed bits
         keep_range(SELF_DECK_MAIN_START, SELF_DECK_SIDE_END);  // the viewer's own live 75
         keep_range(EXTRAS_SB_CTX_START, EXTRAS_END);        // plays-first + sideboard progress
         // The "self is Player A" seat flag must survive (it is live during the

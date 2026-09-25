@@ -549,29 +549,26 @@ _EMB_STR_ZONES = ("self_graveyard", "opp_graveyard", "self_exile", "opp_exile")
 
 
 def _decklist_id_slots():
-    """``[(start, slots)]`` for the five ``(card_id, count)`` decklist blocks.
+    """``[(start, slots, slot_size)]`` for the five decklist blocks.
 
     These are NOT part of the decoded board dump, but their ids do go through
     ``card_emb`` (via ``decklist_encoder``), so a card sitting in a decklist is
-    embedded at every decision even though it is nowhere on the board."""
+    embedded at every decision even though it is nowhere on the board. The self
+    blocks are (card_id, count) slots, the opponent's (card_id, count, revealed)."""
     import env as e
-    return [(e._SELF_LIVE_LIB_START, e.DECKLIST_MAIN_SLOTS),
-            (e._SELF_DECK_MAIN_START, e.DECKLIST_MAIN_SLOTS),
-            (e._SELF_DECK_SIDE_START, e.DECKLIST_SIDE_SLOTS),
-            (e._OPP_DECK_MAIN_START, e.DECKLIST_MAIN_SLOTS),
-            (e._OPP_DECK_SIDE_START, e.DECKLIST_SIDE_SLOTS)]
+    return [(e._SELF_LIVE_LIB_START, e.DECKLIST_MAIN_SLOTS, e._DECKLIST_SLOT_SIZE),
+            (e._SELF_DECK_MAIN_START, e.DECKLIST_MAIN_SLOTS, e._DECKLIST_SLOT_SIZE),
+            (e._SELF_DECK_SIDE_START, e.DECKLIST_SIDE_SLOTS, e._DECKLIST_SLOT_SIZE),
+            (e._OPP_DECK_MAIN_START, e.DECKLIST_MAIN_SLOTS, e._OPP_DECKLIST_SLOT_SIZE),
+            (e._OPP_DECK_SIDE_START, e.DECKLIST_SIDE_SLOTS, e._OPP_DECKLIST_SLOT_SIZE)]
 
 
-def _state_card_ids(obs_row, name_to_id, deck_slots, slot_size):
-    """``(embedded_ids, revealed_ids)`` for one observation.
-
-    The split matters: the opponent-revealed block is a dense N_CARD_TYPES
-    multi-hot fed to ``revealed_encoder``, NOT a card-id lookup, so a mention
-    there gives the card's EMBEDDING ROW no gradient at all. It is also sticky
-    for the whole match (revealed once = set in every later state), so folding
-    it into one number both overstates exposure and misattributes it."""
+def _state_card_ids(obs_row, name_to_id, deck_slots):
+    """The set of card ids one observation EMBEDS (board zones, hand, stack,
+    graveyards, exiles, known top-library, known opponent hand, and the five
+    decklist blocks)."""
     gs = decode.decode_game_state(obs_row)
-    emb, revealed = set(), set()
+    emb = set()
     for key in _EMB_DICT_ZONES:
         for item in gs.get(key) or ():
             nm = item.get("name") if isinstance(item, dict) else item
@@ -581,58 +578,34 @@ def _state_card_ids(obs_row, name_to_id, deck_slots, slot_size):
         for nm in gs.get(key) or ():
             if isinstance(nm, str) and nm in name_to_id:
                 emb.add(name_to_id[nm])
-    for nm in gs.get("opp_revealed") or ():
-        if isinstance(nm, str) and nm in name_to_id:
-            revealed.add(name_to_id[nm])
-    for start, slots in deck_slots:
+    for start, slots, slot_size in deck_slots:
         for k in range(slots):
             idx = int(round(float(obs_row[start + k * slot_size])
                             * N_CARD_TYPES))
             if idx >= 0:
                 emb.add(idx)
-    return emb, revealed
+    return emb
 
 
-def card_occurrence_split(obs, limit=1500, seed=0):
-    """Per-card state counts, split by how the card reaches the network:
+def card_occurrences(obs, limit=1500, seed=0):
+    """Per-card count of sampled states that EMBED the card — the occurrence
+    number the embedding views should filter on. Counting is per state (a hand
+    of four Brainstorms counts once). Returns ``(counts, n_states)``.
 
-      ``emb``      — states where the card's id is EMBEDDED (both boards, hand,
-                     stack, graveyards, exiles, known top-library, known
-                     opponent hand, and the five decklist blocks)
-      ``revealed`` — states where it appears ONLY in the dense opponent-revealed
-                     multi-hot, which never touches the card embedding
-
-    Counting is per state (a hand of four Brainstorms counts once). Returns
-    ``(emb, revealed, n_states)``."""
+    Note this measures *visibility in the sampled data*; :func:`card_exposure`
+    answers the stronger question (did this row actually receive gradient) from
+    the weights, with no shards at all."""
     rng = np.random.default_rng(seed)
     n = obs.shape[0]
     idx = np.arange(n) if n <= limit else np.sort(
         rng.choice(n, size=int(limit), replace=False))
     name_to_id = {n_: i for i, n_ in enumerate(VOCAB_NAMES) if n_}
     deck_slots = _decklist_id_slots()
-    import env as e
-    slot_size = e._DECKLIST_SLOT_SIZE
     emb = np.zeros(N_CARD_TYPES, dtype=np.int64)
-    rev = np.zeros(N_CARD_TYPES, dtype=np.int64)
     for r in idx:
-        e_ids, r_ids = _state_card_ids(obs[r], name_to_id, deck_slots, slot_size)
-        for i in e_ids:
+        for i in _state_card_ids(obs[r], name_to_id, deck_slots):
             emb[i] += 1
-        for i in r_ids - e_ids:
-            rev[i] += 1
-    return emb, rev, int(len(idx))
-
-
-def card_occurrences(obs, limit=1500, seed=0):
-    """Per-card count of sampled states that EMBED the card — the occurrence
-    number the embedding views should filter on. See card_occurrence_split for
-    the revealed-only column. Returns ``(counts, n_states)``.
-
-    Note this measures *visibility in the sampled data*; :func:`card_exposure`
-    answers the stronger question (did this row actually receive gradient) from
-    the weights, with no shards at all."""
-    emb, _, n = card_occurrence_split(obs, limit=limit, seed=seed)
-    return emb, n
+    return emb, int(len(idx))
 
 
 # ----------------------------------------------------------------------
@@ -808,13 +781,13 @@ def obs_blocks():
         ("match context", e._MATCH_CTX_START, e._LIBRARY_CTX_START),
         ("library context", e._LIBRARY_CTX_START, e._CUR_TURN_IDX),
         ("turn", e._CUR_TURN_IDX, e._KNOWN_TOP_LIB_START),
-        ("known top library", e._KNOWN_TOP_LIB_START, e._REVEALED_START),
-        ("opp revealed", e._REVEALED_START, e._OPP_KNOWN_HAND_START),
+        ("known top library", e._KNOWN_TOP_LIB_START, e._OPP_KNOWN_HAND_START),
         ("opp known hand", e._OPP_KNOWN_HAND_START, e._PENDING_DECISION_START),
         ("pending decision", e._PENDING_DECISION_START, e._EXTRAS_START),
-        # NB: this span also covers the deck-identity tail blocks, which have never
-        # had their own row here; it stops at the mana-development block below.
-        ("global extras", e._EXTRAS_START, e._MANA_DEV_START),
+        ("global extras", e._EXTRAS_START, e._SELF_LIVE_LIB_START),
+        ("self decklists", e._SELF_LIVE_LIB_START, e._OPP_DECK_MAIN_START),
+        # The opponent's registered 75 with its match-scoped revealed bits.
+        ("opp decklist", e._OPP_DECK_MAIN_START, e._MANA_DEV_START),
         ("mana development", e._MANA_DEV_START, e._LOG_VITALS_START),
         ("log vitals", e._LOG_VITALS_START, e._PER_TURN_START),
         ("per-turn counters", e._PER_TURN_START, e._DELAYED_START),
@@ -1547,7 +1520,8 @@ def _encoder_specs(sd):
                   + [("draw distance", 1, ["draw_dist"])]))
     specs.append(("decklist_encoder",
                   _card_feat_cols("card", card_dim)
-                  + [("copies count", 1, ["count"])]))
+                  + [("copies count", 1, ["count"]),
+                     ("revealed", 1, ["revealed"])]))
 
     # The second-pass reference combiners: every group is an ENCODED entity
     # embedding (no per-column names — the columns are latent dims).
@@ -1565,12 +1539,6 @@ def _encoder_specs(sd):
         specs.append(("stk_combiner",
                       [("own encoding", half, None),
                        ("targets-mean enc", e_dim, None)]))
-    # The revealed multi-hot's columns ARE vocab cards: its per-column weight
-    # norm names which opponent reveals the net reacts to.
-    specs.append(("revealed_encoder",
-                  [("revealed multi-hot", N_CARD_TYPES,
-                    [card_name(i) for i in range(N_CARD_TYPES)])]))
-
     if "trunk.action_encoder.0.weight" in sd:
         in_dim = int(sd["trunk.action_encoder.0.weight"].shape[1])
         cat_dim = int(sd["trunk.action_cat_emb.weight"].shape[1])
@@ -1592,7 +1560,7 @@ def first_layer_attribution(sd, encoders=None):
 
     The first layer is the only place the input columns are still separable, and
     every column has a NAME (perm status flags, the 96 card_props codegen
-    columns, the revealed multi-hot's vocab cards, …) — so its per-column weight
+    columns, the decklist slots' count and revealed bits, …) — so its per-column weight
     norms literally answer "does the net read printed flying, or the learned
     identity residual, or the tapped bit?". Per group: ``share`` = fraction of
     the layer's input weight energy (Σ column-norm²), ``rms`` = RMS per-column
@@ -1644,7 +1612,6 @@ def _body_segments(sd):
         ("global ctx",         env._GLOBAL_SIZE),
         ("match/lib/turn ctx", env._KNOWN_TOP_LIB_START - env._MATCH_CTX_START),
         ("board counts",       _BOARD_COUNT_FEATS),
-        ("revealed agg",       E),
         ("pending decision",   card_feat + 1),
         ("global extras",      env._EXTRAS_END - env._EXTRAS_START),
         ("mana development",   env._MANA_DEV_END - env._MANA_DEV_START),
@@ -1732,7 +1699,7 @@ _META_CTX_NAMES = ("game_number", "self_match_wins", "opp_match_wins",
 def layer_column_names(sd, layer):
     """``(column labels, state-dict key prefix)`` for a first layer whose input
     columns are nameable: a trunk encoder (perm_encoder, stack_encoder,
-    entity_encoder, decklist_encoder, revealed_encoder, action_encoder) or a
+    entity_encoder, decklist_encoder, action_encoder) or a
     body (policy_body, value_body). Columns without an individual name (learned
     embedding dims, pooled-aggregate dims) get ``group[j]`` labels so every
     label still says which input the column came from."""
@@ -2147,23 +2114,18 @@ def render_projection(mat, ids=None, width=78, height=24, mark="color",
     return lines
 
 
-def render_occurrences(counts, n_states, top_n=25, revealed=None):
+def render_occurrences(counts, n_states, top_n=25):
     ids = named_card_ids()
     order = sorted(ids, key=lambda i: -counts[i])
     zero = [i for i in ids if counts[i] == 0]
     lines = [f"card occurrences over {n_states} sampled decision states",
              f"  {len(ids) - len(zero)}/{len(ids)} named cards are EMBEDDED "
              f"(board zones, hand, graveyards/exiles, and the decklist blocks); "
-             f"{len(zero)} never appear",
-             "  'revealed' counts states where the card shows up ONLY in the "
-             "dense opponent-revealed",
-             "  multi-hot — that block never touches the card embedding, and it "
-             "is sticky for the match.", "",
-             f"  {'embedded':>8} {'':>6} {'revealed':>8}  card"]
+             f"{len(zero)} never appear", "",
+             f"  {'embedded':>8} {'':>6}  card"]
     for i in order[:top_n]:
         frac = counts[i] / max(1, n_states)
-        rev = "" if revealed is None else f"{int(revealed[i]):8d}"
-        lines.append(f"  {counts[i]:8d} {frac*100:5.1f}% {rev:>8}  "
+        lines.append(f"  {counts[i]:8d} {frac*100:5.1f}%  "
                      f"{card_name(i)[:34]:<34} {_bar(frac)}")
     if zero:
         lines.append("")
@@ -2886,11 +2848,13 @@ def sb_card_label(idx):
     return f"card#{idx}"
 
 
-def decode_deck_slots(vec):
-    """A (card_id, count) slot block -> Counter{vocab_idx: count}."""
+def decode_deck_slots(vec, slot_size=2):
+    """A deck-identity slot block -> Counter{vocab_idx: count}. Each slot is
+    ``slot_size`` floats with (card_id, count) first: 2 for the self blocks, 3
+    (+ revealed) for the opponent's registered blocks."""
     import collections
     out = collections.Counter()
-    for i in range(0, len(vec), 2):
+    for i in range(0, len(vec), slot_size):
         idx = int(round(float(vec[i]) * N_CARD_TYPES))
         if idx < 0:
             continue
@@ -2992,8 +2956,10 @@ def analyze_sb_session(obs, rows):
     outs = collections.Counter(dict(before - after))
     self75 = (main_cfg(first) + decode_deck_slots(
         first[env._SELF_DECK_SIDE_START:env._SELF_DECK_SIDE_END]))
-    opp75 = (decode_deck_slots(first[env._OPP_DECK_MAIN_START:env._OPP_DECK_MAIN_END])
-             + decode_deck_slots(first[env._OPP_DECK_SIDE_START:env._OPP_DECK_SIDE_END]))
+    opp75 = (decode_deck_slots(first[env._OPP_DECK_MAIN_START:env._OPP_DECK_MAIN_END],
+                               env._OPP_DECKLIST_SLOT_SIZE)
+             + decode_deck_slots(first[env._OPP_DECK_SIDE_START:env._OPP_DECK_SIDE_END],
+                                 env._OPP_DECKLIST_SLOT_SIZE))
     n_arch = len(archetypes.ARCHETYPES) + 1
     self_oh = first[env.ARCH_ONEHOT_START:env.ARCH_ONEHOT_START + n_arch]
     opp_oh = first[env.ARCH_ONEHOT_START + n_arch:env.ARCH_ONEHOT_END]
@@ -3293,10 +3259,9 @@ def main(argv=None):
     if cmd == "occur":
         s = load_shard_sample(args.shards, max_rows=args.count_rows,
                               window=args.window, seed=args.seed)
-        emb, rev, n = card_occurrence_split(s["obs"], limit=args.count_rows,
-                                            seed=args.seed)
-        print("\n".join(render_occurrences(emb, n, top_n=args.top,
-                                           revealed=rev)))
+        emb, n = card_occurrences(s["obs"], limit=args.count_rows,
+                                  seed=args.seed)
+        print("\n".join(render_occurrences(emb, n, top_n=args.top)))
         return 0
 
     if cmd == "exposure":

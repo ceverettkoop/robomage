@@ -31,7 +31,10 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
                  _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
                  _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
-                 _KNOWN_TOP_LIB_SLOT_SIZE, _REVEALED_START, _REVEALED_SIZE,
+                 _KNOWN_TOP_LIB_SLOT_SIZE,
+                 _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
+                 _OPP_DECKLIST_SLOT_SIZE, _OPP_DECKLIST_REVEALED_OFF,
+                 DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
                  _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
                  _OPP_KNOWN_HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
@@ -810,17 +813,31 @@ def _decode_opp_known_hand(state):
     return names
 
 
-def _decode_opp_revealed(state):
-    """Decode the opponent revealed-cards multi-hot (belief state).
+def decode_opp_decklist(state):
+    """Decode the opponent's REGISTERED decklist blocks (maindeck then sideboard)
+    into ``(vocab_idx, count, revealed)`` tuples for the filled slots, in slot
+    order (ascending vocab id within each block). ``revealed`` is the
+    match-scoped "the opponent has shown this card" bit."""
+    out = []
+    for start, n_slots in ((_OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
+                           (_OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS)):
+        for i in range(n_slots):
+            base = start + i * _OPP_DECKLIST_SLOT_SIZE
+            idx = onehot_to_index(state, base)
+            if idx < 0:
+                continue
+            out.append((idx, int(round(float(state[base + 1]) * 4)),
+                        bool(state[base + _OPP_DECKLIST_REVEALED_OFF] > 0.5)))
+    return out
 
-    Returns the card names of the set bits only — every distinct card the
-    opponent-of-viewer has ever revealed this match (entered a public zone or
-    was revealed by a tutor); empty list when none seen yet."""
-    names = []
-    for idx in range(_REVEALED_SIZE):
-        if state[_REVEALED_START + idx] > 0.5:
-            names.append(card_index_to_name(idx))
-    return names
+
+def _decode_opp_revealed(state):
+    """The opponent's revealed cards (belief state), rebuilt from the revealed
+    bits on the opponent decklist slots: every distinct card of their registered
+    75 the opponent-of-viewer has revealed this match (entered a public zone or
+    was revealed by a tutor), in ascending vocab order; empty list when none."""
+    idxs = sorted({idx for idx, _ct, rev in decode_opp_decklist(state) if rev})
+    return [card_index_to_name(idx) for idx in idxs]
 
 
 def _decode_stack(state, labels=SELF_OPP_LABELS):

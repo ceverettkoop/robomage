@@ -34,7 +34,7 @@ from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, N_CARD_TYPES
 from cli_spec import DEFAULT_AZ_C_PUCT
 from decode import menu_merge_reps
 from env import (_CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _MATCH_CTX_START,
-                 _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END,
+                 _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END, _OPP_DECKLIST_SLOT_SIZE,
                  _SELF_IS_A_IDX, _obs_action_category, _obs_action_card_id)
 from sb_rules import SB_CARD_FACTS, SB_DEAD_RULES
 from search_env import SearchRoboMageEnv, SimQuery
@@ -1029,9 +1029,9 @@ def sb_dead_mask(obs: np.ndarray, num_choices: int) -> np.ndarray:
     if obs[_IS_SIDEBOARD_IDX] <= 0.5:
         return dead
     # Union of fact bits over the opponent's registered main + side blocks.
-    # Slots are (card_id, count) pairs; the empty-slot sentinel decodes to -1.
+    # Slots are (card_id, count, revealed); the empty-slot sentinel decodes to -1.
     opp_facts = 0
-    for j in range(_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END, 2):
+    for j in range(_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END, _OPP_DECKLIST_SLOT_SIZE):
         cid = int(round(float(obs[j]) * N_CARD_TYPES))
         if cid >= 0:
             opp_facts |= SB_CARD_FACTS[cid]

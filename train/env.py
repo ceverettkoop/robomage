@@ -39,8 +39,8 @@ State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
 STATE_SIZE-float state vector. Card identity is a single normalized id float per
 slot (idx/N_CARD_TYPES, -1/N_CARD_TYPES = empty), NOT a one-hot — the policy
-network maps ids through a learned nn.Embedding. The opponent revealed-cards
-block is the only vocab-width block (N_CARD_TYPES multi-hot).
+network maps ids through a learned nn.Embedding. No block is vocab-width; the
+opponent's match-scoped revealed cards ride as a bit on each opp decklist slot.
 State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 64 action zone_ref floats
 + 64 action entity-slot-ref floats + 64 action option-ordinal floats
@@ -110,7 +110,8 @@ try:
         STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
-        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
+        OPP_DECKLIST_REVEALED_OFF,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
@@ -141,7 +142,8 @@ except ImportError:
         STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
-        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
+        OPP_DECKLIST_REVEALED_OFF,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
@@ -465,7 +467,6 @@ _LIBRARY_CTX_SIZE       = LIBRARY_CTX_SIZE     # self_lib/60, opp_lib/60
 _CUR_TURN_SIZE          = CUR_TURN_SIZE        # current turn / 50
 _KNOWN_TOP_LIB_SLOTS    = KNOWN_TOP_LIBRARY_SIZE  # serialized known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = CARD_ID_SLOT_SIZE   # card id per slot
-_REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-hot (only vocab-width block)
 _OPP_KNOWN_HAND_SLOTS   = MAX_HAND_SLOTS       # known opponent-hand card identities
 _OPP_KNOWN_HAND_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 
@@ -488,9 +489,7 @@ _LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE
 _CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE
 _KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE
 _KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
-_REVEALED_START      = _KNOWN_TOP_LIB_END
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE
-_OPP_KNOWN_HAND_START = _REVEALED_END
+_OPP_KNOWN_HAND_START = _KNOWN_TOP_LIB_END
 _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
@@ -553,8 +552,9 @@ _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
 assert _EXTRAS_END == _EXTRAS_PLAYS_FIRST + EXTRAS_SB_CTX_SIZE, _EXTRAS_END
 
 # ── Deck-identity tail blocks (mirror machine_io.h's deck-identity tail) ──────────────
-# Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
-# count normalized /4.0. Slots packed ascending by vocab id, no holes.
+# Each self slot is (card_id, count) and each opp slot is (card_id, count, revealed):
+# card id via norm_card_id (empty = -1 sentinel), count normalized /4.0. Slots
+# packed ascending by vocab id, no holes.
 #   SELF_LIVE_LIBRARY : the viewer's LIBRARY zone tallied live (viewer-only).
 #   SELF_DECK_MAIN / SELF_DECK_SIDE : the viewer's OWN current 75 — the deck
 #     CONFIGURATION (every card regardless of zone), tracking each sideboard swap.
@@ -562,7 +562,12 @@ assert _EXTRAS_END == _EXTRAS_PLAYS_FIRST + EXTRAS_SB_CTX_SIZE, _EXTRAS_END
 #     between games; this is what the sideboarding player is choosing between.
 #   OPP_DECK_MAIN / OPP_DECK_SIDE : the opponent's REGISTERED decklist, frozen at
 #     the match's registered 75 (the post-board split is hidden information).
-_DECKLIST_SLOT_SIZE     = DECKLIST_SLOT_SIZE      # card id + count per slot
+#     revealed = 1.0 when the opponent has revealed that card this match
+#     (accumulated across the games of a bo3; a double-faced card also counts
+#     when its back face was revealed); 0.0 on empty slots.
+_DECKLIST_SLOT_SIZE     = DECKLIST_SLOT_SIZE      # card id + count per self slot
+_OPP_DECKLIST_SLOT_SIZE = OPP_DECKLIST_SLOT_SIZE  # card id + count + revealed per opp slot
+_OPP_DECKLIST_REVEALED_OFF = OPP_DECKLIST_REVEALED_OFF  # revealed bit within an opp slot
 _SELF_LIVE_LIB_START    = _EXTRAS_END
 _SELF_LIVE_LIB_END      = _SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
 _SELF_DECK_MAIN_START   = _SELF_LIVE_LIB_END
@@ -570,9 +575,9 @@ _SELF_DECK_MAIN_END     = _SELF_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIS
 _SELF_DECK_SIDE_START   = _SELF_DECK_MAIN_END
 _SELF_DECK_SIDE_END     = _SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
 _OPP_DECK_MAIN_START    = _SELF_DECK_SIDE_END
-_OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _OPP_DECKLIST_SLOT_SIZE
 _OPP_DECK_SIDE_START    = _OPP_DECK_MAIN_END
-_OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _OPP_DECKLIST_SLOT_SIZE
 
 # ── Mana development (mirrors machine_io.h's MANA DEVELOPMENT block) ─────────
 # The one summary of each player's mana BASE: per-color untapped-source potential
@@ -674,7 +679,7 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # for a sideboarding decision. When is_sideboard_phase (state[_MATCH_CTX_START+3])
 # is set we zero every block except the ones that actually inform sideboarding:
 # graveyards + exile ("how the game went"), match/library/turn context (game
-# number => play/draw), the opponent revealed-cards multi-hot (the primary signal), and the pending-decision
+# number => play/draw), the opponent's registered decklist with its revealed bits (the primary signal), and the pending-decision
 # context (which IN card the OUT query is cutting for). The global-extras block
 # (lands played, monarch, day/night, MandatoryChoice one-hot, ...) describes the
 # stale ended game, so it stays masked; it holds no card-id slots. The MANA
@@ -696,10 +701,9 @@ def _build_sideboard_mask():
     for lo, hi in (
         (_GY_START, _HAND_START),                   # graveyards + exile (self + opp)
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
-        (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
-        # The opponent's REGISTERED decklist is exactly what informs sideboarding, so
-        # both opp-deck blocks stay visible. The SELF_LIVE_LIBRARY block is NOT
+        # The opponent's REGISTERED decklist and its revealed bits are exactly what
+        # informs sideboarding, so both opp-deck blocks stay visible. The SELF_LIVE_LIBRARY block is NOT
         # kept (the library zone is stale during the sideboard phase); its card-id
         # positions are sentinel-filled below, its counts masked to 0.0.
         (_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END),

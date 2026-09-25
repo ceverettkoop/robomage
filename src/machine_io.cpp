@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "card_db.h"
 #include "card_vocab.h"
 #include "error.h"
 #include "classes/deck_state.h"
@@ -28,6 +29,7 @@
 #include "game_driver.h"                  // priority_window_open
 #include "game_queries.h"
 #include "mana_system.h"                    // mana_potential (mana-development block)
+#include "parse.h"                          // name_to_uid
 #include "systems/rules_modifying.h"        // rules_mod::land_drops_remaining
 #include "systems/state_manager_internal.h"
 
@@ -59,6 +61,8 @@ static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry
 static void fill_decklist_block(int* ids, int* counts, int n_slots,
                                 const std::vector<DecklistEntry>& entries,
                                 const char* block_name);
+static int revealed_card_identity(int vocab_idx);
+static void fill_opp_revealed_bits(GameState* gs, const unsigned char* opp_revealed);
 
 // ── Entity → reference-slot map ───────────────────────────────────────────────
 // Maps every serialized entity to its slot in the unified viewer-relative
@@ -449,6 +453,62 @@ static void fill_decklist_block(int* ids, int* counts, int n_slots,
     }
 }
 
+// The vocab index of the physical card a revealed name belongs to: the name's
+// card_db entry (DFC back faces are aliased onto the card's one entity) resolved
+// through that entity's CardData name, i.e. the front face a decklist registers.
+// -1 when the name has no loaded card.
+static int revealed_card_identity(int vocab_idx) {
+    auto it = card_db.find(name_to_uid(card_index_to_name(vocab_idx)));
+    if (it == card_db.end() || !global_coordinator.entity_has_component<CardData>(it->second))
+        return -1;
+    return card_name_to_index(global_coordinator.GetComponent<CardData>(it->second).name);
+}
+
+// Project the opponent's match-scoped reveal set (indexed by vocab id) onto the
+// filled opp registered-decklist slots. A slot is revealed when its card's own
+// name was revealed or, for a double-faced card, when its back face was (a
+// transformed permanent, an MDFC played back face up). A revealed name with no
+// slot even then is dropped; debug builds print a stderr WARNING once per vocab
+// id per process.
+static void fill_opp_revealed_bits(GameState* gs, const unsigned char* opp_revealed) {
+    // Slot of each registered card: main slots as i, side slots as MAIN + i.
+    int slot_of[REVEALED_SIZE];
+    for (int id = 0; id < REVEALED_SIZE; id++) slot_of[id] = -1;
+    for (int i = 0; i < DECKLIST_MAIN_SLOTS; i++) {
+        int id = gs->opp_deck_main_id[i];
+        if (id >= 0 && id < REVEALED_SIZE) slot_of[id] = i;
+    }
+    for (int i = 0; i < DECKLIST_SIDE_SLOTS; i++) {
+        int id = gs->opp_deck_side_id[i];
+        if (id >= 0 && id < REVEALED_SIZE) slot_of[id] = DECKLIST_MAIN_SLOTS + i;
+    }
+    for (int id = 0; id < REVEALED_SIZE; id++) {
+        if (!opp_revealed[id]) continue;
+        int slot = slot_of[id];
+        if (slot < 0) {
+            int card = revealed_card_identity(id);
+            if (card >= 0 && card < REVEALED_SIZE) slot = slot_of[card];
+        }
+        if (slot < 0) {
+#ifndef NDEBUG
+            static unsigned char warned[REVEALED_SIZE] = {};
+            if (!warned[id]) {
+                warned[id] = 1;
+                fprintf(stderr,
+                        "WARNING: opponent revealed card vocab id %d (%s), which is not in "
+                        "their registered 75; the observation has no decklist slot for it\n",
+                        id, card_index_to_name(id));
+            }
+#endif
+            continue;
+        }
+        if (slot < DECKLIST_MAIN_SLOTS)
+            gs->opp_deck_main_revealed[slot] = 1;
+        else
+            gs->opp_deck_side_revealed[slot - DECKLIST_MAIN_SLOTS] = 1;
+    }
+}
+
 // Slot ref of `e` restricted to the battlefield part of the ref space (-1 otherwise).
 static int battlefield_slot_ref_of(Entity e) {
     int r = slot_ref_of(e);
@@ -578,12 +638,14 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->self_deck_main_ct[i]    = 0;
         gs->opp_deck_main_id[i]     = -1;
         gs->opp_deck_main_ct[i]     = 0;
+        gs->opp_deck_main_revealed[i] = 0;
     }
     for (int i = 0; i < DECKLIST_SIDE_SLOTS; i++) {
         gs->self_deck_side_id[i] = -1;
         gs->self_deck_side_ct[i] = 0;
         gs->opp_deck_side_id[i]  = -1;
         gs->opp_deck_side_ct[i]  = 0;
+        gs->opp_deck_side_revealed[i] = 0;
     }
 
     Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
@@ -658,12 +720,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         ? cur_game.known_top_library_a : cur_game.known_top_library_b;
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
         gs->known_top_library_self[i] = viewer_known[i];
-
-    // Opponent-of-viewer's match-scoped revealed-cards multi-hot.
-    const unsigned char* opp_revealed = (viewer == Zone::PLAYER_A)
-        ? g_revealed_by_b : g_revealed_by_a;
-    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
-        gs->opp_revealed[i] = opp_revealed[i];
 
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
@@ -938,6 +994,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     fill_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
                         DECKLIST_SIDE_SLOTS, deck_state_registered_side(opp_owner),
                         "opp sideboard");
+    // Opponent-of-viewer's match-scoped reveal set, projected onto those slots.
+    fill_opp_revealed_bits(gs, (viewer == Zone::PLAYER_A) ? g_revealed_by_b : g_revealed_by_a);
 }
 
 // ── populate_query ────────────────────────────────────────────────────────────
@@ -1140,15 +1198,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
         state.push_back(norm_card_id(gs->known_top_library_self[i]));
 
-    // Opponent revealed-cards multi-hot (N_CARD_TYPES floats; all zeros = none seen yet).
-    // Accumulated across the match, perspective-relative to the viewer.
-    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
-        state.push_back(gs->opp_revealed[i] ? 1.0f : 0.0f);
-
     // Known opponent-hand cards (10 x 1 = 10): specific card identities the viewer
     // has had revealed from the opponent's hand and that are still in hand. Sentinel
-    // id = empty/unknown slot. Distinct from the multi-hot above: this tracks the
-    // exact card and clears when that card leaves the hand.
+    // id = empty/unknown slot. Distinct from the opp decklist revealed bits: this
+    // tracks the exact card and clears when that card leaves the hand.
     for (int i = 0; i < MAX_HAND_SLOTS; i++)
         state.push_back(norm_card_id(gs->opp_known_hand[i]));
 
@@ -1160,7 +1213,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Global extras (27 floats): lands played, monarch, city's blessing, revolt,
     // pending extra turns, day/night, the priority-window context, the mulligan
     // state, the mandatory-choice one-hot, then self_plays_first and the two
-    // sideboard-phase progress scalars. See the [5826-5852] block in machine_io.h.
+    // sideboard-phase progress scalars. See the [4898-4924] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
     state.push_back(gs->self.is_monarch ? 1.0f : 0.0f);
@@ -1192,7 +1245,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // unbalanced poles sit symmetrically either side of it.
     state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
 
-    // ── Deck-identity tail blocks (see machine_io.h [5949-6300]) ───────────────
+    // ── Deck-identity tail blocks (see machine_io.h [4925-5340]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
     // normalized /4.0. Slots are packed ascending by vocab id with no holes.
     auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {
@@ -1206,17 +1259,28 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Self LIVE deck configuration: maindeck (48 x 2 = 96) then sideboard (15 x 2 = 30)
     push_decklist_block(gs->self_deck_main_id, gs->self_deck_main_ct, DECKLIST_MAIN_SLOTS);
     push_decklist_block(gs->self_deck_side_id, gs->self_deck_side_ct, DECKLIST_SIDE_SLOTS);
-    // Opponent REGISTERED maindeck (48 x 2 = 96)
-    push_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct, DECKLIST_MAIN_SLOTS);
-    // Opponent STATIC sideboard (15 x 2 = 30)
-    push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);
+    // Opponent slots carry a third float: the match-scoped revealed bit.
+    auto push_opp_decklist_block = [&](const int* ids, const int* counts,
+                                       const unsigned char* revealed, int n_slots) {
+        for (int i = 0; i < n_slots; i++) {
+            state.push_back(norm_card_id(ids[i]));
+            state.push_back(static_cast<float>(counts[i]) / 4.0f);
+            state.push_back(revealed[i] ? 1.0f : 0.0f);
+        }
+    };
+    // Opponent REGISTERED maindeck (48 x 3 = 144)
+    push_opp_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct,
+                            gs->opp_deck_main_revealed, DECKLIST_MAIN_SLOTS);
+    // Opponent REGISTERED sideboard (16 x 3 = 48)
+    push_opp_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
+                            gs->opp_deck_side_revealed, DECKLIST_SIDE_SLOTS);
 
-    // ── Mana development (see machine_io.h [6301-6319]) ───────────────────────
+    // ── Mana development (see machine_io.h [5341-5359]) ───────────────────────
     // Self (10 floats) then opponent (9 — no lands_in_hand, which is hidden).
     push_mana_dev_block(state, gs->self, /*with_lands_in_hand=*/true);
     push_mana_dev_block(state, gs->opponent, /*with_lands_in_hand=*/false);
 
-    // ── Log-scaled vitals (see machine_io.h [6320-6323]) ──────────────────────
+    // ── Log-scaled vitals (see machine_io.h [5360-5363]) ──────────────────────
     // The same life/library counts already emitted linearly above (player blocks,
     // library-context block), re-warped through log1p so the near-zero region —
     // where the game is decided and the linear floats have their least resolution —
@@ -1225,13 +1289,13 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     push_log_vitals_block(state, gs->self.life, gs->self_library_ct);
     push_log_vitals_block(state, gs->opponent.life, gs->opp_library_ct);
 
-    // ── Per-turn counters (see machine_io.h [6324-6345]) ──────────────────────
+    // ── Per-turn counters (see machine_io.h [5364-5385]) ──────────────────────
     // Self (11 floats) then opponent (11): the per-turn counts and the spell-color
     // multi-hot.
     push_per_turn_block(state, gs->self);
     push_per_turn_block(state, gs->opponent);
 
-    // ── Pending delayed triggers (see machine_io.h [6346-6553]) ───────────────
+    // ── Pending delayed triggers (see machine_io.h [5386-5593]) ───────────────
     for (int i = 0; i < DELAYED_SLOTS; i++)
         push_delayed_slot(state, gs->delayed[i]);
 

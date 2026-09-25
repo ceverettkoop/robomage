@@ -64,10 +64,11 @@ from env import (
     _DT_PRESENT, _DT_CTRL_SELF, _DT_STATE, _DT_STACK_REF, _DT_CREATOR_ID,
     _DT_CREATOR_REF, _DT_SUBJECT_REF, _DT_SUBJECT_ID, _DT_FIRE_ONEHOT_START,
     _DT_FIRES_THIS_TURN, _MISHRAS_BAUBLE_VOCAB_IDX,
-    _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START, _REVEALED_START,
+    _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
-    _DECKLIST_SLOT_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
+    _DECKLIST_SLOT_SIZE, _OPP_DECKLIST_SLOT_SIZE, _OPP_DECKLIST_REVEALED_OFF,
+    _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
@@ -155,31 +156,62 @@ def _card_id_slots():
         base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
         yield "delayed.creator_id", s, base + _DT_CREATOR_ID
         yield "delayed.subject_id", s, base + _DT_SUBJECT_ID
-    # Deck-identity tail blocks: card id is the first float of each (card_id, count) slot.
-    for name, start, n in _DECKLIST_BLOCKS:
+    # Deck-identity tail blocks: card id is the first float of each slot.
+    for name, start, n, slot_size in _DECKLIST_BLOCKS:
         for s in range(n):
-            yield name, s, start + s * _DECKLIST_SLOT_SIZE
+            yield name, s, start + s * slot_size
 
 
-# The deck-identity blocks: (name, start offset, slot count).
+# The deck-identity blocks: (name, start offset, slot count, slot width). The self
+# blocks are (card_id, count) slots, the opponent's (card_id, count, revealed).
 _DECKLIST_BLOCKS = (
-    ("self_live_lib", _SELF_LIVE_LIB_START, DECKLIST_MAIN_SLOTS),
-    ("self_deck_main", _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
-    ("self_deck_side", _SELF_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
-    ("opp_deck_main", _OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
-    ("opp_deck_side", _OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
+    ("self_live_lib", _SELF_LIVE_LIB_START, DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE),
+    ("self_deck_main", _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE),
+    ("self_deck_side", _SELF_DECK_SIDE_START, DECKLIST_SIDE_SLOTS, _DECKLIST_SLOT_SIZE),
+    ("opp_deck_main", _OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS, _OPP_DECKLIST_SLOT_SIZE),
+    ("opp_deck_side", _OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS, _OPP_DECKLIST_SLOT_SIZE),
 )
+_OPP_DECKLIST_BLOCKS = tuple(b for b in _DECKLIST_BLOCKS if b[0].startswith("opp_"))
 
 
-def _decode_decklist_block(state, start, n_slots):
+def _decode_decklist_block(state, start, n_slots, slot_size=_DECKLIST_SLOT_SIZE):
     """Return [(vocab_id, count_int)] for every slot (id=-1 => empty)."""
     out = []
     for s in range(n_slots):
-        base = start + s * _DECKLIST_SLOT_SIZE
+        base = start + s * slot_size
         cid = _decode_card_id(state[base])
         cnt = int(round(float(state[base + 1]) * 4.0))
         out.append((cid, cnt))
     return out
+
+
+def _opp_decklist_entries(state):
+    """The opponent's registered decklist (maindeck, then sideboard) as two tuples
+    of (vocab_id, count_int) — the frozen part of the blocks, revealed bits
+    excluded."""
+    return tuple(tuple(_decode_decklist_block(state, start, n, size))
+                 for _name, start, n, size in _OPP_DECKLIST_BLOCKS)
+
+
+def _opp_revealed_bits(state):
+    """{vocab_id: raw revealed float} over the opponent's filled decklist slots."""
+    out = {}
+    for _name, start, n, size in _OPP_DECKLIST_BLOCKS:
+        for s in range(n):
+            base = start + s * size
+            cid = _decode_card_id(state[base])
+            if cid >= 0:
+                out[cid] = float(state[base + _OPP_DECKLIST_REVEALED_OFF])
+    return out
+
+
+def _check_revealed_monotone(decision_idx, seat, before, after):
+    """Revealed bits never clear within a match, for a fixed viewer seat."""
+    for cid, v in before.items():
+        if v > 0.5 and not after.get(cid, 0.0) > 0.5:
+            _fail(decision_idx, seat, "opp_deck.revealed", cid, after.get(cid),
+                  f"revealed bit for vocab {cid} cleared within the match "
+                  "(it must be monotone non-decreasing)")
 
 
 def _ref_slots():
@@ -610,7 +642,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
 
     # (8) Companion: a declared companion is revealed to the opponent for the
     # whole game proper. When the seat WITHOUT priority (the viewer's opponent)
-    # declared a companion, its bit must be set in the revealed multi-hot.
+    # declared a companion, the revealed bit on its opp decklist slot must be set.
     # Skipped during pregame (mulligan/bottom): this engine reveals the companion
     # in the post-mulligan game setup (src/main.cpp setup_companions), so the bit
     # is not yet present while mulligans/bottoming are still being decided.
@@ -618,22 +650,32 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         opp_seat = "B" if priority_is_a else "A"
         comp_idx = companion_by_seat.get(opp_seat)
         if comp_idx is not None:
-            if not (state[_REVEALED_START + comp_idx] > 0.5):
-                _fail(decision_idx, seat, "opp_revealed.companion", comp_idx,
-                      state[_REVEALED_START + comp_idx],
+            comp_bit = _opp_revealed_bits(state).get(comp_idx)
+            if not (comp_bit is not None and comp_bit > 0.5):
+                _fail(decision_idx, seat, "opp_deck.revealed.companion", comp_idx,
+                      comp_bit,
                       f"opponent (seat {opp_seat}) declared a companion (vocab {comp_idx}) "
-                      "but its revealed bit is not set")
+                      "but its decklist slot's revealed bit is not set")
 
     # (9) Deck-identity blocks: packed ascending by vocab id (no holes), counts in
     # range, self-live-library counts sum to self_library_ct, opp static blocks
-    # constant per viewer seat.
+    # constant per viewer seat, opp revealed bits binary, only on filled slots and
+    # monotone per viewer seat.
     self_lib_sum = 0
-    for name, start, n in _DECKLIST_BLOCKS:
-        entries = _decode_decklist_block(state, start, n)
+    for name, start, n, slot_size in _DECKLIST_BLOCKS:
+        entries = _decode_decklist_block(state, start, n, slot_size)
         seen_empty = False
         prev_id = -1
         for i, (cid, cnt) in enumerate(entries):
             empty = (cid == _CARD_ID_SENTINEL)
+            if slot_size == _OPP_DECKLIST_SLOT_SIZE:
+                rev = float(state[start + i * slot_size + _OPP_DECKLIST_REVEALED_OFF])
+                if rev not in (0.0, 1.0):
+                    _fail(decision_idx, seat, f"{name}.revealed", i, rev,
+                          "revealed bit is not exactly 0.0 or 1.0")
+                if empty and rev != 0.0:
+                    _fail(decision_idx, seat, f"{name}.revealed", i, rev,
+                          "revealed bit set on an empty slot")
             if empty:
                 # Empty slot: count must be ~0.
                 if cnt != 0:
@@ -667,18 +709,17 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         _fail(decision_idx, seat, "self_live_lib.sum", "-", self_lib_sum,
               f"library counts sum to {self_lib_sum} but self_library_ct is {lib_ct}")
 
-    # (9d) opp static maindeck+sideboard blocks are constant across a game per seat.
-    opp_block = (
-        tuple(state[_OPP_DECK_MAIN_START:_OPP_DECK_MAIN_START
-                    + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE]),
-        tuple(state[_OPP_DECK_SIDE_START:_OPP_DECK_SIDE_START
-                    + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE]),
-    )
+    # (9d) opp static maindeck+sideboard (card_id, count) entries are constant
+    # across a game per seat; their revealed bits only ever turn on.
+    opp_block = _opp_decklist_entries(state)
+    revealed = _opp_revealed_bits(state)
     prev = deck_block_by_seat.get(seat)
-    if prev is not None and prev != opp_block:
-        _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
-              "opponent static decklist block changed across decisions of the same seat")
-    deck_block_by_seat[seat] = opp_block
+    if prev is not None:
+        if prev[0] != opp_block:
+            _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
+                  "opponent static decklist block changed across decisions of the same seat")
+        _check_revealed_monotone(decision_idx, seat, prev[1], revealed)
+    deck_block_by_seat[seat] = (opp_block, revealed)
 
     # (12) Mana-development block: every float is a finite non-negative count, the
     # per-color potentials are bounded by the source total, the total covers the
@@ -1159,13 +1200,19 @@ def check_opponent_decklist_frozen():
     sees (see src/classes/deck_state.h).
 
     Drives a real bo3 in which BOTH seats actually sideboard, and asserts that for
-    each viewer seat the decoded opp_deck_main / opp_deck_side blocks are byte-
-    identical at every decision of every game, including the between-games
-    sideboard phases (where env's sideboard mask deliberately keeps them visible).
-    Returns (swaps_made, post_board_decisions)."""
+    each viewer seat the decoded opp_deck_main / opp_deck_side (card_id, count)
+    entries are identical at every decision of every game, including the
+    between-games sideboard phases (where env's sideboard mask deliberately keeps
+    them visible), and that their revealed bits are monotone across the whole
+    match and survive into the sideboard phase and the post-board games.
+    Returns (swaps_made, post_board_decisions, log-vitals live / masked counts,
+    most revealed bits seen in the sideboard phase / a post-board game)."""
     env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
                       auto_sideboard=False)
     first = {}                        # seat -> (main_block, side_block) at first sight
+    last_revealed = {}                # seat -> {vocab_id: revealed} at its last decision
+    rev_in_sb = 0                     # most revealed bits seen in a sideboard-phase obs
+    rev_post_board = 0                # ... and in a post-board game's obs
     swaps = 0
     post_board = 0
     # Log-vitals coverage over this bo3: the main invariant loop is bo1 only, so
@@ -1180,12 +1227,18 @@ def check_opponent_decklist_frozen():
                 lv_masked += 1
             else:
                 lv_live += 1
-            blocks = (
-                tuple(_decode_decklist_block(obs, _OPP_DECK_MAIN_START,
-                                             DECKLIST_MAIN_SLOTS)),
-                tuple(_decode_decklist_block(obs, _OPP_DECK_SIDE_START,
-                                             DECKLIST_SIDE_SLOTS)),
-            )
+            blocks = _opp_decklist_entries(obs)
+            # Revealed bits: monotone per viewer across the whole match (the
+            # per-game ECS reset and the sideboard mask must both preserve them).
+            revealed = _opp_revealed_bits(obs)
+            if seat in last_revealed:
+                _check_revealed_monotone(idx, seat, last_revealed[seat], revealed)
+            last_revealed[seat] = revealed
+            n_rev = sum(1 for v in revealed.values() if v > 0.5)
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                rev_in_sb = max(rev_in_sb, n_rev)
+            elif int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0:
+                rev_post_board = max(rev_post_board, n_rev)
             if seat not in first:
                 first[seat] = blocks
             elif blocks != first[seat]:
@@ -1224,7 +1277,12 @@ def check_opponent_decklist_frozen():
         raise InvariantError(
             f"log-vitals coverage was vacuous: {lv_live} live decisions, "
             f"{lv_masked} sideboard-masked ones (both branches must be seen)")
-    return swaps, post_board, lv_live, lv_masked
+    if rev_in_sb == 0 or rev_post_board == 0:
+        raise InvariantError(
+            f"revealed-bit persistence was vacuous: {rev_in_sb} bits seen in the "
+            f"sideboard phase, {rev_post_board} in a post-board game (game 1's reveals "
+            "must survive into both)")
+    return swaps, post_board, lv_live, lv_masked, rev_in_sb, rev_post_board
 
 
 # "Sideboard in: 4x Lightning Bolt" / "Sideboard out: 1x Island" — the count is the
@@ -1725,12 +1783,15 @@ def main():
           f"decisions, on the stack at {n_stack}, then gone", flush=True)
 
     try:
-        n_swaps, n_post, lv_live, lv_masked = check_opponent_decklist_frozen()
+        (n_swaps, n_post, lv_live, lv_masked,
+         rev_sb, rev_post) = check_opponent_decklist_frozen()
     except InvariantError as e:
         print(f"FAIL  opponent decklist frozen across bo3\n  {e}", flush=True)
         return 1
     print(f"ok    opponent decklist frozen across bo3: {n_swaps} swaps made, "
           f"{n_post} post-board decisions checked", flush=True)
+    print(f"ok    opp revealed bits across bo3: monotone per viewer, up to {rev_sb} "
+          f"set in the sideboard phase and {rev_post} in a post-board game", flush=True)
     print(f"ok    log vitals across bo3: {lv_live} live decisions match the log "
           f"identity, {lv_masked} sideboard decisions masked to zeros", flush=True)
 

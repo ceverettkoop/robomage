@@ -30,7 +30,6 @@ extern "C" {
 #define MAX_CHOICE_DESC 128
 #define PERM_COUNTERS_LEN 64  // PermanentState.counters summary width (mirrored in train/env.py)
 #define PERM_TOKEN_NAME_LEN 32  // PermanentState.token_name width (mirrored in train/env.py)
-#define REVEALED_CARD_TYPES 1024  // mirror N_CARD_TYPES in machine_io.h / REVEALED_SIZE in match_state.h
 
 typedef struct PlayerState_tag {
     int life;
@@ -214,8 +213,8 @@ typedef struct GameState_tag {
     int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
     // Opponent-hand cards whose identity the viewer knows (revealed in hand by
     // Duress/Thoughtseize/tutor, and not yet moved to another zone). card_vocab_idx,
-    // -1 = empty/unknown slot. Tracks the specific card, unlike opp_revealed which
-    // is only a match-scoped "ever seen" multi-hot.
+    // -1 = empty/unknown slot. Tracks the specific card, unlike the opp decklist
+    // revealed bits, which are a match-scoped "ever seen" flag per card name.
     int  opp_known_hand[MAX_HAND_SLOTS];
     int  self_library_ct;
     int  opp_library_ct;
@@ -223,10 +222,6 @@ typedef struct GameState_tag {
     // Known top-of-library cards (viewer's library only). Index 0 = top.
     // -1 = unknown.
     int known_top_library_self[KNOWN_TOP_LIBRARY_SIZE];
-
-    // Opponent's revealed-cards multi-hot, accumulated across the match (bo3).
-    // opp_revealed[i] = 1 if the opponent has ever revealed card vocab index i.
-    unsigned char opp_revealed[REVEALED_CARD_TYPES];
 
     // bo3 match state
     int  match_game_number;  // -1 = single game, 0-2 = bo3 game index
@@ -291,6 +286,11 @@ typedef struct GameState_tag {
     int opp_deck_main_ct[DECKLIST_MAIN_SLOTS];
     int opp_deck_side_id[DECKLIST_SIDE_SLOTS];
     int opp_deck_side_ct[DECKLIST_SIDE_SLOTS];
+    // Per opp decklist slot: 1 if the opponent has revealed that card this match
+    // (match_state's reveal set, accumulated across the games of a bo3; a
+    // double-faced card also counts when its back face was revealed).
+    unsigned char opp_deck_main_revealed[DECKLIST_MAIN_SLOTS];
+    unsigned char opp_deck_side_revealed[DECKLIST_SIDE_SLOTS];
 } GameState;
 
 #ifdef __cplusplus
