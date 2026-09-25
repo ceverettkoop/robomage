@@ -15,6 +15,19 @@
 
 extern Coordinator global_coordinator;
 
+static void place_rearranged_card(RearrangeRt &rt, size_t remaining_idx, std::shared_ptr<Orderer> orderer);
+
+// Slots rt.remaining[remaining_idx]: appends it to rt.chosen_order (deepest
+// first, so chosen_order[0] ends up deepest and the last entry on top), removes
+// it from the candidates, and puts it on top of its owner's library, which also
+// pushes it onto the known-top cache.
+static void place_rearranged_card(RearrangeRt &rt, size_t remaining_idx, std::shared_ptr<Orderer> orderer) {
+    Entity card = rt.remaining[remaining_idx];
+    rt.chosen_order.push_back(card);
+    rt.remaining.erase(rt.remaining.begin() + static_cast<long>(remaining_idx));
+    orderer->add_to_zone(false, card, Zone::LIBRARY);
+}
+
 namespace effects {
 
 HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -22,8 +35,13 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
     // The looked-at slice is frozen once into the frame rt (pinned against
-    // determinize — the already-slotted cards stay in the library until the
-    // one-shot put-back below); the slot-pick loop index and the shuffle-y/n
+    // determinize). Slots are filled deepest first and each chosen card is put
+    // on top of the library the moment it is chosen, so every later placement
+    // lands above it and the final order is the slot order; the chosen card is
+    // on the known-top cache (and so in the observation) for the remaining
+    // picks. The unchosen cards stay in the library below the placed ones and
+    // are addressed by entity through rt.remaining, never by position. The
+    // slot-pick loop index, the forced-last placement, and the shuffle-y/n
     // stage persist so a resume re-enters the suspended decision.
     RearrangeRt local_rt;
     RearrangeRt &rt = ctx.can_suspend() ? ctx.rt<RearrangeRt>() : local_rt;
@@ -66,21 +84,16 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         // so seating the ask there is a no-op swap.
         int choice = ctx.ask(std::move(pick_actions), ab.controller, ab.source);
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-        rt.chosen_order.push_back(rt.remaining[static_cast<size_t>(choice)]);
-        rt.remaining.erase(rt.remaining.begin() + choice);
+        // Record, drop from the candidates, and place in one step with no
+        // suspension point between them: a resume re-enters at the next pick
+        // (rt.pick advances in the loop increment), so a card is never placed twice.
+        place_rearranged_card(rt, static_cast<size_t>(choice), orderer);
     }
 
-    // Put the cards back — exactly once, even if the shuffle prompt below
-    // suspends and this handler is re-entered.
+    // The last card is forced onto the top slot — exactly once, even if the
+    // shuffle prompt below suspends and this handler is re-entered.
     if (!rt.placed) {
-        // Last card is forced
-        if (!rt.remaining.empty()) {
-            rt.chosen_order.push_back(rt.remaining[0]);
-        }
-        // Put cards back: chosen_order[0] should end up on top, so place in reverse
-        for (auto it : rt.chosen_order) {
-            orderer->add_to_zone(false, it, Zone::LIBRARY);
-        }
+        if (!rt.remaining.empty()) place_rearranged_card(rt, 0, orderer);
         rt.placed = true;
     }
 

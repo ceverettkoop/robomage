@@ -77,10 +77,10 @@ struct SurveilRt {
 struct RearrangeRt {
     bool init = false;            // slice fetched + look log emitted
     std::vector<Entity> lib;      // looked-at slice, top-first; all pinned
-    std::vector<Entity> remaining;    // not yet slotted
-    std::vector<Entity> chosen_order; // slot picks so far (deepest first)
+    std::vector<Entity> remaining;    // not yet slotted; still in the library below the placed ones
+    std::vector<Entity> chosen_order; // slot picks so far (deepest first), each already on top
     size_t pick = 0;              // next slot pick
-    bool placed = false;          // put-back epilogue already ran (exactly once)
+    bool placed = false;          // forced last card already placed (exactly once)
 };
 struct SylvanRt {
     bool init = false;            // draw-2 + drawn-in-hand scan done

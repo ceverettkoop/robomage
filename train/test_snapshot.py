@@ -61,7 +61,7 @@ from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
     _LIBRARY_CTX_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
-    _SELF_PERM_START, _STACK_START)
+    _SELF_PERM_START, _STACK_START, _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END)
 from cli_spec import BINARY, BIN_DIR
 
 # The binary payload framing after every BQUERY header, WITHOUT --narrative:
@@ -1082,6 +1082,187 @@ def test_pool_determinize_pin():
         return (f"mid-loop root @ {p2}: {head} post-root steps world-invariant "
                 f"(pins held), {n_worlds}/3 distinct world descents, RESTORE "
                 f"exact, outcome={outcome['winner']!r}")
+    finally:
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def _write_rearrange_decks():
+    """Stacked decks for the Ponder rearrange test. With --no-shuffle A's
+    opening hand is Ponder + 6 Islands; an Island battlefield preset pays the
+    {U}, so a cast-first policy casts Ponder on A's first turn and reaches its
+    rearrange picks over the top three cards (Lightning Bolt, Grizzly Bears,
+    Counterspell — distinct, so the known-top ids are unambiguous). The rest of
+    A's library is a varied run of basics so a determinize resample of the
+    unpinned cards is observable in later draws; B is all Forests."""
+    d = os.path.join(BIN_DIR, "resources", "decks", "temp")
+    os.makedirs(d, exist_ok=True)
+    pa = os.path.join(d, "rearr_pq_a.dk")
+    with open(pa, "w") as f:
+        f.write("1 Ponder\n6 Island\n1 Lightning Bolt\n1 Grizzly Bears\n1 Counterspell\n"
+                "4 Mountain\n4 Forest\n4 Swamp\n4 Plains\n4 Island\n")
+    pb = os.path.join(d, "rearr_pq_b.dk")
+    with open(pb, "w") as f:
+        f.write("30 Forest\n")
+    return [pa, pb]
+
+
+_REARRANGE_EXTRA = ["--deck-a", "temp/rearr_pq_a", "--deck-b", "temp/rearr_pq_b",
+                    "--no-shuffle", "--narrative", "--battlefield-a", "Island"]
+
+
+def _record_rearrange_line(seed, pick_choices, cap=4000):
+    """Play one full game: cast the first castable spell seen (Ponder, exactly
+    once), answer the all-TOP_LIBRARY rearrange slot picks with `pick_choices`
+    in order, auto-0 everything else (so the shuffle prompt keeps the order).
+    Returns (records, choices, outcome) like _record_pool_line."""
+    eng = Engine(seed, extra=_REARRANGE_EXTRA)
+    records, choices = [], []
+    cast_done = False
+    picks_seen = 0
+    r = eng.read()
+    n = 0
+    while r.kind == "q" and n < cap:
+        cats = _query_cats(r.payload)[:r.nc]
+        a = 0
+        if not cast_done and bool((cats == CAT_CAST_SPELL).any()):
+            a = int(np.argmax(cats == CAT_CAST_SPELL))
+            cast_done = True
+        elif r.nc >= 2 and bool((cats == CAT_TOP_LIBRARY).all()):
+            if picks_seen < len(pick_choices):
+                a = pick_choices[picks_seen]
+            picks_seen += 1
+        records.append((r.nc, r.payload, r.safe))
+        choices.append(a)
+        r = eng.play(a)
+        n += 1
+    outcome = {"kind": r.kind, "returncode": r.returncode, "winner": r.winner}
+    eng.kill()
+    return records, choices, outcome
+
+
+def _known_top_ids(payload):
+    """The serialized known-top-of-library card-id floats of a query's state."""
+    return _state(payload)[_KNOWN_TOP_LIB_START:_KNOWN_TOP_LIB_END]
+
+
+def test_rearrange_pick_roundtrip():
+    """Ponder's rearrange slot picks (effects::rearrange_top_of_library) place
+    each chosen card on top of the library as it is chosen. At the SECOND pick
+    (a mid-loop root whose frame rt holds one already-placed card and two
+    still-unplaced candidates below it):
+
+    - the observation already shows the first-chosen card as the known top
+      (and showed nothing at the first pick);
+    - SNAPSHOT re-emits exactly, a divergent excursion then RESTORE returns
+      byte-identically;
+    - DETERMINIZE re-emits the root byte-identically and keeps the pinned
+      looked-at cards in place: replaying the control choices yields post-root
+      queries byte-identical to the control (no card placed twice on resume,
+      the draw takes the card slotted on top), while deeper descents diverge
+      across world seeds (unpinned cards resampled);
+    - the released real line stays byte-identical to the control run."""
+    seed = 5
+    deck_paths = _write_rearrange_decks()
+    try:
+        # Pick 1: Grizzly Bears goes 3rd; pick 2: Lightning Bolt goes 2nd;
+        # Counterspell is forced on top and drawn by Ponder.
+        control, choices, outcome = _record_rearrange_line(seed, pick_choices=(1, 0))
+        picks = [i for i, (nc, pl, _s) in enumerate(control)
+                 if nc >= 2 and bool((_query_cats(pl)[:nc] == CAT_TOP_LIBRARY).all())]
+        if len(picks) != 2:
+            raise ProtocolError(f"expected exactly 2 rearrange picks in the control "
+                                f"line, found {len(picks)}")
+        p1, p2 = picks
+        if p2 != p1 + 1:
+            raise ProtocolError(f"rearrange picks at {p1}/{p2} are not consecutive")
+        for i in picks:
+            if not control[i][2]:
+                raise ProtocolError(f"rearrange pick at {i} reports safe=0")
+        empty = np.float32(-1.0 / N_CARD_TYPES)
+        kt1 = _known_top_ids(control[p1][1])
+        if not bool((kt1 == empty).all()):
+            raise ProtocolError(f"known top at the first pick is {kt1}, expected empty")
+        chosen_id = _query_ids(control[p1][1])[choices[p1]]
+        kt2 = _known_top_ids(control[p2][1])
+        if kt2[0] != chosen_id or not bool((kt2[1:] == empty).all()):
+            raise ProtocolError(f"known top at the second pick is {kt2}, expected the "
+                                f"first-chosen card {chosen_id} alone on top")
+
+        eng = Engine(seed, extra=_REARRANGE_EXTRA)
+        cur = eng.read()
+        for idx in range(p2):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"rearrange alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        _assert_same_query(cur, control[p2][1], control[p2][0], "rearrange root alignment")
+        snap_nc, snap_pl = cur.nc, cur.payload
+        q = eng.snapshot(0)
+        _assert_same_query(q, snap_pl, snap_nc, "rearrange post-SNAPSHOT re-emit")
+
+        # Divergent excursion: the other candidate, then a scrambled continuation.
+        dq = q
+        for i in range(8):
+            dq = eng.play(1 if i == 0 else _diverge(i, dq.nc))
+            if dq.kind != "q":
+                break
+
+        head = 3    # post-root steps that must be world-invariant (pins held)
+        depth = 120  # descent length hashed for cross-world divergence
+        hashes = {}
+        for ds in (2, 3, 4):
+            rq = eng.restore(0)
+            _assert_same_query(rq, snap_pl, snap_nc, f"rearrange RESTORE (seed {ds})")
+            dq = eng.determinize(ds)
+            _assert_same_query(dq, snap_pl, snap_nc,
+                               f"rearrange post-DETERMINIZE re-emit (seed {ds})")
+            h = hashlib.sha256()
+            for j in range(depth):
+                cidx = p2 + j
+                a = choices[cidx] if cidx < len(choices) else 0
+                r = eng.play(a)
+                if r.kind != "q":
+                    h.update(b"END:" + (r.result or "eof").encode())
+                    break
+                if j < head:
+                    want_nc, want_pl, _ws = control[p2 + 1 + j]
+                    _assert_same_query(
+                        r, want_pl, want_nc,
+                        f"rearrange world (seed {ds}) step {j} diverged from control "
+                        "— a pinned looked-at card moved in the sampled world")
+                h.update(r.payload)
+            hashes[ds] = h.hexdigest()
+        if len(set(hashes.values())) == 1:
+            raise ProtocolError(
+                "all determinize worlds descended byte-identically for "
+                f"{depth} steps — the resample of UNPINNED library cards "
+                "appears to have no effect")
+
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "rearrange final RESTORE")
+        rel = eng.release()
+        _assert_same_query(rel, snap_pl, snap_nc, "rearrange post-RELEASE re-emit")
+        cur = rel
+        for idx in range(p2, len(control)):
+            _assert_same_query(cur, control[idx][1], control[idx][0],
+                               f"rearrange resumed alignment at decision {idx}")
+            cur = eng.play(choices[idx])
+        if cur.kind != "eof" or cur.returncode != 0:
+            eng.kill()
+            raise ProtocolError(f"resumed rearrange line ended abnormally: "
+                                f"{cur.kind} rc={cur.returncode}")
+        if cur.winner != outcome["winner"]:
+            eng.kill()
+            raise ProtocolError(f"outcome mismatch: control {outcome['winner']!r} "
+                                f"vs resumed {cur.winner!r}")
+        eng.kill()
+        n_worlds = len(set(hashes.values()))
+        return (f"second pick @ {p2} shows the first-chosen card on top, safe=1, "
+                f"round-trip exact, {head} post-root steps world-invariant, "
+                f"{n_worlds}/3 distinct world descents, outcome={outcome['winner']!r}")
     finally:
         for p in deck_paths:
             try:
@@ -3422,6 +3603,7 @@ TESTS = [
     ("dredge_roundtrip", test_dredge_roundtrip),
     ("pool_loop_roundtrip", test_pool_loop_roundtrip),
     ("pool_determinize_pin", test_pool_determinize_pin),
+    ("rearrange_pick_roundtrip", test_rearrange_pick_roundtrip),
     ("trigger_order_roundtrip", test_trigger_order_roundtrip),
     ("trigger_target_roundtrip", test_trigger_target_roundtrip),
     ("legend_rule_roundtrip", test_legend_rule_roundtrip),
