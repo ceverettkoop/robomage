@@ -247,7 +247,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         global_coordinator.SendEvent(draw_step_event);
                     }
                     // first turn first player skips draw!
-                    if (turn == 0 && player_a_turn == true) break;
+                    if (turn == 0) break;
                     // PLAYER_DREW_CARD is fired per-card inside the draw batch
                     // (with the first-card-in-draw-step flag), so no emit here.
                     // The turn-based draw runs as a resumable batch (pending_query
