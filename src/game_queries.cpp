@@ -555,6 +555,10 @@ Zone::Ownership active_seat() { return cur_game.player_a_turn ? Zone::PLAYER_A :
 Zone::Ownership source_controller(Entity source) {
     if (global_coordinator.entity_has_component<Permanent>(source))
         return global_coordinator.GetComponent<Permanent>(source).controller;
+    // A spell's controller is the player who cast it (CR 110.2 / 608.2), not its owner.
+    if (global_coordinator.entity_has_component<Spell>(source) &&
+        global_coordinator.GetComponent<Spell>(source).caster != Zone::UNKNOWN)
+        return global_coordinator.GetComponent<Spell>(source).caster;
     if (global_coordinator.entity_has_component<Zone>(source))
         return global_coordinator.GetComponent<Zone>(source).owner;
     return Zone::UNKNOWN;

@@ -3506,9 +3506,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 cur_game.pending_enters_transformed.insert(land_entity);
             }
 
-            // Move to battlefield
+            // Move to battlefield. A land enters under the control of the player who played it
+            // (CR 305.2 / 110.2a) — the priority holder, who need not own it (a land played from
+            // exile under a play permission).
+            Zone::Ownership land_player = priority_seat();
             orderer->add_to_zone(false, land_entity, Zone::BATTLEFIELD);
-            zone.controller = zone.owner;
+            zone.controller = land_player;
             // ForgetOnMoved$ Exile: a land played from exile under a Light Up the Stage play
             // permission consumes that permission as it leaves exile (harmless no-op otherwise).
             cur_game.impulse_cast_permission.erase(land_entity);
@@ -3516,11 +3519,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // Permanent component added by apply_permanent_components on next SBA pass
 
             // Update player's lands played counter
-            Entity player_entity = get_player_entity(zone.owner);
+            Entity player_entity = get_player_entity(land_player);
             auto &player = global_coordinator.GetComponent<Player>(player_entity);
             player.lands_played_this_turn++;
 
-            game_log("%s played %s\n", player_name(zone.owner).c_str(), played_face->name.c_str());
+            game_log("%s played %s\n", player_name(land_player).c_str(), played_face->name.c_str());
 
             // Playing a land uses take_action() (resets pass tracking)
             game.take_action();
@@ -3542,7 +3545,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // back face for this cast. The land-back case is handled in the SPECIAL_ACTION path.
             const CardData &card_data = (action.cast_back_face && front_data.backside)
                                             ? *front_data.backside : front_data;
-            Zone::Ownership caster = zone.owner;
+            // The caster is the player taking this action (the priority holder, CR 601.2), who
+            // need not own the card (a card cast from exile under a play permission).
+            Zone::Ownership caster = priority_seat();
 
             // If the chosen back face is a permanent, reuse the transform machinery so it enters
             // showing the back face (apply_permanent_components flips it at entry, suppressing the

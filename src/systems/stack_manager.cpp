@@ -165,6 +165,9 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 global_coordinator.GetComponent<Spell>(top_entity).x_paid > 0)
                 cur_game.pending_etb_xpaid[top_entity] =
                     global_coordinator.GetComponent<Spell>(top_entity).x_paid;
+            // A resolving permanent spell enters under the control of the spell's controller
+            // (CR 608.3a), who need not be its owner. Read before the Spell component goes.
+            Zone::Ownership entering_controller = source_controller(top_entity);
             if (global_coordinator.entity_has_component<Spell>(top_entity))
                 global_coordinator.RemoveComponent<Spell>(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity))
@@ -175,7 +178,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             cur_game.cast_to_battlefield.insert(top_entity);
             orderer->add_to_zone(false, top_entity, Zone::BATTLEFIELD);
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
-            top_zone.controller = top_zone.owner;
+            top_zone.controller = entering_controller;
             // TODO ETB event here
             game_log("%s enters the battlefield\n", card_data.name.c_str());
         } else {

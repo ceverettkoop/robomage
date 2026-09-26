@@ -369,9 +369,11 @@ Zone::Ownership priority_seat();
 Zone::Ownership active_seat();
 
 // ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
-// Who controls an ability's SOURCE object: its live Permanent.controller while on the
-// battlefield, else the owner of its current zone. The "source controller" idiom that
-// token/amass/mobilize/delayed-trigger/deal-damage/etc. otherwise repeat inline.
+// Who controls an object: its live Permanent.controller while on the battlefield, a spell's
+// caster while on the stack (CR 110.2), else the owner of its current zone. The one "who
+// controls entity e" query; do not re-derive it from Zone::owner at call sites. For "you" in a
+// resolving ability use the ability's own controller (Ability::controller, CR 109.5 / 608.2g),
+// which stays fixed if the source changes control or leaves play.
 Zone::Ownership source_controller(Entity source);
 
 // CR 702.16: is `player_entity` currently under a "protection from everything" grant
