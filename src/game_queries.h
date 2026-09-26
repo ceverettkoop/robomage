@@ -378,10 +378,12 @@ bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zo
 
 // ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
 // Who controls an object: its live Permanent.controller while on the battlefield, a spell's
-// caster while on the stack (CR 110.2), else the owner of its current zone. The one "who
-// controls entity e" query; do not re-derive it from Zone::owner at call sites. For "you" in a
-// resolving ability use the ability's own controller (Ability::controller, CR 109.5 / 608.2g),
-// which stays fixed if the source changes control or leaves play.
+// caster while on the stack (CR 110.2), else the owner of its current zone (CR 108.4: an object
+// outside the battlefield and stack is its owner's), else a vanished token's last-known
+// controller; a player entity reports its own seat. The one "who controls entity e" query; do
+// not re-derive it from Zone::owner at call sites. For "you" in a resolving ability use the
+// ability's own controller (Ability::controller, CR 109.5 / 608.2g), which stays fixed if the
+// source changes control or leaves play.
 Zone::Ownership source_controller(Entity source);
 
 // CR 702.16: is `player_entity` currently under a "protection from everything" grant

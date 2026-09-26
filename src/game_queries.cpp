@@ -596,12 +596,21 @@ bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zo
 Zone::Ownership source_controller(Entity source) {
     if (global_coordinator.entity_has_component<Permanent>(source))
         return global_coordinator.GetComponent<Permanent>(source).controller;
-    // A spell's controller is the player who cast it (CR 110.2 / 608.2), not its owner.
+    // A spell's controller is the player who cast it (CR 110.2 / 608.2), not its owner. A spell
+    // copy choosing its targets has no Zone yet (CR 707.10), only its Spell.
     if (global_coordinator.entity_has_component<Spell>(source) &&
         global_coordinator.GetComponent<Spell>(source).caster != Zone::UNKNOWN)
         return global_coordinator.GetComponent<Spell>(source).caster;
-    if (global_coordinator.entity_has_component<Zone>(source))
-        return global_coordinator.GetComponent<Zone>(source).owner;
+    if (global_coordinator.entity_has_component<Player>(source)) return seat_of_player(source);
+    if (global_coordinator.entity_has_component<Zone>(source)) {
+        const auto &z = global_coordinator.GetComponent<Zone>(source);
+        // A card that has just entered the battlefield, before its Permanent is built, is
+        // controlled by the player recorded on its Zone as it entered.
+        if (z.location == Zone::BATTLEFIELD && z.controller != Zone::UNKNOWN) return z.controller;
+        return z.owner;
+    }
+    // A token that ceased to exist (CR 111.7): its last-known controller.
+    if (const LastKnownInfo *lki = lki_for(source)) return lki->controller;
     return Zone::UNKNOWN;
 }
 

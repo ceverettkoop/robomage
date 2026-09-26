@@ -164,19 +164,7 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
     StackTarget& st = se.targets[n];
     st.present = true;
     st.is_player = global_coordinator.entity_has_component<Player>(tgt);
-    Zone::Ownership ctrl = Zone::UNKNOWN;
-    if (st.is_player) {
-        ctrl = seat_of_player(tgt);
-    } else if (global_coordinator.entity_has_component<Permanent>(tgt)) {
-        ctrl = global_coordinator.GetComponent<Permanent>(tgt).controller;
-    } else if (global_coordinator.entity_has_component<Zone>(tgt)) {
-        // Non-permanent target (a spell on the stack, a graveyard card): its owner.
-        ctrl = global_coordinator.GetComponent<Zone>(tgt).owner;
-    } else if (const LastKnownInfo *lki = lki_for(tgt)) {
-        // A target token that ceased to exist (CR 111.7): its last-known controller.
-        ctrl = lki->controller;
-    }
-    st.controller_is_self = (ctrl == viewer);
+    st.controller_is_self = (source_controller(tgt) == viewer);
     // Instance-level join: which serialized slot the target occupies (-1 for players
     // and entities outside the reference space). Requires the entity->slot map to be
     // built first, so stack entries are filled in populate_gamestate's pass B.
@@ -458,7 +446,7 @@ static void fill_permanent_state(PermanentState& ps, Entity e) {
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer) {
     se = StackEntry{};
     se.card_vocab_idx     = action_card_vocab_idx(e);
-    se.controller_is_self = (global_coordinator.GetComponent<Zone>(e).owner == viewer);
+    se.controller_is_self = (source_controller(e) == viewer);
     se.is_spell           = global_coordinator.entity_has_component<Spell>(e);
     for (int t = 0; t < MAX_STACK_TGTS; t++) {
         se.targets[t].card_vocab_idx = -1;
@@ -618,7 +606,7 @@ static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
         const DelayedTriggerLink& link = global_coordinator.GetComponent<Ability>(e).delayed_link;
         DelayedTriggerEntry d{};
         d.present            = true;
-        d.controller_is_self = (global_coordinator.GetComponent<Zone>(e).owner == viewer);
+        d.controller_is_self = (source_controller(e) == viewer);
         d.on_stack           = true;
         d.stack_ref          = slot_ref_of(e);
         d.creator_card_idx   = link.creator_vocab_idx;
@@ -760,20 +748,9 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         extern Zone::Ownership sideboard_phase_player;
         Entity pd = cur_game.pending_decision_source;
         gs->pending_decision_card = action_card_vocab_idx(pd);
-        if (global_coordinator.entity_has_component<Permanent>(pd))
-            gs->pending_decision_ctrl_is_self =
-                (global_coordinator.GetComponent<Permanent>(pd).controller == viewer);
-        else if (global_coordinator.entity_has_component<Zone>(pd))
-            gs->pending_decision_ctrl_is_self =
-                (global_coordinator.GetComponent<Zone>(pd).owner == viewer);
-        else if (global_coordinator.entity_has_component<Spell>(pd))
-            // A spell copy choosing its new targets has no Zone until it is placed on the
-            // stack (CR 707.10); its controller is the Spell's caster.
-            gs->pending_decision_ctrl_is_self =
-                (global_coordinator.GetComponent<Spell>(pd).caster == viewer);
-        else if (const LastKnownInfo *lki = lki_for(pd))
-            // A source token that ceased to exist (CR 111.7): its last-known controller.
-            gs->pending_decision_ctrl_is_self = (lki->controller == viewer);
+        Zone::Ownership pd_ctrl = source_controller(pd);
+        if (pd_ctrl != Zone::UNKNOWN)
+            gs->pending_decision_ctrl_is_self = (pd_ctrl == viewer);
         else if (sideboard_phase)
             // A sideboard IN/OUT source is a bare load_card template entity with
             // neither Permanent nor Zone; the sideboarding player owns it.
@@ -1137,12 +1114,7 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
         // Controller is self
         ac.controller_is_self = false;
         if (src != 0) {
-            if (global_coordinator.entity_has_component<Permanent>(src))
-                ac.controller_is_self = (global_coordinator.GetComponent<Permanent>(src).controller == priority_owner);
-            else if (src == priority_ent)
-                ac.controller_is_self = true;
-            else if (global_coordinator.entity_has_component<Zone>(src))
-                ac.controller_is_self = (global_coordinator.GetComponent<Zone>(src).owner == priority_owner);
+            ac.controller_is_self = (source_controller(src) == priority_owner);
             // A sideboard IN/OUT source is a bare load_card template entity with
             // neither Permanent nor Zone, so controller_is_self stays false; the
             // emitter (cli_output) then writes the ctrl-null sentinel because its
@@ -1157,7 +1129,10 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
             bool is_self_owned = (z.owner == priority_owner);
             switch (z.location) {
                 case Zone::BATTLEFIELD:
-                    ac.zone_ref = is_self_owned ? REF_SELF_BATTLEFIELD : REF_OPP_BATTLEFIELD;
+                    // Battlefield slots are bucketed by controller (CR 404.2 keeps the other
+                    // zones by owner), so a stolen permanent is on its controller's side.
+                    ac.zone_ref = source_controller(src) == priority_owner ? REF_SELF_BATTLEFIELD
+                                                                           : REF_OPP_BATTLEFIELD;
                     break;
                 case Zone::HAND:
                     ac.zone_ref = is_self_owned ? REF_SELF_HAND : REF_OPP_HAND;
