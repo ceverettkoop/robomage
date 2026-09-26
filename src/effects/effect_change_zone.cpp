@@ -750,7 +750,9 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         }
 
         if (chosen != 0) {
-            auto &chosen_cd = global_coordinator.GetComponent<CardData>(chosen);
+            // Named before the move, through entity_name: a battlefield pick may be a token,
+            // which has no CardData.
+            std::string chosen_name = entity_name(chosen);
             auto &chosen_zone = global_coordinator.GetComponent<Zone>(chosen);
             // Pre-move origin, for a Duration$ UntilHostLeavesPlay exile's linked return.
             Zone::ZoneValue chosen_origin = chosen_zone.location;
@@ -790,19 +792,19 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 // A face-down exile (CR 708.4): the searcher knows the card; the opponent sees only
                 // that a card was exiled face down. Report it privately, not as public knowledge.
                 game_log_private(owner, "%s exiles %s face down\n", player_name(owner).c_str(),
-                                 chosen_cd.name.c_str());
+                                 chosen_name.c_str());
                 game_log_redacted(owner, "%s exiles a card face down\n", player_name(owner).c_str());
             } else if (dest_public) {
-                game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
+                game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_name.c_str(), dest_str);
             } else if (reveal) {
                 // Hidden destination, but the card was revealed — it's public knowledge.
                 // The orderer reveal hook only fires for public zones, so mark it here.
                 mark_card_revealed(chosen, owner);
-                game_log("%s reveals %s and puts it to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(),
+                game_log("%s reveals %s and puts it to %s\n", player_name(owner).c_str(), chosen_name.c_str(),
                     dest_str);
             } else {
                 game_log_private(
-                    owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
+                    owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_name.c_str(), dest_str);
                 game_log_redacted(owner, "%s puts a card to %s\n", player_name(owner).c_str(), dest_str);
             }
         } else {

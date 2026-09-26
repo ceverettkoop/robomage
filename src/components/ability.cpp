@@ -305,7 +305,6 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         search_actions.push_back(ftf);
     }
     for (auto entity : choices) {
-        auto &cd = global_coordinator.GetComponent<CardData>(entity);
         auto &z = global_coordinator.GetComponent<Zone>(entity);
         const char *zone_label = (z.location == Zone::GRAVEYARD)    ? " (graveyard)"
                                  : (z.location == Zone::EXILE)       ? " (exile)"
@@ -313,7 +312,8 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
                                  : (z.location == Zone::HAND)        ? " (hand)"
                                  : (z.location == Zone::BATTLEFIELD) ? " (battlefield)"
                                                                      : " (library)";
-        LegalAction la(PASS_PRIORITY, entity, cd.name + zone_label);
+        // entity_name, not CardData: a battlefield candidate may be a token (no CardData).
+        LegalAction la(PASS_PRIORITY, entity, entity_name(entity) + zone_label);
         la.category = cat;
         la.card_is_public = reveal;
         search_actions.push_back(la);
