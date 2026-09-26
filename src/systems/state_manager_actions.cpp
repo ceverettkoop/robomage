@@ -1158,15 +1158,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!activation_condition_met(ab, priority_player, orderer->mEntities, entity)) continue;
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
-            if (ab.tap_cost && permanent.has_summoning_sickness &&
-                global_coordinator.entity_has_component<Creature>(entity)) {
-                auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                bool has_haste = false;
-                for (const auto &kw : cr.keywords) {
-                    if (kw == "Haste") { has_haste = true; break; }
-                }
-                if (!has_haste) continue;
-            }
+            if (ab.tap_cost && is_summoning_sick(entity)) continue;
             // Activation limit check
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
             // sac_cost_spec: require controller has a permanent matching type (honouring a

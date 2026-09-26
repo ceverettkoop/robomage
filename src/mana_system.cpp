@@ -283,14 +283,7 @@ static bool mana_ability_available_now(Entity e, const Permanent &permanent, con
     if (ab.tap_cost && permanent.is_tapped) return false;
     if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) return false;
     // Summoning sickness check for creatures with tap cost
-    if (ab.tap_cost && permanent.has_summoning_sickness &&
-        global_coordinator.entity_has_component<Creature>(e)) {
-        auto &cr = global_coordinator.GetComponent<Creature>(e);
-        bool has_haste = false;
-        for (const auto &kw : cr.keywords)
-            if (kw == "Haste") { has_haste = true; break; }
-        if (!has_haste) return false;
-    }
+    if (ab.tap_cost && is_summoning_sick(e)) return false;
     return true;
 }
 

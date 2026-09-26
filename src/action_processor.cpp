@@ -522,14 +522,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != active_player) continue;
         if (permanent.is_tapped) continue;
-        if (permanent.has_summoning_sickness) {
-            auto &cr = global_coordinator.GetComponent<Creature>(entity);
-            bool has_haste = false;
-            for (const auto &kw : cr.keywords) {
-                if (kw == "Haste") { has_haste = true; break; }
-            }
-            if (!has_haste) continue;
-        }
+        if (is_summoning_sick(entity)) continue;
         // A creature a CantAttack static forbids from attacking (Ensnaring Bridge: power greater
         // than the controller's hand size) is never eligible (CR 509.1a) — not offered and not
         // forced by a "must attack" effect, since it isn't able to attack.
