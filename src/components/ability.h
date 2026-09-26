@@ -442,36 +442,28 @@ struct Ability{
     // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers)
     int trigger_zone_origin = -1;       // Zone::ZoneValue origin filter; -1 = any
     int trigger_zone_destination = -1;  // Zone::ZoneValue destination filter; -1 = any
-    bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
-    bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
-    bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
-    bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
-    // ValidCard$ ...+untapped — the changing card must be an UNTAPPED battlefield permanent
-    // at trigger time (Mystic Sanctuary: "When this land enters untapped"). The enters-tapped
-    // replacement (T2.2) has already set Permanent::is_tapped by the time triggers are scanned.
+    // The raw ValidCard$ / ValidCards$ filter. A zone-change trigger matches the moving object
+    // against it with zone_change_object_matches (types, subtypes, control, ownership, token-ness,
+    // colors and tap state as the object exists after the event, or as it last existed on the
+    // battlefield for a departure — CR 603.6a / 603.10a).
+    std::string trigger_valid_card = "";
+    bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature (TapsForMana)
+    // ValidCard$ ...+untapped (Mystic Sanctuary: "When this land enters untapped"). Matched by
+    // trigger_valid_card on the live permanent; the self look-back scan (a permanent that already
+    // left again) has no tapped state to read and does not fire it.
     bool trigger_valid_card_untapped = false;
     // ValidCard$ Card.nonCreature combined with an ActivatorThisTurnCast$ count (The Fantasticar's
     // "your fourth noncreature spell each turn"): the cast spell must be NONCREATURE. Bound to the
     // SPELL_CAST event (fired after the per-cast counters are bumped) rather than the dedicated
     // NONCREATURE_SPELL_CAST event (fired before), so a count gate sees the current cast counted.
     bool trigger_valid_card_non_creature = false;
-    // ValidCard$ ...+!token — the changing card must be a real card, not a token (CR 110.1 /
-    // 111.7). Moonshadow's "permanent cards put into your graveyard" excludes tokens.
-    bool trigger_valid_card_non_token = false;
-    // ValidCard$ Permanent — the changing card must be a permanent card (CR 110.4a: artifact,
-    // battle, creature, enchantment, land, planeswalker), excluding instants/sorceries.
-    bool trigger_valid_card_is_permanent = false;
     // Mode$ ChangesZoneAll ("whenever one or more cards ...") — a single BATCH trigger (CR
     // 603.2c): it fires exactly ONCE per group of simultaneous matching zone changes, not once
     // per card. The trigger scan dedupes it to one firing per event batch (Moonshadow).
     bool trigger_batch_zone_all = false;
-    // ValidCard$ ...+Colorless — the cast spell (SpellCast) or changing card (ChangesZone)
-    // must be colorless (CR 105.2c / 202.2). Used by Glaring Fleshraker (Card.Colorless
-    // SpellCast trigger; Creature.Other+Colorless+YouCtrl ChangesZone trigger).
+    // ValidCard$ ...+Colorless on a SpellCast trigger — the cast spell must be colorless
+    // (CR 105.2c / 202.2; Glaring Fleshraker's Card.Colorless).
     bool trigger_valid_card_colorless = false;
-    // ValidCard(s)$ <Subtype> — the changing card must have this subtype (e.g. Ajani's
-    // "Cat.Other+YouCtrl"). Empty = no subtype filter. Matched against CardData/Token types.
-    std::string trigger_valid_card_subtype = "";
     // OptionalDecider$ You — a "you may ..." triggered ability; its controller is prompted
     // to accept or decline as it resolves (Mode$ ChangesZoneAll on Ajani).
     bool trigger_optional = false;

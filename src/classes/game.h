@@ -105,7 +105,7 @@ struct LastKnownInfo {
                                            // token-band vocab index
     int power = 0;
     int toughness = 0;
-    std::vector<std::string> type_names;   // type/subtype/supertype names
+    std::set<Type> types;                  // its type line (types, subtypes, supertypes)
     std::set<Colors> colors;               // effective colors
     Zone::Ownership controller = Zone::UNKNOWN;  // last controller (CR 608.2g): "that permanent's controller"
     std::vector<Entity> exiled_with;       // Permanent::exiled_with snapshot — the cards this permanent
@@ -308,8 +308,8 @@ struct Game {
         // the APNAP-flattened queue of collected triggers still to be put on
         // the stack, plus the front trigger's in-flight target selection. Set
         // by place_triggers_apnap, driven by resume_trigger_placement, cleared
-        // at placement completion (which also restores saved_priority and
-        // clears lk_battlefield_types). Value member so a snapshot covers the
+        // at placement completion (which also restores saved_priority). Value
+        // member so a snapshot covers the
         // parked placement. See resolution_frame.h.
         TriggerPlacementRT trigger_placement;
         // Cast-time suspension state (pending_query tag CAST): the persisted
@@ -731,7 +731,6 @@ struct Game {
         int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
         std::vector<Entity> imprinted_entities;  // the set of cards "imprinted" (recorded) by a resolving DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$. Distinct from remembered_entities (which holds the chosen cards taken to hand).
         std::string chosen_type = "";  // the current card type set by a DB$ RepeatEach | RepeatTypesFrom$ loop (Atraxa: iterated per card type present among the imprinted cards); read by a ChooseCard Choices$ Card.ChosenType filter, cleared when the loop ends
-        std::map<Entity, std::vector<std::string>> lk_battlefield_types;  // last-known type/subtype names of a permanent captured as it leaves the battlefield (603.10 look-back), so a "dies"/leaves trigger can match a token that has already ceased to exist by the time triggers are checked
         std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
         std::map<Entity, Entity> pending_enters_attacking;  // one-shot: {ninja -> attack target} a K:Ninjutsu (CR 702.49e) put this card onto the battlefield attacking; consumed when its Creature component is created (a non-creature ninja, e.g. a planeswalker, drops the mark — it can't be a combatant)
         std::set<Entity> pending_enters_transformed;  // one-shot: a ChangeZone effect (Transformed$ True) put this card onto the battlefield showing its DFC back face; consumed when its Permanent is created

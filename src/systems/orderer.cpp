@@ -154,15 +154,6 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         if (ctrl == Zone::PLAYER_A) cur_game.revolt_player_a = true;
         else                        cur_game.revolt_player_b = true;
 
-        // 603.10 look-back: snapshot the permanent's type/subtype names as it leaves the
-        // battlefield so a "dies"/leaves-the-battlefield trigger can still match it after a
-        // token has ceased to exist (and after CardData/Permanent are stripped). Consumed
-        // and cleared by check_triggered_abilities.
-        std::vector<std::string> &names = cur_game.lk_battlefield_types[target];
-        names.clear();
-        for (const auto &t : global_coordinator.GetComponent<Permanent>(target).types)
-            names.push_back(t.name);
-
         // Full last-known-information snapshot (CR 608.2h / 112.7a): the permanent's effective
         // characteristics as it last existed in play, so the effective_* accessors can answer a
         // post-departure read (e.g. Swords to Plowshares' "gains life equal to its power" for the
@@ -170,7 +161,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         // CardData components are still intact (they are stripped later, by the SBA pass).
         LastKnownInfo &lki = cur_game.last_known_info[target];
         lki = LastKnownInfo{};
-        lki.type_names = names;
+        lki.types = global_coordinator.GetComponent<Permanent>(target).types;
         lki.controller = global_coordinator.GetComponent<Permanent>(target).controller;
         // Identity (name, token-ness, token script): a token ceases to exist once it leaves the
         // battlefield (CR 111.7), taking every component with it, but an unless-cost prompt or a

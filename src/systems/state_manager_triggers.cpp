@@ -91,8 +91,6 @@ class TriggerPlaceTargetAsker final : public TargetAsker {
 // A short, distinct label so a player ordering two triggers from the same source can tell them
 // apart (e.g. Endurance's evoke-sacrifice trigger vs. its enters-the-battlefield trigger).
 static std::string trigger_label(const std::string &name, const Ability &ab);
-static bool type_set_has_creature(const std::set<Type> &types);
-static bool zone_change_object_is_creature(const Game &game, Entity e);
 
 // Storm count (CR 702.40a): the number of OTHER spells cast before the storm spell this turn,
 // counting spells cast by EITHER player. The per-player spells_cast_this_turn counters already
@@ -111,64 +109,12 @@ static size_t storm_count_this_turn(const Game &game) {
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending);
 
-// The CardData face a card presents for an ENTERS-the-battlefield trigger match, honoring a
-// transform-on-entry. Ajani, Nacatl Pariah returns to the battlefield already transformed to his
-// planeswalker back face; the CARD_CHANGED_ZONE event still carries the entity whose (front)
-// CardData is the creature Cat, but CR 712.2/712.14 make the entering object's characteristics its
-// active BACK face. So an external "a creature you control enters" trigger (Guide of Souls) must
-// test the back face — a noncreature planeswalker back does NOT satisfy "a creature enters" (and a
-// creature back WOULD). apply_permanent_components sets Permanent::transformed before triggers are
-// collected (it runs first in the SBA loop), so the flipped face is already reflected here. Falls
-// back to the front CardData for a non-transformed card, a card with no back face, or one no longer
-// on the battlefield.
-static const CardData *etb_effective_face(Entity e) {
-    if (!global_coordinator.entity_has_component<CardData>(e)) return nullptr;
-    const CardData &front = global_coordinator.GetComponent<CardData>(e);
-    if (front.backside &&
-        global_coordinator.entity_has_component<Permanent>(e) &&
-        global_coordinator.GetComponent<Permanent>(e).transformed)
-        return front.backside.get();
-    return &front;
-}
-
-static bool type_set_has_creature(const std::set<Type> &types) {
-    for (const auto &t : types)
-        if (t.kind == TYPE && t.name == "Creature") return true;
-    return false;
-}
-
-// Is the object a CARD_CHANGED_ZONE / SPELL_CAST event names a creature (a ValidCard$ Creature
-// match, CR 603.2)? A token is judged by its own type line, not by being a token: a Clue, Food or
-// Powerstone is a noncreature artifact. A token leaving the battlefield is matched by its
-// last-known battlefield types (603.10), which also cover a token that has already ceased to
-// exist (no components left); a live token reads its permanent type line, else its token
-// definition. A card reads the face it presents (etb_effective_face).
-static bool zone_change_object_is_creature(const Game &game, Entity e) {
-    bool is_token = global_coordinator.entity_has_component<Token>(e);
-    if (is_token || !global_coordinator.entity_has_component<CardData>(e)) {
-        auto it = game.lk_battlefield_types.find(e);
-        if (it != game.lk_battlefield_types.end()) {
-            for (const auto &n : it->second)
-                if (n == "Creature") return true;
-            return false;
-        }
-        if (!is_token) return false;
-        if (global_coordinator.entity_has_component<Permanent>(e))
-            return type_set_has_creature(global_coordinator.GetComponent<Permanent>(e).types);
-        return type_set_has_creature(global_coordinator.GetComponent<Token>(e).types);
-    }
-    const CardData *face = etb_effective_face(e);
-    return face && is_creature_card(*face);
-}
-
 // Bind the triggering player (the event's PLAYER, e.g. the caster of the triggering spell)
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
 // LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
 // subabilities/charm_choices. Only abilities flagged defined_triggered_activator are touched.
 static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
-    Zone::Ownership activator = (activator_entity == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A
-                              : (activator_entity == get_player_entity(Zone::PLAYER_B)) ? Zone::PLAYER_B
-                                                                                        : Zone::UNKNOWN;
+    Zone::Ownership activator = seat_of_player(activator_entity);
     if (ab.defined_triggered_activator) ab.triggered_activator = activator;
     for (auto &sub : ab.subabilities) bind_triggered_activator(sub, activator_entity);
     for (auto &c : ab.charm_choices) bind_triggered_activator(c, activator_entity);
@@ -180,9 +126,7 @@ static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
 // so recurse into subabilities/charm_choices. Only abilities flagged defined_triggered_player
 // are touched.
 static void bind_triggered_player(Ability &ab, Entity player_entity) {
-    Zone::Ownership who = (player_entity == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A
-                        : (player_entity == get_player_entity(Zone::PLAYER_B)) ? Zone::PLAYER_B
-                                                                               : Zone::UNKNOWN;
+    Zone::Ownership who = seat_of_player(player_entity);
     if (ab.defined_triggered_player) ab.triggered_player = who;
     for (auto &sub : ab.subabilities) bind_triggered_player(sub, player_entity);
     for (auto &c : ab.charm_choices) bind_triggered_player(c, player_entity);
@@ -634,100 +578,31 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
                     if (ab.trigger_zone_destination >= 0 &&
                         ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
-                    // ValidCard$ Creature filter. Honor a transform-on-entry: a permanent that
-                    // entered already flipped to a NONCREATURE back face (Ajani, Nacatl Pariah ->
-                    // his planeswalker side) must not satisfy "a creature enters" (CR 712.2/712.14,
-                    // via etb_effective_face), which is what wrongly fired Guide of Souls.
-                    if (ab.trigger_valid_card_is_creature && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (!zone_change_object_is_creature(game, ev_card)) continue;
-                    }
-                    // ValidCard$ Card.nonCreature filter on a counted SpellCast (The Fantasticar):
-                    // the triggering spell must NOT be a creature.
-                    if (ab.trigger_valid_card_non_creature && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (zone_change_object_is_creature(game, ev_card)) continue;
-                    }
-                    // ValidCard$ Instant/Sorcery filter (Murktide Regent)
-                    if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
-                        bool ok = false;
-                        for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
-                            if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { ok = true; break; }
-                        if (!ok) continue;
-                    }
-                    // ValidCard$ Land.* filter (landfall)
-                    if (ab.trigger_valid_card_is_land && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_land = global_coordinator.entity_has_component<CardData>(ev_card) &&
-                                       is_land_card(global_coordinator.GetComponent<CardData>(ev_card));
-                        if (!is_land) continue;
-                    }
-                    // ValidCard$ Artifact.* filter (Kappa Cannoneer: another artifact entering).
-                    // Token artifacts have their types on the Token component, not CardData.
-                    if (ab.trigger_valid_card_is_artifact && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_art = false;
-                        if (global_coordinator.entity_has_component<CardData>(ev_card))
-                            is_art = card_has_type(global_coordinator.GetComponent<CardData>(ev_card),
-                                                   "Artifact");
-                        if (!is_art && global_coordinator.entity_has_component<Token>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<Token>(ev_card).types)
-                                if (t.name == "Artifact") { is_art = true; break; }
-                        }
-                        if (!is_art) continue;
-                    }
-                    // ValidCard$ ...+!token — only real cards match, not tokens (CR 110.1).
-                    // Token permanents carry a Token component (their identity lives there
-                    // rather than on CardData). Moonshadow's "permanent CARDS put into your
-                    // graveyard" must ignore a dying token you own.
-                    if (ab.trigger_valid_card_non_token && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (global_coordinator.entity_has_component<Token>(ev_card)) continue;
-                    }
-                    // ValidCard$ Permanent — only permanent card types match (CR 110.4a);
-                    // an instant/sorcery moving to the graveyard must not trigger (Moonshadow:
-                    // "permanent cards put into your graveyard").
-                    if (ab.trigger_valid_card_is_permanent && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
-                        if (!is_permanent_card(global_coordinator.GetComponent<CardData>(ev_card)))
+                    // ValidCard$ filter (Guide of Souls' Creature.Other+YouCtrl, Kappa Cannoneer's
+                    // Artifact.YouCtrl, landfall's Land.YouCtrl, Ajani's Cat.Other+YouCtrl,
+                    // Moonshadow's Permanent.YouOwn+!token, Murktide's Instant/Sorcery): the moving
+                    // object as it exists after the event, or as it last existed on the battlefield
+                    // for a departure (CR 603.6a / 603.10a) — its live types (an animated land is a
+                    // creature, a Clue token isn't, an entering-transformed face is its back face)
+                    // and its controller (a creature reanimated from an opponent's graveyard is
+                    // YouCtrl for the reanimator).
+                    if (!ab.trigger_valid_card.empty() && ev.HasParam(Params::ENTITY)) {
+                        MatchCtx vctx;
+                        vctx.controller = perm.controller;
+                        vctx.source = entity;
+                        if (!zone_change_object_matches(ev.GetParam<Entity>(Params::ENTITY), ev_origin,
+                                                        ev_dest, ab.trigger_valid_card, vctx))
                             continue;
                     }
-                    // ValidCard$ ...+untapped filter (Mystic Sanctuary: "When this land enters
-                    // untapped"): the changing card must be an untapped battlefield permanent
-                    // right now. The enters-tapped replacement dispatch (T2.2) runs inside
-                    // apply_permanent_components, which precedes this trigger scan in the SBA
-                    // loop, so Permanent::is_tapped already reflects how the card entered.
-                    if (ab.trigger_valid_card_untapped && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (!global_coordinator.entity_has_component<Permanent>(ev_card)) continue;
-                        if (global_coordinator.GetComponent<Permanent>(ev_card).is_tapped) continue;
-                    }
-                    // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
-                    // against the changing card's CardData or Token subtypes.
-                    if (!ab.trigger_valid_card_subtype.empty() && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool has_sub = false;
-                        if (global_coordinator.entity_has_component<CardData>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
-                                if (t.name == ab.trigger_valid_card_subtype) { has_sub = true; break; }
-                        }
-                        if (!has_sub && global_coordinator.entity_has_component<Token>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<Token>(ev_card).types)
-                                if (t.name == ab.trigger_valid_card_subtype) { has_sub = true; break; }
-                        }
-                        // 603.10 look-back: a token that died has already ceased to exist, so
-                        // fall back to its last-known type names captured at battlefield-leave.
-                        if (!has_sub) {
-                            auto it = game.lk_battlefield_types.find(ev_card);
-                            if (it != game.lk_battlefield_types.end())
-                                for (auto &n : it->second)
-                                    if (n == ab.trigger_valid_card_subtype) { has_sub = true; break; }
-                        }
-                        if (!has_sub) continue;
-                    }
+                }
+                // ValidCard$ Card.nonCreature on a SpellCast trigger (The Fantasticar): the cast
+                // spell must NOT be a creature spell.
+                if (ab.trigger_valid_card_non_creature && ev.GetType() == Events::SPELL_CAST &&
+                    ev.HasParam(Params::ENTITY)) {
+                    Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+                    if (global_coordinator.entity_has_component<CardData>(spell_e) &&
+                        is_creature_card(global_coordinator.GetComponent<CardData>(spell_e)))
+                        continue;
                 }
                 // Drawn trigger filters (Orcish Bowmasters): PLAYER_DREW_CARD
                 if (ev.GetType() == Events::PLAYER_DREW_CARD) {
@@ -1238,12 +1113,7 @@ static std::string trigger_label(const std::string &name, const Ability &ab) {
 
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending) {
-    if (pending.empty()) {
-        // Nothing fired this batch: the look-back type snapshots are stale the moment the
-        // batch is over (they'd wrongly match a reused entity id in a later batch).
-        game.lk_battlefield_types.clear();
-        return;
-    }
+    if (pending.empty()) return;
     if (game.trigger_placement.active)
         fatal_error("place_triggers_apnap re-entered with a placement already in flight");
 
@@ -1383,9 +1253,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         tp.queue.erase(tp.queue.begin());
     }
 
-    // Placement complete: restore the pre-placement priority seat and retire the
-    // look-back type snapshots for this batch (see check_triggered_abilities).
+    // Placement complete: restore the pre-placement priority seat.
     cur_game.player_a_has_priority = tp.saved_priority;
     tp = TriggerPlacementRT{};
-    game.lk_battlefield_types.clear();
 }

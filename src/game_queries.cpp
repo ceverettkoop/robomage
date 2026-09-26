@@ -21,6 +21,8 @@ static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt);
 static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership source_ctrl,
                                                  Zone::Ownership player);
+static std::vector<std::pair<std::string, bool>> filter_tokens(const std::string &spec);
+static bool player_target_alternative(const std::string &alt, bool &opponent_only, bool &you_only);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
@@ -185,7 +187,18 @@ struct CharView {
     bool has_x_cost = false;                 // printed mana cost contains {X} (Gaddock Teeg's hasXCost)
     bool creature_suppressed = false;        // on battlefield, has "Creature" in its type line but
                                              // is NOT currently a creature (no live Creature component)
+    bool entered_by_cast = false;            // a permanent that entered by being cast (wasCastByYou)
 };
+
+// The name an object has in its current zone: a permanent's (the face it shows, CR 712.8e),
+// else its card's. Empty for an object with neither.
+std::string object_name(Entity e) {
+    if (global_coordinator.entity_has_component<Permanent>(e))
+        return global_coordinator.GetComponent<Permanent>(e).name;
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return global_coordinator.GetComponent<CardData>(e).name;
+    return "";
+}
 
 bool view_has_typeline(const CharView &v, const std::string &name) {
     if (!v.types) return false;
@@ -264,12 +277,24 @@ void warn_unknown_qualifier(const std::string &q) {
 // the caller, so cmc tokens here only honour the legacy "cmcLEX" (x_paid) form.
 bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q) {
     if (q.empty()) return true;
+    // "!<qualifier>" negates it (Doomsday's Card.!IsRemembered); "!token" is spelled out below.
+    if (q[0] == '!' && q != "!token") return !eval_qualifier(v, ctx, q.substr(1));
     // identity / state keywords ------------------------------------------------
     if (q == "IsRemembered") {
         for (auto re : cur_game.remembered_entities)
             if (re == v.entity) return true;
         return false;
     }
+    // IsImprinted — one of the cards the resolving ability imprinted (Atraxa's revealed pile).
+    if (q == "IsImprinted") {
+        for (auto ie : cur_game.imprinted_entities)
+            if (ie == v.entity) return true;
+        return false;
+    }
+    // NamedCard — the object has the name chosen by a preceding name-a-card effect (Cabal
+    // Therapy's discard, CR 201.4); nothing matches when no name was chosen.
+    if (q == "NamedCard")
+        return v.entity != 0 && !cur_game.named_card.empty() && object_name(v.entity) == cur_game.named_card;
     if (q == "Other")        return ctx.source == 0 || v.entity != ctx.source;
     if (q == "Self")         return ctx.source != 0 && v.entity == ctx.source;
     if (q == "nonChosenCard") return !cur_game.chosen_cards.count(v.entity);
@@ -296,6 +321,9 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "token")        return v.is_token;
     if (q == "nonToken" || q == "!token") return !v.is_token;
     if (q == "ThisTurnEntered") return v.on_battlefield && entered_battlefield_this_turn(v.entered_on_turn);
+    // wasCastByYou — the permanent entered by being cast (The One Ring's "if you cast it"); its
+    // controller cast it, since a permanent spell enters under its caster's control (CR 608.3a).
+    if (q == "wasCastByYou") return v.on_battlefield && v.entered_by_cast;
     // live combat / tap state (e.g. Guide of Souls' ValidTgts$ Creature.attacking) — only a
     // battlefield permanent can be in these states; a card view leaves them false.
     if (q == "attacking") return v.is_attacking;
@@ -311,7 +339,9 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "hasABasicLandType") return v.types && has_a_basic_land_type(*v.types);
     // mana-value family (dynamic bound applied once by the caller) --------------
     if (q.rfind("cmc", 0) == 0) {
-        if (q == "cmcLEX") return v.cmc <= static_cast<int>(cur_game.x_paid);
+        // cmcLEX reads the X paid, unless the caller resolved X itself and supplied it as the
+        // dynamic bound (Birthing Ritual's X = 1 + the sacrificed creature's mana value).
+        if (q == "cmcLEX") return ctx.cmc_bound >= 0 || v.cmc <= static_cast<int>(cur_game.x_paid);
         return true;  // cmcEQX / cmcLE3 / … enforced via ctx.cmc_bound
     }
     // dynamic power/toughness vs SVar X (Ensnaring Bridge: Creature.powerGTX — "power greater
@@ -466,6 +496,18 @@ CharView card_view(Entity e, const CardData &cd) {
     return v;
 }
 
+// Mana value of a permanent (CR 112.7), read from its card: a transformed NONMODAL permanent keeps
+// the front face's (CR 712.8e — Insectile Aberration is MV 1 from Delver's cost), but a face-up
+// MODAL back has entirely its own characteristics (CR 712.8d), so Witch-Blessed Meadow in play is
+// MV 0, not the front spell's 4. A token (no card) is MV 0.
+void set_permanent_mana_value(CharView &v, Entity e, bool transformed) {
+    if (!global_coordinator.entity_has_component<CardData>(e)) return;
+    const auto &cd = global_coordinator.GetComponent<CardData>(e);
+    const CardData &mv_face = (cd.is_modal_dfc && transformed && cd.backside) ? *cd.backside : cd;
+    v.cmc = card_mana_value(mv_face);
+    v.has_x_cost = mv_face.has_x_cost;
+}
+
 CharView permanent_view(Entity e, const Permanent &perm) {
     CharView v;
     v.entity = e;
@@ -478,6 +520,7 @@ CharView permanent_view(Entity e, const Permanent &perm) {
     v.entered_on_turn = static_cast<long>(perm.entered_on_turn);
     v.on_battlefield = true;
     v.is_tapped = perm.is_tapped;
+    v.entered_by_cast = perm.entered_by_cast;
     if (global_coordinator.entity_has_component<Creature>(e)) {
         v.has_pt = true;
         v.power = effective_power(e);
@@ -491,16 +534,29 @@ CharView permanent_view(Entity e, const Permanent &perm) {
         // view_has_typeline — a "Creature" type query must read the component, not the stale line.
         v.creature_suppressed = true;
     }
-    if (global_coordinator.entity_has_component<CardData>(e)) {
-        auto &cd = global_coordinator.GetComponent<CardData>(e);
-        // Mana value: a transformed NONMODAL permanent keeps the front face's (CR 712.8e —
-        // Insectile Aberration is MV 1 from Delver's cost), so the front CardData is the right
-        // read; but a face-up MODAL back has entirely its own characteristics (CR 712.8d), so
-        // Witch-Blessed Meadow in play is MV 0, not the front spell's 4.
-        const CardData &mv_face = cd.is_modal_dfc ? active_face(e, cd) : cd;
-        v.cmc = card_mana_value(mv_face);  // CR 112.7
-        v.has_x_cost = mv_face.has_x_cost;
-    }
+    set_permanent_mana_value(v, e, perm.transformed);
+    return v;
+}
+
+// The object `e` as it last existed on the battlefield (CR 603.10a / 608.2h): its last-known
+// type line, controller, colors and P/T. Its owner and mana value come from the card, which
+// keeps its identity (a vanished token is owned by its last controller and has mana value 0).
+CharView lki_view(Entity e, const LastKnownInfo &lki) {
+    CharView v;
+    v.entity = e;
+    v.types = &lki.types;
+    v.colors = lki.colors;
+    v.is_token = lki.is_token;
+    v.controller = lki.controller;
+    v.owner = global_coordinator.entity_has_component<Zone>(e)
+                  ? global_coordinator.GetComponent<Zone>(e).owner
+                  : lki.controller;
+    v.on_battlefield = true;
+    v.entered_by_cast = lki.entered_by_cast;
+    v.has_pt = type_set_has(lki.types, "Creature");
+    v.power = lki.power;
+    v.toughness = lki.toughness;
+    set_permanent_mana_value(v, e, lki.transformed);
     return v;
 }
 
@@ -518,6 +574,67 @@ bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx)
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx) {
     if (!is_battlefield_permanent(e)) return false;
     return match_filter_core(permanent_view(e, global_coordinator.GetComponent<Permanent>(e)), spec, ctx);
+}
+
+bool object_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx) {
+    return is_battlefield_permanent(e) ? permanent_matches_filter(e, spec, ctx)
+                                       : card_matches_filter(e, spec, ctx);
+}
+
+bool zone_change_object_matches(Entity e, Zone::ZoneValue origin, Zone::ZoneValue destination,
+                                const std::string &spec, const MatchCtx &ctx) {
+    bool left_battlefield = (origin == Zone::BATTLEFIELD);
+    if (!left_battlefield && destination == Zone::BATTLEFIELD && is_battlefield_permanent(e))
+        return permanent_matches_filter(e, spec, ctx);
+    if (left_battlefield || destination == Zone::BATTLEFIELD) {
+        if (const LastKnownInfo *lki = departed_lki_for(e))
+            return match_filter_core(lki_view(e, *lki), spec, ctx);
+    }
+    return card_matches_filter(e, spec, ctx);
+}
+
+// The '.'/'+'/','/';'-delimited tokens of a filter spec, each flagged whether it is the head
+// (first) token of its OR alternative.
+static std::vector<std::pair<std::string, bool>> filter_tokens(const std::string &spec) {
+    std::vector<std::pair<std::string, bool>> out;
+    size_t p = 0;
+    bool head = true;
+    while (p <= spec.size()) {
+        size_t nx = spec.find_first_of(".+,;", p);
+        if (nx == std::string::npos) nx = spec.size();
+        out.emplace_back(spec.substr(p, nx - p), head);
+        head = (nx < spec.size() && (spec[nx] == ',' || spec[nx] == ';'));
+        p = nx + 1;
+    }
+    return out;
+}
+
+bool filter_names_token(const std::string &spec, const std::string &token) {
+    for (const auto &t : filter_tokens(spec))
+        if (t.first == token) return true;
+    return false;
+}
+
+std::string owner_relative_filter(const std::string &spec) {
+    std::string out;
+    size_t p = 0;
+    while (p <= spec.size()) {
+        size_t nx = spec.find_first_of(".+,;", p);
+        if (nx == std::string::npos) nx = spec.size();
+        std::string tok = spec.substr(p, nx - p);
+        if (tok == "YouCtrl") tok = "YouOwn";
+        else if (tok == "OppCtrl") tok = "OppOwn";
+        out += tok;
+        if (nx < spec.size()) out += spec[nx];
+        p = nx + 1;
+    }
+    return out;
+}
+
+bool filter_has_head(const std::string &spec, const std::string &head) {
+    for (const auto &t : filter_tokens(spec))
+        if (t.second && t.first == head) return true;
+    return false;
 }
 
 int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,

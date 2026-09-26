@@ -109,8 +109,7 @@ ManaValue effective_base_cost(const CardData &card_data,
 // blocking on get_input, so a batch of simultaneous triggers spreads over
 // several main-loop iterations. Called synchronously by place_triggers_apnap
 // when a batch is collected, and by the main loop's TRIGGER_PLACE dispatch
-// with a latched answer. On completion restores the pre-placement priority
-// and clears Game::lk_battlefield_types (the 603.10 look-back snapshots).
+// with a latched answer. On completion restores the pre-placement priority.
 void resume_trigger_placement(Game& game, std::shared_ptr<Orderer> orderer);
 
 class StateManager : public System {

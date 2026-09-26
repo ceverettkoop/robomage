@@ -289,6 +289,31 @@ struct MatchCtx {
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+// `e` in whatever zone it is in: a battlefield permanent by its live characteristics
+// (permanent_matches_filter), any other object by its card's (card_matches_filter).
+bool object_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// The object a zone-change event names, matched as CR 603.6a / 603.10a direct: an object that
+// left the battlefield (origin == BATTLEFIELD) is matched as it last existed there (its
+// last-known information: live types, controller, colors and P/T as it left, CR 608.2h) — this
+// also covers a token that has since ceased to exist; an object that entered the battlefield is
+// matched by its live characteristics as a permanent (so an animated land counts as a creature,
+// a Clue token doesn't, and an opponent's creature you reanimated is YouCtrl), or by its
+// last-known information if it has already left again; any other move matches the card's
+// characteristics in its new zone. The one matcher behind trigger ValidCard$ filters.
+bool zone_change_object_matches(Entity e, Zone::ZoneValue origin, Zone::ZoneValue destination,
+                                const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// Filter-spec structure (read at parse time, not for matching an object): true when `token`
+// is one whole '.'/'+'/','/';'-delimited token of the spec — "nonCreature" is a token of
+// "Card.nonCreature" but "Creature" is not — or, for filter_has_head, the head (type) token of
+// one of its OR alternatives ("Creature" in "Creature.Other+YouCtrl").
+bool filter_names_token(const std::string &spec, const std::string &token);
+bool filter_has_head(const std::string &spec, const std::string &head);
+
+// A filter spec for cards outside the battlefield and the stack, where a card's controller is its
+// owner (CR 108.4a): every YouCtrl / OppCtrl token becomes YouOwn / OppOwn.
+std::string owner_relative_filter(const std::string &spec);
 
 // Count the battlefield permanents matching a Forge `Count$Valid <filter>` spec — the single
 // shared implementation behind both the spell/ability dynamic-amount path (evaluate_dynamic_amount)

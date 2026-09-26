@@ -20,6 +20,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "game_queries.h"
 #include "str_util.h"
 #include "type_constants.h"
 
@@ -2984,15 +2985,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_source_creature_youctrl = false;
     bool damage_combat_only = false;
     bool valid_card_non_creature = false;
-    bool valid_card_instant = false;
-    bool valid_card_sorcery = false;
-    bool valid_card_owner_you = false;
-    bool valid_card_land = false;
-    bool valid_card_artifact = false;
     bool valid_card_colorless = false;
-    bool valid_card_non_token = false;
     bool valid_card_untapped = false;
-    bool valid_card_permanent = false;
     bool mode_is_drawn = false;
     bool mode_is_attacks = false;
     bool mode_is_attackers_declared = false;
@@ -3011,7 +3005,6 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool trigger_optional_local = false;
     size_t draw_number_eq = 0;          // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
     bool attacked_defender_you = false; // Attacked$ You,Planeswalker.YouCtrl (the attack hits you/your PW)
-    std::string valid_card_subtype;
     size_t activator_this_turn_cast_eq = 0;
     int kicked_index = 0;  // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
 
@@ -3128,17 +3121,20 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value == "Battlefield") dest_is_battlefield = true;
             if (value == "Graveyard")   dest_is_graveyard   = true;
         } else if (key == "ValidCard" || key == "ValidCards") {
-            if (value.find("Creature")    != std::string::npos) valid_card_creature     = true;
-            if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
-            if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
-            if (value.rfind("Card.Self", 0) == 0)                valid_card_self         = true;
-            // The Self qualifier may also be a trailing token (e.g. "Card.wasCastByYou+Self",
-            // The One Ring) rather than the head — match the delimited ".Self"/"+Self" form.
-            if (value.find(".Self") != std::string::npos ||
-                value.find("+Self") != std::string::npos)        valid_card_self         = true;
+            // The filter itself is matched against the event's object at trigger time
+            // (zone_change_object_matches); only the tokens that select an event binding or an
+            // identity gate are read here, as whole filter tokens (so "nonCreature" is not read as
+            // "Creature", nor "nonLand" as "Land").
+            ability.trigger_valid_card = value;
+            if (filter_has_head(value, "Creature"))          valid_card_creature     = true;
+            if (filter_names_token(value, "nonCreature"))    valid_card_non_creature = true;
+            if (filter_names_token(value, "Other"))          ability.trigger_self_excluded = true;
+            // Self may be the head qualifier (Card.Self) or a later one (The One Ring's
+            // Card.wasCastByYou+Self).
+            if (filter_names_token(value, "Self"))           valid_card_self         = true;
             // wasCastByYou — "if you cast it" cast-condition on an ETB trigger (The One Ring): the
             // source must have entered by being cast (Permanent::entered_by_cast).
-            if (value.find("wasCastByYou") != std::string::npos)
+            if (filter_names_token(value, "wasCastByYou"))
                 ability.trigger_requires_entered_by_cast = true;
             // Kicker-linked condition (CR 702.33f): "Card.Self+kicked N" — fires only when the
             // Nth kicker was paid. Parse the 1-based index after "kicked " (a missing number
@@ -3154,26 +3150,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                     kicked_index = (n > 0) ? n : 1;
                 }
             }
-            if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
-            if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
-            if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
-            if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
-            if (value.find("OppCtrl")     != std::string::npos) valid_card_opp_ctrl     = true;
-            if (value.find("Land")        != std::string::npos) valid_card_land         = true;
-            if (value.find("Artifact")    != std::string::npos) valid_card_artifact     = true;
-            if (value.find("Colorless")   != std::string::npos) valid_card_colorless    = true;
-            if (value.find("!token")      != std::string::npos) valid_card_non_token    = true;
-            // "+untapped"/".untapped" qualifier — the changing card must be untapped when the
-            // trigger checks it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters
-            // untapped"). Matched delimited so a plain "tapped" token can't set it.
-            if (value.find("+untapped")   != std::string::npos ||
-                value.find(".untapped")   != std::string::npos) valid_card_untapped     = true;
-            // ValidCard$ Permanent (head token) — restrict to permanent card types. Matched
-            // on the leading token so a subtype merely named within isn't misread.
-            if (value.substr(0, value.find_first_of(".+")) == "Permanent")
-                valid_card_permanent = true;
-            // YouCtrl may be the first ('.YouCtrl') or a later ('+YouCtrl') qualifier.
-            if (value.find("YouCtrl")     != std::string::npos) valid_player_is_you     = true;
+            if (filter_names_token(value, "OppOwn"))         valid_card_opp_own      = true;
+            if (filter_names_token(value, "OppCtrl"))        valid_card_opp_ctrl     = true;
+            if (filter_names_token(value, "Colorless"))      valid_card_colorless    = true;
+            // "untapped" qualifier — the changing card must be untapped when the trigger checks
+            // it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters untapped").
+            if (filter_names_token(value, "untapped"))       valid_card_untapped     = true;
+            // YouCtrl on a Drawn / SpellCast trigger names the event's player (the drawer / caster).
+            if (filter_names_token(value, "YouCtrl"))        valid_player_is_you     = true;
             // Dynamic mana-value filter on the cast spell (Chalice of the Void:
             // "Card.cmcEQY", Y = Count$CardCounters.CHARGE). Resolve the cmc<op><svar>
             // qualifier to its runtime Count$ expression + comparison op, mirroring the
@@ -3199,15 +3183,6 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 }
                 break;
             }
-            // Leading token before '.'/'+' that isn't a recognized card type is a
-            // subtype filter (e.g. "Cat.Other+YouCtrl" -> subtype "Cat").
-            std::string head = value.substr(0, value.find_first_of(".+"));
-            static const std::set<std::string> known_types = {
-                "Creature", "Land", "Instant", "Sorcery", "Card", "Permanent",
-                "Artifact", "Enchantment", "Planeswalker"};
-            if (!head.empty() && known_types.find(head) == known_types.end() &&
-                head.rfind("cmc", 0) != 0)
-                valid_card_subtype = head;
         } else if (key == "OptionalDecider") {
             // Any named decider ("You" / "TriggeredCardController" / "Controller") makes the
             // whole triggered ability optional ("you may ...") for that player — the controller
@@ -3281,17 +3256,10 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         else if (origin_is_graveyard)    ability.trigger_zone_origin      = Zone::GRAVEYARD;
         if (dest_is_battlefield)         ability.trigger_zone_destination = Zone::BATTLEFIELD;
         else if (dest_is_graveyard)      ability.trigger_zone_destination = Zone::GRAVEYARD;
-        ability.trigger_valid_card_is_creature            = valid_card_creature;
-        ability.trigger_valid_card_is_instant_or_sorcery  = valid_card_instant || valid_card_sorcery;
-        ability.trigger_valid_card_is_land                = valid_card_land;
-        ability.trigger_valid_card_is_artifact            = valid_card_artifact;
-        ability.trigger_valid_card_colorless              = valid_card_colorless;
-        ability.trigger_valid_card_non_token              = valid_card_non_token;
+        // ValidCard$ (types, control, ownership, …) is matched against the moving object itself
+        // through ability.trigger_valid_card, not against the event's player.
         ability.trigger_valid_card_untapped               = valid_card_untapped;
-        ability.trigger_valid_card_is_permanent           = valid_card_permanent;
         ability.trigger_batch_zone_all                    = mode_changes_zone_all;
-        ability.trigger_valid_card_subtype                = valid_card_subtype;
-        ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
         // A Destination$ Battlefield trigger gated by IsPresent$ Card.Self (the source must
         // already be on the battlefield) is Forge's idiom for "Whenever ANOTHER permanent
@@ -3530,16 +3498,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.stored_svar_gate_compare                 = ability.stored_svar_gate_compare;
                 effect.trigger_zone_origin                      = ability.trigger_zone_origin;
                 effect.trigger_zone_destination                 = ability.trigger_zone_destination;
+                effect.trigger_valid_card                       = ability.trigger_valid_card;
                 effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
-                effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
-                effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
-                effect.trigger_valid_card_is_artifact           = ability.trigger_valid_card_is_artifact;
                 effect.trigger_valid_card_colorless             = ability.trigger_valid_card_colorless;
-                effect.trigger_valid_card_non_token             = ability.trigger_valid_card_non_token;
                 effect.trigger_valid_card_untapped              = ability.trigger_valid_card_untapped;
-                effect.trigger_valid_card_is_permanent          = ability.trigger_valid_card_is_permanent;
                 effect.trigger_batch_zone_all                   = ability.trigger_batch_zone_all;
-                effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
                 effect.trigger_optional                         = ability.trigger_optional;
                 effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;
                 effect.trigger_exclude_first_draw_step          = ability.trigger_exclude_first_draw_step;
