@@ -1424,9 +1424,10 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
 static std::set<Colors> parse_colors_field(const std::string &colors_field) {
     std::set<Colors> ret;
     if (colors_field.empty()) return ret;
+    // Forge separates a multicolor indicator with commas ("Colors:green,blue"); accept spaces too.
     size_t cp = 0;
     while (cp <= colors_field.size()) {
-        size_t sp = colors_field.find(' ', cp);
+        size_t sp = colors_field.find_first_of(" ,", cp);
         if (sp == std::string::npos) sp = colors_field.size();
         std::string ctok = colors_field.substr(cp, sp - cp);
         if      (ctok == "white")    ret.insert(WHITE);
