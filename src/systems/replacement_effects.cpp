@@ -115,16 +115,9 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             auto &cd = global_coordinator.GetComponent<CardData>(ev.entity);
             // A permanent entering as its DFC back face (a transform DFC's transformed entry, or
             // a modal DFC's back face played from hand) carries the BACK face's self-replacement
-            // effects, not the front's. Detect via the live Permanent's transformed flag (set
-            // before this dispatch on a later pass) or the one-shot pending_enters_transformed
-            // marker (set when the back face is put onto the battlefield, consumed at perm
-            // creation). Otherwise the front face's effects apply.
-            const std::vector<Effect::Replacement> *reps = &cd.replacement_effects;
-            if (cd.backside &&
-                ((global_coordinator.entity_has_component<Permanent>(ev.entity) &&
-                  global_coordinator.GetComponent<Permanent>(ev.entity).transformed) ||
-                 cur_game.pending_enters_transformed.count(ev.entity)))
-                reps = &cd.backside->replacement_effects;
+            // effects, not the front's (entering_face).
+            const std::vector<Effect::Replacement> *reps =
+                &entering_face(ev.entity, cd).replacement_effects;
             // Self "enters tapped" replacement effect (614.1d / self-replacement 614.15).
             for (size_t i = 0; i < reps->size(); i++) {
                 const Effect::Replacement &r = (*reps)[i];
@@ -224,10 +217,14 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 }
             }
 
+            // Whether the entering card is a creature is judged by the face it will have on the
+            // battlefield (CR 614.12): Ajani, Nacatl Pariah returning transformed is a
+            // planeswalker, not a creature.
             bool nontoken_creature =
                 !global_coordinator.entity_has_component<Token>(ev.entity) &&
                 global_coordinator.entity_has_component<CardData>(ev.entity) &&
-                is_creature_card(global_coordinator.GetComponent<CardData>(ev.entity));
+                is_creature_card(
+                    entering_face(ev.entity, global_coordinator.GetComponent<CardData>(ev.entity)));
 
             // Grafdigger's Cage (614.13): a creature card moving from a graveyard or library
             // onto the battlefield is prevented from entering — it stays in its origin zone.

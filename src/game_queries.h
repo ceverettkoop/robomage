@@ -71,6 +71,12 @@ inline const CardData &active_face(Entity e, const CardData &cd) {
     return cd;
 }
 
+// The face a card will have on the battlefield as it enters (CR 614.12 / 712.14a): its back face
+// when it is entering transformed (Game::pending_enters_transformed, a modal back face played or
+// a card returned transformed) or is already a transformed permanent, else its front. Replacement
+// effects that check what an entering object "would be" read this face.
+const CardData &entering_face(Entity e, const CardData &cd);
+
 // Printed colors of a card: an explicit Colors$ override if present (a color indicator, or
 // Devoid's COLORLESS), otherwise the colors of its mana cost (CR 105.2 / 202.2). Only the five
 // colors are ever returned — the COLORLESS marker means "no color" (CR 105.2c) — so the set is

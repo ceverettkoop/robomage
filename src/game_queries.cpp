@@ -60,6 +60,11 @@ std::string last_known_name(Entity e) {
     return lki->is_token ? lki->name + " token" : lki->name;
 }
 
+const CardData &entering_face(Entity e, const CardData &cd) {
+    if (cd.backside && cur_game.pending_enters_transformed.count(e)) return *cd.backside;
+    return active_face(e, cd);
+}
+
 int effective_power(Entity e) {
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<Creature>(e))
         return static_cast<int>(global_coordinator.GetComponent<Creature>(e).power);

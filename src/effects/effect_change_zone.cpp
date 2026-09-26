@@ -30,7 +30,8 @@ namespace effects {
 static bool search_reveals_card(const Ability &ab);
 static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, Entity e);
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
-                                        Zone::ZoneValue dest, bool exile_face_down = false);
+                                        Zone::ZoneValue dest, bool exile_face_down = false,
+                                        bool enters_transformed = false);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
 static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
                                                FrameCtx &fctx);
@@ -92,7 +93,8 @@ static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, E
 // "moved to <dest>" log on the returned zone; when it differs from `dest` the replacement
 // dispatcher has already logged the reason for the divert, so no generic line is emitted.
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
-                                        Zone::ZoneValue dest, bool exile_face_down) {
+                                        Zone::ZoneValue dest, bool exile_face_down,
+                                        bool enters_transformed) {
     // CR 110.4a / 712.10: only permanents exist on the battlefield. An effect that would put a
     // non-permanent card onto the battlefield can't — the card stays in its current zone. The
     // case that reaches here is a double-faced card returning from exile via a flicker (e.g.
@@ -112,8 +114,15 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     if (dest == Zone::BATTLEFIELD && !aura_enters_choose_object(orderer, e)) {
         return global_coordinator.GetComponent<Zone>(e).location;
     }
+    // A card put onto the battlefield transformed (CR 712.14a) is marked before the move, so
+    // the entry's replacement effects see the face it will have on the battlefield (CR 614.12:
+    // Containment Priest judges a returning Ajani by his planeswalker back face). The mark is
+    // consumed when its Permanent is built, or dropped if the move is replaced elsewhere.
+    if (dest == Zone::BATTLEFIELD && enters_transformed) cur_game.pending_enters_transformed.insert(e);
     orderer->add_to_zone(false, e, dest, /*top_seen_by_owner=*/true, exile_face_down);
-    return global_coordinator.GetComponent<Zone>(e).location;
+    Zone::ZoneValue landed = global_coordinator.GetComponent<Zone>(e).location;
+    if (landed != Zone::BATTLEFIELD) cur_game.pending_enters_transformed.erase(e);
+    return landed;
 }
 
 // CR 603.6e linked exile-and-return ("exile ... until [host] leaves the battlefield"). Records
@@ -349,11 +358,13 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // entering this way comes under the controller's control (CR 608.2; the spell's
             // controller is the one returning it from their own graveyard). enters_tapped/
             // enters_transformed honour the same flags the search/defined paths use.
-            if (ab.destination == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD) {
-                if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(tgt);
-                if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(tgt);
-            }
-            Zone::ZoneValue landed = change_zone_move(orderer, tgt, ab.destination);
+            bool transformed_entry = ab.destination == Zone::BATTLEFIELD &&
+                                     ab.origin != Zone::BATTLEFIELD && ab.enters_transformed;
+            if (ab.destination == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD &&
+                ab.enters_tapped)
+                cur_game.pending_enters_tapped.insert(tgt);
+            Zone::ZoneValue landed = change_zone_move(orderer, tgt, ab.destination,
+                                                      /*exile_face_down=*/false, transformed_entry);
             if (landed == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD)
                 global_coordinator.GetComponent<Zone>(tgt).controller = ab.controller;
             if (standalone_ability) {
@@ -569,7 +580,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 if (!in_origin) continue;
             }
             std::string nm = entity_name(e);
-            Zone::ZoneValue landed = change_zone_move(orderer, e, ab.destination);
+            Zone::ZoneValue landed = change_zone_move(orderer, e, ab.destination,
+                                                      /*exile_face_down=*/false, ab.enters_transformed);
             if (landed == Zone::BATTLEFIELD) {
                 // Forge default for ChangeZone Destination$ Battlefield: the card enters
                 // under its OWNER's control unless GainControl$ True (CR 110.2a). The
@@ -579,7 +591,6 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 auto &ezone = global_coordinator.GetComponent<Zone>(e);
                 ezone.controller = ezone.owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(e);
-                if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(e);
             }
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", nm.c_str(), dest_str);
@@ -594,13 +605,13 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (ab.origin == Zone::BATTLEFIELD && ab.change_type.empty() && ab.source != 0 &&
         global_coordinator.entity_has_component<Zone>(ab.source)) {
         std::string nm = entity_name(ab.source);
-        Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
+        Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination,
+                                                  /*exile_face_down=*/false, ab.enters_transformed);
         if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
         if (landed == Zone::BATTLEFIELD) {
             // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
             auto &szone = global_coordinator.GetComponent<Zone>(ab.source);
             szone.controller = szone.owner;
-            if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(ab.source);
         }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", nm.c_str(), dest_str);
@@ -747,11 +758,11 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // both stamps Zone::is_face_down and withholds the card from the owner's public revealed
             // multi-hot (a face-down exile is not public knowledge, CR 708.2).
             Zone::ZoneValue landed = change_zone_move(orderer, chosen, ab.destination,
-                /*exile_face_down=*/ab.exile_face_down && ab.destination == Zone::EXILE);
+                /*exile_face_down=*/ab.exile_face_down && ab.destination == Zone::EXILE,
+                ab.enters_transformed);
             if (landed == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
-                if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(chosen);
             }
             // Duration$ UntilHostLeavesPlay on a search-based exile (Cloak and Dagger,
             // Entwined): register the linked return, like the targeted branch above.
