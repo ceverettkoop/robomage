@@ -182,14 +182,19 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                                   ft.controller == active_player;
                                        }),
                         floating_triggers.end());
-                    // Phase in phased-out permanents controlled by active player
-                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
-                        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-                        auto &perm_phase = global_coordinator.GetComponent<Permanent>(entity);
-                        if (perm_phase.controller == active_player && perm_phase.is_phased_out) {
-                            perm_phase.is_phased_out = false;
-                            game_log("%s phases in\n", perm_phase.name.c_str());
+                    // Phase in phased-out permanents controlled by active player (CR 702.26a).
+                    // An Aura or Equipment that phased out indirectly phases in only along with
+                    // the permanent it is attached to (CR 702.26g), inside effects::phase_in.
+                    {
+                        std::vector<Entity> phasing_in;
+                        for (auto entity : orderer->mEntities) {
+                            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+                            auto &perm_phase = global_coordinator.GetComponent<Permanent>(entity);
+                            if (perm_phase.controller == active_player && perm_phase.is_phased_out &&
+                                !perm_phase.phased_out_indirectly)
+                                phasing_in.push_back(entity);
                         }
+                        for (auto entity : phasing_in) effects::phase_in(entity, orderer->mEntities);
                     }
                     // Second part of the untap step (CR 502.2 / 731.2): the day/night turn-based
                     // check, based on the turn that just ended. Runs after phasing, before untap.

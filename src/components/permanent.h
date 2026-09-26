@@ -29,6 +29,9 @@ struct Permanent {
     Entity equipped_to = 0;   // for equipment: which creature entity is equipped (0 = unattached)
     Entity equipped_by = 0;   // for creatures: which equipment is attached (0 = none)
     bool is_phased_out = false;
+    // CR 702.26g: this Aura/Equipment phased out "indirectly", along with the permanent it is
+    // attached to (equipped_to). It doesn't phase in by itself; it phases in with that permanent.
+    bool phased_out_indirectly = false;
     // 122.1: typed counters on this permanent, keyed by counter type ("P1P1", "M1M1",
     // "LOYALTY", keyword counters). Single store for every counter kind (T2.4) — planeswalker
     // loyalty is just a LOYALTY counter (306.5c). Mutate via the get/add_counters helpers in

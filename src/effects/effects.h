@@ -2,6 +2,7 @@
 #define EFFECTS_H
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "../choice_labels.h"
@@ -57,6 +58,14 @@ HandlerResult untap_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
 HandlerResult cleanup(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult phases(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// CR 702.26b/g: phase permanent `e` out directly — it is removed from combat (CR 506.4) and every
+// Aura/Equipment attached to it phases out indirectly with it. `entities` is the iterating
+// system's mEntities. See effect_phases.cpp.
+void phase_out(Entity e, const std::set<Entity> &entities);
+// CR 702.26c/g: phase permanent `e` in, together with everything that phased out indirectly
+// along with it. Called from the untap step for each permanent that phased out directly under
+// the active player's control. See effect_phases.cpp.
+void phase_in(Entity e, const std::set<Entity> &entities);
 HandlerResult wins_game(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult prowess_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
