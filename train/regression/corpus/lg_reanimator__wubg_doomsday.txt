@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Ponder, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Cavern of Souls
    1: Dark Ritual
@@ -111,6 +115,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -127,7 +132,9 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Brainstorm, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Lotus Petal
+  Self BF:  Lotus Petal (NEW)
+  This turn: self spells=1 noncreature=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -156,7 +163,8 @@
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
   Self GY: Lotus Petal
-  Extras: self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Archon of Cruelty
    1: Bloodstained Mire
@@ -180,7 +188,8 @@
   Pending: Brainstorm (self)
   Self GY: Lotus Petal
   Known top: Bloodstained Mire, ?, ?, ?, ?
-  Extras: self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Archon of Cruelty
    1: Marsh Flats
@@ -200,7 +209,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
   Self GY: Brainstorm, Lotus Petal
   Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
-  Extras: self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -214,10 +224,11 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Archon of Cruelty, Otherworldly Gaze, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Self GY: Brainstorm, Lotus Petal
   Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -238,7 +249,8 @@
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Brainstorm, Lotus Petal
   Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -258,9 +270,10 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Otherworldly Gaze, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Self GY: Polluted Delta, Brainstorm, Lotus Petal
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze  [#0]
@@ -279,11 +292,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Stack: Otherworldly Gaze (spell, self)
   Pending: Otherworldly Gaze (self)
   Self GY: Polluted Delta, Brainstorm, Lotus Petal
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Underground Sea on top of library  [#0]
    1: Put Reanimate on top of library  [#0]
@@ -300,11 +314,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Stack: Otherworldly Gaze (spell, self)
   Pending: Otherworldly Gaze (self)
   Self GY: Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Reanimate on top of library  [#0]
    1: Put Brainstorm on top of library  [#0]
@@ -319,11 +334,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 49
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Stack: Otherworldly Gaze (spell, self)
   Pending: Otherworldly Gaze (self)
   Self GY: Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
@@ -346,8 +362,10 @@
   Self:  20 life | mana: empty | hand(7): Cavern of Souls, Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Opp BF:   Island (T)
-  Opp GY:  Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Underground Sea, Reanimate, Otherworldly Gaze
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Cavern of Souls
@@ -362,11 +380,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Cavern of Souls
+  Self BF:  Cavern of Souls (NEW)
   Opp BF:   Island (T)
-  Opp GY:  Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Pending: Cavern of Souls (self)
+  Opp GY:  Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Underground Sea, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Choose creature type: Wizard  [#0]
    1: Choose creature type: Moonfolk  [#1]
@@ -382,11 +402,12 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Doomsday, Island, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student | lib 53
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Cavern of Souls
+  Self BF:  Cavern of Souls (NEW)
   Opp BF:   Island (T)
-  Opp GY:  Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Underground Sea, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -413,8 +434,10 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Island
   Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Otherworldly Gaze [play:self], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Undercity Sewers
@@ -432,13 +455,14 @@
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Griselbrand, Thoughtseize, Thoughtseize | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island | Undercity Sewers (T)
+  Self BF:  Island | Undercity Sewers (T,NEW,res 1)
   Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
-  Self GY: Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Otherworldly Gaze [play:self], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
@@ -462,8 +486,10 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Cavern of Souls | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Island | Undercity Sewers (T)
-  Opp GY:  Brainstorm, Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Otherworldly Gaze
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -481,10 +507,12 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Doomsday, Island, Scrubland | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
   Opp BF:   Island | Undercity Sewers (T)
-  Opp GY:  Brainstorm, Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Otherworldly Gaze
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep Tamiyo, Inquisitive Student
    1: Keep Tamiyo, Inquisitive Student
@@ -500,9 +528,10 @@
   Self BF:  Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Island | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student
-  Opp GY:  Brainstorm, Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -517,12 +546,13 @@
   Step: Declare Atk (turn 4)
   Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Cavern of Souls (T) | Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Island | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student
-  Opp GY:  Brainstorm, Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -537,12 +567,13 @@
   Step: Declare Atk (turn 4)
   Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
+  Self BF:  Cavern of Souls (T) | Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
   Opp BF:   Island | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student
-  Opp GY:  Brainstorm, Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Brainstorm, Otherworldly Gaze [play:opponent], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -567,9 +598,10 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 52
   Self BF:  Island | Undercity Sewers
   Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
-  Self GY: Brainstorm, Otherworldly Gaze, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Brainstorm, Otherworldly Gaze [play:self], Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze (flashback)  [#4]
@@ -596,6 +628,8 @@
   Self GY: Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Careful Study on top of library  [#0]
    1: Put Otherworldly Gaze on top of library  [#0]
@@ -619,6 +653,8 @@
   Self GY: Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Otherworldly Gaze on top of library  [#0]
    1: Put Careful Study on top of library  [#0]
@@ -637,9 +673,11 @@
   Opp BF:   Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
   Stack: Otherworldly Gaze (spell, self) [flashback]
   Pending: Otherworldly Gaze (self)
-  Self GY: Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Otherworldly Gaze [play:self], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Island, Cavern of Souls, Tamiyo, Inquisitive Student
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Careful Study on top of library  [#0]
    1: Put Careful Study into graveyard
@@ -665,9 +703,10 @@
   Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -683,9 +722,11 @@
   Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -699,9 +740,11 @@
   Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -719,12 +762,14 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Doomsday, Scrubland | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Clue
+  Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep Tamiyo, Inquisitive Student
    1: Keep Tamiyo, Inquisitive Student
@@ -740,10 +785,11 @@
   Self BF:  Cavern of Souls (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -756,13 +802,14 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Dark Ritual, Dark Ritual, Doomsday | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -780,13 +827,14 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: 3B | hand(2): Dark Ritual, Doomsday | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -803,15 +851,16 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Tamiyo, Inquisitive Student (graveyard)
@@ -877,16 +926,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Tamiyo, Inquisitive Student (graveyard)
@@ -951,16 +1001,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Known top: Edge of Autumn, Thassa's Oracle, ?, ?, ?
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Tamiyo, Inquisitive Student (graveyard)
@@ -1024,16 +1075,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Known top: Street Wraith, Edge of Autumn, Thassa's Oracle, ?, ?
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Tamiyo, Inquisitive Student (graveyard)
@@ -1096,16 +1148,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Known top: Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle, ?
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Tamiyo, Inquisitive Student (graveyard)
@@ -1220,16 +1273,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp exile:  Otherworldly Gaze
   Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Brainstorm  [#4]
    1: Brainstorm  [#4]
@@ -1245,16 +1299,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp exile:  Otherworldly Gaze
   Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Brainstorm  [#3]
    1: Street Wraith  [#3]
@@ -1269,16 +1324,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp exile:  Otherworldly Gaze
   Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Street Wraith  [#2]
    1: Edge of Autumn  [#2]
@@ -1292,16 +1348,17 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp exile:  Otherworldly Gaze
-  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
+  Known top: Thassa's Oracle, Brainstorm, Brainstorm, Street Wraith, Edge of Autumn
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Street Wraith  [#1]
    1: Edge of Autumn  [#1]
@@ -1317,15 +1374,16 @@
   Step: Declare Atk (turn 6)
   Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 5
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Doomsday
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp exile:  Otherworldly Gaze
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1340,15 +1398,16 @@
   Step: Declare Atk (turn 6)
   Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 5
   Opp:   19 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Clue
+  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Doomsday
-  Opp GY:  Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Careful Study, Otherworldly Gaze [play:opponent], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp exile:  Otherworldly Gaze
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1373,11 +1432,12 @@
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Island | Undercity Sewers
   Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Careful Study, Otherworldly Gaze, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Careful Study, Otherworldly Gaze [play:self], Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Doomsday
   Self exile: Otherworldly Gaze
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze (flashback)  [#4]
@@ -1406,6 +1466,8 @@
   Self exile: Otherworldly Gaze
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Thoughtseize on top of library  [#0]
    1: Put Force of Will on top of library  [#0]
@@ -1431,6 +1493,8 @@
   Self exile: Otherworldly Gaze
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Force of Will on top of library  [#0]
    1: Put Lotus Petal on top of library  [#0]
@@ -1454,6 +1518,8 @@
   Self exile: Otherworldly Gaze
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Lotus Petal on top of library  [#0]
    1: Put Lotus Petal into graveyard
@@ -1484,6 +1550,7 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1506,6 +1573,8 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1527,6 +1596,8 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1542,12 +1613,15 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 38
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
+  Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Lotus Petal, Force of Will, Thoughtseize, Careful Study, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
+  This turn: self drawn=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Sacrifice Cavern of Souls
    1: Sacrifice Island
@@ -1571,7 +1645,8 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self drawn=1
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1594,7 +1669,8 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self drawn=2
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1619,7 +1695,8 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self drawn=2 life_lost=2
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1644,7 +1721,8 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Brainstorm, Brainstorm, ?, ?, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self drawn=3 life_lost=2
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1663,7 +1741,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
   Opp:   19 life | mana: empty | hand count: 6 | lib 38
-  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Lotus Petal, Force of Will, Thoughtseize, Careful Study, Careful Study, Brainstorm, Brainstorm, Reanimate, Underground Sea, Polluted Delta, Brainstorm, Lotus Petal
@@ -1671,7 +1749,8 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Brainstorm, Brainstorm, ?, ?, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self drawn=3 life_lost=2
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Thassa's Oracle  [#0]
@@ -1693,7 +1772,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
   Opp:   19 life | mana: empty | hand count: 6 | lib 38
-  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Thassa's Oracle [1/3] (SICK) | Clue | Clue
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
   Opp BF:   Island (T) | Undercity Sewers (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)
@@ -1703,9 +1782,10 @@
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Known top: Brainstorm, Brainstorm, ?, ?, ?
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Reanimate, Careful Study, Otherworldly Gaze
-  Extras: self_revolt
+  This turn: self spells=1 drawn=3 life_lost=2 colors=U
+  Extras: self_revolt, not_priority_window, self_mulligans=1
   Actions:
-   0: Take nothing
+   0: Put nothing on top of library (rest go to the bottom of library)
    1: Brainstorm
    2: Brainstorm
   >> B/B: 1 (Brainstorm)

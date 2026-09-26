@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -58,6 +59,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -111,6 +115,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -134,6 +139,8 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -147,10 +154,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Marsh Flats
+  Self BF:  Marsh Flats (NEW)
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Marsh Flats (ChangeZone)  [#0]
@@ -172,7 +180,8 @@
   Pending: Marsh Flats (self)
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Swamp
@@ -192,11 +201,12 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp
+  Self BF:  Swamp (NEW)
   Opp BF:   Tropical Island
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
@@ -209,12 +219,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp
+  Self BF:  Swamp (NEW)
   Opp BF:   Tropical Island
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -229,12 +240,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp (T)
+  Self BF:  Swamp (T,NEW)
   Opp BF:   Tropical Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -254,14 +266,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp (T)
+  Self BF:  Swamp (T,NEW)
   Opp BF:   Tropical Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats
   Known opp hand: Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fatal Push
    1: Fatal Push
@@ -300,6 +313,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -313,13 +328,14 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Underground Sea | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Scalding Tarn | Swamp
+  Self BF:  Scalding Tarn (NEW) | Swamp
   Opp BF:   Tropical Island
   Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -344,7 +360,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -363,13 +380,14 @@
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Underground Sea | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island | Swamp
+  Self BF:  Island (NEW) | Swamp
   Opp BF:   Tropical Island
   Self GY: Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Careful Study  [#0]
@@ -384,14 +402,15 @@
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(5): Atraxa, Grand Unifier, Force of Will, Ponder, Reanimate, Underground Sea | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T) | Swamp
+  Self BF:  Island (T,NEW) | Swamp
   Opp BF:   Tropical Island
   Stack: Careful Study (spell, self)
   Self GY: Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -408,7 +427,7 @@
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(7): Atraxa, Grand Unifier, Flow State, Force of Will, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T) | Swamp
+  Self BF:  Island (T,NEW) | Swamp
   Opp BF:   Tropical Island
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -416,7 +435,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Atraxa, Grand Unifier
    1: Flow State
@@ -435,7 +455,7 @@
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(6): Flow State, Force of Will, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T) | Swamp
+  Self BF:  Island (T,NEW) | Swamp
   Opp BF:   Tropical Island
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -443,7 +463,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Flow State
    1: Force of Will
@@ -460,13 +481,14 @@
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(5): Flow State, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T) | Swamp
+  Self BF:  Island (T,NEW) | Swamp
   Opp BF:   Tropical Island
   Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Reanimate  [#0]
@@ -479,14 +501,15 @@
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(5): Flow State, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T) | Swamp
+  Self BF:  Island (T,NEW) | Swamp
   Opp BF:   Tropical Island
   Pending: Reanimate (self)
   Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Atraxa, Grand Unifier
   >> B/B: 0 (Atraxa, Grand Unifier)
@@ -520,7 +543,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -528,7 +551,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Lotus Petal (Artifact) into hand
    1: Put no Artifact card into hand
@@ -543,7 +567,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -551,7 +575,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Atraxa, Grand Unifier (Creature) into hand
    1: Put no Creature card into hand
@@ -566,7 +591,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -574,7 +599,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Otherworldly Gaze (Instant) into hand
    1: Put Otherworldly Gaze (Instant) into hand
@@ -590,7 +616,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -598,7 +624,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Undercity Sewers (Land) into hand
    1: Put no Land card into hand
@@ -613,7 +640,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -621,7 +648,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Careful Study (Sorcery) into hand
    1: Put Reanimate (Sorcery) into hand
@@ -652,13 +680,14 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(9): Atraxa, Grand Unifier, Careful Study, Flow State, Lotus Petal, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 42
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lotus Petal  [#0]
@@ -672,13 +701,14 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(8): Atraxa, Grand Unifier, Careful Study, Flow State, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 42
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Lotus Petal | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Lotus Petal (NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Careful Study  [#0]
@@ -700,7 +730,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(9): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 40
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -708,7 +738,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Animate Dead
    1: Atraxa, Grand Unifier
@@ -729,7 +760,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(8): Animate Dead, Careful Study, Flow State, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 40
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
   Opp BF:   Tropical Island
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -737,7 +768,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Animate Dead
    1: Careful Study
@@ -770,6 +802,8 @@
   Self GY: Force of Will
   Opp GY:  Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp revealed: Scalding Tarn, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Atraxa, Grand Unifier
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -798,6 +832,7 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze  [#0]
@@ -824,6 +859,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Thoughtseize on top of library  [#0]
    1: Put Polluted Delta on top of library  [#0]
@@ -848,6 +885,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Polluted Delta on top of library  [#0]
    1: Put Raph & Mikey, Troublemakers on top of library  [#0]
@@ -870,6 +909,8 @@
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Raph & Mikey, Troublemakers on top of library  [#0]
    1: Put Raph & Mikey, Troublemakers into graveyard
@@ -885,10 +926,12 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Otherworldly Gaze, Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Self GY: Otherworldly Gaze [play:self], Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -902,13 +945,14 @@
   Step: First Main (turn 6)
   Self:  9 life | mana: empty | hand(6): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp | Underground Sea (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Otherworldly Gaze, Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Self GY: Otherworldly Gaze [play:self], Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Animate Dead  [#0]
@@ -925,14 +969,15 @@
   Step: First Main (turn 6)
   Self:  9 life | mana: empty | hand(6): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp | Underground Sea (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Pending: Animate Dead (self)
-  Self GY: Otherworldly Gaze, Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Self GY: Otherworldly Gaze [play:self], Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Atraxa, Grand Unifier
    1: Raph & Mikey, Troublemakers
@@ -961,13 +1006,15 @@
   Step: Declare Atk (turn 6)
   Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK) | Swamp (T) | Underground Sea (T)
+  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK,NEW,DELAYED) | Swamp (T) | Underground Sea (T,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Otherworldly Gaze, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
+  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Atraxa, Grand Unifier [7/7]
    1: Raph & Mikey, Troublemakers [6/7]
@@ -983,13 +1030,15 @@
   Step: Declare Atk (turn 6)
   Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK) | Swamp (T) | Underground Sea (T)
+  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK,NEW,DELAYED) | Swamp (T) | Underground Sea (T,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Otherworldly Gaze, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
+  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Raph & Mikey, Troublemakers [6/7]
    1: Confirm attackers
@@ -1005,13 +1054,15 @@
   Step: Declare Atk (turn 6)
   Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (ATK,SICK) | Swamp (T) | Underground Sea (T)
+  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (ATK,SICK,NEW,DELAYED) | Swamp (T) | Underground Sea (T,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Otherworldly Gaze, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
+  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1037,14 +1088,16 @@
   Step: Declare Atk (turn 6)
   Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 35
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK) | Swamp (T) | Underground Sea (T)
+  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK,NEW) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK,NEW,DELAYED,res 1) | Swamp (T) | Underground Sea (T,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
   Pending: Archon of Cruelty (self)
-  Self GY: Otherworldly Gaze, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
   >> B/B: 0 (Player A (20 life))
@@ -1059,13 +1112,15 @@
   Self:  20 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 52
   Opp:   9 life | mana: empty | hand count: 5 | lib 35
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK) | Swamp (T) | Underground Sea (T)
+  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK,NEW,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK,NEW,DELAYED,res 1) | Swamp (T) | Underground Sea (T,NEW)
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
+  Delayed: Animate Dead@48 -> Raph & Mikey, Troublemakers (watching Animate Dead@48) (opponent, leaves bf, waiting)
   Pending: Archon of Cruelty (opp)
   Self GY: Force of Will
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Extras: opp_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Sacrifice Tamiyo, Inquisitive Student
   >> A/A: 0 (Sacrifice Tamiyo, Inquisitive Student)
@@ -1080,13 +1135,15 @@
   Self:  20 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 52
   Opp:   9 life | mana: empty | hand count: 5 | lib 35
   Self BF:  Tropical Island (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK) | Swamp (T) | Underground Sea (T)
+  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK,NEW,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK,NEW,DELAYED,res 1) | Swamp (T) | Underground Sea (T,NEW)
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
+  Delayed: Animate Dead@48 -> Raph & Mikey, Troublemakers (watching Animate Dead@48) (opponent, leaves bf, waiting)
   Pending: Archon of Cruelty (opp)
   Self GY: Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: opp_lands_played=1, self_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Extras: opp_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fatal Push
    1: Fatal Push

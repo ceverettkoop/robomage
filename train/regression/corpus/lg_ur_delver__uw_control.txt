@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Daze, Mishra's Bauble, Mishra's Bauble, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -85,6 +87,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Stack: Mishra's Bauble (spell, opponent)
   Opp revealed: Mishra's Bauble
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -97,7 +101,8 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Daze, Mishra's Bauble, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
+  This turn: self spells=1 noncreature=1
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -114,8 +119,9 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
   Stack: Mishra's Bauble (spell, self)
+  This turn: self spells=2 noncreature=2
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -128,9 +134,11 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
   Stack: Mishra's Bauble (spell, self)
   Pending: Mishra's Bauble (self)
+  This turn: self spells=2 noncreature=2
+  Extras: not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (20 life)
@@ -148,7 +156,8 @@
   Stack: Mishra's Bauble (ability, opponent) -> self (player) -> Mishra's Bauble (spell, opponent)
   Opp GY:  Mishra's Bauble
   Opp revealed: Mishra's Bauble
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -165,9 +174,11 @@
   Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Stack: Mishra's Bauble (spell, opponent)
+  Delayed: Mishra's Bauble (opponent, upkeep, waiting)
   Opp GY:  Mishra's Bauble
   Opp revealed: Mishra's Bauble
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -180,8 +191,10 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
+  This turn: self spells=2 noncreature=2
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -200,9 +213,11 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble | Thundering Falls (T)
+  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
   Stack: Thundering Falls (ability, self) [amt=1]
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
+  This turn: self spells=2 noncreature=2
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -216,11 +231,13 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Mishra's Bauble | Thundering Falls (T)
+  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
   Stack: Thundering Falls (ability, self) [amt=1]
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (20 life)
@@ -242,11 +259,13 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Thundering Falls (T)
+  Self BF:  Thundering Falls (T,NEW,res 1)
   Stack: Thundering Falls (ability, self) [amt=1]
+  Delayed: Mishra's Bauble (self, upkeep, waiting) | Mishra's Bauble (self, upkeep, waiting)
   Pending: Thundering Falls (self)
   Self GY: Mishra's Bauble, Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
@@ -269,7 +288,9 @@
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Thundering Falls (T)
+  Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Extras: not_priority_window
   Actions:
    0: Delayed trigger  [#0]
    1: Delayed trigger  [#1]
@@ -291,6 +312,7 @@
   Opp BF:   Thundering Falls (T)
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
+  This turn: self drawn=1 | opp drawn=2
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -304,10 +326,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Flooded Strand
+  Self BF:  Flooded Strand (NEW)
   Opp BF:   Thundering Falls (T)
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
+  This turn: self drawn=1 | opp drawn=2
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -331,7 +354,8 @@
   Self GY: Flooded Strand
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1 | opp drawn=2
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -352,11 +376,12 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Opp BF:   Thundering Falls (T)
   Self GY: Flooded Strand
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
+  This turn: self drawn=1 life_lost=1 | opp drawn=2
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -373,12 +398,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Thundering Falls (T)
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=2
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -391,12 +417,13 @@
   Self:  20 life | mana: empty | hand(6): Daze, Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Thundering Falls (T)
-  Opp BF:   Island (T)
+  Opp BF:   Island (T,NEW)
   Stack: Ponder (spell, opponent)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self drawn=2 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -412,14 +439,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Thundering Falls (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=2
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Tundra  [#2]
    1: Mystic Sanctuary  [#2]
@@ -433,14 +461,16 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Thundering Falls (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Known top: Tundra, ?, ?, ?, ?
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=2
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Mystic Sanctuary  [#1]
    1: Flow State  [#1]
@@ -451,7 +481,7 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Thundering Falls (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -459,7 +489,8 @@
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Flow State, Mystic Sanctuary, Tundra, ?, ?
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=2
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -487,6 +518,7 @@
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -507,6 +539,7 @@
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -525,6 +558,8 @@
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
+  This turn: opp spells=1 noncreature=1 drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -537,11 +572,12 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Mishra's Bauble | Thundering Falls
+  Self BF:  Mishra's Bauble (NEW) | Thundering Falls
   Opp BF:   Island (T)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -556,11 +592,12 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Daze, Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Mishra's Bauble | Thundering Falls | Volcanic Island
+  Self BF:  Mishra's Bauble (NEW) | Thundering Falls | Volcanic Island (NEW)
   Opp BF:   Island (T)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -577,12 +614,13 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Mishra's Bauble | Thundering Falls (T) | Volcanic Island (T)
+  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T) | Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Cori-Steel Cutter (spell, self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
+  This turn: self spells=2 noncreature=2 drawn=1 colors=R
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -598,14 +636,15 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Mishra's Bauble | Thundering Falls (T) | Volcanic Island (T)
+  Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T) | Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Cori-Steel Cutter (spell, self)
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 drawn=1 colors=R
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (19 life)
    1: Player A (20 life)
@@ -620,12 +659,13 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Ponder, Island
+  This turn: self spells=2 noncreature=2 drawn=1 colors=R
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -639,13 +679,14 @@
   Self:  19 life | mana: empty | hand(7): Flow State, Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
+  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
   Stack: Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Volcanic Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=2 noncreature=2 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -659,14 +700,15 @@
   Self:  19 life | mana: empty | hand(7): Flow State, Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
+  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
   Stack: Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Volcanic Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=2 noncreature=2 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Cori-Steel Cutter
   >> B/B: 0 (Cori-Steel Cutter)
@@ -679,13 +721,15 @@
   Self:  19 life | mana: empty | hand(7): Flow State, Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
-  Opp BF:   Thundering Falls (T) | Volcanic Island (T)
+  Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
   Stack: Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
+  Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Volcanic Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=2 noncreature=2 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Exile Flow State
    1: Exile Tamiyo, Inquisitive Student
@@ -701,14 +745,15 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Force of Will (spell, opponent) -> Cori-Steel Cutter (self, slot 98) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -722,7 +767,7 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Force of Will (spell, opponent) -> Cori-Steel Cutter (self, slot 98) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Pending: Daze (self)
@@ -730,7 +775,8 @@
   Opp GY:  Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Force of Will
    1: Cori-Steel Cutter
@@ -743,14 +789,16 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Force of Will (spell, opponent) -> Cori-Steel Cutter (self, slot 98) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
+  Pending: Daze (self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Return Thundering Falls
    1: Return Volcanic Island
@@ -764,13 +812,14 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Thundering Falls, Volcanic Island | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T)
+  Self BF:  Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Daze (spell, self) -> Force of Will (opponent, slot 97) -> Force of Will (spell, opponent) -> Cori-Steel Cutter (self, slot 99) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
+  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -784,7 +833,7 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Thundering Falls, Volcanic Island | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T)
+  Self BF:  Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Daze (spell, self) -> Force of Will (opponent, slot 97) -> Force of Will (spell, opponent) -> Cori-Steel Cutter (self, slot 99) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Pending: Daze (self)
@@ -792,7 +841,8 @@
   Opp GY:  Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Daze
    1: Force of Will
@@ -806,14 +856,16 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Thundering Falls, Volcanic Island | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Volcanic Island (T)
+  Self BF:  Volcanic Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Daze (spell, self) -> Force of Will (opponent, slot 97) -> Force of Will (spell, opponent) -> Cori-Steel Cutter (self, slot 99) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
+  Pending: Daze (self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Return Volcanic Island
   >> A/A: 0 (Return Volcanic Island)
@@ -830,16 +882,18 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Stack: Daze (spell, opponent) -> Force of Will (self, slot 98) -> Daze (spell, opponent) -> Force of Will (self, slot 98) -> Force of Will (spell, self) -> Cori-Steel Cutter (opponent, slot 100) -> Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
+  Pending: Daze (opp)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=4 noncreature=4 instant_sorcery=2 drawn=1 colors=UR
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> B/B: 0 (Don't pay (spell is countered))
+   0: Don't pay (Force of Will is countered)  [#0]
+  >> B/B: 0 (Don't pay (Force of Will is countered))
 --- Narrative ---
   Force of Will is countered
   Counter fizzles
@@ -866,6 +920,7 @@
   Self BF:  Island
   Opp BF:   Cori-Steel Cutter
   Stack: Mishra's Bauble (ability, opponent)
+  Delayed: Mishra's Bauble (opponent, upkeep, on stack #0)
   Self GY: Force of Will, Ponder, Flooded Strand
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
@@ -899,6 +954,7 @@
   Self exile: Flow State
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -913,13 +969,14 @@
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | energy 2 | hand(5): Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 48
   Opp:   20 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Island (T) | Misty Rainforest
+  Self BF:  Island (T) | Misty Rainforest (NEW)
   Opp BF:   Cori-Steel Cutter
   Self GY: Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -946,7 +1003,8 @@
   Self exile: Flow State
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U | opp drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -963,13 +1021,14 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | energy 2 | hand(5): Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Island (T) | Island
+  Self BF:  Island (T) | Island (NEW)
   Opp BF:   Cori-Steel Cutter
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Volcanic Island, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U | opp drawn=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1000,6 +1059,7 @@
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -1019,7 +1079,7 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Brainstorm, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 47
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T)
+  Self BF:  Cori-Steel Cutter | Thundering Falls (T,NEW,res 1)
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Stack: Thundering Falls (ability, self) [amt=1]
   Pending: Thundering Falls (self)
@@ -1027,7 +1087,8 @@
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Scalding Tarn on top of library  [#0]
    1: Put Scalding Tarn into graveyard
@@ -1056,6 +1117,7 @@
   Self exile: Flow State
   Known opp hand: Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mystic Sanctuary
@@ -1073,13 +1135,15 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(4): Mystic Sanctuary, Swords to Plowshares, The One Ring, Tundra | lib 46
   Opp:   20 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T)
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Known opp hand: Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Keep Tamiyo, Inquisitive Student
    1: Keep Tamiyo, Inquisitive Student
@@ -1092,13 +1156,14 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(4): Mystic Sanctuary, Swords to Plowshares, The One Ring, Tundra | lib 46
   Opp:   20 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T)
   Self GY: Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Known opp hand: Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self spells=1 drawn=1 colors=U
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1155,6 +1220,8 @@
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Murktide Regent
    1: Ponder
@@ -1182,6 +1249,8 @@
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Murktide Regent
    1: Ponder
@@ -1206,6 +1275,7 @@
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1219,13 +1289,14 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Murktide Regent, Ponder, Preordain, Unholy Heat, Volcanic Island | lib 44
   Opp:   17 life | mana: empty | energy 2 | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island
+  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (NEW)
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Self GY: Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1246,15 +1317,17 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(4): Murktide Regent, Preordain, Unholy Heat, Volcanic Island | lib 44
   Opp:   17 life | mana: empty | energy 2 | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Thundering Falls (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Stack: Cori-Steel Cutter (ability, self) -> Ponder (spell, self)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -1270,7 +1343,7 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(4): Murktide Regent, Preordain, Unholy Heat, Volcanic Island | lib 44
   Opp:   17 life | mana: empty | energy 2 | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Thundering Falls (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -1279,7 +1352,8 @@
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Scalding Tarn  [#2]
    1: Lightning Bolt  [#2]
@@ -1293,7 +1367,7 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(4): Murktide Regent, Preordain, Unholy Heat, Volcanic Island | lib 44
   Opp:   17 life | mana: empty | energy 2 | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Thundering Falls (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -1302,7 +1376,8 @@
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Lightning Bolt  [#1]
    1: Dragon's Rage Channeler  [#1]
@@ -1313,7 +1388,7 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(4): Murktide Regent, Preordain, Unholy Heat, Volcanic Island | lib 44
   Opp:   17 life | mana: empty | energy 2 | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Thundering Falls (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -1322,7 +1397,8 @@
   Opp exile:  Flow State
   Known top: Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1351,6 +1427,7 @@
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Meticulous Archive
@@ -1369,7 +1446,7 @@
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 45
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Meticulous Archive (ability, self) [amt=1]
   Pending: Meticulous Archive (self)
@@ -1377,7 +1454,8 @@
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Ponder on top of library  [#0]
    1: Put Ponder into graveyard
@@ -1391,13 +1469,14 @@
   Step: Declare Atk (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1412,13 +1491,14 @@
   Step: Declare Atk (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1434,12 +1514,13 @@
   Step: Declare Atk (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1453,13 +1534,14 @@
   Step: Declare Blk (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1473,12 +1555,13 @@
   Step: Combat Dmg (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1490,12 +1573,13 @@
   Step: End Combat (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1507,12 +1591,13 @@
   Step: Second Main (turn 8)
   Self:  17 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Clue (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Volcanic Island, Scalding Tarn, Ponder, Daze, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1563,6 +1648,7 @@
   Opp exile:  Flow State
   Known top: Lightning Bolt, Scalding Tarn, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  Extras: not_priority_window
   Actions:
    0: Tamiyo, Inquisitive Student
    1: Monk token
@@ -1584,13 +1670,14 @@
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Preordain, Volcanic Island | lib 42
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Self GY: Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1604,7 +1691,7 @@
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Preordain, Volcanic Island | lib 42
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Pending: Lightning Bolt (self)
   Self GY: Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -1612,7 +1699,8 @@
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (20 life)
@@ -1629,15 +1717,17 @@
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Murktide Regent, Preordain, Volcanic Island | lib 42
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [2/2]
+  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [2/2] (res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Stack: Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Cori-Steel Cutter (Token)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -1656,15 +1746,17 @@
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Murktide Regent, Preordain, Volcanic Island | lib 42
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [3/3] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Thundering Falls (T) | Volcanic Island (T) | Monk [3/3] (res 2) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Stack: Cori-Steel Cutter (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -1679,13 +1771,14 @@
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(4): Dragon's Rage Channeler, Murktide Regent, Preordain, Volcanic Island | lib 42
   Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Monk [3/3] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Thundering Falls (T) | Volcanic Island (T) | Monk [3/3] (res 2) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=3
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1699,13 +1792,14 @@
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(3): Dragon's Rage Channeler, Murktide Regent, Preordain | lib 42
   Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [3/3] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (NEW) | Monk [3/3] (res 2) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=3
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1724,14 +1818,15 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Murktide Regent, Preordain | lib 42
   Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [3/3] (res 2) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: self_lands_played=1, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [3/3]
    1: Confirm attackers
@@ -1746,14 +1841,15 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Murktide Regent, Preordain | lib 42
   Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (ATK) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [3/3] (ATK,res 2) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Known top: Scalding Tarn, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: self_lands_played=1, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1799,6 +1895,7 @@
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  Extras: not_priority_window
   Actions:
    0: Dragon's Rage Channeler
    1: Monk token
@@ -1826,6 +1923,7 @@
   Self exile: Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1842,12 +1940,14 @@
   Opp:   23 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile 4 cards from graveyard (Delve)  [#4]
    1: Exile 5 cards from graveyard (Delve)  [#5]
@@ -1862,12 +1962,14 @@
   Opp:   23 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Flooded Strand (Delve)
    1: Exile Force of Will (Delve)
@@ -1890,12 +1992,14 @@
   Opp:   23 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Flooded Strand, Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Force of Will (Delve)
    1: Exile Misty Rainforest (Delve)
@@ -1917,12 +2021,14 @@
   Opp:   23 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Will, Flooded Strand, Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Misty Rainforest (Delve)
    1: Exile Ponder (Delve)
@@ -1943,12 +2049,14 @@
   Opp:   23 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Tune the Narrative, Ponder
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Ponder (Delve)
@@ -1968,12 +2076,14 @@
   Opp:   23 life | mana: empty | hand count: 2 | lib 42
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Swords to Plowshares (Delve)
@@ -1994,13 +2104,14 @@
   Step: First Main (turn 10)
   Self:  11 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   23 life | mana: empty | hand count: 2 | lib 42
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WU | opp life_gained=3
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2030,6 +2141,7 @@
   Self exile: Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2047,11 +2159,14 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
   Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Exile 4 cards from graveyard (Delve)  [#4]
    1: Exile 5 cards from graveyard (Delve)  [#5]
@@ -2066,11 +2181,14 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
   Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Brainstorm (Delve)
@@ -2095,11 +2213,14 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
   Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Daze (Delve)
@@ -2123,11 +2244,14 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
   Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Daze, Daze, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Exile Daze (Delve)
    1: Exile Daze (Delve)
@@ -2150,11 +2274,14 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
   Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Daze, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Exile Daze (Delve)
    1: Exile Lightning Bolt (Delve)
@@ -2176,11 +2303,14 @@
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
   Self BF:  Cori-Steel Cutter | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Exile Lightning Bolt (Delve)
    1: Exile Mishra's Bauble (Delve)
@@ -2203,13 +2333,14 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(2): Preordain, Scalding Tarn | lib 41
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1] | Monk [1/1]
+  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Self GY: Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2225,14 +2356,17 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(1): Scalding Tarn | lib 41
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [1/1]
+  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Stack: Preordain (spell, self)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Cori-Steel Cutter (Token)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2247,14 +2381,17 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(1): Scalding Tarn | lib 41
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [1/1]
+  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Stack: Cori-Steel Cutter (ability, self) -> Preordain (spell, self)
+  Pending: Monk (self)
   Self GY: Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2275,14 +2412,17 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(1): Scalding Tarn | lib 41
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Stack: Cori-Steel Cutter (ability, self) -> Preordain (spell, self)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -2298,7 +2438,7 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(1): Scalding Tarn | lib 41
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Stack: Preordain (spell, self)
   Pending: Preordain (self)
@@ -2307,6 +2447,8 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Keep on top
    1: Put on bottom
@@ -2319,7 +2461,7 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(1): Scalding Tarn | lib 41
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Stack: Preordain (spell, self)
   Pending: Preordain (self)
@@ -2327,7 +2469,10 @@
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Keep on top
    1: Put on bottom
@@ -2341,13 +2486,15 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(2): Dragon's Rage Channeler, Scalding Tarn | lib 40
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Self GY: Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -2360,13 +2507,15 @@
   Step: First Main (turn 11)
   Self:  23 life | mana: empty | hand(1): Dragon's Rage Channeler | lib 40
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Scalding Tarn | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Scalding Tarn (NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Self GY: Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2384,7 +2533,7 @@
   Step: First Main (turn 11)
   Self:  22 life | mana: empty | hand(1): Dragon's Rage Channeler | lib 40
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
@@ -2392,8 +2541,10 @@
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -2411,14 +2562,15 @@
   Step: Declare Atk (turn 11)
   Self:  22 life | mana: empty | hand(1): Dragon's Rage Channeler | lib 39
   Opp:   11 life | mana: empty | energy 2 | hand count: 2 | lib 42
-  Self BF:  Cori-Steel Cutter | Island | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (NEW) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tundra
   Self GY: Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
@@ -2448,6 +2600,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Preordain
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast The One Ring  [#0]
@@ -2472,6 +2625,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Preordain
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -2485,7 +2639,7 @@
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | energy 2 | hand(2): Force of Negation, Force of Will | lib 41
   Opp:   22 life | mana: empty | hand count: 1 | lib 39
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [Indestructible] | Tundra
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [Indestructible] (NEW) | Tundra
   Opp BF:   Cori-Steel Cutter | Island | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [1/1] | Monk [1/1] (SICK)
   Stack: The One Ring (ability, self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
@@ -2493,6 +2647,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Preordain
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Activate The One Ring (PutCounter)  [#0]
@@ -2512,14 +2667,16 @@
   Step: Declare Atk (turn 12)
   Self:  11 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Geist of Saint Traft | lib 40
   Opp:   22 life | mana: empty | hand count: 1 | lib 39
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra
   Opp BF:   Cori-Steel Cutter | Island | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [1/1] | Monk [1/1] (SICK)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Preordain
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 drawn=2
+  Self effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [6/6]
    1: Confirm attackers
@@ -2548,6 +2705,8 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Opp effects: protection from everything
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
@@ -2571,6 +2730,9 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Preordain
+  This turn: opp spells=1 drawn=1 colors=R
+  Self effects: protection from everything
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -2592,6 +2754,9 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Preordain
+  This turn: opp spells=1 drawn=1 colors=R
+  Self effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Dragon's Rage Channeler
   >> B/B: 0 (Dragon's Rage Channeler)
@@ -2606,11 +2771,15 @@
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Opp BF:   Cori-Steel Cutter | Island | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1] | Monk [1/1]
   Stack: Dragon's Rage Channeler (spell, opponent)
+  Pending: Force of Will (self)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Preordain
+  This turn: opp spells=1 drawn=1 colors=R
+  Self effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Exile Force of Negation
    1: Exile Geist of Saint Traft
@@ -2634,6 +2803,9 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
@@ -2653,11 +2825,15 @@
   Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1] | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Flow State (spell, self)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Cori-Steel Cutter (Token)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2676,11 +2852,15 @@
   Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1] | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Cori-Steel Cutter (ability, self) -> Flow State (spell, self)
+  Pending: Monk (self)
   Self GY: Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2698,11 +2878,15 @@
   Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1] | Monk [1/1] | Monk [1/1]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Monk (ability, self) [amt=1] -> Cori-Steel Cutter (ability, self) -> Flow State (spell, self)
+  Pending: Monk (self)
   Self GY: Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2725,14 +2909,18 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 38
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Cori-Steel Cutter (ability, self) -> Flow State (spell, self)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -2747,7 +2935,7 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 38
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -2756,6 +2944,9 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Misty Rainforest
    1: Tamiyo, Inquisitive Student
@@ -2767,7 +2958,7 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 38
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -2776,6 +2967,9 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Misty Rainforest
    1: Lightning Bolt
@@ -2790,13 +2984,15 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(2): Lightning Bolt, Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Self GY: Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -2810,7 +3006,7 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(2): Lightning Bolt, Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Pending: Lightning Bolt (self)
   Self GY: Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
@@ -2818,6 +3014,9 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Player A (22 life)
    1: Murktide Regent
@@ -2838,14 +3037,18 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Lightning Bolt (spell, self) -> Murktide Regent (opponent, slot 51)
+  Pending: Monk (self)
   Self GY: Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2861,14 +3064,18 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Monk (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> Murktide Regent (opponent, slot 51)
+  Pending: Monk (self)
   Self GY: Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2883,14 +3090,18 @@
   Step: First Main (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Stack: Monk (ability, self) [amt=1] -> Monk (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> Murktide Regent (opponent, slot 51)
+  Pending: Monk (self)
   Self GY: Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -2915,14 +3126,16 @@
   Step: Declare Atk (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] | Monk [3/3] | Monk [3/3] | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (res 2) | Monk [3/3] (res 2) | Monk [3/3] (res 2) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [8/8]
    1: Monk token [3/3]
@@ -2940,14 +3153,16 @@
   Step: Declare Atk (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] | Monk [3/3] | Monk [3/3] | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (res 2) | Monk [3/3] (res 2) | Monk [3/3] (res 2) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [3/3]
    1: Monk token [3/3]
@@ -2965,14 +3180,16 @@
   Step: Declare Atk (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (ATK) | Monk [3/3] | Monk [3/3] | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (ATK,res 2) | Monk [3/3] (res 2) | Monk [3/3] (res 2) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [3/3]
    1: Monk token [3/3]
@@ -2990,14 +3207,16 @@
   Step: Declare Atk (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (ATK) | Monk [3/3] (ATK) | Monk [3/3] | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (ATK,res 2) | Monk [3/3] (ATK,res 2) | Monk [3/3] (res 2) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [3/3]
    1: Confirm attackers
@@ -3015,14 +3234,16 @@
   Step: Declare Atk (turn 13)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 36
   Opp:   10 life | mana: empty | energy 2 | hand count: 1 | lib 40
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (ATK) | Monk [3/3] (ATK) | Monk [3/3] (ATK) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (ATK,res 2) | Monk [3/3] (ATK,res 2) | Monk [3/3] (ATK,res 2) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -3046,13 +3267,15 @@
   Self:  10 life | mana: empty | energy 2 | hand(1): Geist of Saint Traft | lib 40
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T,ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (T,ATK) | Monk [3/3] (T,ATK) | Monk [3/3] (T,ATK) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T,ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (T,ATK,res 2) | Monk [3/3] (T,ATK,res 2) | Monk [3/3] (T,ATK,res 2) | Monk [2/2] (SICK,NEW,res 1)
   Self GY: Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
-  Extras: mandatory_choice=Declare Blk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR
+  Self effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Murktide Regent [6/6]
    1: Confirm blockers
@@ -3066,13 +3289,16 @@
   Self:  10 life | mana: empty | energy 2 | hand(1): Geist of Saint Traft | lib 40
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T,ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (T,ATK) | Monk [3/3] (T,ATK) | Monk [3/3] (T,ATK) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T,ATK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (T,ATK,res 2) | Monk [3/3] (T,ATK,res 2) | Monk [3/3] (T,ATK,res 2) | Monk [2/2] (SICK,NEW,res 1)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
-  Extras: mandatory_choice=Declare Blk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR
+  Self effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Murktide Regent [8/8]
    1: Monk token [3/3]
@@ -3096,13 +3322,15 @@
   Self:  10 life | mana: empty | energy 2 | hand(1): Geist of Saint Traft | lib 40
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6, 3dmg] [+1/+1:3] [Flying] (BLK->Murktide Regent) | Mystic Sanctuary (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra
-  Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T,ATK,BLOCKED) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (T,ATK) | Monk [3/3] (T,ATK) | Monk [3/3] (T,ATK) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T,ATK,BLOCKED) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [3/3] (T,ATK,res 2) | Monk [3/3] (T,ATK,res 2) | Monk [3/3] (T,ATK,res 2) | Monk [2/2] (SICK,NEW,res 1)
   Self GY: Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
-  Extras: mandatory_choice=Declare Blk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UR
+  Self effects: protection from everything
+  Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> B/B: 0 (Confirm blockers)
@@ -3161,6 +3389,7 @@
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self drawn=2
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -3189,6 +3418,8 @@
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=5 colors=U
+  Extras: not_priority_window
   Actions:
    0: Flow State
    1: Geist of Saint Traft
@@ -3215,6 +3446,8 @@
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Known top: Flow State, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=5 colors=U
+  Extras: not_priority_window
   Actions:
    0: Geist of Saint Traft
    1: Lórien Revealed
@@ -3238,6 +3471,7 @@
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Known top: Geist of Saint Traft, Flow State, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=5 colors=U
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
@@ -3251,7 +3485,7 @@
   Step: Upkeep (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(3): Lorien Revealed, Wasteland, Wasteland | lib 37
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Island (T) | Island | Meticulous Archive | Mystic Sanctuary | The One Ring [burden:2] [Indestructible] (T) | Tundra
+  Self BF:  Island (T) | Island | Meticulous Archive | Mystic Sanctuary | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
   Self GY: Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
@@ -3259,6 +3493,7 @@
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Known top: Geist of Saint Traft, Flow State, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=5 life_lost=2 colors=U
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
@@ -3271,7 +3506,7 @@
   Step: Draw (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(4): Geist of Saint Traft, Lorien Revealed, Wasteland, Wasteland | lib 36
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Island (T) | Island | Meticulous Archive | Mystic Sanctuary | The One Ring [burden:2] [Indestructible] (T) | Tundra
+  Self BF:  Island (T) | Island | Meticulous Archive | Mystic Sanctuary | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
   Self GY: Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
@@ -3279,6 +3514,7 @@
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Known top: Flow State, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=6 life_lost=2 colors=U
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
@@ -3289,7 +3525,7 @@
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(4): Geist of Saint Traft, Lorien Revealed, Wasteland, Wasteland | lib 36
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Island (T) | Island | Meticulous Archive | Mystic Sanctuary | The One Ring [burden:2] [Indestructible] (T) | Tundra
+  Self BF:  Island (T) | Island | Meticulous Archive | Mystic Sanctuary | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
   Self GY: Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
@@ -3297,6 +3533,7 @@
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Known top: Flow State, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=6 life_lost=2 colors=U
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -3315,7 +3552,7 @@
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(3): Lorien Revealed, Wasteland, Wasteland | lib 36
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T) | Tundra
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
   Stack: Geist of Saint Traft (spell, self)
   Self GY: Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
@@ -3324,6 +3561,7 @@
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Known top: Flow State, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=6 life_lost=2 colors=WU
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
@@ -3339,7 +3577,7 @@
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(2): Wasteland, Wasteland | lib 36
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T)
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T)
   Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
   Stack: Lorien Revealed (ability, self) -> Geist of Saint Traft (spell, self)
   Pending: Lorien Revealed (self)
@@ -3349,6 +3587,8 @@
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Known top: Flow State, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=6 life_lost=2 colors=WU
+  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Tundra
@@ -3364,13 +3604,14 @@
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(3): Tundra, Wasteland, Wasteland | lib 35
   Opp:   22 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T)
   Opp BF:   Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (T) | Monk [1/1] (SICK)
   Self GY: Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=6 life_lost=2 colors=WU
   Actions:
    0: Pass priority
    1: Play Tundra
@@ -3401,6 +3642,7 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Into the Flood Maw  [#0]
@@ -3422,6 +3664,8 @@
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: The One Ring
   >> A/A: 0 (The One Ring)
@@ -3439,11 +3683,14 @@
   Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1] | Monk [1/1] | Monk [1/1]
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra (T)
   Stack: Into the Flood Maw (spell, self) -> The One Ring (opponent, slot 53)
+  Pending: Monk (self)
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -3462,11 +3709,14 @@
   Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1] | Monk [1/1] | Monk [1/1]
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra (T)
   Stack: Monk (ability, self) [amt=1] -> Into the Flood Maw (spell, self) -> The One Ring (opponent, slot 53)
+  Pending: Monk (self)
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -3484,11 +3734,14 @@
   Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1] | Monk [1/1] | Monk [1/1] | Monk [1/1]
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra (T)
   Stack: Monk (ability, self) [amt=1] -> Monk (ability, self) [amt=1] -> Into the Flood Maw (spell, self) -> The One Ring (opponent, slot 53)
+  Pending: Monk (self)
   Self GY: Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -3515,14 +3768,15 @@
   Step: First Main (turn 15)
   Self:  22 life | mana: empty | hand(1): Tamiyo, Inquisitive Student | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [2/2]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -3542,16 +3796,18 @@
   Step: First Main (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Stack: Cori-Steel Cutter (ability, self) -> Tamiyo, Inquisitive Student (spell, self)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -3565,14 +3821,15 @@
   Step: First Main (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -3588,15 +3845,17 @@
   Step: First Main (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Murktide Regent [8/8]
    1: Tamiyo, Inquisitive Student [0/3]
@@ -3616,15 +3875,16 @@
   Step: Declare Atk (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [9/9]
    1: Monk token [2/2]
@@ -3643,15 +3903,16 @@
   Step: Declare Atk (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
@@ -3670,15 +3931,16 @@
   Step: Declare Atk (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK) | Monk [2/2] | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK,res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
@@ -3697,15 +3959,16 @@
   Step: Declare Atk (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK) | Monk [2/2] (ATK) | Monk [2/2] | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK,res 1) | Monk [2/2] (ATK,res 1) | Monk [2/2] (res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
@@ -3724,15 +3987,16 @@
   Step: Declare Atk (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK) | Monk [2/2] (ATK) | Monk [2/2] (ATK) | Monk [2/2] | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK,res 1) | Monk [2/2] (ATK,res 1) | Monk [2/2] (ATK,res 1) | Monk [2/2] (res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Confirm attackers
@@ -3751,15 +4015,16 @@
   Step: Declare Atk (turn 15)
   Self:  22 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   8 life | mana: empty | energy 2 | hand count: 3 | lib 35
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK) | Monk [2/2] (ATK) | Monk [2/2] (ATK) | Monk [2/2] (ATK) | Monk [1/1] (SICK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK,res 1) | Monk [2/2] (ATK,res 1) | Monk [2/2] (ATK,res 1) | Monk [2/2] (ATK,res 1) | Monk [1/1] (SICK,NEW)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
   Self GY: Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Self exile: Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp exile:  Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Known opp hand: The One Ring
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -3784,14 +4049,15 @@
   Step: Declare Blk (turn 15)
   Self:  8 life | mana: empty | energy 2 | hand(3): The One Ring, Wasteland, Wasteland | lib 35
   Opp:   22 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [1/1] (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
+  Opp BF:   Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [1/1] (SICK,NEW)
   Self GY: Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain, Into the Flood Maw, Tamiyo, Inquisitive Student
-  Extras: self_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Geist of Saint Traft [2/2]
    1: Confirm blockers
@@ -3804,14 +4070,16 @@
   Step: Declare Blk (turn 15)
   Self:  8 life | mana: empty | energy 2 | hand(3): The One Ring, Wasteland, Wasteland | lib 35
   Opp:   22 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [1/1] (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
+  Opp BF:   Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [1/1] (SICK,NEW)
+  Pending: Geist of Saint Traft (self)
   Self GY: Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain, Into the Flood Maw, Tamiyo, Inquisitive Student
-  Extras: self_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
@@ -3835,14 +4103,15 @@
   Step: Declare Blk (turn 15)
   Self:  8 life | mana: empty | energy 2 | hand(3): The One Ring, Wasteland, Wasteland | lib 35
   Opp:   22 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (BLK->Monk,SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK)
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK,BLOCKED) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [2/2] (T,ATK) | Monk [1/1] (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (BLK->Monk,SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra | Tundra (T) | Fish [1/1] (T,SICK,NEW)
+  Opp BF:   Cori-Steel Cutter (->Murktide Regent) (res 1) | Island (T) | Murktide Regent [9/9] [+1/+1:5] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK,BLOCKED,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [2/2] (T,ATK,res 1) | Monk [1/1] (SICK,NEW)
   Self GY: Lorien Revealed, Brainstorm, Murktide Regent, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Into the Flood Maw, Lightning Bolt, Flow State, Dragon's Rage Channeler, Scalding Tarn, Preordain, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Self exile: Force of Negation, Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Lightning Bolt, Daze, Daze, Brainstorm, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Preordain, Into the Flood Maw, Tamiyo, Inquisitive Student
-  Extras: self_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> B/B: 0 (Confirm blockers)

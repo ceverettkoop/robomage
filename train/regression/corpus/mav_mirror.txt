@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -58,6 +59,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Forest, Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Forest, Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Forest
    1: Green Sun's Zenith
@@ -111,6 +115,7 @@
   Step: Upkeep (turn 1)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -128,8 +133,10 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
   Stack: Once Upon a Time (spell, self)
   Pending: Once Upon a Time (self)
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
-   0: Take nothing
+   0: Take nothing (rest go to the bottom of library)
    1: Wasteland
    2: Knight of the Reliquary
    3: Endurance
@@ -147,6 +154,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -160,11 +169,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Talon Gates of Madara
+  Self BF:  Talon Gates of Madara (NEW)
   Pending: Talon Gates of Madara (self)
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time
-  Extras: self_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: No target
   >> A/A: 0 (No target)
@@ -190,6 +200,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp revealed: Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -205,11 +217,12 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Savannah
+  Self BF:  Savannah (NEW)
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -225,11 +238,12 @@
   Step: Second Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Savannah
+  Self BF:  Savannah (NEW)
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -250,6 +264,8 @@
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Savannah
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -271,8 +287,10 @@
   Pending: Once Upon a Time (self)
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Savannah
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: not_priority_window, self_mulligans=1
   Actions:
-   0: Take nothing
+   0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
    2: Collector Ouphe
    3: Noble Hierarch
@@ -300,6 +318,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -317,13 +337,14 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Savannah | Talon Gates of Madara
+  Self BF:  Savannah | Talon Gates of Madara (NEW)
   Opp BF:   Talon Gates of Madara
   Pending: Talon Gates of Madara (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: No target
   >> B/B: 0 (No target)
@@ -337,12 +358,13 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Savannah | Talon Gates of Madara
+  Self BF:  Savannah | Talon Gates of Madara (NEW,res 1)
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -355,12 +377,14 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Savannah | Talon Gates of Madara
+  Self BF:  Savannah | Talon Gates of Madara (NEW,res 1)
   Opp BF:   Talon Gates of Madara
+  Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -377,14 +401,15 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(6): Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Savannah (T) | Talon Gates of Madara
+  Self BF:  Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Opp BF:   Talon Gates of Madara
   Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -418,6 +443,7 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -435,6 +461,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -450,6 +478,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -470,9 +500,12 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Dryad Arbor [1/1] | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
+  Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -494,6 +527,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -514,6 +549,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
   >> B/B: 0 (Fail to find)
@@ -532,6 +569,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -547,12 +586,13 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Swords to Plowshares, Wasteland, Windswept Heath | lib 50
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah | Talon Gates of Madara | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah | Talon Gates of Madara | Wasteland (NEW)
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Keen-Eyed Curator  [#0]
@@ -585,6 +625,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Karakas
@@ -597,12 +639,13 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Karakas | Talon Gates of Madara
+  Self BF:  Karakas (NEW) | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -619,12 +662,14 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Karakas | Talon Gates of Madara
+  Self BF:  Karakas (NEW) | Talon Gates of Madara
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: X = 0  [#0]
   >> A/A: 0 (X = 0)
@@ -641,14 +686,15 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Karakas (T) | Talon Gates of Madara (T)
+  Self BF:  Karakas (T,NEW) | Talon Gates of Madara (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
   Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -676,6 +722,7 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -696,6 +743,7 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dryad Arbor
    1: Dryad Arbor
@@ -717,6 +765,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -739,7 +789,8 @@
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W | opp life_gained=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -759,7 +810,8 @@
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -777,7 +829,8 @@
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -796,11 +849,13 @@
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
+  Pending: Green Sun's Zenith (self)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -823,7 +878,8 @@
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -845,7 +901,8 @@
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Karakas
    1: Talon Gates of Madara
@@ -871,7 +928,8 @@
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -892,7 +950,8 @@
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -914,7 +973,8 @@
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
   >> B/B: 0 (Fail to find)
@@ -934,7 +994,8 @@
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -949,13 +1010,14 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 50
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (NEW)
   Opp BF:   Talon Gates of Madara (T)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -969,14 +1031,15 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 50
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (NEW)
   Opp BF:   Talon Gates of Madara (T)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Karakas
    1: Once Upon a Time
@@ -994,14 +1057,15 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 50
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T,NEW)
   Opp BF:   Talon Gates of Madara (T)
   Stack: Keen-Eyed Curator (ability, self) -> Karakas (opponent)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1015,13 +1079,14 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 50
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T,NEW)
   Opp BF:   Talon Gates of Madara (T)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1034,14 +1099,15 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 50
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T,NEW)
   Opp BF:   Talon Gates of Madara (T)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Once Upon a Time
    1: Once Upon a Time
@@ -1061,12 +1127,13 @@
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 50
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Opp BF:   Talon Gates of Madara (T)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -1081,12 +1148,13 @@
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 50
   Opp:   21 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Opp BF:   Talon Gates of Madara (T)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1118,6 +1186,7 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1136,6 +1205,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1152,6 +1223,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1176,6 +1249,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1188,11 +1263,13 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 49
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1206,12 +1283,13 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Knight of the Reliquary | lib 49
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Talon Gates of Madara | Wasteland (T) | Windswept Heath
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Talon Gates of Madara | Wasteland (T) | Windswept Heath (NEW)
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1225,13 +1303,14 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Knight of the Reliquary | lib 49
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Talon Gates of Madara | Wasteland (T) | Windswept Heath
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah | Talon Gates of Madara | Wasteland (T) | Windswept Heath (NEW)
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Once Upon a Time
    1: Swords to Plowshares
@@ -1247,13 +1326,14 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Knight of the Reliquary | lib 49
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T) | Windswept Heath
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T) | Windswept Heath (NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1269,13 +1349,14 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 49
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1289,14 +1370,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 49
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Forest
@@ -1314,13 +1396,14 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1334,13 +1417,14 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1353,14 +1437,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Swords to Plowshares
    1: Wasteland
@@ -1376,14 +1461,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Swords to Plowshares (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1397,13 +1483,14 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath, Wasteland
   Self exile: Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1416,14 +1503,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland
   Self exile: Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wasteland
    1: Windswept Heath
@@ -1441,13 +1529,14 @@
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -1462,13 +1551,14 @@
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(1): Knight of the Reliquary | lib 48
   Opp:   18 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] (ATK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1496,6 +1586,8 @@
   Self exile: Once Upon a Time, Karakas, Dryad Arbor
   Opp exile:  Wasteland, Swords to Plowshares, Once Upon a Time
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Gaea's Cradle
@@ -1522,6 +1614,7 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1541,6 +1634,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1558,6 +1653,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1583,6 +1680,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1604,6 +1703,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Gaea's Cradle
    1: Talon Gates of Madara
@@ -1629,7 +1730,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1647,7 +1749,8 @@
   Self exile: Once Upon a Time, Karakas, Dryad Arbor
   Opp exile:  Wasteland, Swords to Plowshares, Once Upon a Time
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_revolt
+  This turn: opp spells=1 drawn=1 colors=WG
+  Extras: opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Tap Gaea's Cradle for (G)
@@ -1669,7 +1772,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, opp_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1683,14 +1787,15 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): Savannah | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Windswept Heath
   Opp GY:  Gaea's Cradle
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, opp_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -1704,14 +1809,15 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK) | Savannah | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (NEW) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Windswept Heath
   Opp GY:  Gaea's Cradle
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1724,7 +1830,7 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK) | Savannah | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (NEW) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Windswept Heath
@@ -1732,7 +1838,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Gaea's Cradle
    1: Wasteland
@@ -1748,7 +1855,7 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Gaea's Cradle (opponent)
   Self GY: Wasteland, Windswept Heath
@@ -1756,7 +1863,8 @@
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1770,13 +1878,14 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1789,14 +1898,15 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wasteland
    1: Windswept Heath
@@ -1814,13 +1924,14 @@
   Step: Declare Atk (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Collector Ouphe [2/2]
    1: Keen-Eyed Curator [3/3]
@@ -1836,13 +1947,14 @@
   Step: Declare Atk (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -1858,13 +1970,14 @@
   Step: Declare Atk (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   15 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [3/3] (SICK) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [3/3] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1900,7 +2013,8 @@
   Self exile: Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp exile:  Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: mandatory_choice=Cleanup Discard
+  This turn: self drawn=1
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Cleanup Discard
   Actions:
    0: Green Sun's Zenith
    1: Green Sun's Zenith
@@ -1930,6 +2044,7 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1950,6 +2065,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Endurance  [#0]
@@ -1975,6 +2092,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1989,7 +2108,7 @@
   Step: Draw (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK,NEW) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Endurance (self)
   Self GY: Windswept Heath
@@ -1997,6 +2116,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: No target
    1: Player A (10 life)
@@ -2011,7 +2132,7 @@
   Step: Draw (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK,NEW) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Endurance (ability, self)
   Self GY: Windswept Heath
@@ -2019,6 +2140,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2032,13 +2155,15 @@
   Step: Draw (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2050,13 +2175,15 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2070,7 +2197,7 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath
@@ -2078,6 +2205,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Knight of the Reliquary
    1: Windswept Heath
@@ -2092,7 +2221,7 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (opponent)
   Self GY: Windswept Heath
@@ -2100,6 +2229,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2111,14 +2242,17 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (opponent)
+  Pending: Knight of the Reliquary (self)
   Self GY: Windswept Heath
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Sacrifice Dryad Arbor
    1: Sacrifice Forest
@@ -2134,7 +2268,7 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (opponent)
   Self GY: Dryad Arbor, Windswept Heath
@@ -2142,7 +2276,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2156,7 +2291,7 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 46
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (opponent)
   Pending: Knight of the Reliquary (self)
@@ -2165,7 +2300,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Gaea's Cradle
@@ -2193,7 +2329,7 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (opponent)
   Self GY: Dryad Arbor, Windswept Heath
@@ -2201,7 +2337,8 @@
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2215,13 +2352,14 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Dryad Arbor, Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2234,14 +2372,15 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Dryad Arbor, Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Dryad Arbor
    1: Windswept Heath
@@ -2256,14 +2395,15 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: 3G | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Dryad Arbor (self)
   Self GY: Dryad Arbor, Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2277,13 +2417,14 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: 3G | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Windswept Heath
   Self exile: Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2296,14 +2437,15 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: 3G | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath
   Self exile: Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Windswept Heath
   >> B/B: 0 (Windswept Heath)
@@ -2316,14 +2458,15 @@
   Step: First Main (turn 14)
   Self:  19 life | mana: 2G | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Windswept Heath (self)
   Self GY: Windswept Heath
   Self exile: Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2338,12 +2481,13 @@
   Step: Declare Atk (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Collector Ouphe [2/2]
    1: Keen-Eyed Curator [3/3]
@@ -2359,12 +2503,13 @@
   Step: Declare Atk (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (T,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -2380,12 +2525,13 @@
   Step: Declare Atk (turn 14)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (SICK) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest (T) | Gaea's Cradle (T,NEW) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2420,7 +2566,8 @@
   Self exile: Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp exile:  Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Endurance, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: mandatory_choice=Cleanup Discard
+  This turn: self drawn=1
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Cleanup Discard
   Actions:
    0: Green Sun's Zenith
    1: Green Sun's Zenith
@@ -2449,6 +2596,7 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2468,6 +2616,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2485,6 +2635,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -2499,13 +2651,14 @@
   Step: First Main (turn 16)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Talon Gates of Madara
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2520,14 +2673,15 @@
   Step: First Main (turn 16)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Thalia, Guardian of Thraben
   >> B/B: 0 (Thalia, Guardian of Thraben)
@@ -2541,14 +2695,15 @@
   Step: First Main (turn 16)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2561,14 +2716,16 @@
   Step: First Main (turn 16)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
+  Pending: Knight of the Reliquary (self)
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Sacrifice Forest
    1: Sacrifice Savannah
@@ -2583,7 +2740,7 @@
   Step: First Main (turn 16)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah | Savannah | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Self GY: Forest
@@ -2591,7 +2748,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2615,7 +2773,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2638,7 +2797,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Savannah
@@ -2653,7 +2813,7 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (NEW) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Self GY: Wooded Foothills, Forest
@@ -2661,7 +2821,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2675,7 +2836,7 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (NEW) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Pending: Knight of the Reliquary (self)
@@ -2684,7 +2845,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Horizon Canopy
@@ -2709,7 +2871,7 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Horizon Canopy | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle | Horizon Canopy (NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (NEW) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Self GY: Wooded Foothills, Forest
@@ -2717,7 +2879,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Horizon Canopy (Draw)  [#1]
@@ -2733,7 +2896,7 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: 3G | hand(0): (empty) | lib 42
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Horizon Canopy (ability, self) [amt=1] -> Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Self GY: Horizon Canopy, Wooded Foothills, Forest
@@ -2741,7 +2904,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2755,7 +2919,7 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: 3G | hand(1): Scythecat Cub | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Thalia, Guardian of Thraben (opponent)
   Self GY: Horizon Canopy, Wooded Foothills, Forest
@@ -2763,7 +2927,8 @@
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=2 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2777,13 +2942,14 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: 3G | hand(1): Scythecat Cub | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=2 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Scythecat Cub  [#0]
@@ -2797,14 +2963,15 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: 1G | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Scythecat Cub (spell, self)
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2817,13 +2984,14 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: 1G | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2836,14 +3004,15 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: 1G | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Forest
    1: Horizon Canopy
@@ -2858,14 +3027,15 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Forest (self)
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2879,13 +3049,14 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Horizon Canopy, Wooded Foothills
   Self exile: Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2898,14 +3069,15 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Horizon Canopy, Wooded Foothills
   Self exile: Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Horizon Canopy
    1: Wooded Foothills
@@ -2920,14 +3092,15 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T,NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Horizon Canopy (self)
   Self GY: Horizon Canopy, Wooded Foothills
   Self exile: Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2941,13 +3114,14 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T,NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self GY: Wooded Foothills
   Self exile: Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2960,14 +3134,15 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T,NEW) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Pending: Keen-Eyed Curator (self)
   Self GY: Wooded Foothills
   Self exile: Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wooded Foothills
   >> B/B: 0 (Wooded Foothills)
@@ -2981,14 +3156,15 @@
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [3/3] (T) | Savannah (T,NEW) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, self) -> Wooded Foothills (self)
   Self GY: Wooded Foothills
   Self exile: Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3003,12 +3179,13 @@
   Step: Declare Atk (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T,NEW) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Collector Ouphe [2/2]
    1: Endurance [3/4]
@@ -3025,12 +3202,13 @@
   Step: Declare Atk (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T,NEW) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Endurance [3/4]
    1: Keen-Eyed Curator [3/3]
@@ -3047,12 +3225,13 @@
   Step: Declare Atk (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [2/2] (T) | Savannah (T,NEW) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -3069,12 +3248,13 @@
   Step: Declare Atk (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [2/2] (T) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [2/2] (T) | Savannah (T,NEW) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Talon Gates of Madara
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=2 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)

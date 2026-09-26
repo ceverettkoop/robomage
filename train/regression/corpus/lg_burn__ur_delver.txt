@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -82,7 +84,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Fiery Islet
+  Self BF:  Fiery Islet (NEW)
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -109,8 +111,9 @@
   Self:  20 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -127,10 +130,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -146,10 +150,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -164,12 +169,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Fiery Islet (T)
   Pending: Mishra's Bauble (self)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (19 life)
    1: Player B (20 life)
@@ -184,12 +190,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -211,9 +218,10 @@
   Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -236,11 +244,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Opp BF:   Fiery Islet (T)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -258,14 +268,16 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Unholy Heat  [#2]
    1: Lightning Bolt  [#2]
@@ -279,14 +291,17 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Unholy Heat, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Lightning Bolt  [#1]
    1: Daze  [#1]
@@ -297,15 +312,17 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Known top: Daze, Lightning Bolt, Unholy Heat, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -337,8 +354,9 @@
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [play:self/eot]
   Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
+  This turn: opp drawn=1
   Actions:
    0: Pass priority
    1: Cast Rift Bolt (from exile, no cost)  [#7]
@@ -358,6 +376,8 @@
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Rift Bolt
   Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
+  This turn: opp drawn=1
+  Extras: not_priority_window
   Actions:
    0: Player B (19 life)
    1: Player A (19 life)
@@ -377,6 +397,8 @@
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -396,6 +418,8 @@
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window
   Actions:
    0: Rift Bolt
   >> B/B: 0 (Rift Bolt)
@@ -410,9 +434,12 @@
   Self BF:  Island (T)
   Opp BF:   Fiery Islet
   Stack: Rift Bolt (spell, opponent) -> self (player)
+  Pending: Daze (self)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window
   Actions:
    0: Return Island
   >> B/B: 0 (Return Island)
@@ -429,14 +456,16 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Fiery Islet
   Stack: Daze (spell, opponent) -> Rift Bolt (self, slot 97) -> Rift Bolt (spell, self) -> opponent (player)
+  Pending: Daze (opp)
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Known opp hand: Island
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Tap Fiery Islet for (U)
    1: Tap Fiery Islet for (R)
-   2: Don't pay (spell is countered)  [#0]
+   2: Don't pay (Rift Bolt is countered)  [#0]
   >> A/A: 0 (Tap Fiery Islet for (U))
 --- Narrative ---
   Player A pays 1 life
@@ -449,16 +478,18 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Fiery Islet (T)
   Stack: Daze (spell, opponent) -> Rift Bolt (self, slot 97) -> Rift Bolt (spell, self) -> opponent (player)
+  Pending: Daze (opp)
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Known opp hand: Island
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_revolt, not_priority_window
   Actions:
-   0: Pay {1} (spell is not countered)  [#1]
-   1: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Pay {1} (spell is not countered))
+   0: Pay {1} (Rift Bolt is not countered)  [#1]
+   1: Don't pay (Rift Bolt is countered)  [#0]
+  >> A/A: 0 (Pay {1} (Rift Bolt is not countered))
 --- Narrative ---
-  Player A pays {1} — spell is not countered
+  Player A pays {1} — Rift Bolt is not countered
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 16 life)
   Player A draws Chain Lightning
@@ -473,6 +504,7 @@
   Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
   Known opp hand: Island
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=U
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -488,11 +520,12 @@
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Chain Lightning, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   16 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Fiery Islet (T) | Mountain
+  Self BF:  Fiery Islet (T) | Mountain (NEW)
   Self GY: Rift Bolt
   Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
   Known opp hand: Island
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=U
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -507,13 +540,14 @@
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Chain Lightning, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   16 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Fiery Islet (T) | Mountain
+  Self BF:  Fiery Islet (T) | Mountain (NEW)
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
   Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
   Known opp hand: Island
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  Extras: self_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=U
+  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Player B (16 life)
    1: Player A (18 life)
@@ -532,16 +566,18 @@
   Step: First Main (turn 3)
   Self:  13 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Island, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 52
-  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Rift Bolt
   Known top: Unholy Heat, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=6 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: opp_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> B/B: 0 (Don't pay (spell is countered))
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
@@ -562,6 +598,7 @@
   Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -616,6 +653,7 @@
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=R
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -629,11 +667,12 @@
   Step: First Main (turn 5)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Rift Bolt | lib 51
   Opp:   13 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain
+  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Island
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=R
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -661,8 +700,9 @@
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
   Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -677,12 +717,13 @@
   Step: First Main (turn 6)
   Self:  13 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 47
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island | Scalding Tarn
+  Self BF:  Island | Scalding Tarn (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
   Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -706,9 +747,10 @@
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Mystic Sanctuary
@@ -741,7 +783,7 @@
   Stack: Rift Bolt (ability, self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [1 ctr]
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
   Actions:
    0: Pass priority
@@ -761,7 +803,7 @@
   Opp BF:   Island | Mystic Sanctuary (T)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [play:self/eot]
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
   Actions:
    0: Pass priority
@@ -784,6 +826,7 @@
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Rift Bolt
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  Extras: not_priority_window
   Actions:
    0: Player B (12 life)
    1: Player A (15 life)
@@ -803,6 +846,7 @@
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -821,6 +865,7 @@
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -838,6 +883,7 @@
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -853,6 +899,7 @@
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -874,6 +921,8 @@
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: not_priority_window
   Actions:
    0: Player B (9 life)
    1: Player A (15 life)
@@ -898,6 +947,7 @@
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=7
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -925,6 +975,7 @@
   Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -941,11 +992,12 @@
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 45
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -959,11 +1011,12 @@
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 45
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Scalding Tarn | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self BF:  Island (T) | Mystic Sanctuary | Scalding Tarn (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -981,14 +1034,15 @@
   Step: First Main (turn 8)
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 45
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Thundering Falls
@@ -1010,14 +1064,15 @@
   Step: First Main (turn 8)
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T,NEW,res 1)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Stack: Thundering Falls (ability, self) [amt=1]
   Pending: Thundering Falls (self)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Ponder on top of library  [#0]
    1: Put Ponder into graveyard
@@ -1060,6 +1115,7 @@
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -1075,6 +1131,7 @@
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1097,6 +1154,7 @@
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -1114,11 +1172,12 @@
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
   Opp:   4 life | mana: empty | hand count: 6 | lib 43
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  This turn: self spells=1 drawn=2 colors=R
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1132,11 +1191,12 @@
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
   Opp:   4 life | mana: empty | hand count: 6 | lib 43
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  This turn: self spells=1 drawn=2 colors=R
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1150,13 +1210,14 @@
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
   Opp:   4 life | mana: empty | hand count: 6 | lib 43
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
   Pending: Chain Lightning (self)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 colors=R
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (4 life)
    1: Player A (14 life)
@@ -1175,12 +1236,13 @@
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
   Self GY: Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Into the Flood Maw  [#0]
@@ -1192,12 +1254,14 @@
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
+  Pending: Into the Flood Maw (self)
   Self GY: Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Decline: promise a tapped Fish to your opponent  [#0]
    1: Accept: promise a tapped Fish to your opponent  [#1]
@@ -1211,13 +1275,14 @@
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
   Pending: Into the Flood Maw (self)
   Self GY: Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Eidolon of the Great Revel
   >> B/B: 0 (Eidolon of the Great Revel)
@@ -1244,16 +1309,18 @@
   Self:  -1 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Self GY: Into the Flood Maw, Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Known opp hand: Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=5 colors=U | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> B/B: 0 (Don't pay (spell is countered))
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   Player B has -1 life - Player A wins!
 

@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -83,7 +85,8 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Brainstorm, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Lotus Petal
+  Self BF:  Lotus Petal (NEW)
+  This turn: self spells=1 noncreature=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -112,7 +115,8 @@
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
   Self GY: Lotus Petal
-  Extras: self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: self_revolt, not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Bloodstained Mire
@@ -136,7 +140,8 @@
   Pending: Brainstorm (self)
   Self GY: Lotus Petal
   Known top: Bloodstained Mire, ?, ?, ?, ?
-  Extras: self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: self_revolt, not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Marsh Flats
@@ -156,6 +161,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self GY: Brainstorm, Lotus Petal
   Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -170,9 +176,10 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Archon of Cruelty, Otherworldly Gaze, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Self GY: Brainstorm, Lotus Petal
   Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -194,7 +201,8 @@
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Brainstorm, Lotus Petal
   Known top: Marsh Flats, Bloodstained Mire, ?, ?, ?
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -214,8 +222,9 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Otherworldly Gaze, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Self GY: Polluted Delta, Brainstorm, Lotus Petal
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -235,11 +244,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 51
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Stack: Otherworldly Gaze (spell, self)
   Pending: Otherworldly Gaze (self)
   Self GY: Polluted Delta, Brainstorm, Lotus Petal
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Swamp on top of library  [#0]
    1: Put Bloodstained Mire on top of library  [#0]
@@ -256,11 +266,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 50
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Stack: Otherworldly Gaze (spell, self)
   Pending: Otherworldly Gaze (self)
   Self GY: Swamp, Polluted Delta, Brainstorm, Lotus Petal
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Bloodstained Mire on top of library  [#0]
    1: Put Reanimate on top of library  [#0]
@@ -275,11 +286,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 49
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Stack: Otherworldly Gaze (spell, self)
   Pending: Otherworldly Gaze (self)
   Self GY: Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Reanimate on top of library  [#0]
    1: Put Reanimate into graveyard
@@ -302,8 +314,9 @@
   Self:  20 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Opp BF:   Island (T)
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -320,10 +333,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
   Opp BF:   Island (T)
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -339,10 +353,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Island (T)
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -357,12 +372,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Island (T)
   Pending: Mishra's Bauble (self)
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (19 life)
    1: Player B (20 life)
@@ -377,12 +393,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Opp BF:   Island (T)
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -404,9 +421,10 @@
   Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -429,11 +447,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Opp BF:   Island (T)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -451,14 +471,16 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Thundering Falls  [#2]
    1: Misty Rainforest  [#2]
@@ -472,14 +494,17 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Known top: Thundering Falls, ?, ?, ?, ?
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Misty Rainforest  [#1]
    1: Lightning Bolt  [#1]
@@ -490,15 +515,17 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Island (T)
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Known top: Lightning Bolt, Misty Rainforest, Thundering Falls, ?, ?
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -526,9 +553,10 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Island
   Opp BF:   Island (T)
-  Self GY: Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Otherworldly Gaze [play:self], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
+  This turn: self drawn=1 | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -542,11 +570,12 @@
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 47
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Island | Polluted Delta
+  Self BF:  Island | Polluted Delta (NEW)
   Opp BF:   Island (T)
-  Self GY: Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Otherworldly Gaze [play:self], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
+  This turn: self drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -568,10 +597,11 @@
   Opp BF:   Island (T)
   Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1 | opp drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Undercity Sewers
@@ -594,14 +624,15 @@
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers | lib 46
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Island | Undercity Sewers (T)
+  Self BF:  Island | Undercity Sewers (T,NEW,res 1)
   Opp BF:   Island (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
-  Self GY: Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1 | opp drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Animate Dead on top of library  [#0]
    1: Put Animate Dead into graveyard
@@ -626,8 +657,9 @@
   Self BF:  Island
   Opp BF:   Island | Undercity Sewers (T)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -643,11 +675,12 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Thundering Falls, Volcanic Island | lib 48
   Opp:   18 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Island | Misty Rainforest
+  Self BF:  Island | Misty Rainforest (NEW)
   Opp BF:   Island | Undercity Sewers (T)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -670,9 +703,10 @@
   Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Opp GY:  Animate Dead, Polluted Delta, Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Reanimate, Otherworldly Gaze, Animate Dead
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Mystic Sanctuary
@@ -700,7 +734,7 @@
   Opp:   18 life | mana: empty | hand count: 7 | lib 47
   Self BF:  Island | Undercity Sewers
   Opp BF:   Island | Mystic Sanctuary (T)
-  Self GY: Animate Dead, Polluted Delta, Otherworldly Gaze, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
+  Self GY: Animate Dead, Polluted Delta, Otherworldly Gaze [play:self], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Mystic Sanctuary
   Actions:
@@ -729,6 +763,8 @@
   Self GY: Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Raph & Mikey, Troublemakers on top of library  [#0]
    1: Put Polluted Delta on top of library  [#0]
@@ -752,6 +788,8 @@
   Self GY: Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Polluted Delta on top of library  [#0]
    1: Put Archon of Cruelty on top of library  [#0]
@@ -773,6 +811,8 @@
   Self GY: Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Archon of Cruelty on top of library  [#0]
    1: Put Archon of Cruelty into graveyard
@@ -793,6 +833,7 @@
   Opp GY:  Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Undercity Sewers
@@ -810,7 +851,7 @@
   Step: First Main (turn 5)
   Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Careful Study, Thoughtseize, Thoughtseize | lib 41
   Opp:   18 life | mana: empty | hand count: 7 | lib 47
-  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
+  Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers (T,NEW,res 1)
   Opp BF:   Island | Mystic Sanctuary (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
@@ -818,7 +859,8 @@
   Opp GY:  Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Opp revealed: Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Flow State on top of library  [#0]
    1: Put Flow State into graveyard
@@ -846,6 +888,7 @@
   Opp GY:  Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -860,12 +903,13 @@
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Thundering Falls, Volcanic Island | lib 46
   Opp:   18 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Island | Mystic Sanctuary | Scalding Tarn
+  Self BF:  Island | Mystic Sanctuary | Scalding Tarn (NEW)
   Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
   Self GY: Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -891,7 +935,8 @@
   Opp GY:  Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -907,12 +952,13 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Thundering Falls, Volcanic Island | lib 45
   Opp:   18 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Island | Mystic Sanctuary | Volcanic Island
+  Self BF:  Island | Mystic Sanctuary | Volcanic Island (NEW)
   Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T)
   Self GY: Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Reanimate, Otherworldly Gaze, Archon of Cruelty, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -947,6 +993,7 @@
   Opp GY:  Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -976,6 +1023,8 @@
   Opp GY:  Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Atraxa, Grand Unifier
@@ -1001,6 +1050,8 @@
   Opp GY:  Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Atraxa, Grand Unifier
    1: Force of Will
@@ -1022,6 +1073,7 @@
   Opp GY:  Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1043,6 +1095,8 @@
   Opp GY:  Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (18 life)
@@ -1075,6 +1129,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 colors=UB
+  Extras: not_priority_window
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -1098,6 +1154,7 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Into the Flood Maw, Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=2 colors=UB
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1119,6 +1176,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Into the Flood Maw, Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=2 colors=UB
+  Extras: not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (16 life)
@@ -1150,6 +1209,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Into the Flood Maw, Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=3 life_lost=2 colors=UB
+  Extras: not_priority_window
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -1172,6 +1233,7 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=3 life_lost=4 colors=UB
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1199,6 +1261,7 @@
   Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -1218,12 +1281,13 @@
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Dragon's Rage Channeler, Polluted Delta, Thundering Falls, Volcanic Island | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 37
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T)
+  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island | Mystic Sanctuary | Volcanic Island (T)
   Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Self GY: Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -1238,12 +1302,13 @@
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(3): Dragon's Rage Channeler, Thundering Falls, Volcanic Island | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 37
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Polluted Delta | Volcanic Island (T)
+  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island | Mystic Sanctuary | Polluted Delta (NEW) | Volcanic Island (T)
   Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Self GY: Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self spells=1 drawn=1 colors=R
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1261,7 +1326,7 @@
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | hand(3): Dragon's Rage Channeler, Thundering Falls, Volcanic Island | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 37
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T)
+  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island | Mystic Sanctuary | Volcanic Island (T)
   Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
@@ -1269,7 +1334,8 @@
   Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=R
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -1284,12 +1350,13 @@
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | hand(3): Dragon's Rage Channeler, Thundering Falls, Volcanic Island | lib 43
   Opp:   14 life | mana: empty | hand count: 1 | lib 37
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island
+  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (NEW)
   Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Self GY: Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self spells=1 drawn=1 life_lost=1 colors=R
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1309,14 +1376,16 @@
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | hand(2): Thundering Falls, Volcanic Island | lib 43
   Opp:   14 life | mana: empty | hand count: 1 | lib 37
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Island (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Stack: Cori-Steel Cutter (ability, self) -> Dragon's Rage Channeler (spell, self)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 drawn=1 life_lost=1 colors=R
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -1347,6 +1416,7 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Reanimate  [#0]
@@ -1367,6 +1437,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Archon of Cruelty
@@ -1389,14 +1461,15 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 36
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (SICK,NEW) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Raph & Mikey, Troublemakers [7/7]
    1: Confirm attackers
@@ -1411,14 +1484,15 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 36
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (ATK,SICK,NEW) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1453,7 +1527,7 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 35
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -1462,6 +1536,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window
   Actions:
    0: Put Lotus Petal (Artifact) into hand
    1: Put no Artifact card into hand
@@ -1476,7 +1552,7 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 35
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -1485,6 +1561,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window
   Actions:
    0: Put Griselbrand (Creature) into hand
    1: Put no Creature card into hand
@@ -1499,7 +1577,7 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 35
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -1508,6 +1586,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window
   Actions:
    0: Put Animate Dead (Enchantment) into hand
    1: Put no Enchantment card into hand
@@ -1522,7 +1602,7 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 35
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -1531,6 +1611,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window
   Actions:
    0: Put Force of Will (Instant) into hand
    1: Put Otherworldly Gaze (Instant) into hand
@@ -1546,7 +1628,7 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 35
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -1555,6 +1637,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window
   Actions:
    0: Put Underground Sea (Land) into hand
    1: Put no Land card into hand
@@ -1569,7 +1653,7 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 35
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Atraxa, Grand Unifier (ability, self)
   Pending: Atraxa, Grand Unifier (self)
@@ -1578,6 +1662,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window
   Actions:
    0: Put Flow State (Sorcery) into hand
    1: Put Flow State (Sorcery) into hand
@@ -1613,12 +1699,13 @@
   Self:  16 life | mana: empty | hand(2): Thundering Falls, Volcanic Island | lib 43
   Opp:   7 life | mana: empty | hand count: 7 | lib 29
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,ATK,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,ATK,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Self GY: Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
+  Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [3/3]
    1: Dragon's Rage Channeler [3/3]
@@ -1639,13 +1726,14 @@
   Step: Second Main (turn 9)
   Self:  14 life | mana: empty | hand(7): Animate Dead, Flow State, Force of Will, Force of Will, Griselbrand, Lotus Petal, Underground Sea | lib 29
   Opp:   2 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B | opp life_lost=14
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1661,7 +1749,7 @@
   Step: Second Main (turn 9)
   Self:  14 life | mana: empty | hand(7): Animate Dead, Flow State, Force of Will, Force of Will, Griselbrand, Lotus Petal, Underground Sea | lib 29
   Opp:   2 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Pending: Animate Dead (self)
   Self GY: Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
@@ -1669,6 +1757,8 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B | opp life_lost=14
+  Extras: not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Archon of Cruelty
@@ -1686,7 +1776,7 @@
   Step: Second Main (turn 9)
   Self:  14 life | mana: empty | hand(6): Flow State, Force of Will, Force of Will, Griselbrand, Lotus Petal, Underground Sea | lib 29
   Opp:   2 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK,NEW,res 1) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Animate Dead (spell, self)
   Self GY: Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
@@ -1694,6 +1784,7 @@
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B | opp life_lost=14
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1718,14 +1809,17 @@
   Step: Second Main (turn 9)
   Self:  14 life | mana: empty | hand(6): Flow State, Force of Will, Force of Will, Griselbrand, Lotus Petal, Underground Sea | lib 29
   Opp:   2 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Animate Dead (->Archon of Cruelty) | Archon of Cruelty [5/6] [Flying] (eq:Animate Dead) (SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self BF:  Animate Dead (->Archon of Cruelty) (NEW,DELAYED,res 1) | Archon of Cruelty [5/6] [Flying] (eq:Animate Dead) (SICK,NEW,DELAYED) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK,NEW,res 1) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Delayed: Animate Dead@0 -> Archon of Cruelty (watching Animate Dead@0) (self, leaves bf, waiting)
   Pending: Archon of Cruelty (self)
   Self GY: Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Otherworldly Gaze
   Known opp hand: Thundering Falls, Volcanic Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B | opp life_lost=14
+  Extras: not_priority_window
   Actions:
    0: Player B (2 life)
   >> A/A: 0 (Player B (2 life))
@@ -1740,13 +1834,16 @@
   Self:  2 life | mana: empty | hand(2): Thundering Falls, Volcanic Island | lib 43
   Opp:   14 life | mana: empty | hand count: 6 | lib 29
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Opp BF:   Animate Dead (->Archon of Cruelty) | Archon of Cruelty [5/6] [Flying] (eq:Animate Dead) (SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Animate Dead (->Archon of Cruelty) (NEW,DELAYED,res 1) | Archon of Cruelty [5/6] [Flying] (eq:Animate Dead) (SICK,NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK,NEW,res 1) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
+  Delayed: Animate Dead@48 -> Archon of Cruelty (watching Animate Dead@48) (opponent, leaves bf, waiting)
   Pending: Archon of Cruelty (opp)
   Self GY: Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
+  This turn: self life_lost=14 | opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B
+  Extras: not_priority_window
   Actions:
    0: Sacrifice Dragon's Rage Channeler
    1: Sacrifice Dragon's Rage Channeler
@@ -1763,14 +1860,16 @@
   Self:  2 life | mana: empty | hand(2): Thundering Falls, Volcanic Island | lib 43
   Opp:   14 life | mana: empty | hand count: 6 | lib 29
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
-  Opp BF:   Animate Dead (->Archon of Cruelty) | Archon of Cruelty [5/6] [Flying] (eq:Animate Dead) (SICK) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Animate Dead (->Archon of Cruelty) (NEW,DELAYED,res 1) | Archon of Cruelty [5/6] [Flying] (eq:Animate Dead) (SICK,NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK,NEW,res 1) | Island (T) | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
+  Delayed: Animate Dead@48 -> Archon of Cruelty (watching Animate Dead@48) (opponent, leaves bf, waiting)
   Pending: Archon of Cruelty (opp)
   Self GY: Dragon's Rage Channeler, Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
   Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  Extras: self_revolt
+  This turn: self life_lost=14 | opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B
+  Extras: self_revolt, not_priority_window
   Actions:
    0: Thundering Falls
    1: Volcanic Island

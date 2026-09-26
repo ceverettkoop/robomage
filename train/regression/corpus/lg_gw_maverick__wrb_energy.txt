@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -85,8 +87,10 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Stack: Once Upon a Time (spell, self)
   Pending: Once Upon a Time (self)
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: not_priority_window
   Actions:
-   0: Take nothing
+   0: Take nothing (rest go to the bottom of library)
    1: Badgermole Cub
    2: Endurance
    3: Collector Ouphe
@@ -102,6 +106,7 @@
   Self:  20 life | mana: empty | hand(7): Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self GY: Once Upon a Time
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
    1: Play Forest
@@ -129,6 +134,7 @@
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -142,10 +148,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Marsh Flats
+  Self BF:  Marsh Flats (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -169,7 +176,8 @@
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Badlands
@@ -189,11 +197,12 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badlands
+  Self BF:  Badlands (NEW)
   Opp BF:   Forest
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -208,13 +217,14 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badlands
+  Self BF:  Badlands (NEW)
   Opp BF:   Forest
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -231,14 +241,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badlands (T)
+  Self BF:  Badlands (T,NEW)
   Opp BF:   Forest
   Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Name card: Ajani, Nacatl Pariah
    1: Name card: Amped Raptor
@@ -292,8 +303,9 @@
   Self BF:  Forest
   Opp BF:   Badlands (T)
   Self GY: Once Upon a Time
-  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
   Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -308,11 +320,12 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Forest | Savannah
+  Self BF:  Forest | Savannah (NEW)
   Opp BF:   Badlands (T)
   Self GY: Once Upon a Time
-  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
   Opp revealed: Marsh Flats, Badlands, Cabal Therapy
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -332,13 +345,14 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Badgermole Cub [2/2] (SICK) | Forest (T) | Savannah (T)
+  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Forest (T) | Savannah (T,NEW)
   Opp BF:   Badlands (T)
   Pending: Badgermole Cub (self)
   Self GY: Once Upon a Time
-  Opp GY:  Cabal Therapy, Marsh Flats
+  Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
   Opp revealed: Marsh Flats, Badlands, Cabal Therapy
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Forest
    1: Savannah
@@ -364,11 +378,13 @@
   Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Badlands
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Self GY: Cabal Therapy, Marsh Flats
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
+  Self GY: Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Once Upon a Time
   Known opp hand: Once Upon a Time, Thalia, Guardian of Thraben, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -383,12 +399,15 @@
   Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Badlands
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Thoughtseize (self)
-  Self GY: Cabal Therapy, Marsh Flats
+  Self GY: Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Once Upon a Time
   Known opp hand: Once Upon a Time, Thalia, Guardian of Thraben, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -412,13 +431,16 @@
   Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Badlands (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Thoughtseize (self)
-  Self GY: Cabal Therapy, Marsh Flats
+  Self GY: Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Once Upon a Time
   Known opp hand: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Once Upon a Time
    1: Swords to Plowshares
@@ -435,11 +457,13 @@
   Self:  17 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Badlands (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
+  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
   Known opp hand: Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -452,12 +476,14 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(5): Amped Raptor, Ocelot Pride, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badlands (T) | Scrubland
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Self BF:  Badlands (T) | Scrubland (NEW)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
+  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
   Known opp hand: Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -475,12 +501,14 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
+  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
   Known opp hand: Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -494,14 +522,16 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
   Known opp hand: Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WB
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (17 life)
@@ -514,13 +544,16 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
-  Self GY: Thoughtseize, Cabal Therapy, Marsh Flats
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
+  Pending: Cabal Therapy (self)
+  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
   Known opp hand: Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WB
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Sacrifice Ocelot Pride
   >> B/B: 0 (Sacrifice Ocelot Pride)
@@ -535,15 +568,17 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badlands (T) | Scrubland (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self BF:  Badlands (T) | Scrubland (T,NEW)
+  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
   Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
+  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Cabal Therapy (self)
   Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
   Known opp hand: Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=WB
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Name card: Ajani, Nacatl Pariah
    1: Name card: Amped Raptor
@@ -592,8 +627,9 @@
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Once Upon a Time, Swords to Plowshares, Wasteland, Wasteland | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
   Opp BF:   Badlands (T) | Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
@@ -613,13 +649,15 @@
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Wasteland, Wasteland | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
   Opp BF:   Badlands (T) | Scrubland (T)
   Stack: Once Upon a Time (spell, self)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -633,16 +671,19 @@
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Wasteland, Wasteland | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
   Opp BF:   Badlands (T) | Scrubland (T)
   Stack: Once Upon a Time (spell, self)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Once Upon a Time (self)
   Self GY: Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: not_priority_window
   Actions:
-   0: Take nothing
+   0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
    2: Verdant Catacombs
    3: Talon Gates of Madara
@@ -658,12 +699,14 @@
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
   Opp BF:   Badlands (T) | Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -676,12 +719,14 @@
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
   Opp BF:   Badlands (T) | Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -692,12 +737,14 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
   Opp BF:   Badlands (T) | Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -713,12 +760,14 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah | Wasteland
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Wasteland (NEW)
   Opp BF:   Badlands (T) | Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -735,13 +784,16 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah | Wasteland
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Wasteland (NEW)
   Opp BF:   Badlands (T) | Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
+  Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -756,13 +808,15 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Wasteland
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
   Opp BF:   Badlands (T) | Scrubland (T)
   Stack: Green Sun's Zenith (spell, self)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -776,15 +830,17 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T) | Wasteland
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
   Opp BF:   Badlands (T) | Scrubland (T)
   Stack: Green Sun's Zenith (spell, self)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Badlands
    1: Scrubland
@@ -805,15 +861,17 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
   Opp BF:   Scrubland (T)
   Stack: Green Sun's Zenith (spell, self)
+  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -829,13 +887,15 @@
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Confirm attackers
@@ -850,13 +910,15 @@
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Self BF:  Badgermole Cub [2/2] (ATK) | Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp exile:  Cabal Therapy
   Opp revealed: Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -878,7 +940,8 @@
   Self:  15 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 3 | lib 49
   Self BF:  Scrubland
-  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Cabal Therapy
@@ -897,13 +960,15 @@
   Self:  15 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 3 | lib 49
   Self BF:  Scrubland
-  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T) | Savannah (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Cabal Therapy
   Known opp hand: Swords to Plowshares, Wasteland
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  Extras: not_priority_window
   Actions:
    0: Badgermole Cub
    1: Dryad Arbor
@@ -932,8 +997,9 @@
   Step: Upkeep (turn 7)
   Self:  22 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
@@ -951,13 +1017,15 @@
   Step: Draw (turn 7)
   Self:  22 life | mana: empty | hand(4): Karakas, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -968,13 +1036,15 @@
   Step: First Main (turn 7)
   Self:  22 life | mana: empty | hand(4): Karakas, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Savannah
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Karakas
@@ -993,13 +1063,15 @@
   Step: First Main (turn 7)
   Self:  22 life | mana: empty | hand(3): Karakas, Swords to Plowshares, Wasteland | lib 48
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Play Karakas
@@ -1013,13 +1085,15 @@
   Step: First Main (turn 7)
   Self:  22 life | mana: empty | hand(2): Swords to Plowshares, Wasteland | lib 48
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
+  This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1034,15 +1108,17 @@
   Step: First Main (turn 7)
   Self:  22 life | mana: empty | hand(2): Swords to Plowshares, Wasteland | lib 48
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Thalia, Guardian of Thraben
   >> A/A: 0 (Thalia, Guardian of Thraben)
@@ -1058,14 +1134,16 @@
   Step: Declare Atk (turn 7)
   Self:  22 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T,NEW) | Savannah (T)
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Forest [1/1]
    1: Confirm attackers
@@ -1080,14 +1158,16 @@
   Step: Declare Atk (turn 7)
   Self:  22 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Karakas (T) | Savannah (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Karakas (T,NEW) | Savannah (T)
   Opp BF:   Scrubland (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1110,13 +1190,15 @@
   Self:  14 life | mana: empty | hand(5): Amped Raptor, Amped Raptor, Ocelot Pride, Silent Clearing, Voice of Victory | lib 48
   Opp:   22 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Scrubland
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Savannah (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Savannah (T)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Cabal Therapy
   Opp exile:  Badgermole Cub
   Known opp hand: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Silent Clearing
@@ -1132,14 +1214,16 @@
   Step: First Main (turn 8)
   Self:  14 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Silent Clearing, Voice of Victory | lib 48
   Opp:   22 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Savannah (T)
+  Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Savannah (T)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Cabal Therapy
   Opp exile:  Badgermole Cub
   Known opp hand: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Play Silent Clearing
@@ -1160,8 +1244,9 @@
   Step: Upkeep (turn 9)
   Self:  22 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   14 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah
   Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T) | Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
@@ -1179,14 +1264,16 @@
   Step: Upkeep (turn 9)
   Self:  22 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   14 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah
   Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T) | Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  Extras: not_priority_window
   Actions:
    0: Ocelot Pride
    1: Dryad Arbor
@@ -1207,13 +1294,15 @@
   Step: First Main (turn 9)
   Self:  22 life | mana: empty | hand(3): Misty Rainforest, Thalia, Guardian of Thraben, Wasteland | lib 47
   Opp:   15 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah
   Opp BF:   Scrubland (T) | Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1232,13 +1321,15 @@
   Step: First Main (turn 9)
   Self:  22 life | mana: empty | hand(2): Misty Rainforest, Wasteland | lib 47
   Opp:   15 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T) | Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1253,13 +1344,15 @@
   Step: First Main (turn 9)
   Self:  22 life | mana: empty | hand(1): Wasteland | lib 47
   Opp:   15 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Misty Rainforest | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Misty Rainforest (NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T) | Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1277,16 +1370,18 @@
   Step: First Main (turn 9)
   Self:  21 life | mana: empty | hand(1): Wasteland | lib 47
   Opp:   15 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T) | Silent Clearing
   Stack: Misty Rainforest (ability, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=W | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Savannah
@@ -1302,14 +1397,16 @@
   Step: Declare Atk (turn 9)
   Self:  21 life | mana: empty | hand(1): Wasteland | lib 46
   Opp:   15 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah (NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T) | Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=W | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Forest [1/1]
    1: Confirm attackers
@@ -1324,14 +1421,16 @@
   Step: Declare Atk (turn 9)
   Self:  21 life | mana: empty | hand(1): Wasteland | lib 46
   Opp:   15 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Karakas (T) | Savannah (NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Scrubland (T) | Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=W | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1353,7 +1452,8 @@
   Self:  14 life | mana: empty | hand(3): Amped Raptor, Amped Raptor, Voice of Victory | lib 48
   Opp:   21 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Scrubland | Silent Clearing
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Ocelot Pride, Cabal Therapy
@@ -1373,13 +1473,15 @@
   Self:  14 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Thoughtseize, Voice of Victory | lib 47
   Opp:   21 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Scrubland | Silent Clearing
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Ocelot Pride, Cabal Therapy
   Opp exile:  Badgermole Cub
   Known opp hand: Wasteland
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Silent Clearing (Draw)  [#1]
@@ -1391,13 +1493,15 @@
   Self:  14 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Thoughtseize, Voice of Victory | lib 47
   Opp:   21 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Scrubland | Silent Clearing
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Ocelot Pride, Cabal Therapy
   Opp exile:  Badgermole Cub
   Known opp hand: Wasteland
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
@@ -1413,7 +1517,8 @@
   Self:  14 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Thoughtseize, Voice of Victory | lib 47
   Opp:   21 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Scrubland | Silent Clearing
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Savannah | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Thoughtseize (self)
   Self GY: Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
@@ -1421,6 +1526,8 @@
   Opp exile:  Badgermole Cub
   Known opp hand: Wasteland
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Player A (21 life)
    1: Player B (14 life)
@@ -1451,8 +1558,9 @@
   Step: Upkeep (turn 11)
   Self:  21 life | mana: empty | hand(1): Wasteland | lib 46
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Scrubland (T) | Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
@@ -1470,13 +1578,15 @@
   Step: Draw (turn 11)
   Self:  21 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Scrubland (T) | Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Karakas (ChangeZone)  [#1]
@@ -1487,13 +1597,15 @@
   Step: First Main (turn 11)
   Self:  21 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Scrubland (T) | Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1508,13 +1620,15 @@
   Step: First Main (turn 11)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland (NEW)
   Opp BF:   Scrubland (T) | Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1529,15 +1643,17 @@
   Step: First Main (turn 11)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland (NEW)
   Opp BF:   Scrubland (T) | Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Thalia, Guardian of Thraben
   >> A/A: 0 (Thalia, Guardian of Thraben)
@@ -1550,14 +1666,16 @@
   Step: First Main (turn 11)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland (NEW)
   Opp BF:   Scrubland (T) | Silent Clearing (T)
   Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 5)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1571,16 +1689,18 @@
   Step: First Main (turn 11)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland (NEW)
   Opp BF:   Scrubland (T) | Silent Clearing (T)
   Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 5)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Scrubland
    1: Silent Clearing
@@ -1604,13 +1724,15 @@
   Step: First Main (turn 11)
   Self:  21 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah | Savannah
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah | Savannah
   Opp BF:   Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
@@ -1628,14 +1750,16 @@
   Step: Declare Atk (turn 11)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Forest [1/1]
    1: Confirm attackers
@@ -1650,14 +1774,16 @@
   Step: Declare Atk (turn 11)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 45
   Opp:   11 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK) | Karakas (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Karakas (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing (T)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1684,8 +1810,9 @@
   Step: Upkeep (turn 13)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 45
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
@@ -1703,13 +1830,15 @@
   Step: Draw (turn 13)
   Self:  21 life | mana: empty | hand(2): Keen-Eyed Curator, Windswept Heath | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Karakas (ChangeZone)  [#1]
@@ -1720,13 +1849,15 @@
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(2): Keen-Eyed Curator, Windswept Heath | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1743,14 +1874,16 @@
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
   Stack: Keen-Eyed Curator (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Activate Karakas (ChangeZone)  [#1]
@@ -1763,15 +1896,18 @@
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
   Stack: Keen-Eyed Curator (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: not_priority_window
   Actions:
    0: Thalia, Guardian of Thraben
   >> A/A: 0 (Thalia, Guardian of Thraben)
@@ -1787,13 +1923,15 @@
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah | Savannah
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah | Savannah
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1812,13 +1950,15 @@
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(1): Windswept Heath | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 drawn=1 colors=WG
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1832,13 +1972,15 @@
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Windswept Heath
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Windswept Heath (NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1856,16 +1998,18 @@
   Step: First Main (turn 13)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
   Stack: Windswept Heath (ability, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 drawn=1 life_lost=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Plains
@@ -1880,13 +2024,15 @@
   Step: First Main (turn 13)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK) | Plains | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Plains (NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 drawn=1 life_lost=1 colors=WG
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1900,15 +2046,17 @@
   Step: First Main (turn 13)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   10 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK) | Plains | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Plains (NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Badlands, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 drawn=1 life_lost=1 colors=WG
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Badlands
    1: Marsh Flats
@@ -1952,8 +2100,9 @@
   Step: Upkeep (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
@@ -1972,13 +2121,15 @@
   Step: Draw (turn 15)
   Self:  20 life | mana: empty | hand(1): Noble Hierarch | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Karakas (ChangeZone)  [#1]
@@ -1990,13 +2141,15 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(1): Noble Hierarch | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Noble Hierarch  [#0]
@@ -2012,14 +2165,16 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
   Stack: Noble Hierarch (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Activate Karakas (ChangeZone)  [#1]
@@ -2033,15 +2188,18 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
   Stack: Noble Hierarch (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: not_priority_window
   Actions:
    0: Thalia, Guardian of Thraben
   >> A/A: 0 (Thalia, Guardian of Thraben)
@@ -2054,14 +2212,16 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
   Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 7) -> Noble Hierarch (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2075,14 +2235,16 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Plains | Savannah | Savannah
   Opp BF:   Silent Clearing
   Stack: Noble Hierarch (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2096,13 +2258,15 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains | Savannah | Savannah
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains | Savannah | Savannah
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2119,14 +2283,16 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah | Savannah
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah | Savannah
   Opp BF:   Silent Clearing
   Stack: Thalia, Guardian of Thraben (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 drawn=1 colors=WG
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2140,13 +2306,15 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 drawn=1 colors=WG
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2160,15 +2328,17 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_revolt
+  This turn: self spells=2 drawn=1 colors=WG
+  Extras: self_revolt, not_priority_window
   Actions:
    0: Marsh Flats
    1: Ocelot Pride
@@ -2195,14 +2365,16 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
   Stack: Keen-Eyed Curator (ability, self) -> Marsh Flats (opponent)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Self exile: Badgermole Cub
   Opp exile:  Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 drawn=1 colors=WG
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2217,13 +2389,15 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=2 drawn=1 colors=WG
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2237,15 +2411,17 @@
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_revolt
+  This turn: self spells=2 drawn=1 colors=WG
+  Extras: self_revolt, not_priority_window
   Actions:
    0: Ocelot Pride
    1: Scrubland
@@ -2274,14 +2450,16 @@
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 drawn=1 colors=WG
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -2296,14 +2474,16 @@
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   10 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (ATK) | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (ATK) | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Swords to Plowshares, Thoughtseize, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 drawn=1 colors=WG
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2329,12 +2509,14 @@
   Self:  6 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Amped Raptor, Amped Raptor, Orcish Bowmasters, Voice of Victory, Wasteland | lib 44
   Opp:   20 life | mana: empty | hand count: 0 | lib 42
   Self BF:  Silent Clearing
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Opp GY:  Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp exile:  Badgermole Cub
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2347,13 +2529,15 @@
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Amped Raptor, Orcish Bowmasters, Voice of Victory | lib 44
   Opp:   20 life | mana: empty | hand count: 0 | lib 42
-  Self BF:  Silent Clearing | Wasteland
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Silent Clearing | Wasteland (NEW)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Plains (T) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Opp GY:  Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp exile:  Badgermole Cub
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2386,8 +2570,9 @@
   Step: Upkeep (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   5 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
@@ -2406,13 +2591,15 @@
   Step: Draw (turn 17)
   Self:  20 life | mana: empty | hand(1): Scythecat Cub | lib 41
   Opp:   5 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Karakas (ChangeZone)  [#1]
@@ -2424,13 +2611,15 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(1): Scythecat Cub | lib 41
   Opp:   5 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Scythecat Cub  [#0]
@@ -2447,14 +2636,16 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
   Stack: Scythecat Cub (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Activate Karakas (ChangeZone)  [#1]
@@ -2468,15 +2659,18 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
   Stack: Scythecat Cub (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: not_priority_window
   Actions:
    0: Ajani, Nacatl Pariah
    1: Thalia, Guardian of Thraben
@@ -2490,14 +2684,16 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
   Stack: Karakas (ability, self) -> Ajani, Nacatl Pariah (opponent, slot 48) -> Scythecat Cub (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2511,15 +2707,17 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
   Stack: Scythecat Cub (spell, self)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2533,14 +2731,16 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2554,8 +2754,9 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
@@ -2563,7 +2764,8 @@
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: opp_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Scrubland
    1: Swords to Plowshares
@@ -2588,15 +2790,17 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
   Stack: Keen-Eyed Curator (ability, self) -> Scrubland (opponent)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2611,14 +2815,16 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2632,8 +2838,9 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Thoughtseize
@@ -2641,7 +2848,8 @@
   Opp exile:  Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: opp_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Swords to Plowshares
    1: Thoughtseize
@@ -2665,15 +2873,17 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
   Stack: Keen-Eyed Curator (ability, self) -> Swords to Plowshares (opponent)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2688,14 +2898,16 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2709,8 +2921,9 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Thoughtseize
@@ -2718,7 +2931,8 @@
   Opp exile:  Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: opp_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Thoughtseize
    1: Thoughtseize
@@ -2741,15 +2955,17 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
   Stack: Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2765,14 +2981,16 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize
   Self exile: Badgermole Cub
   Opp exile:  Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
+  This turn: self spells=1 drawn=1 colors=G
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -2786,8 +3004,9 @@
   Step: First Main (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize
@@ -2795,7 +3014,8 @@
   Opp exile:  Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: opp_revolt
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Thoughtseize
    1: Misty Rainforest
@@ -2820,14 +3040,16 @@
   Step: Declare Atk (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Thoughtseize, Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [7/7]
    1: Thalia, Guardian of Thraben [2/1]
@@ -2843,14 +3065,16 @@
   Step: Declare Atk (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Thoughtseize, Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Thalia, Guardian of Thraben [2/1]
    1: Confirm attackers
@@ -2866,14 +3090,16 @@
   Step: Declare Atk (turn 17)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   5 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Thoughtseize, Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Known opp hand: Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Ocelot Pride, Marsh Flats, Scrubland, Badlands, Cabal Therapy, Silent Clearing
-  Extras: opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2893,12 +3119,14 @@
   Self:  5 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Amped Raptor, Orcish Bowmasters, Voice of Victory | lib 44
   Opp:   20 life | mana: empty | hand count: 0 | lib 41
   Self BF:  Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Opp GY:  Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Thoughtseize, Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp exile:  Badgermole Cub
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Plains, Savannah, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  Extras: self_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Cat Warrior token [2/1]
    1: Confirm blockers
@@ -2912,12 +3140,15 @@
   Self:  5 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Amped Raptor, Orcish Bowmasters, Voice of Victory | lib 44
   Opp:   20 life | mana: empty | hand count: 0 | lib 41
   Self BF:  Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
+  Pending: Cat Warrior (self)
   Opp GY:  Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Thoughtseize, Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp exile:  Badgermole Cub
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Plains, Savannah, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  Extras: self_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Keen-Eyed Curator [7/7]
    1: Thalia, Guardian of Thraben [2/1]
@@ -2937,12 +3168,14 @@
   Self:  5 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Amped Raptor, Orcish Bowmasters, Voice of Victory | lib 44
   Opp:   20 life | mana: empty | hand count: 0 | lib 41
   Self BF:  Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (BLK->Keen-Eyed Curator,SICK)
-  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK,BLOCKED) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK,BLOCKED) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Opp GY:  Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Once Upon a Time, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Thoughtseize, Thoughtseize, Swords to Plowshares, Scrubland, Ocelot Pride, Marsh Flats, Badlands, Ocelot Pride, Cabal Therapy
   Opp exile:  Badgermole Cub
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Plains, Savannah, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  Extras: self_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=G
+  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> B/B: 0 (Confirm blockers)
