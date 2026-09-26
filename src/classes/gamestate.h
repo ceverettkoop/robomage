@@ -96,7 +96,7 @@ typedef struct PermanentState_tag {
     // permanents, 48-95 opp permanents, 96-107 stack top-first; -1 = none). See the
     // entity->slot map in machine_io.cpp and norm_ref in machine_io.h.
     int  attached_to_ref;        // for equipment/auras: slot of the permanent this is attached to
-    int  attached_by_ref;        // for creatures: slot of the equipment/aura attached to this
+    int  attached_by_ref;        // for creatures: slot of the equipment/aura attached to this (lowest slot if several)
     int  attack_target_ref;      // attacked planeswalker's slot (-1 while attacking a player)
     int  blocking_target_ref;    // for blockers: slot of the attacker this creature blocks
     bool is_blocked;             // attacker was blocked at declare-blockers (CR 509.1h)

@@ -53,13 +53,7 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
     }
     if (target_creature != 0 && global_coordinator.entity_has_component<Permanent>(equip_entity) &&
         global_coordinator.entity_has_component<Permanent>(target_creature)) {
-        auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip_entity);
-        // Detach from previous creature
-        if (eq_perm.equipped_to != 0 && global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to)) {
-            global_coordinator.GetComponent<Permanent>(eq_perm.equipped_to).equipped_by = 0;
-        }
-        eq_perm.equipped_to = target_creature;
-        global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = equip_entity;
+        global_coordinator.GetComponent<Permanent>(equip_entity).equipped_to = target_creature;
         game_log("Equipment attached.\n");
     }
 attach_done:;

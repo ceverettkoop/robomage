@@ -589,8 +589,8 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 remerge_animate_granted_abilities(entity);
             } else {
                 // Token has left the battlefield — strip components (shared helper also clears
-                // attachment links, 704.5n) and schedule for destruction
-                strip_permanent_components(entity);
+                // attachment links) and schedule for destruction
+                strip_permanent_components(entity, mEntities);
                 tokens_to_destroy.push_back(entity);
             }
             continue;
@@ -708,12 +708,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     if (pa != game.pending_attach.end()) {
                         Entity equip = pa->second;
                         if (global_coordinator.entity_has_component<Permanent>(equip)) {
-                            auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip);
-                            if (eq_perm.equipped_to != 0 &&
-                                global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to))
-                                global_coordinator.GetComponent<Permanent>(eq_perm.equipped_to).equipped_by = 0;
-                            eq_perm.equipped_to = entity;
-                            perm.equipped_by = equip;
+                            global_coordinator.GetComponent<Permanent>(equip).equipped_to = entity;
                             game_log("Equipment attached.\n");
                         }
                         game.pending_attach.erase(pa);
@@ -722,7 +717,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it
                 // was cast targeting. The aura is the entity whose Permanent is being created;
                 // its enchanted object was recorded at cast (pending_aura_target). Reuse the
-                // equipped_to/equipped_by attachment link so the aura's static buffs (Affected$
+                // equipped_to attachment link so the aura's static buffs (Affected$
                 // Creature.EnchantedBy) and the aura state-based check find the enchanted object.
                 {
                     auto pat = game.pending_aura_target.find(entity);
@@ -1025,10 +1020,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             }
 
         } else {  // off battlefield, check to remove
-            // Shared strip (game_queries.cpp): clears equipment attachment links (704.5n) before
+            // Shared strip (game_queries.cpp): clears attachment links before
             // removing Permanent/Creature/Damage. Same helper add_to_zone uses for the
             // same-resolution-return entry reset (CR 400.7).
-            strip_permanent_components(entity);
+            strip_permanent_components(entity, mEntities);
         }
     }
 

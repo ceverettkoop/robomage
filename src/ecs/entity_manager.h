@@ -13,7 +13,7 @@ class EntityManager {
         EntityManager() {
             // Initialize the queue with all possible entity IDs. Entity 0 is reserved
             // as the universal "null entity" sentinel — many fields (ability targets,
-            // attack_target, equipped_by, etc.) default to 0 to mean "none", and code
+            // attack_target, equipped_to, etc.) default to 0 to mean "none", and code
             // throughout treats `== 0` as "no entity". Issuing 0 to a real entity (it
             // would otherwise go to Player A, the first entity created) collides with
             // that sentinel and makes that entity untargetable. Start issuing at 1.

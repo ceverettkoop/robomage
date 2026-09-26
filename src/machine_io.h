@@ -104,7 +104,7 @@
 //                  [12] attached_to_ref (norm_ref) — for equipment/auras: the slot of
 //                       the permanent this is attached to
 //                  [13] attached_by_ref (norm_ref) — for creatures: the slot of the
-//                       equipment/aura attached to this
+//                       equipment/aura attached to this (the lowest slot when several are)
 //                  [14] attack_target_ref (norm_ref) — attacked planeswalker's slot;
 //                       0.0 while is_attacking means "attacking the player"
 //                  [15] blocking_target_ref (norm_ref) — the attacker this blocker blocks

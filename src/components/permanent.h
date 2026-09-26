@@ -26,8 +26,10 @@ struct Permanent {
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
     size_t entered_on_turn = 0;  // cur_game.turn when this entered the battlefield (Ocelot Pride "entered this turn")
     bool transformed = false;  // true when DFC is showing its back face
-    Entity equipped_to = 0;   // for equipment: which creature entity is equipped (0 = unattached)
-    Entity equipped_by = 0;   // for creatures: which equipment is attached (0 = none)
+    // For an Equipment or Aura: the permanent it is attached to (0 = unattached). This is the
+    // one record of an attachment; what is attached to a permanent is derived from it (several
+    // Equipment and Auras may share one host, CR 301.5 / 303.4).
+    Entity equipped_to = 0;
     bool is_phased_out = false;
     // CR 702.26g: this Aura/Equipment phased out "indirectly", along with the permanent it is
     // attached to (equipped_to). It doesn't phase in by itself; it phases in with that permanent.

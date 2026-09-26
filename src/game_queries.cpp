@@ -145,19 +145,18 @@ std::string entity_name(Entity e) {
 }
 
 // Strip Permanent/Creature/Damage from a card no longer on the battlefield (or re-entering it as
-// a new object, CR 400.7). Clears equipment/aura attachment links first so no dangling reference
-// survives (704.5n): a creature leaving unattaches its equipment (which stays), an equipment
-// leaving clears the host's back-link. Contract documented at the declaration in game_queries.h.
-void strip_permanent_components(Entity entity) {
+// a new object, CR 400.7). Every Equipment and Aura attached to it becomes unattached first, so no
+// link survives to name the entity once it is a new object or its id is reused (an Equipment
+// stays on the battlefield; an unattached Aura goes to the graveyard, 704.5m). Contract
+// documented at the declaration in game_queries.h.
+void strip_permanent_components(Entity entity, const std::set<Entity> &entities) {
     if (global_coordinator.entity_has_component<Permanent>(entity)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        if (perm.equipped_by != 0 &&
-            global_coordinator.entity_has_component<Permanent>(perm.equipped_by)) {
-            global_coordinator.GetComponent<Permanent>(perm.equipped_by).equipped_to = 0;
-        }
-        if (perm.equipped_to != 0 &&
-            global_coordinator.entity_has_component<Permanent>(perm.equipped_to)) {
-            global_coordinator.GetComponent<Permanent>(perm.equipped_to).equipped_by = 0;
+        // Every attachment link, whatever the attached permanent's zone or phasing: this clears
+        // the relationship itself rather than querying the battlefield.
+        for (auto e : entities) {
+            if (e == entity || !global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto &attached = global_coordinator.GetComponent<Permanent>(e);
+            if (attached.equipped_to == entity) attached.equipped_to = 0;
         }
         global_coordinator.RemoveComponent<Permanent>(entity);
     }

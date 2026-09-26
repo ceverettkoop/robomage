@@ -55,6 +55,7 @@ static void format_counter_summary(const CounterMap& counters, char* buf, size_t
 static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer);
 static void fill_permanent_state(PermanentState& ps, Entity e);
+static void fill_attached_by_refs(GameState* gs, int self_bf, int opp_bf);
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
 static int battlefield_slot_ref_of(Entity e);
 static int creator_slot_ref(const DelayedTriggerLink& link);
@@ -361,6 +362,24 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(norm_card_id(p.card_vocab_idx));       // [42] card id (LAST)
 }
 
+// A permanent's attached_by_ref, derived from the attachments' own attached_to_ref (the
+// attachment's link is the one record of the relationship). A host with several attachments
+// reports the one in the lowest slot. Runs after every permanent's attached_to_ref is filled.
+static void fill_attached_by_refs(GameState* gs, int self_bf, int opp_bf) {
+    auto slot_state = [&](int ref) -> PermanentState* {
+        if (ref >= 0 && ref < self_bf) return &gs->self_permanents[ref];
+        if (ref >= MAX_BATTLEFIELD_SLOTS && ref < MAX_BATTLEFIELD_SLOTS + opp_bf)
+            return &gs->opp_permanents[ref - MAX_BATTLEFIELD_SLOTS];
+        return nullptr;
+    };
+    for (int ref = 0; ref < 2 * MAX_BATTLEFIELD_SLOTS; ref++) {
+        const PermanentState* att = slot_state(ref);
+        if (!att) continue;
+        PermanentState* host = slot_state(att->attached_to_ref);
+        if (host && host->attached_by_ref < 0) host->attached_by_ref = ref;
+    }
+}
+
 // Pass-B fill of one battlefield permanent's PermanentState. Runs after the
 // entity->slot map is built so the attachment/combat reference fields resolve.
 static void fill_permanent_state(PermanentState& ps, Entity e) {
@@ -417,7 +436,7 @@ static void fill_permanent_state(PermanentState& ps, Entity e) {
             ps.other_counters += c.second;
 
     ps.attached_to_ref = slot_ref_of(perm.equipped_to);
-    ps.attached_by_ref = slot_ref_of(perm.equipped_by);
+    ps.attached_by_ref = -1;  // derived from the attachments' links (fill_attached_by_refs)
     ps.is_phased_out   = perm.is_phased_out;
 
     ps.entered_this_turn = entered_battlefield_this_turn(static_cast<long>(perm.entered_on_turn));
@@ -992,6 +1011,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_permanent_state(gs->self_permanents[i], self_ents[i]);
     for (int i = 0; i < opp_bf; i++)
         fill_permanent_state(gs->opp_permanents[i], opp_ents[i]);
+    fill_attached_by_refs(gs, self_bf, opp_bf);
     for (int i = 0; i < stored_stack; i++)
         fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
     fill_delayed_triggers(gs, viewer, stack_delayed);

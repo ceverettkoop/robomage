@@ -303,7 +303,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // (Phasing never passes through add_to_zone; a phased-out permanent keeps its state, 702.26.)
     if (destination == Zone::BATTLEFIELD && origin != Zone::BATTLEFIELD &&
         global_coordinator.entity_has_component<Permanent>(target)) {
-        strip_permanent_components(target);
+        strip_permanent_components(target, mEntities);
     }
 
     // A zone change re-derives visibility from the new zone: any prior "identity

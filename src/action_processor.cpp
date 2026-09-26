@@ -322,9 +322,6 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
                 return;
             }
         }
-        if (global_coordinator.entity_has_component<Permanent>(permanent.equipped_to)) {
-            global_coordinator.GetComponent<Permanent>(permanent.equipped_to).equipped_by = 0;
-        }
         game_log("%s unattaches.\n", permanent.name.c_str());
         permanent.equipped_to = 0;
         game.take_action();
@@ -1791,12 +1788,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             resume_choice = -1;
             auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
 
-            // Detach from previous creature if any
-            if (permanent.equipped_to != 0 && global_coordinator.entity_has_component<Permanent>(permanent.equipped_to)) {
-                global_coordinator.GetComponent<Permanent>(permanent.equipped_to).equipped_by = 0;
-            }
             permanent.equipped_to = target_creature;
-            global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = permanent_entity;
             std::string tname = global_coordinator.GetComponent<Permanent>(target_creature).name;
             game_log("%s equipped to %s.\n", permanent.name.c_str(), tname.c_str());
             game.take_action();
