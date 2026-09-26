@@ -91,6 +91,8 @@ class TriggerPlaceTargetAsker final : public TargetAsker {
 // A short, distinct label so a player ordering two triggers from the same source can tell them
 // apart (e.g. Endurance's evoke-sacrifice trigger vs. its enters-the-battlefield trigger).
 static std::string trigger_label(const std::string &name, const Ability &ab);
+static bool type_set_has_creature(const std::set<Type> &types);
+static bool zone_change_object_is_creature(const Game &game, Entity e);
 
 // Storm count (CR 702.40a): the number of OTHER spells cast before the storm spell this turn,
 // counting spells cast by EITHER player. The per-player spells_cast_this_turn counters already
@@ -127,6 +129,36 @@ static const CardData *etb_effective_face(Entity e) {
         global_coordinator.GetComponent<Permanent>(e).transformed)
         return front.backside.get();
     return &front;
+}
+
+static bool type_set_has_creature(const std::set<Type> &types) {
+    for (const auto &t : types)
+        if (t.kind == TYPE && t.name == "Creature") return true;
+    return false;
+}
+
+// Is the object a CARD_CHANGED_ZONE / SPELL_CAST event names a creature (a ValidCard$ Creature
+// match, CR 603.2)? A token is judged by its own type line, not by being a token: a Clue, Food or
+// Powerstone is a noncreature artifact. A token leaving the battlefield is matched by its
+// last-known battlefield types (603.10), which also cover a token that has already ceased to
+// exist (no components left); a live token reads its permanent type line, else its token
+// definition. A card reads the face it presents (etb_effective_face).
+static bool zone_change_object_is_creature(const Game &game, Entity e) {
+    bool is_token = global_coordinator.entity_has_component<Token>(e);
+    if (is_token || !global_coordinator.entity_has_component<CardData>(e)) {
+        auto it = game.lk_battlefield_types.find(e);
+        if (it != game.lk_battlefield_types.end()) {
+            for (const auto &n : it->second)
+                if (n == "Creature") return true;
+            return false;
+        }
+        if (!is_token) return false;
+        if (global_coordinator.entity_has_component<Permanent>(e))
+            return type_set_has_creature(global_coordinator.GetComponent<Permanent>(e).types);
+        return type_set_has_creature(global_coordinator.GetComponent<Token>(e).types);
+    }
+    const CardData *face = etb_effective_face(e);
+    return face && is_creature_card(*face);
 }
 
 // Bind the triggering player (the event's PLAYER, e.g. the caster of the triggering spell)
@@ -610,21 +642,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     // via etb_effective_face), which is what wrongly fired Guide of Souls.
                     if (ab.trigger_valid_card_is_creature && ev.HasParam(Params::ENTITY)) {
                         Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
-                        if (!is_creature) {
-                            const CardData *face = etb_effective_face(ev_card);
-                            if (face) is_creature = is_creature_card(*face);
-                        }
-                        if (!is_creature) continue;
+                        if (!zone_change_object_is_creature(game, ev_card)) continue;
                     }
                     // ValidCard$ Card.nonCreature filter on a counted SpellCast (The Fantasticar):
                     // the triggering spell must NOT be a creature.
                     if (ab.trigger_valid_card_non_creature && ev.HasParam(Params::ENTITY)) {
                         Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
-                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card))
-                            is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
-                        if (is_creature) continue;
+                        if (zone_change_object_is_creature(game, ev_card)) continue;
                     }
                     // ValidCard$ Instant/Sorcery filter (Murktide Regent)
                     if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
