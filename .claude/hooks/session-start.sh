@@ -9,9 +9,10 @@
 #      from Card-Forge/forge, so a fresh clone has none and the engine asserts
 #      the moment it tries to load a card.
 #
-# It does NOT build the engine — building is left to the user (`make HEADLESS=TRUE`)
-# so the hook can't clobber a bin/robomage that a running training/league job is
-# exec'ing (a mid-session rebuild races the workers and fails them with EACCES).
+# It does NOT build the engine — building is left to the user (`make` →
+# bin/debug/robomage, `make BUILD=RELEASE` → bin/release/robomage) so the hook
+# can't clobber a binary that a running training/league job is exec'ing (a
+# mid-session rebuild races the workers and fails them with EACCES).
 set -euo pipefail
 
 # Only provision when running in a Claude Code remote (cloud) environment.
@@ -40,9 +41,10 @@ fi
 
 echo "[session-start] Fetching Forge card + token scripts for the playable decks..."
 # provision_decks.py is the single provisioning entry point (shared with CI): it
-# collects every card named by the top-level / meta/ / league/ decks, fetches any
-# missing card scripts, then scans them for the token scripts they create (incl.
-# DFC-combined scripts and synthesized Amass / Investigate / Mobilize tokens) and
+# collects every card named by the top-level and league/ decks (plus meta/ when
+# that directory exists), fetches any missing card scripts, then scans them for
+# the token scripts they create (incl. DFC-combined scripts and synthesized
+# Amass / Investigate / Mobilize tokens, mapped by its keyword_tokens table) and
 # fetches those too. Add-only and non-fatal — a card missing from Forge just needs
 # hand-authoring and never aborts the hook.
 "$VENV_PY" tools/forge_fetch/provision_decks.py

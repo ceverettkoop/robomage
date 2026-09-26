@@ -1,116 +1,97 @@
 # Running games: modes, agents, I/O
 
-How a RoboMage game gets run outside the torch training loop — what the engine
-provides, where agents live, and the one Python API to script games with.
+How a RoboMage game is run outside the torch training loop: what the engine provides, the agent
+spec grammar, and the one Python API to script games with.
 
 ## The engine has no agents
 
-`bin/robomage` knows nothing about scripted tiers, models, or humans. In
-`--machine` mode it emits a `BQUERY` binary frame on stdout at every decision
-point — for **both** seats, interleaved in priority order — and reads a single
-integer choice back on stdin. Who picks that integer is entirely the driver's
-concern. The only engine-side seat distinction is `--player A|B` (diverts one
-seat to the CLI's interactive stdin prompt, a blocking `getchar`/`scanf` read;
-used by direct interactive play, not by any Python-driven mode) and
-`--log-viewer A|B` (redacts the private narrative to one seat's view without
-rerouting input; used by the TUI).
+`bin/<config>/robomage` knows nothing about scripted tiers, models or humans. In `--machine` mode
+it emits a `BQUERY` frame on stdout at every decision, for **both** seats in priority order, and
+reads one integer back on stdin. Who picks that integer is the driver's concern. The only
+engine-side seat options are `--player A|B` (routes one seat to the engine's own interactive stdin
+prompt; no Python tool uses it) and `--log-viewer A|B` (redacts private narrative to one seat's
+view without rerouting input; set by the TUI/GUI play boards).
 
-Engine-level knobs (see `src/main.cpp` argv parsing for the full list):
-decks (`--deck-a/-b`), `--seed`, `--no-shuffle`, zone presets
-(`--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`), `--narrative`
-(full game log + per-action description/counter side-channels), `--bo3`
-(match loop: per-game seed = base+game, loser goes first, sideboarding between
-games, `GAME_RESULT:`/`MATCH_RESULT:` protocol lines), `--replay <rmlog>`
-(self-contained deterministic replay), `--log-decisions` (write the replay
-log in machine mode).
+Other engine flags (`src/main.cpp` argv loop): `--deck-a/-b` (or `--deck` for both), `--seed`,
+`--no-shuffle`, zone presets `--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`,
+`--narrative` (full game log + per-action description side-channels), `--bo3` (match loop:
+per-game seed = base + game, loser goes first, sideboarding, `GAME_RESULT:`/`MATCH_RESULT:`
+lines), `--replay <rmlog>` (deterministic replay), `--log-decisions` (write the replay log in
+machine mode), `--search-server` (snapshot/restore/determinize protocol for MCTS; implies
+`--machine`), `--broadcast-steps` (passive `BSTATE` frames at auto-passed steps, for the GUI's
+step pacing).
 
-## The Python stack (train/)
-
-One layer per concern — everything that runs games sits on this stack:
+## The Python stack (`train/`)
 
 | Layer | Module | Role |
 |---|---|---|
-| Engine wrapper | `env.py` (`RoboMageEnv` / `NarrativeEnv`) | subprocess launch, BQUERY parse, obs assembly, result/reward parse, seeds |
-| Decoding | `decode.py` | state vector / action menu → human-readable structures and transcript blocks |
-| Agents | `opponents.py` (`Controller`) | scripted tiers, model checkpoints, `--play` scripts, action lists, human CLI, autopass |
-| Loop | `runner.py` (`drive_game`) | THE decision loop: route priority seat → controller, step, hooks |
+| Engine wrapper | `env.py` (`RoboMageEnv`, `NarrativeEnv`); `search_env.py` (`SearchNarrativeEnv`) | subprocess launch, BQUERY parse, obs, result/reward, seeds; the search variant is swapped in when a controller sets `wants_search_env` |
+| Decoding | `decode.py` | state vector / action menu → readable structures and transcript blocks |
+| Agents | `opponents.py` (`Controller`, `make_controller`) | every agent kind below |
+| Loop | `runner.py` (`drive_game`) | THE decision loop: priority seat → controller, step, hooks |
 | Orchestration | `runner.py` (`run_games`, `run_match`) | env per game, transcripts, tallies, records |
 
-### Agent specs (one grammar everywhere)
+## Agent specs (one grammar everywhere)
 
-`opponents.make_controller(spec)` — used by `run_match`, `observe`, the test
-harness, the TUI, and `play.py` — accepts:
+`opponents.make_controller(spec)` backs every `--player-a/-b` flag (harness, observe, baseline,
+play.py, analysis, the TUI/GUI) and `run_match`. Specs are case-insensitive:
 
-- `"scripted"` / `"hard"` — the heuristic HARD tier (the default anywhere a
-  bare `scripted` appears)
-- `"easy"` / `"greedy"`, `"random"`, `"explore"`, `"explore:patient"` — other
-  scripted tiers (fuzzing profiles included)
-- `"human"` — interactive CLI seat: renders board + menu, accepts an index or
-  a semantic spec (`cast:bolt`, `target:bears@opp`, `pass`), `quit` to exit
-- `"play:<spec,spec,...>"` — pre-baked semantic action script (the harness
-  `--play` grammar, `action_spec.py`)
-- `"actions:<i,i,...>"` — positional action-index list
-- `"auto"` — always action 0 (pass / first choice)
-- the generalist model spec `"gen"` (→ `checkpoints/gen__final.zip`, else newest
-  `gen__v*`) or an explicit checkpoint path, resolved by
-  `opponents.resolve_checkpoint` — the single resolver shared by train.py,
-  play.py and the TUI (a bare deck shorthand is rejected: the deck travels
-  separately as an explicit parameter)
-- `"az:<gen-or-path>"` / `"mcts:<ckpt>"` (MCTS search) or `"azraw:<gen-or-path>"`
-  (raw AZ policy) — `SearchController`/`AZRawController`. The search specs take a
-  `?k=v&…` query: `sims`/`worlds`/`c`/`temp`/`seed` (in-game search) plus
-  `sb_branches`/`sb_worlds`/`sb_rollout_turns` — the **bo3 sideboard
-  plan-search** budget (defaults `8`/`4`/`6`, the `DEFAULT_SB_*` constants in
-  `cli_spec.py`). A sideboard prompt is not searched with PUCT: the controller
-  runs `mcts.run_plan_search`, a flat search over complete sideboard
-  configurations — one argmax-greedy completion per legal first pick (the
-  coverage pass, Done included) plus `sb_branches` deterministic alternate
-  completions of the best branches — each priced by a raw-policy rollout on
-  every `sb_worlds` world to end of player-turn `sb_rollout_turns` of the
-  sampled next game (`sb_rollout_turns=0` prices the completed decklist with
-  the net's static read). Plan value = the cross-world mean, Q per first pick
-  = its best plan, and the played pick / recorded `pi` come from
-  `softmax(Q / mcts.SB_PI_TAU)`. Plan values are memoized per (world seed,
-  pick multiset) in a boundary-shared table, so a boundary's later picks
-  mostly re-price from cache (the world seeds stay pinned to the boundary's
-  first searched root); see `test_mirror_search.py`'s
-  `parallel_sb_persistence` and `test_plan_search.py`. e.g.
-  `az:gen?sims=64&worlds=4&sb_branches=4&sb_rollout_turns=8`.
-  - `time=<seconds>` sets a **wall-clock per-decision budget** instead of a fixed
-    sim count: the search interleaves its `worlds` round-robin and runs as many
-    simulations as fit in that many seconds, then stops (more time = stronger
-    play). The one budget applies to both in-game and sideboard roots (at a
-    sideboard root the plan search's coverage pass is the floor and the clock
-    truncates the extras; note the deadline is checked between plan
-    evaluations, so it can overshoot by up to one rollout). It overrides
-    `sims` as the terminator — `sims`, when explicitly pinned alongside
-    `time=`, acts only as a hard cap. A floor of one sim per world always
-    runs. e.g. `az:gen?time=5&worlds=4`.
-    `play.py --think-time <seconds>` is the CLI front door that appends this knob.
-    When `time=` is absent the fixed-`sims` path is byte-for-byte unchanged (the
-    actor visit-parity corpus depends on it).
-  - `procs=<n>` (default `1`) runs a **world-parallel mirror pool** for
-    **interactive** search: the engine is single-threaded, but a search's `worlds`
-    are independent, so `n-1` extra engine processes are kept in lockstep with the
-    primary game and the worlds fan out across all `n` processes concurrently
-    (~near-linear more sims/decision for `procs ≤ worlds`, whether the terminator
-    is `sims` or `time=`). `procs=1` is byte-identical to the plain single-engine
-    search — self-play and the parity corpus never use the pool. `play.py
-    --search-procs <n>` is the CLI front door. e.g. `az:gen?time=2&procs=4`.
-    The **spec-grammar default stays 1** (gates / eval / parity reproducibility),
-    but the INTERACTIVE front doors default it to AUTO when neither the spec nor
-    the flag names one: every tool offering `--search-procs` — `play.py`
-    (hence `./tui.sh`'s play entry and the GUI play launcher, whose field IS
-    that flag) and the analysis browser — appends
-    `procs=min(worlds, max(1, cpu_count//2))` (`cli_spec.search_knob_pairs` via
-    `opponents.default_search_procs`); an explicit `procs=` / `--search-procs`
-    / a set launcher field always wins.
-- a prebuilt `Controller` instance (passed through)
+| Spec | Agent |
+|---|---|
+| `scripted`, `hard`, `heuristic`, `scripted:hard` | scripted HARD tier (what a bare `scripted` means everywhere) |
+| `easy`, `greedy` (or `scripted:easy`…) | greedy tier |
+| `random` | uniform random |
+| `explore`, `fuzz` | coverage fuzzer (vary `--seed`) |
+| `explore:patient`, `patient` | fuzzer's big-mana profile |
+| `auto`, `autopass` | always action 0 (pass / first choice) |
+| `human` | terminal seat: prints board + menu, takes an index or a semantic spec (`cast:bolt`, `target:bears@opp`, `pass`), `quit`/`q`/`exit` to leave |
+| `play:<spec,spec,…>` | semantic action script (the harness `--play` grammar, `action_spec.py`); once exhausted, action 0 |
+| `actions:<i,i,…>` | positional action indices |
+| `gen`, or a checkpoint path / name | PPO model (`ModelController`) via `opponents.resolve_checkpoint`: `gen` → `checkpoints/gen__final.zip`, else newest `gen__v*.zip`; a name is looked up in `checkpoints/` as-is, `.zip`, `_final.zip`. A bare deck name (`delver`) is rejected: the deck is always a separate parameter |
+| `mcts:<gen\|path\|uniform>[?knobs]` | PUCT search with a PPO net's policy/value (`uniform` = torch-free uniform evaluator, for plumbing tests) |
+| `az:<gen\|path>[?knobs]` | PUCT search with an AZNet: `az:gen` → `gen__azfinal.pt`, else newest `gen__azv*.pt`, else a warm start from the `gen` PPO net; a `.pt` path loads directly, a `.zip` warm-starts |
+| `azraw:<gen\|path>` | the AZNet's argmax policy, no search (knobs are not parsed) |
+| a `Controller` instance | passed through |
 
-The human-on-a-board seat is the exception: the TUI and GUI boards
-(`tui_game.py` / `gui_game.py`, launched via `play.py --board tui|gui`,
-`./tui.sh`, `./gui.sh`) host their own UI-coupled loop (`game_driver.GameDriver`)
-and queue human clicks; the *opponent* seat uses the same spec grammar above.
+Which checkpoint a spec names for analysis purposes (V(s), probes, replay search) is resolved by
+`opponents.parse_model_spec` and its `load_spec_*` loaders; do not strip prefixes by hand.
+
+### Search knobs (`mcts:` / `az:`)
+
+Query string `?k=v&k=v` (later keys win); a malformed value fails naming the spec.
+
+| Knob | Default | Meaning |
+|---|---|---|
+| `sims` | 128 | in-game simulations per decision, split across worlds |
+| `worlds` | 4 | determinized worlds |
+| `c` | `DEFAULT_AZ_C_PUCT` (2.5) | PUCT constant |
+| `temp` | 0 | root temperature |
+| `seed` | 0 | search RNG seed |
+| `time` | — | wall-clock seconds per decision (see below) |
+| `procs` | 1 | engine processes for world-parallel search (see below) |
+| `clock`, `tmin`, `tmax`, `sb_tmax` | —, 0.5, 60, 15 | whole-match chess-clock bank in seconds; each decision draws a variable budget in [`tmin`, `tmax`] (sideboard roots capped at `sb_tmax`) |
+| `paced` | 0 | human-facing play: small jittered response floor plus occasional fake-think pauses, masking timing tells |
+| `xw` | 1 | cross-world batched leaf evaluation (identical visits, pure speed); `xw=0` disables |
+| `device` | `ROBOMAGE_EVAL_DEVICE`, else cpu | `az:` only: torch device for the net |
+| `vscale` | 1 | `mcts:` only: PPO value tanh scale |
+| `sb_branches`, `sb_worlds`, `sb_rollout_turns` | 8, 4, 6 (`cli_spec.DEFAULT_SB_*`) | bo3 sideboard plan-search budget |
+
+- **`time=<s>`** replaces `sims` as the terminator: worlds run round-robin until the deadline, with
+  a floor of one simulation per world; `sims`, if explicitly given, becomes a hard cap. Without
+  `time=` the fixed-sims path is byte-for-byte unchanged (the actor parity corpus depends on it).
+  `play.py --think-time` is the CLI front door. e.g. `az:gen?time=5&worlds=4`.
+- **`procs=<n>`** keeps `n-1` mirror engine processes in lockstep with the game and fans the
+  worlds across all `n` (about linear speedup for `procs ≤ worlds`); `procs=1` is identical to
+  the single-engine search, and self-play / parity never use the pool. The spec default stays 1
+  for reproducible gates and eval, but the interactive front doors (`play.py` and so the
+  `./tui.sh` play entry and GUI Play dialog, and the analysis browser) add
+  `procs=min(worlds, max(1, cpu_count // 2))` when neither the spec nor `--search-procs` sets it
+  (`cli_spec.search_knob_pairs` via `opponents.default_search_procs`).
+
+The human seat on a board is the exception to `runner`: the TUI and GUI play boards
+(`tui_game.py` / `gui_game.py`, via `play.py --board tui|gui`, `./tui.sh`, `./gui.sh`) run their
+own UI-coupled loop (`game_driver.GameDriver`) and queue human clicks; the opponent seat uses the
+spec grammar above.
 
 ## Scripting games: `runner.run_match`
 
@@ -120,100 +101,82 @@ import runner
 # bo3 match, scripted HARD mirror, deterministic, compact transcript
 r = runner.run_match("scripted", "scripted", deck_a="league/bug", deck_b="league/bug")
 
-# model vs scripted, 10 bo1 games, no output, per-game records
-r = runner.run_match("league/bug", "scripted",
-                     deck_a="league/bug", deck_b="league/bug",
+# PPO generalist vs scripted, 10 bo1 games, no output
+r = runner.run_match("gen", "scripted", deck_a="league/bug", deck_b="league/bug",
                      games=10, bo3=False, transcript="quiet")
 print(r.win_rate, r.records[0].engine_seed, r.records[0].actions)
 
-# drive one seat through a fixed line, sculpted state (harness-style kwargs)
-r = runner.run_match("play:A:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp",
-                     "auto", bo3=False,
-                     battlefield_a="Mountain", battlefield_b="Grizzly Bears",
+# one seat through a fixed line, sculpted state (harness-style kwargs)
+r = runner.run_match("play:keep,cast:Lightning Bolt,target:Grizzly Bears@opp", "auto",
+                     bo3=False, battlefield_a="Mountain", battlefield_b="Grizzly Bears",
                      max_decisions=40)
 ```
 
-Defaults: **bo3 on**, `seed=1` (game *i* uses `seed+i`; `seed=None` for
-random), compact transcript. `transcript=` one of `"verbose"` (full board +
-menu per decision), `"compact"` (one line per decision), `"narrative"`
-(engine narrative + results only — human play), `"quiet"` (nothing; draws
-still dump `draw_<n>.txt`). `out=` redirects the transcript to any stream.
-Returns a `MatchResult` (W/L/D from seat A, `win_rate`, per-game
-`GameRecord`s with reward, decision count, engine seed, and the full action
-log — enough to replay).
+```python
+run_match(agent_a="scripted", agent_b="scripted", *, deck_a=None, deck_b=None,
+          games=1, bo3=True, seed=1, transcript="compact", out=None,
+          binary_path=BINARY, deterministic_models=True, checkpoint_resolver=None,
+          max_decisions=None, **run_games_kwargs) -> MatchResult
+```
 
-Zone presets, `no_shuffle`, `life_a/b`, `log_decisions`, and `coverage` pass
-through to `run_games` (same kwargs the test harness uses).
+- `seed`: game *i* uses `seed + i`; `seed=None` is random. Python's `random` is seeded the same,
+  so scripted tie-breaks replay too.
+- `transcript`: `"verbose"` (narrative + board + menu per decision), `"compact"` (narrative + one
+  line per decision), `"narrative"` (engine narrative and results only, for a `human` seat),
+  `"quiet"` (nothing). `out=` redirects to any stream.
+- Every draw (no winner, e.g. the engine's step cap) saves its full log to
+  `draw_<timestamp>.txt` in the cwd, even when quiet. A game stopped by `max_decisions` is
+  reported incomplete and not counted.
+- Extra kwargs pass to `run_games`: zone presets (`battlefield_a`, `graveyard_b`, `exile_a`,
+  `sideboard_b`, …), `no_shuffle`, `life_a/b`, `log_decisions`, `coverage` (a
+  `coverage_report.CoverageAccumulator`), hooks `on_query` / `on_action` / `on_game_end(record)`,
+  and `narrative=False` (engine without its game log; the benchmark path, only sensible quiet).
+- Returns `MatchResult`: `wins` / `losses` / `draws` from seat A, `games`, `win_rate`,
+  `label_a/b`, and `records` — one `GameRecord` per game (bo1) or match (bo3) with `reward`,
+  `decisions`, `capped`, `actions` (every index sent; with `engine_seed`, enough to replay),
+  `engine_seed`, `winner`, and under bo3 `game_results` (per-game `(winner, a_on_play)`).
 
-For custom instrumentation, drop one layer to `runner.drive_game(env, obs,
-ctrl_a, ctrl_b, on_query=..., on_action=..., max_decisions=...)` — the hooks
-receive a `Decision` context (obs, num_choices, priority seat, lazily-decoded
-menu). This is how `analysis.py` records traces; there is no other decision
-loop in the tree.
+`run_games(controller_a, controller_b, *, …)` is the layer below: it takes `Controller` objects
+(pass one object twice for a single global decision-maker, as the harness does), `n_games`, and
+defaults to `bo3=False`, `seed=None`; it returns `(wins, losses, draws)`.
+
+For custom instrumentation drop to `runner.drive_game(env, obs, controller_a, controller_b, *,
+on_query=None, on_action=None, on_narrative=None, max_decisions=None, coverage=None)` on an env
+you have reset (and will close). `on_query(d)` / `on_action(d, action)` receive a `Decision`
+(`obs`, `num_choices`, `priority_is_a`, `controller`, `index`, lazily decoded `menu()`). It
+returns a `GameRecord`. There is no other decision loop outside the training wrappers and the
+play boards.
 
 ## The tools and where they sit
 
-Every Python tool that plays games takes the same match-format flag,
-`--format bo1|bo3`, defaulting to **bo3**. A game/match count is always `--games` (whole
-matches under bo3; each tool's help says what it counts), the PUCT constant is
-always `--c-puct`, and `--seed` defaults to **1** on every test, eval and
-inspection tool (observe, baseline, az-eval, analysis, the harness, the
-`bench-actor` / `bench-workers` benchmarks, az_inspect) but to a **random, printed** seed on long training runs
-(az-selfplay, az-train, az, az-league).
+Every tool that plays games takes `--format bo1|bo3` (default **bo3**). A count is always
+`--games` (whole matches under bo3), the PUCT constant is always `--c-puct`, and `--seed`
+defaults to **1** on test, eval and inspection tools (observe, baseline, az-eval, analysis, the
+harness, `bench-actor` / `bench-workers`, az_inspect) but to a **random, printed** seed on long
+training runs (az-selfplay, az-train, az, az-league); `play.py` is random unless given.
 
-- **`test_harness.py`** — state sculpting (hands/zones/scenarios); a global
-  both-seat `--play`/`--actions` script makes decisions first, then each
-  seat's `--player-a/-b` agent spec (default `auto`); `run_games` under the
-  hood. Pass `--format bo1` for a single game (sculpted scenarios usually
-  want one).
-- **`train.py observe`** — per-seat agent specs (`--player-a/-b`, including
-  `play:<specs>` scripts) and decks (`--deck-a/-b`), any matchup. bo3 by
-  default; `--format bo1` for single games; game i uses seed `--seed`+i.
-  Transcript level `--verbose` / default compact / `--quiet` (one-line W/L/D
-  summary only); `--out FILE` sends the transcript to FILE with the summary on
-  stdout; `--max-decisions N` caps each game. Two named forms:
-  - **fuzz campaign** — `--player-a explore --player-b explore` (or
-    `explore:patient`, the big-mana mode; each seat its own novelty state)
-    `--verbose --out FILE`: verbose transcript per matchup for bug review, any
-    draw is a finding (also saved to `draw_<stamp>.txt`).
-  - **throughput benchmark** — `--timing` prints games, decisions, wall,
-    games/s, decisions/s and ms/decision (plus `matches=` under bo3); with
-    `--quiet` the engine also runs without narrative, the lean path
-    (`--format bo1 --games 40 --max-decisions 4000 --quiet --timing`, scripted
-    vs scripted on the delver mirror by default).
-- **`train.py baseline`** — the AZ generalist (`az:gen` = `gen__azfinal.pt`)
-  under the full league search budget (1028 sims × 8 worlds) vs scripted
-  **HARD** over the whole league grid (every deck piloted vs every deck, mirrors
-  included), 10 bo3 matches per matchup, seats alternating. Runs on the C++
-  actor (`bin/az_actor --search` eval mode + the scripted oracle + the GPU eval
-  server, 48 legs in flight) — NOT on `drive_game`; PPO `.zip` models,
-  `mcts:`/`azraw:` specs, a `--player-b` other than scripted:hard, and
-  `--no-actor` fall back to the runner-based `train.baseline_sweep` (fresh
-  controllers per unit of work; a matchup splits into contiguous game chunks
-  when there are fewer matchups than `--workers`). `--player-a` is the agent
-  under test and `--player-b` the reference (default scripted:hard; players
-  alternate physical seats), `--deck-a` narrows to one piloted deck (mirror
-  unless `--deck-b`), `--games`/`--sims`/`--worlds`/`--workers` scale it
-  (`--sims`/`--worlds`/`--c-puct`/`--sb-*` fill every search seat's
-  unspecified knobs), `--seed` reproduces. The search A/B gate — search vs
-  the same checkpoint's raw policy — is `baseline --player-a mcts:gen
-  --player-b gen --deck-a <deck>`. The report ends with player A's score
-  against the 55% promotion bar (PASS/FAIL plus the gate's SPRT reading) and,
-  on the Python backend, each search seat's counters and safe fraction. Every run appends its report to `checkpoints/baseline_report.log`
-  (override with `--log`), and the actor path records the net's searched
-  decisions as shards under `az_data/baseline/baseline_<stamp>/` (analyzable
-  with `az_inspect`/the shard browsers; never pooled into training;
-  `--no-record` to skip). Implementation: `train/az_baseline.py`.
-- **`play.py`** — human vs model: `--player-a`/`--player-b` are agent specs,
-  exactly one of them `human` (default: human on A vs `az:gen` on B),
-  with `--deck-a`/`--deck-b`. `--board text` = `run_games` with a
-  `HumanController` seat (semantic input) vs `make_controller(opponent)`;
-  `--board tui|gui` (default gui) = the GameDriver boards.
-- **`ci_check.py`** — the `make check` gate; league smoke + fuzz tiers run
-  through `run_games`, replay corpus through the engine's `--replay`.
-- **`analysis.py`** — trace collection / counterfactual rollouts on
-  `drive_game` hooks; replays via recorded engine seed + action log.
+- **`test_harness.py`** (`run_games`) — state sculpting (hands / zones / scenarios). One global
+  `--play`/`--actions` script drives both seats first (seat keys `A:`/`B:`), then each seat's
+  `--player-a/-b` agent (default `auto`). Use `--format bo1` for a single sculpted game.
+- **`train.py observe`** (`run_games`) — any matchup: `--player-a/-b` (default `scripted`),
+  `--deck-a` (default `delver`) / `--deck-b` (default: A's deck); game *i* uses `--seed + i`.
+  Transcript `--verbose` / compact / `--quiet` (one-line W/L/D only); `--out FILE` writes the
+  transcript to FILE with the summary on stdout; `--max-decisions N` caps each game. Two forms:
+  - **fuzz campaign** — `--player-a explore --player-b explore` (or `explore:patient`)
+    `--verbose --out FILE`; any draw is a finding (also saved to `draw_<stamp>.txt`).
+  - **throughput benchmark** — `--timing` prints games, decisions, wall, games/s, decisions/s,
+    ms/decision (`matches=` under bo3); with `--quiet` the engine runs without narrative:
+    `--format bo1 --games 40 --max-decisions 4000 --quiet --timing`.
+- **`train.py az-eval`** — the promotion gate; its Python fallback plays through `run_match`.
+- **`play.py`** — one seat `human` (default: human on A vs `az:gen` on B), `--deck-a/-b`.
+  `--board text` = `run_games` with a human seat (index or semantic spec; `concede` /
+  `concede:match` resign); `--board tui|gui` (default gui) = the GameDriver boards.
+- **`ci_check.py`** — the `make check` gate; `smoke`/`fuzz` tiers and the `replay` corpus
+  (`regression/replay_diff.py`) run through `run_games`. See [`ci.md`](ci.md).
+- **`analysis.py`** — trace collection and counterfactual rollouts on `drive_game` hooks, replayed
+  from a recorded engine seed + action log; `gui_session_io.py` replays saved sessions the same
+  way.
 
-The torch training loop (`train.py train/league/sweep`, the vectorized env
-wrappers `ModelVsScriptedEnv`/`SelfPlayEnv`/`FixedModelEnv`) is a separate
-path by design and is not routed through the runner.
+The torch training loop (`train.py train/league/sweep`, the vectorized wrappers
+`ModelVsScriptedEnv`/`SelfPlayEnv`/`FixedModelEnv`) is a separate path by design and does not use
+the runner (only its periodic rollout transcripts do, via `run_games`).

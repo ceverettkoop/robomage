@@ -1,64 +1,78 @@
 # Continuous integration & the test standard
 
-The standard for changes to this repo: **`make check` must pass.** It is the one
-command that stands in for the old grab-bag of harness invocations, and CI runs
-exactly it. Run it locally before pushing.
+The standard for changes to this repo: **`make check` must pass.** CI runs exactly it; run it
+locally before pushing.
 
 ```bash
-make check          # builds (headless debug) + runs train/ci_check.py (all tiers)
+make check    # `make` (debug build + codegen), then train/ci_check.py (every default tier)
 ```
 
-`make check` requires the Forge card scripts to be provisioned first (the
-SessionStart hook does this on a fresh clone / cloud session):
+It needs the Forge card scripts provisioned first (the SessionStart hook does this in cloud sessions only;
+run it yourself on a fresh local clone):
 
 ```bash
 train/.venv/bin/python tools/forge_fetch/provision_decks.py
 ```
 
-`provision_decks.py` fetches the script for **every card in `src/card_vocab.h`**
-plus every card named by the decks (top-level, `meta/`, `league/`) and the tokens
-they create. Fetching the whole vocab — not just deck cards — is what keeps the
-codegen (`train/card_costs.py`) deterministic, so the `pygen` tier below is a
-reliable gate rather than an environment-dependent one.
+`provision_decks.py` fetches the script for **every card in `src/card_vocab.h`** plus every card
+named by the top-level, `meta/` and `league/` decks, and the tokens they create. Fetching the
+whole vocab keeps the script-derived codegen (`card_costs.py`, `card_props.py`,
+`src/gen/card_costs_gen.h`) complete and independent of which decks happen to be provisioned.
+`ci_check.py` exits 2 without running anything when a tier needs a missing engine binary or
+card scripts, or when `--tier` names an unknown tier.
 
 ## The tiers (`train/ci_check.py`)
 
-`ci_check.py` runs cheap-to-expensive; every requested tier runs even if an
-earlier one fails, so one invocation reports every finding. It exits nonzero on
-any **error** (warnings alone still pass).
+Tiers run in the order below. Every requested tier runs even if an earlier one fails, so one
+invocation reports every finding. Exit 1 on any **error**; warnings alone pass. Most tiers wrap
+one `train/test_*.py` script, which can be run standalone to reproduce.
 
-| Tier | What it checks | Fails on |
+| Tier | Checks (script) | Notes |
 |---|---|---|
-| `pygen` | `train/_enums.py` and `train/card_costs.py` are in sync with their C++ inputs | a stale committed copy (someone changed a C++ input without running `make pygen`) |
-| `vocab` | every card in the top-level and `league/` decks resolves to a `card_vocab.h` entry (DFC deck names resolve through their script's front face) | any deck card missing from the vocab |
-| `gatesprt` | the AZ promotion gate's sequential test (`train/gate_sprt.py`, via `train/test_gate_sprt.py`): hypotheses symmetric about 0.5, draws scored half/half, Wald bounds, verdict monotone and mirror-symmetric, the round cap keeping the incumbent unless the score reached the bar (an in-between score is UNDECIDED, not a failed gate), the per-deck floor lock (beyond rescue under the cap) firing only when it truly is, and simulated per-match-checked gates accepting a stronger candidate in fewer matches than the fixed panel they replaced, rejecting a weaker one, and coin-flipping an EQUAL one | any change to the promote/keep math — which silently changes which nets get promoted and has no other symptom. Stdlib-only, torch-free, engine-free, instant |
-| `treecache` | the rebuilt-search-tree cache behind the recording browser's Tree tab (`train/tree_cache.py`, via `test_tree_cache.py`): synthetic per-world MCTS trees round-trip through the npz layout node-for-node (P/N/W/rep/sel_mask/children exact, argmax-visit PV descent identical) and a bad format version is refused | any serialization drift. Torch-free, engine-free, instant |
-| `browser` | the Textual analysis browser (`train/tui_analysis.py`, `analysis.py browse --board tui`, via `test_tui_browser.py`) driven headlessly over a synthetic saved session: the `.rmtrace` source loads through the shared `browse_session` engine worker, ctrl+s saves a `.rmtrace` that reloads with the same games and provenance, a net probe runs on the analysis worker, the Tree tab installs a rebuilt tree's per-world roots, submits node expansions and renders the walked hypothetical board as text, and live-streamed events grow / follow / finalize a LIVE games row | the terminal board losing a capability the GUI pane has (its glue to the shared core). Torch-free; needs `bin/robomage`, textual and matplotlib (self-skips without them); ~3s |
-| `modelspec` | the model-spec resolver (`opponents.parse_model_spec` and its loaders, via `test_model_spec.py`): the kind/prefix/base/canonical-evaluator table for every spec family (bare / `mcts:` = PPO, `az:`/`azraw:`/`.pt` = AZ ladder, `uniform`, agent specs), knob stripping, `tree_rebuild.evaluator_spec_for`, and — loaders stubbed — that one spec's search evaluator, V(s) model and probe net read the SAME checkpoint through analysis / shard_replay / shard_probes / az_inspect | a consumer re-growing its own prefix/knob stripper and drifting onto a different net. Torch-free, engine-free, instant |
-| `obsinv` | structural per-decision invariants on the raw machine-mode observation across a few seeded scripted games (`train/test_obs_invariants.py`): card-id / entity-ref floats decode in range, recency-packed zones (GY/exile) have no holes, one-hots are one-hot, player counts non-negative, a declared companion is revealed to the opponent, pass flags are 0 outside priority windows, every non-priority decision names its pending-decision source (outside an approved exception table), delayed-trigger slots are packed, opp decklist `revealed` bits sit only on filled slots | any observation-encoding invariant violation (a silent `serialize_state` layout/encoding regression) |
-| `actorobs` | the C++ AZ actor's copy of the observation layout still agrees with `src/machine_io.h` — `make actor-syntax` runs `-fsyntax-only` over the actor's two libtorch-free TUs, firing every absolute-offset `static_assert` in `src/actor/obs_builder.{h,cpp}` | the actor obs mirror not compiling (a layout change that left `src/actor/` behind). Compiler-only, no torch — the asserts were previously reachable only via `make actor`, which is not in the default build |
-| `replay` | the byte-identical replay corpus (`train/regression/corpus/`, decks delver/doomsday/mav in every seating) still reproduces exactly | any transcript drift |
-| `smoke` | deterministic league games with the scripted **hard** agent across the league mirrors + a ring of crosses (fixed seeds) | a crash, an incomplete game, or an `ERROR:`/`FATAL:` line |
-| `fuzz` | short random coverage fuzz (the `explore` agent) over the league mirrors (fixed seeds on PR) | same as smoke |
+| `pygen` | Runs every generator; fails if the **tracked** outputs `train/_enums.py` / `src/gen/archetypes_gen.h` differ from the committed copies (restored afterward). The untracked script-derived outputs are only crash-checked | stale = a C++/JSON input changed without regenerating |
+| `vocab` | every top-level and `league/` deck card resolves to a `card_vocab.h` entry (DFCs via their script's front face) | |
+| `curriculum` | curriculum plan schema, each phase kind's composed `train.py` argv, resume forms, plan-hash prefix check (`test_curriculum.py`) | stdlib-only |
+| `clispec` | the shared CLI vocabulary (`test_cli_spec.py`): removed flags error with their hint and stay out of `--help`/TUI forms, `--format` defaults to bo3, GUI launcher fields mirror play.py/browser flags, search-knob fold, per-board option errors, `analysis.py browse --source` dispatch | legs whose script needs torch/SB3 (`train.py`, `bench_actor.py`) or textual (TUI stubs) print `[skip]` without them |
+| `gatesprt` | the AZ promotion gate's SPRT (`gate_sprt.py` via `test_gate_sprt.py`): symmetric hypotheses, draws half/half, Wald bounds, monotone/mirror-symmetric verdict, round-cap and floor-lock rules, simulated gates accept a stronger candidate, reject a weaker one, coin-flip an equal one | a silent change here changes which nets get promoted. Stdlib-only |
+| `shardrec` | play-session shard recorder (`test_shard_record.py`): trainer schema, mid-game flush validity (`z=0` rows), no duplicate rows on rewrite, per-mover z backfill, both readers round-trip, π from the search posterior only, shared search-vs-net divergence | torch-free, engine-free |
+| `treecache` | rebuilt-search-tree cache (`test_tree_cache.py`): per-world trees round-trip node-for-node through the npz layout; a bad format version is refused | torch-free, engine-free |
+| `browser` | Textual analysis browser (`test_tui_browser.py`) driven headlessly: `.rmtrace` load/save round trip, a net probe, Tree tab rebuild/expand/walk, live-stream rows | needs the engine, textual and matplotlib; `[skip]` without the packages |
+| `modelspec` | model-spec resolver (`test_model_spec.py`): the spec-family table, knob stripping, and one spec → one checkpoint across every consumer | torch-free, engine-free |
+| `concede` | CR 104.3a concession sentinels (`test_concede.py`): bo1 / bo3-game / match concede outcomes, and the sentinel replays via `--replay` | needs the engine |
+| `obsinv` | per-decision structural invariants on the raw observation over seeded scripted games (`test_obs_invariants.py`) — see its docstring for the list | prints the violated invariant (decision, seat, block, slot, value) |
+| `actorobs` | `make actor-syntax` (`-fsyntax-only` over the actor's libtorch-free TUs, firing the obs-layout `static_assert`s in `src/actor/obs_builder.{h,cpp}`), plus a generated TU asserting `machine_io.h`'s `OFFSET_CHAIN` equals `env.py`'s offsets block by block | compiler only |
+| `pergame` | bo3 per-game-index win-rate split: seat-flip consistency, tally merging, a live bo3 (`test_per_game_split.py`) | needs the engine |
+| `snapshot` | `--search-server` snapshot/restore/determinize protocol: round-trip identity, RNG isolation, terminal intercept (`test_snapshot.py`) | needs the engine |
+| `sbrules` | dead-sideboard-card rules table and `mcts.sb_dead_mask` (`test_sb_rules.py`) | engine- and torch-free; the C++ twin is covered by `actor` |
+| `sbselfplay` | AZ self-play writes bo3 sideboard samples priced by the next game's result (`test_sideboard_selfplay.py`) | needs the engine |
+| `plansearch` | sideboard plan search (`mcts.run_plan_search` + `IncrementalPlanSearch`): coverage, accounting, determinism, memo (`test_plan_search.py`) | needs the engine |
+| `mirror` | world-parallel mirror-pool search: bit-identical visits vs serial, bo3 lockstep, pool disable on drift (`test_mirror_search.py`) | needs the engine |
+| `xwsearch` | cross-world batched leaf evaluation in the Python search: exact parity vs sequential (`test_xw_search.py`) | torch legs skip without torch |
+| `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed | any transcript drift |
+| `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup) | see classification below |
+| `fuzz` | the `explore` fuzzer (`--mode`) over the league mirrors (`--fuzz-games`, default 8 per matchup) | see classification below |
 
-### Opt-in tiers (valid for `--tier`, not part of the default run)
+`smoke`/`fuzz` play through `runner.run_games` with seed `--seed + 1000·k` for matchup `k`, and
+write `ci_out/<tier>_<a>__<b>.txt` (Python output plus engine stderr).
 
-| Tier | What it checks | Needs |
+### Opt-in tiers (valid for `--tier`, not in the default run)
+
+| Tier | Checks | Needs |
 |---|---|---|
-| `actor` | the Phase-D AZ actor: obs bit-parity (`test_actor_parity.py`), MCTS visit-count parity (`test_mcts_parity.py`), self-play shard schema / trainer ingest (`test_actor_shards.py`), and trainer-interchangeability of C++ vs Python shards (`test_actor_trains.py` — same schema, both loss trajectories finite and decreasing) | `bin/az_actor` (`make actor`) + torch; self-skips otherwise. The actor links the **venv's** libtorch by rpath but is compiled against its headers, so after ANY change of the venv's torch (e.g. the pinned ROCm swap in [`gpu_selfplay_inference_plan.md`](gpu_selfplay_inference_plan.md) — currently `torch==2.10.0+rocm7.0`) rebuild BOTH configs (`make actor` and `make actor BUILD=RELEASE`) and re-run this tier: stale actors abort at runtime with c10 errors (seen: `set_stride`) or fail parity spuriously |
-| `analysis` | the GUI analysis window's engine core — chunked `IncrementalSearch` bit-identical to `run_search`, detached-mirror lockstep, cancellation (`test_analysis_session.py`) — plus the shard-replay reconstruction behind `analysis.py browse --source DIR` (`test_shard_replay.py`) | torch-free; `bin/robomage` |
-| `treerebuild` | the exact rebuild of a recorded opponent search (`train/tree_rebuild.py`, via `test_tree_rebuild.py`): a uniform-evaluator `SearchController` plays a recorded match with fixed-sims AND timed searches, then every searched row is replayed and re-searched from its recorded world seeds + sim count and must reproduce the recorded root visits bit-for-bit; the cached tree reopens identical, PV walks return boards, and a tree-followed row resolves to its origin search | torch-free; `bin/robomage` |
-| `azinspect` | the AZ checkpoint inspector's views against a fresh net + synthetic shards (`test_az_inspect.py`) | torch; no engine binary |
-| `gui` | headless PySide6 shell smokes (play board, shard recording, analysis window, save/reopen, the shard browser and tree rebuild over the recordings those legs write — never a training pool) | PySide6 |
+| `actor` | `test_actor_parity.py` (obs bit-parity), `test_mcts_parity.py` (MCTS visit parity incl. two-model legs), `test_actor_shards.py` (shard schema/ingest), `test_actor_trains.py` (C++ vs Python shards train alike), `test_az_gate.py` (actor-backend gate driver) | `bin/<config>/az_actor` (`make actor`) + torch, else `[skip]`. Errors (instead of running) if any `src/` engine source (excluding `src/gen/`) is newer than the actor binary. The actor links the venv's libtorch but compiles against its headers, so after any change of the venv's torch rebuild both configs (`make actor` and `make actor BUILD=RELEASE`): stale actors abort with c10 errors (e.g. `set_stride`) or fail parity spuriously |
+| `analysis` | `test_analysis_session.py` (chunked `IncrementalSearch` bit-identical to `run_search`, detached-mirror lockstep, rewind, cancellation), `test_shard_replay.py` (`analysis.py browse --source DIR` reconstruction), `test_browse_session.py` (browser core), `test_gui_session_io.py` (`.rmplay`/`.rmtrace` save/load) | the engine; torch-free |
+| `treerebuild` | `test_tree_rebuild.py`: a recorded match's searches (fixed-sims and timed) re-run from their recorded world seeds + sim counts reproduce the recorded root visits exactly; cached tree reopens identical; followed rows resolve to their origin | the engine; torch-free |
+| `azinspect` | `test_az_inspect.py`: every `az_inspect` view against a fresh net + synthetic shards | torch (else `[skip]`); no engine |
+| `gui` | headless PySide6 legs (offscreen): play board, record-shards, analysis window, session save/reopen, `.rmtrace` open, shard browser, and a torch-free `mcts:uniform` search recording whose tree is rebuilt — each browsing only the scratch recordings the earlier legs wrote | PySide6 (else `[skip]`) |
 
 ```bash
 train/.venv/bin/python train/ci_check.py --tier actor
 ```
 
-Each `gui` leg is one process selected by `ROBOMAGE_SMOKE`, a comma list of smoke legs
-(`play[:N]`, `analysis`, `session`, `trace`, `browser[:DIR]`, `tree:DIR`; parsed by
-`cli_spec.smoke_legs`). To reproduce one leg by hand, under a memory cap and against a small
-recording only:
+Each `gui` leg is one process selected by `ROBOMAGE_SMOKE` (a comma list of `play[:N]`,
+`analysis`, `session`, `trace`, `browser[:DIR]`, `tree:DIR`; parsed by `cli_spec.smoke_legs`).
+Reproduce a leg by hand under a memory cap, against a small recording only (never a training
+pool):
 
 ```bash
 QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=play:8 ROBOMAGE_RECORD_DIR=/tmp/rec \
@@ -69,98 +83,86 @@ QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=browser:/tmp/rec \
   train/.venv/bin/python train/gui_main.py
 ```
 
-Useful flags: `--tier pygen,vocab` (subset), `--smoke-games N` / `--fuzz-games N`
-(depth), `--seed N`, `--matchups mirrors|ring|mirrors+ring|all|"a:b,c:d"`,
-`--out-dir DIR` (transcripts + relocated draw logs; `ci_out/` by default).
+Flags: `--tier a,b` (subset), `--smoke-games N`, `--fuzz-games N`, `--seed N` (default 1),
+`--mode explore|explore:patient` (fuzz agent), `--matchups mirrors|ring|mirrors+ring|all|"a:b,c:d"`
+(default: smoke `mirrors+ring`, fuzz `mirrors`), `--out-dir DIR` (default `ci_out/`). The run
+ends with a `Reproduce:` line naming its tiers, seed, mode and matchups.
 
-### Draw and warning classification
+### Error and warning classification
 
-Draws are not acceptable, but the two causes differ:
+Draws are not acceptable, but the causes differ in severity:
 
-- A game that ends with no winner because the engine hit its internal step cap (a
-  **stall**) is a **warning** — flagged for review, does not fail the gate.
-- A game whose engine process **crashed** (nonzero exit / EOF mid-game, surfaced
-  as an exception) is an **error** — fails the gate. So is any `ERROR:`/`FATAL:`
-  / assert / traceback line in a transcript (a non-fatal engine `ERROR:` is not
-  acceptable per `CLAUDE.md`).
+- **Error** (fails the gate): an engine crash (nonzero exit / EOF mid-game), fewer games
+  completed than requested, or any transcript line matching `^ERROR:` / `^FATAL:`, a Python
+  traceback, `Segmentation fault`, a failed assertion, `Aborted` or `core dumped` (a non-fatal
+  engine `ERROR:` is not acceptable per `CLAUDE.md`).
+- **Warning** (flagged for review, passes): a game that ends with no winner because the engine
+  hit its step cap (a **stall** draw; its log is moved into `--out-dir`), or an engine
+  `WARNING:` line.
 
-Routine `WARNING: Unrecognized ability param` lines are left in the transcript
-(greppable) but not surfaced — they fire in bulk for cosmetic / AI-hint params
-and would drown the signal. The keys currently suppressed at the source (and the
-ones still needing a real handler) are tracked in `todo.md`.
+`WARNING: Unrecognized ability param` lines stay in the transcript (greppable) but are not
+surfaced: they fire in bulk for cosmetic / AI-hint params. Params the parser drops without
+warning are the `ignored_keys` set in `src/parse.cpp`; their review is tracked in `todo.md`
+("Audit: ability-param keys the parser silently ignores").
 
 ## Workflows
 
-- **`.github/workflows/ci.yml`** — on push / PR to `main` (and `workflow_dispatch`).
-  Runs all tiers with the fixed default seed, so a red run is the diff's fault,
-  not RNG. Transcripts are uploaded as an artifact (`if: always()`), so
-  warning-level stall-draw logs are reviewable even on green runs.
-- **`.github/workflows/nightly-fuzz.yml`** — scheduled (08:00 UTC) + manual. Runs
-  the `fuzz` tier over **all** league matchups in both `explore` and
-  `explore:patient` modes, with a **rotating** seed (derived from the run number,
-  printed to the job summary with the exact local reproduce command). Two more
-  jobs install CPU torch (pinned to the dev venv's 2.10) and the SB3 stack:
-  `actor-parity` runs the opt-in `actor` tier, and `full-check` runs the default
-  `ci_check.py` (what `make check` runs) with textual and matplotlib added too. The per-push
-  image has only numpy + gymnasium, so there the `browser` tier and the `clispec`
-  legs that launch `train.py`, `bench_actor.py` or the TUI stubs print `[skip]`
-  (and `xwsearch` skips its torch legs); `full-check` is where they run on GitHub.
+- **`.github/workflows/ci.yml`** — push / PR to `main`, and `workflow_dispatch`. Runs the default
+  `ci_check.py` with the fixed seed, so a red run is the diff's fault, not RNG. Transcripts are
+  uploaded as `ci-transcripts-<run_id>` even on success, so stall-draw logs are reviewable. The
+  image has only numpy + gymnasium: the `browser` tier, the `clispec` legs that need
+  torch/SB3/textual, and `xwsearch`'s torch legs print `[skip]` here.
+- **`.github/workflows/nightly-fuzz.yml`** — daily 08:00 UTC, plus manual (`games`, `seed`
+  inputs). Three jobs:
+  - `fuzz` — the `fuzz` tier over **all** league matchups, once with `explore` and once with
+    `explore:patient`, 40 games per matchup, with a **rotating** seed (run number × 100000
+    unless given). The job summary prints the exact local reproduce command; artifact
+    `nightly-fuzz-explore[-patient]-<run>`.
+  - `actor-parity` — installs CPU torch (pinned `torch==2.10.*`, matching the dev venv; later
+    headers need C++20) and the SB3 stack, builds `make actor`, runs `--tier actor`.
+  - `full-check` — same torch pin plus SB3, matplotlib and `train/requirements-tui.txt`, then the
+    default `ci_check.py`, so every leg skipped per-push runs at least nightly.
 
-Both share `.github/actions/setup-robomage` (Python venv, pip / card-script /
-ccache caching, provisioning, headless debug build). The card-script cache is
-populated with a split restore/save so the first run leaves a warm cache even if
-a later step fails; the fetch tool is add-only, so a stale cache only re-fetches
-the delta.
+All jobs share `.github/actions/setup-robomage` (Python 3.12 venv with numpy + gymnasium,
+card-script provisioning, ccache, debug build). The card-script cache is keyed on the
+`FORGE_PIN` hash (a pin bump restores nothing and re-fetches everything) and saved right after
+provisioning, so even a failing first run leaves a warm cache; the fetch tool is add-only, so a
+stale cache within a pin only re-fetches the delta.
 
 ## Reproducing a CI failure locally
 
-1. **PR gate failure:** run `make check` (same command, same fixed seed). The
-   failing tier names the transcript file under `ci_out/`; open it. Download the
-   run's `ci-transcripts-*` artifact if you want the exact CI transcripts.
-   - An **`obsinv`** failure prints the exact violated invariant (decision index,
-     seat, block, slot, raw value); reproduce it directly with
-     `train/.venv/bin/python train/test_obs_invariants.py` (fixed internal seeds,
-     so it replays identically).
-2. **Nightly-fuzz failure:** the job summary prints the seed and the exact
-   `ci_check.py --tier fuzz ... --seed <SEED>` line — run it locally to replay
-   the same games. The `nightly-fuzz-*` artifact has the transcripts.
+1. **PR gate:** run `make check` (same command, same fixed seed). The failing tier names its
+   transcript under `ci_out/`; the run's `ci-transcripts-*` artifact has CI's copies. Re-run one
+   tier with `--tier <name>` or its `test_*.py` script directly (e.g.
+   `train/.venv/bin/python train/test_obs_invariants.py`; fixed internal seeds).
+2. **Nightly fuzz:** run the `ci_check.py --tier fuzz --matchups all --mode … --fuzz-games …
+   --seed …` line from the job summary; the `nightly-fuzz-*` artifact has the transcripts.
 
 ## Intentionally changing behavior
 
-Some tiers pin current behavior, so an **intended** change must update them in
-the same commit (the diff is part of the review).
+Some tiers pin current behavior, so an **intended** change updates them in the same commit (the
+diff is part of the review). The one-command path is **`make regen`**: provision the card set,
+`make` (which reruns every generator), then re-record the replay corpus. Review and commit the
+changed files. What it covers:
 
-**The one-command path is `make regen`** — it builds, provisions the card set,
-force-reruns both codegen generators, and re-records the replay corpus; then you
-review and commit the changed files. Prefer it over the individual steps below
-(which document what it does):
-
-- **`replay` drift** from a deliberate engine/agent/card-data change:
-  re-record the corpus and commit it.
+- **`replay` drift** from a deliberate engine / agent / card-data change: re-record and commit.
   ```bash
   train/.venv/bin/python train/regression/replay_diff.py record
   ```
-  The corpus is **platform-portable**: all gameplay randomness goes through
-  `src/stable_rng.h` (hand-rolled Fisher–Yates + rejection sampling over the
-  raw mt19937 stream), so Mac and Linux produce byte-identical transcripts
-  from the same seed. Keep it that way — never call `std::shuffle`,
-  `std::uniform_int_distribution`, or `rand()` with `cur_game.gen` (or for any
-  gameplay decision); their output is implementation-defined and differs
-  between libstdc++ (CI) and libc++ (macOS), which silently re-locks the
-  corpus, RMLOG replays, and bug-repro seeds to one platform.
-- **`pygen` staleness** after editing `src/card_vocab.h` (or a C++ codegen
-  input): regenerate and commit the outputs (provision the full card set first so
-  `card_costs.py` is complete).
-  ```bash
-  train/.venv/bin/python tools/forge_fetch/provision_decks.py
-  train/.venv/bin/python train/gen_enums.py
-  train/.venv/bin/python train/gen_card_costs.py
-  ```
-  Run the generators directly (or use `make regen`) rather than `make pygen`
-  here: ci_check's pygen tier restores the committed copies with `git
-  checkout`, which bumps their mtimes past the C++ inputs, so the incremental
-  `pygen` file targets can report "nothing to be done" on stale content.
+  The corpus is **platform-portable**: all gameplay randomness goes through `src/stable_rng.h`
+  (hand-rolled Fisher–Yates + rejection sampling over the raw mt19937 stream), so Mac and Linux
+  produce byte-identical transcripts from a seed. Never call `std::shuffle`,
+  `std::uniform_int_distribution` or `rand()` with `cur_game.gen` (or for any gameplay
+  decision): their output is implementation-defined and differs between libstdc++ (CI) and
+  libc++ (macOS), which would lock the corpus, RMLOG replays and bug-repro seeds to one platform.
+- **`pygen` staleness** after editing a C++/JSON codegen input: `make pygen` (every generator,
+  unconditionally, write-if-changed), then commit `train/_enums.py` and
+  `src/gen/archetypes_gen.h`. The other generated files are untracked; nothing to commit.
 
-`train.py observe --player-a explore --player-b explore --verbose --out FILE` is
-the manual, exploratory fuzz-campaign tool (dumps a transcript for review;
-always exits 0). `ci_check.py` is the gating wrapper.
+`make refetch` deletes the local card/token scripts, re-provisions them at the pinned Forge
+commit and runs `make check` **without** re-recording, to detect whether fresh scripts drift
+from the committed corpus; if the drift is intended, follow with `make regen`.
+
+`train.py observe --player-a explore --player-b explore --verbose --out FILE` is the manual,
+exploratory fuzz campaign (dumps a transcript for review; always exits 0). `ci_check.py` is the
+gating wrapper.

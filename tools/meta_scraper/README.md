@@ -23,6 +23,7 @@ Options:
 | `--top N` | 10 | number of top archetypes to fetch |
 | `--out DIR` | `bin/resources/decks/meta/` | output directory for `.dk` files |
 | `--format CODE` | `LE` | MTGTop8 format code (LE = Legacy) |
+| `--cardsfolder DIR` | `bin/resources/cardsfolder/` | scripts used to expand double-faced names (`''` disables) |
 | `--delay SEC` | 0.6 | pause between requests (be polite) |
 | `--dry-run` | off | print the plan without writing files |
 
@@ -40,15 +41,20 @@ The run is idempotent: files are overwritten by sanitized archetype name.
    format used elsewhere in `bin/resources/decks/` (tab-separated `qty<TAB>name`,
    a blank line, then `SIDEBOARD:`).
 
-Card names are kept verbatim (apostrophes included); the engine's `name_to_uid`
-normalization strips punctuation when resolving card scripts, so both spellings
-resolve.
+Card names are kept verbatim (apostrophes included; the engine's `name_to_uid`
+strips punctuation), except that a front-face-only name of a multi-face card
+(DFC/adventure/split) is expanded to the combined `Front Back` name when a local
+combined script exists (e.g. `Brazen Borrower` -> `Brazen Borrower Petty Theft`),
+so the engine resolves its `<front>_<back>.txt` script; with no local combined
+script the name is left as-is.
 
 ## Notes
 
 - Some archetypes are 80-card **companion** (e.g. Yorion) builds — an 80-card
   mainboard is expected for those, not a parsing error.
 - Card names that are not yet in `src/card_vocab.h` are still written to the
-  deck file; use `train/missing_cards.py` to list which ones need implementing.
+  deck file; `train/missing_cards.py --decks-dir bin/resources/decks/meta`
+  lists which ones need implementing (without `--decks-dir` it scans the league
+  roster in `decks/league/`).
 - If MTGTop8 changes its HTML and parsing returns nothing, the tool exits with a
   clear error rather than writing empty decks.
