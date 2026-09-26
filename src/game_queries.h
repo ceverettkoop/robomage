@@ -368,6 +368,14 @@ Zone::Ownership seat_of_player(Entity player_entity);
 Zone::Ownership priority_seat();
 Zone::Ownership active_seat();
 
+// ── Player targets (CR 115.1 / 109.5) ───────────────────────────────────────
+// The player half of a Forge ValidTgts$ spec: its comma-OR alternatives that name a player —
+// "Any" (any target), "Player" (either player), "Opponent" / "Player.Opponent" (only an opponent
+// of `you`), "Player.You" (only `you`). `names_players` says whether any alternative names a
+// player at all; `player_matches_target_spec` whether `player` satisfies one of them.
+bool target_spec_names_players(const std::string &valid_tgts);
+bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zone::Ownership you);
+
 // ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
 // Who controls an object: its live Permanent.controller while on the battlefield, a spell's
 // caster while on the stack (CR 110.2), else the owner of its current zone. The one "who

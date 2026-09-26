@@ -743,21 +743,6 @@ static bool player_has_protection_from_everything(Entity cand, Zone::Ownership c
     return false;
 }
 
-// True if `needle` occurs in `hay` as a WHOLE word — not as a substring of a longer alphabetic
-// token. A ValidTgts spec names a player target with the head type "Player", but control
-// qualifiers embed it inside longer words (e.g. "ControlledBy TriggeredDefendingPlayer" on
-// Frenzied Trapbreaker), where a raw substring scan would wrongly read it as a player target.
-static bool valid_tgts_names_word(const std::string &hay, const char *needle) {
-    const size_t nlen = std::char_traits<char>::length(needle);
-    for (size_t p = hay.find(needle); p != std::string::npos; p = hay.find(needle, p + 1)) {
-        const bool left_ok = (p == 0) || !std::isalpha(static_cast<unsigned char>(hay[p - 1]));
-        const size_t end = p + nlen;
-        const bool right_ok = (end == hay.size()) || !std::isalpha(static_cast<unsigned char>(hay[end]));
-        if (left_ok && right_ok) return true;
-    }
-    return false;
-}
-
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -834,8 +819,6 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     }
 
     bool any = (vt == "Any");
-    bool opp_only = (vt == "Opponent");
-    bool inc_players = any || opp_only || valid_tgts_names_word(vt, "Player");
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
     bool inc_lands = vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
@@ -904,14 +887,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     }
 
     // Player target
-    if (global_coordinator.entity_has_component<Player>(cand)) {
-        if (!inc_players) return false;
-        if (opp_only) {
-            Zone::Ownership opp = opponent_of(caster);
-            return cand == get_player_entity(opp);
-        }
-        return true;
-    }
+    if (global_coordinator.entity_has_component<Player>(cand))
+        return player_matches_target_spec(vt, cand, caster);
 
     // Battlefield permanent target (phased-out permanents can't be targeted, 702.26b)
     if (!is_battlefield_permanent(cand)) return false;

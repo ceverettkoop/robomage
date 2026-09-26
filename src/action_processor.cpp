@@ -381,16 +381,11 @@ static std::vector<Entity> build_valid_targets(
         return valid_targets;
     }
 
-    bool any = (vt == "Any");
-    bool opp_only = (vt == "Opponent");
-    bool inc_players = any || opp_only || vt.find("Player") != std::string::npos;
-
-    // Players: opponent first, self second
-    if (inc_players) {
-        if (ability.is_legal_target(get_player_entity(opp), priority_player))
-            valid_targets.push_back(get_player_entity(opp));
-        if (!opp_only && ability.is_legal_target(get_player_entity(priority_player), priority_player))
-            valid_targets.push_back(get_player_entity(priority_player));
+    // Players: opponent first, self second (is_legal_target applies the spec's player clause)
+    if (target_spec_names_players(vt)) {
+        for (Zone::Ownership seat : {opp, priority_player})
+            if (ability.is_legal_target(get_player_entity(seat), priority_player))
+                valid_targets.push_back(get_player_entity(seat));
     }
 
     // Permanents: two passes — opponent's first, then own (entity-ID order within each group)

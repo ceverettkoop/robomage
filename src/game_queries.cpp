@@ -551,6 +551,47 @@ Zone::Ownership priority_seat() {
 
 Zone::Ownership active_seat() { return cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B; }
 
+// ── Player targets (declared in game_queries.h) ─────────────────────────────
+// One comma-OR alternative of a ValidTgts$ spec, if it names a player: the seat restriction it
+// places (UNKNOWN = either player, else the required relation to `you`). False when it names no
+// player (a permanent/card alternative).
+static bool player_target_alternative(const std::string &alt, bool &opponent_only, bool &you_only) {
+    opponent_only = you_only = false;
+    if (alt == "Any") return true;
+    size_t sep = alt.find_first_of(".+");
+    const std::string head = alt.substr(0, sep);
+    if (head == "Opponent") { opponent_only = true; return true; }
+    if (head != "Player") return false;
+    if (sep == std::string::npos) return true;
+    std::string quals = alt.substr(sep + 1);
+    std::replace(quals.begin(), quals.end(), '.', '+');
+    for (const auto &q : split(quals, '+', /*skip_empty=*/true)) {
+        if (q == "Opponent") opponent_only = true;
+        else if (q == "You") you_only = true;
+    }
+    return true;
+}
+
+bool target_spec_names_players(const std::string &valid_tgts) {
+    bool opp_only = false, you_only = false;
+    for (const auto &alt : split(valid_tgts, ',', /*skip_empty=*/true))
+        if (player_target_alternative(alt, opp_only, you_only)) return true;
+    return false;
+}
+
+bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zone::Ownership you) {
+    Zone::Ownership seat = seat_of_player(player);
+    if (seat == Zone::UNKNOWN) return false;
+    for (const auto &alt : split(valid_tgts, ',', /*skip_empty=*/true)) {
+        bool opp_only = false, you_only = false;
+        if (!player_target_alternative(alt, opp_only, you_only)) continue;
+        if (opp_only && seat != opponent_of(you)) continue;
+        if (you_only && seat != you) continue;
+        return true;
+    }
+    return false;
+}
+
 // ── Defined$ player resolution (declared in game_queries.h) ─────────────────
 Zone::Ownership source_controller(Entity source) {
     if (global_coordinator.entity_has_component<Permanent>(source))
