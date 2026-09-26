@@ -53,6 +53,11 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
     }
     if (target_creature != 0 && global_coordinator.entity_has_component<Permanent>(equip_entity) &&
         global_coordinator.entity_has_component<Permanent>(target_creature)) {
+        // An Equipment attaches only to something it can equip; otherwise it doesn't move
+        // (CR 301.5b/301.5c).
+        bool is_equipment = global_coordinator.entity_has_component<CardData>(equip_entity) &&
+                            global_coordinator.GetComponent<CardData>(equip_entity).is_equipment;
+        if (is_equipment && !equipment_can_equip(equip_entity, target_creature)) goto attach_done;
         global_coordinator.GetComponent<Permanent>(equip_entity).equipped_to = target_creature;
         game_log("Equipment attached.\n");
     }

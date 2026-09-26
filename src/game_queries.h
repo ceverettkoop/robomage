@@ -1007,16 +1007,36 @@ inline std::vector<Entity> controlled_permanents_matching(
     return out;
 }
 
+// Whether the Equipment `equipment` can equip `host` (CR 301.5c): `host` is a creature on the
+// battlefield other than the Equipment itself, and the Equipment is not itself a creature unless
+// it has reconfigure. Who controls `host` is not part of it (CR 301.5d). Shared by the equip
+// ability's candidates and the 704.5n unattach check.
+inline bool equipment_can_equip(Entity equipment, Entity host) {
+    if (host == 0 || host == equipment) return false;
+    if (!is_battlefield_permanent(host) || !global_coordinator.entity_has_component<Creature>(host))
+        return false;
+    if (global_coordinator.entity_has_component<Creature>(equipment) &&
+        !(global_coordinator.entity_has_component<CardData>(equipment) &&
+          global_coordinator.GetComponent<CardData>(equipment).is_reconfigure))
+        return false;
+    return true;
+}
+
+// Whether `host` is a legal target for the equip ability of `equipment` activated by `player`
+// (CR 702.6a: "attach to target creature you control"), checked when the ability is offered and
+// again as it resolves.
+inline bool is_equip_candidate(Entity equipment, Entity host, Zone::Ownership player) {
+    return is_battlefield_permanent(host, player) && equipment_can_equip(equipment, host);
+}
+
 // The creatures `player` controls that the Equipment `equipment` can be attached to by its equip
-// ability (CR 702.6a: "attach to target creature you control"; CR 301.5c: never to itself).
-// Shared by the equip legal-action gate and the creature menu offered when it is activated.
+// ability. Shared by the equip legal-action gate and the creature menu offered when it is
+// activated.
 inline std::vector<Entity> equip_candidates(Entity equipment, Zone::Ownership player,
                                             const std::set<Entity> &entities) {
     std::vector<Entity> out;
     for (auto e : entities)
-        if (e != equipment && is_battlefield_permanent(e, player) &&
-            global_coordinator.entity_has_component<Creature>(e))
-            out.push_back(e);
+        if (is_equip_candidate(equipment, e, player)) out.push_back(e);
     return out;
 }
 

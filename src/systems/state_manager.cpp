@@ -227,17 +227,32 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             }
         }
 
+        // Attachments (Permanent::equipped_to, shared by Auras and Equipment):
         // 704.5m - an Aura attached to an illegal object, or not attached to anything, is put
-        // into its owner's graveyard. Auras carry an enchant restriction (CardData::enchant_filter)
-        // and track their attachment via Permanent::equipped_to (shared with equipment). We check
-        // the structural part of "illegal": no attachment, or the enchanted object has left the
-        // battlefield / is no longer a creature (the common fall-off when the enchanted creature
-        // dies or is bounced).
+        // into its owner's graveyard. Auras carry an enchant restriction (CardData::enchant_filter).
+        // We check the structural part of "illegal": no attachment, the enchanted object has left
+        // the battlefield / is no longer a creature (the common fall-off when the enchanted
+        // creature dies or is bounced), or it enchants itself or is a creature (303.4d).
+        // 704.5n / 704.5p - an Equipment attached to a permanent it can't equip (not a creature,
+        // gone, itself, or the Equipment is a creature without reconfigure, 301.5c), and any
+        // other non-Aura permanent attached to something, becomes unattached and stays on the
+        // battlefield.
         for (auto entity : mEntities) {
             if (!is_battlefield_permanent(entity)) continue;
-            if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-            const auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            if (cd.enchant_filter.empty()) continue;  // not an Aura
+            const CardData *acd = global_coordinator.entity_has_component<CardData>(entity)
+                                      ? &global_coordinator.GetComponent<CardData>(entity)
+                                      : nullptr;
+            if (!acd || acd->enchant_filter.empty()) {  // not an Aura
+                auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+                if (perm.equipped_to == 0) continue;
+                if (acd && acd->is_equipment && equipment_can_equip(entity, perm.equipped_to))
+                    continue;
+                game_log("%s becomes unattached\n", entity_name(entity).c_str());
+                perm.equipped_to = 0;
+                any_applied = true;
+                continue;
+            }
+            const auto &cd = *acd;
             // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4) awaiting its
             // ETB reanimation: it entered unattached (its enchant target is still a graveyard card)
             // and its trigger has not yet returned+attached the creature. Its pending_aura_target
@@ -246,7 +261,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             if (game.pending_aura_target.count(entity)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             Entity enchanted = perm.equipped_to;
-            bool illegal = (enchanted == 0) || !is_battlefield_permanent(enchanted);
+            bool illegal = (enchanted == 0) || enchanted == entity ||
+                           !is_battlefield_permanent(enchanted) ||
+                           global_coordinator.entity_has_component<Creature>(entity);
             if (!illegal && cd.enchant_filter.find("Creature") != std::string::npos &&
                 !global_coordinator.entity_has_component<Creature>(enchanted))
                 illegal = true;

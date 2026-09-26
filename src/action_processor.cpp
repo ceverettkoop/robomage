@@ -1788,6 +1788,16 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             resume_choice = -1;
             auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
 
+            // The creature must still be one this Equipment can equip for its controller (CR
+            // 702.6a / 301.5c); otherwise the Equipment doesn't move (CR 301.5b).
+            if (!is_battlefield_permanent(permanent_entity) ||
+                !is_equip_candidate(permanent_entity, target_creature, controller)) {
+                game_log("%s can't equip %s; it doesn't move.\n", permanent.name.c_str(),
+                         entity_name(target_creature).c_str());
+                game.take_action();
+                pa = Game::PendingActivation{};
+                return;
+            }
             permanent.equipped_to = target_creature;
             std::string tname = global_coordinator.GetComponent<Permanent>(target_creature).name;
             game_log("%s equipped to %s.\n", permanent.name.c_str(), tname.c_str());
