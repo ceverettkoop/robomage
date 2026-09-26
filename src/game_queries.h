@@ -181,9 +181,47 @@ std::set<Colors> effective_colors(Entity e);
 // a battlefield object's Permanent name (a token is tagged " token"), then the card's
 // printed CardData name, then a lingering Token component (a token that already left the
 // battlefield keeps only Token), then a standalone ability entity described via its source
-// card ("Sylvan Library's ability") or its effect category. "<unknown>" only when the
-// entity carries no name-bearing component at all. Defined in game_queries.cpp.
+// card ("Sylvan Library's ability") or its effect category, then the last-known name of a
+// permanent that left play and ceased to exist (a token, CR 111.7). "<unknown>" only when the
+// entity carries no name-bearing component and no last-known information. Defined in
+// game_queries.cpp.
 std::string entity_name(Entity e);
+
+// The leaving-the-battlefield snapshot (CR 608.2h) captured for `e` as it last left play, or
+// null if none was captured or it is superseded. A card's snapshot describes the object that
+// left, and only the resolving spell or ability that moved it reads it as that object (CR
+// 608.2h: Swords to Plowshares' life gain); to every later reader the card is a new object with
+// its printed characteristics (CR 400.7). So a card's snapshot is superseded when that
+// resolution ends, at birth when the card left outside a resolution (a state-based death, a
+// cost), and at the card's next zone change. A token keeps its snapshot after it ceases to exist
+// (CR 111.7) — no new object ever takes its place — until its entity id is issued again. Defined
+// in game_queries.cpp.
+struct LastKnownInfo;
+const LastKnownInfo *lki_for(Entity e);
+
+// The snapshot of the object that left the battlefield as `e`, superseded or not. For
+// look-backs that refer to that departed object rather than to whatever the card is now: its
+// own leaves/dies trigger collection (CR 603.10) and an ability whose source it was, resolving
+// later (Blast Zone's counters, Amped Raptor's cast-from-hand gate; CR 608.2h).
+const LastKnownInfo *departed_lki_for(Entity e);
+
+// Called as `e` makes a zone change that does not start on the battlefield: its snapshot from
+// an earlier battlefield exit now describes an older object (CR 400.7), so mark it superseded.
+void supersede_last_known_info(Entity e);
+
+// Supersede every card's snapshot (tokens excepted). Called as a resolution ends: the effects
+// that read a card's last-known information as the object that just left (a sub-ability of the
+// spell that moved it, CR 608.2h) have all run.
+void supersede_departed_cards();
+
+// Drop any snapshot recorded under `e`. Installed as the coordinator's entity-issued hook, so
+// an object given a reused id never inherits the last-known information of the id's previous
+// holder.
+void forget_last_known_info(Entity e);
+
+// The display name `e` had as it last left the battlefield ("Construct token" for a token),
+// from its last-known information; empty when none was captured.
+std::string last_known_name(Entity e);
 
 // Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
 // longer on the battlefield — clearing its equipment/aura attachment links first so no dangling
@@ -495,6 +533,35 @@ inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKN
     return true;
 }
 
+// True if a permanent whose Permanent::entered_on_turn is `entered_on_turn` entered the
+// battlefield during the current turn. The single "entered this turn" predicate: the
+// ThisTurnEntered filter qualifier and the observation's per-permanent entered_this_turn
+// flag both read it. Defined in game_queries.cpp (needs cur_game).
+bool entered_battlefield_this_turn(long entered_on_turn);
+
+// Number of this turn's triggered-ability resolutions whose source is `source`
+// (Game::ability_resolution_counts — the Count$ResolvedThisTurn value, Scythecat Cub).
+// Defined in game_queries.cpp (needs cur_game).
+int ability_resolutions_this_turn(Entity source);
+
+// Activations counted against a permanent's once-per-turn gates: every ability's
+// ActivationLimit$ counter (Ability::activations_this_turn, only advanced for a limited
+// ability) summed, plus 1 if one of its loyalty abilities was activated (CR 606.3). Both
+// reset for every battlefield permanent at each untap step (reset_permanent_activations_this_turn).
+inline int permanent_activations_this_turn(const Permanent &perm) {
+    int n = perm.loyalty_ability_activated_this_turn ? 1 : 0;
+    for (const auto &ab : perm.abilities) n += ab.activations_this_turn;
+    return n;
+}
+
+// Clear the once-per-turn activation gates counted by permanent_activations_this_turn. Called
+// for every battlefield permanent, whichever player controls it, as each turn begins: "Activate
+// only once each turn" (CR 602.5b) counts the opponent's turns too.
+inline void reset_permanent_activations_this_turn(Permanent &perm) {
+    for (auto &ab : perm.abilities) ab.activations_this_turn = 0;
+    perm.loyalty_ability_activated_this_turn = false;
+}
+
 // All live battlefield permanents (phased-out excluded), optionally only those
 // controlled by `ctrl`. Pass the iterating system's mEntities (or orderer->mEntities).
 // Prefer this over re-scanning entities inline when you need the whole set.
@@ -535,6 +602,105 @@ void refresh_city_blessing(const std::set<Entity> &entities);
 // (origin EXILE, destination != EXILE) and references that card counts as a return path. Defined in
 // game_queries.cpp (needs cur_game.delayed_triggers).
 Entity returnable_exiled_card(Entity host);
+
+// ── Play permissions from the graveyard and exile ────────────────────────────
+// Whether `player` has a permission to play (cast, or play as a land) the card `card`
+// from the zone it is in, IGNORING timing, cost affordability, targets and cast
+// prohibitions: those stay in the legal-action enumeration. The single source for
+// "which play routes exist for this card": the enumeration's graveyard/exile loops gate on
+// its `sources` bits, and the ML observation's graveyard/exile playable flags read it, so
+// the two cannot disagree about which cards are playable from those zones.
+// Sources covered:
+//   FLASHBACK         a graveyard card its owner may cast with flashback (CR 702.34)
+//   ESCAPE            a graveyard card its owner may cast with escape (CR 702.139)
+//   GRAVEYARD_CAST    a nonland graveyard card in Game::may_cast_this_turn (Emry's grant;
+//                     the owner, this turn)
+//   GRAVEYARD_LAND    a land card in its owner's graveyard while a static lets the owner play
+//                     lands from the graveyard (Icetill Explorer, Mole Man)
+//   EXILE_GRANT       an exiled card with a Game::impulse_cast_permission whose caster is
+//                     `player` (Light Up the Stage, Ugin's -11, Amped Raptor, a suspend free
+//                     cast, warp); a land only under a NORMAL grant that allows lands
+// Not covered: a suspended card still carrying time counters (no permission until the last
+// counter is removed), a void-countered card (Dauthi Voidwalker's ability plays its chosen
+// card during resolution, so no standing permission exists), graveyard-activated abilities
+// such as unearth (they activate an ability, not play the card), and hand casts.
+// expires_this_turn is true when the card is playable and EVERY source covering it lapses at
+// this turn's cleanup (Emry's grant, a "this turn" exile grant, or a Light Up the Stage grant
+// during the caster's next turn); false for a static or keyword source or a grant that
+// outlives this turn. Defined in game_queries.cpp (needs cur_game and rules_mod).
+struct CardPlayPermission {
+    enum Source : unsigned {
+        FLASHBACK      = 1u << 0,
+        ESCAPE         = 1u << 1,
+        GRAVEYARD_CAST = 1u << 2,
+        GRAVEYARD_LAND = 1u << 3,
+        EXILE_GRANT    = 1u << 4,
+    };
+    unsigned sources = 0;
+    bool expires_this_turn = false;
+    bool playable() const { return sources != 0; }
+};
+CardPlayPermission card_play_permission(Entity card, Zone::Ownership player);
+
+// Counters on a card in exile: its suspend time counters (Game::suspend_time_counters) plus
+// 1 for a void counter (Game::void_countered, Dauthi Voidwalker). An exiled card is not a
+// permanent, so these live in Game rather than Permanent::counters. Defined in
+// game_queries.cpp.
+int exiled_card_counters(Entity card);
+
+// ── Delayed triggers (CR 603.7) ──────────────────────────────────────────────
+struct DelayedTrigger;
+
+// THE registration path for every delayed triggered ability: stamps the fire ability's
+// DelayedTriggerLink (a fresh seq from Game::next_delayed_seq, `creator` = the card whose
+// ability set the trigger up, the fire kind, and the subjects with both vocab ids captured
+// now) and appends the trigger to cur_game.delayed_triggers. The subjects are the fire
+// ability's delayed_link.subjects when the caller pre-set them, else the first non-empty of
+// dt.remembered_objects, the fire ability's non-player targets, its
+// restore_remembered_exiled_with, and dt.watch_entity. Defined in game_queries.cpp.
+void register_delayed_trigger(DelayedTrigger dt, Entity creator);
+
+// True when `e` is the watched object or one of the subjects of a delayed trigger still
+// waiting in cur_game.delayed_triggers (not yet fired). Defined in game_queries.cpp.
+bool is_waiting_delayed_trigger_subject(Entity e);
+
+// True when the waiting delayed trigger `dt` is scheduled to fire later in the current turn:
+// a phase trigger whose fire_on_turn has arrived, whose ValidPlayer$ restriction (if any)
+// names the active player, and whose step is still ahead. A leaves-the-battlefield watch is
+// not turn-scheduled and returns false. Defined in game_queries.cpp.
+bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt);
+
+// ── Player-scoped effects (the observation's PLAYER EFFECTS block) ───────────
+// The continuous effects currently applying to one player as a whole, each read from the
+// same state the rules consult:
+//   protection_from_everything  — a Game::player_protection_from_everything grant (The One Ring)
+//   cant_gain_life              — player_cant_gain_life (Roiling Vortex's {R})
+//   hexproof_from[W,U,B,R,G]    — the colors of this player's Game::hexproof_from_colors_this_turn
+//                                 grants (Veil of Summer)
+//   spells_cant_be_countered    — player_spells_cant_be_countered(): a Veil of Summer grant or an
+//                                 unfiltered "spells you control can't be countered" battlefield
+//                                 static (Hexing Squelcher). A per-card or type-filtered form covers
+//                                 only some spells and stays on its visible card/permanent.
+//   may_cast_sorceries_as_flash — a Game::cast_with_flash_permissions entry the player controls
+//                                 (Teferi, Time Raveler's +1)
+//   restricted_to_sorcery_speed — rules_mod::opponent_sorcery_speed_locked, derived from the live
+//                                 static (Teferi, Time Raveler on the opponent's battlefield)
+//   emblem_vocab_idx            — the distinct creating cards of the player's emblems, in creation
+//                                 order (the serializer keeps the first MAX_EMBLEM_SLOTS)
+//   floating_trigger_vocab_idx  — the creating card of the player's first live floating trigger
+//                                 (Tamiyo, Seasoned Scholar's +2, Forth Eorlingas!); -1 = none
+struct PlayerEffects {
+    bool protection_from_everything = false;
+    bool cant_gain_life = false;
+    bool hexproof_from[5] = {false, false, false, false, false};
+    bool spells_cant_be_countered = false;
+    bool may_cast_sorceries_as_flash = false;
+    bool restricted_to_sorcery_speed = false;
+    std::vector<int> emblem_vocab_idx;
+    int floating_trigger_vocab_idx = -1;
+};
+// `entities` must hold the battlefield permanents (e.g. the iterating system's mEntities).
+PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &entities);
 
 // The card `source` exiled and still tracks via Permanent::exiled_with — the association a Saga
 // records at chapter I so its later chapters can act on "the card exiled with this" (Defined$
@@ -693,6 +859,18 @@ inline bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &
     }
     return false;
 }
+
+// True if EVERY spell `player` controls is protected from being countered by an effect covering
+// the player as a whole (CR 614.13/CantHappen, "spells you control can't be countered"): a
+// Game::cant_counter_spells_of grant (Veil of Summer), or a live battlefield CANT_BE_COUNTERED
+// replacement whose ValidSA$ filter is the bare controller-scoped spell filter — "Spell.YouCtrl" on
+// a permanent `player` controls (Hexing Squelcher) or "Spell.OppCtrl" on one the opponent controls.
+// A spell's own "This spell can't be countered" and a type/color-narrowed filter cover only some
+// spells, so they are not player-level protection (the counter-resolution path checks those per
+// spell). Single source for the counter-resolution check on a spell and the observation's
+// spells_cant_be_countered flag. `entities` must hold the battlefield permanents (e.g. the
+// iterating system's mEntities). Defined in game_queries.cpp.
+bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities);
 
 // True if `e` is a spell that was cast via flashback. Such a spell is exiled
 // (rather than sent to the graveyard) when it leaves the stack — whether it

@@ -38,6 +38,14 @@ bool Game::combat_damage_prevented(Entity source, Entity target) const {
     return false;
 }
 
+bool Game::combat_damage_shielded(Entity creature) const {
+    if (creature == 0) return false;
+    for (const auto &shield : combat_damage_prevention_shields)
+        if (shield.creature == creature && (shield.prevent_as_source || shield.prevent_as_target))
+            return true;
+    return false;
+}
+
 void Game::generate_players(const Deck &deck_a, const Deck &deck_b) {
     player_a_entity = gen_player(deck_a);
     player_b_entity = gen_player(deck_b);
@@ -64,12 +72,6 @@ void Game::player_loses(Zone::Ownership loser) {
     winner = (loser == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 }
 
-void Game::record_action(int category, int card_vocab_idx, bool player_a) {
-    action_history[action_history_write] = {category, card_vocab_idx, player_a, static_cast<int>(turn)};
-    action_history_write = (action_history_write + 1) % ACTION_HISTORY_SIZE;
-    if (action_history_count < ACTION_HISTORY_SIZE) action_history_count++;
-}
-
 void Game::clear_known_top_library(bool player_a_owner) {
     int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) arr[i] = -1;
@@ -86,6 +88,19 @@ void Game::known_top_library_remove_pos(bool player_a_owner, int pos) {
     int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
     for (int i = pos; i < KNOWN_TOP_LIBRARY_SIZE - 1; i++) arr[i] = arr[i + 1];
     arr[KNOWN_TOP_LIBRARY_SIZE - 1] = -1;
+}
+
+void Game::known_top_library_set(bool player_a_owner, int pos, int card_vocab_idx) {
+    if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
+    int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    arr[pos] = card_vocab_idx;
+}
+
+void Game::known_top_library_insert(bool player_a_owner, int pos, int card_vocab_idx) {
+    if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
+    int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    for (int i = KNOWN_TOP_LIBRARY_SIZE - 1; i > pos; i--) arr[i] = arr[i - 1];
+    arr[pos] = card_vocab_idx;
 }
 
 void Game::pass_priority() {
@@ -179,13 +194,17 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // Second part of the untap step (CR 502.2 / 731.2): the day/night turn-based
                     // check, based on the turn that just ended. Runs after phasing, before untap.
                     day_night_untap_transition();
-                    // Untap all permanents controlled by active player; reset per-turn counters
+                    // Untap all permanents controlled by active player. Once-each-turn activation
+                    // gates (ActivationLimit$, CR 602.5b; loyalty, CR 606.3) reset for EVERY
+                    // battlefield permanent: "each turn" includes the opponent's turns. A
+                    // phased-out permanent is skipped; it phases in only at its controller's
+                    // untap step, where this loop then resets it.
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
-                        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+                        if (!is_battlefield_permanent(entity)) continue;
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
+                        reset_permanent_activations_this_turn(permanent);
                         if (permanent.controller == active_player) {
-                            if (permanent.is_phased_out) continue;  // don't untap phased-out permanents
                             // Untap-prevention (Choke; rule 614.1d) is a replacement effect:
                             // dispatch an UNTAP event and skip untapping if it is replaced.
                             ReplacementEvent rev;
@@ -209,8 +228,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                 }
                             }
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
-                            for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
-                            permanent.loyalty_ability_activated_this_turn = false;  // 606.3 resets each of the controller's turns
                         }
                     }
                     cur_step = UPKEEP;
@@ -645,8 +662,8 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
         }
         // Park the dredge question for the loop top (tag TURN_DRAW): persist
         // priority at the drawing player (the blocking prompt's repoint) and
-        // arm with the ambient pending-decision source (the blocking prompt
-        // ran scope-less — source 0 at a turn-based draw).
+        // arm with the ambient pending-decision source (0: a turn-based draw
+        // has no asking card; each dredge entry names its own card).
         PendingQuery &pq = game.pending_query;
         pq = PendingQuery{};
         pq.tag = PendingQuery::TURN_DRAW;

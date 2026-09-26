@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Arid Mesa, Ocelot Pride, Ocelot Pride, Plateau, Thoughtseize, Voice of Victory, Voice of Victory | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -80,7 +82,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Ocelot Pride, Ocelot Pride, Plateau, Thoughtseize, Voice of Victory, Voice of Victory | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Arid Mesa
+  Self BF:  Arid Mesa (NEW)
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -101,7 +103,8 @@
   Stack: Arid Mesa (ability, self)
   Pending: Arid Mesa (self)
   Self GY: Arid Mesa
-  Extras: self_lands_played=1, self_revolt
+  This turn: self life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Badlands
@@ -121,8 +124,9 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Ocelot Pride, Ocelot Pride, Plateau, Thoughtseize, Voice of Victory, Voice of Victory | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Badlands
+  Self BF:  Badlands (NEW)
   Self GY: Arid Mesa
+  This turn: self life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -136,10 +140,11 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(6): Ocelot Pride, Ocelot Pride, Plateau, Thoughtseize, Voice of Victory, Voice of Victory | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Badlands
+  Self BF:  Badlands (NEW)
   Pending: Thoughtseize (self)
   Self GY: Arid Mesa
-  Extras: self_lands_played=1, self_revolt
+  This turn: self life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (19 life)
@@ -154,11 +159,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 52
-  Opp BF:   Badlands (T)
+  Opp BF:   Badlands (T,NEW)
   Stack: Thoughtseize (spell, opponent) -> self (player)
   Opp GY:  Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=B
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -180,13 +186,14 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Ocelot Pride, Ocelot Pride, Plateau, Voice of Victory, Voice of Victory | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Badlands (T)
+  Self BF:  Badlands (T,NEW)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Pending: Thoughtseize (self)
   Self GY: Arid Mesa
   Known opp hand: Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island
   Opp revealed: Force of Will, Doomsday, Dark Ritual, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual
    1: Doomsday
@@ -218,6 +225,7 @@
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -236,6 +244,7 @@
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -248,11 +257,12 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal
+  Self BF:  Lotus Petal (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -267,11 +277,12 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -284,11 +295,12 @@
   Step: Begin Combat (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -302,11 +314,12 @@
   Step: Declare Atk (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -320,12 +333,13 @@
   Step: Declare Blk (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -339,11 +353,12 @@
   Step: Combat Dmg (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -355,11 +370,12 @@
   Step: End Combat (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -371,11 +387,12 @@
   Step: Second Main (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -388,11 +405,12 @@
   Step: End Step (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Badlands (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -414,6 +432,7 @@
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -431,6 +450,8 @@
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Badlands
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -447,6 +468,7 @@
   Opp GY:  Quantum Riddler
   Known opp hand: Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student
   Opp revealed: Force of Will, Doomsday, Dark Ritual, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Plateau
@@ -459,12 +481,13 @@
   Step: First Main (turn 3)
   Self:  17 life | mana: empty | hand(5): Ocelot Pride, Ocelot Pride, Orcish Bowmasters, Voice of Victory, Voice of Victory | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Badlands | Plateau
+  Self BF:  Badlands | Plateau (NEW)
   Opp BF:   Lotus Petal | Tropical Island
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Quantum Riddler
   Known opp hand: Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student
   Opp revealed: Force of Will, Doomsday, Dark Ritual, Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island, Quantum Riddler
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -484,12 +507,13 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Plateau (T)
+  Opp BF:   Badlands | Plateau (T,NEW)
   Stack: Ocelot Pride (spell, opponent)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -504,11 +528,12 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -520,11 +545,12 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -538,11 +564,12 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -556,10 +583,11 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: opp spells=1 drawn=1 colors=W
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -575,11 +603,12 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -591,11 +620,12 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -607,11 +637,12 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -623,11 +654,12 @@
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -665,6 +697,7 @@
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -680,6 +713,7 @@
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -694,11 +728,12 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Flooded Strand | Lotus Petal | Tropical Island
+  Self BF:  Flooded Strand (NEW) | Lotus Petal | Tropical Island
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Self GY: Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -716,12 +751,13 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Flooded Strand | Tropical Island
+  Self BF:  Flooded Strand (NEW) | Tropical Island
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Dark Ritual (spell, self)
   Self GY: Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -744,6 +780,7 @@
   Self GY: Flooded Strand, Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -765,7 +802,8 @@
   Self GY: Flooded Strand, Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -785,12 +823,13 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Dark Ritual (spell, self)
   Self GY: Flooded Strand, Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -805,11 +844,12 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: 3B | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Self GY: Dark Ritual, Flooded Strand, Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -824,12 +864,13 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Self GY: Dark Ritual, Flooded Strand, Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -844,14 +885,15 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Flooded Strand, Lotus Petal, Quantum Riddler
   Opp GY:  Thoughtseize, Arid Mesa
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Flooded Strand (graveyard)
@@ -917,7 +959,7 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -925,7 +967,8 @@
   Opp GY:  Thoughtseize, Arid Mesa
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Flooded Strand (graveyard)
@@ -990,7 +1033,7 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -998,7 +1041,8 @@
   Opp GY:  Thoughtseize, Arid Mesa
   Known top: Island, Thassa's Oracle, ?, ?, ?
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Flooded Strand (graveyard)
@@ -1062,7 +1106,7 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1070,7 +1114,8 @@
   Opp GY:  Thoughtseize, Arid Mesa
   Known top: Edge of Autumn, Island, Thassa's Oracle, ?, ?
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Flooded Strand (graveyard)
@@ -1133,7 +1178,7 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1141,7 +1186,8 @@
   Opp GY:  Thoughtseize, Arid Mesa
   Known top: Street Wraith, Edge of Autumn, Island, Thassa's Oracle, ?
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
    1: Flooded Strand (graveyard)
@@ -1256,7 +1302,7 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1264,7 +1310,8 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Brainstorm, Street Wraith, Edge of Autumn, Island, Thassa's Oracle
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Brainstorm  [#4]
    1: Street Wraith  [#4]
@@ -1280,7 +1327,7 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1288,7 +1335,8 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Brainstorm, Street Wraith, Edge of Autumn, Island, Thassa's Oracle
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Street Wraith  [#3]
    1: Edge of Autumn  [#3]
@@ -1303,15 +1351,16 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
-  Known top: Brainstorm, Street Wraith, Edge of Autumn, Island, Thassa's Oracle
+  Known top: Thassa's Oracle, Brainstorm, Street Wraith, Edge of Autumn, Island
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Street Wraith  [#2]
    1: Edge of Autumn  [#2]
@@ -1325,15 +1374,16 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
-  Known top: Brainstorm, Street Wraith, Edge of Autumn, Island, Thassa's Oracle
+  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Edge of Autumn, Island
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Edge of Autumn  [#1]
    1: Island  [#1]
@@ -1348,13 +1398,14 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island | Underground Sea
+  Self BF:  Tropical Island | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=11 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1369,7 +1420,7 @@
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 5
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Tropical Island (T) | Underground Sea
+  Self BF:  Tropical Island (T) | Underground Sea (NEW)
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
   Stack: Tamiyo, Inquisitive Student (spell, self)
   Self GY: Doomsday
@@ -1377,6 +1428,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
   Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=11 colors=UB
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1427,6 +1479,8 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: opp spells=1 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1440,7 +1494,7 @@
   Step: Upkeep (turn 5)
   Self:  17 life | mana: empty | hand(3): Ocelot Pride, Voice of Victory, Voice of Victory | lib 51
   Opp:   9 life | mana: empty | hand count: 2 | lib 5
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T)
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Plateau (T)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea
   Pending: Orcish Bowmasters (self)
   Self GY: Thoughtseize, Arid Mesa
@@ -1448,6 +1502,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Player B (9 life)
    1: Player A (17 life)
@@ -1470,14 +1526,15 @@
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Voice of Victory, Voice of Victory | lib 50
   Opp:   8 life | mana: empty | hand count: 2 | lib 5
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Ocelot Pride [1/1]
    1: Confirm attackers
@@ -1492,14 +1549,15 @@
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Voice of Victory, Voice of Victory | lib 50
   Opp:   8 life | mana: empty | hand count: 2 | lib 5
-  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1517,13 +1575,14 @@
   Self:  8 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 5
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea
-  Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: mandatory_choice=Declare Blk
+  This turn: self life_lost=1 | opp spells=1 drawn=1 colors=B
+  Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm blockers
@@ -1559,6 +1618,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -1572,14 +1632,15 @@
   Step: Declare Atk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1594,14 +1655,15 @@
   Step: Declare Atk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island | Underground Sea
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island | Underground Sea
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1617,13 +1679,14 @@
   Step: Declare Atk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue (SICK)
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue (SICK,NEW)
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1637,14 +1700,15 @@
   Step: Declare Blk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue (SICK)
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue (SICK,NEW)
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1658,13 +1722,14 @@
   Step: Combat Dmg (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue (SICK)
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue (SICK,NEW)
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1676,13 +1741,14 @@
   Step: End Combat (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue (SICK)
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue (SICK,NEW)
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1694,13 +1760,14 @@
   Step: Second Main (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tropical Island | Underground Sea | Clue (SICK,NEW)
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1712,13 +1779,14 @@
   Step: End Step (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
+  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tropical Island | Underground Sea | Clue (SICK,NEW)
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1742,6 +1810,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1761,6 +1830,8 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1778,6 +1849,7 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Amped Raptor  [#0]
@@ -1804,6 +1876,8 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=1 drawn=1 colors=R
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1819,13 +1893,15 @@
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
+  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK,NEW) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
   Stack: Amped Raptor (ability, opponent)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=1 drawn=1 colors=R
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1845,14 +1921,15 @@
   Step: First Main (turn 7)
   Self:  18 life | mana: empty | energy 2 | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
   Opp:   7 life | mana: empty | hand count: 2 | lib 4
-  Self BF:  Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
-  Self exile: Ajani, Nacatl Pariah
+  Self exile: Ajani, Nacatl Pariah [play:self/eot]
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Cast Ajani, Nacatl Pariah (impulse, alt cost)  [#7]
@@ -1867,13 +1944,15 @@
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
+  Opp BF:   Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
   Stack: Ajani, Nacatl Pariah (spell, opponent)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=2 drawn=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1889,13 +1968,15 @@
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
   Stack: Ajani, Nacatl Pariah (ability, opponent)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=2 drawn=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1910,12 +1991,14 @@
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=2 drawn=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1927,12 +2010,14 @@
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=2 drawn=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1945,14 +2030,15 @@
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
   Opp:   7 life | mana: empty | hand count: 2 | lib 4
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 drawn=1 colors=WR
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Ocelot Pride [1/1]
    1: Orcish Bowmasters [1/1]
@@ -1970,14 +2056,15 @@
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
   Opp:   7 life | mana: empty | hand count: 2 | lib 4
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 drawn=1 colors=WR
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [1/1]
@@ -1995,14 +2082,15 @@
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
   Opp:   7 life | mana: empty | hand count: 2 | lib 4
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 drawn=1 colors=WR
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Cat token [1/1]
@@ -2020,14 +2108,15 @@
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
   Opp:   7 life | mana: empty | hand count: 2 | lib 4
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 drawn=1 colors=WR
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [1/1]
    1: Confirm attackers
@@ -2045,14 +2134,15 @@
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
   Opp:   7 life | mana: empty | hand count: 2 | lib 4
-  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (SICK)
+  Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (SICK,NEW)
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 drawn=1 colors=WR
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2069,12 +2159,14 @@
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=2 drawn=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2088,12 +2180,13 @@
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   18 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: opp spells=2 drawn=1 colors=WR
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2110,12 +2203,14 @@
   Self:  6 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self life_lost=1 | opp spells=2 drawn=1 life_gained=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2133,12 +2228,14 @@
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self life_lost=4 | opp spells=2 drawn=1 life_gained=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2150,12 +2247,14 @@
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self life_lost=4 | opp spells=2 drawn=1 life_gained=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2167,12 +2266,14 @@
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self life_lost=4 | opp spells=2 drawn=1 life_gained=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2186,13 +2287,15 @@
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK,NEW)
   Stack: Ocelot Pride (ability, opponent)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self life_lost=4 | opp spells=2 drawn=1 life_gained=1 colors=WR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2211,13 +2314,14 @@
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK,NEW) | Cat [1/1] (SICK,NEW) | Cat Warrior [2/1] (SICK,NEW) | Cat [1/1] (SICK,NEW)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
-  Extras: opp_citys_blessing
+  This turn: self life_lost=4 | opp spells=2 drawn=1 life_gained=1 colors=WR
+  Extras: opp_citys_blessing, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2260,6 +2364,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=1
   Extras: opp_citys_blessing
   Actions:
    0: Pass priority
@@ -2279,6 +2384,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=1
   Extras: opp_citys_blessing
   Actions:
    0: Pass priority
@@ -2294,12 +2400,14 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
-  Extras: opp_citys_blessing
+  This turn: self drawn=1
+  Extras: opp_citys_blessing, not_priority_window
   Actions:
    0: Sacrifice Island
    1: Sacrifice Tropical Island
@@ -2322,6 +2430,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2345,7 +2454,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, opp_revolt
+  This turn: opp drawn=2
+  Extras: self_citys_blessing, opp_revolt, not_priority_window
   Actions:
    0: Player B (3 life)
    1: Player A (19 life)
@@ -2378,6 +2488,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2396,12 +2507,13 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2415,12 +2527,13 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2436,13 +2549,14 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
-  Extras: opp_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=2 life_lost=1
+  Extras: opp_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -2458,13 +2572,14 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island | Underground Sea | Clue
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
-  Extras: opp_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=2 life_lost=1
+  Extras: opp_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2479,13 +2594,14 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Stack: Tamiyo, Inquisitive Student (ability, self)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2501,13 +2617,14 @@
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue | Clue (SICK,NEW)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2523,14 +2640,15 @@
   Step: Declare Blk (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue | Clue (SICK,NEW)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
-  Extras: opp_citys_blessing, self_revolt
+  This turn: self drawn=2 life_lost=1
+  Extras: opp_citys_blessing, self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2546,13 +2664,14 @@
   Step: Combat Dmg (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue | Clue (SICK,NEW)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2566,13 +2685,14 @@
   Step: End Combat (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island | Underground Sea | Clue | Clue (SICK,NEW)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2586,13 +2706,14 @@
   Step: Second Main (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tropical Island | Underground Sea | Clue | Clue (SICK,NEW)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2606,13 +2727,14 @@
   Step: End Step (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tropical Island | Underground Sea | Clue | Clue (SICK,NEW)
+  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
+  This turn: self drawn=2 life_lost=1
   Extras: opp_citys_blessing, self_revolt
   Actions:
    0: Pass priority
@@ -2638,7 +2760,7 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
-  Extras: opp_citys_blessing
+  Extras: opp_citys_blessing, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2660,7 +2782,8 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Amped Raptor
-  Extras: opp_citys_blessing
+  This turn: opp drawn=1
+  Extras: opp_citys_blessing, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2680,6 +2803,7 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self drawn=1
   Extras: self_citys_blessing
   Actions:
    0: Pass priority
@@ -2705,7 +2829,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing
+  This turn: self drawn=1
+  Extras: self_citys_blessing, not_priority_window
   Actions:
    0: Player B (2 life)
    1: Player A (19 life)
@@ -2728,7 +2853,8 @@
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Cabal Therapy, Amped Raptor
-  Extras: opp_citys_blessing
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: opp_citys_blessing, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -2754,7 +2880,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: self_citys_blessing, not_priority_window
   Actions:
    0: Name card: Ajani, Nacatl Pariah
    1: Name card: Amped Raptor
@@ -2795,11 +2922,12 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
   Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Self GY: Cabal Therapy, Thoughtseize, Arid Mesa
+  Self GY: Cabal Therapy [play:self], Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: self_citys_blessing
   Actions:
    0: Pass priority
@@ -2819,11 +2947,12 @@
   Opp BF:   Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Stack: Ocelot Pride (spell, opponent)
   Self GY: Edge of Autumn, Island, Doomsday
-  Opp GY:  Cabal Therapy, Thoughtseize, Arid Mesa
+  Opp GY:  Cabal Therapy [play:opponent], Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Cabal Therapy, Amped Raptor
-  Extras: opp_citys_blessing
+  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WB
+  Extras: opp_citys_blessing, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -2839,13 +2968,14 @@
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Self GY: Cabal Therapy, Thoughtseize, Arid Mesa
+  Self GY: Cabal Therapy [play:self], Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WB
   Extras: self_citys_blessing
   Actions:
    0: Pass priority
@@ -2859,15 +2989,16 @@
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy, Thoughtseize, Arid Mesa
+  Self GY: Cabal Therapy [play:self], Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WB
+  Extras: self_citys_blessing, not_priority_window
   Actions:
    0: Player B (2 life)
    1: Player A (19 life)
@@ -2880,14 +3011,16 @@
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Self GY: Cabal Therapy, Thoughtseize, Arid Mesa
+  Pending: Cabal Therapy (self)
+  Self GY: Cabal Therapy [play:self], Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WB
+  Extras: self_citys_blessing, not_priority_window
   Actions:
    0: Sacrifice Ajani, Nacatl Pariah
    1: Sacrifice Amped Raptor
@@ -2911,14 +3044,15 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Stack: Cabal Therapy (spell, opponent) [flashback] -> self (player)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Cabal Therapy, Amped Raptor
-  Extras: opp_citys_blessing, opp_revolt
+  This turn: opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: opp_citys_blessing, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -2935,7 +3069,7 @@
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
   Pending: Cabal Therapy (self)
@@ -2944,7 +3078,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window
   Actions:
    0: Name card: Ajani, Nacatl Pariah
    1: Name card: Amped Raptor
@@ -2985,14 +3120,15 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Opp exile:  Cabal Therapy
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Cabal Therapy, Amped Raptor
-  Extras: opp_citys_blessing, opp_revolt
+  This turn: opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: opp_citys_blessing, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -3006,14 +3142,15 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Opp BF:   Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Opp exile:  Cabal Therapy
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Cabal Therapy, Amped Raptor
-  Extras: opp_citys_blessing, opp_revolt
+  This turn: opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: opp_citys_blessing, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -3028,7 +3165,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3036,7 +3173,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Amped Raptor [2/1]
    1: Ocelot Pride [1/1]
@@ -3059,7 +3197,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3067,7 +3205,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Ocelot Pride [1/1]
    1: Orcish Bowmasters [1/1]
@@ -3090,7 +3229,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3098,7 +3237,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [2/2]
@@ -3121,7 +3261,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3129,7 +3269,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [2/2]
    1: Cat token [1/1]
@@ -3152,7 +3293,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3160,7 +3301,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [1/1]
    1: Cat Warrior token [2/1]
@@ -3183,7 +3325,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3191,7 +3333,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat Warrior token [2/1]
    1: Cat token [1/1]
@@ -3214,7 +3357,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3222,7 +3365,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [1/1]
    1: Cat Warrior token [2/1]
@@ -3245,7 +3389,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3253,7 +3397,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat Warrior token [2/1]
    1: Cat token [1/1]
@@ -3276,7 +3421,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1]
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3284,7 +3429,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Cat token [1/1]
    1: Confirm attackers
@@ -3307,7 +3453,7 @@
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
-  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK)
+  Self BF:  Amped Raptor [2/1] [First Strike] (ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK) | Cat Warrior [2/1] (ATK) | Cat [1/1] (ATK)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
   Self GY: Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -3315,7 +3461,8 @@
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  Extras: self_citys_blessing, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: self_citys_blessing, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -3337,14 +3484,15 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Amped Raptor [2/1] [First Strike] (T,ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
+  Opp BF:   Amped Raptor [2/1] [First Strike] (T,ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Opp exile:  Cabal Therapy
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Cabal Therapy, Amped Raptor
-  Extras: opp_citys_blessing, opp_revolt
+  This turn: opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
+  Extras: opp_citys_blessing, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -3360,13 +3508,14 @@
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
-  Opp BF:   Amped Raptor [2/1] [First Strike] (T,ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
+  Opp BF:   Amped Raptor [2/1] [First Strike] (T,ATK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau (T) | Orc Army [2/2] [+1/+1:2] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK) | Cat Warrior [2/1] (T,ATK) | Cat [1/1] (T,ATK)
   Self GY: Edge of Autumn, Island, Doomsday
   Opp GY:  Ajani, Nacatl Pariah, Thoughtseize, Arid Mesa
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Opp exile:  Cabal Therapy
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
   Opp revealed: Thoughtseize, Orcish Bowmasters, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Plateau, Badlands, Cabal Therapy, Amped Raptor
+  This turn: opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
   Extras: opp_citys_blessing, opp_revolt
   Actions:
    0: Pass priority

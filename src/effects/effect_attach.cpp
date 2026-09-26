@@ -27,21 +27,13 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
         // Optional$ True — "you MAY attach ..." (Cori-Steel Cutter's DBAttach). The ability's
         // controller decides at resolution through the shared yes/no menu, asked through ctx
         // so it can suspend (same "Decline:/Accept:" entries, same chooser repoint-and-
-        // restore, ambient pending-decision source as the old request_optional_yesno). A
+        // restore, the ability's source as the pending-decision source). A
         // single Shape A prompt: no rt — a resume re-derives the pure prelude and the next
         // ask consumes the latched answer.
         std::string prompt = "attach " + entity_name(equip_entity) + " to " +
                              entity_name(target_creature);
-        std::vector<LegalAction> yn;
-        LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-        decline.category = ActionCategory::OPTIONAL_YESNO;
-        decline.option_ordinal = 0;  // 0 = decline
-        yn.push_back(decline);
-        LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-        accept.category = ActionCategory::OPTIONAL_YESNO;
-        accept.option_ordinal = 1;  // 1 = accept
-        yn.push_back(accept);
-        int yc = ctx.ask(std::move(yn), ab.controller, cur_game.pending_decision_source);
+        std::vector<LegalAction> yn = optional_yesno_menu(prompt);
+        int yc = ctx.ask(std::move(yn), ab.controller, ab.source);
         if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (yc != 1) goto attach_done;
     }

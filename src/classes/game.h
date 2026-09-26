@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define ACTION_HISTORY_SIZE 128
 #define KNOWN_TOP_LIBRARY_SIZE 5
 
 #ifdef __cplusplus
@@ -95,7 +94,15 @@ struct DelayedTrigger {
 // "its controller gains life equal to its power", read from a creature it just exiled) uses
 // these last-known values rather than the printed base. While the object is still in its
 // expected zone, effective characteristics are read live from its components instead.
+struct CardData;
+
 struct LastKnownInfo {
+    std::string name;                      // Permanent name as it left play: a token that then ceases
+                                           // to exist (CR 111.7) keeps its identity for a prompt or
+                                           // observation that still refers to it
+    bool is_token = false;                 // it was a token (CR 111.1)
+    std::string token_script;              // a token's script stem (Token::script_name), the key of its
+                                           // token-band vocab index
     int power = 0;
     int toughness = 0;
     std::vector<std::string> type_names;   // type/subtype/supertype names
@@ -126,6 +133,17 @@ struct LastKnownInfo {
                                            // sacrificed as part of its own activation cost (Blast
                                            // Zone: "MV equal to the number of charge counters on it")
                                            // reads the last-known count (CR 608.2h).
+    bool superseded = false;               // the card is a new object to every later reader (CR 400.7):
+                                           // the resolution that moved it is over, or it moved again
+                                           // (see lki_for). General reads (lki_for) no longer see this
+                                           // snapshot; only look-backs at the departed object itself
+                                           // (departed_lki_for) still do (CR 608.2h).
+    std::shared_ptr<const CardData> copied_card;  // the copied characteristics of a permanent that
+                                                  // left play as an in-place copy (Thespian's
+                                                  // Stage): the card itself reverts to its printed
+                                                  // CardData on leaving (CR 400.7), so the 603.10
+                                                  // look-back reads the copy's abilities from here.
+                                                  // Null for a permanent that was not a copy.
 };
 
 enum MandatoryChoice {
@@ -142,13 +160,6 @@ enum MandatoryChoice {
 // Mirrored into Python by train/gen_enums.py, which counts the enum's members.
 static constexpr int N_MANDATORY_CHOICES = ASSIGN_COMBAT_DAMAGE_CHOICE + 1;
 
-struct ActionHistoryEntry {
-    int category;        // ActionCategory value
-    int card_vocab_idx;  // -1 for non-card entities
-    bool player_a;       // true if Player A took this action
-    int turn;            // cur_game.turn when the action was taken
-};
-
 // An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
 // and can't be removed. Created by an AB$ Effect with StaticAbilities$ + Duration$ Permanent
 // (Kaito's [+1] "Ninjas you control get +1/+1."). Its statics are gathered into g_active_statics
@@ -158,6 +169,11 @@ struct ActionHistoryEntry {
 struct Emblem {
     Zone::Ownership controller = Zone::PLAYER_A;
     std::vector<StaticAbility> statics;
+    // The card whose ability created the emblem (Kaito, Bane of Nightmares; Tamiyo, Seasoned
+    // Scholar) and its vocab idx captured at creation. The emblem's identity in the observation's
+    // player-effects block.
+    Entity source = 0;
+    int source_vocab_idx = -1;
 };
 
 struct Game {
@@ -217,6 +233,9 @@ struct Game {
         // turns; empty in a fresh Game.
         std::vector<Zone::Ownership> extra_turns;
         std::vector<DelayedTrigger> delayed_triggers;
+        // Next DelayedTriggerLink::seq register_delayed_trigger hands out (monotonic per game,
+        // starting at 1 so 0 stays "not a delayed trigger").
+        uint32_t next_delayed_seq = 1;
         // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
         // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
         // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;
@@ -241,7 +260,10 @@ struct Game {
         int converge = 0;
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
-                                            // effective_* accessors when the object is no longer in play
+                                            // effective_* accessors when the object is no longer in play.
+                                            // A card's entry is superseded once the card is a new
+                                            // object (see lki_for); every entry is erased when its
+                                            // entity id is issued again
         std::vector<Entity> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
@@ -773,11 +795,6 @@ struct Game {
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
         std::map<Entity, Entity> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
 
-        // Recent action history ring buffer for ML observation
-        ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};
-        int action_history_write = 0;  // next write position (circular)
-        int action_history_count = 0;  // total entries written (capped at ACTION_HISTORY_SIZE)
-
         // Known top-of-library cards (one array per player). Index 0 is the top of the
         // library. -1 = unknown (default). Updated when a card is placed on top of a
         // library or when a card is removed from the top; cleared to all -1 on shuffle.
@@ -798,10 +815,15 @@ struct Game {
         // `ended`/`winner` inline.
         void player_loses(Zone::Ownership loser);
 
-        void record_action(int category, int card_vocab_idx, bool player_a);
         void clear_known_top_library(bool player_a_owner);
         void known_top_library_push(bool player_a_owner, int card_vocab_idx);
         void known_top_library_remove_pos(bool player_a_owner, int pos);
+        // Records card_vocab_idx at `pos` without moving any entry (a card already sitting at
+        // that depth became known). No-op outside the tracked window.
+        void known_top_library_set(bool player_a_owner, int pos, int card_vocab_idx);
+        // Inserts card_vocab_idx at `pos`, shifting the entries at pos.. one deeper (the deepest
+        // falls off the window). No-op outside the tracked window.
+        void known_top_library_insert(bool player_a_owner, int pos, int card_vocab_idx);
 
         bool ready_to_resolve();
         // CR 615: is this combat damage prevented by an active combat-damage prevention shield?
@@ -809,6 +831,9 @@ struct Game {
         // would deal), or `target` is a shielded creature under a prevent-as-target shield (damage
         // it would be dealt). Consulted at each combat-damage assignment in deal_combat_damage.
         bool combat_damage_prevented(Entity source, Entity target) const;
+        // True when `creature` is the creature of any active combat-damage prevention shield,
+        // in either direction (damage it would deal or be dealt).
+        bool combat_damage_shielded(Entity creature) const;
         bool is_mandatory_choice_pending() const;
         void generate_players(const Deck &deck_a, const Deck &deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager, std::shared_ptr<class Orderer> orderer);

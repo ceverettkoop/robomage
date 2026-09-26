@@ -39,34 +39,64 @@ from env import (
     _SELF_PERM_START, _OPP_PERM_START, _PERM_SLOTS, _PERM_SLOT_SIZE,
     _PERM_CHOSEN_NAME_OFF, _PERM_RETURNABLE_OFF, _PERM_CARD_OFF,
     _OFF_ATTACHED_TO, _OFF_ATTACHED_BY, _OFF_ATTACK_TGT, _OFF_BLOCKING_TGT,
-    _STACK_START, _STACK_SLOTS, _STACK_SLOT_SIZE, _STACK_TGT_START,
+    _STACK_START, _STACK_SLOTS, _STACK_SLOT_SIZE, _STACK_TGT_START, _STACK_SIZE_IDX,
     _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
     _GY_START, _GY_SLOT_SIZE, _EXILE_START, _EXILE_SLOT_SIZE,
     _HAND_START, _HAND_SLOT_SIZE, MAX_GY_SLOTS, MAX_HAND_SLOTS,
     _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END,
     _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END,
-    _PENDING_DECISION_START, _HIST_START, _ACTION_HISTORY_SIZE,
-    _ACTION_HISTORY_ENTRY, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
+    _PENDING_DECISION_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
+    _EXTRAS_SELF_PASSED, _EXTRAS_OPP_PASSED, _EXTRAS_IS_PRIORITY_WINDOW,
+    _EXTRAS_SELF_MULLIGANS, _EXTRAS_OPP_MULLIGANS, _EXTRAS_SELF_BOTTOM_REMAINING,
+    _MATCH_CTX_START,
     _SELF_BLOCK_START, _OPP_BLOCK_START, _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
     _MANA_DEV_START, _MANA_DEV_OPP_START,
     _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
     _MD_SELF_LAND_DROPS, _MD_OPP_LAND_DROPS,
     _LOG_VITALS_START, _LOG_VITALS_OPP_START, _LV_LOG_LIFE, _LV_LOG_LIBRARY,
-    _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START, _REVEALED_START,
+    _PER_TURN_START, _PER_TURN_OPP_START, _PT_SPELLS, _PT_NONCREATURE,
+    _PT_INSTANT_SORCERY, _PT_CARDS_DRAWN, _PT_LIFE_GAINED, _PT_LIFE_LOST,
+    _PT_COLORS_START, _OFF_IS_CREATURE, _OFF_ENTERED_THIS_TURN,
+    _OFF_RESOLUTIONS_THIS_TURN, _OFF_ACTIVATIONS_THIS_TURN, _OFF_CANT_BE_BLOCKED,
+    _OFF_COMBAT_DMG_PREVENTED, _OFF_PENDING_DELAYED_SUBJECT,
+    _DELAYED_START, _DELAYED_SLOTS, _DELAYED_SLOT_SIZE,
+    _DT_PRESENT, _DT_CTRL_SELF, _DT_STATE, _DT_STACK_REF, _DT_CREATOR_ID,
+    _DT_CREATOR_REF, _DT_SUBJECT_REF, _DT_SUBJECT_ID, _DT_FIRE_ONEHOT_START,
+    _DT_FIRES_THIS_TURN, _MISHRAS_BAUBLE_VOCAB_IDX,
+    _PLAYER_EFFECTS_START, _PLAYER_EFFECTS_OPP_START, _PE_HEXPROOF_START,
+    _PE_UNCOUNTERABLE, _PE_SORCERY_FLASH, _PE_SORCERY_SPEED_LOCK, _PE_EMBLEM_OFF,
+    _PE_FLOATING_OFF, _CUR_TURN_IDX,
+    _PB_LIFE, _PB_HAND_CT, _PB_MANA, _LIBRARY_CTX_START,
     _SELF_LIVE_LIB_START, _SELF_DECK_MAIN_START, _SELF_DECK_SIDE_START,
     _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
-    _DECKLIST_SLOT_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
+    _DECKLIST_SLOT_SIZE, _OPP_DECKLIST_SLOT_SIZE, _OPP_DECKLIST_REVEALED_OFF,
+    _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX)
 from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     DECKLIST_SIDE_SLOTS, CAT_ACTIVATE_ABILITY,
                     CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
+                    CAT_PASS_PRIORITY, CAT_DISCARD, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS,
+                    CAT_KEEP_LEGEND, CAT_ORDER_TRIGGERS, CAT_CHOOSE_REPLACEMENT,
+                    _MC_NAMES,
                     SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
                     LAND_DROPS_NORMALIZER, LOG_VITALS_PLAYER_SIZE,
-                    LIFE_NORMALIZER, LIBRARY_NORMALIZER,
-                    LOG_LIFE_DENOM, LOG_LIBRARY_DENOM)
+                    LIFE_NORMALIZER, LIBRARY_NORMALIZER, MULLIGAN_NORMALIZER,
+                    LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
+                    PER_TURN_COUNT_NORMALIZER, PER_TURN_COLOR_FIELDS,
+                    N_DELAYED_FIRE_KINDS, MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS,
+                    ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
+                    ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
+                    ZONE_COUNTER_NORMALIZER, CAT_CAST_SPELL, CAT_PLAY_LAND, CAT_SELECT_TARGET,
+                    _REF_NAMES)
 from opponents import make_controller
 from scripted_agent import scripted_action
+
+# ActionRefZone values of the graveyard / exile zones, by their generated display names.
+_REF_BY_NAME = {name: v for v, name in _REF_NAMES.items()}
+_REF_SELF_GY, _REF_OPP_GY = _REF_BY_NAME["own gy"], _REF_BY_NAME["opp gy"]
+_REF_SELF_EXILE, _REF_OPP_EXILE = _REF_BY_NAME["own ex"], _REF_BY_NAME["opp ex"]
 
 # Card-id decode: sentinel (empty/unknown) -> -1; a real id -> [0, N_CARD_TYPES).
 _CARD_ID_SENTINEL = -1
@@ -121,11 +151,11 @@ def _card_id_slots():
             yield f"stack.tgt{t}.card_id", s, tbase + (_STACK_TGT_FIELDS - 1)
     for name, start in (("self_gy", _GY_START), ("opp_gy", _OPP_GY_START)):
         for i in range(MAX_GY_SLOTS):
-            yield name, i, start + i * _GY_SLOT_SIZE
+            yield name, i, start + i * _GY_SLOT_SIZE + ZONE_CARD_ID_OFF
     for name, start in (("self_exile", _EXILE_START),
                         ("opp_exile", _OPP_EXILE_START)):
         for i in range(MAX_GY_SLOTS):
-            yield name, i, start + i * _EXILE_SLOT_SIZE
+            yield name, i, start + i * _EXILE_SLOT_SIZE + ZONE_CARD_ID_OFF
     for i in range(MAX_HAND_SLOTS):
         yield "self_hand", i, _HAND_START + i * _HAND_SLOT_SIZE
     for i, off in enumerate(range(_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END)):
@@ -133,33 +163,71 @@ def _card_id_slots():
     for i, off in enumerate(range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END)):
         yield "opp_known_hand", i, off
     yield "pending_decision", 0, _PENDING_DECISION_START
-    for e in range(_ACTION_HISTORY_SIZE):
-        yield "history.card_id", e, _HIST_START + e * _ACTION_HISTORY_ENTRY + 1
-    # Deck-identity tail blocks: card id is the first float of each (card_id, count) slot.
-    for name, start, n in _DECKLIST_BLOCKS:
+    for s in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        yield "delayed.creator_id", s, base + _DT_CREATOR_ID
+        yield "delayed.subject_id", s, base + _DT_SUBJECT_ID
+    for side, start in (("self_effects", _PLAYER_EFFECTS_START),
+                        ("opp_effects", _PLAYER_EFFECTS_OPP_START)):
+        for e in range(MAX_EMBLEM_SLOTS):
+            yield f"{side}.emblem_id", e, start + _PE_EMBLEM_OFF + e
+        yield f"{side}.floating_trigger_source", 0, start + _PE_FLOATING_OFF
+    # Deck-identity tail blocks: card id is the first float of each slot.
+    for name, start, n, slot_size in _DECKLIST_BLOCKS:
         for s in range(n):
-            yield name, s, start + s * _DECKLIST_SLOT_SIZE
+            yield name, s, start + s * slot_size
 
 
-# The deck-identity blocks: (name, start offset, slot count).
+# The deck-identity blocks: (name, start offset, slot count, slot width). The self
+# blocks are (card_id, count) slots, the opponent's (card_id, count, revealed).
 _DECKLIST_BLOCKS = (
-    ("self_live_lib", _SELF_LIVE_LIB_START, DECKLIST_MAIN_SLOTS),
-    ("self_deck_main", _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
-    ("self_deck_side", _SELF_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
-    ("opp_deck_main", _OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS),
-    ("opp_deck_side", _OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS),
+    ("self_live_lib", _SELF_LIVE_LIB_START, DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE),
+    ("self_deck_main", _SELF_DECK_MAIN_START, DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE),
+    ("self_deck_side", _SELF_DECK_SIDE_START, DECKLIST_SIDE_SLOTS, _DECKLIST_SLOT_SIZE),
+    ("opp_deck_main", _OPP_DECK_MAIN_START, DECKLIST_MAIN_SLOTS, _OPP_DECKLIST_SLOT_SIZE),
+    ("opp_deck_side", _OPP_DECK_SIDE_START, DECKLIST_SIDE_SLOTS, _OPP_DECKLIST_SLOT_SIZE),
 )
+_OPP_DECKLIST_BLOCKS = tuple(b for b in _DECKLIST_BLOCKS if b[0].startswith("opp_"))
 
 
-def _decode_decklist_block(state, start, n_slots):
+def _decode_decklist_block(state, start, n_slots, slot_size=_DECKLIST_SLOT_SIZE):
     """Return [(vocab_id, count_int)] for every slot (id=-1 => empty)."""
     out = []
     for s in range(n_slots):
-        base = start + s * _DECKLIST_SLOT_SIZE
+        base = start + s * slot_size
         cid = _decode_card_id(state[base])
         cnt = int(round(float(state[base + 1]) * 4.0))
         out.append((cid, cnt))
     return out
+
+
+def _opp_decklist_entries(state):
+    """The opponent's registered decklist (maindeck, then sideboard) as two tuples
+    of (vocab_id, count_int) — the frozen part of the blocks, revealed bits
+    excluded."""
+    return tuple(tuple(_decode_decklist_block(state, start, n, size))
+                 for _name, start, n, size in _OPP_DECKLIST_BLOCKS)
+
+
+def _opp_revealed_bits(state):
+    """{vocab_id: raw revealed float} over the opponent's filled decklist slots."""
+    out = {}
+    for _name, start, n, size in _OPP_DECKLIST_BLOCKS:
+        for s in range(n):
+            base = start + s * size
+            cid = _decode_card_id(state[base])
+            if cid >= 0:
+                out[cid] = float(state[base + _OPP_DECKLIST_REVEALED_OFF])
+    return out
+
+
+def _check_revealed_monotone(decision_idx, seat, before, after):
+    """Revealed bits never clear within a match, for a fixed viewer seat."""
+    for cid, v in before.items():
+        if v > 0.5 and not after.get(cid, 0.0) > 0.5:
+            _fail(decision_idx, seat, "opp_deck.revealed", cid, after.get(cid),
+                  f"revealed bit for vocab {cid} cleared within the match "
+                  "(it must be monotone non-decreasing)")
 
 
 def _ref_slots():
@@ -177,11 +245,91 @@ def _ref_slots():
         for t in range(_STACK_TGT_SLOTS):
             tbase = base + _STACK_TGT_START + t * _STACK_TGT_FIELDS
             yield f"stack.tgt{t}.slot_ref", s, tbase + 3   # [+3]=slot_ref
+    for s in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        yield "delayed.stack_ref", s, base + _DT_STACK_REF
+        yield "delayed.creator_ref", s, base + _DT_CREATOR_REF
+        yield "delayed.subject_ref", s, base + _DT_SUBJECT_REF
 
 
-def _zone_block_offsets(start):
-    """Absolute offsets of a MAX_GY_SLOTS-wide recency-packed zone block."""
-    return [start + i * _GY_SLOT_SIZE for i in range(MAX_GY_SLOTS)]
+def _zone_block_offsets(start, slot_size):
+    """Absolute card-id offsets of a MAX_GY_SLOTS-wide recency-packed zone block."""
+    return [start + i * slot_size + ZONE_CARD_ID_OFF for i in range(MAX_GY_SLOTS)]
+
+
+# The four graveyard / exile blocks: (name, start, slot width, has a counters float).
+_ZONE_BLOCKS = (("self_gy", _GY_START, _GY_SLOT_SIZE, False),
+                ("opp_gy", _OPP_GY_START, _GY_SLOT_SIZE, False),
+                ("self_exile", _EXILE_START, _EXILE_SLOT_SIZE, True),
+                ("opp_exile", _OPP_EXILE_START, _EXILE_SLOT_SIZE, True))
+_ZONE_FLAG_OFFS = (("playable_by_self", ZONE_PLAYABLE_SELF_OFF),
+                   ("playable_by_opp", ZONE_PLAYABLE_OPP_OFF),
+                   ("play_expires_this_turn", ZONE_EXPIRES_OFF))
+
+
+def _check_zone_slots(decision_idx, seat, obs, state, num_choices):
+    """Graveyard / exile slot scalars (16):
+      - each play-permission flag is exactly 0.0 or 1.0, and 0.0 on a slot whose
+        card id is the sentinel (empty, or a hidden face-down card);
+      - play_expires_this_turn implies one of the playable flags;
+      - an exile slot's counters float decodes to a whole count >= 0, and is 0 on
+        a sentinel slot;
+      - in the sideboard phase every flag and counter is masked to 0.0;
+      - a cast / land play the menu offers from a graveyard or exile (zone ref
+        own/opp gy or exile) names a card that some slot of that zone holds with
+        playable_by_self set (skipped when that zone is at its slot cap, where
+        the card may sit past the truncation)."""
+    sideboarding = state[_IS_SIDEBOARD_IDX] > 0.5
+    playable_ids = {}
+    for block, start, size, has_counters in _ZONE_BLOCKS:
+        ids = set()
+        filled = 0
+        for i in range(MAX_GY_SLOTS):
+            base = start + i * size
+            empty = _decode_card_id(state[base + ZONE_CARD_ID_OFF]) == _CARD_ID_SENTINEL
+            filled += 0 if empty else 1
+            for label, off in _ZONE_FLAG_OFFS:
+                v = float(state[base + off])
+                if v not in (0.0, 1.0):
+                    _fail(decision_idx, seat, f"{block}.{label}", i, v, "flag is not 0/1")
+                if v and (empty or sideboarding):
+                    _fail(decision_idx, seat, f"{block}.{label}", i, v,
+                          "flag set on a sentinel slot" if empty
+                          else "flag set during the sideboard phase")
+            if (state[base + ZONE_EXPIRES_OFF] > 0.5
+                    and state[base + ZONE_PLAYABLE_SELF_OFF] < 0.5
+                    and state[base + ZONE_PLAYABLE_OPP_OFF] < 0.5):
+                _fail(decision_idx, seat, f"{block}.play_expires_this_turn", i,
+                      state[base + ZONE_EXPIRES_OFF], "expiry set on an unplayable card")
+            if has_counters:
+                n = _decode_whole_count(decision_idx, seat, state[base + EXILE_COUNTERS_OFF],
+                                        ZONE_COUNTER_NORMALIZER, f"{block}.counters")
+                if n and (empty or sideboarding):
+                    _fail(decision_idx, seat, f"{block}.counters", i,
+                          state[base + EXILE_COUNTERS_OFF],
+                          "counters on a sentinel slot or during the sideboard phase")
+            if not empty and state[base + ZONE_PLAYABLE_SELF_OFF] > 0.5:
+                ids.add(_decode_card_id(state[base + ZONE_CARD_ID_OFF]))
+        playable_ids[block] = (ids, filled >= MAX_GY_SLOTS)
+    if not num_choices:
+        return
+    zone_block = {_REF_SELF_GY: "self_gy", _REF_OPP_GY: "opp_gy",
+                  _REF_SELF_EXILE: "self_exile", _REF_OPP_EXILE: "opp_exile"}
+    cats = decode.action_categories(obs, num_choices)
+    zones = decode.action_zone_refs(obs, num_choices)
+    ids = decode.action_card_ids(obs)
+    for i in range(num_choices):
+        if int(cats[i]) not in (CAT_CAST_SPELL, CAT_PLAY_LAND):
+            continue
+        block = zone_block.get(int(zones[i]))
+        if block is None:
+            continue
+        cid = _decode_card_id(ids[i])
+        held, capped = playable_ids[block]
+        if cid not in held and not capped:
+            _fail(decision_idx, seat, f"action[{i}]", int(zones[i]), cid,
+                  f"menu plays card {cid} from {block} but no {block} slot holding it "
+                  "has playable_by_self")
 
 
 # ── The invariant checks (all read `state` = obs[:STATE_SIZE]) ─────────────────
@@ -309,6 +457,219 @@ def _check_log_vitals(decision_idx, seat, state):
                       f"(count recovered from this obs's linear float)")
 
 
+def _decode_whole_count(decision_idx, seat, v, norm, label):
+    """De-normalize a count float and require a whole number >= 0."""
+    x = float(v) * norm
+    n = int(round(x))
+    if not np.isfinite(x) or abs(x - n) > 1e-4 or n < 0:
+        _fail(decision_idx, seat, label, "-", float(v),
+              f"count de-normalizes to {x} (expected a whole number >= 0)")
+    return n
+
+
+def _check_per_turn(decision_idx, seat, state):
+    """Invariant (16): the PER-TURN COUNTERS block and the per-permanent per-turn
+    statuses. Every count de-normalizes to a whole number >= 0 and every flag is
+    exactly 0/1. Per player the spell counts nest (instant/sorcery spells are
+    noncreature spells, noncreature spells are spells — one cast-time increment
+    site feeds all three) and a spell color can only be recorded alongside a cast.
+    Per permanent, "can't be blocked this turn" is only ever set on a creature, and
+    an empty slot carries none of the new fields."""
+    for label, start in (("self_per_turn", _PER_TURN_START),
+                         ("opp_per_turn", _PER_TURN_OPP_START)):
+        counts = {}
+        for field, off, norm in (
+                ("spells", _PT_SPELLS, PER_TURN_COUNT_NORMALIZER),
+                ("noncreature", _PT_NONCREATURE, PER_TURN_COUNT_NORMALIZER),
+                ("instant_sorcery", _PT_INSTANT_SORCERY, PER_TURN_COUNT_NORMALIZER),
+                ("cards_drawn", _PT_CARDS_DRAWN, PER_TURN_COUNT_NORMALIZER),
+                ("life_gained", _PT_LIFE_GAINED, LIFE_NORMALIZER),
+                ("life_lost", _PT_LIFE_LOST, LIFE_NORMALIZER)):
+            counts[field] = _decode_whole_count(decision_idx, seat, state[start + off],
+                                                norm, f"{label}.{field}")
+        colors = [_decode_flag(decision_idx, seat, state, start + _PT_COLORS_START + c,
+                               f"{label}.color{c}")
+                  for c in range(PER_TURN_COLOR_FIELDS)]
+        if not (counts["instant_sorcery"] <= counts["noncreature"] <= counts["spells"]):
+            _fail(decision_idx, seat, label, "-", counts,
+                  "spell counts must nest: instant/sorcery <= noncreature <= spells")
+        if any(colors) and counts["spells"] == 0:
+            _fail(decision_idx, seat, f"{label}.colors", "-", colors,
+                  "a spell color is recorded but no spell was cast this turn")
+    for side, start in (("self_perm", _SELF_PERM_START),
+                        ("opp_perm", _OPP_PERM_START)):
+        for s in range(_PERM_SLOTS):
+            base = start + s * _PERM_SLOT_SIZE
+            empty = _decode_card_id(state[base + _PERM_CARD_OFF]) == _CARD_ID_SENTINEL
+            vals = []
+            for off, name in ((_OFF_ENTERED_THIS_TURN, "entered_this_turn"),
+                              (_OFF_CANT_BE_BLOCKED, "cant_be_blocked"),
+                              (_OFF_COMBAT_DMG_PREVENTED, "combat_damage_prevented")):
+                vals.append(_decode_flag(decision_idx, seat, state, base + off,
+                                         f"{side}[{s}].{name}"))
+            for off, name in ((_OFF_RESOLUTIONS_THIS_TURN, "resolutions_this_turn"),
+                              (_OFF_ACTIVATIONS_THIS_TURN, "activations_this_turn")):
+                vals.append(_decode_whole_count(decision_idx, seat, state[base + off],
+                                                PER_TURN_COUNT_NORMALIZER,
+                                                f"{side}[{s}].{name}"))
+            if empty and any(vals):
+                _fail(decision_idx, seat, side, s, vals,
+                      "per-turn permanent status set on an empty slot")
+            if vals[1] and state[base + _OFF_IS_CREATURE] < 0.5:
+                _fail(decision_idx, seat, f"{side}.cant_be_blocked", s, 1.0,
+                      "can't-be-blocked set on a non-creature")
+
+
+# Running tallies of the delayed-trigger entries check_decision has validated
+# (reported by main so a run that never exercised the block is visible).
+DELAYED_SEEN = {"waiting": 0, "on_stack": 0}
+
+
+def _ref_slot_card_id(state, ref):
+    """Card id serialized at an entity-slot ref (perm or stack slot)."""
+    if ref < _PERM_SLOTS:
+        return _decode_card_id(state[_SELF_PERM_START + ref * _PERM_SLOT_SIZE + _PERM_CARD_OFF])
+    if ref < 2 * _PERM_SLOTS:
+        return _decode_card_id(state[_OPP_PERM_START + (ref - _PERM_SLOTS) * _PERM_SLOT_SIZE
+                                     + _PERM_CARD_OFF])
+    return _decode_card_id(state[_STACK_START + (ref - 2 * _PERM_SLOTS) * _STACK_SLOT_SIZE + 1])
+
+
+def _check_delayed(decision_idx, seat, state):
+    """Invariant (17): the PENDING DELAYED TRIGGERS block and the per-permanent
+    pending_delayed_subject bit.
+
+    - Slots are packed (no present slot after an empty one) and an empty slot is
+      all zeros except the two card-id sentinels.
+    - Flags are exactly 0/1 and at most one fire_on bit is set.
+    - A waiting entry (state 0) has stack_ref 0. An on-stack entry (state 1) whose
+      stack_ref resolves points at a FILLED stack slot whose card id is the
+      creator's or the subject's (exile-until-host-leaves puts the exiled card's
+      ability on the stack, its creator being the host); fires_this_turn is 0.
+    - creator_ref, when set, points at a filled battlefield/stack slot holding the
+      creator's card id; subject_ref, when set, at a filled battlefield slot.
+    - Registration order is not observable from the obs; the packing check is the
+      part of "ascending seq" the obs can witness.
+    - pending_delayed_subject is only set on a filled permanent slot, and only when
+      some waiting entry exists."""
+    seen_empty = False
+    any_waiting = False
+    for s in range(_DELAYED_SLOTS):
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        label = f"delayed[{s}]"
+        present = _decode_flag(decision_idx, seat, state, base + _DT_PRESENT, f"{label}.present")
+        if not present:
+            seen_empty = True
+            for off in range(_DELAYED_SLOT_SIZE):
+                if off in (_DT_CREATOR_ID, _DT_SUBJECT_ID):
+                    if _decode_card_id(state[base + off]) != _CARD_ID_SENTINEL:
+                        _fail(decision_idx, seat, label, off, state[base + off],
+                              "empty delayed slot carries a card id")
+                elif float(state[base + off]) != 0.0:
+                    _fail(decision_idx, seat, label, off, state[base + off],
+                          "empty delayed slot carries a non-zero field")
+            continue
+        if seen_empty:
+            _fail(decision_idx, seat, label, s, 1.0,
+                  "present delayed slot after an empty one (block must be packed)")
+        _decode_flag(decision_idx, seat, state, base + _DT_CTRL_SELF, f"{label}.ctrl")
+        on_stack = _decode_flag(decision_idx, seat, state, base + _DT_STATE, f"{label}.state")
+        fires = _decode_flag(decision_idx, seat, state, base + _DT_FIRES_THIS_TURN,
+                             f"{label}.fires_this_turn")
+        fire_bits = sum(_decode_flag(decision_idx, seat, state,
+                                     base + _DT_FIRE_ONEHOT_START + k, f"{label}.fire{k}")
+                        for k in range(N_DELAYED_FIRE_KINDS))
+        if fire_bits > 1:
+            _fail(decision_idx, seat, label, "fire_on", fire_bits,
+                  "more than one fire_on bit set")
+        creator_id = _decode_card_id(state[base + _DT_CREATOR_ID])
+        subject_id = _decode_card_id(state[base + _DT_SUBJECT_ID])
+        stack_ref = _decode_ref(state[base + _DT_STACK_REF])
+        if not on_stack:
+            any_waiting = True
+            DELAYED_SEEN["waiting"] += 1
+            if stack_ref != -1:
+                _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                      "waiting delayed trigger carries a stack_ref")
+        else:
+            DELAYED_SEEN["on_stack"] += 1
+            if fires:
+                _fail(decision_idx, seat, label, "fires_this_turn", 1.0,
+                      "on-stack delayed trigger has fires_this_turn set")
+            if stack_ref != -1:
+                if not (2 * _PERM_SLOTS <= stack_ref < N_ENTITY_REF_SLOTS):
+                    _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                          "stack_ref is not a stack slot")
+                sid = _ref_slot_card_id(state, stack_ref)
+                if sid == _CARD_ID_SENTINEL:
+                    _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                          "stack_ref points at an empty stack slot")
+                if sid not in (creator_id, subject_id):
+                    _fail(decision_idx, seat, label, "stack_ref", stack_ref,
+                          f"stack slot card id {sid} is neither the creator's "
+                          f"({creator_id}) nor the subject's ({subject_id})")
+        creator_ref = _decode_ref(state[base + _DT_CREATOR_REF])
+        if creator_ref != -1 and _ref_slot_card_id(state, creator_ref) != creator_id:
+            _fail(decision_idx, seat, label, "creator_ref", creator_ref,
+                  f"creator_ref slot does not hold the creator card id {creator_id}")
+        subject_ref = _decode_ref(state[base + _DT_SUBJECT_REF])
+        if subject_ref != -1:
+            if subject_ref >= 2 * _PERM_SLOTS:
+                _fail(decision_idx, seat, label, "subject_ref", subject_ref,
+                      "subject_ref is not a battlefield slot")
+            if _ref_slot_card_id(state, subject_ref) == _CARD_ID_SENTINEL:
+                _fail(decision_idx, seat, label, "subject_ref", subject_ref,
+                      "subject_ref points at an empty permanent slot")
+    for side, start in (("self_perm", _SELF_PERM_START),
+                        ("opp_perm", _OPP_PERM_START)):
+        for s in range(_PERM_SLOTS):
+            base = start + s * _PERM_SLOT_SIZE
+            bit = _decode_flag(decision_idx, seat, state, base + _OFF_PENDING_DELAYED_SUBJECT,
+                               f"{side}[{s}].pending_delayed_subject")
+            if not bit:
+                continue
+            if _decode_card_id(state[base + _PERM_CARD_OFF]) == _CARD_ID_SENTINEL:
+                _fail(decision_idx, seat, side, s, 1.0,
+                      "pending_delayed_subject set on an empty slot")
+            if not any_waiting:
+                _fail(decision_idx, seat, side, s, 1.0,
+                      "pending_delayed_subject set but no delayed trigger is waiting")
+
+
+# Running tally of decisions at which some player effect was active (reported by
+# main so a run whose games never exercised the block is visible).
+PLAYER_EFFECTS_SEEN = {"active": 0}
+
+
+def _check_player_effects(decision_idx, seat, state):
+    """Invariant (18): the PLAYER EFFECTS block. Every flag is exactly 0/1 and
+    every card id is valid-or-sentinel (the id range is checked with the other
+    id floats, invariant (1)). The emblem ids are packed (a filled second slot
+    needs a filled first) and distinct. During the sideboard phase the whole
+    block is masked: flags 0.0, ids the empty sentinel."""
+    sideboarding = state[_IS_SIDEBOARD_IDX] > 0.5
+    for label, start in (("self_effects", _PLAYER_EFFECTS_START),
+                         ("opp_effects", _PLAYER_EFFECTS_OPP_START)):
+        flags = [_decode_flag(decision_idx, seat, state, start + f, f"{label}.flag{f}")
+                 for f in range(PLAYER_EFFECTS_FLAGS)]
+        emblems = [_decode_card_id(state[start + _PE_EMBLEM_OFF + e])
+                   for e in range(MAX_EMBLEM_SLOTS)]
+        floating = _decode_card_id(state[start + _PE_FLOATING_OFF])
+        filled = [e for e in emblems if e != _CARD_ID_SENTINEL]
+        if emblems[:len(filled)] != filled:
+            _fail(decision_idx, seat, f"{label}.emblems", "-", emblems,
+                  "emblem ids must be packed (no filled slot after an empty one)")
+        if len(set(filled)) != len(filled):
+            _fail(decision_idx, seat, f"{label}.emblems", "-", emblems,
+                  "emblem ids must be distinct")
+        active = any(flags) or filled or floating != _CARD_ID_SENTINEL
+        if sideboarding and active:
+            _fail(decision_idx, seat, label, "-", (flags, emblems, floating),
+                  "player effects set during the sideboard phase (block is masked)")
+        if active:
+            PLAYER_EFFECTS_SEEN["active"] += 1
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -338,10 +699,9 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
                   f"entity ref {ref} out of range [{_REF_MIN},{_REF_MAX}]")
 
     # (3) GY/exile blocks are sentinel-suffixed (recency-packed, no holes).
-    for block, start in (("self_gy", _GY_START), ("opp_gy", _OPP_GY_START),
-                        ("self_exile", _EXILE_START), ("opp_exile", _OPP_EXILE_START)):
+    for block, start, size, _ in _ZONE_BLOCKS:
         seen_empty = False
-        for i, off in enumerate(_zone_block_offsets(start)):
+        for i, off in enumerate(_zone_block_offsets(start, size)):
             empty = _decode_card_id(state[off]) == _CARD_ID_SENTINEL
             if seen_empty and not empty:
                 _fail(decision_idx, seat, block, i, state[off],
@@ -351,7 +711,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # (4) A non-sentinel returnable-exile id implies that id is in an exile block.
     exile_ids = set()
     for start in (_EXILE_START, _OPP_EXILE_START):
-        for off in _zone_block_offsets(start):
+        for off in _zone_block_offsets(start, _EXILE_SLOT_SIZE):
             cid = _decode_card_id(state[off])
             if cid != _CARD_ID_SENTINEL:
                 exile_ids.add(cid)
@@ -406,7 +766,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
 
     # (8) Companion: a declared companion is revealed to the opponent for the
     # whole game proper. When the seat WITHOUT priority (the viewer's opponent)
-    # declared a companion, its bit must be set in the revealed multi-hot.
+    # declared a companion, the revealed bit on its opp decklist slot must be set.
     # Skipped during pregame (mulligan/bottom): this engine reveals the companion
     # in the post-mulligan game setup (src/main.cpp setup_companions), so the bit
     # is not yet present while mulligans/bottoming are still being decided.
@@ -414,22 +774,32 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         opp_seat = "B" if priority_is_a else "A"
         comp_idx = companion_by_seat.get(opp_seat)
         if comp_idx is not None:
-            if not (state[_REVEALED_START + comp_idx] > 0.5):
-                _fail(decision_idx, seat, "opp_revealed.companion", comp_idx,
-                      state[_REVEALED_START + comp_idx],
+            comp_bit = _opp_revealed_bits(state).get(comp_idx)
+            if not (comp_bit is not None and comp_bit > 0.5):
+                _fail(decision_idx, seat, "opp_deck.revealed.companion", comp_idx,
+                      comp_bit,
                       f"opponent (seat {opp_seat}) declared a companion (vocab {comp_idx}) "
-                      "but its revealed bit is not set")
+                      "but its decklist slot's revealed bit is not set")
 
     # (9) Deck-identity blocks: packed ascending by vocab id (no holes), counts in
     # range, self-live-library counts sum to self_library_ct, opp static blocks
-    # constant per viewer seat.
+    # constant per viewer seat, opp revealed bits binary, only on filled slots and
+    # monotone per viewer seat.
     self_lib_sum = 0
-    for name, start, n in _DECKLIST_BLOCKS:
-        entries = _decode_decklist_block(state, start, n)
+    for name, start, n, slot_size in _DECKLIST_BLOCKS:
+        entries = _decode_decklist_block(state, start, n, slot_size)
         seen_empty = False
         prev_id = -1
         for i, (cid, cnt) in enumerate(entries):
             empty = (cid == _CARD_ID_SENTINEL)
+            if slot_size == _OPP_DECKLIST_SLOT_SIZE:
+                rev = float(state[start + i * slot_size + _OPP_DECKLIST_REVEALED_OFF])
+                if rev not in (0.0, 1.0):
+                    _fail(decision_idx, seat, f"{name}.revealed", i, rev,
+                          "revealed bit is not exactly 0.0 or 1.0")
+                if empty and rev != 0.0:
+                    _fail(decision_idx, seat, f"{name}.revealed", i, rev,
+                          "revealed bit set on an empty slot")
             if empty:
                 # Empty slot: count must be ~0.
                 if cnt != 0:
@@ -463,18 +833,17 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         _fail(decision_idx, seat, "self_live_lib.sum", "-", self_lib_sum,
               f"library counts sum to {self_lib_sum} but self_library_ct is {lib_ct}")
 
-    # (9d) opp static maindeck+sideboard blocks are constant across a game per seat.
-    opp_block = (
-        tuple(state[_OPP_DECK_MAIN_START:_OPP_DECK_MAIN_START
-                    + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE]),
-        tuple(state[_OPP_DECK_SIDE_START:_OPP_DECK_SIDE_START
-                    + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE]),
-    )
+    # (9d) opp static maindeck+sideboard (card_id, count) entries are constant
+    # across a game per seat; their revealed bits only ever turn on.
+    opp_block = _opp_decklist_entries(state)
+    revealed = _opp_revealed_bits(state)
     prev = deck_block_by_seat.get(seat)
-    if prev is not None and prev != opp_block:
-        _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
-              "opponent static decklist block changed across decisions of the same seat")
-    deck_block_by_seat[seat] = opp_block
+    if prev is not None:
+        if prev[0] != opp_block:
+            _fail(decision_idx, seat, "opp_deck.constancy", "-", "changed",
+                  "opponent static decklist block changed across decisions of the same seat")
+        _check_revealed_monotone(decision_idx, seat, prev[1], revealed)
+    deck_block_by_seat[seat] = (opp_block, revealed)
 
     # (12) Mana-development block: every float is a finite non-negative count, the
     # per-color potentials are bounded by the source total, the total covers the
@@ -491,6 +860,19 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # life/library float — the two encodings of one number, pinned to each other.
     # (Masked to zeros during the sideboard phase, which is asserted instead there.)
     _check_log_vitals(decision_idx, seat, state)
+
+    # (16) Per-turn counters and the per-permanent per-turn statuses: whole counts,
+    # binary flags, nested spell counts, colors only alongside a cast.
+    _check_per_turn(decision_idx, seat, state)
+
+    # (17) Pending delayed triggers: packed slots, sentinel-clean empties, the
+    # on-stack stack_ref link, creator/subject refs, and the per-permanent
+    # pending_delayed_subject bit only on filled slots.
+    _check_delayed(decision_idx, seat, state)
+
+    # (18) Player effects: binary flags, packed distinct emblem ids, masked in the
+    # sideboard phase.
+    _check_player_effects(decision_idx, seat, state)
 
     # (10) Every per-action option_ordinal float round-trips into
     # [-1, OPTION_ORDINAL_MAX]. The ords block is the 6th (last) action-metadata
@@ -532,6 +914,151 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
                       f"duplicate ability ordinal {o} on entity slot {slot} — "
                       "same-permanent activations are indistinguishable")
             seen_by_slot[slot].add(o)
+
+    # (14) Every non-priority decision names its asking card in the
+    # pending-decision block, outside the listed source-less kinds.
+    if num_choices:
+        _check_pending_source(decision_idx, seat, obs, state, num_choices)
+
+    # (15) Priority-window context and mulligan state agree with the menu.
+    if num_choices:
+        _check_priority_and_mulligan(decision_idx, seat, obs, state, num_choices)
+
+    # (16) Graveyard / exile play-permission flags and exile counters.
+    _check_zone_slots(decision_idx, seat, obs, state, num_choices)
+
+
+# ── Pending-decision source (14) ──────────────────────────────────────────────
+#
+# Every decision that is not a priority window names its asking card in the
+# pending-decision block, except the decision kinds below. A priority window is
+# recognized by its menu: only determine_legal_actions emits the PASS_PRIORITY
+# *category* (scry/dig/yes-no prompts reuse the PASS_PRIORITY action type under
+# their own categories).
+
+_MC_CLEANUP_DISCARD = _MC_NAMES.index("Cleanup Discard")
+
+# User-approved source-less decision kinds: label -> predicate(cats, obs).
+_SOURCELESS_APPROVED = {
+    "mulligan": lambda cats, obs: decode.is_mulligan(cats),
+    "mulligan bottoming": lambda cats, obs: decode.is_bottom(cats),
+    "sideboarding": lambda cats, obs: set(cats) <= {
+        CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE},
+    "cleanup discard": lambda cats, obs: (
+        set(cats) == {CAT_DISCARD}
+        and obs[_EXTRAS_MC_ONEHOT_START + _MC_CLEANUP_DISCARD] > 0.5),
+    "declare attackers": lambda cats, obs: set(cats) <= {
+        CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS},
+    "declare blockers": lambda cats, obs: set(cats) <= {
+        CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS},
+    # 603.3b ordering led by one of the monarch's inherent triggers (CR 725.2),
+    # which have no source object and no creating card. (A floating trigger names
+    # the card whose effect created it as the ordering source.)
+    "monarch trigger ordering": lambda cats, obs: (
+        set(cats) == {CAT_ORDER_TRIGGERS}
+        and _decode_card_id(decode.action_card_ids(obs)[0]) == _CARD_ID_SENTINEL),
+}
+
+# PROVISIONAL source-less decision kinds found while adding this check, pending
+# user review — each is a candidate for either a real source or promotion into
+# the approved table above.
+_SOURCELESS_PROVISIONAL = {
+    # 704.5j legend-rule keep: an SBA, asked on behalf of no card (each menu
+    # entry names one of the conflicting legends).
+    "legend rule keep": lambda cats, obs: set(cats) == {CAT_KEEP_LEGEND},
+    # Draw-step dredge (CR 702.52a): the turn-based draw's replacement choice
+    # (entry 0 = draw normally, carrying no card; each dredge entry names its
+    # dredge card). A resolution-time draw names the resolving ability instead.
+    "draw-step dredge": lambda cats, obs: (
+        set(cats) == {CAT_CHOOSE_REPLACEMENT}
+        and _decode_card_id(decode.action_card_ids(obs)[0]) == _CARD_ID_SENTINEL),
+    # 616.1 choice among several applicable replacement effects (each menu
+    # entry names its replacement's source).
+    "616.1 replacement choice": lambda cats, obs: set(cats) == {CAT_CHOOSE_REPLACEMENT},
+}
+
+
+def sourceless_kind(cats, obs):
+    """The allowed-exception label for a source-less decision, or None."""
+    for table in (_SOURCELESS_APPROVED, _SOURCELESS_PROVISIONAL):
+        for label, pred in table.items():
+            if pred(cats, obs):
+                return label
+    return None
+
+
+def is_priority_window(cats):
+    return any(int(c) == CAT_PASS_PRIORITY for c in cats)
+
+
+def _check_pending_source(decision_idx, seat, obs, state, num_choices):
+    cats = [int(c) for c in decode.action_categories(obs, num_choices)]
+    if is_priority_window(cats):
+        return
+    if _decode_card_id(state[_PENDING_DECISION_START]) != _CARD_ID_SENTINEL:
+        return
+    if sourceless_kind(cats, obs) is None:
+        _fail(decision_idx, seat, "pending_decision.source", "-",
+              state[_PENDING_DECISION_START],
+              f"non-priority decision without a pending-decision source "
+              f"(menu categories {sorted(set(cats))})")
+
+
+# ── Priority-window context + mulligan state (15) ────────────────────────────
+#
+# is_priority_window is set by the engine (priority_window_open) independently of
+# the menu, so it is checked against the menu's own signature of a priority window
+# (the PASS_PRIORITY category). The pass flags are 0 outside a priority window,
+# the mandatory-choice one-hot is NONE inside one, and the mulligan floats are
+# whole counts in range with bottom_remaining nonzero exactly while bottoming.
+
+def _decode_flag(decision_idx, seat, state, idx, label):
+    v = float(state[idx])
+    if v not in (0.0, 1.0):
+        _fail(decision_idx, seat, label, "-", v, "flag must be exactly 0.0 or 1.0")
+    return v == 1.0
+
+
+def _decode_mulligan_count(decision_idx, seat, state, idx, label):
+    v = float(state[idx]) * MULLIGAN_NORMALIZER
+    n = int(round(v))
+    if abs(v - n) > 1e-4 or not (0 <= n <= MULLIGAN_NORMALIZER):
+        _fail(decision_idx, seat, label, "-", v,
+              f"mulligan count must be a whole number in [0,{MULLIGAN_NORMALIZER}]")
+    return n
+
+
+def _check_priority_and_mulligan(decision_idx, seat, obs, state, num_choices):
+    cats = [int(c) for c in decode.action_categories(obs, num_choices)]
+    window = _decode_flag(decision_idx, seat, state, _EXTRAS_IS_PRIORITY_WINDOW,
+                          "extras.is_priority_window")
+    if window != is_priority_window(cats):
+        _fail(decision_idx, seat, "extras.is_priority_window", "-", window,
+              f"is_priority_window disagrees with the menu (categories "
+              f"{sorted(set(cats))})")
+    for idx, label in ((_EXTRAS_SELF_PASSED, "extras.self_has_passed"),
+                       (_EXTRAS_OPP_PASSED, "extras.opp_has_passed")):
+        if _decode_flag(decision_idx, seat, state, idx, label) and not window:
+            _fail(decision_idx, seat, label, "-", 1.0,
+                  "pass flag set outside a priority window")
+    if window and np.any(state[_EXTRAS_MC_ONEHOT_START + 1:
+                               _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES] > 0.5):
+        _fail(decision_idx, seat, "mandatory_choice_onehot", "-", "set",
+              "a mandatory choice is pending at a priority window")
+
+    self_mulls = _decode_mulligan_count(decision_idx, seat, state,
+                                        _EXTRAS_SELF_MULLIGANS, "extras.self_mulligans")
+    _decode_mulligan_count(decision_idx, seat, state, _EXTRAS_OPP_MULLIGANS,
+                           "extras.opp_mulligans")
+    bottom = _decode_mulligan_count(decision_idx, seat, state,
+                                    _EXTRAS_SELF_BOTTOM_REMAINING,
+                                    "extras.self_bottom_remaining")
+    if (bottom > 0) != bool(decode.is_bottom(cats)):
+        _fail(decision_idx, seat, "extras.self_bottom_remaining", "-", bottom,
+              "bottom_remaining must be nonzero exactly at a bottoming decision")
+    if bottom > self_mulls:
+        _fail(decision_idx, seat, "extras.self_bottom_remaining", "-", bottom,
+              f"bottom_remaining {bottom} exceeds the viewer's mulligans {self_mulls}")
 
 
 # ── Game driving ──────────────────────────────────────────────────────────────
@@ -646,6 +1173,462 @@ def check_walker_activation_ordinals():
         env.close()
 
 
+def _zone_slot_flags(state, start, size, card_idx):
+    """(playable_by_self, playable_by_opp, play_expires_this_turn) of the first
+    slot of a graveyard / exile block holding `card_idx`, or None."""
+    for i in range(MAX_GY_SLOTS):
+        base = start + i * size
+        if _decode_card_id(state[base + ZONE_CARD_ID_OFF]) == card_idx:
+            return tuple(bool(state[base + off] > 0.5) for _, off in _ZONE_FLAG_OFFS)
+    return None
+
+
+def check_graveyard_play_permissions():
+    """Guaranteed coverage for invariant (16)'s flag semantics: seat A starts with
+    Emry, Lurker of the Loch in play and Mishra's Bauble + Deep Analysis in its
+    graveyard. Deep Analysis (flashback, a keyword route) must read playable by
+    its owner only, never expiring — playable_by_self from A's view,
+    playable_by_opp from B's. A activates Emry targeting the Bauble; once the
+    grant resolves the Bauble reads playable by A (by the opponent from B's view)
+    with play_expires_this_turn set, and the flags are gone after that turn's
+    cleanup. Every decision also runs the full
+    check_decision battery. Returns (Deep Analysis decisions, granted-Bauble
+    decisions)."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    emry = names["Emry, Lurker of the Loch"]
+    bauble = names["Mishra's Bauble"]
+    analysis = names["Deep Analysis"]
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Emry Lurker of the Loch",
+                      graveyard_a="Mishras Bauble,Deep Analysis", bo3=False)
+    n_analysis = n_granted = 0
+    activated = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(300):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            a_gy = _GY_START if priority_is_a else _OPP_GY_START
+            da = _zone_slot_flags(state, a_gy, _GY_SLOT_SIZE, analysis)
+            if da is not None:
+                want = (True, False, False) if priority_is_a else (False, True, False)
+                if da != want:
+                    raise InvariantError(
+                        f"Deep Analysis (flashback) flags {da}, expected {want}")
+                n_analysis += 1
+            bb = _zone_slot_flags(state, a_gy, _GY_SLOT_SIZE, bauble)
+            if bb is not None and any(bb):
+                want = (True, False, True) if priority_is_a else (False, True, True)
+                if not activated or bb != want:
+                    raise InvariantError(
+                        f"Mishra's Bauble flags {bb}, expected {want} and only after "
+                        "Emry's activation")
+                n_granted += 1
+            elif bb is not None and n_granted:
+                return n_analysis, n_granted   # the grant lapsed at cleanup
+            choice = 0
+            ids = decode.action_card_ids(obs)
+            if priority_is_a:
+                for a in range(num):
+                    cat, cid = int(cats[a]), _decode_card_id(ids[a])
+                    if not activated and cat == CAT_ACTIVATE_ABILITY and cid == emry:
+                        choice = a
+                        activated = True
+                        break
+                    if cat == CAT_SELECT_TARGET and cid == bauble:
+                        choice = a
+                        break
+            env.step(choice)
+        raise InvariantError(
+            f"Emry's grant never observed and lapsed within 300 decisions "
+            f"(activated={activated}, granted decisions={n_granted})")
+    finally:
+        env.close()
+
+
+def check_delayed_trigger_lifecycle():
+    """Guaranteed coverage for invariant (17): stage two Mishra's Baubles for
+    seat A, activate one, and follow its "draw at the beginning of the next
+    turn's upkeep" delayed trigger through the observation — waiting (fire_on
+    upkeep, creator in the graveyard so creator_ref is none), then on the stack
+    at the next upkeep (seat A holds the second Bauble, so it gets a decision
+    there) with a stack_ref naming a Bauble stack slot, then gone once it has
+    resolved. Every decision also runs the full check_decision battery. Returns
+    (waiting decisions, on-stack decisions)."""
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Mishras Bauble,Mishras Bauble", bo3=False)
+    waiting = on_stack = 0
+    activated = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(200):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            base = _DELAYED_START
+            if state[base + _DT_PRESENT] > 0.5:
+                if _decode_card_id(state[base + _DT_CREATOR_ID]) != _MISHRAS_BAUBLE_VOCAB_IDX:
+                    raise InvariantError("delayed entry's creator is not Mishra's Bauble")
+                if state[base + _DT_STATE] < 0.5:
+                    if state[base + _DT_FIRE_ONEHOT_START] < 0.5:
+                        raise InvariantError("waiting Bauble trigger does not fire on upkeep")
+                    if _decode_ref(state[base + _DT_CREATOR_REF]) != -1:
+                        raise InvariantError("sacrificed Bauble still has a creator_ref")
+                    waiting += 1
+                else:
+                    ref = _decode_ref(state[base + _DT_STACK_REF])
+                    if ref < 0 or _ref_slot_card_id(state, ref) != _MISHRAS_BAUBLE_VOCAB_IDX:
+                        raise InvariantError(
+                            f"on-stack Bauble trigger's stack_ref {ref} is not a Bauble stack slot")
+                    on_stack += 1
+            elif on_stack:
+                return waiting, on_stack           # resolved: the entry is gone
+            choice = 0
+            ids = decode.action_card_ids(obs)
+            for a in range(num):
+                cat = int(cats[a])
+                if (priority_is_a and not activated and cat == CAT_ACTIVATE_ABILITY
+                        and _decode_card_id(ids[a]) == _MISHRAS_BAUBLE_VOCAB_IDX):
+                    choice = a
+                    activated = True
+                    break
+            env.step(choice)
+        raise InvariantError(
+            f"Bauble delayed trigger not followed to resolution in 200 decisions "
+            f"(waiting {waiting}, on stack {on_stack}, activated {activated})")
+    finally:
+        env.close()
+
+
+def _player_effects_half(state, start):
+    """(flags tuple, emblem ids tuple, floating-trigger source id) of one half."""
+    flags = tuple(bool(state[start + f] > 0.5) for f in range(PLAYER_EFFECTS_FLAGS))
+    emblems = tuple(_decode_card_id(state[start + _PE_EMBLEM_OFF + e])
+                    for e in range(MAX_EMBLEM_SLOTS))
+    return flags, emblems, _decode_card_id(state[start + _PE_FLOATING_OFF])
+
+
+_NO_PLAYER_EFFECTS = ((False,) * PLAYER_EFFECTS_FLAGS,
+                      (_CARD_ID_SENTINEL,) * MAX_EMBLEM_SLOTS, _CARD_ID_SENTINEL)
+
+
+def _seat_effect_halves(state, priority_is_a):
+    """(player A's half, player B's half) of the player-effects block."""
+    self_half = _player_effects_half(state, _PLAYER_EFFECTS_START)
+    opp_half = _player_effects_half(state, _PLAYER_EFFECTS_OPP_START)
+    return (self_half, opp_half) if priority_is_a else (opp_half, self_half)
+
+
+def _write_veil_deck():
+    """A stacked temp deck for check_veil_player_effects: two Veil of Summer on top
+    (so both start in hand under no_shuffle), then Forests. Returns the deck spec."""
+    stem = "temp/obsinv_veil"
+    path = os.path.join(_DECKS_DIR, "temp", "obsinv_veil.dk")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        f.write("2 Veil of Summer\n58 Forest\n")
+    return stem
+
+
+def check_veil_player_effects():
+    """Guaranteed coverage for invariant (18)'s semantics: seat A (on the play, two
+    Forests in play, two Veil of Summer in its stacked opening hand) plays a land
+    and casts Veil of Summer. Before it resolves both halves of the block are
+    empty; afterwards player A's half reads exactly hexproof from blue and black
+    plus spells_cant_be_countered (A's self half, B's opp half) while B's is
+    empty; the next turn both are empty again. Every decision also runs the full
+    check_decision battery. Returns the number of decisions that saw the grant."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    veil = names["Veil of Summer"]
+    want = [False] * PLAYER_EFFECTS_FLAGS
+    want[_PE_HEXPROOF_START + 1] = True          # blue
+    want[_PE_HEXPROOF_START + 2] = True          # black
+    want[_PE_UNCOUNTERABLE] = True
+    want_a = (tuple(want),) + _NO_PLAYER_EFFECTS[1:]
+    env = RoboMageEnv(deck_a=_write_veil_deck(), deck_b="delver", no_shuffle=True,
+                      battlefield_a="Forest,Forest", bo3=False)
+    granted = 0
+    grant_turn = None
+    cast = played = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(300):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            turn = int(round(float(state[_CUR_TURN_IDX]) * 50))
+            a_half, b_half = _seat_effect_halves(state, priority_is_a)
+            if b_half != _NO_PLAYER_EFFECTS:
+                raise InvariantError(f"player B's effects half is set: {b_half}")
+            if a_half != _NO_PLAYER_EFFECTS:
+                if a_half != want_a:
+                    raise InvariantError(
+                        f"player A's effects after Veil of Summer {a_half}, expected {want_a}")
+                if not cast or (grant_turn is not None and turn != grant_turn):
+                    raise InvariantError(
+                        f"Veil of Summer grant seen outside its turn (turn {turn}, "
+                        f"cast={cast}, grant turn {grant_turn})")
+                grant_turn = turn
+                granted += 1
+            elif grant_turn is not None and turn > grant_turn:
+                return granted                     # lapsed at cleanup
+            choice = 0
+            if priority_is_a:
+                ids = decode.action_card_ids(obs)
+                for a in range(num):
+                    cat = int(cats[a])
+                    if not played and cat == CAT_PLAY_LAND:
+                        choice, played = a, True
+                        break
+                    if (played and not cast and cat == CAT_CAST_SPELL
+                            and _decode_card_id(ids[a]) == veil):
+                        choice, cast = a, True
+                        break
+            env.step(choice)
+        raise InvariantError(
+            f"Veil of Summer grant not seen and lapsed within 300 decisions "
+            f"(cast={cast}, granted decisions={granted})")
+    finally:
+        env.close()
+
+
+def check_teferi_player_effects():
+    """Guaranteed coverage for invariant (18)'s static-derived and grant fields:
+    seat A starts with Teferi, Time Raveler in play. Once the preset lands (after
+    the mulligans) player B's half reads restricted_to_sorcery_speed at every
+    decision (and A's never does). A
+    activates Teferi's lowest-ordinal loyalty ability (+1); once it resolves A's
+    half reads may_cast_sorceries_as_flash until A's next turn begins. Every
+    decision also runs the full check_decision battery. Returns (decisions with
+    the flash grant, decisions after it lapsed)."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    teferi = names["Teferi, Time Raveler"]
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Teferi Time Raveler", bo3=False)
+    flash = lapsed = 0
+    grant_turn = None
+    activated = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(400):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            turn = int(round(float(state[_CUR_TURN_IDX]) * 50))
+            (a_flags, _, _), (b_flags, _, _) = _seat_effect_halves(state, priority_is_a)
+            if decode.is_mulligan(cats) or decode.is_bottom(cats):
+                # The battlefield preset lands after the mulligans.
+                if a_flags != _NO_PLAYER_EFFECTS[0] or b_flags != _NO_PLAYER_EFFECTS[0]:
+                    raise InvariantError("player effects set before Teferi is in play")
+                env.step(0)
+                continue
+            if not b_flags[_PE_SORCERY_SPEED_LOCK] or a_flags[_PE_SORCERY_SPEED_LOCK]:
+                raise InvariantError(
+                    f"Teferi's static: restricted_to_sorcery_speed A={a_flags[_PE_SORCERY_SPEED_LOCK]} "
+                    f"B={b_flags[_PE_SORCERY_SPEED_LOCK]}, expected A=False B=True")
+            if b_flags[_PE_SORCERY_FLASH]:
+                raise InvariantError("player B reads may_cast_sorceries_as_flash")
+            if a_flags[_PE_SORCERY_FLASH]:
+                if not activated:
+                    raise InvariantError("flash grant set before Teferi's +1 was activated")
+                if grant_turn is None:
+                    grant_turn = turn
+                flash += 1
+            elif flash:
+                # Lapses as A's next turn begins (two turns after the grant).
+                if turn < grant_turn + 2:
+                    raise InvariantError(
+                        f"flash grant lapsed early (turn {turn}, granted turn {grant_turn})")
+                lapsed += 1
+                if lapsed >= 3:
+                    return flash, lapsed
+            choice = 0
+            if priority_is_a and not activated:
+                ids = decode.action_card_ids(obs)
+                ords = decode.action_ordinals(obs, num)
+                acts = [a for a in range(num) if int(cats[a]) == CAT_ACTIVATE_ABILITY
+                        and _decode_card_id(ids[a]) == teferi]
+                if acts:
+                    choice = min(acts, key=lambda a: int(ords[a]))
+                    activated = True
+            env.step(choice)
+        raise InvariantError(
+            f"Teferi's flash grant not followed to its lapse in 400 decisions "
+            f"(activated={activated}, flash decisions={flash}, lapsed={lapsed})")
+    finally:
+        env.close()
+
+
+def check_squelcher_player_effects():
+    """Guaranteed coverage for invariant (18)'s battlefield-static source of
+    spells_cant_be_countered: seat A starts with Hexing Squelcher in play ("Spells
+    you control can't be countered"). At every decision player A's
+    spells_cant_be_countered flag is set exactly while the Squelcher is on A's
+    battlefield, and player B's never is (the static covers only its controller).
+    Before the preset lands (the mulligans) both halves are empty. Every decision
+    also runs the full check_decision battery. Returns the number of decisions
+    that saw the flag."""
+    env = RoboMageEnv(deck_a="delver", deck_b="delver",
+                      battlefield_a="Hexing Squelcher", bo3=False)
+    flagged = 0
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(120):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
+            check_decision(i, obs, priority_is_a, {}, pregame, deck_blocks,
+                           num_choices=num)
+            (a_flags, _, _), (b_flags, _, _) = _seat_effect_halves(state, priority_is_a)
+            if b_flags[_PE_UNCOUNTERABLE]:
+                raise InvariantError("player B reads spells_cant_be_countered from "
+                                     "A's Hexing Squelcher")
+            gs = decode.decode_game_state(state)
+            a_bf = gs["self_battlefield"] if priority_is_a else gs["opp_battlefield"]
+            present = any(p["name"] == "Hexing Squelcher" for p in a_bf)
+            if a_flags[_PE_UNCOUNTERABLE] != present:
+                raise InvariantError(
+                    f"decision {i}: player A's spells_cant_be_countered="
+                    f"{a_flags[_PE_UNCOUNTERABLE]} with Hexing Squelcher "
+                    f"{'on' if present else 'not on'} A's battlefield")
+            flagged += present
+            _obs, _r, terminated, truncated, _info = env.step(0)
+            if terminated or truncated:
+                break
+        if flagged == 0:
+            raise InvariantError("Hexing Squelcher never seen on A's battlefield")
+        return flagged
+    finally:
+        env.close()
+
+
+# decode_game_state keys a mirrored view is NOT expected to reproduce from the
+# other seat's frame: the priority seat's identity flags, the priority player's
+# private knowledge (a mirrored front end hides it), and the blocks that carry
+# perspective-relative battlefield slot refs (stack targets, delayed-trigger and
+# pending-decision refs).
+_MIRROR_EXEMPT_KEYS = {"priority_player", "priority_is_a", "self_hand",
+                       "known_top_library", "opp_known_hand", "opp_revealed",
+                       "stack", "delayed_triggers", "pending_decision"}
+# Engine seeds of the scripted games check_mirrored_view drives.
+_MIRROR_SEEDS = (1, 2, 3, 4, 5, 6, 7, 8)
+# Extras that legitimately differ across a priority hand-off (the passing seat's
+# pass flag is set only after it passed) or are viewer-only.
+_MIRROR_EXEMPT_EXTRAS = {"self_passed", "opp_passed", "bottom_remaining"}
+
+
+def _mirror_comparable(gs):
+    """A decode_game_state dict reduced to what a mirrored view must reproduce:
+    the exempt keys dropped and every perspective-relative slot ref ("slot" /
+    "*_slot" fields, numbered from the viewing seat's battlefield) removed."""
+    def strip_slots(v):
+        if isinstance(v, dict):
+            return {k: strip_slots(x) for k, x in v.items()
+                    if k != "slot" and not k.endswith("_slot")}
+        if isinstance(v, list):
+            return [strip_slots(x) for x in v]
+        return v
+    out = {k: strip_slots(v) for k, v in gs.items() if k not in _MIRROR_EXEMPT_KEYS}
+    out["extras"] = {k: v for k, v in out["extras"].items()
+                     if k not in _MIRROR_EXEMPT_EXTRAS}
+    return out
+
+
+def check_mirrored_view():
+    """The play boards' mirrored view (game_driver.decode_human_frame) swaps every
+    per-player key the decoder emits. Drives scripted bo1 games of the
+    exile-heavy bw_dnt vs ur_delver matchup (one per _MIRROR_SEEDS seed) and, at
+    every priority hand-off
+    where one seat PASSES and the other seat's priority window follows in the
+    same step with the same stack size (so only the viewer changed),
+    asserts that the second frame decoded mirrored (as seen by the passing seat)
+    equals the first frame decoded normally, for every key but the
+    _MIRROR_EXEMPT_KEYS / _MIRROR_EXEMPT_EXTRAS. Requires hand-offs where the
+    per-turn counters and the exile blocks differ between the players, so both
+    are exercised. Returns (hand-offs compared, with per-turn asymmetry, with
+    exile asymmetry)."""
+    from types import SimpleNamespace
+    from game_driver import decode_human_frame
+    deck_a, deck_b = "league/bw_dnt", "league/ur_delver"
+    prev = {}          # the previous decision: obs copy, seat, and whether it passed
+    counts = {"compared": 0, "per_turn": 0, "exile": 0}
+
+    def frame(o, mirrored):
+        return decode_human_frame(SimpleNamespace(
+            obs=o, opp_perspective=mirrored, perm_counters=None,
+            perm_token_names=None))[0]
+
+    def key(o):
+        st = o[:STATE_SIZE]
+        return (decode.decode_turn(st), decode.decode_step(st),
+                int(round(float(st[_STACK_SIZE_IDX]) * 10)))
+
+    def on_query(d):
+        o = np.array(d.obs, copy=True)
+        if (prev.get("passed") and prev["seat"] != d.priority_is_a
+                and prev["key"] == key(o)
+                and is_priority_window(decode.action_categories(o, d.num_choices))):
+            own = frame(prev["obs"], False)
+            mirrored = frame(o, True)
+            want, got = _mirror_comparable(own), _mirror_comparable(mirrored)
+            if want != got:
+                bad = sorted(k for k in want if want[k] != got.get(k))
+                raise InvariantError(
+                    f"decision {d.index}: mirrored view differs from the passing seat's "
+                    f"own view at {bad}: own={[want[k] for k in bad]} "
+                    f"mirrored={[got.get(k) for k in bad]}")
+            counts["compared"] += 1
+            counts["per_turn"] += own["self_this_turn"] != own["opp_this_turn"]
+            counts["exile"] += own["self_exile"] != own["opp_exile"]
+        prev.update(obs=o, seat=d.priority_is_a, key=key(o), passed=False)
+
+    def on_action(d, action):
+        cats = decode.action_categories(d.obs, d.num_choices)
+        prev["passed"] = int(cats[action]) == CAT_PASS_PRIORITY
+
+    for seed in _MIRROR_SEEDS:
+        env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, bo3=False)
+        obs, _ = env.reset(seed=seed)
+        random.seed(seed)
+        ctrl_a, ctrl_b = _make_scripted_pair(deck_a, deck_b)
+        prev.clear()
+        try:
+            runner.drive_game(env, obs, ctrl_a, ctrl_b, on_query=on_query,
+                              on_action=on_action)
+        finally:
+            env.close()
+    if not counts["per_turn"] or not counts["exile"]:
+        raise InvariantError(
+            f"mirrored-view check never saw asymmetric per-turn counters / exile "
+            f"({counts}); pick a matchup that exercises them")
+    return counts["compared"], counts["per_turn"], counts["exile"]
+
+
 # Bo3 sideboard-check tuning: swaps each seat makes per sideboard phase, how many
 # post-board decisions are enough to prove the freeze held into game 2, and a hard
 # decision cap so a pathological match can never hang the tier.
@@ -737,15 +1720,20 @@ def check_opponent_decklist_frozen():
     sees (see src/classes/deck_state.h).
 
     Drives a real bo3 in which BOTH seats actually sideboard, and asserts that for
-    each viewer seat the decoded opp_deck_main / opp_deck_side blocks are byte-
-    identical at every decision of every game, including the between-games
-    sideboard phases (where env's sideboard mask deliberately keeps them visible).
-    Returns (swaps_made, post_board_decisions)."""
+    each viewer seat the decoded opp_deck_main / opp_deck_side (card_id, count)
+    entries are identical at every decision of every game, including the
+    between-games sideboard phases (where env's sideboard mask deliberately keeps
+    them visible), and that their revealed bits are monotone across the whole
+    match and survive into the sideboard phase and the post-board games.
+    Returns (swaps_made, post_board_decisions, log-vitals live / masked counts,
+    most revealed bits seen in the sideboard phase / a post-board game)."""
     env = RoboMageEnv(deck_a=_SB_DECK_A, deck_b=_SB_DECK_B, bo3=True,
                       auto_sideboard=False)
     first = {}                        # seat -> (main_block, side_block) at first sight
+    last_revealed = {}                # seat -> {vocab_id: revealed} at its last decision
+    rev_in_sb = 0                     # most revealed bits seen in a sideboard-phase obs
+    rev_post_board = 0                # ... and in a post-board game's obs
     swaps = 0
-    saw_sideboard = False
     post_board = 0
     # Log-vitals coverage over this bo3: the main invariant loop is bo1 only, so
     # this is where the block's SIDEBOARD-phase form (masked to zeros) is exercised
@@ -759,12 +1747,18 @@ def check_opponent_decklist_frozen():
                 lv_masked += 1
             else:
                 lv_live += 1
-            blocks = (
-                tuple(_decode_decklist_block(obs, _OPP_DECK_MAIN_START,
-                                             DECKLIST_MAIN_SLOTS)),
-                tuple(_decode_decklist_block(obs, _OPP_DECK_SIDE_START,
-                                             DECKLIST_SIDE_SLOTS)),
-            )
+            blocks = _opp_decklist_entries(obs)
+            # Revealed bits: monotone per viewer across the whole match (the
+            # per-game ECS reset and the sideboard mask must both preserve them).
+            revealed = _opp_revealed_bits(obs)
+            if seat in last_revealed:
+                _check_revealed_monotone(idx, seat, last_revealed[seat], revealed)
+            last_revealed[seat] = revealed
+            n_rev = sum(1 for v in revealed.values() if v > 0.5)
+            if obs[_IS_SIDEBOARD_IDX] > 0.5:
+                rev_in_sb = max(rev_in_sb, n_rev)
+            elif int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0:
+                rev_post_board = max(rev_post_board, n_rev)
             if seat not in first:
                 first[seat] = blocks
             elif blocks != first[seat]:
@@ -781,9 +1775,10 @@ def check_opponent_decklist_frozen():
             if any(c in (CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT) for c in cats) and \
                     not any(c == CAT_SIDEBOARD_DONE for c in cats):
                 swaps += 1
-            if obs[_IS_SIDEBOARD_IDX] > 0.5:
-                saw_sideboard = True
-            elif saw_sideboard:
+            # A post-board decision: game 2+ of the bo3 (game_number is 0-based),
+            # outside the sideboard phase itself.
+            if (obs[_IS_SIDEBOARD_IDX] <= 0.5
+                    and int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0):
                 post_board += 1
                 if post_board >= _SB_POST_BOARD_MIN:
                     break
@@ -802,7 +1797,12 @@ def check_opponent_decklist_frozen():
         raise InvariantError(
             f"log-vitals coverage was vacuous: {lv_live} live decisions, "
             f"{lv_masked} sideboard-masked ones (both branches must be seen)")
-    return swaps, post_board, lv_live, lv_masked
+    if rev_in_sb == 0 or rev_post_board == 0:
+        raise InvariantError(
+            f"revealed-bit persistence was vacuous: {rev_in_sb} bits seen in the "
+            f"sideboard phase, {rev_post_board} in a post-board game (game 1's reveals "
+            "must survive into both)")
+    return swaps, post_board, lv_live, lv_masked, rev_in_sb, rev_post_board
 
 
 # "Sideboard in: 4x Lightning Bolt" / "Sideboard out: 1x Island" — the count is the
@@ -1184,7 +2184,7 @@ def check_sideboard_self_context():
       (iii) the self-deck blocks actually MOVE during a sideboard phase (they are
             the live view; the complement of the frozen opponent blocks);
       (iv)  at a sideboard root the match context describes the UPCOMING game
-            (game_number advanced, is_post_board set), not the one that just ended;
+            (game_number advanced), not the one that just ended;
       (v)   the two seats disagree about self_plays_first at the same boundary —
             exactly one of them is on the play next.
 
@@ -1238,13 +2238,12 @@ def check_sideboard_self_context():
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 sb_decisions += 1
                 match = decode._decode_match_context(obs[:STATE_SIZE])
-                # (iv) boarding for game 2 means game_number 1 (0-based) and a
-                # post-board game ahead. Reading the ended game would give 0/False.
-                if match["game_number"] <= 0 or not match["is_post_board"]:
+                # (iv) boarding for game 2 means game_number 1 (0-based). Reading
+                # the ended game would give 0.
+                if match["game_number"] <= 0:
                     raise InvariantError(
                         f"seat {seat}: sideboard root reports game_number "
-                        f"{match['game_number']} / is_post_board "
-                        f"{match['is_post_board']} — it must describe the UPCOMING "
+                        f"{match['game_number']} — it must describe the UPCOMING "
                         "game, not the one that just ended")
                 plays_first_at_boundary.setdefault(
                     seat, bool(obs[_EXTRAS_PLAYS_FIRST] > 0.5))
@@ -1296,12 +2295,64 @@ def main():
           "activations on one Jace", flush=True)
 
     try:
-        n_swaps, n_post, lv_live, lv_masked = check_opponent_decklist_frozen()
+        n_da, n_granted = check_graveyard_play_permissions()
+    except InvariantError as e:
+        print(f"FAIL  graveyard play permissions\n  {e}", flush=True)
+        return 1
+    print(f"ok    graveyard play permissions: flashback card flagged at {n_da} "
+          f"decisions, Emry's grant at {n_granted} then lapsed", flush=True)
+
+    try:
+        n_wait, n_stack = check_delayed_trigger_lifecycle()
+    except InvariantError as e:
+        print(f"FAIL  delayed-trigger lifecycle\n  {e}", flush=True)
+        return 1
+    print(f"ok    delayed-trigger lifecycle: Bauble trigger waiting at {n_wait} "
+          f"decisions, on the stack at {n_stack}, then gone", flush=True)
+
+    try:
+        n_veil = check_veil_player_effects()
+    except InvariantError as e:
+        print(f"FAIL  Veil of Summer player effects\n  {e}", flush=True)
+        return 1
+    print(f"ok    Veil of Summer player effects: hexproof U/B + uncounterable at "
+          f"{n_veil} decisions, empty before and after", flush=True)
+
+    try:
+        n_mir, n_mir_pt, n_mir_ex = check_mirrored_view()
+    except InvariantError as e:
+        print(f"FAIL  mirrored board view\n  {e}", flush=True)
+        return 1
+    print(f"ok    mirrored board view: {n_mir} priority hand-offs match the passing "
+          f"seat's own view ({n_mir_pt} with per-turn and {n_mir_ex} with exile "
+          f"asymmetry)", flush=True)
+
+    try:
+        n_squelch = check_squelcher_player_effects()
+    except InvariantError as e:
+        print(f"FAIL  Hexing Squelcher player effects\n  {e}", flush=True)
+        return 1
+    print(f"ok    Hexing Squelcher player effects: A uncounterable at {n_squelch} "
+          f"decisions with the Squelcher in play, B never", flush=True)
+
+    try:
+        n_flash, n_lapsed = check_teferi_player_effects()
+    except InvariantError as e:
+        print(f"FAIL  Teferi player effects\n  {e}", flush=True)
+        return 1
+    print(f"ok    Teferi player effects: opponent sorcery-speed lock at every decision, "
+          f"+1 flash grant at {n_flash} decisions then lapsed", flush=True)
+
+    try:
+        (n_swaps, n_post, lv_live, lv_masked,
+         rev_sb, rev_post) = check_opponent_decklist_frozen()
     except InvariantError as e:
         print(f"FAIL  opponent decklist frozen across bo3\n  {e}", flush=True)
         return 1
     print(f"ok    opponent decklist frozen across bo3: {n_swaps} swaps made, "
           f"{n_post} post-board decisions checked", flush=True)
+    print(f"ok    opp revealed bits across bo3: monotone per viewer, up to {rev_sb} "
+          f"set in the sideboard phase and {rev_post} in a post-board game", flush=True)
     print(f"ok    log vitals across bo3: {lv_live} live decisions match the log "
           f"identity, {lv_masked} sideboard decisions masked to zeros", flush=True)
 
@@ -1336,6 +2387,11 @@ def main():
         return 1
     print(f"ok    sideboard forced out: in-first pairing with the lock held; card "
           f"{fo_id} stranded, force-cut as a swap, then Done-only", flush=True)
+
+    print(f"ok    delayed triggers: {DELAYED_SEEN['waiting']} waiting and "
+          f"{DELAYED_SEEN['on_stack']} on-stack entries checked", flush=True)
+    print(f"ok    player effects: active at {PLAYER_EFFECTS_SEEN['active']} "
+          f"player-halves checked", flush=True)
 
     print(f"\nobs invariants OK: {total} decisions checked across "
           f"{len(matchups)} games", flush=True)

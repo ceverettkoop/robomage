@@ -1545,7 +1545,12 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         }
         game_log(" remaining):\n");
 
-        int choice = InputLogger::instance().get_input(pay_actions);
+        // The card being paid for is the pending-decision source.
+        int choice;
+        {
+            PendingDecisionScope pending(paid_for);
+            choice = InputLogger::instance().get_input(pay_actions);
+        }
 
         // Check for cancel
         if (!is_machine && choice == static_cast<int>(pay_actions.size()) - 1) {

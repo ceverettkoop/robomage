@@ -68,6 +68,9 @@ static void frame_finish() {
     cur_game.player_a_has_priority = fr.prev_priority;
     cur_game.remembered_entities = fr.saved_remembered;
     fr = ResolutionFrame{};
+    // The effects that could read a card this resolution moved off the battlefield as the
+    // departed object have run; from here on it is a new object (CR 400.7).
+    supersede_departed_cards();
 }
 
 void StackManager::init() {

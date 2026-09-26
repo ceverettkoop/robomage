@@ -220,6 +220,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Determine controller from owner_entity
                 Zone::Ownership ctrl = (dt.owner_entity == game.player_a_entity)
                                        ? Zone::PLAYER_A : Zone::PLAYER_B;
+                // The copy carries dt.ability.delayed_link (seq, creator, subjects) onto the
+                // stack object, so the observation's delayed-trigger block keeps following
+                // this trigger until its stack object leaves the stack.
                 Ability trigger_ab = dt.ability;
                 trigger_ab.controller = ctrl;
                 // Defined$ TriggeredCardController (Searing Blood): bind the fire ability's player
@@ -945,17 +948,24 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // The how-it-entered gates ("if you cast it", evoke, offspring) and the active DFC face
         // lived on the stripped Permanent; the look-back reads them from the LKI snapshot taken
         // as the permanent left the battlefield.
-        const LastKnownInfo *lki = nullptr;
-        {
-            auto lki_it = game.last_known_info.find(entity);
-            if (lki_it != game.last_known_info.end()) lki = &lki_it->second;
-        }
+        // A battlefield-departure event (or an ETB look-back) refers to the object that left
+        // play, so it reads that departed object's snapshot even if the card moved again within
+        // the same resolution (a flicker). A move between other zones is a new object's own
+        // event (CR 400.7) and sees only a current snapshot.
+        const LastKnownInfo *lki = (ev_origin == Zone::BATTLEFIELD || etb_lookback)
+                                       ? departed_lki_for(entity)
+                                       : lki_for(entity);
         // DisableTriggers (Doorkeeper Thrull) applies to the entering permanent's ETB triggers
         // exactly as in the battlefield scan.
         if (etb_lookback && rules_mod::etb_triggers_suppressed(entity)) continue;
-        const std::string ent_name = entity_name(entity);
-        // A transformed DFC functions with its active (back) face's abilities (CR 712.4).
-        const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+        const std::string ent_name =
+            (lki && lki->copied_card) ? lki->copied_card->name : entity_name(entity);
+        // A transformed DFC functions with its active (back) face's abilities (CR 712.4). A
+        // permanent that left play as an in-place copy looks back at the copy's
+        // characteristics (CR 603.10), not the printed card it reverted to (CR 400.7).
+        const CardData &cd = (lki && lki->copied_card)
+                                 ? *lki->copied_card
+                                 : global_coordinator.GetComponent<CardData>(entity);
         // Layer-6 ability removal (CR 613.1f / 305.7) via the LKI look-back (CR 603.10): a
         // permanent whose abilities were removed as it left play (Humility "lose all abilities")
         // had NO triggered abilities to fire on leaving — the look-back uses its last-known
@@ -1289,17 +1299,21 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                 }
                 game_log("%s orders %zu simultaneous triggers (pick which goes on the stack next).\n",
                          player_name(owner).c_str(), group_size);
+                // The group's leading trigger source is the pending-decision source
+                // (each menu entry still carries its own trigger's source). A floating
+                // trigger has no source object; the card whose effect created it stands in.
+                const PendingTriggerRT &lead = tp.queue.front();
+                Entity order_source = lead.source != 0 ? lead.source : lead.ab.floating_creator;
                 if (!suspendable) {
+                    PendingDecisionScope pending(order_source);
                     pick = static_cast<size_t>(InputLogger::instance().get_input(choices));
                 } else {
-                    // Park the ordering pick for the main loop. Byte-compat: this prompt
-                    // runs with pending_decision_source == 0 today (no PendingDecisionScope
-                    // wraps it), and the corpus decodes that state field — arm with 0.
+                    // Park the ordering pick for the main loop.
                     pq = PendingQuery{};
                     pq.tag = PendingQuery::TRIGGER_PLACE;
                     pq.menu = std::move(choices);
                     pq.chooser_is_a = (owner == Zone::PLAYER_A);
-                    pq.decision_source = 0;
+                    pq.decision_source = order_source;
                     pq.prev_priority = cur_game.player_a_has_priority;
                     pq.answered = false;
                     pq.answer = -1;

@@ -3,6 +3,7 @@
 #include "../card_vocab.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 
@@ -20,6 +21,10 @@ void match_reset_revealed() {
 
 void mark_card_revealed(Entity e, Zone::Ownership owner) {
     if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
+    // A copy of a spell is not a card (CR 707.10): it reveals nothing from anyone's deck.
+    if (global_coordinator.entity_has_component<Spell>(e) &&
+        global_coordinator.GetComponent<Spell>(e).is_copy)
+        return;
 
     // Per-card, per-game belief: if this card is revealed while still in a hidden
     // zone (hand), record that its specific identity is now known to the non-owner
@@ -31,12 +36,14 @@ void mark_card_revealed(Entity e, Zone::Ownership owner) {
     }
 
     // Resolve the card's vocab index the same way machine_io does: a battlefield
-    // permanent carries its name on Permanent; everything else on CardData.
+    // permanent carries its name on Permanent; everything else on CardData. A permanent
+    // that is an in-place copy (CR 707.2) records its printed card — the deck card that
+    // was revealed — never the copied identity.
     int idx = -1;
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
         if (perm.is_token) return;  // tokens are not deck cards
-        idx = card_name_to_index(perm.name);
+        idx = card_name_to_index(perm.printed_card ? perm.printed_card->name : perm.name);
     } else if (global_coordinator.entity_has_component<CardData>(e)) {
         idx = card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
     }

@@ -378,7 +378,6 @@ The `Game` struct (`src/classes/game.h`) tracks:
 - Timestamp for ordering simultaneous events
 - RNG seed and generator for reproducibility
 - Delayed triggers (fire on specific future game events)
-- Action history ring buffer (last 128 actions, used in ML observation)
 
 Game loop in `src/main.cpp`:
 1. State-based effects check (lethal damage, player death, permanent lifecycle, mandatory choices)
@@ -410,6 +409,12 @@ Ability categories resolved by `Ability::resolve()` in `src/components/ability.c
 - `"ExaltedBonus"` / `"ProwessBonus"` — grant combat bonuses based on keyword count
 
 Activated abilities with `valid_tgts != "N_A"` have their target selected before costs are paid and before the ability entity is pushed onto the stack. Target legality is re-verified at resolution.
+
+**Last-known information (CR 400.7 / 608.2h).** An effect that reads a departed object's
+characteristics AFTER the resolution that moved it (its own leaves/dies triggers, an ability whose
+source it was resolving later) must use `departed_lki_for` (`src/game_queries.h`), not
+`effective_power`/`effective_*`: those read `lki_for`, whose snapshot is superseded when that
+resolution ends and at the object's next zone change (tokens excepted, CR 111.7).
 
 **Name-a-card candidate set (deviation from CR 201.4).** "Name a card" effects (Cabal Therapy,
 Disruptor Flute, Petrified Hamlet) do **not** offer every card. `build_name_card_choices()`
@@ -573,9 +578,9 @@ Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO`
 **Bo3-relevant state-vector fields** (exact indices/normalizers live in the `src/machine_io.h`
 layout block — don't hardcode them here):
 - **Match context** — `game_number`, `self/opp_match_wins`, `is_sideboard_phase` (all 0.0 in single-game mode).
-- **Library & post-board context** — `self/opp_library_ct`, `is_post_board` (1.0 in game 2+ of a bo3).
-- **Known top-5 library cards** — set as cards are placed on top (Ponder/Brainstorm/etc.), cleared on shuffle, slid up when a tracked card is drawn.
-- **Opponent revealed-cards multi-hot** — "has the opponent ever revealed card X this match", set when an opponent card enters a public zone or is revealed by a tutor. The engine's deterministic belief state (a feedforward policy can't remember reveals across `reset()`), persisted over the per-game ECS reset. Tracked in `src/classes/match_state.{h,cpp}`.
+- **Library context** — `self/opp_library_ct` (post-board is `game_number > 1`; there is no separate flag).
+- **Known top-5 library cards** — set as each card is placed or kept on top (Ponder/Brainstorm, scry/surveil keeps, as chosen), cleared on shuffle, slid up when a tracked card is drawn.
+- **Opponent `revealed` bits** — a `revealed` bit on each opponent registered-decklist slot (card_id, count, revealed): "has the opponent revealed this card this match", set when an opponent card enters a public zone or is revealed by a tutor (a DFC's slot also when its back face was revealed). The engine's deterministic belief state (a feedforward policy can't remember reveals across `reset()`), persisted over the per-game ECS reset. The reveal set lives in `src/classes/match_state.{h,cpp}`.
 
 ### Machine mode protocol
 
@@ -637,7 +642,9 @@ are unchanged) and is written to the RMLOG so it replays. In the sideboard phase
 `-3` still ends the match. Python constants in `train/env.py`; `GameDriver.concede(match=…)`
 injects one for the human seat. Regression `train/test_concede.py` (`make check` tier `concede`).
 
-**Two perspective flags** worth knowing without opening the source: in the state vector, one flag marks whether the priority player is the active player (perspective-relative) and another marks whether "self" is Player A (absolute); AND-ing their agreement recovers `active_is_a`. See `src/machine_io.h` for their exact indices.
+**Two perspective flags** worth knowing without opening the source: in the state vector, one flag marks whether the priority player is the active player (perspective-relative) and another marks whether "self" is Player A (absolute); AND-ing their agreement recovers `active_is_a`. See `src/machine_io.h` for their exact indices. The seat flag stays in the state vector for the Python drivers but is zeroed out of both network trunks (`extractor.network_global_ctx`), so the net cannot learn seat-specific play.
+
+**No action history in the obs.** The obs carries the board as observed, never a log of past choices (a history leaked the opponent's hidden picks). The facts a history used to carry are explicit fields: priority pass flags + `is_priority_window` + mulligan state (extras), per-turn counters and spell colors, per-permanent turn statuses, the pending delayed-trigger block, the player-effects block, graveyard/exile play permissions, and the pending-decision source (named at every non-priority prompt).
 
 ### Interactive front ends: TUI, GUI, and the analysis window
 
@@ -883,8 +890,10 @@ decision. Regressions: `test_tree_cache.py` (default tier `treecache`),
   `[-1, 107]`; GY/exile blocks recency-packed with no holes; one-hots sum correctly; the
   mana-development block consistent (per-color ≤ `potential_total`, `lands_in_play` = counted land
   slots, etc.); each log-scaled vital = `log1p(v)/log1p(normalizer)` vs the same obs's linear
-  float. Every offset imported from `env`/`_enums` (layout-change-proof). Default `make check` tier
-  `obsinv`; standalone `train/.venv/bin/python train/test_obs_invariants.py`.
+  float; pass flags 0 outside priority windows; every non-priority decision names its pending
+  source (outside an approved exception table); delayed-trigger slots packed; opp `revealed` bits
+  only on filled slots; the mirrored board view matches the other seat's own frames. Every offset
+  imported from `env`/`_enums` (layout-change-proof). Default `make check` tier `obsinv`; standalone `train/.venv/bin/python train/test_obs_invariants.py`.
 - `src/machine_io.h` — state vector layout documentation and constants
 - `src/input_logger.cpp` — machine mode BQUERY emission, replay, and CLI input handling
 - `src/card_vocab.h` — card name → vocab index mapping for one-hot encoding

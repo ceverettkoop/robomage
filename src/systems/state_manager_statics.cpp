@@ -84,7 +84,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(perm.controller);
     dt.fire_on_turn = cur_game.turn;
-    cur_game.delayed_triggers.push_back(dt);
+    register_delayed_trigger(dt, entity);
     game_log("%s is unearthed (haste; exiled at the next end step).\n", perm.name.c_str());
 }
 
@@ -102,13 +102,14 @@ static void mark_warp_permanent(Entity entity, Permanent &perm) {
     fire_ab.ability_type = Ability::TRIGGERED;
     fire_ab.category = "WarpExile";
     fire_ab.source = entity;
+    fire_ab.delayed_link.subjects = {entity};  // the permanent it exiles
 
     DelayedTrigger dt;
     dt.ability = fire_ab;
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(perm.controller);
     dt.fire_on_turn = cur_game.turn;
-    cur_game.delayed_triggers.push_back(dt);
+    register_delayed_trigger(dt, entity);
     game_log("%s was cast with warp (exiled at the next end step; castable from exile later).\n",
              perm.name.c_str());
 }
@@ -956,7 +957,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             // suspend mid-apply: the caller chain (this function, then
                             // state_based_effects) early-returns cooperatively.
                             pq_arm_sbe(key, std::move(type_choices), perm_ref.controller,
-                                       /*decision_source=*/0);
+                                       /*decision_source=*/entity);
                             return;
                         }
                         // Blocking fallback for an SBE call outside the main loop.
@@ -1004,7 +1005,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             game_log("Choose a card name for %s:\n", perm_ref.name.c_str());
                             if (in_main_loop()) {
                                 pq_arm_sbe(key, std::move(name_choices), perm_ref.controller,
-                                           /*decision_source=*/0);
+                                           /*decision_source=*/entity);
                                 return;
                             }
                             // Blocking fallback for an SBE call outside the main

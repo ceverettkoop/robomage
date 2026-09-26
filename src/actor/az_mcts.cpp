@@ -1948,6 +1948,7 @@ bool AZMcts::on_game_end(int winner) { return impl_->on_game_end(winner); }
 void AZMcts::set_scripted_provider(std::function<int(const float*, int)> fn) {
     impl_->scripted_provider = std::move(fn);
 }
+bool AZMcts::at_real_decision() const { return impl_->phase == Impl::IDLE; }
 const std::vector<SearchRootResult>& AZMcts::results() const { return impl_->results; }
 void AZMcts::begin_match(uint32_t cap_seed) { impl_->begin_match(cap_seed); }
 void AZMcts::end_game() { impl_->end_game(); }

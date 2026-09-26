@@ -973,8 +973,8 @@ class SearchController:
             return run_search(env, self._evaluator, **kw)
 
         # A bo3 sideboard root runs the flat plan search instead of PUCT. Key
-        # ONLY off is_sideboard_phase — is_post_board / game_number still
-        # reflect the just-ended game at a g1->g2 root. In-game roots keep
+        # ONLY off is_sideboard_phase — game_number still
+        # reflects the just-ended game at a g1->g2 root. In-game roots keep
         # run_search's default max_depth (60).
         tb = self._time_budget
         tmin_s = None

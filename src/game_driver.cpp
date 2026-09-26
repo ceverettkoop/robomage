@@ -14,6 +14,7 @@
 #include "classes/game.h"
 #include "classes/match_context.h"
 #include "classes/match_state.h"
+#include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
@@ -28,6 +29,7 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "game_queries.h"
 #include "input_logger.h"
 #include "machine_io.h"
 #include "search_server.h"
@@ -94,7 +96,7 @@ bool log_decisions_flag = false;
 // legal action is pass), emit a passive BSTATE frame — the BQUERY payload with
 // no stdin read — so an observing front end can render each step instead of
 // fast-forwarding to the next real decision. Consumes no input and records
-// nothing, so replays, action history, and search mirrors are unaffected.
+// nothing, so replays and search mirrors are unaffected.
 bool broadcast_steps_mode = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
@@ -225,6 +227,12 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
 static bool g_in_main_loop = false;
 bool in_main_loop() { return g_in_main_loop; }
 
+// Set around the main loop's priority-decision emission (see priority_window_open
+// in game_driver.h). A search RESTORE applies at the loop top, after the emitting
+// get_input has returned and cleared this, so a restored state never inherits it.
+static bool g_priority_window_open = false;
+bool priority_window_open() { return g_priority_window_open; }
+
 // The StateManager the post-restore hook recomputes through; rebound by every
 // init_ecs so the hook always targets the current game's system instance.
 static std::shared_ptr<StateManager> g_hook_state_manager;
@@ -237,6 +245,7 @@ EcsSystems init_ecs() {
     card_db.clear();
     ++g_card_db_generation;
     global_coordinator.Init();
+    global_coordinator.SetEntityIssuedHook(forget_last_known_info);
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
     global_coordinator.RegisterComponent<ColorIdentity>();
@@ -619,7 +628,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             if (machine_mode && broadcast_steps_mode && !search_restore_pending()
                 && !search_any_snapshot_live()) {
                 Query q;
+                g_priority_window_open = true;
                 populate_gamestate(&gs, viewer);
+                g_priority_window_open = false;
                 populate_query(&q, legal_actions);
                 cli_emit_machine_bstate(&q, &gs);
             }
@@ -631,6 +642,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // In machine mode this populate is redundant: print_game_state early-returns,
         // and InputLogger::get_input re-runs populate_gamestate into its own buffer.
         // Skip the wasted full-entity scan + memset on every machine-mode decision.
+        g_priority_window_open = true;
         if (!machine_mode) {
             populate_gamestate(&gs, viewer);
             print_game_state(&gs);
@@ -640,6 +652,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // same decision (the snapshot round-trip CI test proves it byte-for-byte).
         search_set_loop_safe(true);
         int choice = InputLogger::instance().get_input(legal_actions);
+        g_priority_window_open = false;
         search_set_loop_safe(false);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
@@ -910,18 +923,19 @@ static void pregame_opening_actions(EcsSystems &sys) {
             // The y/n is seated on `player` with the request_optional_yesno
             // convention (priority save/set/restore + the exact same two-option
             // menu), but emitted through the loop gate so it is loop-safe.
-            std::vector<LegalAction> yn;
-            LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-            decline.category = ActionCategory::OPTIONAL_YESNO;
-            decline.option_ordinal = 0;  // 0 = decline
-            yn.push_back(decline);
-            LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-            accept.category = ActionCategory::OPTIONAL_YESNO;
-            accept.option_ordinal = 1;  // 1 = accept
-            yn.push_back(accept);
+            std::vector<LegalAction> yn = optional_yesno_menu(prompt);
+            // The card is the pending-decision source. The baseline is reset to 0 first
+            // (nothing is pending in the pregame): a SNAPSHOT here captures the scoped value,
+            // and without the reset a RESTORE's recreated scope would capture it as its prev
+            // and leak it past the answer.
             bool prev_priority = cur_game.player_a_has_priority;
             cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
-            int choice = pregame_ask(yn);
+            int choice;
+            {
+                cur_game.pending_decision_source = 0;
+                PendingDecisionScope pending(card);
+                choice = pregame_ask(yn);
+            }
             if (choice < 0) return;  // restore latched; state is about to be overwritten
             cur_game.player_a_has_priority = prev_priority;
             pg.oh_card_idx++;
@@ -1044,9 +1058,8 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     sideboard_phase_state = &st;
     // Repoint priority to the sideboarding player (the established engine pattern:
     // every prompt is issued with player_a_has_priority pointing at the chooser).
-    // record_chosen_action's actor stamp and populate_query's per-action
-    // controller_is_self flags both read this flag, so without the repoint both
-    // would carry whatever the just-ended game left behind. cur_game is discarded
+    // populate_query's per-action controller_is_self flags read this flag, so
+    // without the repoint they would carry whatever the just-ended game left behind. cur_game is discarded
     // (replaced by Game(seed)) when the next game starts, so nothing to restore.
     cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
     // Reset the pending-decision baseline to 0 for this phase. The OUT menu wraps

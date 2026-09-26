@@ -15,6 +15,9 @@ extern "C" {
 #define N_OBS_KEYWORDS 16  // keyword multi-hot width per permanent slot (OBS_KEYWORDS in machine_io.h)
 #define MAX_STACK_MODES 6  // chosen-mode multi-hot width per stack entry
 #define MAX_STACK_TGTS 4   // announced targets serialized per stack entry (truncated)
+#define MAX_DELAYED_TRIGGER_SLOTS 16  // pending delayed triggers serialized (truncated, seq order)
+#define MAX_EMBLEM_SLOTS 2  // emblem card ids serialized per player (distinct creators, creation order)
+#define N_DELAYED_FIRE_KINDS 4  // fire_on one-hot: upkeep, end step, end of combat, leaves battlefield
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
 #define DECKLIST_MAIN_SLOTS 48  // distinct-name slots: self live library + opp maindeck
@@ -28,7 +31,6 @@ extern "C" {
 #define MAX_CHOICE_DESC 128
 #define PERM_COUNTERS_LEN 64  // PermanentState.counters summary width (mirrored in train/env.py)
 #define PERM_TOKEN_NAME_LEN 32  // PermanentState.token_name width (mirrored in train/env.py)
-#define REVEALED_CARD_TYPES 1024  // mirror N_CARD_TYPES in machine_io.h / REVEALED_SIZE in match_state.h
 
 typedef struct PlayerState_tag {
     int life;
@@ -48,6 +50,25 @@ typedef struct PlayerState_tag {
     int  lands_in_play;        // battlefield lands this player controls
     int  lands_in_hand;        // land cards in hand — VIEWER ONLY (0 for the opponent)
     int  land_drops_remaining; // lands still playable this turn (rules_mod, clamped at 0)
+    // ── Per-turn counters (serialized as the state vector's PER-TURN COUNTERS block;
+    // field meanings and normalizers are documented in machine_io.h) ──
+    int  spells_cast_this_turn;
+    int  noncreature_spells_cast_this_turn;
+    int  instant_sorcery_spells_cast_this_turn;
+    int  cards_drawn_this_turn;
+    int  life_gained_this_turn;
+    int  life_lost_this_turn;
+    bool spell_colors_cast_this_turn[5]; // W, U, B, R, G
+    // ── Player effects (serialized as the state vector's PLAYER EFFECTS block; filled from
+    // player_effects() in game_queries.h, field meanings documented in machine_io.h) ──
+    bool protection_from_everything;
+    bool cant_gain_life;
+    bool hexproof_from[5];               // W, U, B, R, G
+    bool spells_cant_be_countered;
+    bool may_cast_sorceries_as_flash;
+    bool restricted_to_sorcery_speed;
+    int  emblem_card_idx[MAX_EMBLEM_SLOTS];  // -1 = empty
+    int  floating_trigger_source_idx;        // -1 = none
 } PlayerState;
 
 typedef struct PermanentState_tag {
@@ -59,7 +80,6 @@ typedef struct PermanentState_tag {
                                  // permanent that STILL has a return path (Static Prison holding a
                                  // real card, Flickerwisp/Phelia EOT blink); -1 = none (no return,
                                  // e.g. Skyclave Apparition). See returnable_exiled_card().
-    bool controller_is_self;
     bool is_tapped;
     bool is_creature;
     bool is_land;
@@ -81,6 +101,15 @@ typedef struct PermanentState_tag {
     int  blocking_target_ref;    // for blockers: slot of the attacker this creature blocks
     bool is_blocked;             // attacker was blocked at declare-blockers (CR 509.1h)
     bool is_phased_out;          // phased out (CR 702.26); serialized so the slot stays visible
+    bool entered_this_turn;      // entered the battlefield this turn (ThisTurnEntered)
+    int  ability_resolutions_this_turn; // triggered-ability resolutions from it this turn
+                                 // (Count$ResolvedThisTurn)
+    int  activations_this_turn;  // activations counted against its once-per-turn gates
+                                 // (ActivationLimit$ counters summed + loyalty activation)
+    bool cant_be_blocked_this_turn; // a "can't be blocked this turn" effect applies
+    bool combat_damage_prevented;   // it is the creature of a combat-damage prevention shield
+    bool pending_delayed_subject;   // watched by / a subject of a WAITING delayed trigger
+                                    // (is_waiting_delayed_trigger_subject)
     bool keywords[N_OBS_KEYWORDS];  // effective keyword multi-hot (OBS_KEYWORDS order)
     char token_name[PERM_TOKEN_NAME_LEN]; // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
     char counters[PERM_COUNTERS_LEN]; // compact typed-counter summary ("charge:2, +1/+1:3"), empty = none
@@ -117,6 +146,32 @@ typedef struct StackEntry_tag {
                                          // primary, sub-abilities', chosen modes'
     char target_name[48]; // display name of first target, empty = no target (display only)
 } StackEntry;
+
+// One pending delayed trigger (CR 603.7): a record still waiting in
+// Game::delayed_triggers, or its fired ability on the stack (DelayedTriggerLink::seq != 0).
+typedef struct DelayedTriggerEntry_tag {
+    bool present;
+    bool controller_is_self;
+    bool on_stack;             // false = waiting to fire, true = fired, its ability on the stack
+    int  stack_ref;            // the stack object's slot ref when on_stack (-1 = none/truncated)
+    int  creator_card_idx;     // vocab idx of the card whose ability set it up (-1 = none)
+    int  creator_ref;          // creator's battlefield/stack slot ref (-1 = elsewhere)
+    int  subject_ref;          // first watched / affected permanent's battlefield slot ref (-1 = none)
+    int  subject_card_idx;     // vocab idx of the first subject (-1 = none)
+    int  fire_kind;            // DelayedTriggerLink::FireKind (-1 = no one-hot column)
+    bool fires_this_turn;      // a waiting phase trigger scheduled later this turn
+} DelayedTriggerEntry;
+
+// One graveyard or exile card (card_play_permission and exiled_card_counters in
+// game_queries.h). A hidden-identity slot (an opponent's face-down exiled card) keeps
+// card_idx -1 and every other field 0.
+typedef struct ZoneCardEntry_tag {
+    int  card_idx;               // card_vocab_idx, -1 = empty / hidden
+    bool playable_by_self;       // the viewer has a play permission covering it
+    bool playable_by_opp;        // the viewer's opponent has one
+    bool play_expires_this_turn; // every permission covering it lapses at this turn's cleanup
+    int  counters;               // exile only: suspend time counters + void counter
+} ZoneCardEntry;
 
 typedef enum ActionRefZone_tag {
     REF_NONE = 0,
@@ -158,7 +213,6 @@ typedef struct GameState_tag {
     int         turn;
     Step        cur_step;
     bool        is_active_player;  // true when the viewer (self) is the active player
-    bool        viewer_has_priority; // true when the viewer (self) currently holds priority
     bool        self_is_player_a;
     int         stack_size;
 
@@ -167,36 +221,29 @@ typedef struct GameState_tag {
 
     StackEntry  stack[MAX_STACK_DISPLAY];
 
-    int  self_graveyard[MAX_GY_SLOTS];   // card_vocab_idx, -1 = empty
-    int  opp_graveyard[MAX_GY_SLOTS];
-    // Exile is collected + serialized in RECENCY order (slot 0 = most recent
-    // arrival, sorted by Zone::distance_from_top). All exile is public in this
-    // engine, so both zones are fully visible. card_vocab_idx, -1 = empty.
-    int  self_exile[MAX_GY_SLOTS];
-    int  opp_exile[MAX_GY_SLOTS];
+    // Pending delayed triggers, ascending by registration seq (packed, no holes).
+    DelayedTriggerEntry delayed[MAX_DELAYED_TRIGGER_SLOTS];
+
+    // Graveyards and exile, collected per owner in RECENCY order (slot 0 = most
+    // recent arrival, sorted by Zone::distance_from_top). Exile is public except an
+    // opponent's face-down card, whose slot is hidden (see ZoneCardEntry).
+    ZoneCardEntry self_graveyard[MAX_GY_SLOTS];
+    ZoneCardEntry opp_graveyard[MAX_GY_SLOTS];
+    ZoneCardEntry self_exile[MAX_GY_SLOTS];
+    ZoneCardEntry opp_exile[MAX_GY_SLOTS];
 
     int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
     // Opponent-hand cards whose identity the viewer knows (revealed in hand by
     // Duress/Thoughtseize/tutor, and not yet moved to another zone). card_vocab_idx,
-    // -1 = empty/unknown slot. Tracks the specific card, unlike opp_revealed which
-    // is only a match-scoped "ever seen" multi-hot.
+    // -1 = empty/unknown slot. Tracks the specific card, unlike the opp decklist
+    // revealed bits, which are a match-scoped "ever seen" flag per card name.
     int  opp_known_hand[MAX_HAND_SLOTS];
     int  self_library_ct;
     int  opp_library_ct;
 
-    // Recent action history (newest first), 4 floats per entry:
-    //   category / ACTION_CATEGORY_MAX, card_vocab_idx / N_CARD_TYPES, is_self,
-    //   turn / 50.0
-    float action_history[ACTION_HISTORY_SIZE * 4];
-    int   action_history_len;  // valid entries (0 to ACTION_HISTORY_SIZE)
-
     // Known top-of-library cards (viewer's library only). Index 0 = top.
     // -1 = unknown.
     int known_top_library_self[KNOWN_TOP_LIBRARY_SIZE];
-
-    // Opponent's revealed-cards multi-hot, accumulated across the match (bo3).
-    // opp_revealed[i] = 1 if the opponent has ever revealed card vocab index i.
-    unsigned char opp_revealed[REVEALED_CARD_TYPES];
 
     // bo3 match state
     int  match_game_number;  // -1 = single game, 0-2 = bo3 game index
@@ -216,6 +263,18 @@ typedef struct GameState_tag {
     bool is_day;               // game designation is day (CR 731.1)
     bool is_night;             // game designation is night
     int  pending_choice_kind;  // MandatoryChoice enum value (NONE = 0)
+    // Priority-window context: the viewer's and the other seat's pass flags, and
+    // whether the current decision is an ordinary priority window. All false unless
+    // it is (see priority_window_open in game_driver.h).
+    bool self_has_passed;
+    bool opp_has_passed;
+    bool is_priority_window;
+    // Mulligan state (Game::pregame): mulligans each player has taken this game, and
+    // the cards the viewer still has to bottom (0 outside the viewer's bottoming).
+    // All 0 during a bo3 sideboard phase.
+    int  self_mulligans_taken;
+    int  opp_mulligans_taken;
+    int  self_bottom_remaining;
     // The viewer is the starting player of the game this observation pertains to:
     // the current game in-game, the UPCOMING game during a bo3 sideboard phase.
     bool self_plays_first;
@@ -249,6 +308,11 @@ typedef struct GameState_tag {
     int opp_deck_main_ct[DECKLIST_MAIN_SLOTS];
     int opp_deck_side_id[DECKLIST_SIDE_SLOTS];
     int opp_deck_side_ct[DECKLIST_SIDE_SLOTS];
+    // Per opp decklist slot: 1 if the opponent has revealed that card this match
+    // (match_state's reveal set, accumulated across the games of a bo3; a
+    // double-faced card also counts when its back face was revealed).
+    unsigned char opp_deck_main_revealed[DECKLIST_MAIN_SLOTS];
+    unsigned char opp_deck_side_revealed[DECKLIST_SIDE_SLOTS];
 } GameState;
 
 #ifdef __cplusplus

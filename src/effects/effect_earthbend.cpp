@@ -90,7 +90,7 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     dt.watch_entity = tgt;
     dt.fire_on_leave_battlefield = true;
     dt.fire_dest_zones = {Zone::GRAVEYARD, Zone::EXILE};
-    cur_game.delayed_triggers.push_back(dt);
+    register_delayed_trigger(dt, ab.source);
 
     return HandlerResult::DONE_RUN_SUBS;
 }

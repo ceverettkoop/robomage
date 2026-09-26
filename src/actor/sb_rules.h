@@ -24,7 +24,7 @@
 #include "actor/obs_builder.h"   // ACT_CATS_START, ACT_IDS_START
 #include "classes/action.h"      // ActionCategory, ACTION_CATEGORY_MAX
 #include "gen/sb_rules_gen.h"    // SB_RULE_CARD/SB_RULE_MASK/SB_CARD_FACTS
-#include "machine_io.h"          // N_CARD_TYPES, OPP_DECK_MAIN_START/SIDE_END
+#include "machine_io.h"          // N_CARD_TYPES, OPP_DECK_MAIN_START/SIDE_END, OPP_DECKLIST_SLOT_SIZE
 
 // is_sideboard_phase float within the match-context block (machine_io.h:
 // game_number, self_wins, opp_wins, is_sideboard_phase) — env._IS_SIDEBOARD_IDX.
@@ -49,9 +49,9 @@ inline void sb_dead_mask(const float* o, int nc, std::vector<bool>& out) {
     out.assign(static_cast<size_t>(nc), false);
     if (!(o[SB_IS_SIDEBOARD_IDX] > 0.5f)) return;
     // Union of fact bits over the opponent's registered main + side blocks.
-    // Slots are (card_id, count) pairs; the empty-slot sentinel decodes to -1.
+    // Slots are (card_id, count, revealed); the empty-slot sentinel decodes to -1.
     uint32_t opp_facts = 0;
-    for (int j = OPP_DECK_MAIN_START; j < OPP_DECK_SIDE_END; j += 2) {
+    for (int j = OPP_DECK_MAIN_START; j < OPP_DECK_SIDE_END; j += OPP_DECKLIST_SLOT_SIZE) {
         const int cid =
             static_cast<int>(std::lround(double(o[j]) * N_CARD_TYPES));
         if (cid >= 0) opp_facts |= SB_CARD_FACTS[cid];

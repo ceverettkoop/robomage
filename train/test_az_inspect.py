@@ -211,18 +211,11 @@ def test_shards(data_dir, planted_idx):
             check("observation layout" in str(e),
                   "a stale-layout shard is rejected by message, not a shape error")
 
-    emb, rev, n = azi.card_occurrence_split(s["obs"], limit=8)
-    check(emb[planted_idx] == n and n > 0,
+    counts, n = azi.card_occurrences(s["obs"], limit=8)
+    check(counts[planted_idx] == n and n > 0,
           f"the planted hand card is counted in all {n} decoded states")
-    check(emb.sum() > emb[planted_idx],
+    check(counts.sum() > counts[planted_idx],
           "other cards in the synthetic state are counted too")
-    # The revealed multi-hot never reaches card_emb, so it must not be folded
-    # into the embedded count (it is also sticky for a whole match).
-    check(rev.sum() == 0,
-          "revealed-only counts are reported separately, not summed in")
-    counts, n2 = azi.card_occurrences(s["obs"], limit=8)
-    check(np.array_equal(counts, emb) and n2 == n,
-          "card_occurrences returns the EMBEDDED column")
     return s
 
 
@@ -609,8 +602,8 @@ def test_weight_views(net, tmp):
 
     attr = azi.first_layer_attribution(sd)   # the width asserts run inside
     encs = {a["encoder"] for a in attr}
-    check({"perm_encoder", "stack_encoder", "entity_encoder",
-           "decklist_encoder", "revealed_encoder", "action_encoder"} <= encs,
+    check({"perm_encoder", "stack_encoder", "zone_card_encoder", "entity_encoder",
+           "decklist_encoder", "action_encoder"} <= encs,
           "firstlayer covers every trunk encoder incl. the per-action head")
     check(all(abs(sum(g["share"] for g in a["groups"]) - 1.0) < 1e-6
               for a in attr),
@@ -623,7 +616,7 @@ def test_weight_views(net, tmp):
                   for a in battr),
           "bodylayer tiles both bodies' in-dim and names every arch column")
 
-    for layer in ("perm_encoder", "entity_encoder", "policy_body",
+    for layer in ("perm_encoder", "zone_card_encoder", "entity_encoder", "policy_body",
                   "value_body"):
         names, prefix = azi.layer_column_names(sd, layer)
         check(len(names) == sd[prefix + ".weight"].shape[1],
@@ -715,8 +708,7 @@ def test_renders(net, path, sample, mat):
         "structure": lambda: azi.render_structure(mat, k=5),
         "clusters": lambda: azi.render_clusters(mat, k=3),
         "project": lambda: azi.render_projection(mat, width=40, height=10),
-        "occur": lambda: azi.render_occurrences(counts, 6, top_n=5,
-                                                revealed=counts * 0),
+        "occur": lambda: azi.render_occurrences(counts, 6, top_n=5),
         "catemb": lambda: azi.render_category_embedding(net),
         "buckets": lambda: azi.render_buckets(
             net, azi.obs_buckets(net, sample["obs"])),

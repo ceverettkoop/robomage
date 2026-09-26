@@ -8,7 +8,7 @@ representation that is invariant to card ordering and slot position.
 State is always from the PRIORITY PLAYER'S perspective ("self").
 
 NOTE: Both exile zones are serialized right after the graveyard blocks and
-      consumed through the shared entity encoder like the graveyards.
+      consumed through the shared zone_card_encoder like the graveyards.
 NOTE: ActionChoice.description is never part of the observation — it is for
       human-readable display only (CLI) and is not passed to the ML model.
 
@@ -17,62 +17,86 @@ Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 looked up in a learned nn.Embedding. This decouples the observation size from the
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
-Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6354):
-  obs[0:36]            global context (player stats, step, flags, stack size)
-  obs[36:3684]         96 permanent slots × 38 floats
-                         slots 0-47: self; slots 48-95: opponent
-                         0-10  status: power, toughness, tapped, attacking, blocking,
-                               sickness, damage, controller_is_self, is_creature,
-                               is_land, loyalty
-                         11    p1p1_net (signed, /10)
-                         12    other_counters (/10)
-                         13-16 entity refs (normalized (idx+1)/108): attached_to,
+Index layout must stay in sync with src/machine_io.h (STATE_SIZE = 6516):
+  obs[0:36]            global context (player stats, step, flags, stack size); the
+                         self_is_A seat flag [34] is zeroed before the network sees
+                         it (network_global_ctx)
+  obs[36:4164]         96 permanent slots × 43 floats
+                         slots 0-47: self; slots 48-95: opponent (no controller
+                         flag: the halves are split by controller)
+                         0-9   status: power, toughness, tapped, attacking, blocking,
+                               sickness, damage, is_creature, is_land, loyalty
+                         10    p1p1_net (signed, /10)
+                         11    other_counters (/10)
+                         12-15 entity refs (normalized (idx+1)/108): attached_to,
                                attached_by, attack_target, blocking_target
-                         17    is_blocked
-                         18    is_phased_out
-                         19-34 keyword multi-hot (N_OBS_KEYWORDS = 16)
-                         35    chosen-name id (Pithing Needle / Disruptor Flute named
+                         16    is_blocked
+                         17    is_phased_out
+                         18    entered_this_turn
+                         19    triggered-ability resolutions this turn (/10)
+                         20    once-per-turn-gated activations this turn (/10)
+                         21    cant_be_blocked_this_turn
+                         22    combat_damage_prevented
+                         23    pending_delayed_subject (watched by / a subject of a
+                               waiting delayed trigger)
+                         24-39 keyword multi-hot (N_OBS_KEYWORDS = 16)
+                         40    chosen-name id (Pithing Needle / Disruptor Flute named
                                card, Petrified Hamlet named land; sentinel = none)
-                         36    returnable-exile id (card this permanent exiled that still
+                         41    returnable-exile id (card this permanent exiled that still
                                has a return path — Static Prison / Phelia; sentinel = none)
-                         37    card id (LAST)
-  obs[3684:4128]       12 stack slots × 37 floats (controller_is_self + card id +
+                         42    card id (LAST)
+  obs[4164:4608]       12 stack slots × 37 floats (controller_is_self + card id +
                          is_spell + x_or_amount/10 + 7 cast qualifiers +
                          chosen-mode multi-hot(6) + 4 announced-target sub-slots ×
                          [present, is_player, controller_is_self, slot_ref, card id])
-  obs[4128:4256]      128 graveyard slots × 1 float (card id, recency-ordered)
+  obs[4608:5120]      128 graveyard slots × 4 floats (card id FIRST, playable_by_self,
+                         playable_by_opp, play_expires_this_turn; recency-ordered)
                          slots 0-63: self; slots 64-127: opponent
-  obs[4256:4384]      128 exile slots × 1 float (card id, recency-ordered)
+  obs[5120:5760]      128 exile slots × 5 floats (the graveyard fields + counters/10;
+                         recency-ordered)
                          slots 0-63: self; slots 64-127: opponent
-  obs[4384:4394]       10 hand slots    × 1 float  (card id)
-  obs[4394:4906]      128 action history entries × 4 floats (newest first)
-                         per entry: category_norm, card_id_norm, is_self, turn/50
-  obs[4906:4910]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-  obs[4910:4913]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-  obs[4913]            current game turn / 50
-  obs[4914:4919]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
-  obs[4919:5943]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
-  obs[5943:5953]       10 known opponent-hand slots × 1 float (card id)
-  obs[5953:5955]       pending-decision context (source card id + ctrl_is_self)
-  obs[5955:5977]       global extras (self/opp lands played, viewer_has_priority,
-                         self/opp monarch, city's blessing, revolt, pending extra
-                         turns, is_day, is_night, MandatoryChoice one-hot(6),
-                         self_plays_first, sideboard swaps made, sideboard delta)
-  obs[5977:6073]       48 self live-library slots × (card id, count)
-  obs[6073:6201]       the viewer's own live 75: 48 maindeck + 16 sideboard slots
+  obs[5760:5770]       10 hand slots    × 1 float  (card id)
+  obs[5770:5774]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+  obs[5774:5776]       library counts (self_lib/60, opp_lib/60)
+  obs[5776]            current game turn / 50
+  obs[5777:5782]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
+  obs[5782:5792]       10 known opponent-hand slots × 1 float (card id)
+  obs[5792:5794]       pending-decision context (source card id + ctrl_is_self)
+  obs[5794:5821]       global extras (self/opp lands played, self/opp monarch, city's
+                         blessing, revolt, pending extra turns, is_day, is_night,
+                         self/opp has_passed + is_priority_window, self/opp
+                         mulligans taken + self bottom remaining, MandatoryChoice
+                         one-hot(6), self_plays_first, sideboard swaps made,
+                         sideboard delta)
+  obs[5821:5917]       48 self live-library slots × (card id, count)
+  obs[5917:6045]       the viewer's own live 75: 48 maindeck + 16 sideboard slots
                          × (card id, count). 16, not 15: mid-swap a cut card is
                          momentarily the sideboard's 16th (DECKLIST_SIDE_SLOTS).
-  obs[6201:6329]       the opponent's REGISTERED 75 (frozen at match start):
-                         48 maindeck + 16 sideboard slots × (card id, count)
-  obs[6329:6350]       mana development: self (11 floats: potential W,U,B,R,G,C,
+  obs[6045:6237]       the opponent's REGISTERED 75 (frozen at match start):
+                         48 maindeck + 16 sideboard slots × (card id, count,
+                         revealed — the opponent has shown that card this match)
+  obs[6237:6256]       mana development: self (10 floats: potential W,U,B,R,G,C,
                          potential_total, lands_in_play, lands_in_hand,
-                         land_drops_remaining, max-CMC proxy) then opponent
-                         (10 — no lands_in_hand, which is hidden information)
-  obs[6350:6354]       log-scaled vitals: self (log1p(max(life,0))/log1p(20),
+                         land_drops_remaining) then opponent
+                         (9 — no lands_in_hand, which is hidden information)
+  obs[6256:6260]       log-scaled vitals: self (log1p(max(life,0))/log1p(20),
                          log1p(library)/log1p(60)) then opponent — the same counts
                          as the linear floats above, re-warped for resolution near
                          zero (see the LOG VITALS block in machine_io.h)
-  obs[6354:]           action metadata (cats|ids|ctrl|zone|refs|ords) + matchup
+  obs[6260:6282]       per-turn counters: self (11 floats: spells, noncreature and
+                         instant/sorcery spells cast, cards drawn (/10), life gained,
+                         life lost (/20), spell-color multi-hot W,U,B,R,G) then opponent
+  obs[6282:6490]       16 pending delayed-trigger slots × 13 floats (present,
+                         controller_is_self, state (0 waiting / 1 on the stack),
+                         stack_ref, creator card id, creator_ref, subject_ref,
+                         subject card id, fire_on one-hot(4), fires_this_turn),
+                         packed in registration order
+  obs[6490:6516]       player effects: self then opponent, 13 floats each
+                         (protection_from_everything, cant_gain_life, hexproof
+                         from W,U,B,R,G, spells_cant_be_countered,
+                         may_cast_sorceries_as_flash, restricted_to_sorcery_speed,
+                         2 emblem card ids, floating-trigger source card id)
+  obs[6516:]           action metadata (cats|ids|ctrl|zone|refs|ords) + matchup
                          tail (appended by env.py; refs are normalized
                          entity-slot references, (idx+1)/108 with 0.0 = none)
 """
@@ -101,25 +125,39 @@ try:
                         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
                         MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY, MAX_STACK_MODES,
                         MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
-                        KNOWN_TOP_LIBRARY_SIZE, ACTION_HISTORY_SIZE,
-                        CARD_ID_SLOT_SIZE, STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
-                        STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
+                        KNOWN_TOP_LIBRARY_SIZE,
+                        CARD_ID_SLOT_SIZE, GY_SLOT_SIZE, EXILE_SLOT_SIZE, ZONE_CARD_ID_OFF,
+                        STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
+                        STACK_QUAL_FIELDS, STACK_TGT_FIELDS,
+                        MATCH_CTX_SIZE, LIBRARY_CTX_SIZE, CUR_TURN_SIZE,
                         PENDING_DECISION_SIZE, EXTRAS_SCALARS,
-                        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+                        EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE,
+                        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
+                        OPP_DECKLIST_REVEALED_OFF,
                         MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
-                        LOG_VITALS_PLAYER_SIZE)
+                        LOG_VITALS_PLAYER_SIZE, PER_TURN_PLAYER_SIZE,
+                        MAX_DELAYED_TRIGGER_SLOTS, DELAYED_SLOT_SIZE,
+                        MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS,
+                        PLAYER_EFFECTS_PLAYER_SIZE)
 except ImportError:
     from train._enums import (ACTION_CATEGORY_MAX, N_OBS_KEYWORDS, N_MANDATORY_CHOICES,
                              DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
                              MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY, MAX_STACK_MODES,
                              MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
-                             KNOWN_TOP_LIBRARY_SIZE, ACTION_HISTORY_SIZE,
-                             CARD_ID_SLOT_SIZE, STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
-                             STACK_QUAL_FIELDS, STACK_TGT_FIELDS, HIST_ENTRY_SIZE,
+                             KNOWN_TOP_LIBRARY_SIZE,
+                             CARD_ID_SLOT_SIZE, GY_SLOT_SIZE, EXILE_SLOT_SIZE, ZONE_CARD_ID_OFF,
+                             STACK_HEAD_FIELDS, STACK_XAMT_FIELDS,
+                             STACK_QUAL_FIELDS, STACK_TGT_FIELDS,
+                             MATCH_CTX_SIZE, LIBRARY_CTX_SIZE, CUR_TURN_SIZE,
                              PENDING_DECISION_SIZE, EXTRAS_SCALARS,
-                             EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+                             EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE,
+                             EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
+                             OPP_DECKLIST_REVEALED_OFF,
                              MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
-                             LOG_VITALS_PLAYER_SIZE)
+                             LOG_VITALS_PLAYER_SIZE, PER_TURN_PLAYER_SIZE,
+                             MAX_DELAYED_TRIGGER_SLOTS, DELAYED_SLOT_SIZE,
+                             MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS,
+                             PLAYER_EFFECTS_PLAYER_SIZE)
 
 
 def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -158,14 +196,15 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 # offset chain, so a hand-copied width here silently misreads the observation.
 # The chain is cross-checked block-by-block against env.py's at the bottom.
 _PERM_SLOTS      = 2 * MAX_BATTLEFIELD_SLOTS  # 48 self + 48 opponent (unified: creatures, lands, other)
-# 11 status (incl. loyalty) + 2 counters + 4 entity refs + is_blocked +
-# is_phased_out + keyword multi-hot + chosen-name id + returnable-exile id +
-# card id (LAST) = 38
-_PERM_SLOT_SIZE  = 19 + N_OBS_KEYWORDS + 3  # 38
-_PERM_STATUS_FLOATS   = _PERM_SLOT_SIZE - 3  # 35 non-id status/ref/keyword floats
-_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3  # 35 (chosen-name id, 3rd-last)
-_PERM_RETURNABLE_OFF  = _PERM_SLOT_SIZE - 2  # 36 (returnable-exile id, 2nd-last)
-_PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 37 (card id is always LAST)
+# 10 status (incl. loyalty) + 2 counters + 4 entity refs + is_blocked +
+# is_phased_out + 5 per-turn statuses + keyword multi-hot + chosen-name id +
+# returnable-exile id + card id (LAST) = 43 (the 5 per-turn statuses are followed
+# by pending_delayed_subject)
+_PERM_SLOT_SIZE  = 24 + N_OBS_KEYWORDS + 3  # 43
+_PERM_STATUS_FLOATS   = _PERM_SLOT_SIZE - 3  # 40 non-id status/ref/keyword floats
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3  # 40 (chosen-name id, 3rd-last)
+_PERM_RETURNABLE_OFF  = _PERM_SLOT_SIZE - 2  # 41 (returnable-exile id, 2nd-last)
+_PERM_CARD_OFF   = _PERM_SLOT_SIZE - 1      # 42 (card id is always LAST)
 
 _STACK_SLOTS      = MAX_STACK_DISPLAY
 _STACK_XAMT_OFF   = STACK_HEAD_FIELDS   # x_or_amount / 10 within a stack slot
@@ -180,33 +219,60 @@ _STACK_TGT_OFF    = _STACK_MODE_OFF + _STACK_MODE_SLOTS     # 17
 _STACK_SLOT_SIZE  = _STACK_TGT_OFF + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 
 _GY_SLOTS        = 2 * MAX_GY_SLOTS  # 64 self + 64 opponent
-_GY_SLOT_SIZE    = CARD_ID_SLOT_SIZE # card id only
+# card id (FIRST) + playable_by_self + playable_by_opp + play_expires_this_turn
+_GY_SLOT_SIZE    = GY_SLOT_SIZE
 
-_EXILE_SLOTS     = 2 * MAX_GY_SLOTS  # 64 self + 64 opponent (same layout as graveyard)
-_EXILE_SLOT_SIZE = CARD_ID_SLOT_SIZE # card id only
+_EXILE_SLOTS     = 2 * MAX_GY_SLOTS  # 64 self + 64 opponent
+_EXILE_SLOT_SIZE = EXILE_SLOT_SIZE   # the graveyard fields + counters
+# Both zones share zone_card_encoder: the scalars after the leading card id, with the
+# graveyard padded by a zero counters column to the exile width.
+assert ZONE_CARD_ID_OFF == 0, "zone slot encoders slice the scalars after a leading card id"
+_ZONE_CARD_OFF   = ZONE_CARD_ID_OFF
+_ZONE_SCALARS    = _EXILE_SLOT_SIZE - 1
 
 _HAND_SLOTS      = MAX_HAND_SLOTS
 _HAND_SLOT_SIZE  = CARD_ID_SLOT_SIZE # card id only
 
-_HIST_ENTRIES    = ACTION_HISTORY_SIZE  # action history entries (newest first)
-_HIST_ENTRY_SIZE = HIST_ENTRY_SIZE      # category_norm, card_id_norm, is_self, turn/50
-
 _KNOWN_TOP_LIB_SLOTS     = KNOWN_TOP_LIBRARY_SIZE  # known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
-_REVEALED_SIZE           = N_CARD_TYPES  # opponent revealed-cards multi-hot (dense, not one-hot-per-slot)
 _OPP_KNOWN_HAND_SLOTS    = MAX_HAND_SLOTS  # known opponent-hand card identities
 _OPP_KNOWN_HAND_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 
-# Deck-identity tail blocks (mirror machine_io.h [5977-6328] / env.py): five
-# (card_id, count) slot blocks — the viewer's live LIBRARY tally, the viewer's own
-# LIVE maindeck + sideboard, and the opponent's REGISTERED maindeck + sideboard.
-# card id first (norm_card_id, -1 empty sentinel), count second (/4.0). All five
-# share one decklist_encoder.
+# Deck-identity tail blocks (mirror machine_io.h's deck-identity tail / env.py): five
+# slot blocks — the viewer's live LIBRARY tally, the viewer's own LIVE maindeck +
+# sideboard as (card_id, count), and the opponent's REGISTERED maindeck + sideboard
+# as (card_id, count, revealed). card id first (norm_card_id, -1 empty sentinel),
+# count second (/4.0), the opp slots' match-scoped revealed bit third. All five
+# share one decklist_encoder; the self slots enter it with revealed = 0.
 _DECKLIST_MAIN_SLOTS = DECKLIST_MAIN_SLOTS   # 48 (self live lib, self/opp main)
 _DECKLIST_SIDE_SLOTS = DECKLIST_SIDE_SLOTS   # 16 (self/opp side)
-_DECKLIST_SLOT_SIZE  = DECKLIST_SLOT_SIZE     # card id + count per slot
+_DECKLIST_SLOT_SIZE  = DECKLIST_SLOT_SIZE     # card id + count per self slot
+_OPP_DECKLIST_SLOT_SIZE = OPP_DECKLIST_SLOT_SIZE  # card id + count + revealed per opp slot
 _DECKLIST_CARD_OFF   = 0                      # card id first within a slot
 _DECKLIST_COUNT_OFF  = 1                      # count second
+_DECKLIST_REVEALED_OFF = OPP_DECKLIST_REVEALED_OFF  # revealed third (opp slots only)
+
+# Pending delayed-trigger slots (mirror machine_io.h's DELAYED TRIGGERS block /
+# env.py's _DT_* offsets): present, controller_is_self, state, stack_ref, creator
+# card id, creator_ref, subject_ref, subject card id, fire_on one-hot,
+# fires_this_turn. The two card ids go through the shared card embedding.
+_DELAYED_SLOTS       = MAX_DELAYED_TRIGGER_SLOTS
+_DELAYED_SLOT_SIZE   = DELAYED_SLOT_SIZE
+_DT_PRESENT_OFF      = 0
+_DT_CREATOR_ID_OFF   = 4
+_DT_SUBJECT_ID_OFF   = 7
+# Scalar columns fed to the encoder: ctrl, state, stack_ref (1..3), creator_ref,
+# subject_ref (5..6), fire_on one-hot + fires_this_turn (8..end).
+_DT_SCALARS          = 3 + 2 + (DELAYED_SLOT_SIZE - 8)
+
+# Player-effects block (mirror machine_io.h's PLAYER EFFECTS block / env.py's _PE_*
+# offsets): per player the PLAYER_EFFECTS_FLAGS flags, then MAX_EMBLEM_SLOTS emblem
+# card ids, then the floating-trigger source card id. Self half, then the opponent's.
+_PE_FLAGS            = PLAYER_EFFECTS_FLAGS
+_PE_EMBLEM_OFF       = PLAYER_EFFECTS_FLAGS
+_PE_EMBLEM_SLOTS     = MAX_EMBLEM_SLOTS
+_PE_FLOATING_OFF     = _PE_EMBLEM_OFF + MAX_EMBLEM_SLOTS
+_PE_PLAYER_SIZE      = PLAYER_EFFECTS_PLAYER_SIZE
 
 _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 
@@ -230,6 +296,7 @@ try:
     import env as _env_mod
     from env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
                      _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
+                     _SELF_IS_A_IDX,
                      OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
                      ARCH_ONEHOT_START as _ARCH_ONEHOT_START,
                      ARCH_ONEHOT_END as _ARCH_ONEHOT_END,
@@ -240,6 +307,7 @@ except ImportError:
     import train.env as _env_mod
     from train.env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
                            _GLOBAL_SIZE as _ENV_GLOBAL_SIZE, N_ENTITY_REF_SLOTS,
+                           _SELF_IS_A_IDX,
                            OBS_SIZE as _ENV_OBS_SIZE, BUCKET_IDX as _BUCKET_IDX,
                            ARCH_ONEHOT_START as _ARCH_ONEHOT_START,
                            ARCH_ONEHOT_END as _ARCH_ONEHOT_END,
@@ -255,6 +323,22 @@ except ImportError:
 _ARCH_ONEHOT_FEATS  = _ARCH_ONEHOT_END - _ARCH_ONEHOT_START
 _MATCHUP_TAIL_FEATS = _ARCH_ONEHOT_END - _BUCKET_IDX
 _GLOBAL_SIZE = _ENV_GLOBAL_SIZE   # header width (single source of truth: env.py)
+# The header's "self is Player A" float. The drivers route seats by it, but no
+# network may condition on which seat it plays: network_global_ctx zeroes it.
+_SEAT_FLAG_IDX = _SELF_IS_A_IDX
+
+
+def network_global_ctx(obs: torch.Tensor, global_size: int,
+                       seat_flag_idx: int) -> torch.Tensor:
+    """The header slice ``obs[:, :global_size]`` as the networks see it: the
+    seat flag at ``seat_flag_idx`` replaced by 0.0. The ONE definition shared by
+    CardGameExtractor and az_net.ScriptTrunk (which passes its baked constants),
+    so the two trunks stay bit-identical. Plain-int arguments keep it
+    TorchScript-compilable."""
+    return torch.cat([obs[:, :seat_flag_idx],
+                      torch.zeros_like(obs[:, seat_flag_idx:seat_flag_idx + 1]),
+                      obs[:, seat_flag_idx + 1:global_size]], dim=1)
+
 try:
     from _enums import REF_ZONE_MAX, N_REF_ZONES
 except ImportError:
@@ -262,7 +346,6 @@ except ImportError:
 _ACTION_CAT_EMBED  = 8    # learned embedding dim for the action category
 _REF_ZONE_EMBED    = 4    # learned embedding dim for the per-action zone_ref
 _PER_ACTION_DIM    = 32   # per-action feature width fed to the action scorer
-_HIST_RECENT_K     = 32   # most-recent history entries embedded per-entry
 _ATTN_HEADS        = 4    # heads of the entity-table self-attention layer
 # Per-side board counts computed in forward from the permanent block (the pooled
 # mean+max is count-invariant, so magnitudes must be handed to the trunk
@@ -287,31 +370,29 @@ _EXILE_START = _GY_END
 _EXILE_END   = _EXILE_START + _EXILE_SLOTS * _EXILE_SLOT_SIZE
 _HAND_START  = _EXILE_END
 _HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE
-_HIST_START  = _HAND_END
-_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE
-# Then: match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase),
-# library counts & post-board (self_lib/60, opp_lib/60, is_post_board).
-_MATCH_CTX_START      = _HIST_END
-_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # library ctx start
-_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # current turn idx
+# Then: match context (game_number, self_wins, opp_wins, sideboard_phase),
+# library counts (self_lib/60, opp_lib/60), and the current turn.
+_MATCH_CTX_START      = _HAND_END
+_MATCH_CTX_END        = _MATCH_CTX_START + MATCH_CTX_SIZE      # library ctx start
+_LIBRARY_CTX_END      = _MATCH_CTX_END + LIBRARY_CTX_SIZE      # current turn idx
 _CUR_TURN_IDX         = _LIBRARY_CTX_END
-_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1
+_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + CUR_TURN_SIZE
 _KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
-_REVEALED_START       = _KNOWN_TOP_LIB_END
-_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE
-_OPP_KNOWN_HAND_START = _REVEALED_END
+_OPP_KNOWN_HAND_START = _KNOWN_TOP_LIB_END
 _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
 _PENDING_START        = _OPP_KNOWN_HAND_END
 _PENDING_SIZE         = PENDING_DECISION_SIZE
 _PENDING_END          = _PENDING_START + _PENDING_SIZE
-# Global extras: self/opp lands played, priority, monarch, city's blessing,
-# revolt, pending extra turns, day/night flags, the MandatoryChoice one-hot, then
+# Global extras: self/opp lands played, monarch, city's blessing, revolt, pending
+# extra turns, day/night flags, the priority-window context (pass flags +
+# is_priority_window), the mulligan state, the MandatoryChoice one-hot, then
 # self_plays_first and the two sideboard-progress scalars (swaps made, maindeck
 # drift). Cheap scalar facts — passed through raw.
 _EXTRAS_START         = _PENDING_END
-_EXTRAS_SIZE          = EXTRAS_SCALARS + N_MANDATORY_CHOICES + EXTRAS_SB_CTX_SIZE  # 22
+_EXTRAS_SIZE          = (EXTRAS_SCALARS + EXTRAS_PRIORITY_SIZE + EXTRAS_MULLIGAN_SIZE
+                         + N_MANDATORY_CHOICES + EXTRAS_SB_CTX_SIZE)  # 27
 _EXTRAS_END           = _EXTRAS_START + _EXTRAS_SIZE
 # Deck-identity tail blocks: self live library, the viewer's own live 75, then the
 # opponent's registered main + side.
@@ -322,11 +403,11 @@ _SELF_DECK_MAIN_END   = _SELF_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _DECKLIST
 _SELF_DECK_SIDE_START = _SELF_DECK_MAIN_END
 _SELF_DECK_SIDE_END   = _SELF_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
 _OPP_DECK_MAIN_START  = _SELF_DECK_SIDE_END
-_OPP_DECK_MAIN_END    = _OPP_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_END    = _OPP_DECK_MAIN_START + _DECKLIST_MAIN_SLOTS * _OPP_DECKLIST_SLOT_SIZE
 _OPP_DECK_SIDE_START  = _OPP_DECK_MAIN_END
-_OPP_DECK_SIDE_END    = _OPP_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_SIDE_END    = _OPP_DECK_SIDE_START + _DECKLIST_SIDE_SLOTS * _OPP_DECKLIST_SLOT_SIZE
 # Mana development: the self half (per-color untapped-source potential, total,
-# lands in play, lands in hand, land drops remaining, max-CMC proxy) then the
+# lands in play, lands in hand, land drops remaining) then the
 # opponent's (same minus lands in hand). Cheap normalized scalars with no card
 # identity, so — like the global extras — they are passed through RAW into the
 # trunk rather than encoded; the point of the block is that the net gets the
@@ -342,7 +423,19 @@ _MANA_DEV_END         = _MANA_DEV_START + _MANA_DEV_SIZE
 _LOG_VITALS_START     = _MANA_DEV_END
 _LOG_VITALS_SIZE      = 2 * LOG_VITALS_PLAYER_SIZE
 _LOG_VITALS_END       = _LOG_VITALS_START + _LOG_VITALS_SIZE
-_STATE_END            = _LOG_VITALS_END
+# Per-turn counters: spells / noncreature / instant-sorcery spells cast, cards drawn,
+# life gained / lost and the spell-color multi-hot, self then opponent. Plain
+# normalized scalars with no card identity, passed through RAW like the blocks above.
+_PER_TURN_START       = _LOG_VITALS_END
+_PER_TURN_SIZE        = 2 * PER_TURN_PLAYER_SIZE
+_PER_TURN_END         = _PER_TURN_START + _PER_TURN_SIZE
+# Pending delayed triggers: 16 slots encoded by delayed_encoder and pooled.
+_DELAYED_START        = _PER_TURN_END
+_DELAYED_END          = _DELAYED_START + _DELAYED_SLOTS * _DELAYED_SLOT_SIZE
+# Player effects: two halves (self, opp) encoded by player_effects_encoder.
+_PLAYER_EFFECTS_START = _DELAYED_END
+_PLAYER_EFFECTS_END   = _PLAYER_EFFECTS_START + 2 * _PE_PLAYER_SIZE
+_STATE_END            = _PLAYER_EFFECTS_END
 # obs[_STATE_END:] = action metadata + cost features + matchup tail (env.py)
 # Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE and
 # the obs tail offsets; these asserts are the mirror check).
@@ -362,11 +455,9 @@ _ENV_CHAIN_PAIRS = [
     ("_GY_START",             _GY_START),
     ("_EXILE_START",          _EXILE_START),
     ("_HAND_START",           _HAND_START),
-    ("_HIST_START",           _HIST_START),
     ("_MATCH_CTX_START",      _MATCH_CTX_START),
     ("_CUR_TURN_IDX",         _CUR_TURN_IDX),
     ("_KNOWN_TOP_LIB_START",  _KNOWN_TOP_LIB_START),
-    ("_REVEALED_START",       _REVEALED_START),
     ("_OPP_KNOWN_HAND_START", _OPP_KNOWN_HAND_START),
     ("_EXTRAS_START",         _EXTRAS_START),
     ("_EXTRAS_END",           _EXTRAS_END),
@@ -379,6 +470,12 @@ _ENV_CHAIN_PAIRS = [
     ("_MANA_DEV_END",         _MANA_DEV_END),
     ("_LOG_VITALS_START",     _LOG_VITALS_START),
     ("_LOG_VITALS_END",       _LOG_VITALS_END),
+    ("_PER_TURN_START",       _PER_TURN_START),
+    ("_PER_TURN_END",         _PER_TURN_END),
+    ("_DELAYED_START",        _DELAYED_START),
+    ("_DELAYED_END",          _DELAYED_END),
+    ("_PLAYER_EFFECTS_START", _PLAYER_EFFECTS_START),
+    ("_PLAYER_EFFECTS_END",   _PLAYER_EFFECTS_END),
 ]
 for _name, _mine in _ENV_CHAIN_PAIRS:
     _theirs = getattr(_env_mod, _name)
@@ -399,13 +496,19 @@ class CardGameExtractor(BaseFeaturesExtractor):
     size.
 
     Encoders over the slot formats:
-      perm_encoder   (35 status/counter/ref/keyword floats + chosen-name embed +
+      perm_encoder   (40 status/counter/ref/keyword floats + chosen-name embed +
                      returnable-exile embed + card_embed → embed_dim): permanents
       stack_encoder  (33 scalars incl. a stack-position float + card_embed +
                      target-embed mean → embed_dim//2): stack items
-      entity_encoder (card_embed + draw-distance float → embed_dim): graveyard,
-                     exile, known opp hand (distance 0), and the combined
-                     hand + known-top-library block (top slot i at (i+1)/5)
+      delayed_encoder (10 scalars (ctrl, state, stack/creator/subject refs,
+                     fire_on one-hot, fires_this_turn) + creator embed + subject
+                     embed → embed_dim//2): pending delayed triggers
+      zone_card_encoder (card_embed + 4 scalars: playable_by_self,
+                     playable_by_opp, play_expires_this_turn, counters/10 — 0.0 for
+                     a graveyard slot → embed_dim): graveyard and exile
+      entity_encoder (card_embed + draw-distance float → embed_dim): known opp
+                     hand (distance 0) and the combined hand +
+                     known-top-library block (top slot i at (i+1)/5)
       ref_combiner   (embed + 4*embed → embed): each permanent's 4 entity refs
                      (attached_to/by, attack/block target) gathered from the
                      encoded entity table and combined into its embedding
@@ -422,16 +525,18 @@ class CardGameExtractor(BaseFeaturesExtractor):
     neither dilute the mean nor pin the max.
 
     Output fed into the policy MLP head:
-      global(36) + hist_recent(K × (cat_emb+card_emb+2) embedded, newest first) +
-      meta_ctx(8) + board_counts(14: per-side permanent/creature/untapped/
+      global(36, seat flag zeroed — network_global_ctx) +
+      meta_ctx(7) + board_counts(14: per-side permanent/creature/untapped/
                 attacker/blocker counts + total P/T — magnitudes the
                 count-invariant pooling cannot express) +
-      revealed_agg(embed) +
       pending_feat(card_emb+1: what's asking for the current choice) +
-      extras(22 raw: lands played, priority, monarch, ..., MandatoryChoice one-hot) +
-      mana_dev(21 raw: per-color untapped-source potential, total, lands in play /
-                in hand, land drops remaining, max-CMC proxy — self then opponent) +
+      extras(27 raw: lands played, monarch, ..., pass flags + is_priority_window,
+             mulligan state, MandatoryChoice one-hot, sideboard context) +
+      mana_dev(19 raw: per-color untapped-source potential, total, lands in play /
+                in hand, land drops remaining — self then opponent) +
       log_vitals(4 raw: log1p-scaled life and library size, self then opponent) +
+      per_turn(22 raw: spells / noncreature / instant-sorcery cast, cards drawn,
+               life gained / lost, spell-color multi-hot — self then opponent) +
       [action_extras raw — ONLY when per_action_head=False (the stock head has no
        other action channel); with the per-action head the metadata feeds the
        per-action encoder instead and never enters base raw] +
@@ -441,6 +546,9 @@ class CardGameExtractor(BaseFeaturesExtractor):
       perm_agg(embed*2: masked mean+max over ATTENDED rows) +
       stack_agg(embed*2: attended rows are full-width) +
       top_stack_feat(embed: the attended top-of-stack row, positional) +
+      delayed_agg(embed: masked mean+max of the embed//2 delayed-trigger rows) +
+      player_effects_feat(embed: player_effects_encoder rows, self | opp — flags,
+                          summed emblem embeds, floating-trigger source embed) +
       graveyard_agg(embed*2) + exile_agg(embed*2) +
       hand_lib_agg(embed*2: hand + known top-library combined, draw-distance
                    distinguished) +
@@ -448,13 +556,14 @@ class CardGameExtractor(BaseFeaturesExtractor):
                      positional — the sharp "what do I draw next" signal) +
       opp_known_hand_agg(embed*2) +
       self_live_lib_agg + self_deck_main/side_agg + opp_deck_main/side_agg
-        (each embed*2: masked mean+max over a (card_id, count) deck-identity block)
+        (each embed*2: masked mean+max over a deck-identity block; the opp
+         blocks' slots also carry the match-scoped revealed bit)
 
-    The raw 128×4 action-history block and the raw per-action metadata are
-    deliberately NOT in base: index-valued floats (vocab ids, category enums,
-    slot refs) carry no learnable structure for a dense layer and are the obs's
-    best game-fingerprint memorization channel — everything the trunk should
-    know from them arrives embedded (hist_recent, the per-action encoder).
+    The raw per-action metadata is deliberately NOT in base (except on the stock
+    head, which has no other action channel): index-valued floats (vocab ids,
+    category enums, slot refs) carry no learnable structure for a dense layer and
+    are the obs's best game-fingerprint memorization channel — everything the
+    trunk should know from them arrives embedded (the per-action encoder).
     """
 
     def __init__(
@@ -470,21 +579,16 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # (card_props). Every consumer below sizes against this, not the identity
         # width alone.
         card_feat = card_embed_dim + N_CARD_PROPS
-        _meta_ctx_size = _KNOWN_TOP_LIB_START - _HIST_END  # 8 (match+lib+turn)
-        # Embedded recent-history block: the K most recent action-history entries,
-        # each flattened as [cat_emb | card_emb | is_self | turn]. Positional
-        # (recency-ordered) on purpose. The older raw tail is NOT passed through.
-        _hist_recent_size = _HIST_RECENT_K * (_ACTION_CAT_EMBED + card_feat + 2)
+        _meta_ctx_size = _KNOWN_TOP_LIB_START - _MATCH_CTX_START  # 7 (match+lib+turn)
         base_features_dim = (
             _GLOBAL_SIZE                                 # 36
-            + _hist_recent_size                          # embedded recent-K history
-            + _meta_ctx_size                             # 8 match + lib + turn
+            + _meta_ctx_size                             # 7 match + lib + turn
             + _BOARD_COUNT_FEATS                         # per-side board counts / P-T sums
-            + embed_dim                                  # opponent revealed-cards multi-hot
             + card_feat + 1                              # pending-decision source embed + ctrl flag
-            + _EXTRAS_SIZE                               # 22 global extras (raw passthrough)
-            + _MANA_DEV_SIZE                             # 21 mana development (raw passthrough)
+            + _EXTRAS_SIZE                               # 27 global extras (raw passthrough)
+            + _MANA_DEV_SIZE                             # 19 mana development (raw passthrough)
             + _LOG_VITALS_SIZE                           # 4 log-scaled vitals (raw passthrough)
+            + _PER_TURN_SIZE                             # 22 per-turn counters (raw passthrough)
             # Raw action metadata: stock-head fallback ONLY (that path has no
             # other action channel). With the per-action head the same blocks
             # feed the per-action encoder and never enter base raw.
@@ -496,6 +600,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim * 2                              # perm masked mean+max (attended rows)
             + embed_dim * 2                              # stack mean+max (attended, full width)
             + embed_dim                                  # top-of-stack attended row (positional)
+            + embed_dim                                  # delayed triggers mean+max (half width)
+            + embed_dim                                  # player effects, self | opp (half width each)
             + embed_dim * 2                              # graveyard masked-mean + max
             + embed_dim * 2                              # exile masked-mean + max
             + embed_dim * 2                              # hand + known-top-library masked-mean + max
@@ -573,10 +679,41 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
-        # Shared encoder for pure card-identity slots (graveyard, exile, known
-        # opponent hand, and the combined hand + known-top-library block). The
-        # +1 input is the draw-distance float: 0.0 for a card in hand (and for
-        # every other zone this encoder serves), (i+1)/5 for known top-of-library
+        # Encoder for the pending delayed-trigger slots: the scalar columns (see
+        # _DT_SCALARS; refs enter as raw normalized floats), the creator's card
+        # embedding and the subject's card embedding.
+        self.delayed_encoder = nn.Sequential(
+            nn.Linear(_DT_SCALARS + 2 * card_feat, embed_dim),
+            nn.ReLU(),
+            nn.Linear(embed_dim, half),
+            nn.ReLU(),
+        )
+
+        # Shared encoder for each player's half of the player-effects block: the
+        # PLAYER_EFFECTS_FLAGS flags, the summed card embeddings of the emblem ids
+        # (empty slots embed to the zero padding row) and the floating-trigger
+        # source's card embedding.
+        self.player_effects_encoder = nn.Sequential(
+            nn.Linear(_PE_FLAGS + 2 * card_feat, embed_dim),
+            nn.ReLU(),
+            nn.Linear(embed_dim, half),
+            nn.ReLU(),
+        )
+
+        # Shared encoder for the graveyard and exile slots: the card embedding plus
+        # the slot scalars (playable_by_self, playable_by_opp, play_expires_this_turn,
+        # counters/10; graveyard slots carry a 0.0 counters column).
+        self.zone_card_encoder = nn.Sequential(
+            nn.Linear(card_feat + _ZONE_SCALARS, embed_dim),
+            nn.ReLU(),
+            nn.Linear(embed_dim, embed_dim),
+            nn.ReLU(),
+        )
+
+        # Shared encoder for pure card-identity slots (known opponent hand and the
+        # combined hand + known-top-library block). The +1 input is the
+        # draw-distance float: 0.0 for a card in hand (and for the known opponent
+        # hand), (i+1)/5 for known top-of-library
         # slot i — distinguishing "in hand now" from "drawn i turns from now"
         # and preserving the top-5 ORDER that pooling would otherwise erase.
         self.entity_encoder = nn.Sequential(
@@ -606,25 +743,18 @@ class CardGameExtractor(BaseFeaturesExtractor):
         self.entity_attn = nn.MultiheadAttention(
             embed_dim, _ATTN_HEADS, batch_first=True)
 
-        # Shared encoder for the three deck-identity blocks (self live library,
-        # opponent static maindeck + sideboard). Each slot is a (card_id, count)
-        # pair: the card id is embedded via the shared card embedding and the
-        # normalized count appended, so one encoder covers all three blocks.
+        # Shared encoder for the five deck-identity blocks (self live library,
+        # self live maindeck + sideboard, opponent registered maindeck +
+        # sideboard). The card id is embedded via the shared card embedding and
+        # the normalized count + revealed bit appended (revealed = 0 for the self
+        # blocks, which carry no such bit), so one encoder covers all five.
         self.decklist_encoder = nn.Sequential(
-            nn.Linear(card_feat + 1, embed_dim),
+            nn.Linear(card_feat + 2, embed_dim),
             nn.ReLU(),
         )
 
-        # Encoder for the dense opponent revealed-cards multi-hot (many bits set,
-        # not a single id), so it gets its own weights.
-        self.revealed_encoder = nn.Sequential(
-            nn.Linear(_REVEALED_SIZE, embed_dim),
-            nn.ReLU(),
-        )
-
-        # Action-category embedding — shared by the embedded recent-history block
-        # (always) and the per-action encoder (when enabled). History and action
-        # slots use the same category/ACTION_CATEGORY_MAX normalization.
+        # Action-category embedding for the per-action encoder (when enabled);
+        # action slots carry category/ACTION_CATEGORY_MAX.
         self.action_cat_emb = nn.Embedding(ACTION_CATEGORY_MAX + 1, _ACTION_CAT_EMBED)
 
         # Per-action encoder (opt-in): category embed + referenced-card embed +
@@ -661,14 +791,13 @@ class CardGameExtractor(BaseFeaturesExtractor):
         return emb, present
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
-        global_ctx    = obs[:, :_GLOBAL_SIZE]
-        hist_ctx      = obs[:, _HIST_START:_HIST_END]           # action history (128 × 4)
-        meta_ctx      = obs[:, _HIST_END:_KNOWN_TOP_LIB_START]  # match ctx + library ctx + current turn (8)
-        revealed      = obs[:, _REVEALED_START:_REVEALED_END]   # opponent revealed-cards multi-hot
+        global_ctx    = network_global_ctx(obs, _GLOBAL_SIZE, _SEAT_FLAG_IDX)
+        meta_ctx      = obs[:, _MATCH_CTX_START:_KNOWN_TOP_LIB_START]  # match ctx + library ctx + current turn (7)
         pending       = obs[:, _PENDING_START:_PENDING_END]     # pending-decision source id + ctrl flag
-        extras        = obs[:, _EXTRAS_START:_EXTRAS_END]       # 22 global extras (raw passthrough)
+        extras        = obs[:, _EXTRAS_START:_EXTRAS_END]       # 27 global extras (raw passthrough)
         mana_dev      = obs[:, _MANA_DEV_START:_MANA_DEV_END]   # mana development (raw passthrough)
         log_vitals    = obs[:, _LOG_VITALS_START:_LOG_VITALS_END]  # log-scaled life/library (raw)
+        per_turn      = obs[:, _PER_TURN_START:_PER_TURN_END]   # per-turn counters (raw)
         # Matchup tail: the raw value-bucket index is STRIPPED here (a bucket id is
         # a meaningless magnitude to the trunk) and stashed for the policy's
         # multi-head critic to gather with; the two archetype one-hots DO feed the
@@ -676,20 +805,6 @@ class CardGameExtractor(BaseFeaturesExtractor):
         self.last_bucket = torch.round(obs[:, _BUCKET_IDX]).long().clamp_(
             0, N_VALUE_BUCKETS - 1)
         arch_onehot   = obs[:, _ARCH_ONEHOT_START:_ARCH_ONEHOT_END]
-
-        # Embedded recent history: card ids as raw floats are unlearnable (vocab
-        # order is meaningless), so the K most recent entries get their card id
-        # and category embedded per entry, flattened recency-ordered. The older
-        # raw tail is deliberately dropped (index-valued floats = the obs's best
-        # game-fingerprint memorization channel).
-        hist_entries = hist_ctx.reshape(-1, _HIST_ENTRIES, _HIST_ENTRY_SIZE)
-        recent = hist_entries[:, :_HIST_RECENT_K]               # (B, K, 4) newest first
-        rec_cat_idx = torch.round(recent[:, :, 0] * ACTION_CATEGORY_MAX).long() \
-            .clamp_(0, ACTION_CATEGORY_MAX)
-        rec_cat_e = self.action_cat_emb(rec_cat_idx)            # (B, K, cat_embed)
-        rec_card_e, _ = self._embed_ids(recent[:, :, 1])        # (B, K, card_embed)
-        hist_recent = torch.cat([rec_cat_e, rec_card_e, recent[:, :, 2:4]], dim=-1) \
-            .reshape(recent.shape[0], -1)                       # (B, K*(cat+card+2))
 
         # Pending-decision context: embed WHAT is asking for the current choice
         # (may not be on the stack yet — targets are announced pre-push).
@@ -712,9 +827,9 @@ class CardGameExtractor(BaseFeaturesExtractor):
         self_side = obs[:, _SELF_DECK_SIDE_START:_SELF_DECK_SIDE_END].reshape(
             -1, _DECKLIST_SIDE_SLOTS, _DECKLIST_SLOT_SIZE)
         opp_main  = obs[:, _OPP_DECK_MAIN_START:_OPP_DECK_MAIN_END].reshape(
-            -1, _DECKLIST_MAIN_SLOTS, _DECKLIST_SLOT_SIZE)
+            -1, _DECKLIST_MAIN_SLOTS, _OPP_DECKLIST_SLOT_SIZE)
         opp_side  = obs[:, _OPP_DECK_SIDE_START:_OPP_DECK_SIDE_END].reshape(
-            -1, _DECKLIST_SIDE_SLOTS, _DECKLIST_SLOT_SIZE)
+            -1, _DECKLIST_SIDE_SLOTS, _OPP_DECKLIST_SLOT_SIZE)
 
         # Embed card identity per slot, then build each slot's encoder input. The
         # chosen-name id and the returnable-exile id are each embedded through the
@@ -745,13 +860,31 @@ class CardGameExtractor(BaseFeaturesExtractor):
         stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_xquals, stk_modes,
                             stk_tgt_scalars, stk_pos, stk_card_emb, stk_tgt_agg], dim=-1)
 
-        gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
-        ex_emb_in, ex_present = self._embed_ids(exile[:, :, 0])
+        # Pending delayed triggers: scalar columns + creator and subject embeds.
+        delayed = obs[:, _DELAYED_START:_DELAYED_END].reshape(
+            -1, _DELAYED_SLOTS, _DELAYED_SLOT_SIZE)
+        dt_creator_emb, _ = self._embed_ids(delayed[:, :, _DT_CREATOR_ID_OFF])
+        dt_subject_emb, _ = self._embed_ids(delayed[:, :, _DT_SUBJECT_ID_OFF])
+        dt_present = delayed[:, :, _DT_PRESENT_OFF] > 0.5
+        dt_in = torch.cat([delayed[:, :, 1:_DT_CREATOR_ID_OFF],
+                           delayed[:, :, _DT_CREATOR_ID_OFF + 1:_DT_SUBJECT_ID_OFF],
+                           delayed[:, :, _DT_SUBJECT_ID_OFF + 1:],
+                           dt_creator_emb, dt_subject_emb], dim=-1)
+
+        # Player effects: per player (self, opp) the flags + summed emblem embeds +
+        # the floating-trigger source embed.
+        pe = obs[:, _PLAYER_EFFECTS_START:_PLAYER_EFFECTS_END].reshape(-1, 2, _PE_PLAYER_SIZE)
+        pe_emblem_emb, _ = self._embed_ids(pe[:, :, _PE_EMBLEM_OFF:_PE_FLOATING_OFF])
+        pe_floating_emb, _ = self._embed_ids(pe[:, :, _PE_FLOATING_OFF])
+        pe_in = torch.cat([pe[:, :, :_PE_FLAGS], pe_emblem_emb.sum(2), pe_floating_emb], dim=-1)
+
+        gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, _ZONE_CARD_OFF])
+        ex_emb_in, ex_present = self._embed_ids(exile[:, :, _ZONE_CARD_OFF])
         opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
         # Combined hand + known-top-library block: 10 hand slots (draw distance
         # 0.0) then the 5 known top-lib slots (distance (i+1)/5, preserving the
         # top-5 order). Unknown top slots carry the -1 sentinel and mask out like
-        # empty hand slots. The other entity_encoder zones feed a 0.0 distance.
+        # empty hand slots. The known opponent hand feeds a 0.0 distance.
         hl_emb, hl_present = self._embed_ids(
             torch.cat([hand[:, :, 0], top_lib[:, :, 0]], dim=1))  # (B, 15, card_feat)
         hl_dist = hl_emb.new_zeros(hl_emb.shape[0],
@@ -764,36 +897,45 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # (sharp "what do I draw next" signal, same pattern as pending_feat).
         next_draw_feat = hl_emb[:, _HAND_SLOTS]
         zero_dist = hl_emb.new_zeros(hl_emb.shape[0], 1, 1)
-        gy_in = torch.cat([gy_emb_in, zero_dist.expand(-1, _GY_SLOTS, -1)], dim=-1)
-        ex_in = torch.cat([ex_emb_in, zero_dist.expand(-1, _EXILE_SLOTS, -1)], dim=-1)
+        # Graveyard / exile: card embedding + the slot scalars after the card id
+        # (graveyard padded with a zero counters column to the exile width).
+        gy_in = torch.cat([gy_emb_in, graveyard[:, :, 1:],
+                           torch.zeros_like(graveyard[:, :, :1])], dim=-1)
+        ex_in = torch.cat([ex_emb_in, exile[:, :, 1:]], dim=-1)
         opp_hand_in = torch.cat(
             [opp_hand_emb_in, zero_dist.expand(-1, _OPP_KNOWN_HAND_SLOTS, -1)], dim=-1)
 
-        # Deck-identity blocks: embed the card id, append the normalized count,
-        # encode with the shared decklist_encoder, pool masked mean+max per block.
+        # Deck-identity blocks: embed the card id, append the normalized count and
+        # the revealed bit (a zero column for the self blocks), encode with the
+        # shared decklist_encoder, pool masked mean+max per block.
         self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, _DECKLIST_CARD_OFF])
         self_main_emb, self_main_present = self._embed_ids(self_main[:, :, _DECKLIST_CARD_OFF])
         self_side_emb, self_side_present = self._embed_ids(self_side[:, :, _DECKLIST_CARD_OFF])
         opp_main_emb, opp_main_present = self._embed_ids(opp_main[:, :, _DECKLIST_CARD_OFF])
         opp_side_emb, opp_side_present = self._embed_ids(opp_side[:, :, _DECKLIST_CARD_OFF])
         self_lib_in = torch.cat(
-            [self_lib_emb, self_lib[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+            [self_lib_emb, self_lib[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1],
+             torch.zeros_like(self_lib[:, :, :1])], dim=-1)
         self_main_in = torch.cat(
-            [self_main_emb, self_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+            [self_main_emb, self_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1],
+             torch.zeros_like(self_main[:, :, :1])], dim=-1)
         self_side_in = torch.cat(
-            [self_side_emb, self_side[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+            [self_side_emb, self_side[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1],
+             torch.zeros_like(self_side[:, :, :1])], dim=-1)
         opp_main_in = torch.cat(
-            [opp_main_emb, opp_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+            [opp_main_emb, opp_main[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_REVEALED_OFF + 1]], dim=-1)
         opp_side_in = torch.cat(
-            [opp_side_emb, opp_side[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_COUNT_OFF + 1]], dim=-1)
+            [opp_side_emb, opp_side[:, :, _DECKLIST_COUNT_OFF:_DECKLIST_REVEALED_OFF + 1]], dim=-1)
 
         # Encode each slot type with its shared-weight encoder. perm/stack are
         # the FIRST pass — their 4 entity refs / announced-target slot_refs still
         # enter as raw floats here and are resolved by the gathers below.
         perm_emb    = self.perm_encoder(perm_in)       # (B, 96, embed)
         stk_emb     = self.stack_encoder(stk_in)       # (B, 12, embed//2)
-        gy_emb      = self.entity_encoder(gy_in)       # (B, 128, embed)
-        ex_emb      = self.entity_encoder(ex_in)       # (B, 128, embed)  — shared weights
+        dt_emb      = self.delayed_encoder(dt_in)      # (B, 16, embed//2)
+        pe_emb      = self.player_effects_encoder(pe_in)  # (B, 2, embed//2)
+        gy_emb      = self.zone_card_encoder(gy_in)    # (B, 128, embed)
+        ex_emb      = self.zone_card_encoder(ex_in)    # (B, 128, embed)  — shared weights
         hand_lib_emb = self.entity_encoder(hl_in)      # (B, 15, embed)  — shared weights
         opp_hand_emb = self.entity_encoder(opp_hand_in)  # (B, 10, embed)  — shared weights
         self_lib_enc = self.decklist_encoder(self_lib_in)  # (B, 48, embed)  — shared weights
@@ -889,25 +1031,27 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perm_agg    = _masked_mean_max(perm_att, perm_present)
         stk_agg     = _masked_mean_max(stk_att, stk_present)
         top_stack_feat = stk_att[:, 0]        # positional: what resolves NEXT
+        delayed_agg = _masked_mean_max(dt_emb, dt_present)
+        player_effects_feat = pe_emb.flatten(1)  # positional: self half | opp half
         gy_agg      = _masked_mean_max(gy_emb,   gy_present)
         ex_agg      = _masked_mean_max(ex_emb,   ex_present)
         hand_lib_agg = _masked_mean_max(hand_lib_emb, hl_present)
         opp_hand_agg = _masked_mean_max(opp_hand_emb, opp_hand_present)
-        revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
         self_lib_agg = _masked_mean_max(self_lib_enc, self_lib_present)
         self_main_agg = _masked_mean_max(self_main_enc, self_main_present)
         self_side_agg = _masked_mean_max(self_side_enc, self_side_present)
         opp_main_agg = _masked_mean_max(opp_main_enc, opp_main_present)
         opp_side_agg = _masked_mean_max(opp_side_enc, opp_side_present)
 
-        parts = [global_ctx, hist_recent, meta_ctx, board_counts,
-                 revealed_agg, pending_feat, extras, mana_dev, log_vitals]
+        parts = [global_ctx, meta_ctx, board_counts,
+                 pending_feat, extras, mana_dev, log_vitals, per_turn]
         if not self.per_action_head:
             # Stock-head fallback only: raw action metadata (this path has no
             # per-action encoder, so it is its only action channel).
             parts.append(obs[:, _STATE_END:_BUCKET_IDX])
         parts += [arch_onehot,
-                  perm_agg, stk_agg, top_stack_feat, gy_agg, ex_agg,
+                  perm_agg, stk_agg, top_stack_feat, delayed_agg,
+                  player_effects_feat, gy_agg, ex_agg,
                   hand_lib_agg, next_draw_feat, opp_hand_agg,
                   self_lib_agg, self_main_agg, self_side_agg,
                   opp_main_agg, opp_side_agg]

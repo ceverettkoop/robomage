@@ -243,6 +243,11 @@ public:
     // continues; false to let the real game end (never returned while searching).
     bool on_game_end(int winner);
 
+    // True between real decisions: the next on_decision call is a new REAL
+    // engine decision (not a simulation step of a search in flight), and the
+    // call that returns with this true again committed a real action.
+    bool at_real_decision() const;
+
     // Per-searched-root results, in order.
     const std::vector<SearchRootResult>& results() const;
 

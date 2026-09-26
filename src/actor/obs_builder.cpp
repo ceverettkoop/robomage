@@ -20,7 +20,7 @@
 // ── State-vector offsets ────────────────────────────────────────────────────
 // The actor no longer keeps its own copy of the offset chain. Every absolute
 // block offset it needs (SELF_PERM_START, HAND_START, MATCH_CTX_START,
-// REVEALED_START, EXTRAS_*, the deck-identity tail, ...) comes from the
+// OPP_KNOWN_HAND_START, EXTRAS_*, the deck-identity tail, ...) comes from the
 // OFFSET_CHAIN in src/machine_io.h, which is derived from that header's block
 // widths and pinned by its own `== STATE_SIZE` static_assert. train/env.py
 // derives the same chain from the same widths (mirrored by train/gen_enums.py),
@@ -44,9 +44,7 @@ static_assert(STACK_TGT_START == 17, "stack target sub-slots start at slot offse
 
 // Block ENDs the sideboard obs mask below needs; machine_io.h names each block's
 // start, and one block's end is the next one's start.
-static constexpr int HIST_END = MATCH_CTX_START;
-static constexpr int KNOWN_TOP_LIB_END = REVEALED_START;
-static constexpr int REVEALED_END = OPP_KNOWN_HAND_START;
+static constexpr int KNOWN_TOP_LIB_END = OPP_KNOWN_HAND_START;
 static constexpr int OPP_KNOWN_HAND_END = PENDING_DECISION_START;
 static constexpr int PENDING_DECISION_END = EXTRAS_START;
 static constexpr int SELF_LIVE_LIB_END = SELF_DECK_MAIN_START;
@@ -122,9 +120,9 @@ static void write_matchup_tail(float* o, bool self_is_a) {
 // between-games sideboard phase the engine keeps the ended game's ECS alive, so
 // the raw state vector describes the STALE terminal board — noise for a
 // sideboarding decision. env.py zeroes every state block except the ones that
-// inform sideboarding (graveyards+exile, action history, match/library/turn ctx,
-// the opponent revealed multi-hot, the pending-decision context, and BOTH opponent
-// static-decklist blocks), plus the self-is-A seat flag; card-id positions inside
+// inform sideboarding (graveyard+exile card ids, match/library/turn ctx,
+// the pending-decision context, and BOTH opponent static-decklist blocks with their
+// revealed bits), plus the self-is-A seat flag; card-id positions inside
 // masked blocks are filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 (0.0
 // decodes to real vocab index 0). We build the identical keep/fill pair once.
 // The MANA DEVELOPMENT block is board state of the ENDED game (untapped sources, lands
@@ -148,12 +146,16 @@ static const SideboardMask& sideboard_mask() {
         auto keep_range = [&](int lo, int hi) {
             for (int i = lo; i < hi; i++) m.keep[static_cast<size_t>(i)] = true;
         };
-        keep_range(GY_START, HAND_START);                   // graveyards + exile (self + opp)
-        keep_range(HIST_START, HIST_END);                   // action history ring
+        // Graveyards + exile (self + opp): only the card ids survive. The play-permission
+        // flags and the exile counters describe the ended game's permissions, so they
+        // are masked to 0.0.
+        for (int s = 0; s < 2 * MAX_GY_SLOTS; s++) {
+            m.keep[static_cast<size_t>(GY_START + s * GY_SLOT_SIZE + ZONE_CARD_ID_OFF)] = true;
+            m.keep[static_cast<size_t>(EXILE_START + s * EXILE_SLOT_SIZE + ZONE_CARD_ID_OFF)] = true;
+        }
         keep_range(MATCH_CTX_START, KNOWN_TOP_LIB_START);   // match + library ctx + current turn
-        keep_range(REVEALED_START, REVEALED_END);           // opponent revealed multi-hot
         keep_range(PENDING_DECISION_START, PENDING_DECISION_END);  // pending-decision context
-        keep_range(OPP_DECK_MAIN_START, OPP_DECK_SIDE_END); // opponent registered decklist (both blocks)
+        keep_range(OPP_DECK_MAIN_START, OPP_DECK_SIDE_END); // opponent registered decklist + revealed bits
         keep_range(SELF_DECK_MAIN_START, SELF_DECK_SIDE_END);  // the viewer's own live 75
         keep_range(EXTRAS_SB_CTX_START, EXTRAS_END);        // plays-first + sideboard progress
         // The "self is Player A" seat flag must survive (it is live during the
@@ -179,6 +181,16 @@ static const SideboardMask& sideboard_mask() {
             int tgt0 = base + STACK_TGT_START;
             for (int t = 0; t < STACK_TGT_SLOTS; t++)
                 card_id_slot(tgt0 + t * STACK_TGT_FIELDS + STACK_TGT_ID_OFF);
+        }
+        // Delayed-trigger slots: creator and subject card ids.
+        for (int s = 0; s < DELAYED_SLOTS; s++) {
+            card_id_slot(DELAYED_START + s * DELAYED_SLOT_SIZE + DELAYED_CREATOR_ID_OFF);
+            card_id_slot(DELAYED_START + s * DELAYED_SLOT_SIZE + DELAYED_SUBJECT_ID_OFF);
+        }
+        // Player effects (self + opp): the emblem and floating-trigger source card ids.
+        for (int base : {PLAYER_EFFECTS_START, PLAYER_EFFECTS_OPP_START}) {
+            for (int e = 0; e < MAX_EMBLEM_SLOTS; e++) card_id_slot(base + PLAYER_EFFECTS_EMBLEM_OFF + e);
+            card_id_slot(base + PLAYER_EFFECTS_FLOATING_OFF);
         }
         for (int i = HAND_START; i < HAND_START + MAX_HAND_SLOTS; i++) card_id_slot(i);       // self hand
         for (int i = KNOWN_TOP_LIB_START; i < KNOWN_TOP_LIB_END; i++) card_id_slot(i);        // known top-5

@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Lotus Petal, Marsh Flats, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -84,6 +86,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Stack: Lotus Petal (spell, opponent)
   Opp revealed: Lotus Petal
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -99,6 +103,8 @@
   Stack: Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Lotus Petal
+  This turn: opp spells=1 noncreature=1
+  Extras: not_priority_window
   Actions:
    0: Lotus Petal
   >> B/B: 0 (Lotus Petal)
@@ -111,7 +117,10 @@
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Stack: Lotus Petal (spell, opponent)
+  Pending: Force of Will (self)
   Opp revealed: Lotus Petal
+  This turn: opp spells=1 noncreature=1
+  Extras: not_priority_window
   Actions:
    0: Exile Atraxa, Grand Unifier
    1: Exile Careful Study
@@ -133,6 +142,8 @@
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -147,11 +158,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Marsh Flats
+  Self BF:  Marsh Flats (NEW)
   Self GY: Lotus Petal
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -175,7 +187,8 @@
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Swamp
@@ -194,11 +207,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp
+  Self BF:  Swamp (NEW)
   Self GY: Marsh Flats, Lotus Petal
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -213,13 +227,14 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp
+  Self BF:  Swamp (NEW)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats, Lotus Petal
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (19 life)
    1: Player A (19 life)
@@ -242,7 +257,7 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Brainstorm, Polluted Delta, Thoughtseize, Undercity Sewers | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp (T)
+  Self BF:  Swamp (T,NEW)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats, Lotus Petal
@@ -250,7 +265,8 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Marsh Flats, Ponder, Reanimate, Thoughtseize
   Opp revealed: Ponder, Force of Will, Thoughtseize, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 life_lost=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Careful Study
    1: Ponder
@@ -281,6 +297,7 @@
   Opp GY:  Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Thoughtseize, Lotus Petal, Swamp, Marsh Flats
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -294,12 +311,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(4): Careful Study, Ponder, Reanimate, Scalding Tarn | lib 52
   Opp:   17 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Marsh Flats
+  Self BF:  Marsh Flats (NEW)
   Opp BF:   Swamp (T)
   Self GY: Thoughtseize, Force of Will
   Opp GY:  Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Thoughtseize, Lotus Petal, Swamp, Marsh Flats
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -324,7 +342,8 @@
   Opp GY:  Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Thoughtseize, Lotus Petal, Swamp, Marsh Flats
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Swamp
@@ -360,6 +379,7 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Reanimate
   Opp revealed: Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -382,6 +402,8 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Reanimate
   Opp revealed: Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Player B (18 life)
    1: Player A (17 life)
@@ -412,6 +434,8 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Reanimate, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Careful Study
    1: Ponder
@@ -434,6 +458,7 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -447,13 +472,14 @@
   Step: First Main (turn 3)
   Self:  15 life | mana: empty | hand(3): Brainstorm, Otherworldly Gaze, Undercity Sewers | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Polluted Delta | Swamp (T)
+  Self BF:  Polluted Delta (NEW) | Swamp (T)
   Opp BF:   Swamp
   Self GY: Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -480,7 +506,8 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -499,13 +526,14 @@
   Step: First Main (turn 3)
   Self:  14 life | mana: empty | hand(3): Brainstorm, Otherworldly Gaze, Undercity Sewers | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Island | Swamp (T)
+  Self BF:  Island (NEW) | Swamp (T)
   Opp BF:   Swamp
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -527,7 +555,7 @@
   Step: First Main (turn 3)
   Self:  14 life | mana: empty | hand(5): Dark Ritual, Flow State, Force of Will, Otherworldly Gaze, Undercity Sewers | lib 47
   Opp:   18 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Island (T) | Swamp (T)
+  Self BF:  Island (T,NEW) | Swamp (T)
   Opp BF:   Swamp
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -536,7 +564,8 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=3 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual
    1: Flow State
@@ -553,7 +582,7 @@
   Step: First Main (turn 3)
   Self:  14 life | mana: empty | hand(4): Flow State, Force of Will, Otherworldly Gaze, Undercity Sewers | lib 48
   Opp:   18 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Island (T) | Swamp (T)
+  Self BF:  Island (T,NEW) | Swamp (T)
   Opp BF:   Swamp
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -563,7 +592,8 @@
   Known top: Dark Ritual, ?, ?, ?, ?
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=3 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Flow State
    1: Force of Will
@@ -593,6 +623,7 @@
   Opp GY:  Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Marsh Flats
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Bloodstained Mire
@@ -606,12 +637,13 @@
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(3): Careful Study, Ponder, Scalding Tarn | lib 50
   Opp:   14 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Bloodstained Mire | Swamp
+  Self BF:  Bloodstained Mire (NEW) | Swamp
   Opp BF:   Island (T) | Swamp (T)
   Self GY: Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Marsh Flats
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -637,7 +669,8 @@
   Opp GY:  Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Marsh Flats
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Undercity Sewers
@@ -661,7 +694,7 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(3): Careful Study, Ponder, Scalding Tarn | lib 49
   Opp:   14 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Swamp | Undercity Sewers (T)
+  Self BF:  Swamp | Undercity Sewers (T,NEW,res 1)
   Opp BF:   Island (T) | Swamp (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
@@ -669,7 +702,8 @@
   Opp GY:  Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Polluted Delta, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Marsh Flats
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Thoughtseize on top of library  [#0]
    1: Put Thoughtseize into graveyard
@@ -726,6 +760,8 @@
   Known top: Flow State, Dark Ritual, ?, ?, ?
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Flow State on top of library  [#0]
    1: Put Dark Ritual on top of library  [#0]
@@ -752,6 +788,8 @@
   Known top: Dark Ritual, ?, ?, ?, ?
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Dark Ritual on top of library  [#0]
    1: Put Force of Will on top of library  [#0]
@@ -775,6 +813,8 @@
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Force of Will on top of library  [#0]
    1: Put Force of Will into graveyard
@@ -790,11 +830,12 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Island (T) | Swamp
   Opp BF:   Swamp | Undercity Sewers (T)
-  Self GY: Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Self GY: Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Undercity Sewers
@@ -812,16 +853,17 @@
   Step: First Main (turn 5)
   Self:  14 life | mana: empty | hand(2): Careful Study, Force of Will | lib 45
   Opp:   17 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Island (T) | Swamp | Undercity Sewers (T)
+  Self BF:  Island (T) | Swamp | Undercity Sewers (T,NEW,res 1)
   Opp BF:   Swamp | Undercity Sewers (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
-  Self GY: Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Self GY: Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Careful Study, Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Scalding Tarn on top of library  [#0]
    1: Put Scalding Tarn into graveyard
@@ -846,9 +888,10 @@
   Self BF:  Swamp | Undercity Sewers
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Self GY: Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Otherworldly Gaze
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -867,11 +910,13 @@
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
   Opp BF:   Swamp | Undercity Sewers (T)
   Stack: Careful Study (spell, opponent)
-  Self GY: Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Self GY: Scalding Tarn, Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Swamp, Undercity Sewers, Bloodstained Mire, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -893,9 +938,11 @@
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
   Self GY: Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Otherworldly Gaze
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Flow State
@@ -917,9 +964,11 @@
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
   Self GY: Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Otherworldly Gaze
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Flow State
    1: Lotus Petal
@@ -937,9 +986,10 @@
   Self BF:  Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Self GY: Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Otherworldly Gaze
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -956,11 +1006,13 @@
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
   Opp BF:   Swamp | Undercity Sewers (T)
   Stack: Lotus Petal (spell, opponent)
-  Self GY: Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Self GY: Scalding Tarn, Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -977,11 +1029,13 @@
   Opp BF:   Swamp | Undercity Sewers (T)
   Stack: Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
-  Self GY: Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Self GY: Scalding Tarn, Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Lotus Petal
   >> A/A: 0 (Lotus Petal)
@@ -996,11 +1050,14 @@
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
   Opp BF:   Swamp | Undercity Sewers (T)
   Stack: Lotus Petal (spell, opponent)
-  Self GY: Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Pending: Force of Will (self)
+  Self GY: Scalding Tarn, Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Known opp hand: Ponder, Scalding Tarn
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
   Actions:
    0: Exile Careful Study
   >> A/A: 0 (Exile Careful Study)
@@ -1019,10 +1076,12 @@
   Self BF:  Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Self GY: Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Careful Study
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1035,13 +1094,14 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(1): Ponder | lib 45
   Opp:   13 life | mana: empty | hand count: 0 | lib 44
-  Self BF:  Scalding Tarn | Swamp | Undercity Sewers (T)
+  Self BF:  Scalding Tarn (NEW) | Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Self GY: Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Careful Study
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1064,11 +1124,12 @@
   Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Careful Study
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1087,13 +1148,14 @@
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(1): Ponder | lib 44
   Opp:   13 life | mana: empty | hand count: 0 | lib 44
-  Self BF:  Island | Swamp | Undercity Sewers (T)
+  Self BF:  Island (NEW) | Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Self GY: Scalding Tarn, Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Careful Study
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1111,16 +1173,17 @@
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   13 life | mana: empty | hand count: 0 | lib 44
-  Self BF:  Island (T) | Swamp | Undercity Sewers (T)
+  Self BF:  Island (T,NEW) | Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Scalding Tarn, Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Careful Study
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Brainstorm  [#2]
    1: Dark Ritual  [#2]
@@ -1134,16 +1197,18 @@
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   13 life | mana: empty | hand count: 0 | lib 44
-  Self BF:  Island (T) | Swamp | Undercity Sewers (T)
+  Self BF:  Island (T,NEW) | Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Scalding Tarn, Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Careful Study
+  Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual  [#1]
    1: Animate Dead  [#1]
@@ -1154,17 +1219,18 @@
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   13 life | mana: empty | hand count: 0 | lib 44
-  Self BF:  Island (T) | Swamp | Undercity Sewers (T)
+  Self BF:  Island (T,NEW) | Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Scalding Tarn, Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Opp GY:  Force of Will, Scalding Tarn, Otherworldly Gaze [play:opponent], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Careful Study
   Known top: Animate Dead, Dark Ritual, Brainstorm, ?, ?
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1188,7 +1254,7 @@
   Opp:   16 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Island | Swamp | Undercity Sewers
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
-  Self GY: Force of Will, Scalding Tarn, Otherworldly Gaze, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
+  Self GY: Force of Will, Scalding Tarn, Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Careful Study
   Opp exile:  Atraxa, Grand Unifier
@@ -1221,6 +1287,8 @@
   Self exile: Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Polluted Delta on top of library  [#0]
    1: Put Flooded Strand on top of library  [#0]
@@ -1246,6 +1314,8 @@
   Self exile: Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Flooded Strand on top of library  [#0]
    1: Put Animate Dead on top of library  [#0]
@@ -1269,6 +1339,8 @@
   Self exile: Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Animate Dead on top of library  [#0]
    1: Put Animate Dead into graveyard
@@ -1290,6 +1362,7 @@
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Reanimate  [#0]
@@ -1310,6 +1383,8 @@
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Archon of Cruelty
   >> A/A: 0 (Archon of Cruelty)
@@ -1329,7 +1404,7 @@
   Step: First Main (turn 7)
   Self:  5 life | mana: empty | hand(0): (empty) | lib 40
   Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
   Pending: Archon of Cruelty (self)
   Self GY: Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
@@ -1337,6 +1412,8 @@
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=8 colors=UB
+  Extras: not_priority_window
   Actions:
    0: Player B (16 life)
   >> A/A: 0 (Player B (16 life))
@@ -1353,7 +1430,7 @@
   Self:  16 life | mana: empty | hand(1): Animate Dead | lib 43
   Opp:   5 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Stack: Archon of Cruelty (ability, opponent) -> self (player)
   Pending: Archon of Cruelty (opp)
   Self GY: Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
@@ -1362,6 +1439,8 @@
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Dark Ritual, Brainstorm, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=8 colors=UB
+  Extras: not_priority_window
   Actions:
    0: Animate Dead
   >> B/B: 0 (Animate Dead)
@@ -1380,13 +1459,15 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1398,13 +1479,15 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1418,13 +1501,15 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1438,13 +1523,14 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1459,13 +1545,15 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1477,13 +1565,15 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1495,13 +1585,15 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1513,13 +1605,15 @@
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
+  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK,NEW,res 1)
   Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1562,6 +1656,7 @@
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1584,6 +1679,7 @@
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1610,6 +1706,8 @@
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window
   Actions:
    0: Dark Ritual
    1: Flow State
@@ -1635,6 +1733,8 @@
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Dark Ritual, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window
   Actions:
    0: Flow State
    1: Otherworldly Gaze
@@ -1656,6 +1756,7 @@
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Flow State, Dark Ritual, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze  [#0]
@@ -1684,6 +1785,8 @@
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Flow State, Dark Ritual, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Flow State on top of library  [#0]
    1: Put Dark Ritual on top of library  [#0]
@@ -1710,6 +1813,8 @@
   Opp exile:  Otherworldly Gaze, Careful Study
   Known top: Dark Ritual, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Dark Ritual on top of library  [#0]
    1: Put Lotus Petal on top of library  [#0]
@@ -1733,6 +1838,8 @@
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Lotus Petal on top of library  [#0]
    1: Put Lotus Petal into graveyard
@@ -1747,11 +1854,12 @@
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
-  Self GY: Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Self GY: Otherworldly Gaze [play:self], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -1764,13 +1872,14 @@
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(0): (empty) | lib 37
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
-  Self BF:  Island (T) | Polluted Delta | Swamp | Undercity Sewers (T)
+  Self BF:  Island (T) | Polluted Delta (NEW) | Swamp | Undercity Sewers (T)
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
-  Self GY: Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Self GY: Otherworldly Gaze [play:self], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1792,12 +1901,13 @@
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
   Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Undercity Sewers
@@ -1820,16 +1930,17 @@
   Step: First Main (turn 8)
   Self:  12 life | mana: empty | hand(0): (empty) | lib 36
   Opp:   8 life | mana: empty | hand count: 0 | lib 40
-  Self BF:  Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T)
+  Self BF:  Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T,NEW,res 1)
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
-  Self GY: Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Otherworldly Gaze on top of library  [#0]
    1: Put Otherworldly Gaze into graveyard
@@ -1854,10 +1965,11 @@
   Self BF:  Island | Swamp | Undercity Sewers | Archon of Cruelty [6/6] [Flying]
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T)
   Self GY: Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Otherworldly Gaze [play:opponent], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Bloodstained Mire
@@ -1870,13 +1982,14 @@
   Step: First Main (turn 9)
   Self:  8 life | mana: empty | hand(0): (empty) | lib 39
   Opp:   12 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Bloodstained Mire | Island | Swamp | Undercity Sewers | Archon of Cruelty [6/6] [Flying]
+  Self BF:  Bloodstained Mire (NEW) | Island | Swamp | Undercity Sewers | Archon of Cruelty [6/6] [Flying]
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T)
   Self GY: Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Otherworldly Gaze [play:opponent], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1899,11 +2012,12 @@
   Stack: Bloodstained Mire (ability, self)
   Pending: Bloodstained Mire (self)
   Self GY: Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Otherworldly Gaze [play:opponent], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Undercity Sewers
@@ -1926,16 +2040,17 @@
   Step: First Main (turn 9)
   Self:  7 life | mana: empty | hand(0): (empty) | lib 38
   Opp:   12 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying]
+  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1) | Undercity Sewers | Archon of Cruelty [6/6] [Flying]
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T)
   Stack: Undercity Sewers (ability, self) [amt=1]
   Pending: Undercity Sewers (self)
   Self GY: Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Otherworldly Gaze [play:opponent], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
@@ -1949,14 +2064,15 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(0): (empty) | lib 37
   Opp:   12 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying]
+  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1) | Undercity Sewers | Archon of Cruelty [6/6] [Flying]
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T)
   Self GY: Brainstorm, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Otherworldly Gaze [play:opponent], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Archon of Cruelty [6/6]
    1: Confirm attackers
@@ -1971,14 +2087,15 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(0): (empty) | lib 37
   Opp:   12 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (ATK)
+  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (ATK)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T)
   Self GY: Brainstorm, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Otherworldly Gaze [play:opponent], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1992,15 +2109,16 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(0): (empty) | lib 37
   Opp:   12 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (T,ATK)
+  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (T,ATK)
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T) | Undercity Sewers (T)
   Pending: Archon of Cruelty (self)
   Self GY: Brainstorm, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Opp GY:  Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Otherworldly Gaze [play:opponent], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (12 life)
   >> A/A: 0 (Player B (12 life))
@@ -2032,7 +2150,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 37
   Self BF:  Island | Swamp | Undercity Sewers | Undercity Sewers
   Opp BF:   Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (T)
-  Self GY: Otherworldly Gaze, Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Otherworldly Gaze [play:self], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Brainstorm, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
@@ -2055,11 +2173,12 @@
   Self BF:  Island (T) | Swamp (T) | Undercity Sewers | Undercity Sewers
   Opp BF:   Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (T)
   Stack: Otherworldly Gaze (spell, self) [flashback]
-  Self GY: Polluted Delta, Otherworldly Gaze, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
+  Self GY: Polluted Delta, Otherworldly Gaze [play:self], Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Brainstorm, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Otherworldly Gaze (flashback)  [#4]
@@ -2088,6 +2207,8 @@
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Griselbrand on top of library  [#0]
    1: Put Atraxa, Grand Unifier on top of library  [#0]
@@ -2113,6 +2234,8 @@
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Atraxa, Grand Unifier on top of library  [#0]
    1: Put Polluted Delta on top of library  [#0]
@@ -2136,6 +2259,8 @@
   Self exile: Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Polluted Delta on top of library  [#0]
    1: Put Polluted Delta into graveyard
@@ -2163,6 +2288,8 @@
   Self exile: Otherworldly Gaze, Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Archon of Cruelty on top of library  [#0]
    1: Put Animate Dead on top of library  [#0]
@@ -2188,6 +2315,8 @@
   Self exile: Otherworldly Gaze, Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Animate Dead on top of library  [#0]
    1: Put Underground Sea on top of library  [#0]
@@ -2211,6 +2340,8 @@
   Self exile: Otherworldly Gaze, Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=U
+  Extras: not_priority_window
   Actions:
    0: Put Underground Sea on top of library  [#0]
    1: Put Underground Sea into graveyard
@@ -2232,6 +2363,7 @@
   Self exile: Otherworldly Gaze, Otherworldly Gaze, Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -2244,13 +2376,14 @@
   Step: First Main (turn 10)
   Self:  3 life | mana: empty | hand(1): Thoughtseize | lib 27
   Opp:   10 life | mana: empty | hand count: 0 | lib 37
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (NEW)
   Opp BF:   Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (T)
   Self GY: Underground Sea, Animate Dead, Archon of Cruelty, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Polluted Delta, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
   Opp GY:  Brainstorm, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Self exile: Otherworldly Gaze, Otherworldly Gaze, Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2264,7 +2397,7 @@
   Step: First Main (turn 10)
   Self:  3 life | mana: empty | hand(1): Thoughtseize | lib 27
   Opp:   10 life | mana: empty | hand count: 0 | lib 37
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (NEW)
   Opp BF:   Island | Swamp | Undercity Sewers (T) | Undercity Sewers | Archon of Cruelty [6/6] [Flying] (T)
   Pending: Thoughtseize (self)
   Self GY: Underground Sea, Animate Dead, Archon of Cruelty, Polluted Delta, Atraxa, Grand Unifier, Griselbrand, Polluted Delta, Lotus Petal, Dark Ritual, Flow State, Brainstorm, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
@@ -2272,7 +2405,8 @@
   Self exile: Otherworldly Gaze, Otherworldly Gaze, Atraxa, Grand Unifier
   Opp exile:  Otherworldly Gaze, Careful Study
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (10 life)
    1: Player B (3 life)
@@ -2309,7 +2443,8 @@
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze, Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
-  Extras: mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Archon of Cruelty [6/6]
    1: Confirm attackers
@@ -2331,7 +2466,8 @@
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze, Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
-  Extras: mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2353,6 +2489,8 @@
   Self exile: Otherworldly Gaze, Careful Study
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze, Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Player B (1 life)
   >> A/A: 0 (Player B (1 life))

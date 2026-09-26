@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -102,7 +104,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Underground Sea
+  Self BF:  Underground Sea (NEW)
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -119,9 +121,9 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Underground Sea
+  Self BF:  Underground Sea (NEW)
   Pending: Thoughtseize (self)
-  Extras: self_lands_played=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (20 life)
@@ -136,8 +138,9 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Stack: Thoughtseize (spell, self) -> opponent (player)
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -150,10 +153,11 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Stack: Thoughtseize (spell, opponent) -> self (player)
   Opp revealed: Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=B
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -175,12 +179,13 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Pending: Thoughtseize (self)
   Known opp hand: Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=B
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Force of Will
    1: Dark Ritual
@@ -198,11 +203,12 @@
   Step: First Main (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -215,11 +221,12 @@
   Step: Begin Combat (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -234,11 +241,12 @@
   Step: Declare Atk (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -253,12 +261,13 @@
   Step: Declare Blk (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -273,11 +282,12 @@
   Step: Combat Dmg (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -290,11 +300,12 @@
   Step: End Combat (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -307,11 +318,12 @@
   Step: Second Main (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -324,11 +336,12 @@
   Step: End Step (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -351,6 +364,7 @@
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -369,6 +383,8 @@
   Opp GY:  Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -384,6 +400,7 @@
   Self GY: Force of Will
   Opp GY:  Thoughtseize
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -398,11 +415,12 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Force of Will
   Opp GY:  Thoughtseize
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -425,7 +443,8 @@
   Opp GY:  Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -446,7 +465,8 @@
   Self GY: Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Opp revealed: Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Swamp
@@ -464,11 +484,12 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea
+  Self BF:  Underground Sea (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -486,12 +507,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Stack: Personal Tutor (spell, self)
   Self GY: Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -504,13 +526,14 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Stack: Personal Tutor (spell, opponent)
   Self GY: Thoughtseize
   Opp GY:  Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -525,14 +548,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Stack: Personal Tutor (spell, self)
   Pending: Personal Tutor (self)
   Self GY: Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Opp revealed: Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Doomsday
@@ -560,12 +584,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -578,12 +603,13 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -595,12 +621,13 @@
   Step: Begin Combat (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -613,12 +640,13 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -632,12 +660,13 @@
   Step: Declare Atk (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -650,12 +679,13 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -670,11 +700,12 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -687,13 +718,14 @@
   Step: Declare Blk (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -707,12 +739,13 @@
   Step: Combat Dmg (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -725,12 +758,13 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -742,12 +776,13 @@
   Step: End Combat (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -760,12 +795,13 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -777,12 +813,13 @@
   Step: Second Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -795,12 +832,13 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -812,12 +850,13 @@
   Step: End Step (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -830,12 +869,13 @@
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -875,6 +915,7 @@
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -893,6 +934,7 @@
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -910,6 +952,8 @@
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Thoughtseize, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -926,6 +970,7 @@
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -950,6 +995,7 @@
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -968,6 +1014,8 @@
   Opp GY:  Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Thoughtseize, Underground Sea
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -990,6 +1038,8 @@
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Thoughtseize  [#2]
    1: Edge of Autumn  [#2]
@@ -1009,8 +1059,11 @@
   Pending: Ponder (self)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known top: Thoughtseize, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Edge of Autumn  [#1]
    1: Force of Will  [#1]
@@ -1030,6 +1083,8 @@
   Known top: Edge of Autumn, Force of Will, Thoughtseize, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1050,6 +1105,7 @@
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Island
@@ -1066,13 +1122,14 @@
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1087,12 +1144,13 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1103,13 +1161,14 @@
   Step: Begin Combat (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1124,12 +1183,13 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1142,13 +1202,14 @@
   Step: Declare Atk (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1163,12 +1224,13 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1182,11 +1244,12 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1198,14 +1261,15 @@
   Step: Declare Blk (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1221,13 +1285,14 @@
   Step: Combat Dmg (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1242,12 +1307,13 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1258,13 +1324,14 @@
   Step: End Combat (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1279,12 +1346,13 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1295,13 +1363,14 @@
   Step: Second Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1316,12 +1385,13 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1332,13 +1402,14 @@
   Step: End Step (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island
+  Self BF:  Underground Sea (T) | Island (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1353,12 +1424,13 @@
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
+  Opp BF:   Underground Sea (T) | Island (NEW)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Edge of Autumn, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1398,6 +1470,7 @@
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1417,6 +1490,7 @@
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1436,6 +1510,8 @@
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1453,6 +1529,7 @@
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1477,6 +1554,7 @@
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1496,6 +1574,8 @@
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1519,6 +1599,8 @@
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Ponder  [#2]
    1: Personal Tutor  [#2]
@@ -1538,7 +1620,10 @@
   Pending: Ponder (self)
   Self GY: Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
+  Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Personal Tutor  [#1]
    1: Thoughtseize  [#1]
@@ -1557,6 +1642,8 @@
   Opp GY:  Ponder, Thoughtseize
   Known top: Thoughtseize, Personal Tutor, Ponder, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1576,6 +1663,7 @@
   Opp GY:  Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1591,12 +1679,13 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea | Underground Sea (T)
+  Self BF:  Underground Sea (NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1613,14 +1702,15 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea | Underground Sea (T)
+  Self BF:  Underground Sea (NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Pending: Thoughtseize (self)
   Self GY: Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (18 life)
    1: Player B (19 life)
@@ -1635,13 +1725,14 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Self GY: Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1655,14 +1746,15 @@
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Stack: Thoughtseize (spell, opponent) -> self (player)
   Self GY: Ponder, Thoughtseize
   Opp GY:  Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1684,7 +1776,7 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Pending: Thoughtseize (self)
@@ -1693,7 +1785,8 @@
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UB
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Doomsday
    1: Street Wraith
@@ -1710,13 +1803,14 @@
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1730,13 +1824,14 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1748,13 +1843,14 @@
   Step: Begin Combat (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1768,13 +1864,14 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1788,13 +1885,14 @@
   Step: Declare Atk (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1808,13 +1906,14 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1829,12 +1928,13 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -1847,14 +1947,15 @@
   Step: Declare Blk (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1869,13 +1970,14 @@
   Step: Combat Dmg (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1889,13 +1991,14 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1907,13 +2010,14 @@
   Step: End Combat (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1927,13 +2031,14 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1945,13 +2050,14 @@
   Step: Second Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1965,13 +2071,14 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1983,13 +2090,14 @@
   Step: End Step (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2003,13 +2111,14 @@
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2051,6 +2160,7 @@
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2071,6 +2181,7 @@
   Known top: Thoughtseize, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2089,6 +2200,8 @@
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2107,6 +2220,7 @@
   Known top: Thoughtseize, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -2121,13 +2235,14 @@
   Step: First Main (turn 5)
   Self:  18 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Island | Misty Rainforest
+  Self BF:  Underground Sea | Island | Misty Rainforest (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known top: Thoughtseize, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2153,6 +2268,7 @@
   Known top: Thoughtseize, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2173,7 +2289,8 @@
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2197,7 +2314,8 @@
   Known top: Thoughtseize, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Undercity Sewers
@@ -2213,12 +2331,13 @@
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2232,13 +2351,14 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2250,12 +2370,13 @@
   Step: Begin Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2269,13 +2390,14 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2289,12 +2411,13 @@
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2308,13 +2431,14 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2329,12 +2453,13 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1 life_lost=1
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2347,13 +2472,14 @@
   Step: Declare Blk (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2368,12 +2494,13 @@
   Step: Combat Dmg (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2387,13 +2514,14 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2405,12 +2533,13 @@
   Step: End Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2424,13 +2553,14 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2442,12 +2572,13 @@
   Step: Second Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2461,13 +2592,14 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2479,12 +2611,13 @@
   Step: End Step (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea (NEW) | Underground Sea | Island
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2498,13 +2631,14 @@
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea | Underground Sea | Island
+  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
   Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Personal Tutor, Ponder, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2546,6 +2680,7 @@
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2566,6 +2701,7 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2584,6 +2720,8 @@
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2602,6 +2740,7 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
@@ -2627,6 +2766,7 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2646,6 +2786,8 @@
   Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2669,6 +2811,8 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Doomsday
@@ -2700,6 +2844,7 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Play Verdant Catacombs
@@ -2715,13 +2860,14 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 48
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Verdant Catacombs
+  Self BF:  Underground Sea (T) | Underground Sea | Verdant Catacombs (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -2748,6 +2894,7 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2768,7 +2915,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2792,7 +2940,8 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Swamp
@@ -2808,12 +2957,13 @@
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2828,12 +2978,13 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2845,12 +2996,13 @@
   Step: Begin Combat (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2865,12 +3017,13 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2884,12 +3037,13 @@
   Step: Declare Atk (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2904,12 +3058,13 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2924,11 +3079,12 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -2941,13 +3097,14 @@
   Step: Declare Blk (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2963,12 +3120,13 @@
   Step: Combat Dmg (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2983,12 +3141,13 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3000,12 +3159,13 @@
   Step: End Combat (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3020,12 +3180,13 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3037,12 +3198,13 @@
   Step: Second Main (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3057,12 +3219,13 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3074,12 +3237,13 @@
   Step: End Step (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -3094,12 +3258,13 @@
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3139,6 +3304,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3159,6 +3325,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3176,6 +3343,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3194,6 +3363,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3211,6 +3381,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3229,6 +3401,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3246,6 +3419,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3266,6 +3441,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3283,6 +3459,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3303,6 +3481,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3321,6 +3500,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3341,6 +3522,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3358,6 +3540,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3376,6 +3560,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3393,6 +3578,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3411,6 +3598,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3428,6 +3616,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3446,6 +3636,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3463,6 +3654,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3504,6 +3697,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3523,6 +3717,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3542,6 +3737,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3559,6 +3756,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3578,6 +3776,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3595,6 +3795,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3614,6 +3815,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3633,6 +3836,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3652,6 +3856,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3671,6 +3877,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3688,6 +3895,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3710,6 +3919,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3729,6 +3939,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3746,6 +3958,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3765,6 +3978,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3782,6 +3997,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3801,6 +4017,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3818,6 +4036,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3837,6 +4056,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3876,6 +4097,7 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3897,6 +4119,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3915,6 +4138,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3934,6 +4159,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3956,6 +4182,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -3977,6 +4204,8 @@
   Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Dark Ritual, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3999,6 +4228,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Actions:
    0: Pass priority
    1: Cast Doomsday  [#0]
@@ -4020,6 +4250,7 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -4041,6 +4272,8 @@
   Opp GY:  Dark Ritual, Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Known opp hand: Edge of Autumn, Edge of Autumn
   Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Dark Ritual, Street Wraith, Edge of Autumn, Underground Sea
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4065,6 +4298,8 @@
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Thoughtseize (graveyard)
    1: Dark Ritual (graveyard)
@@ -4137,6 +4372,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Thoughtseize (graveyard)
    1: Dark Ritual (graveyard)
@@ -4208,6 +4445,8 @@
   Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Thoughtseize (graveyard)
    1: Dark Ritual (graveyard)
@@ -4278,6 +4517,8 @@
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Thoughtseize (graveyard)
    1: Dark Ritual (graveyard)
@@ -4347,6 +4588,8 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Thoughtseize (graveyard)
    1: Dark Ritual (graveyard)
@@ -4466,6 +4709,8 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#4]
    1: Street Wraith  [#4]
@@ -4487,9 +4732,11 @@
   Pending: Doomsday (self)
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
+  Known top: Thassa's Oracle, Street Wraith, Street Wraith, Street Wraith, Street Wraith
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#3]
    1: Street Wraith  [#3]
@@ -4510,9 +4757,11 @@
   Pending: Doomsday (self)
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
+  Known top: Street Wraith, Thassa's Oracle, Street Wraith, Street Wraith, Street Wraith
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#2]
    1: Street Wraith  [#2]
@@ -4532,9 +4781,11 @@
   Pending: Doomsday (self)
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
+  Known top: Street Wraith, Street Wraith, Thassa's Oracle, Street Wraith, Street Wraith
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#1]
    1: Street Wraith  [#1]
@@ -4557,6 +4808,7 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=9 colors=B
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -4570,12 +4822,15 @@
   Opp:   16 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea (T) | Underground Sea | Island
   Opp BF:   Underground Sea | Underground Sea | Underground Sea
+  Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=9 colors=B
+  Extras: not_priority_window
   Actions:
    0: Sacrifice Underground Sea
    1: Sacrifice Underground Sea
@@ -4599,6 +4854,7 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=9 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4618,7 +4874,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=9 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4643,6 +4900,7 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=9 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4667,6 +4925,7 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=11 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4686,7 +4945,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=11 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4711,6 +4971,7 @@
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=11 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4735,6 +4996,7 @@
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=13 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4754,7 +5016,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=13 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4779,6 +5042,7 @@
   Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=13 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4803,6 +5067,7 @@
   Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4822,7 +5087,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=4 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4847,6 +5113,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4866,7 +5133,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4888,6 +5156,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4907,7 +5176,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4931,6 +5201,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -4950,7 +5221,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4973,6 +5245,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -4995,7 +5268,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  Extras: self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5018,6 +5292,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -5037,7 +5312,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -5059,6 +5335,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -5078,7 +5355,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -5100,6 +5378,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -5119,7 +5398,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -5141,6 +5421,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -5160,7 +5441,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  Extras: opp_revolt
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -5207,6 +5489,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5227,6 +5510,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -5248,6 +5532,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5266,6 +5552,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Doomsday  [#0]
@@ -5293,6 +5580,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5314,6 +5602,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -5339,6 +5629,8 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
@@ -5412,6 +5704,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
@@ -5484,6 +5778,8 @@
   Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
@@ -5555,6 +5851,8 @@
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
@@ -5625,6 +5923,8 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
@@ -5745,6 +6045,8 @@
   Known top: Ponder, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Ponder  [#4]
    1: Street Wraith  [#4]
@@ -5770,6 +6072,8 @@
   Known top: Ponder, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#3]
    1: Street Wraith  [#3]
@@ -5791,9 +6095,11 @@
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Ponder, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
+  Known top: Thassa's Oracle, Ponder, Street Wraith, Street Wraith, Street Wraith
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#2]
    1: Street Wraith  [#2]
@@ -5814,9 +6120,11 @@
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Ponder, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
+  Known top: Street Wraith, Thassa's Oracle, Ponder, Street Wraith, Street Wraith
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window
   Actions:
    0: Street Wraith  [#1]
    1: Street Wraith  [#1]
@@ -5840,6 +6148,7 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, Ponder
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=8 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5865,6 +6174,7 @@
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, Ponder
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=10 colors=B
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -5886,6 +6196,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=10 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5909,6 +6221,7 @@
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, Ponder, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=10 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5934,6 +6247,7 @@
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, Ponder, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=12 colors=B
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -5955,6 +6269,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=12 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5978,6 +6294,7 @@
   Known top: Street Wraith, Thassa's Oracle, Ponder, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=12 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6003,6 +6320,7 @@
   Known top: Street Wraith, Thassa's Oracle, Ponder, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -6024,6 +6342,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6047,6 +6367,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6068,6 +6389,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6088,6 +6411,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6109,6 +6433,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6131,6 +6457,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6152,6 +6479,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6174,6 +6503,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6194,6 +6524,8 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6218,6 +6550,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6239,6 +6572,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6259,6 +6594,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6280,6 +6616,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6300,6 +6638,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6321,6 +6660,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6341,6 +6682,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6362,6 +6704,8 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6407,6 +6751,7 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6429,6 +6774,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6449,6 +6795,8 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6469,6 +6817,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Thassa's Oracle  [#0]
@@ -6494,6 +6843,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -6517,6 +6867,8 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6532,7 +6884,7 @@
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0
   Opp:   2 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Thassa's Oracle [1/3] (SICK) | Underground Sea (T) | Underground Sea (T)
+  Self BF:  Thassa's Oracle [1/3] (SICK,NEW) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
@@ -6541,6 +6893,7 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6553,7 +6906,7 @@
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
   Opp:   2 life | mana: empty | hand count: 4 | lib 0
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Thassa's Oracle [1/3] (SICK) | Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Thassa's Oracle [1/3] (SICK,NEW) | Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (ability, opponent) [amt=1]
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
@@ -6562,6 +6915,8 @@
   Known top: Thassa's Oracle, Ponder, ?, ?, ?
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -6577,7 +6932,7 @@
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0
   Opp:   2 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Thassa's Oracle [1/3] (SICK) | Underground Sea (T) | Underground Sea (T)
+  Self BF:  Thassa's Oracle [1/3] (SICK,NEW,res 1) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)
@@ -6587,9 +6942,11 @@
   Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
-   0: Take nothing
-  >> A/A: 0 (Take nothing)
+   0: Put nothing on top of library (rest go to the bottom of library)
+  >> A/A: 0 (Put nothing on top of library (rest go to the bottom of library))
 --- Narrative ---
   Player A puts 0 card(s) on the bottom of their library.
   Resolving ability (category: WinsGame)

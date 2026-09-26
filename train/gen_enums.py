@@ -103,8 +103,9 @@ _GAMESTATE_INTS = [
     "MAX_BATTLEFIELD_SLOTS", "MAX_STACK_DISPLAY", "MAX_STACK_MODES",
     "MAX_STACK_TGTS", "MAX_GY_SLOTS", "MAX_HAND_SLOTS",
     "DECKLIST_MAIN_SLOTS", "DECKLIST_SIDE_SLOTS",
+    "MAX_DELAYED_TRIGGER_SLOTS", "N_DELAYED_FIRE_KINDS", "MAX_EMBLEM_SLOTS",
 ]
-_GAME_INTS = ["KNOWN_TOP_LIBRARY_SIZE", "ACTION_HISTORY_SIZE"]
+_GAME_INTS = ["KNOWN_TOP_LIBRARY_SIZE"]
 _MACHINE_INTS = ["STATE_SIZE", "N_CARD_TYPES", "PERM_SLOT_SIZE", "OPTION_ORDINAL_MAX",
                  "N_ACTION_OBS_BLOCKS", "SIDEBOARD_SWAP_CAP",
                  # State-vector block widths (the "State-vector block widths"
@@ -113,17 +114,26 @@ _MACHINE_INTS = ["STATE_SIZE", "N_CARD_TYPES", "PERM_SLOT_SIZE", "OPTION_ORDINAL
                  # a literal, so a width change propagates to every consumer.
                  # Only PLAIN-LITERAL constants belong here: parse_int_constant
                  # matches `NAME = <digits>`, so a constant defined in terms of
-                 # others (STATE_HEADER_SIZE, STACK_SLOT_SIZE, GY_SLOT_SIZE, the
-                 # whole offset chain) must be re-derived on the Python side.
+                 # others (STATE_HEADER_SIZE, STACK_SLOT_SIZE, the whole offset
+                 # chain) must be re-derived on the Python side.
                  "PLAYER_BLOCK_SIZE", "STEP_ONEHOT_SIZE", "HEADER_FLAGS",
-                 "CARD_ID_SLOT_SIZE", "STACK_HEAD_FIELDS", "STACK_XAMT_FIELDS",
-                 "STACK_QUAL_FIELDS", "STACK_TGT_FIELDS", "HIST_ENTRY_SIZE",
+                 "CARD_ID_SLOT_SIZE", "GY_SLOT_SIZE", "EXILE_SLOT_SIZE",
+                 "ZONE_CARD_ID_OFF", "ZONE_PLAYABLE_SELF_OFF", "ZONE_PLAYABLE_OPP_OFF",
+                 "ZONE_EXPIRES_OFF", "EXILE_COUNTERS_OFF", "ZONE_COUNTER_NORMALIZER",
+                 "STACK_HEAD_FIELDS", "STACK_XAMT_FIELDS",
+                 "STACK_QUAL_FIELDS", "STACK_TGT_FIELDS",
                  "MATCH_CTX_SIZE", "LIBRARY_CTX_SIZE", "CUR_TURN_SIZE",
-                 "PENDING_DECISION_SIZE", "EXTRAS_SCALARS", "EXTRAS_SB_CTX_SIZE",
-                 "DECKLIST_SLOT_SIZE", "MANA_DEV_COLORS", "MANA_DEV_SELF_SIZE",
+                 "PENDING_DECISION_SIZE", "EXTRAS_SCALARS", "EXTRAS_PRIORITY_SIZE",
+                 "EXTRAS_MULLIGAN_SIZE", "MULLIGAN_NORMALIZER", "EXTRAS_SB_CTX_SIZE",
+                 "DECKLIST_SLOT_SIZE", "OPP_DECKLIST_SLOT_SIZE",
+                 "OPP_DECKLIST_REVEALED_OFF", "MANA_DEV_COLORS", "MANA_DEV_SELF_SIZE",
                  "MANA_DEV_OPP_SIZE", "MANA_COUNT_NORMALIZER",
                  "LAND_DROPS_NORMALIZER", "LOG_VITALS_PLAYER_SIZE",
-                 "LIFE_NORMALIZER", "LIBRARY_NORMALIZER"]
+                 "LIFE_NORMALIZER", "LIBRARY_NORMALIZER",
+                 "PER_TURN_COUNT_FIELDS", "PER_TURN_COLOR_FIELDS",
+                 "PER_TURN_PLAYER_SIZE", "PER_TURN_COUNT_NORMALIZER",
+                 "DELAYED_SLOT_SIZE", "PLAYER_EFFECTS_FLAGS",
+                 "PLAYER_EFFECTS_PLAYER_SIZE"]
 
 # Float constants that C++ derives from a mirrored int SCALE via log1p (the LOG
 # VITALS block's denominators, machine_io.h). They cannot go through

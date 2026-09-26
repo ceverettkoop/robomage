@@ -93,7 +93,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             ab.destination == Zone::HAND || ab.destination == Zone::LIBRARY)
             dt.fire_dest_zones = {ab.destination};
         dt.expires_end_of_turn = dp->this_turn;
-        cur_game.delayed_triggers.push_back(dt);
+        register_delayed_trigger(dt, ab.source);
         game_log("Delayed trigger registered: %s when watched permanent leaves the battlefield.\n",
                  fire_ab.category.c_str());
         return HandlerResult::DONE_NO_SUBS;
@@ -131,7 +131,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 get_player_entity(owner == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A);
     }
     dt.fire_on_turn = next_turn ? cur_game.turn + 1 : cur_game.turn;
-    cur_game.delayed_triggers.push_back(dt);
+    register_delayed_trigger(dt, ab.source);
     game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.category.c_str(),
         phase.empty() ? "upkeep" : phase.c_str());
     // Return false so resolve() does NOT chain this DB$ DelayedTrigger's subabilities inline:

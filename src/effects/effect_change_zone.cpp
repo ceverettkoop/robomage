@@ -151,7 +151,7 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     dt.fire_on_turn = cur_game.turn;
     dt.watch_entity = host;
     dt.fire_on_leave_battlefield = true;
-    cur_game.delayed_triggers.push_back(dt);
+    register_delayed_trigger(dt, host);
 }
 
 // A library search reveals the chosen card when it must satisfy a restriction
@@ -462,16 +462,9 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
         std::string cname = entity_name(card);
         if (ab.optional_choice) {
-            std::vector<LegalAction> yn;
-            LegalAction decline(PASS_PRIORITY, std::string("Leave ") + cname + " in exile");
-            decline.category = ActionCategory::OPTIONAL_YESNO;
-            decline.option_ordinal = 0;
-            yn.push_back(decline);
-            LegalAction accept(PASS_PRIORITY, std::string("Put ") + cname + " onto the battlefield");
-            accept.category = ActionCategory::OPTIONAL_YESNO;
-            accept.option_ordinal = 1;
-            yn.push_back(accept);
-            int yc = fctx.ask(std::move(yn), ab.controller, ab.source);
+            int yc = fctx.ask(yesno_menu("Leave " + cname + " in exile",
+                                         "Put " + cname + " onto the battlefield"),
+                              ab.controller, ab.source);
             if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             if (yc == 0) return HandlerResult::DONE_RUN_SUBS;  // declined — stays in exile for the hand leg
         }

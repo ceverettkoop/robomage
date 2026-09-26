@@ -1,5 +1,6 @@
 #include "effects.h"
 
+#include <memory>
 #include <vector>
 
 #include "../classes/game.h"
@@ -91,14 +92,16 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
 }
 
 // AB$ Clone (Thespian's Stage: "{2}, {T}: CARDNAME becomes a copy of target land, except it has
-// this ability."). CR 706.2 in-place copy: the SOURCE permanent (Thespian's Stage) becomes a copy
-// of the target land while staying the SAME object — same entity, same counters, tapped state, and
-// attachments. Unlike copy_permanent (which spawns a token), this overwrites the source permanent's
-// copiable characteristics (name, types, abilities, keywords, static abilities) with the target's,
-// leaving non-copiable state untouched. Because a copied land is a fresh set of copiable values, any
-// counters already on the source remain (706.2): a Stage cloning Dark Depths becomes a Dark Depths
-// with ZERO ice counters (the ice counters come from Dark Depths' etbCounter, which applies only on
-// ENTRY, never on becoming a copy), so its Mode$ Always state trigger sees no ice counters and fires.
+// this ability."). CR 707.2 / 707.9b in-place copy: the SOURCE permanent (Thespian's Stage) becomes
+// a copy of the target land while staying the SAME object — same entity, same counters, tapped
+// state, and attachments. Unlike copy_permanent (which spawns a token), this overwrites the source
+// permanent's copiable characteristics (name, types, abilities, keywords, static abilities) with the
+// target's, leaving non-copiable state untouched (707.2). Because a copied land is a fresh set of
+// copiable values, any counters already on the source remain: a Stage cloning Dark Depths becomes a
+// Dark Depths with ZERO ice counters (the ice counters come from Dark Depths' etbCounter, which
+// applies only on ENTRY, never on becoming a copy), so its Mode$ Always state trigger sees no ice
+// counters and fires. The card's printed CardData is stashed on Permanent::printed_card (first copy
+// only) and restored by Orderer::add_to_zone when the permanent leaves the battlefield (CR 400.7).
 HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     (void)ctx;
@@ -132,9 +135,13 @@ HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // state (name/types and the ability/static lists) so the next state-based pass re-derives the
     // permanent's activated/mana/triggered abilities and static abilities from the NEW
     // characteristics (apply_permanent_components + apply_land_abilities). Counters, tapped state,
-    // and attachments on the Permanent are deliberately NOT touched (706.2).
-    global_coordinator.GetComponent<CardData>(src) = new_cd;
+    // and attachments on the Permanent are deliberately NOT touched (707.2). The printed card is
+    // stashed before the first overwrite only, so a re-copy keeps the original printed identity.
     auto &perm = global_coordinator.GetComponent<Permanent>(src);
+    if (!perm.printed_card)
+        perm.printed_card =
+            std::make_shared<const CardData>(global_coordinator.GetComponent<CardData>(src));
+    global_coordinator.GetComponent<CardData>(src) = new_cd;
     std::string old_name = perm.name;
     perm.name = new_cd.name;
     perm.types = new_cd.types;

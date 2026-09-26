@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../classes/action.h"
+#include "../choice_labels.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
@@ -429,20 +430,12 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                     int choice = -1;
                     if (!pq_take_latched(key, &choice)) {
                         if (in_main_loop()) {
-                            std::vector<LegalAction> yn;
-                            LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-                            decline.category = ActionCategory::OPTIONAL_YESNO;
-                            decline.option_ordinal = 0;  // 0 = decline
-                            yn.push_back(decline);
-                            LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-                            accept.category = ActionCategory::OPTIONAL_YESNO;
-                            accept.option_ordinal = 1;  // 1 = accept
-                            yn.push_back(accept);
+                            std::vector<LegalAction> yn = optional_yesno_menu(prompt);
                             // Park the choice and suspend mid-apply: dispatch()
                             // and its SBE caller early-return cooperatively
                             // before the Permanent is created.
                             pq_arm_sbe(key, std::move(yn), ev.affected_player,
-                                       /*decision_source=*/0);
+                                       /*decision_source=*/ev.entity);
                             return;
                         }
                         // Blocking fallback for an SBE call outside the main loop
@@ -540,9 +533,14 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             choices.push_back(decline);
             // Blocking decision seated on the owner — this MOVE_TO_ZONE dispatch fires inside
             // Orderer::add_to_zone, the one remaining blocking replacement site (see choose_one).
+            // The entering card is the pending-decision source.
             bool prev_priority = cur_game.player_a_has_priority;
             cur_game.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
-            int pick = InputLogger::instance().get_input(choices);
+            int pick;
+            {
+                PendingDecisionScope pending(ev.entity);
+                pick = InputLogger::instance().get_input(choices);
+            }
             cur_game.player_a_has_priority = prev_priority;
             if (pick >= 0 && pick < static_cast<int>(discardable.size())) {
                 ev.pending_discard = discardable[static_cast<size_t>(pick)];  // caller discards it

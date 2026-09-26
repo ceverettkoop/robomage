@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -58,6 +59,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -111,6 +115,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -134,6 +139,8 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -147,10 +154,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Flooded Strand
+  Self BF:  Flooded Strand (NEW)
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -172,7 +180,8 @@
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -193,11 +202,12 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Opp BF:   Tropical Island
   Self GY: Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -213,12 +223,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -233,13 +244,14 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wrath of the Skies  [#2]
    1: The One Ring  [#2]
@@ -253,13 +265,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
+  Known top: Wrath of the Skies, ?, ?, ?, ?
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: The One Ring  [#1]
    1: Flow State  [#1]
@@ -270,14 +284,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
   Known top: Flow State, The One Ring, Wrath of the Skies, ?, ?
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -310,6 +325,7 @@
   Self GY: Ponder, Flooded Strand
   Known top: The One Ring, Wrath of the Skies, ?, ?, ?
   Opp revealed: Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tune the Narrative  [#0]
@@ -329,6 +345,8 @@
   Self GY: Ponder, Flooded Strand
   Known top: The One Ring, Wrath of the Skies, ?, ?, ?
   Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -349,6 +367,8 @@
   Opp BF:   Tropical Island
   Self GY: Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -361,11 +381,12 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | energy 2 | hand(7): Flow State, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, The One Ring, Wrath of the Skies | lib 48
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island (T) | Misty Rainforest
+  Self BF:  Island (T) | Misty Rainforest (NEW)
   Opp BF:   Tropical Island
   Self GY: Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -388,7 +409,8 @@
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -407,11 +429,12 @@
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | energy 2 | hand(7): Flow State, Force of Will, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, The One Ring, Wrath of the Skies | lib 47
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island (T) | Island
+  Self BF:  Island (T) | Island (NEW)
   Opp BF:   Tropical Island
   Self GY: Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -425,12 +448,13 @@
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | energy 2 | hand(6): Flow State, Force of Will, Swords to Plowshares, The One Ring, The One Ring, Wrath of the Skies | lib 47
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island (T) | Island (T)
+  Self BF:  Island (T) | Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Tamiyo, Inquisitive Student (spell, self)
   Self GY: Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -456,6 +480,8 @@
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Opp GY:  Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Island, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -474,6 +500,8 @@
   Stack: Tamiyo, Inquisitive Student (spell, opponent)
   Self GY: Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -492,6 +520,8 @@
   Pending: Force of Will (self)
   Self GY: Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tamiyo, Inquisitive Student
   >> B/B: 0 (Tamiyo, Inquisitive Student)
@@ -506,8 +536,11 @@
   Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Opp BF:   Tropical Island (T)
   Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Pending: Force of Will (self)
   Self GY: Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Flow State
   >> B/B: 0 (Exile Flow State)
@@ -538,6 +571,8 @@
   Opp GY:  Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tune the Narrative  [#0]
@@ -561,6 +596,8 @@
   Opp GY:  Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -573,13 +610,14 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 4 | hand(4): Swords to Plowshares, The One Ring, The One Ring, Wrath of the Skies | lib 45
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Wasteland
+  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Wasteland (NEW)
   Opp BF:   Tropical Island (T)
   Self GY: Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -592,14 +630,15 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 4 | hand(4): Swords to Plowshares, The One Ring, The One Ring, Wrath of the Skies | lib 45
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Wasteland
+  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Wasteland (NEW)
   Opp BF:   Tropical Island (T)
   Pending: Wasteland (self)
   Self GY: Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Tropical Island
    1: Wasteland
@@ -622,7 +661,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -642,7 +682,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -671,6 +712,8 @@
   Opp GY:  Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -697,6 +740,7 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -715,6 +759,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -731,6 +777,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -756,7 +804,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=2
+  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -777,7 +826,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=2
+  Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -812,6 +862,7 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -833,6 +884,8 @@
   Opp GY:  Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -858,6 +911,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Force of Negation
    1: Geist of Saint Traft
@@ -886,6 +941,8 @@
   Self exile: Flow State
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Geist of Saint Traft
    1: Misty Rainforest
@@ -911,14 +968,15 @@
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(7): Geist of Saint Traft, Misty Rainforest, Swords to Plowshares, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 41
   Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue
   Opp BF:   Tropical Island
   Self GY: Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -933,14 +991,15 @@
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(6): Geist of Saint Traft, Swords to Plowshares, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 41
   Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Island (T) | Island | Misty Rainforest | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue
+  Self BF:  Island (T) | Island | Misty Rainforest (NEW) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue
   Opp BF:   Tropical Island
   Self GY: Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -958,7 +1017,7 @@
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | energy 4 | hand(6): Geist of Saint Traft, Swords to Plowshares, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 41
   Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue
   Opp BF:   Tropical Island
   Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
@@ -967,7 +1026,8 @@
   Self exile: Flow State
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Meticulous Archive
@@ -990,7 +1050,7 @@
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | energy 4 | hand(6): Geist of Saint Traft, Swords to Plowshares, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 40
   Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Island (T) | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue
+  Self BF:  Island (T) | Island | Meticulous Archive (T,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue
   Opp BF:   Tropical Island
   Stack: Meticulous Archive (ability, self) [amt=1]
   Pending: Meticulous Archive (self)
@@ -998,7 +1058,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Flow State on top of library  [#0]
    1: Put Flow State into graveyard
@@ -1011,13 +1072,14 @@
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | energy 4 | hand(6): Geist of Saint Traft, Swords to Plowshares, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 39
   Opp:   20 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Island (T) | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Clue
+  Self BF:  Island (T) | Island | Meticulous Archive (T,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue
   Opp BF:   Tropical Island
   Self GY: Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -1048,6 +1110,9 @@
   Opp GY:  Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Swamp
@@ -1060,13 +1125,15 @@
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   16 life | mana: empty | energy 4 | hand count: 6 | lib 39
-  Self BF:  Swamp | Tropical Island
+  Self BF:  Swamp (NEW) | Tropical Island
   Opp BF:   Island (T) | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Clue
   Self GY: Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Baleful Strix  [#0]
@@ -1102,6 +1169,7 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1122,6 +1190,7 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Baleful Strix
   >> B/B: 0 (Baleful Strix)
@@ -1142,6 +1211,8 @@
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1164,7 +1235,8 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W | opp life_gained=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1184,7 +1256,8 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1202,7 +1275,8 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1219,14 +1293,15 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 38
   Opp:   21 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Wasteland | Clue
+  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Wasteland (NEW) | Clue
   Opp BF:   Swamp (T) | Tropical Island (T)
   Self GY: Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: self_lands_played=1, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -1243,7 +1318,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 38
   Opp:   21 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Wasteland | Clue
+  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Wasteland (NEW) | Clue
   Opp BF:   Swamp (T) | Tropical Island (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Self GY: Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -1251,7 +1326,8 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: self_lands_played=1, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1265,7 +1341,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 38
   Opp:   21 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Wasteland | Clue
+  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Wasteland (NEW) | Clue
   Opp BF:   Swamp (T) | Tropical Island (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Pending: Wasteland (self)
@@ -1274,7 +1350,8 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: self_lands_played=1, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Tropical Island
    1: Meticulous Archive
@@ -1290,7 +1367,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, The One Ring, The One Ring, Wasteland, Wrath of the Skies | lib 38
   Opp:   21 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Clue
+  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Clue
   Opp BF:   Swamp (T) | Tropical Island (T)
   Stack: Wasteland (ability, self) -> Tropical Island (opponent, slot 49) -> Tamiyo, Seasoned Scholar (ability, self)
   Self GY: Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -1298,7 +1375,8 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1337,6 +1415,9 @@
   Self exile: Baleful Strix
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
@@ -1354,6 +1435,9 @@
   Self exile: Baleful Strix
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -1376,6 +1460,9 @@
   Self exile: Baleful Strix
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (16 life)
    1: Player A (21 life)
@@ -1398,6 +1485,9 @@
   Self exile: Baleful Strix
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1416,6 +1506,9 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Thoughtseize, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1437,6 +1530,9 @@
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Thoughtseize, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Thoughtseize
   >> B/B: 0 (Thoughtseize)
@@ -1451,11 +1547,15 @@
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying]
   Opp BF:   Swamp (T)
   Stack: Thoughtseize (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
   Self GY: Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State
   Opp exile:  Baleful Strix
   Opp revealed: Thoughtseize, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Geist of Saint Traft
   >> B/B: 0 (Exile Geist of Saint Traft)
@@ -1477,6 +1577,9 @@
   Self exile: Baleful Strix
   Opp exile:  Geist of Saint Traft, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1498,6 +1601,9 @@
   Self exile: Baleful Strix
   Opp exile:  Geist of Saint Traft, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Force of Will
    1: Thoughtseize
@@ -1513,11 +1619,15 @@
   Self BF:  Swamp (T)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying]
   Stack: Force of Will (spell, opponent) -> Thoughtseize (self, slot 97) -> Thoughtseize (spell, self) -> opponent (player)
+  Pending: Force of Will (self)
   Self GY: Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Baleful Strix
   Opp exile:  Geist of Saint Traft, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Exile Lórien Revealed
   >> A/A: 0 (Exile Lórien Revealed)
@@ -1550,6 +1660,9 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, The One Ring, Wasteland, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: The One Ring
    1: The One Ring
@@ -1573,6 +1686,9 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wasteland, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -1585,7 +1701,7 @@
   Step: First Main (turn 13)
   Self:  18 life | mana: empty | hand(4): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict | lib 47
   Opp:   15 life | mana: empty | energy 4 | hand count: 3 | lib 37
-  Self BF:  Misty Rainforest | Swamp (T)
+  Self BF:  Misty Rainforest (NEW) | Swamp (T)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying]
   Self GY: Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -1593,7 +1709,9 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wasteland, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -1620,7 +1738,9 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wasteland, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Bayou
@@ -1656,6 +1776,8 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1675,13 +1797,16 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | energy 4 | hand(3): The One Ring, Wasteland, Wrath of the Skies | lib 36
   Opp:   17 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 4]
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 4] (NEW)
   Opp BF:   Bayou | Swamp (T)
   Self GY: The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 drawn=1 colors=WU
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1698,14 +1823,16 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | energy 4 | hand(2): The One Ring, Wrath of the Skies | lib 36
   Opp:   17 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 4] | Wasteland
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 4] (NEW) | Wasteland (NEW)
   Opp BF:   Bayou | Swamp (T)
   Self GY: The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 colors=WU
+  Opp effects: sorcery speed only
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -1723,7 +1850,7 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | energy 4 | hand(2): The One Ring, Wrath of the Skies | lib 36
   Opp:   17 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Teferi, Time Raveler [loy 4] | Wasteland
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Teferi, Time Raveler [loy 4] (NEW) | Wasteland (NEW)
   Opp BF:   Bayou | Swamp (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Self GY: The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -1731,7 +1858,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 colors=WU
+  Opp effects: sorcery speed only
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1744,7 +1873,7 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | energy 4 | hand(2): The One Ring, Wrath of the Skies | lib 36
   Opp:   17 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Teferi, Time Raveler [loy 4] | Wasteland
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Teferi, Time Raveler [loy 4] (NEW) | Wasteland (NEW)
   Opp BF:   Bayou | Swamp (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Pending: Wasteland (self)
@@ -1753,7 +1882,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 colors=WU
+  Opp effects: sorcery speed only
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Bayou
    1: Meticulous Archive
@@ -1770,7 +1901,7 @@
   Self:  17 life | mana: empty | hand(4): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict | lib 46
   Opp:   15 life | mana: empty | energy 4 | hand count: 2 | lib 36
   Self BF:  Bayou | Swamp (T)
-  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Teferi, Time Raveler [loy 4]
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Teferi, Time Raveler [loy 4] (NEW)
   Stack: Wasteland (ability, opponent) -> Bayou (self, slot 0) -> Tamiyo, Seasoned Scholar (ability, opponent)
   Self GY: Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -1778,7 +1909,9 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 colors=WU
+  Self effects: sorcery speed only
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Tap Bayou for (G)
@@ -1795,14 +1928,17 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | energy 4 | hand(2): The One Ring, Wrath of the Skies | lib 36
   Opp:   17 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Teferi, Time Raveler [loy 4]
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Teferi, Time Raveler [loy 4] (NEW)
   Opp BF:   Swamp (T)
   Self GY: Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 colors=WU
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
@@ -1836,6 +1972,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1848,7 +1988,7 @@
   Step: First Main (turn 15)
   Self:  17 life | mana: empty | hand(4): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict | lib 45
   Opp:   15 life | mana: empty | energy 4 | hand count: 2 | lib 36
-  Self BF:  Swamp | Underground Sea
+  Self BF:  Swamp | Underground Sea (NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Teferi, Time Raveler [loy 5]
   Self GY: Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -1856,7 +1996,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -1874,7 +2017,7 @@
   Step: First Main (turn 15)
   Self:  17 life | mana: empty | hand(3): Fatal Push, Fatal Push, Sheoldred's Edict | lib 45
   Opp:   15 life | mana: empty | energy 4 | hand count: 2 | lib 36
-  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea (T)
+  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Underground Sea (T,NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Teferi, Time Raveler [loy 5]
   Pending: Orcish Bowmasters (self)
   Self GY: Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
@@ -1883,7 +2026,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Player B (15 life)
    1: Player A (17 life)
@@ -1920,6 +2066,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1940,6 +2089,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Orcish Bowmasters
    1: Orc Army token
@@ -1965,7 +2117,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Opp effects: sorcery speed only
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -1985,14 +2139,17 @@
   Step: First Main (turn 16)
   Self:  14 life | mana: empty | energy 4 | hand(2): The One Ring, Wrath of the Skies | lib 35
   Opp:   18 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 5]
+  Self BF:  Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Teferi, Time Raveler [loy 5]
   Opp BF:   Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1] (SICK)
   Self GY: Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
@@ -2026,6 +2183,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -2050,6 +2211,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Each opponent sacrifices a nontoken creature.  [#0]
    1: Each opponent sacrifices a creature token.  [#1]
@@ -2076,6 +2241,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -2088,7 +2257,7 @@
   Step: First Main (turn 17)
   Self:  18 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 44
   Opp:   14 life | mana: empty | energy 4 | hand count: 2 | lib 35
-  Self BF:  Misty Rainforest | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Misty Rainforest (NEW) | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 6]
   Self GY: Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2096,7 +2265,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -2123,7 +2295,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Forest
@@ -2142,7 +2317,7 @@
   Step: Declare Atk (turn 17)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 43
   Opp:   14 life | mana: empty | energy 4 | hand count: 2 | lib 35
-  Self BF:  Forest | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Forest (NEW) | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 6]
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2150,7 +2325,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -2163,15 +2341,19 @@
   Step: Declare Atk (turn 17)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 43
   Opp:   14 life | mana: empty | energy 4 | hand count: 2 | lib 35
-  Self BF:  Forest | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Forest (NEW) | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 6]
+  Pending: Orc Army (self)
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (14 life)
    1: Tamiyo, Seasoned Scholar (loyalty 10)
@@ -2187,7 +2369,7 @@
   Step: Declare Atk (turn 17)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 43
   Opp:   14 life | mana: empty | energy 4 | hand count: 2 | lib 35
-  Self BF:  Forest | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1] (ATK)
+  Self BF:  Forest (NEW) | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1] (ATK)
   Opp BF:   Island | Island | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Teferi, Time Raveler [loy 6]
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2195,7 +2377,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2226,6 +2411,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -2245,13 +2433,17 @@
   Step: First Main (turn 18)
   Self:  14 life | mana: empty | energy 4 | hand(3): Force of Negation, The One Ring, Wrath of the Skies | lib 34
   Opp:   17 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 6]
+  Self BF:  Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] (act 1) | Teferi, Time Raveler [loy 6]
   Opp BF:   Forest | Swamp (T) | Underground Sea (T) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
@@ -2285,6 +2477,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -2303,7 +2499,7 @@
   Step: First Main (turn 19)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 42
   Opp:   14 life | mana: empty | energy 4 | hand count: 3 | lib 34
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Underground Sea | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 7]
   Pending: Orcish Bowmasters (self)
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
@@ -2312,6 +2508,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (14 life)
    1: Player A (17 life)
@@ -2333,7 +2533,7 @@
   Step: First Main (turn 19)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 42
   Opp:   13 life | mana: empty | energy 4 | hand count: 3 | lib 34
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 7]
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2341,6 +2541,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -2354,7 +2558,7 @@
   Step: Declare Atk (turn 19)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 42
   Opp:   13 life | mana: empty | energy 4 | hand count: 3 | lib 34
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 7]
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2362,7 +2566,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [2/2]
    1: Confirm attackers
@@ -2375,15 +2582,19 @@
   Step: Declare Atk (turn 19)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 42
   Opp:   13 life | mana: empty | energy 4 | hand count: 3 | lib 34
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 7]
+  Pending: Orc Army (self)
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (13 life)
    1: Tamiyo, Seasoned Scholar (loyalty 12)
@@ -2399,7 +2610,7 @@
   Step: Declare Atk (turn 19)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 42
   Opp:   13 life | mana: empty | energy 4 | hand count: 3 | lib 34
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2] (ATK)
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2] (ATK)
   Opp BF:   Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 7]
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2407,7 +2618,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2427,7 +2641,7 @@
   Step: Second Main (turn 19)
   Self:  17 life | mana: empty | hand(2): Fatal Push, Fatal Push | lib 42
   Opp:   12 life | mana: empty | energy 4 | hand count: 3 | lib 34
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea | Orc Army [1/2] [+1/+1:2] (T)
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Underground Sea | Orc Army [1/2] [+1/+1:2] (T)
   Opp BF:   Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Teferi, Time Raveler [loy 7]
   Self GY: Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2435,6 +2649,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=2
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -2459,6 +2677,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -2478,13 +2699,17 @@
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | energy 4 | hand(4): Force of Negation, Force of Negation, The One Ring, Wrath of the Skies | lib 33
   Opp:   17 life | mana: empty | hand count: 2 | lib 42
-  Self BF:  Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 7]
+  Self BF:  Island | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 14] [Flying] (act 1) | Teferi, Time Raveler [loy 7]
   Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Underground Sea | Orc Army [2/2] [+1/+1:2] (T)
   Self GY: Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Force of Will, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
@@ -2518,6 +2743,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2541,6 +2770,10 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Negation  [#0]
@@ -2571,6 +2804,10 @@
   Opp exile:  Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Fatal Push
    1: Fatal Push
@@ -2598,6 +2835,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Fatal Push
    1: Fatal Push
@@ -2621,6 +2862,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2645,6 +2890,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Each opponent sacrifices a nontoken creature.  [#0]
    1: Each opponent sacrifices a creature token.  [#1]
@@ -2669,6 +2918,10 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Negation  [#0]
@@ -2693,6 +2946,10 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Sheoldred's Edict
   >> B/B: 0 (Sheoldred's Edict)
@@ -2719,6 +2976,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2731,7 +2992,7 @@
   Step: First Main (turn 21)
   Self:  17 life | mana: empty | hand(1): Fatal Push | lib 40
   Opp:   12 life | mana: empty | energy 4 | hand count: 3 | lib 33
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Underground Sea (T) | Wasteland | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
   Self GY: Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
@@ -2740,7 +3001,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2753,7 +3017,7 @@
   Step: First Main (turn 21)
   Self:  17 life | mana: empty | hand(1): Fatal Push | lib 40
   Opp:   12 life | mana: empty | energy 4 | hand count: 3 | lib 33
-  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Underground Sea (T) | Wasteland | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
   Pending: Wasteland (self)
   Self GY: Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
@@ -2763,7 +3027,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Meticulous Archive
    1: Underground Sea
@@ -2791,7 +3058,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [2/2]
@@ -2807,6 +3077,7 @@
   Opp:   12 life | mana: empty | energy 4 | hand count: 3 | lib 33
   Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
+  Pending: Orcish Bowmasters (self)
   Self GY: Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
@@ -2814,7 +3085,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (12 life)
    1: Tamiyo, Seasoned Scholar (loyalty 14)
@@ -2839,7 +3113,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [2/2]
    1: Confirm attackers
@@ -2854,6 +3131,7 @@
   Opp:   12 life | mana: empty | energy 4 | hand count: 3 | lib 33
   Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
+  Pending: Orc Army (self)
   Self GY: Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
@@ -2861,7 +3139,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (12 life)
    1: Tamiyo, Seasoned Scholar (loyalty 14)
@@ -2887,7 +3168,10 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2904,12 +3188,16 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
   Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Swamp (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
+  Pending: Tamiyo, Seasoned Scholar (self)
   Self GY: Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UB
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Floating trigger (Pump)  [#0]
    1: Floating trigger (Pump)  [#1]
@@ -2943,6 +3231,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2971,6 +3262,9 @@
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Force of Negation
    1: Lórien Revealed
@@ -2998,6 +3292,9 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Lórien Revealed
    1: Murktide Regent
@@ -3016,6 +3313,7 @@
   Opp:   11 life | mana: empty | energy 4 | hand count: 4 | lib 31
   Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2] (T)
   Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
+  Pending: Orcish Bowmasters (self)
   Self GY: Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
@@ -3023,6 +3321,9 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Orcish Bowmasters (DealDamage, targeted)  [#0]
    1: Orcish Bowmasters (DealDamage, targeted)  [#1]
@@ -3046,6 +3347,9 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (11 life)
    1: Player A (17 life)
@@ -3067,6 +3371,7 @@
   Self BF:  Forest (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2] (T)
   Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
   Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
+  Pending: Orcish Bowmasters (self)
   Self GY: Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
@@ -3074,6 +3379,9 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Orcish Bowmasters (DealDamage, targeted)  [#0]
    1: Orcish Bowmasters (DealDamage, targeted)  [#1]
@@ -3097,6 +3405,9 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (11 life)
    1: Player A (17 life)
@@ -3126,6 +3437,9 @@
   Known top: Fatal Push, Ponder, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Self effects: sorcery speed only
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (11 life)
    1: Player A (17 life)
@@ -3156,13 +3470,16 @@
   Self:  8 life | mana: empty | energy 4 | hand(4): Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 31
   Opp:   17 life | mana: empty | hand count: 1 | lib 40
   Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
-  Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5] (T)
+  Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (T,res 3) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5] (T)
   Self GY: Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Lorien Revealed, Force of Negation, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=3 colors=U
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -3182,14 +3499,17 @@
   Step: First Main (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(3): Murktide Regent, The One Ring, Wrath of the Skies | lib 31
   Opp:   17 life | mana: empty | hand count: 1 | lib 40
-  Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
-  Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5] (T)
+  Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Teferi, Time Raveler [loy 8]
+  Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (T,res 3) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5] (T)
   Self GY: Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Lorien Revealed, Force of Negation, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 life_lost=3 colors=U
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -3209,14 +3529,18 @@
   Step: First Main (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(3): Murktide Regent, The One Ring, Wrath of the Skies | lib 31
   Opp:   17 life | mana: empty | hand count: 1 | lib 40
-  Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 8]
-  Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5] (T)
+  Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 16] [Flying] (act 1) | Teferi, Time Raveler [loy 8]
+  Opp BF:   Forest (T) | Orcish Bowmasters [1/1] [Flash] (T,res 3) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5] (T)
   Self GY: Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Lorien Revealed, Force of Negation, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 life_lost=3 colors=U
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
@@ -3251,6 +3575,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -3273,7 +3601,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [5/5]
@@ -3289,6 +3620,7 @@
   Opp:   8 life | mana: empty | energy 4 | hand count: 3 | lib 31
   Self BF:  Forest | Orcish Bowmasters [1/1] [Flash] | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5]
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
+  Pending: Orcish Bowmasters (self)
   Self GY: Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
@@ -3296,7 +3628,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (8 life)
    1: Tamiyo, Seasoned Scholar (loyalty 16)
@@ -3321,7 +3656,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [5/5]
    1: Confirm attackers
@@ -3336,6 +3674,7 @@
   Opp:   8 life | mana: empty | energy 4 | hand count: 3 | lib 31
   Self BF:  Forest | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5]
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
+  Pending: Orc Army (self)
   Self GY: Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
@@ -3343,7 +3682,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (8 life)
    1: Tamiyo, Seasoned Scholar (loyalty 16)
@@ -3369,7 +3711,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -3386,12 +3731,17 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T,ATK)
+  Pending: Tamiyo, Seasoned Scholar (self)
   Self GY: Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Lorien Revealed, Force of Negation, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp drawn=1
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Floating trigger (Pump)  [#0]
    1: Floating trigger (Pump)  [#1]
@@ -3422,7 +3772,10 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Lorien Revealed, Force of Negation, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp drawn=1
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm blockers
@@ -3448,6 +3801,10 @@
   Known top: Ponder, ?, ?, ?, ?
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1 | opp life_lost=4
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -3473,6 +3830,9 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
@@ -3491,6 +3851,9 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Murktide Regent  [#0]
@@ -3511,12 +3874,16 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
+  Pending: Murktide Regent (self)
   Self GY: Brainstorm, Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Brainstorm (Delve)
@@ -3549,12 +3916,16 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
+  Pending: Murktide Regent (self)
   Self GY: Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Brainstorm, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Brainstorm, Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Flooded Strand (Delve)
@@ -3586,12 +3957,16 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
+  Pending: Murktide Regent (self)
   Self GY: Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder, Flooded Strand
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Flooded Strand (Delve)
    1: Exile Flow State (Delve)
@@ -3622,12 +3997,16 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
+  Pending: Murktide Regent (self)
   Self GY: Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Flow State, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Flow State (Delve)
    1: Exile Force of Negation (Delve)
@@ -3657,12 +4036,16 @@
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
+  Pending: Murktide Regent (self)
   Self GY: Meticulous Archive, Force of Negation, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Force of Negation (Delve)
    1: Exile Force of Will (Delve)
@@ -3693,7 +4076,7 @@
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(3): Lorien Revealed, The One Ring, Wrath of the Skies | lib 30
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
+  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] [Flying] | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
   Self GY: Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
@@ -3701,6 +4084,9 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 drawn=1 colors=U
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
@@ -3720,7 +4106,7 @@
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(3): Lorien Revealed, The One Ring, Wrath of the Skies | lib 30
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 9]
+  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 18] [Flying] (act 1) | Teferi, Time Raveler [loy 9]
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
   Self GY: Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
@@ -3728,6 +4114,10 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 drawn=1 colors=U
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
@@ -3745,7 +4135,7 @@
   Step: Declare Atk (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(3): Lorien Revealed, The One Ring, Wrath of the Skies | lib 30
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 10]
+  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 18] [Flying] (act 1) | Teferi, Time Raveler [loy 10] (act 1)
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
   Self GY: Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
@@ -3753,7 +4143,10 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -3768,7 +4161,7 @@
   Step: Declare Atk (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(3): Lorien Revealed, The One Ring, Wrath of the Skies | lib 30
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 10]
+  Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tamiyo, Seasoned Scholar [loy 18] [Flying] (act 1) | Teferi, Time Raveler [loy 10] (act 1)
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Underground Sea | Orc Army [5/5] [+1/+1:5] (T)
   Self GY: Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
@@ -3776,7 +4169,10 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -3808,6 +4204,10 @@
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -3831,6 +4231,10 @@
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self drawn=1
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Murktide Regent
    1: Tamiyo, Inquisitive Student
@@ -3857,6 +4261,10 @@
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -3879,6 +4287,10 @@
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Murktide Regent
    1: Tamiyo, Inquisitive Student
@@ -3906,7 +4318,10 @@
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [5/5]
@@ -3922,13 +4337,17 @@
   Opp:   4 life | mana: empty | energy 4 | hand count: 3 | lib 30
   Self BF:  Forest | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5]
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 10] | Clue (SICK)
+  Pending: Orcish Bowmasters (self)
   Self GY: Fatal Push, Fatal Push, Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (4 life)
    1: Tamiyo, Seasoned Scholar (loyalty 18)
@@ -3952,7 +4371,10 @@
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [5/5]
    1: Confirm attackers
@@ -3967,13 +4389,17 @@
   Opp:   4 life | mana: empty | energy 4 | hand count: 3 | lib 30
   Self BF:  Forest | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5]
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 10] | Clue (SICK)
+  Pending: Orc Army (self)
   Self GY: Fatal Push, Fatal Push, Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Opp GY:  Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Self exile: Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Player B (4 life)
    1: Tamiyo, Seasoned Scholar (loyalty 18)
@@ -3998,7 +4424,10 @@
   Opp exile:  Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Known opp hand: The One Ring, Wrath of the Skies
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Wrath of the Skies, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft, Teferi, Time Raveler
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorcery speed only
+  Opp effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -4015,12 +4444,17 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 38
   Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 10] | Clue (SICK)
   Opp BF:   Forest | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Swamp (T) | Underground Sea (T) | Orc Army [5/5] [+1/+1:5] (T,ATK)
+  Pending: Tamiyo, Seasoned Scholar (self)
   Self GY: Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Fatal Push, Fatal Push, Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Floating trigger (Pump)  [#0]
    1: Floating trigger (Pump)  [#1]
@@ -4051,7 +4485,10 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Murktide Regent [7/7]
    1: Confirm blockers
@@ -4066,13 +4503,17 @@
   Opp:   17 life | mana: empty | hand count: 1 | lib 38
   Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 18] [Flying] | Teferi, Time Raveler [loy 10] | Clue (SICK)
   Opp BF:   Forest | Orcish Bowmasters [0/1] [Flash] (T,ATK) | Swamp (T) | Underground Sea (T) | Orc Army [4/5] [+1/+1:5] (T,ATK)
+  Pending: Murktide Regent (self)
   Self GY: Meticulous Archive, Swords to Plowshares, Wasteland, The One Ring, Force of Will, Wasteland, Swords to Plowshares, Misty Rainforest, Wasteland, Tune the Narrative, Force of Will, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Fatal Push, Fatal Push, Wasteland, Brainstorm, Misty Rainforest, Sheoldred's Edict, Bayou, Misty Rainforest, Thoughtseize, Force of Will, Tropical Island, Tropical Island, Tamiyo, Inquisitive Student
   Self exile: Force of Negation, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft, Flow State
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Orcish Bowmasters [0/1]
    1: Orc Army token [4/5]
@@ -4099,7 +4540,10 @@
   Opp exile:  Sheoldred's Edict, Orcish Bowmasters, Lorien Revealed, Baleful Strix
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Forest, Misty Rainforest, Wasteland, Force of Will, Brainstorm, Thoughtseize, Swamp, Underground Sea, Fatal Push, Orcish Bowmasters, Bayou, Sheoldred's Edict, Baleful Strix, Lorien Revealed, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
+  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
+  Opp effects: sorcery speed only
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> B/B: 0 (Confirm blockers)

@@ -115,20 +115,26 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                         game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
                 }
                 bool suspended = false;
-                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target,
-                                             ctx, suspended, kind);
+                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target, ab.source, ctx,
+                                             suspended, UnlessSubject{UnlessEffect::COUNTER, ab.target, false},
+                                             kind);
                 if (suspended) return HandlerResult::SUSPENDED;
             }
 
             // Can't be countered check — either a cast-time stamp (Cavern of Souls / a "this spell
-            // can't be countered" self replacement) or a continuous battlefield static covering the
-            // spell (Hexing Squelcher: "Spells you control can't be countered", CR 614.13).
+            // can't be countered" self replacement), a continuous battlefield static covering the
+            // spell (Hexing Squelcher: "Spells you control can't be countered", CR 614.13), or a
+            // protection covering every spell the controller controls (the shared
+            // player_spells_cant_be_countered query the observation also reads). Each of these
+            // protects spells only: a non-spell target (an activated or triggered ability, Stifle)
+            // stays counterable even while its controller's spells can't be countered (Veil of
+            // Summer).
+            bool target_is_spell = global_coordinator.entity_has_component<Spell>(ab.target);
             if (do_counter &&
-                ((global_coordinator.entity_has_component<Spell>(ab.target) &&
-                  global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
+                ((target_is_spell && global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
                  spell_uncounterable_by_static(ab.target, orderer->mEntities) ||
                  spell_uncounterable_by_own_condition(ab.target, orderer->mEntities) ||
-                 cur_game.cant_counter_spells_of.count(target_controller) > 0)) {
+                 (target_is_spell && player_spells_cant_be_countered(target_controller, orderer->mEntities)))) {
                 std::string name = entity_name(ab.target);
                 game_log("%s can't be countered\n", name.c_str());
                 do_counter = false;

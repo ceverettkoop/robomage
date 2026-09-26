@@ -65,11 +65,12 @@ def make_obs(*, sideboard, opp_cards, actions):
     obs = np.zeros(env.OBS_SIZE, dtype=np.float32)
     obs[env._IS_SIDEBOARD_IDX] = 1.0 if sideboard else 0.0
     # Empty-slot sentinels for both opp deck blocks, then pack the maindeck.
-    for j in range(env._OPP_DECK_MAIN_START, env._OPP_DECK_SIDE_END, 2):
+    stride = env._OPP_DECKLIST_SLOT_SIZE
+    for j in range(env._OPP_DECK_MAIN_START, env._OPP_DECK_SIDE_END, stride):
         obs[j] = -1.0 / N_CARD_TYPES
     for k, name in enumerate(sorted(opp_cards, key=cid)):
-        obs[env._OPP_DECK_MAIN_START + 2 * k] = cid(name) / N_CARD_TYPES
-        obs[env._OPP_DECK_MAIN_START + 2 * k + 1] = 4 / 4.0
+        obs[env._OPP_DECK_MAIN_START + stride * k] = cid(name) / N_CARD_TYPES
+        obs[env._OPP_DECK_MAIN_START + stride * k + 1] = 4 / 4.0
     for a, (cat, name) in enumerate(actions):
         obs[env.ACT_CATS_START + a] = cat / ACTION_CATEGORY_MAX
         obs[env.ACT_IDS_START + a] = ((cid(name) if name else -1)

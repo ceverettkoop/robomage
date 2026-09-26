@@ -116,8 +116,9 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
                 game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
                          ab.unless_generic_cost);
             bool suspended = false;
-            bool unpaid = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source,
-                                          ctx, suspended, UnlessPayKind::ENERGY);
+            bool unpaid = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ab.source, ctx,
+                                          suspended, UnlessSubject{UnlessEffect::SACRIFICE, ab.source, false},
+                                          UnlessPayKind::ENERGY);
             if (suspended) return HandlerResult::SUSPENDED;
             if (!unpaid) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is sacrificed
         }

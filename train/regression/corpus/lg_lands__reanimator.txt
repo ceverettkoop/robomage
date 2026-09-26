@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -88,7 +90,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Urza's Saga [lore:1]
+  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -104,10 +106,11 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Urza's Saga [lore:1]
+  Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
   Stack: Mox Diamond (spell, opponent)
   Opp revealed: Urza's Saga, Mox Diamond
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -120,11 +123,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Urza's Saga [lore:1]
+  Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
   Stack: Mox Diamond (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Urza's Saga, Mox Diamond
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Mox Diamond
   >> B/B: 0 (Mox Diamond)
@@ -136,10 +140,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Urza's Saga [lore:1]
+  Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
   Stack: Mox Diamond (spell, opponent)
+  Pending: Force of Will (self)
   Opp revealed: Urza's Saga, Mox Diamond
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Exile Atraxa, Grand Unifier
    1: Exile Careful Study
@@ -157,12 +163,13 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Dark Depths, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Urza's Saga [lore:1]
+  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
   Self GY: Mox Diamond
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -176,13 +183,15 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(4): Dark Depths, Skateboard, Urza's Saga, Wasteland | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Urza's Saga [lore:1]
+  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
   Stack: Mox Diamond (ability, self)
+  Pending: Mox Diamond (self)
   Self GY: Mox Diamond
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=2 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Discard Dark Depths (put Mox Diamond onto the battlefield)
    1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
@@ -198,11 +207,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(3): Skateboard, Urza's Saga, Wasteland | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Mox Diamond | Urza's Saga [lore:1]
+  Self BF:  Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
   Self GY: Dark Depths, Mox Diamond
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
+  This turn: self spells=2 noncreature=2 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -219,13 +229,14 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(2): Urza's Saga, Wasteland | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
+  Self BF:  Mox Diamond (T,NEW) | Skateboard (NEW) | Urza's Saga [lore:1] (NEW,res 1)
   Pending: Skateboard (self)
   Self GY: Dark Depths, Mox Diamond
   Opp GY:  Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Atraxa, Grand Unifier
-  Extras: self_lands_played=1
+  This turn: self spells=3 noncreature=3 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Mox Diamond
    1: Skateboard
@@ -255,6 +266,7 @@
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Marsh Flats
@@ -268,12 +280,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 52
   Opp:   20 life | mana: empty | hand count: 2 | lib 53
-  Self BF:  Marsh Flats
+  Self BF:  Marsh Flats (NEW)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
   Self GY: Force of Will
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -298,7 +311,8 @@
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Swamp
@@ -318,12 +332,13 @@
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
   Opp:   20 life | mana: empty | hand count: 2 | lib 53
-  Self BF:  Swamp
+  Self BF:  Swamp (NEW)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
   Self GY: Marsh Flats, Force of Will
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -337,14 +352,15 @@
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
   Opp:   20 life | mana: empty | hand count: 2 | lib 53
-  Self BF:  Swamp
+  Self BF:  Swamp (NEW)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats, Force of Will
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (18 life)
@@ -379,12 +395,13 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Urza's Saga, Wasteland | lib 52
   Opp:   16 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2]
+  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2] (res 1)
   Opp BF:   Swamp (T)
   Self GY: Dark Depths, Mox Diamond
   Opp GY:  Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Thoughtseize, Swamp, Marsh Flats, Atraxa, Grand Unifier
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Boseiju, Who Endures
@@ -403,12 +420,13 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
   Opp:   16 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2] | Urza's Saga [lore:1]
+  Self BF:  Mox Diamond | Skateboard | Urza's Saga [lore:2] (res 1) | Urza's Saga [lore:1] (NEW,res 1)
   Opp BF:   Swamp (T)
   Self GY: Dark Depths, Mox Diamond
   Opp GY:  Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Force of Will, Thoughtseize, Swamp, Marsh Flats, Atraxa, Grand Unifier
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -443,6 +461,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -464,6 +483,8 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Dark Depths, Mox Diamond
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (16 life)
@@ -492,6 +513,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -504,13 +526,14 @@
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(3): Careful Study, Ponder, Reanimate | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Scalding Tarn | Swamp (T)
+  Self BF:  Scalding Tarn (NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Self GY: Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -537,7 +560,8 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -557,13 +581,14 @@
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Careful Study, Ponder, Reanimate | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island | Swamp (T)
+  Self BF:  Island (NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Self GY: Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -584,7 +609,7 @@
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(4): Careful Study, Lotus Petal, Ponder, Reanimate | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Swamp (T)
+  Self BF:  Island (T,NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -593,7 +618,8 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Careful Study
    1: Lotus Petal
@@ -609,7 +635,7 @@
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Careful Study, Lotus Petal, Ponder | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Swamp (T)
+  Self BF:  Island (T,NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -618,7 +644,8 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Careful Study
    1: Lotus Petal
@@ -632,13 +659,14 @@
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(2): Careful Study, Lotus Petal | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Swamp (T)
+  Self BF:  Island (T,NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Self GY: Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -653,13 +681,14 @@
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(1): Careful Study | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Lotus Petal | Swamp (T)
+  Self BF:  Island (T,NEW) | Lotus Petal (NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Self GY: Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -680,7 +709,7 @@
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(2): Lotus Petal, Underground Sea | lib 45
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Swamp (T)
+  Self BF:  Island (T,NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -689,7 +718,8 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=3 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Lotus Petal
    1: Underground Sea
@@ -703,7 +733,7 @@
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(1): Lotus Petal | lib 45
   Opp:   20 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T) | Swamp (T)
+  Self BF:  Island (T,NEW) | Swamp (T)
   Opp BF:   Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [3/3] (SICK)
   Stack: Careful Study (spell, self)
   Pending: Careful Study (self)
@@ -712,7 +742,8 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Boseiju, Who Endures, Wasteland
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=3 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Lotus Petal
   >> B/B: 0 (Lotus Petal)
@@ -759,12 +790,15 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Dark Depths, Wasteland | lib 51
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T) | Urza's Saga [lore:2] (T) | Construct [4/4] | Construct [4/4] (SICK)
+  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T) | Urza's Saga [lore:2] (T) | Construct [4/4] | Construct [4/4] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
+  Pending: Urza's Saga (self)
   Self GY: Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Urza's Saga (chapter 3)  [#0]
    1: Urza's Saga (chapter 2)  [#1]
@@ -782,7 +816,7 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Dark Depths, Wasteland | lib 51
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T) | Urza's Saga [lore:2] (T) | Construct [4/4] | Construct [4/4] (SICK)
+  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T,res 1) | Urza's Saga [lore:2] (T,res 1) | Construct [4/4] | Construct [4/4] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
   Stack: Urza's Saga (ability, self) [amt=1]
   Pending: Urza's Saga (self)
@@ -790,6 +824,8 @@
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Expedition Map
@@ -808,12 +844,13 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Dark Depths, Wasteland | lib 50
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Expedition Map | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [5/5] | Construct [5/5] (SICK)
+  Self BF:  Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -829,12 +866,13 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Boseiju, Who Endures | Expedition Map | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [5/5] | Construct [5/5] (SICK)
+  Self BF:  Boseiju, Who Endures (NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -849,13 +887,15 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [5/5] | Construct [5/5] (SICK)
+  Self BF:  Boseiju, Who Endures (T,NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
+  Pending: Skateboard (self)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Construct [5/5]
    1: Construct [5/5]
@@ -870,13 +910,14 @@
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) | Construct [5/5] (SICK)
+  Self BF:  Boseiju, Who Endures (T,NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [6/5]
    1: Confirm attackers
@@ -891,13 +932,14 @@
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) (ATK) | Construct [5/5] (SICK)
+  Self BF:  Boseiju, Who Endures (T,NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) (ATK) | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -926,6 +968,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -943,6 +986,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -960,6 +1004,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -979,6 +1024,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -998,6 +1044,8 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1018,6 +1066,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1035,6 +1084,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1052,6 +1102,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1069,6 +1120,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1113,6 +1165,7 @@
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1128,12 +1181,13 @@
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK,NEW)
   Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1147,12 +1201,14 @@
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
   Opp:   20 life | mana: empty | hand count: 3 | lib 49
   Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK,NEW)
   Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1167,13 +1223,15 @@
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
   Opp:   20 life | mana: empty | hand count: 3 | lib 49
   Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK,NEW)
   Stack: Urza's Saga (ability, opponent) [amt=1]
   Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1187,7 +1245,7 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Dark Depths, Ghost Quarter, Wasteland | lib 49
   Opp:   7 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK)
+  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T,res 1) | Construct [7/6] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6] (SICK,NEW)
   Opp BF:   Island | Swamp
   Stack: Urza's Saga (ability, self) [amt=1]
   Pending: Urza's Saga (self)
@@ -1195,6 +1253,8 @@
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Grafdigger's Cage
@@ -1212,12 +1272,13 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Dark Depths, Ghost Quarter, Wasteland | lib 48
   Opp:   7 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK)
+  Self BF:  Boseiju, Who Endures (T) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK,NEW)
   Opp BF:   Island | Swamp
   Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1235,13 +1296,14 @@
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK)
+  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK,NEW)
   Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Grafdigger's Cage, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1253,13 +1315,14 @@
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK)
+  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK,NEW)
   Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Grafdigger's Cage, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1272,13 +1335,14 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Ghost Quarter, Wasteland | lib 48
   Opp:   7 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK)
+  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7] (SICK,NEW)
   Opp BF:   Island | Swamp
   Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [8/7]
    1: Construct token [7/7]
@@ -1294,13 +1358,14 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Ghost Quarter, Wasteland | lib 48
   Opp:   7 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (ATK) | Construct [7/7] | Construct [7/7] (SICK)
+  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (ATK) | Construct [7/7] | Construct [7/7] (SICK,NEW)
   Opp BF:   Island | Swamp
   Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [7/7]
    1: Confirm attackers
@@ -1316,13 +1381,14 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Ghost Quarter, Wasteland | lib 48
   Opp:   7 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (ATK) | Construct [7/7] (ATK) | Construct [7/7] (SICK)
+  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (ATK) | Construct [7/7] (ATK) | Construct [7/7] (SICK,NEW)
   Opp BF:   Island | Swamp
   Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1337,13 +1403,14 @@
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (T,ATK) | Construct [7/7] (T,ATK) | Construct [7/7] (SICK)
+  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (T,ATK) | Construct [7/7] (T,ATK) | Construct [7/7] (SICK,NEW)
   Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Grafdigger's Cage, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1357,12 +1424,13 @@
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (T,ATK) | Construct [7/7] (T,ATK) | Construct [7/7] (SICK)
+  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (T,ATK) | Construct [7/7] (T,ATK) | Construct [7/7] (SICK,NEW)
   Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
   Opp GY:  Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Self exile: Atraxa, Grand Unifier
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Grafdigger's Cage, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
+  This turn: opp drawn=1
   Extras: opp_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
