@@ -2213,9 +2213,9 @@ def test_cast_x_roundtrip():
     """Batch 9 (cast flow state machine): the cast-time CHOOSE_X ladder is a
     loop-top pending decision (tag CAST, Game::PendingCast) — it reports
     safe=1 and is a valid SNAPSHOT/RESTORE root. With --no-shuffle A's opening
-    hand is Chalice of the Void + Mountains and a 2-Mountain battlefield
-    preset pays {X}{X}, so a cast-first policy casts Chalice on A's first turn
-    and reaches the 3-option ladder (X = 0/1/2). At the root: SNAPSHOT
+    hand is Chalice of the Void + Mountains and a 4-Mountain battlefield
+    preset pays {X}{X} up to X = 2, so a cast-first policy casts Chalice on A's
+    first turn and reaches the 3-option ladder (X = 0/1/2). At the root: SNAPSHOT
     re-emits exactly; a divergent X (1 instead of the control's 0) must change
     the very next query (different mana tapped, Chalice enters with different
     charge counters); RESTORE returns byte-identically; the resumed real line
@@ -2227,7 +2227,7 @@ def test_cast_x_roundtrip():
     ])
     extra = ["--deck-a", "temp/cast_x_a", "--deck-b", "temp/cast_x_b",
              "--no-shuffle",
-             "--battlefield-a", "Mountain,Mountain"]
+             "--battlefield-a", "Mountain,Mountain,Mountain,Mountain"]
     try:
         control, choices, outcome = _record_cast_first_line(seed, extra)
         root_idx = _find_sbe_root(control, CAT_CHOOSE_X, 3, "cast-x")
