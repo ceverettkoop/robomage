@@ -8,6 +8,7 @@
 #include "card_vocab.h"
 #include "classes/game.h"
 #include "choice_labels.h"
+#include "cli_args.h"
 #include "cli_output.h"
 #include "components/carddata.h"
 #include "components/ability.h"
@@ -106,7 +107,7 @@ static std::vector<std::string> parse_flag_tokens(const std::string &flags_line)
         if (end == std::string::npos) end = flags_line.size();
         std::string piece = flags_line.substr(start, end - start);
         if (!piece.empty()) {
-            bool bare_flag = (piece == "no-shuffle" || piece == "bo3" || piece == "machine");
+            bool bare_flag = is_bare_header_flag(piece);
             bool has_key = piece.find('=') != std::string::npos;
             if (tokens.empty() || bare_flag || has_key) {
                 tokens.push_back(piece);
