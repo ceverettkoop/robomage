@@ -130,47 +130,17 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         }
     }
 
-    // Filter by change_type (supports the "not remembered" restriction used by
-    // Doomsday — written ChangeType$ Card.!IsRemembered in Forge syntax, also
-    // accepted as IsNotRemembered). Without this, the "exile the rest" step would
-    // exile the cards just placed on top, emptying the library.
-    bool filter_not_remembered = (ab.change_type.find("!IsRemembered") != std::string::npos
-                                  || ab.change_type.find("IsNotRemembered") != std::string::npos);
-    // ChangeType$ Card.IsImprinted (Atraxa's ShuffleRest): restrict the move to the imprinted
-    // cards (the revealed set), so bottoming "the rest" touches only those — not the whole
-    // library. Combined with !IsRemembered it targets exactly the imprinted-but-not-taken cards.
-    bool filter_imprinted = ab.change_type.find("IsImprinted") != std::string::npos;
-    // ChangeType$ Card.IsRemembered (Triumph of Saint Katherine's ShuffleBack): restrict the move
-    // to the remembered pile only — the self-exiled card plus the six milled cards — so the
-    // Origin$ Exile scan doesn't sweep up unrelated exiled cards. Excludes the negated
-    // "!IsRemembered" form (Doomsday), which is handled by filter_not_remembered above.
-    bool filter_remembered = (ab.change_type.find("IsRemembered") != std::string::npos
-                              && !filter_not_remembered);
+    // Filter by ChangeType$ through the shared filter matcher: Doomsday's Card.!IsRemembered
+    // (exile everything but the cards just stacked), Atraxa's Card.IsImprinted+!IsRemembered
+    // (bottom the revealed cards not taken), Triumph of Saint Katherine's Card.IsRemembered (only
+    // the remembered pile). Absent a ChangeType$, every card in the zones moves.
+    MatchCtx mctx;
+    mctx.controller = owner;
+    mctx.source = ab.source;
     std::vector<Entity> to_move;
-    for (auto entity : zone_contents) {
-        if (filter_not_remembered) {
-            bool is_remembered = false;
-            for (auto re : cur_game.remembered_entities) {
-                if (re == entity) { is_remembered = true; break; }
-            }
-            if (is_remembered) continue;
-        }
-        if (filter_remembered) {
-            bool is_remembered = false;
-            for (auto re : cur_game.remembered_entities) {
-                if (re == entity) { is_remembered = true; break; }
-            }
-            if (!is_remembered) continue;
-        }
-        if (filter_imprinted) {
-            bool is_imprinted = false;
-            for (auto ie : cur_game.imprinted_entities) {
-                if (ie == entity) { is_imprinted = true; break; }
-            }
-            if (!is_imprinted) continue;
-        }
-        to_move.push_back(entity);
-    }
+    for (auto entity : zone_contents)
+        if (ab.change_type.empty() || card_matches_filter(entity, ab.change_type, mctx))
+            to_move.push_back(entity);
 
     // RandomOrder$ — randomize the moved cards with the seeded RNG (deterministic
     // per game seed, platform-stable — see stable_rng.h). Used for "in a random

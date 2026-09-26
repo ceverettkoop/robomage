@@ -73,6 +73,9 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
 static bool stack_spell_alt_matches(const std::string &alt, Entity cand);
 static bool stack_ability_alt_matches(const std::string &alt, Entity cand);
 static bool target_type_matches_stack_object(const std::string &target_type, Entity cand);
+static bool search_candidate_matches(Entity entity, const std::string &change_type, int cmc_bound,
+                                     const std::string &cmc_op, Zone::Ownership you,
+                                     Entity chain_target);
 
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
@@ -100,19 +103,22 @@ bool Ability::identical_activated_ability(const Ability &other) {
     return true;
 };
 
-// A zone-search candidate is a card object, matched by its PRINTED characteristics through the
-// shared filter matcher (game_queries.h). Thin local adapter so the search_zone call sites keep
-// their (entity, spec, cmc_bound, cmc_op) shape; the dynamic mana-value bound flows through the
-// MatchCtx. All qualifier grammar (colors, Colorless, Basic, P/T, subtypes, cmcLEX, …) now lives
-// in the one shared evaluator.
-static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_bound = -1,
-    const std::string &cmc_op = "", Zone::Ownership you = Zone::UNKNOWN, Entity chain_target = 0) {
+// Does a zone-search candidate match the search's ChangeType$ (a comma-OR filter spec)? Matched
+// through the shared filter matcher in whatever zone the candidate sits: a card by its printed
+// characteristics, a battlefield permanent (a multi-zone search's Battlefield origin) by its live
+// ones. An empty spec or the catch-all "Card" (a bare "search for a card", Demonic Tutor) matches
+// every candidate. `you` is the YouOwn/YouCtrl reference, `chain_target` the targetedBy card, and
+// a dynamic mana-value bound (Aether Vial) flows in through cmc_bound / cmc_op.
+static bool search_candidate_matches(Entity entity, const std::string &change_type, int cmc_bound,
+                                     const std::string &cmc_op, Zone::Ownership you,
+                                     Entity chain_target) {
+    if (change_type.empty() || change_type == "Card") return true;
     MatchCtx ctx;
     ctx.cmc_bound = cmc_bound;
     ctx.cmc_op = cmc_op;
-    ctx.controller = you;  // the "you" reference for YouOwn/YouCtrl/OppOwn/OppCtrl in the filter
-    ctx.chain_target = chain_target;  // the chain's card target for the targetedBy qualifier
-    return card_matches_filter(entity, spec, ctx);
+    ctx.controller = you;
+    ctx.chain_target = chain_target;
+    return object_matches_filter(entity, change_type, ctx);
 }
 
 // Searches a zone for cards whose types match any entry in the comma-separated
@@ -124,9 +130,6 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
     int cmc_bound, const std::string &cmc_op,
     FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target) {
     suspended = false;
-    //  comma-separated subtypes
-    std::vector<std::string> subtypes = split(change_type, ',');
-
     // Collect zone contents
     std::vector<Entity> zone_contents;
     if (zone == Zone::LIBRARY) {
@@ -146,50 +149,10 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         }
     }
 
-    // Filter to matching cards; empty change_type — or the catch-all "Card" (a bare "search for a
-    // card", The Creation of Avacyn / Demonic Tutor) — means every card matches, mirroring
-    // search_multi_zone. (No card object has a printed TYPE literally named "Card", so without this
-    // the type-name loop below would match nothing and the mandatory search would "fail to find".)
     std::vector<Entity> choices;
-    if (change_type.empty() || change_type == "Card") {
-        choices = zone_contents;
-    } else {
-        // Check if any filter spec uses extended syntax (dot/plus qualifiers)
-        bool has_extended = false;
-        for (auto &st : subtypes) {
-            if (st.find('.') != std::string::npos || st.find('+') != std::string::npos) {
-                has_extended = true;
-                break;
-            }
-        }
-        // A dynamic mana-value bound (Aether Vial) forces the extended path so each
-        // candidate is gated by both type and mana value.
-        if (cmc_bound >= 0) has_extended = true;
-
-        for (auto entity : zone_contents) {
-            bool matches = false;
-            if (has_extended) {
-                for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op, owner, chain_target)) {
-                        matches = true;
-                        break;
-                    }
-                }
-            } else {
-                auto &cd = global_coordinator.GetComponent<CardData>(entity);
-                for (auto &t : cd.types) {
-                    for (auto &st : subtypes) {
-                        if (t.name == st) {
-                            matches = true;
-                            break;
-                        }
-                    }
-                    if (matches) break;
-                }
-            }
-            if (matches) choices.push_back(entity);
-        }
-    }
+    for (auto entity : zone_contents)
+        if (search_candidate_matches(entity, change_type, cmc_bound, cmc_op, owner, chain_target))
+            choices.push_back(entity);
 
     const char *zone_name = (zone == Zone::LIBRARY)     ? "library"
                             : (zone == Zone::HAND)      ? "hand"
@@ -304,44 +267,10 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         zone_contents = filtered;
     }
 
-    // Filter by change_type — "Card" matches everything
     std::vector<Entity> choices;
-    if (change_type.empty() || change_type == "Card") {
-        choices = zone_contents;
-    } else {
-        // Parse comma-separated subtypes
-        std::vector<std::string> subtypes = split(change_type, ',');
-        bool has_extended = false;
-        for (auto &st : subtypes) {
-            if (st.find('.') != std::string::npos || st.find('+') != std::string::npos) {
-                has_extended = true;
-                break;
-            }
-        }
-        for (auto entity : zone_contents) {
-            bool matches = false;
-            if (has_extended) {
-                for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st, -1, "", owner, chain_target)) {
-                        matches = true;
-                        break;
-                    }
-                }
-            } else {
-                auto &cd = global_coordinator.GetComponent<CardData>(entity);
-                for (auto &t : cd.types) {
-                    for (auto &st : subtypes) {
-                        if (t.name == st) {
-                            matches = true;
-                            break;
-                        }
-                    }
-                    if (matches) break;
-                }
-            }
-            if (matches) choices.push_back(entity);
-        }
-    }
+    for (auto entity : zone_contents)
+        if (search_candidate_matches(entity, change_type, -1, "", owner, chain_target))
+            choices.push_back(entity);
 
     bool show_fail_to_find = !mandatory || choices.empty();
     if (mandatory && choices.empty()) return 0;

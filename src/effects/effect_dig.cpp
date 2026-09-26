@@ -88,62 +88,23 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
         rt.lib = orderer->get_library_top(dig_owner, effective_dig_num);
 
-        // Parse change_valid filters (comma-separated "Card.Creature,Card.Land" etc.)
-        std::vector<std::string> filters;
-        if (!ab.change_valid.empty()) {
-            size_t fp = 0;
-            while (true) {
-                size_t comma = ab.change_valid.find(',', fp);
-                if (comma == std::string::npos) {
-                    filters.push_back(ab.change_valid.substr(fp));
-                    break;
-                }
-                filters.push_back(ab.change_valid.substr(fp, comma - fp));
-                fp = comma + 1;
-            }
+        // ChangeValid$ (Once Upon a Time's Card.Creature,Card.Land, Malevolent Rumble's Permanent,
+        // Birthing Ritual's Creature.cmcLEX) is matched by the shared filter matcher against each
+        // card. Its X (cmcLEX) is resolved from dynamic_amount_expr when the script supplies one
+        // (Birthing Ritual: 1 + the sacrificed creature's mana value), else it is the X paid.
+        MatchCtx mctx;
+        mctx.controller = dig_owner;
+        mctx.source = ab.source;
+        if (!ab.change_valid.empty() && ab.change_valid.find("cmcLE") != std::string::npos &&
+            !ab.dynamic_amount_expr.empty()) {
+            mctx.cmc_bound = static_cast<int>(
+                evaluate_dynamic_amount(ab.dynamic_amount_expr, dig_owner, orderer, ab.target));
+            mctx.cmc_op = "LE";
         }
-
-        // A filter like "Creature.cmcLEX" or "Card.cmcLEX" carries a mana-value bound X, resolved
-        // from dynamic_amount_expr (e.g. Birthing Ritual: 1 + sacrificed creature's mana value).
-        bool has_cmc_le = !ab.change_valid.empty() && ab.change_valid.find("cmcLE") != std::string::npos;
-        int cmc_threshold = 0;
-        if (has_cmc_le && !ab.dynamic_amount_expr.empty())
-            cmc_threshold = static_cast<int>(evaluate_dynamic_amount(ab.dynamic_amount_expr, dig_owner, orderer, ab.target));
-
-        // Filter matching cards. A filter is dot-separated: "Card" is a type wildcard, a "cmc.."
-        // token is a mana-value bound (handled above), and any other token is the required type
-        // (so both "Card.Creature" and "Creature.cmcLEX" name the Creature type).
         std::vector<Entity> matching;
-        for (auto e : rt.lib) {
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            bool card_matches = filters.empty();
-            for (auto &f : filters) {
-                std::string want_type;
-                size_t start = 0;
-                while (start <= f.size()) {
-                    size_t dot = f.find('.', start);
-                    std::string part = f.substr(start, dot == std::string::npos ? std::string::npos : dot - start);
-                    if (!part.empty() && part != "Card" && part.rfind("cmc", 0) != 0)
-                        want_type = part;
-                    if (dot == std::string::npos) break;
-                    start = dot + 1;
-                }
-                bool type_ok = want_type.empty();
-                // "Permanent" is not a printed type name — it's the permanent-card-type class
-                // (CR 110.4a). Malevolent Rumble's ChangeValid$ Permanent matches any permanent
-                // card (artifact/creature/enchantment/land/planeswalker/battle).
-                if (!type_ok && want_type == "Permanent")
-                    type_ok = is_permanent_card(cd);
-                else if (!type_ok)
-                    for (auto &t : cd.types)
-                        if (t.name == want_type) { type_ok = true; break; }
-                if (type_ok) { card_matches = true; break; }
-            }
-            if (!card_matches) continue;
-            // Apply the mana-value bound if present (cmc <= threshold).
-            if (has_cmc_le && card_mana_value(cd) > cmc_threshold) continue;
-            matching.push_back(e);
-        }
+        for (auto e : rt.lib)
+            if (ab.change_valid.empty() || card_matches_filter(e, ab.change_valid, mctx))
+                matching.push_back(e);
 
         game_log("%s looks at the top %zu card(s) of %s library.\n", actor_name.c_str(), rt.lib.size(),
                  owner_poss.c_str());

@@ -25,31 +25,11 @@ namespace effects {
 // Forward declaration (see definition below).
 static bool discard_filter_matches(Entity e, const std::string &discard_valid);
 
-// True if the card entity `e` matches a DiscardValid$ filter spec — a "Card." head
-// followed by '+'-delimited constraints. Supported constraints: non<Type> (the card must
-// not have that card type) and NamedCard (the card's name must equal the name chosen by a
-// preceding NameCard effect, cur_game.named_card; CR 201.4). An empty filter matches all.
+// True if the card entity `e` matches a DiscardValid$ filter spec (Thoughtseize's
+// Card.nonLand, Cabal Therapy's Card.NamedCard, Mox Diamond's Land), matched by the shared filter
+// matcher against the card's characteristics. An empty filter matches every card.
 static bool discard_filter_matches(Entity e, const std::string &discard_valid) {
-    if (discard_valid.empty()) return true;
-    auto &cd = global_coordinator.GetComponent<CardData>(e);
-    std::string filter = discard_valid;
-    if (filter.rfind("Card.", 0) == 0) filter = filter.substr(5);
-    size_t fp = 0;
-    while (fp < filter.size()) {
-        size_t plus = filter.find('+', fp);
-        if (plus == std::string::npos) plus = filter.size();
-        std::string constraint = filter.substr(fp, plus - fp);
-        if (constraint == "NamedCard") {
-            // No name has been chosen → nothing matches (the named-card discard does nothing).
-            if (cur_game.named_card.empty() || cd.name != cur_game.named_card) return false;
-        } else if (constraint.rfind("non", 0) == 0) {
-            std::string excluded_type = constraint.substr(3);
-            for (auto &t : cd.types)
-                if (t.name == excluded_type) return false;
-        }
-        fp = plus + 1;
-    }
-    return true;
+    return discard_valid.empty() || card_matches_filter(e, discard_valid);
 }
 
 HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
