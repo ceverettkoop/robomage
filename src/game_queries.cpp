@@ -8,9 +8,19 @@
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/player.h"
+#include "ecs/events.h"
+#include "machine_io.h"
 #include "svar_eval.h"
+#include "systems/rules_modifying.h"
 
 extern Coordinator global_coordinator;
+
+static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt);
+static Step delayed_fire_step(uint32_t fire_on);
+static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt);
+static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
+                                                 Zone::Ownership source_ctrl,
+                                                 Zone::Ownership player);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
@@ -18,10 +28,34 @@ extern Coordinator global_coordinator;
 // rather than inline in game_queries.h so the header does not need to depend on game.h (and the
 // cur_game.last_known_info store).
 
-// Look up a leaving-the-battlefield snapshot, if one was captured for `e`.
-static const LastKnownInfo *lki_for(Entity e) {
+// Look up a leaving-the-battlefield snapshot, if one was captured for `e` (declared in
+// game_queries.h).
+const LastKnownInfo *lki_for(Entity e) {
+    const LastKnownInfo *lki = departed_lki_for(e);
+    return (lki && !lki->superseded) ? lki : nullptr;
+}
+
+const LastKnownInfo *departed_lki_for(Entity e) {
     auto it = cur_game.last_known_info.find(e);
     return it == cur_game.last_known_info.end() ? nullptr : &it->second;
+}
+
+void supersede_last_known_info(Entity e) {
+    auto it = cur_game.last_known_info.find(e);
+    if (it != cur_game.last_known_info.end()) it->second.superseded = true;
+}
+
+void supersede_departed_cards() {
+    for (auto &kv : cur_game.last_known_info)
+        if (!kv.second.is_token) kv.second.superseded = true;
+}
+
+void forget_last_known_info(Entity e) { cur_game.last_known_info.erase(e); }
+
+std::string last_known_name(Entity e) {
+    const LastKnownInfo *lki = lki_for(e);
+    if (!lki || lki->name.empty()) return "";
+    return lki->is_token ? lki->name + " token" : lki->name;
 }
 
 int effective_power(Entity e) {
@@ -93,12 +127,14 @@ std::string entity_name(Entity e) {
         if (ab.source != 0 && ab.source != e &&
             (global_coordinator.entity_has_component<Permanent>(ab.source) ||
              global_coordinator.entity_has_component<CardData>(ab.source) ||
-             global_coordinator.entity_has_component<Token>(ab.source)))
+             global_coordinator.entity_has_component<Token>(ab.source) ||
+             !last_known_name(ab.source).empty()))
             return entity_name(ab.source) + "'s ability";
         if (!ab.category.empty()) return ab.category + " ability";
         return "an ability";
     }
-    return "<unknown>";
+    std::string lk = last_known_name(e);
+    return lk.empty() ? "<unknown>" : lk;
 }
 
 // Strip Permanent/Creature/Damage from a card no longer on the battlefield (or re-entering it as
@@ -259,7 +295,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
                                 || v.owner != ctx.controller;
     if (q == "token")        return v.is_token;
     if (q == "nonToken" || q == "!token") return !v.is_token;
-    if (q == "ThisTurnEntered") return v.on_battlefield && v.entered_on_turn == static_cast<long>(cur_game.turn);
+    if (q == "ThisTurnEntered") return v.on_battlefield && entered_battlefield_this_turn(v.entered_on_turn);
     // live combat / tap state (e.g. Guide of Souls' ValidTgts$ Creature.attacking) — only a
     // battlefield permanent can be in these states; a card view leaves them false.
     if (q == "attacking") return v.is_attacking;
@@ -577,6 +613,166 @@ Entity returnable_exiled_card(Entity host) {
     return 0;
 }
 
+CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
+    CardPlayPermission out;
+    if (!global_coordinator.entity_has_component<Zone>(card)) return out;
+    if (!global_coordinator.entity_has_component<CardData>(card)) return out;
+    const auto &zone = global_coordinator.GetComponent<Zone>(card);
+    const auto &cd = global_coordinator.GetComponent<CardData>(card);
+    // A source that outlives this turn's cleanup clears this; it starts true and is only
+    // reported when some source applies.
+    bool all_expire = true;
+    if (zone.location == Zone::GRAVEYARD) {
+        if (zone.owner != player) return out;
+        bool land = is_land_card(cd);
+        if (cd.has_flashback) { out.sources |= CardPlayPermission::FLASHBACK; all_expire = false; }
+        if (cd.has_escape) { out.sources |= CardPlayPermission::ESCAPE; all_expire = false; }
+        if (!land && cur_game.may_cast_this_turn.count(card))
+            out.sources |= CardPlayPermission::GRAVEYARD_CAST;
+        if (land && rules_mod::may_play_lands_from_graveyard(player)) {
+            out.sources |= CardPlayPermission::GRAVEYARD_LAND;
+            all_expire = false;
+        }
+    } else if (zone.location == Zone::EXILE) {
+        auto it = cur_game.impulse_cast_permission.find(card);
+        if (it == cur_game.impulse_cast_permission.end()) return out;
+        const Game::ImpulseCastPermission &g = it->second;
+        if (g.caster != player) return out;
+        if (is_land_card(cd) &&
+            (g.resource != Game::ImpulseCastPermission::NORMAL || !g.allow_land))
+            return out;
+        out.sources |= CardPlayPermission::EXILE_GRANT;
+        // Mirrors the cleanup expiry in game.cpp: a warp grant lasts while the card stays
+        // in exile; an until-the-end-of-your-next-turn grant lapses at a later turn's cleanup
+        // whose active player is its caster; every other grant lapses at this cleanup.
+        Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+        bool expires = !g.warp && (!g.persist_until_end_of_next_turn ||
+                                   (g.caster == active && cur_game.turn > g.grant_turn));
+        if (!expires) all_expire = false;
+    }
+    out.expires_this_turn = out.playable() && all_expire;
+    return out;
+}
+
+int exiled_card_counters(Entity card) {
+    int n = 0;
+    auto it = cur_game.suspend_time_counters.find(card);
+    if (it != cur_game.suspend_time_counters.end() && it->second > 0) n += it->second;
+    if (cur_game.void_countered.count(card)) n += 1;
+    return n;
+}
+
+static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt) {
+    if (dt.fire_on_leave_battlefield) return DelayedTriggerLink::FIRE_LEAVES_BATTLEFIELD;
+    if (dt.fire_on == Events::UPKEEP_BEGAN) return DelayedTriggerLink::FIRE_UPKEEP;
+    if (dt.fire_on == Events::END_STEP_BEGAN) return DelayedTriggerLink::FIRE_END_STEP;
+    if (dt.fire_on == Events::END_OF_COMBAT_BEGAN) return DelayedTriggerLink::FIRE_END_OF_COMBAT;
+    return DelayedTriggerLink::FIRE_OTHER;
+}
+
+// The step whose beginning fires a phase-based delayed trigger's event, or CLEANUP (never
+// ahead of any step that fires one) for an event with no step.
+static Step delayed_fire_step(uint32_t fire_on) {
+    if (fire_on == Events::UPKEEP_BEGAN) return UPKEEP;
+    if (fire_on == Events::DRAW_STEP_BEGAN) return DRAW;
+    if (fire_on == Events::END_OF_COMBAT_BEGAN) return END_OF_COMBAT;
+    if (fire_on == Events::END_STEP_BEGAN) return END_STEP;
+    return CLEANUP;
+}
+
+static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt) {
+    if (!dt.remembered_objects.empty()) return dt.remembered_objects;
+    std::vector<Entity> targets;
+    for (Entity t : dt.ability.targets)
+        if (t != 0 && !global_coordinator.entity_has_component<Player>(t)) targets.push_back(t);
+    if (!targets.empty()) return targets;
+    if (!dt.ability.restore_remembered_exiled_with.empty())
+        return dt.ability.restore_remembered_exiled_with;
+    if (dt.watch_entity != 0) return {dt.watch_entity};
+    return {};
+}
+
+void register_delayed_trigger(DelayedTrigger dt, Entity creator) {
+    DelayedTriggerLink &link = dt.ability.delayed_link;
+    link.seq = cur_game.next_delayed_seq++;
+    link.creator = creator;
+    link.creator_vocab_idx = action_card_vocab_idx(creator);
+    if (link.subjects.empty()) link.subjects = derive_delayed_subjects(dt);
+    link.subject_vocab_idx = link.subjects.empty() ? -1 : action_card_vocab_idx(link.subjects[0]);
+    link.fire_kind = delayed_fire_kind(dt);
+    cur_game.delayed_triggers.push_back(std::move(dt));
+}
+
+bool is_waiting_delayed_trigger_subject(Entity e) {
+    if (e == 0) return false;
+    for (const auto &dt : cur_game.delayed_triggers) {
+        if (dt.watch_entity == e) return true;
+        for (Entity s : dt.ability.delayed_link.subjects)
+            if (s == e) return true;
+    }
+    return false;
+}
+
+bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt) {
+    if (dt.fire_on_leave_battlefield) return false;
+    if (dt.fire_on_turn > cur_game.turn) return false;
+    Entity active = cur_game.player_a_turn ? cur_game.player_a_entity : cur_game.player_b_entity;
+    if (dt.restrict_player != 0 && dt.restrict_player != active) return false;
+    return cur_game.cur_step < delayed_fire_step(dt.fire_on);
+}
+
+// True if `r` is a battlefield CANT_BE_COUNTERED replacement whose ValidSA$ filter is the bare
+// controller-scoped spell filter covering every spell `player` controls, given that the
+// replacement's source is controlled by `source_ctrl`.
+static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
+                                                 Zone::Ownership source_ctrl,
+                                                 Zone::Ownership player) {
+    if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) return false;
+    if (r.valid_sa_filter == "Spell.YouCtrl") return source_ctrl == player;
+    if (r.valid_sa_filter == "Spell.OppCtrl") return source_ctrl != player;
+    return false;
+}
+
+bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities) {
+    if (cur_game.cant_counter_spells_of.count(player) > 0) return true;
+    for (auto e : battlefield_permanents(entities)) {
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
+        for (const auto &r : global_coordinator.GetComponent<CardData>(e).replacement_effects)
+            if (unfiltered_counter_protection_covers(r, ctrl, player)) return true;
+    }
+    return false;
+}
+
+PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &entities) {
+    PlayerEffects fx;
+    for (const auto &p : cur_game.player_protection_from_everything)
+        if (p.player == player) fx.protection_from_everything = true;
+    fx.cant_gain_life = player_cant_gain_life(get_player_entity(player));
+    const Colors wubrg[5] = {WHITE, BLUE, BLACK, RED, GREEN};
+    for (const auto &h : cur_game.hexproof_from_colors_this_turn) {
+        if (h.player != player) continue;
+        for (int i = 0; i < 5; i++)
+            if (h.colors.count(wubrg[i])) fx.hexproof_from[i] = true;
+    }
+    fx.spells_cant_be_countered = player_spells_cant_be_countered(player, entities);
+    for (const auto &perm : cur_game.cast_with_flash_permissions)
+        if (perm.controller == player) fx.may_cast_sorceries_as_flash = true;
+    fx.restricted_to_sorcery_speed = rules_mod::opponent_sorcery_speed_locked(player);
+    for (const auto &emb : cur_game.emblems) {
+        if (emb.controller != player || emb.source_vocab_idx < 0) continue;
+        if (std::find(fx.emblem_vocab_idx.begin(), fx.emblem_vocab_idx.end(),
+                      emb.source_vocab_idx) == fx.emblem_vocab_idx.end())
+            fx.emblem_vocab_idx.push_back(emb.source_vocab_idx);
+    }
+    for (const auto &ft : cur_game.floating_triggers) {
+        if (ft.controller != player || ft.floating_creator_vocab_idx < 0) continue;
+        fx.floating_trigger_vocab_idx = ft.floating_creator_vocab_idx;
+        break;
+    }
+    return fx;
+}
+
 static Zone::Ownership opponent_of(Zone::Ownership p) {
     if (p == Zone::PLAYER_A) return Zone::PLAYER_B;
     if (p == Zone::PLAYER_B) return Zone::PLAYER_A;
@@ -593,6 +789,15 @@ Zone::Ownership resolve_defined_player(const Ability &ab) {
     // check_triggered_abilities' delayed-trigger leave-battlefield path).
     if (ab.defined_triggered_card_controller) return ab.triggered_player;
     return Zone::UNKNOWN;
+}
+
+bool entered_battlefield_this_turn(long entered_on_turn) {
+    return entered_on_turn == static_cast<long>(cur_game.turn);
+}
+
+int ability_resolutions_this_turn(Entity source) {
+    auto it = cur_game.ability_resolution_counts.find(source);
+    return it != cur_game.ability_resolution_counts.end() ? it->second : 0;
 }
 
 // CR 702.131b: Ascend on a permanent — any time its controller controls ten or more

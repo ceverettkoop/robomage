@@ -37,3 +37,16 @@ const char *mana_symbol_str(Colors color) {
         default:        return "?";
     }
 }
+
+std::string mana_value_text(const ManaValue &mana) {
+    size_t generic = mana.count(GENERIC);
+    std::string out;
+    if (generic > 0 || mana.empty()) out += "{" + std::to_string(generic) + "}";
+    for (Colors c : mana) {
+        if (c == GENERIC) continue;
+        out += "{";
+        out += mana_symbol_str(c);
+        out += "}";
+    }
+    return out;
+}

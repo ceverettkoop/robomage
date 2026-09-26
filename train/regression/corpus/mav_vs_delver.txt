@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Horizon Canopy, Savannah, Savannah, Swords to Plowshares, Wasteland, Windswept Heath, Windswept Heath | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -58,6 +59,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Forest, Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Forest, Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Forest
    1: Green Sun's Zenith
@@ -111,6 +115,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -124,9 +129,9 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Talon Gates of Madara
+  Self BF:  Talon Gates of Madara (NEW)
   Pending: Talon Gates of Madara (self)
-  Extras: self_lands_played=1
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: No target
   >> A/A: 0 (No target)
@@ -151,6 +156,8 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Talon Gates of Madara
   Opp revealed: Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -167,9 +174,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
   Opp BF:   Talon Gates of Madara
   Opp revealed: Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -185,10 +194,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Talon Gates of Madara
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -202,11 +212,12 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Talon Gates of Madara
   Pending: Mishra's Bauble (self)
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (20 life)
@@ -221,12 +232,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -248,7 +260,8 @@
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -266,12 +279,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -285,12 +299,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -308,13 +323,14 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(8): Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn, Thundering Falls | lib 48
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Brainstorm (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
    1: Mishra's Bauble
@@ -334,14 +350,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Volcanic Island, Scalding Tarn, Thundering Falls | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Brainstorm (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Brainstorm (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, ?, ?, ?, ?
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
    1: Mishra's Bauble
@@ -363,12 +380,14 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Mishra's Bauble, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Talon Gates of Madara
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Mishra's Bauble  [#0]
@@ -381,13 +400,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Mishra's Bauble (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -400,12 +421,14 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble | Island (T)
+  Self BF:  Mishra's Bauble (NEW) | Island (T,NEW)
   Opp BF:   Talon Gates of Madara
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -418,13 +441,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Ponder, Scalding Tarn, Thundering Falls | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble | Island (T)
+  Self BF:  Mishra's Bauble (NEW) | Island (T,NEW)
   Opp BF:   Talon Gates of Madara
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -454,9 +479,11 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Island (T)
   Opp BF:   Talon Gates of Madara
+  Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
   Opp revealed: Talon Gates of Madara
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Delayed trigger  [#0]
    1: Delayed trigger  [#1]
@@ -479,6 +506,8 @@
   Opp BF:   Island (T)
   Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
+  This turn: self drawn=1 | opp drawn=2
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -497,6 +526,8 @@
   Stack: Once Upon a Time (spell, opponent)
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=2 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -516,8 +547,10 @@
   Pending: Once Upon a Time (self)
   Opp GY:  Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Polluted Delta, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp drawn=2
+  Extras: not_priority_window, self_mulligans=1
   Actions:
-   0: Take nothing
+   0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
    2: Collector Ouphe
    3: Noble Hierarch
@@ -545,6 +578,8 @@
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -568,6 +603,8 @@
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -589,6 +626,8 @@
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler  [#2]
    1: Cori-Steel Cutter  [#2]
@@ -608,7 +647,10 @@
   Pending: Ponder (self)
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Cori-Steel Cutter  [#1]
    1: Unholy Heat  [#1]
@@ -627,6 +669,8 @@
   Opp GY:  Once Upon a Time
   Known top: Unholy Heat, Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -646,6 +690,8 @@
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -661,13 +707,14 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Lightning Bolt, Daze, Unholy Heat, Volcanic Island, Scalding Tarn, Thundering Falls | lib 46
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Island (T) | Volcanic Island
+  Self BF:  Island (T) | Volcanic Island (NEW)
   Opp BF:   Talon Gates of Madara
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
@@ -682,14 +729,15 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Lightning Bolt, Daze, Unholy Heat, Volcanic Island, Scalding Tarn, Thundering Falls | lib 46
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Island (T) | Volcanic Island (T)
+  Self BF:  Island (T) | Volcanic Island (T,NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Dragon's Rage Channeler (spell, self)
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=UR
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -723,6 +771,7 @@
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -743,6 +792,7 @@
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -766,6 +816,8 @@
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -780,7 +832,7 @@
   Step: Upkeep (turn 6)
   Self:  19 life | mana: empty | hand(5): Daze, Unholy Heat, Volcanic Island, Scalding Tarn, Thundering Falls | lib 46
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island | Volcanic Island (T)
   Opp BF:   Talon Gates of Madara
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
   Pending: Dragon's Rage Channeler (self)
@@ -788,6 +840,8 @@
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Cori-Steel Cutter on top of library  [#0]
    1: Put Cori-Steel Cutter into graveyard
@@ -800,13 +854,15 @@
   Step: Upkeep (turn 6)
   Self:  19 life | mana: empty | hand(5): Daze, Unholy Heat, Volcanic Island, Scalding Tarn, Thundering Falls | lib 45
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island | Volcanic Island (T)
   Opp BF:   Talon Gates of Madara
   Stack: Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Dragon's Rage Channeler, ?, ?, ?, ?
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -821,11 +877,13 @@
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Daze, Unholy Heat, Volcanic Island, Scalding Tarn, Thundering Falls | lib 44
   Opp:   17 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island | Volcanic Island (T)
   Opp BF:   Talon Gates of Madara
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -840,12 +898,13 @@
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Daze, Unholy Heat, Scalding Tarn, Thundering Falls | lib 44
   Opp:   17 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island | Volcanic Island (T) | Volcanic Island (NEW)
   Opp BF:   Talon Gates of Madara
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
@@ -860,13 +919,14 @@
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Daze, Unholy Heat, Scalding Tarn, Thundering Falls | lib 44
   Opp:   17 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island | Volcanic Island (T) | Volcanic Island (T,NEW)
   Opp BF:   Talon Gates of Madara
   Stack: Dragon's Rage Channeler (spell, self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -883,12 +943,13 @@
   Step: Declare Atk (turn 6)
   Self:  19 life | mana: empty | hand(4): Daze, Unholy Heat, Scalding Tarn, Thundering Falls | lib 44
   Opp:   17 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK,res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island | Volcanic Island (T) | Volcanic Island (T,NEW)
   Opp BF:   Talon Gates of Madara
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -915,6 +976,8 @@
   Self GY: Once Upon a Time
   Opp GY:  Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Volcanic Island, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Karakas
@@ -927,12 +990,13 @@
   Step: First Main (turn 7)
   Self:  14 life | mana: empty | hand(7): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 50
   Opp:   19 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Karakas | Talon Gates of Madara
+  Self BF:  Karakas (NEW) | Talon Gates of Madara
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Once Upon a Time
   Opp GY:  Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Volcanic Island, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -949,12 +1013,14 @@
   Step: First Main (turn 7)
   Self:  14 life | mana: empty | hand(7): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 50
   Opp:   19 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Karakas | Talon Gates of Madara
+  Self BF:  Karakas (NEW) | Talon Gates of Madara
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
+  Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Volcanic Island, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: X = 0  [#0]
   >> A/A: 0 (X = 0)
@@ -970,12 +1036,13 @@
   Self:  19 life | mana: empty | hand(4): Daze, Unholy Heat, Scalding Tarn, Thundering Falls | lib 44
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Karakas (T) | Talon Gates of Madara (T)
+  Opp BF:   Karakas (T,NEW) | Talon Gates of Madara (T)
   Stack: Green Sun's Zenith (spell, opponent)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -989,13 +1056,14 @@
   Self:  19 life | mana: empty | hand(4): Daze, Unholy Heat, Scalding Tarn, Thundering Falls | lib 44
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Karakas (T) | Talon Gates of Madara (T)
+  Opp BF:   Karakas (T,NEW) | Talon Gates of Madara (T)
   Stack: Green Sun's Zenith (spell, opponent)
   Pending: Daze (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Green Sun's Zenith
   >> B/B: 0 (Green Sun's Zenith)
@@ -1008,12 +1076,14 @@
   Self:  19 life | mana: empty | hand(4): Daze, Unholy Heat, Scalding Tarn, Thundering Falls | lib 44
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Karakas (T) | Talon Gates of Madara (T)
+  Opp BF:   Karakas (T,NEW) | Talon Gates of Madara (T)
   Stack: Green Sun's Zenith (spell, opponent)
+  Pending: Daze (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Return Island
    1: Return Volcanic Island
@@ -1030,12 +1100,14 @@
   Self:  19 life | mana: empty | hand(4): Unholy Heat, Island, Scalding Tarn, Thundering Falls | lib 44
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Karakas (T) | Talon Gates of Madara (T)
+  Opp BF:   Karakas (T,NEW) | Talon Gates of Madara (T)
   Stack: Daze (spell, self) -> Green Sun's Zenith (opponent, slot 97) -> Green Sun's Zenith (spell, opponent)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler (Surveil)  [#0]
    1: Dragon's Rage Channeler (Surveil)  [#1]
@@ -1052,14 +1124,15 @@
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(4): Unholy Heat, Island, Scalding Tarn, Thundering Falls | lib 44
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Karakas (T) | Talon Gates of Madara (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK,res 1) | Volcanic Island (T) | Volcanic Island (T)
+  Opp BF:   Karakas (T,NEW) | Talon Gates of Madara (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Green Sun's Zenith (opponent, slot 99) -> Green Sun's Zenith (spell, opponent)
   Pending: Dragon's Rage Channeler (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Cori-Steel Cutter on top of library  [#0]
    1: Put Cori-Steel Cutter into graveyard
@@ -1075,14 +1148,15 @@
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(4): Unholy Heat, Island, Scalding Tarn, Thundering Falls | lib 43
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Karakas (T) | Talon Gates of Madara (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,res 1) | Volcanic Island (T) | Volcanic Island (T)
+  Opp BF:   Karakas (T,NEW) | Talon Gates of Madara (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Green Sun's Zenith (opponent, slot 98) -> Green Sun's Zenith (spell, opponent)
   Pending: Dragon's Rage Channeler (self)
   Self GY: Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: opp_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Delver of Secrets on top of library  [#0]
    1: Put Delver of Secrets into graveyard
@@ -1097,17 +1171,19 @@
   Step: First Main (turn 7)
   Self:  14 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 50
   Opp:   19 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Karakas (T) | Talon Gates of Madara (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Karakas (T,NEW) | Talon Gates of Madara (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,res 1) | Volcanic Island (T) | Volcanic Island (T)
   Stack: Daze (spell, opponent) -> Green Sun's Zenith (self, slot 97) -> Green Sun's Zenith (spell, self)
+  Pending: Daze (opp)
   Self GY: Once Upon a Time
   Opp GY:  Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter
-  Extras: self_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, opp_revolt, not_priority_window, self_mulligans=1
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Don't pay (spell is countered))
+   0: Don't pay (Green Sun's Zenith is countered)  [#0]
+  >> A/A: 0 (Don't pay (Green Sun's Zenith is countered))
 --- Narrative ---
   Green Sun's Zenith is countered
   No creatures eligible to attack.
@@ -1129,6 +1205,7 @@
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Unholy Heat  [#0]
@@ -1147,6 +1224,7 @@
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
    1: Dragon's Rage Channeler
@@ -1165,9 +1243,12 @@
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Volcanic Island (T) | Volcanic Island
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Stack: Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler (Surveil)  [#0]
    1: Dragon's Rage Channeler (Surveil)  [#1]
@@ -1184,13 +1265,15 @@
   Step: Upkeep (turn 8)
   Self:  19 life | mana: empty | hand(3): Island, Scalding Tarn, Thundering Falls | lib 42
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Volcanic Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Volcanic Island (T) | Volcanic Island
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
   Pending: Dragon's Rage Channeler (self)
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Scalding Tarn on top of library  [#0]
    1: Put Scalding Tarn into graveyard
@@ -1206,13 +1289,15 @@
   Step: Upkeep (turn 8)
   Self:  19 life | mana: empty | hand(3): Island, Scalding Tarn, Thundering Falls | lib 41
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Volcanic Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Volcanic Island (T) | Volcanic Island
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
   Pending: Dragon's Rage Channeler (self)
   Self GY: Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
@@ -1229,12 +1314,13 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Daze, Island, Scalding Tarn, Thundering Falls | lib 39
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Volcanic Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Volcanic Island (T) | Volcanic Island
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -1252,12 +1338,13 @@
   Step: Declare Atk (turn 8)
   Self:  19 life | mana: empty | hand(3): Daze, Scalding Tarn, Thundering Falls | lib 39
   Opp:   14 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Volcanic Island (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK,res 1) | Island (NEW) | Volcanic Island (T) | Volcanic Island
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1284,6 +1371,8 @@
   Self GY: Green Sun's Zenith, Once Upon a Time
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -1301,9 +1390,12 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Karakas | Talon Gates of Madara
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Volcanic Island (T) | Volcanic Island
+  Pending: Green Sun's Zenith (self)
   Self GY: Green Sun's Zenith, Once Upon a Time
   Opp GY:  Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self drawn=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: X = 0  [#0]
   >> A/A: 0 (X = 0)
@@ -1324,6 +1416,8 @@
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze  [#0]
@@ -1344,6 +1438,8 @@
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Green Sun's Zenith
   >> B/B: 0 (Green Sun's Zenith)
@@ -1362,13 +1458,15 @@
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(2): Scalding Tarn, Thundering Falls | lib 39
   Opp:   11 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Island (T) | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Green Sun's Zenith (opponent, slot 98) -> Green Sun's Zenith (spell, opponent)
   Pending: Dragon's Rage Channeler (self)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Mishra's Bauble on top of library  [#0]
    1: Put Mishra's Bauble into graveyard
@@ -1384,14 +1482,17 @@
   Self:  11 life | mana: empty | hand(6): Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 49
   Opp:   19 life | mana: empty | hand count: 2 | lib 38
   Self BF:  Karakas (T) | Talon Gates of Madara (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Volcanic Island (T) | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Island (T) | Volcanic Island (T) | Volcanic Island (T)
   Stack: Daze (spell, opponent) -> Green Sun's Zenith (self, slot 97) -> Green Sun's Zenith (spell, self)
+  Pending: Daze (opp)
   Self GY: Green Sun's Zenith, Once Upon a Time
   Opp GY:  Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: not_priority_window, self_mulligans=1
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Don't pay (spell is countered))
+   0: Don't pay (Green Sun's Zenith is countered)  [#0]
+  >> A/A: 0 (Don't pay (Green Sun's Zenith is countered))
 --- Narrative ---
   Green Sun's Zenith is countered
   No creatures eligible to attack.
@@ -1414,6 +1515,8 @@
   Self GY: Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1427,12 +1530,13 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 37
   Opp:   11 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island | Volcanic Island | Scalding Tarn
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island | Volcanic Island | Scalding Tarn (NEW)
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -1456,7 +1560,8 @@
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Mountain
@@ -1475,12 +1580,13 @@
   Step: Declare Atk (turn 10)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 36
   Opp:   11 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain (NEW) | Volcanic Island | Volcanic Island
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1507,6 +1613,8 @@
   Self GY: Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -1525,11 +1633,13 @@
   Step: First Main (turn 11)
   Self:  8 life | mana: empty | hand(6): Life from the Loam, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wooded Foothills | lib 48
   Opp:   18 life | mana: empty | hand count: 2 | lib 36
-  Self BF:  Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T)
+  Self BF:  Karakas (T) | Noble Hierarch [0/1] (SICK,NEW) | Talon Gates of Madara (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -1542,12 +1652,13 @@
   Step: First Main (turn 11)
   Self:  8 life | mana: empty | hand(5): Life from the Loam, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
   Opp:   18 life | mana: empty | hand count: 2 | lib 36
-  Self BF:  Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T) | Wooded Foothills
+  Self BF:  Karakas (T) | Noble Hierarch [0/1] (SICK,NEW) | Talon Gates of Madara (T) | Wooded Foothills (NEW)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Self GY: Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wooded Foothills (ChangeZone)  [#0]
@@ -1564,14 +1675,15 @@
   Step: First Main (turn 11)
   Self:  7 life | mana: empty | hand(5): Life from the Loam, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
   Opp:   18 life | mana: empty | hand count: 2 | lib 36
-  Self BF:  Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T)
+  Self BF:  Karakas (T) | Noble Hierarch [0/1] (SICK,NEW) | Talon Gates of Madara (T)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island
   Stack: Wooded Foothills (ability, self)
   Pending: Wooded Foothills (self)
   Self GY: Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -1604,6 +1716,8 @@
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Thundering Falls
@@ -1621,14 +1735,15 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(2): Force of Will, Force of Will | lib 35
   Opp:   7 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T,NEW,res 1)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T)
   Stack: Thundering Falls (ability, self) [amt=1]
   Pending: Thundering Falls (self)
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Force of Will on top of library  [#0]
    1: Put Force of Will into graveyard
@@ -1644,12 +1759,13 @@
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(2): Force of Will, Force of Will | lib 34
   Opp:   7 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T,NEW,res 1)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T)
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1676,6 +1792,8 @@
   Self GY: Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Life from the Loam  [#0]
@@ -1699,6 +1817,8 @@
   Self GY: Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self drawn=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Done selecting targets
    1: Wooded Foothills
@@ -1720,6 +1840,8 @@
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1740,6 +1862,8 @@
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Life from the Loam
   >> B/B: 0 (Life from the Loam)
@@ -1754,9 +1878,12 @@
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] | Talon Gates of Madara
   Stack: Life from the Loam (spell, opponent)
+  Pending: Force of Will (self)
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Force of Will
   >> B/B: 0 (Exile Force of Will)
@@ -1774,7 +1901,7 @@
   Step: First Main (turn 13)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 34
   Opp:   4 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] | Talon Gates of Madara
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Force of Will (spell, self) -> Life from the Loam (opponent, slot 98) -> Life from the Loam (spell, opponent)
   Pending: Dragon's Rage Channeler (self)
@@ -1782,6 +1909,8 @@
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Scalding Tarn on top of library  [#0]
    1: Put Scalding Tarn into graveyard
@@ -1797,11 +1926,13 @@
   Self:  4 life | mana: empty | hand(5): Keen-Eyed Curator, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
   Opp:   17 life | mana: empty | hand count: 0 | lib 33
   Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] | Talon Gates of Madara
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T,res 1) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls (T)
   Self GY: Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp exile:  Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Scythecat Cub  [#0]
@@ -1834,6 +1965,8 @@
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Murktide Regent  [#0]
@@ -1848,10 +1981,13 @@
   Opp:   4 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile 2 cards from graveyard (Delve)  [#2]
    1: Exile 3 cards from graveyard (Delve)  [#3]
@@ -1868,10 +2004,13 @@
   Opp:   4 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Delver of Secrets (Delve)
    1: Exile Dragon's Rage Channeler (Delve)
@@ -1905,10 +2044,13 @@
   Opp:   4 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Dragon's Rage Channeler (Delve)
    1: Exile Mishra's Bauble (Delve)
@@ -1941,10 +2083,13 @@
   Opp:   4 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Mishra's Bauble (Delve)
    1: Exile Mishra's Bauble (Delve)
@@ -1976,10 +2121,13 @@
   Opp:   4 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Mishra's Bauble (Delve)
    1: Exile Mishra's Bauble (Delve)
@@ -2010,10 +2158,13 @@
   Opp:   4 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Mishra's Bauble (Delve)
    1: Exile Cori-Steel Cutter (Delve)
@@ -2047,13 +2198,14 @@
   Step: Declare Atk (turn 14)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 32
   Opp:   4 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Murktide Regent [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Self BF:  Murktide Regent [3/3] [Flying] (SICK,NEW) | Dragon's Rage Channeler [3/3] [Flying] (ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Talon Gates of Madara (T)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2080,6 +2232,7 @@
   Opp GY:  Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Draw a card
    1: Dredge Life from the Loam (mill 3)
@@ -2101,6 +2254,7 @@
   Opp GY:  Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Life from the Loam  [#0]
@@ -2124,6 +2278,7 @@
   Opp GY:  Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Done selecting targets
    1: Wooded Foothills
@@ -2146,6 +2301,8 @@
   Opp GY:  Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Thalia, Guardian of Thraben  [#0]
@@ -2163,13 +2320,14 @@
   Step: Declare Atk (turn 15)
   Self:  1 life | mana: empty | hand(3): Keen-Eyed Curator, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 43
   Opp:   17 life | mana: empty | hand count: 0 | lib 32
-  Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Murktide Regent [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Self GY: Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 colors=WG
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Scythecat Cub [2/2]
    1: Confirm attackers
@@ -2197,6 +2355,8 @@
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Murktide Regent  [#0]
@@ -2211,10 +2371,13 @@
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile 2 cards from graveyard (Delve)  [#2]
    1: Exile 3 cards from graveyard (Delve)  [#3]
@@ -2231,10 +2394,13 @@
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Cori-Steel Cutter (Delve)
    1: Exile Cori-Steel Cutter (Delve)
@@ -2263,10 +2429,13 @@
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Cori-Steel Cutter (Delve)
    1: Exile Force of Will (Delve)
@@ -2294,10 +2463,13 @@
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Force of Will (Delve)
    1: Exile Force of Will (Delve)
@@ -2324,10 +2496,13 @@
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Force of Will (Delve)
    1: Exile Brainstorm (Delve)
@@ -2353,10 +2528,13 @@
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Pending: Murktide Regent (self)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Brainstorm (Delve)
@@ -2386,10 +2564,13 @@
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Stack: Murktide Regent (spell, self)
+  Pending: Murktide Regent (self)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Murktide Regent (PutCounter)  [#0]
    1: Murktide Regent (PutCounter)  [#1]
@@ -2407,10 +2588,13 @@
   Self BF:  Murktide Regent [3/3] [Flying] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Stack: Murktide Regent (ability, self) -> Murktide Regent (spell, self)
+  Pending: Murktide Regent (self)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Murktide Regent (PutCounter)  [#0]
    1: Murktide Regent (PutCounter)  [#1]
@@ -2433,13 +2617,14 @@
   Step: Declare Atk (turn 16)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (res 3) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [6/6]
    1: Dragon's Rage Channeler [1/1]
@@ -2455,13 +2640,14 @@
   Step: Declare Atk (turn 16)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK,res 3) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Dragon's Rage Channeler [1/1]
    1: Confirm attackers
@@ -2477,13 +2663,14 @@
   Step: Declare Atk (turn 16)
   Self:  17 life | mana: empty | hand(0): (empty) | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK,res 3) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Opp BF:   Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Self GY: Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Wooded Foothills, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2503,12 +2690,13 @@
   Self:  1 life | mana: empty | hand(3): Keen-Eyed Curator, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 43
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
   Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK,res 3) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Self GY: Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Scythecat Cub [2/2]
    1: Thalia, Guardian of Thraben [2/1]
@@ -2523,12 +2711,14 @@
   Self:  1 life | mana: empty | hand(3): Keen-Eyed Curator, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 43
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
   Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK,res 3) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Pending: Scythecat Cub (self)
   Self GY: Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [1/1]
   >> A/A: 0 (Dragon's Rage Channeler [1/1])
@@ -2547,12 +2737,13 @@
   Self:  1 life | mana: empty | hand(3): Keen-Eyed Curator, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 43
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
   Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (BLK->Dragon's Rage Channeler) | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK,BLOCKED) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK,res 3) | Dragon's Rage Channeler [1/1] (T,ATK,BLOCKED) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Self GY: Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Thalia, Guardian of Thraben [2/1]
    1: Confirm blockers
@@ -2566,12 +2757,14 @@
   Self:  1 life | mana: empty | hand(3): Keen-Eyed Curator, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 43
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
   Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (BLK->Dragon's Rage Channeler) | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK,BLOCKED) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK,res 3) | Dragon's Rage Channeler [1/1] (T,ATK,BLOCKED) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Pending: Thalia, Guardian of Thraben (self)
   Self GY: Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Dragon's Rage Channeler [1/1]
   >> A/A: 0 (Dragon's Rage Channeler [1/1])
@@ -2591,12 +2784,13 @@
   Self:  1 life | mana: empty | hand(3): Keen-Eyed Curator, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 43
   Opp:   17 life | mana: empty | hand count: 0 | lib 31
   Self BF:  Dryad Arbor [1/1] (T) | Karakas (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (BLK->Dragon's Rage Channeler) | Talon Gates of Madara (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (BLK->Dragon's Rage Channeler,SICK)
-  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Dragon's Rage Channeler [1/1] (T,ATK,BLOCKED) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
+  Opp BF:   Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK,res 3) | Dragon's Rage Channeler [1/1] (T,ATK,BLOCKED) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island | Thundering Falls
   Self GY: Life from the Loam, Keen-Eyed Curator, Noble Hierarch, Birds of Paradise, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Opp GY:  Scalding Tarn, Scalding Tarn, Daze, Unholy Heat, Scalding Tarn, Daze, Lightning Bolt, Ponder, Brainstorm, Polluted Delta
   Opp exile:  Brainstorm, Force of Will, Force of Will, Cori-Steel Cutter, Cori-Steel Cutter, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  Extras: mandatory_choice=Declare Blk
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> A/A: 0 (Confirm blockers)

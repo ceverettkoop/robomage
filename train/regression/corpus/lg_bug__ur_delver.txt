@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -58,6 +59,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -111,6 +115,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -134,6 +139,8 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -150,9 +157,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -168,10 +177,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -185,11 +195,12 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Tropical Island
   Pending: Mishra's Bauble (self)
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (20 life)
@@ -204,12 +215,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Opp BF:   Tropical Island
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -231,7 +243,8 @@
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -254,11 +267,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Opp BF:   Tropical Island
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -275,13 +290,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wasteland  [#2]
    1: Scalding Tarn  [#2]
@@ -295,13 +312,16 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
+  Known top: Wasteland, ?, ?, ?, ?
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Scalding Tarn  [#1]
    1: Daze  [#1]
@@ -312,14 +332,16 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Tropical Island
   Stack: Ponder (spell, self)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Known top: Daze, Scalding Tarn, Wasteland, ?, ?
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -355,6 +377,8 @@
   Opp BF:   Tropical Island
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -370,11 +394,12 @@
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Daze, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island, Wasteland | lib 48
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Island | Scalding Tarn
+  Self BF:  Island | Scalding Tarn (NEW)
   Opp BF:   Tropical Island
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -397,7 +422,8 @@
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Mystic Sanctuary
@@ -429,6 +455,8 @@
   Opp BF:   Island | Mystic Sanctuary (T)
   Opp GY:  Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -447,6 +475,8 @@
   Stack: Tamiyo, Inquisitive Student (spell, opponent)
   Self GY: Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -465,6 +495,8 @@
   Pending: Daze (self)
   Self GY: Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tamiyo, Inquisitive Student
   >> B/B: 0 (Tamiyo, Inquisitive Student)
@@ -479,8 +511,11 @@
   Self BF:  Island | Mystic Sanctuary (T)
   Opp BF:   Tropical Island (T)
   Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Pending: Daze (self)
   Self GY: Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Return Island
    1: Return Mystic Sanctuary
@@ -499,13 +534,15 @@
   Self BF:  Tropical Island (T)
   Opp BF:   Mystic Sanctuary (T)
   Stack: Daze (spell, opponent) -> Tamiyo, Inquisitive Student (self, slot 97) -> Tamiyo, Inquisitive Student (spell, self)
+  Pending: Daze (opp)
   Opp GY:  Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Known opp hand: Island
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
-  Extras: opp_revolt
+  This turn: self spells=1 drawn=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: opp_revolt, not_priority_window, self_mulligans=1
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Don't pay (spell is countered))
+   0: Don't pay (Tamiyo, Inquisitive Student is countered)  [#0]
+  >> A/A: 0 (Don't pay (Tamiyo, Inquisitive Student is countered))
 --- Narrative ---
   Tamiyo, Inquisitive Student is countered
   No creatures eligible to attack.
@@ -528,6 +565,8 @@
   Self GY: Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -558,6 +597,8 @@
   Self GY: Tamiyo, Inquisitive Student
   Opp GY:  Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -584,6 +625,8 @@
   Self GY: Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -600,12 +643,13 @@
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Volcanic Island, Volcanic Island, Volcanic Island, Wasteland | lib 45
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Island | Mystic Sanctuary | Scalding Tarn
+  Self BF:  Island | Mystic Sanctuary | Scalding Tarn (NEW)
   Opp BF:   Tropical Island | Tropical Island
   Self GY: Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -629,7 +673,8 @@
   Self GY: Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Thundering Falls
@@ -649,14 +694,15 @@
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Volcanic Island, Volcanic Island, Volcanic Island, Wasteland | lib 44
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Island | Mystic Sanctuary | Thundering Falls (T)
+  Self BF:  Island | Mystic Sanctuary | Thundering Falls (T,NEW,res 1)
   Opp BF:   Tropical Island | Tropical Island
   Stack: Thundering Falls (ability, self) [amt=1]
   Pending: Thundering Falls (self)
   Self GY: Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Dragon's Rage Channeler on top of library  [#0]
    1: Put Dragon's Rage Channeler into graveyard
@@ -689,6 +735,8 @@
   Self GY: Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -707,6 +755,8 @@
   Self GY: Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (17 life)
@@ -727,6 +777,8 @@
   Self GY: Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -746,6 +798,8 @@
   Self GY: Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Lightning Bolt
   >> A/A: 0 (Lightning Bolt)
@@ -760,9 +814,12 @@
   Self BF:  Tropical Island | Tropical Island
   Opp BF:   Island | Mystic Sanctuary | Thundering Falls (T)
   Stack: Lightning Bolt (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
   Self GY: Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp revealed: Lightning Bolt, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Exile Baleful Strix
   >> A/A: 0 (Exile Baleful Strix)
@@ -784,6 +841,8 @@
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -799,13 +858,14 @@
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Volcanic Island, Volcanic Island, Wasteland | lib 42
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Island | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island
+  Self BF:  Island | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (NEW)
   Opp BF:   Tropical Island | Tropical Island
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Opp revealed: Force of Will, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Cori-Steel Cutter  [#0]
@@ -837,6 +897,8 @@
   Opp GY:  Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Swamp
@@ -849,13 +911,14 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   17 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Swamp | Tropical Island | Tropical Island
+  Self BF:  Swamp (NEW) | Tropical Island | Tropical Island
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -874,14 +937,15 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(4): Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   17 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island
+  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T,NEW) | Tropical Island (T) | Tropical Island
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
   Pending: Orcish Bowmasters (self)
   Self GY: Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=B
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Player B (17 life)
    1: Player A (19 life)
@@ -897,13 +961,14 @@
   Self:  17 life | mana: empty | hand(5): Dragon's Rage Channeler, Into the Flood Maw, Volcanic Island, Volcanic Island, Wasteland | lib 42
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island
+  Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T,NEW) | Tropical Island (T) | Tropical Island
   Stack: Orcish Bowmasters (ability, opponent) [amt=1] -> self (player)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=B
+  Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Into the Flood Maw  [#0]
@@ -915,13 +980,15 @@
   Self:  17 life | mana: empty | hand(5): Dragon's Rage Channeler, Into the Flood Maw, Volcanic Island, Volcanic Island, Wasteland | lib 42
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island
+  Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T,NEW) | Tropical Island (T) | Tropical Island
   Stack: Orcish Bowmasters (ability, opponent) [amt=1] -> self (player)
+  Pending: Into the Flood Maw (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=B
+  Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Decline: promise a tapped Fish to your opponent  [#0]
    1: Accept: promise a tapped Fish to your opponent  [#1]
@@ -935,14 +1002,15 @@
   Self:  17 life | mana: empty | hand(5): Dragon's Rage Channeler, Into the Flood Maw, Volcanic Island, Volcanic Island, Wasteland | lib 42
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island
+  Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T,NEW) | Tropical Island (T) | Tropical Island
   Stack: Orcish Bowmasters (ability, opponent) [amt=1] -> self (player)
   Pending: Into the Flood Maw (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 drawn=1 colors=B
+  Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Orcish Bowmasters
   >> B/B: 0 (Orcish Bowmasters)
@@ -979,6 +1047,8 @@
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1007,6 +1077,8 @@
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
    1: Flooded Strand
@@ -1035,6 +1107,8 @@
   Known top: Flooded Strand, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
    1: Flow State
@@ -1059,6 +1133,8 @@
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -1080,6 +1156,8 @@
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (19 life)
    1: Player B (16 life)
@@ -1099,15 +1177,18 @@
   Step: Draw (turn 12)
   Self:  16 life | mana: empty | hand(4): Dragon's Rage Channeler, Flow State, Volcanic Island, Wasteland | lib 40
   Opp:   19 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Monk [1/1] (SICK,NEW)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Stack: Cori-Steel Cutter (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -1122,7 +1203,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(4): Dragon's Rage Channeler, Flow State, Volcanic Island, Wasteland | lib 40
   Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Monk [1/1] (SICK,NEW)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Self GY: Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
@@ -1130,6 +1211,8 @@
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1149,7 +1232,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(3): Flow State, Volcanic Island, Wasteland | lib 40
   Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T) | Monk [1/1] (SICK,NEW)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Self GY: Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
@@ -1157,6 +1240,8 @@
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1170,7 +1255,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(2): Flow State, Wasteland | lib 40
   Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Self GY: Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
@@ -1178,7 +1263,8 @@
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
@@ -1195,16 +1281,18 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(1): Wasteland | lib 40
   Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Stack: Flow State (spell, self)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=4 noncreature=3 instant_sorcery=3 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler (Surveil)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -1223,7 +1311,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(1): Wasteland | lib 40
   Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW,res 1) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Flow State (spell, self)
   Pending: Dragon's Rage Channeler (self)
@@ -1233,7 +1321,8 @@
   Known top: Volcanic Island, Flooded Strand, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=4 noncreature=3 instant_sorcery=3 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Volcanic Island on top of library  [#0]
    1: Put Volcanic Island into graveyard
@@ -1248,7 +1337,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(1): Wasteland | lib 39
   Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW,res 1) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -1258,7 +1347,8 @@
   Known top: Flooded Strand, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=4 noncreature=3 instant_sorcery=3 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Flooded Strand
    1: Brainstorm
@@ -1270,7 +1360,7 @@
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(1): Wasteland | lib 39
   Opp:   16 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW,res 1) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (SICK)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -1280,7 +1370,8 @@
   Known top: Flooded Strand, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=4 noncreature=3 instant_sorcery=3 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Flooded Strand
    1: Daze
@@ -1309,6 +1400,7 @@
   Opp GY:  Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -1331,6 +1423,7 @@
   Opp GY:  Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
    1: Monk token
@@ -1354,6 +1447,8 @@
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=B
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
@@ -1375,6 +1470,8 @@
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=B
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Fatal Push
   >> B/B: 0 (Fatal Push)
@@ -1389,11 +1486,14 @@
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Opp BF:   Swamp (T) | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1]
   Stack: Fatal Push (spell, opponent) -> Dragon's Rage Channeler (self, slot 1)
+  Pending: Daze (self)
   Self GY: Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=B
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Return Island
    1: Return Mystic Sanctuary
@@ -1414,12 +1514,14 @@
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Opp BF:   Swamp (T) | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1]
   Stack: Daze (spell, self) -> Fatal Push (opponent, slot 97) -> Fatal Push (spell, opponent) -> Dragon's Rage Channeler (self, slot 1)
+  Pending: Dragon's Rage Channeler (self)
   Self GY: Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=B
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler (Surveil)  [#0]
    1: Monk token (ProwessBonus)  [#1]
@@ -1438,7 +1540,7 @@
   Step: Upkeep (turn 13)
   Self:  16 life | mana: empty | hand(3): Brainstorm, Island, Wasteland | lib 37
   Opp:   16 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,res 1) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Opp BF:   Swamp (T) | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1]
   Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Daze (spell, self) -> Fatal Push (opponent, slot 98) -> Fatal Push (spell, opponent) -> Dragon's Rage Channeler (self, slot 1)
   Pending: Dragon's Rage Channeler (self)
@@ -1447,7 +1549,8 @@
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=B
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Cori-Steel Cutter on top of library  [#0]
    1: Put Cori-Steel Cutter into graveyard
@@ -1463,20 +1566,22 @@
   Self:  16 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
   Self BF:  Swamp (T) | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,res 1) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Stack: Daze (spell, opponent) -> Fatal Push (self, slot 97) -> Fatal Push (spell, self) -> Dragon's Rage Channeler (opponent, slot 49)
+  Pending: Daze (opp)
   Self GY: Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Tap Tropical Island for (G)
    1: Tap Tropical Island for (U)
    2: Tap Tropical Island for (G)
    3: Tap Tropical Island for (U)
-   4: Don't pay (spell is countered)  [#0]
+   4: Don't pay (Fatal Push is countered)  [#0]
   >> A/A: 0 (Tap Tropical Island for (G))
 --- Narrative ---
   Player A tapped Tropical Island for {G}
@@ -1487,19 +1592,21 @@
   Self:  16 life | mana: 1G | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
   Self BF:  Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,res 1) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Stack: Daze (spell, opponent) -> Fatal Push (self, slot 97) -> Fatal Push (spell, self) -> Dragon's Rage Channeler (opponent, slot 49)
+  Pending: Daze (opp)
   Self GY: Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Tap Tropical Island for (G)
    1: Tap Tropical Island for (U)
-   2: Pay {1} (spell is not countered)  [#1]
-   3: Don't pay (spell is countered)  [#0]
+   2: Pay {1} (Fatal Push is not countered)  [#1]
+   3: Don't pay (Fatal Push is countered)  [#0]
   >> A/A: 0 (Tap Tropical Island for (G))
 --- Narrative ---
   Player A tapped Tropical Island for {G}
@@ -1510,20 +1617,22 @@
   Self:  16 life | mana: 2G | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
   Self BF:  Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,res 1) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Stack: Daze (spell, opponent) -> Fatal Push (self, slot 97) -> Fatal Push (spell, self) -> Dragon's Rage Channeler (opponent, slot 49)
+  Pending: Daze (opp)
   Self GY: Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: opp_revolt, not_priority_window, self_mulligans=1
   Actions:
-   0: Pay {1} (spell is not countered)  [#1]
-   1: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Pay {1} (spell is not countered))
+   0: Pay {1} (Fatal Push is not countered)  [#1]
+   1: Don't pay (Fatal Push is countered)  [#0]
+  >> A/A: 0 (Pay {1} (Fatal Push is not countered))
 --- Narrative ---
-  Player A pays {1} — spell is not countered
+  Player A pays {1} — Fatal Push is not countered
   Resolving ability (category: Destroy)
   Dragon's Rage Channeler is destroyed
   Player A draws Misty Rainforest
@@ -1534,13 +1643,14 @@
   Self:  16 life | mana: empty | hand(5): Fatal Push, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
   Self BF:  Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Self GY: Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -1553,14 +1663,15 @@
   Step: First Main (turn 13)
   Self:  16 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
-  Self BF:  Misty Rainforest | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Misty Rainforest (NEW) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Self GY: Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: self_lands_played=1, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]
@@ -1578,7 +1689,7 @@
   Self:  15 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
   Self BF:  Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Stack: Misty Rainforest (ability, self)
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
@@ -1586,7 +1697,8 @@
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Bayou
@@ -1606,14 +1718,15 @@
   Step: First Main (turn 13)
   Self:  15 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
-  Self BF:  Bayou | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Bayou (NEW) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Self GY: Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -1627,15 +1740,16 @@
   Step: First Main (turn 13)
   Self:  15 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
-  Self BF:  Bayou | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Bayou (NEW) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,res 1)
   Pending: Fatal Push (self)
   Self GY: Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Monk token
    1: Orc Army token
@@ -1654,14 +1768,15 @@
   Step: Declare Atk (turn 13)
   Self:  15 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
-  Self BF:  Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Bayou (T,NEW) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -1676,14 +1791,15 @@
   Step: Declare Atk (turn 13)
   Self:  15 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
   Opp:   16 life | mana: empty | hand count: 3 | lib 36
-  Self BF:  Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (ATK)
+  Self BF:  Bayou (T,NEW) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (ATK)
   Opp BF:   Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Known opp hand: Island
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1711,6 +1827,7 @@
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1739,6 +1856,8 @@
   Opp exile:  Baleful Strix
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Island
    1: Lightning Bolt
@@ -1765,6 +1884,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Lightning Bolt
    1: Mishra's Bauble
@@ -1788,6 +1909,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -1809,6 +1932,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (15 life)
    1: Player B (15 life)
@@ -1828,15 +1953,18 @@
   Step: Draw (turn 14)
   Self:  15 life | mana: empty | hand(3): Mishra's Bauble, Murktide Regent, Wasteland | lib 34
   Opp:   15 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1] (SICK,NEW)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
   Stack: Cori-Steel Cutter (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Brainstorm, Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -1851,7 +1979,7 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(3): Mishra's Bauble, Murktide Regent, Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1] (SICK,NEW)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Lightning Bolt, Brainstorm, Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
@@ -1859,6 +1987,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1878,7 +2008,7 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Lightning Bolt, Brainstorm, Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
@@ -1886,6 +2016,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1901,14 +2033,17 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Brainstorm, Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp exile:  Baleful Strix
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Brainstorm (Delve)
@@ -1938,8 +2073,9 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Brainstorm, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Brainstorm
@@ -1947,6 +2083,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Cori-Steel Cutter (Delve)
@@ -1975,8 +2113,9 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Daze, Cori-Steel Cutter, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Brainstorm, Brainstorm
@@ -1984,6 +2123,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Cori-Steel Cutter (Delve)
    1: Exile Daze (Delve)
@@ -2011,8 +2152,9 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Daze, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2020,6 +2162,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Daze (Delve)
    1: Exile Daze (Delve)
@@ -2046,8 +2190,9 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Pending: Murktide Regent (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Daze, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2055,6 +2200,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Daze (Delve)
    1: Exile Dragon's Rage Channeler (Delve)
@@ -2082,7 +2229,7 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(1): Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
   Stack: Murktide Regent (spell, self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2092,6 +2239,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -2104,7 +2253,7 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(1): Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Mishra's Bauble | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Mishra's Bauble (NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
   Stack: Murktide Regent (spell, self)
   Pending: Mishra's Bauble (self)
@@ -2115,6 +2264,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (12 life)
    1: Player B (15 life)
@@ -2135,8 +2286,9 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(1): Wasteland | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2144,7 +2296,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_revolt
+  This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2157,8 +2310,9 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(0): (empty) | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (NEW) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
@@ -2166,7 +2320,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2179,8 +2334,9 @@
   Step: First Main (turn 14)
   Self:  15 life | mana: empty | hand(0): (empty) | lib 34
   Opp:   12 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland | Monk [2/2] (SICK)
+  Self BF:  Cori-Steel Cutter (res 1) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (NEW) | Monk [2/2] (SICK,NEW,res 1)
   Opp BF:   Bayou (T) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Wasteland (self)
   Self GY: Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
@@ -2189,7 +2345,8 @@
   Known top: Island, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Bayou
    1: Tropical Island
@@ -2224,11 +2381,13 @@
   Self BF:  Swamp | Tropical Island | Tropical Island | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Mishra's Bauble (ability, opponent)
+  Delayed: Mishra's Bauble (opponent, upkeep, on stack #0)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -2246,15 +2405,18 @@
   Step: Upkeep (turn 15)
   Self:  12 life | mana: empty | hand(2): Sheoldred's Edict, Thoughtseize | lib 47
   Opp:   15 life | mana: empty | hand count: 0 | lib 34
-  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Stack: Mishra's Bauble (ability, opponent)
+  Delayed: Mishra's Bauble (opponent, upkeep, on stack #0)
   Pending: Orcish Bowmasters (self)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 colors=B
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (15 life)
    1: Player A (12 life)
@@ -2279,7 +2441,7 @@
   Step: Upkeep (turn 15)
   Self:  12 life | mana: empty | hand(2): Sheoldred's Edict, Thoughtseize | lib 47
   Opp:   14 life | mana: empty | hand count: 1 | lib 33
-  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Pending: Orcish Bowmasters (self)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
@@ -2287,6 +2449,8 @@
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 colors=B | opp drawn=1 life_lost=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (14 life)
    1: Player A (12 life)
@@ -2310,14 +2474,15 @@
   Step: Declare Atk (turn 15)
   Self:  12 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 46
   Opp:   13 life | mana: empty | hand count: 1 | lib 33
-  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 2) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Cori-Steel Cutter | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=B | opp drawn=1 life_lost=2
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [3/3]
    1: Confirm attackers
@@ -2346,6 +2511,8 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -2359,14 +2526,15 @@
   Step: First Main (turn 16)
   Self:  13 life | mana: empty | hand(1): Force of Will | lib 32
   Opp:   12 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter | Island | Murktide Regent [7/7] [+1/+1:4] [Flying] | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1]
+  Self BF:  Cori-Steel Cutter | Island (NEW) | Murktide Regent [7/7] [+1/+1:4] [Flying] | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Monk [1/1]
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
   Self GY: Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#32]
@@ -2381,14 +2549,16 @@
   Step: First Main (turn 16)
   Self:  13 life | mana: empty | hand(1): Force of Will | lib 32
   Opp:   12 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1]
+  Self BF:  Cori-Steel Cutter | Island (T,NEW) | Murktide Regent [7/7] [+1/+1:4] [Flying] | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1]
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
+  Pending: Cori-Steel Cutter (self)
   Self GY: Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Murktide Regent [7/7]
    1: Monk [1/1]
@@ -2402,14 +2572,15 @@
   Step: First Main (turn 16)
   Self:  13 life | mana: empty | hand(1): Force of Will | lib 32
   Opp:   12 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Volcanic Island | Monk [1/1]
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
   Self GY: Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#32]
@@ -2424,14 +2595,16 @@
   Step: First Main (turn 16)
   Self:  13 life | mana: empty | hand(1): Force of Will | lib 32
   Opp:   12 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
+  Pending: Cori-Steel Cutter (self)
   Self GY: Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Murktide Regent [8/8]
    1: Monk [1/1]
@@ -2445,14 +2618,15 @@
   Step: Declare Atk (turn 16)
   Self:  13 life | mana: empty | hand(1): Force of Will | lib 32
   Opp:   12 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
   Self GY: Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [8/8]
    1: Monk token [1/1]
@@ -2468,14 +2642,15 @@
   Step: Declare Atk (turn 16)
   Self:  13 life | mana: empty | hand(1): Force of Will | lib 32
   Opp:   12 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T,NEW) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
   Self GY: Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [1/1]
    1: Confirm attackers
@@ -2504,6 +2679,7 @@
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -2521,7 +2697,7 @@
   Step: Upkeep (turn 17)
   Self:  4 life | mana: empty | hand(2): Sheoldred's Edict, Thoughtseize | lib 46
   Opp:   13 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Pending: Orcish Bowmasters (self)
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
@@ -2529,6 +2705,8 @@
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 colors=B
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (13 life)
    1: Player A (4 life)
@@ -2552,13 +2730,15 @@
   Step: Draw (turn 17)
   Self:  4 life | mana: empty | hand(3): Brainstorm, Sheoldred's Edict, Thoughtseize | lib 45
   Opp:   12 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [4/4] [+1/+1:4]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Self GY: Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2578,7 +2758,7 @@
   Step: Draw (turn 17)
   Self:  4 life | mana: empty | hand(5): Force of Will, Ponder, Ponder, Sheoldred's Edict, Thoughtseize | lib 42
   Opp:   12 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -2587,6 +2767,8 @@
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=UB | opp life_lost=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Force of Will
    1: Ponder
@@ -2603,7 +2785,7 @@
   Step: Draw (turn 17)
   Self:  4 life | mana: empty | hand(4): Force of Will, Ponder, Sheoldred's Edict, Thoughtseize | lib 43
   Opp:   12 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -2613,6 +2795,8 @@
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Known top: Ponder, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=UB | opp life_lost=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Force of Will
    1: Ponder
@@ -2628,7 +2812,7 @@
   Step: Declare Atk (turn 17)
   Self:  4 life | mana: empty | hand(3): Force of Will, Sheoldred's Edict, Thoughtseize | lib 44
   Opp:   12 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Self GY: Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2636,7 +2820,8 @@
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Known top: Ponder, Ponder, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=UB | opp life_lost=1
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [4/4]
@@ -2652,7 +2837,7 @@
   Step: Declare Atk (turn 17)
   Self:  4 life | mana: empty | hand(3): Force of Will, Sheoldred's Edict, Thoughtseize | lib 44
   Opp:   12 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
+  Self BF:  Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4]
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Self GY: Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2660,7 +2845,8 @@
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Known top: Ponder, Ponder, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=UB | opp life_lost=1
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [4/4]
    1: Confirm attackers
@@ -2676,7 +2862,7 @@
   Step: Declare Atk (turn 17)
   Self:  4 life | mana: empty | hand(3): Force of Will, Sheoldred's Edict, Thoughtseize | lib 44
   Opp:   12 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (ATK)
+  Self BF:  Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (ATK)
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
   Self GY: Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
@@ -2684,7 +2870,8 @@
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Known top: Ponder, Ponder, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=UB | opp life_lost=1
+  Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2704,13 +2891,14 @@
   Self:  12 life | mana: empty | hand(1): Force of Will | lib 32
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
   Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [1/1]
-  Opp BF:   Orcish Bowmasters [1/1] [Flash] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T,ATK)
+  Opp BF:   Orcish Bowmasters [1/1] [Flash] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T,ATK)
   Self GY: Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: mandatory_choice=Declare Blk
+  This turn: self life_lost=1 | opp spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=UB
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Monk token [1/1]
    1: Confirm blockers
@@ -2740,6 +2928,8 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
@@ -2760,7 +2950,7 @@
   Step: First Main (turn 18)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 31
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -2769,6 +2959,8 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Cori-Steel Cutter
    1: Flooded Strand
@@ -2780,7 +2972,7 @@
   Step: First Main (turn 18)
   Self:  7 life | mana: empty | hand(1): Force of Will | lib 31
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -2789,6 +2981,8 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Cori-Steel Cutter
    1: Polluted Delta
@@ -2803,13 +2997,15 @@
   Step: First Main (turn 18)
   Self:  7 life | mana: empty | hand(3): Flooded Strand, Force of Will, Polluted Delta | lib 29
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Self GY: Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -2824,14 +3020,15 @@
   Step: First Main (turn 18)
   Self:  7 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 29
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Flooded Strand | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Flooded Strand (NEW) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls | Volcanic Island | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Self GY: Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#32]
@@ -2847,14 +3044,16 @@
   Step: First Main (turn 18)
   Self:  7 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 29
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Flooded Strand | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Flooded Strand (NEW) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Murktide Regent [8/8]
    1: Monk [2/2]
@@ -2867,14 +3066,15 @@
   Step: First Main (turn 18)
   Self:  7 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 29
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Flooded Strand | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Flooded Strand (NEW) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Self GY: Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -2891,7 +3091,7 @@
   Step: First Main (turn 18)
   Self:  6 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 29
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
@@ -2900,7 +3100,8 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Volcanic Island
@@ -2914,14 +3115,15 @@
   Step: First Main (turn 18)
   Self:  6 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 28
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Volcanic Island | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (NEW) | Volcanic Island | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Self GY: Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#32]
@@ -2936,14 +3138,16 @@
   Step: First Main (turn 18)
   Self:  6 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 28
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
+  Pending: Cori-Steel Cutter (self)
   Self GY: Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Murktide Regent [8/8]
    1: Monk [2/2]
@@ -2957,14 +3161,15 @@
   Step: Declare Atk (turn 18)
   Self:  6 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 28
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Self GY: Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [8/8]
    1: Monk token [2/2]
@@ -2980,14 +3185,15 @@
   Step: Declare Atk (turn 18)
   Self:  6 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 28
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2]
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Monk [2/2] (res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Self GY: Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Confirm attackers
@@ -3003,14 +3209,15 @@
   Step: Declare Atk (turn 18)
   Self:  6 life | mana: empty | hand(2): Force of Will, Polluted Delta | lib 28
   Opp:   4 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (ATK)
+  Self BF:  Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Monk [2/2] (ATK,res 1)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
   Self GY: Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Opp revealed: Misty Rainforest, Force of Will, Brainstorm, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -3030,14 +3237,15 @@
   Self:  4 life | mana: empty | hand(3): Force of Will, Sheoldred's Edict, Thoughtseize | lib 44
   Opp:   6 life | mana: empty | hand count: 2 | lib 28
   Self BF:  Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK)
+  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Monk [2/2] (T,ATK,res 1)
   Self GY: Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Known top: Ponder, Ponder, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: opp_lands_played=1, opp_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Confirm blockers
@@ -3051,14 +3259,16 @@
   Self:  4 life | mana: empty | hand(3): Force of Will, Sheoldred's Edict, Thoughtseize | lib 44
   Opp:   6 life | mana: empty | hand count: 2 | lib 28
   Self BF:  Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK)
+  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Monk [2/2] (T,ATK,res 1)
+  Pending: Orcish Bowmasters (self)
   Self GY: Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Known top: Ponder, Ponder, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: opp_lands_played=1, opp_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Monk token [2/2]
   >> A/A: 0 (Monk token [2/2])
@@ -3077,14 +3287,15 @@
   Self:  4 life | mana: empty | hand(3): Force of Will, Sheoldred's Edict, Thoughtseize | lib 44
   Opp:   6 life | mana: empty | hand count: 2 | lib 28
   Self BF:  Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (BLK->Monk,SICK) | Swamp (T) | Tropical Island (T) | Tropical Island (T) | Orc Army [4/4] [+1/+1:4] (T)
-  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] (T,ATK,BLOCKED)
+  Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Monk [2/2] (T,ATK,BLOCKED,res 1)
   Self GY: Brainstorm, Bayou, Fatal Push, Misty Rainforest, Fatal Push, Force of Will, Tamiyo, Inquisitive Student
   Opp GY:  Flooded Strand, Flow State, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flow State, Volcanic Island, Lightning Bolt, Into the Flood Maw, Lightning Bolt, Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn, Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Baleful Strix
   Opp exile:  Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Known top: Ponder, Ponder, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
-  Extras: opp_lands_played=1, opp_revolt, mandatory_choice=Declare Blk
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> A/A: 0 (Confirm blockers)

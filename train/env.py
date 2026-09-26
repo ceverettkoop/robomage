@@ -39,8 +39,8 @@ State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
 STATE_SIZE-float state vector. Card identity is a single normalized id float per
 slot (idx/N_CARD_TYPES, -1/N_CARD_TYPES = empty), NOT a one-hot — the policy
-network maps ids through a learned nn.Embedding. The opponent revealed-cards
-block is the only vocab-width block (N_CARD_TYPES multi-hot).
+network maps ids through a learned nn.Embedding. No block is vocab-width; the
+opponent's match-scoped revealed cards ride as a bit on each opp decklist slot.
 State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 64 action zone_ref floats
 + 64 action entity-slot-ref floats + 64 action option-ordinal floats
@@ -89,7 +89,7 @@ except ImportError:
 
 # ACTION_CATEGORY_MAX is generated from the C++ ActionCategory enum (single source
 # of truth) by train/gen_enums.py — import it so this module never drifts from the
-# engine's category normalization (used for both the action block and history).
+# engine's category normalization (used for the action block).
 # Every value below is GENERATED from the C++ headers by train/gen_enums.py — the
 # single source of truth. Import them (never re-type the literals) so this module
 # cannot drift from the engine: the layout/size constants (STATE_SIZE, MAX_ACTIONS,
@@ -103,16 +103,25 @@ try:
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
-        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
+        GY_SLOT_SIZE, EXILE_SLOT_SIZE, ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
+        ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
+        ZONE_COUNTER_NORMALIZER,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
-        STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
-        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
+        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
+        OPP_DECKLIST_REVEALED_OFF,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
+        LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
+        PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
+        MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
+        MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -130,16 +139,25 @@ except ImportError:
         STATE_SIZE, MAX_ACTIONS, MAX_CHOICE_DESC, PERM_COUNTERS_LEN,
         PERM_TOKEN_NAME_LEN, MAX_BATTLEFIELD_SLOTS, MAX_STACK_DISPLAY,
         MAX_STACK_MODES, MAX_STACK_TGTS, MAX_GY_SLOTS, MAX_HAND_SLOTS,
-        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE, ACTION_HISTORY_SIZE,
+        KNOWN_TOP_LIBRARY_SIZE, PERM_SLOT_SIZE,
         DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
         PLAYER_BLOCK_SIZE, STEP_ONEHOT_SIZE, HEADER_FLAGS, CARD_ID_SLOT_SIZE,
+        GY_SLOT_SIZE, EXILE_SLOT_SIZE, ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
+        ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
+        ZONE_COUNTER_NORMALIZER,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
-        STACK_TGT_FIELDS, HIST_ENTRY_SIZE, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
-        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE,
+        EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
+        EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
+        OPP_DECKLIST_REVEALED_OFF,
         MANA_DEV_COLORS, MANA_DEV_SELF_SIZE, MANA_DEV_OPP_SIZE,
         MANA_COUNT_NORMALIZER, LAND_DROPS_NORMALIZER,
         LOG_VITALS_PLAYER_SIZE, LOG_LIFE_DENOM, LOG_LIBRARY_DENOM,
+        LIFE_NORMALIZER, PER_TURN_COUNT_FIELDS, PER_TURN_COLOR_FIELDS,
+        PER_TURN_PLAYER_SIZE, PER_TURN_COUNT_NORMALIZER,
+        MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
+        MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
         CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
@@ -416,7 +434,9 @@ _STEP_ONEHOT_SIZE  = STEP_ONEHOT_SIZE          # UNTAP..CLEANUP, incl. FIRST_STR
 _STEP_FIRST_MAIN_IDX  = _STEP_ONEHOT_START + 3                       # 23
 _STEP_SECOND_MAIN_IDX = _STEP_ONEHOT_START + 10                      # 30
 _IS_ACTIVE_IDX  = _STEP_ONEHOT_START + _STEP_ONEHOT_SIZE            # 33: priority player is active
-_SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1                                # 34: "self" is Player A
+# 34: "self" is Player A. Seat routing for the drivers only — both networks zero
+# it out of their input (extractor.network_global_ctx).
+_SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1
 _STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack size / 10
 _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
 # HEADER_FLAGS (machine_io.h) counts those three trailing scalars; if a fourth is
@@ -424,12 +444,13 @@ _GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full h
 # shifting every block below.
 assert _GLOBAL_SIZE == 2 * PLAYER_BLOCK_SIZE + STEP_ONEHOT_SIZE + HEADER_FLAGS, _GLOBAL_SIZE
 _PERM_SLOTS             = MAX_BATTLEFIELD_SLOTS  # per-player; 96 total (self + opp)
-# 11 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
-# + keyword multi-hot + chosen-name id + returnable-exile id + card id (LAST) = 38.
+# 10 status (incl. loyalty) + 2 counters + 4 refs + is_blocked + is_phased_out
+# + 5 per-turn statuses + pending_delayed_subject + keyword multi-hot + chosen-name
+# id + returnable-exile id + card id (LAST) = 43. No controller flag: the blocks are split by controller.
 # Keep the derived formula and cross-check it against the engine's PERM_SLOT_SIZE
 # (machine_io.h) so a change to either side is caught here. The three id-family
 # floats sit last: chosen_name_id then returnable_exile_id then card_id.
-_PERM_SLOT_SIZE         = 19 + N_OBS_KEYWORDS + 3
+_PERM_SLOT_SIZE         = 24 + N_OBS_KEYWORDS + 3
 assert _PERM_SLOT_SIZE == PERM_SLOT_SIZE, (_PERM_SLOT_SIZE, PERM_SLOT_SIZE)
 _STACK_SLOTS            = MAX_STACK_DISPLAY
 _STACK_XAMT_OFF         = STACK_HEAD_FIELDS    # x_or_amount / 10 within a stack slot
@@ -444,19 +465,18 @@ _STACK_TGT_START        = _STACK_MODE_START + _STACK_MODE_SLOTS               # 
 # then target sub-slots (37 total)
 _STACK_SLOT_SIZE        = _STACK_TGT_START + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 _GY_SLOTS_TOTAL         = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent
-_GY_SLOT_SIZE           = CARD_ID_SLOT_SIZE    # card id only
-_EXILE_SLOTS_TOTAL      = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent (same layout as GY)
-_EXILE_SLOT_SIZE        = CARD_ID_SLOT_SIZE    # card id only
+# Graveyard slot: card id (FIRST) + playable_by_self + playable_by_opp +
+# play_expires_this_turn; an exile slot appends counters / ZONE_COUNTER_NORMALIZER.
+_GY_SLOT_SIZE           = GY_SLOT_SIZE
+_EXILE_SLOTS_TOTAL      = 2 * MAX_GY_SLOTS     # 64 self + 64 opponent
+_EXILE_SLOT_SIZE        = EXILE_SLOT_SIZE
 _HAND_SLOTS_TOTAL       = MAX_HAND_SLOTS
 _HAND_SLOT_SIZE         = CARD_ID_SLOT_SIZE
-_ACTION_HISTORY_SIZE    = ACTION_HISTORY_SIZE  # entries in the action history ring (src/classes/game.h)
-_ACTION_HISTORY_ENTRY   = HIST_ENTRY_SIZE      # cat_norm, card_id, is_self, turn/50
 _MATCH_CTX_SIZE         = MATCH_CTX_SIZE       # game_number, self_wins, opp_wins, sideboard_phase
-_LIBRARY_CTX_SIZE       = LIBRARY_CTX_SIZE     # self_lib/60, opp_lib/60, is_post_board
+_LIBRARY_CTX_SIZE       = LIBRARY_CTX_SIZE     # self_lib/60, opp_lib/60
 _CUR_TURN_SIZE          = CUR_TURN_SIZE        # current turn / 50
 _KNOWN_TOP_LIB_SLOTS    = KNOWN_TOP_LIBRARY_SIZE  # serialized known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = CARD_ID_SLOT_SIZE   # card id per slot
-_REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-hot (only vocab-width block)
 _OPP_KNOWN_HAND_SLOTS   = MAX_HAND_SLOTS       # known opponent-hand card identities
 _OPP_KNOWN_HAND_SLOT_SIZE = CARD_ID_SLOT_SIZE  # card id per slot
 
@@ -470,9 +490,7 @@ _STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE
 _GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE
 _EXILE_START         = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE
 _HAND_START          = _EXILE_START + _EXILE_SLOTS_TOTAL * _EXILE_SLOT_SIZE
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY
-_MATCH_CTX_START     = _HIST_END
+_MATCH_CTX_START     = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE
 # _MATCH_CTX layout: game_number, self_wins, opp_wins, is_sideboard_phase.
 # The sideboard flag is the single source of truth for "this decision is a bo3
 # sideboard root" (used by az_selfplay + opponents.SearchController budget selection).
@@ -481,9 +499,7 @@ _LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE
 _CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE
 _KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE
 _KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
-_REVEALED_START      = _KNOWN_TOP_LIB_END
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE
-_OPP_KNOWN_HAND_START = _REVEALED_END
+_OPP_KNOWN_HAND_START = _KNOWN_TOP_LIB_END
 _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
@@ -493,28 +509,43 @@ _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOW
 _PENDING_DECISION_START = _OPP_KNOWN_HAND_END
 _PENDING_DECISION_SIZE  = PENDING_DECISION_SIZE  # source card id + ctrl_is_self
 _PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE
-# Global extras (see machine_io.h [5955-5976]): self/opp lands_played/10,
-# viewer_has_priority, self/opp is_monarch, self/opp city's blessing, self/opp
-# revolt, self/opp pending extra turns/3, is_day, is_night, then the
-# MandatoryChoice one-hot (NONE at index 0).
+# Global extras (see machine_io.h's global-extras block): self/opp
+# lands_played/10, self/opp is_monarch, self/opp city's blessing, self/opp revolt,
+# self/opp pending extra turns/3, is_day, is_night, then the priority-window
+# context, the mulligan state, and the MandatoryChoice one-hot (NONE at index 0).
 _EXTRAS_START        = _PENDING_DECISION_END
 _EXTRAS_LANDS_SELF   = _EXTRAS_START + 0
 _EXTRAS_LANDS_OPP    = _EXTRAS_START + 1
-_EXTRAS_HAS_PRIORITY = _EXTRAS_START + 2
-_EXTRAS_MONARCH_SELF = _EXTRAS_START + 3
-_EXTRAS_MONARCH_OPP  = _EXTRAS_START + 4
-_EXTRAS_BLESSING_SELF = _EXTRAS_START + 5
-_EXTRAS_BLESSING_OPP = _EXTRAS_START + 6
-_EXTRAS_REVOLT_SELF  = _EXTRAS_START + 7
-_EXTRAS_REVOLT_OPP   = _EXTRAS_START + 8
-_EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 9
-_EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 10
-_EXTRAS_IS_DAY       = _EXTRAS_START + 11
-_EXTRAS_IS_NIGHT     = _EXTRAS_START + 12
-# EXTRAS_SCALARS (machine_io.h) = the 13 scalar/flag floats enumerated above, so
-# the one-hot's start follows a width change engine-side instead of a bare 13.
-_EXTRAS_MC_ONEHOT_START = _EXTRAS_START + EXTRAS_SCALARS
-assert _EXTRAS_MC_ONEHOT_START == _EXTRAS_IS_NIGHT + 1, _EXTRAS_MC_ONEHOT_START
+_EXTRAS_MONARCH_SELF = _EXTRAS_START + 2
+_EXTRAS_MONARCH_OPP  = _EXTRAS_START + 3
+_EXTRAS_BLESSING_SELF = _EXTRAS_START + 4
+_EXTRAS_BLESSING_OPP = _EXTRAS_START + 5
+_EXTRAS_REVOLT_SELF  = _EXTRAS_START + 6
+_EXTRAS_REVOLT_OPP   = _EXTRAS_START + 7
+_EXTRAS_EXTRA_TURNS_SELF = _EXTRAS_START + 8
+_EXTRAS_EXTRA_TURNS_OPP  = _EXTRAS_START + 9
+_EXTRAS_IS_DAY       = _EXTRAS_START + 10
+_EXTRAS_IS_NIGHT     = _EXTRAS_START + 11
+# EXTRAS_SCALARS (machine_io.h) = the 12 scalar/flag floats enumerated above.
+assert _EXTRAS_IS_NIGHT + 1 == _EXTRAS_START + EXTRAS_SCALARS, EXTRAS_SCALARS
+# Priority-window context. All three are 0.0 unless the decision is an ordinary
+# priority window: the viewer's and the other seat's has-passed flags (opp 1.0 =
+# passing now resolves the top of the stack or ends the step), then
+# is_priority_window itself.
+_EXTRAS_PRIORITY_START = _EXTRAS_START + EXTRAS_SCALARS
+_EXTRAS_SELF_PASSED  = _EXTRAS_PRIORITY_START + 0
+_EXTRAS_OPP_PASSED   = _EXTRAS_PRIORITY_START + 1
+_EXTRAS_IS_PRIORITY_WINDOW = _EXTRAS_PRIORITY_START + 2
+assert _EXTRAS_IS_PRIORITY_WINDOW + 1 == _EXTRAS_PRIORITY_START + EXTRAS_PRIORITY_SIZE
+# Mulligan state, each / MULLIGAN_NORMALIZER: mulligans the viewer and the opponent
+# have taken this game, and the cards the viewer still has to bottom (0 outside the
+# viewer's bottoming). All 0.0 during a bo3 sideboard phase.
+_EXTRAS_MULLIGAN_START = _EXTRAS_PRIORITY_START + EXTRAS_PRIORITY_SIZE
+_EXTRAS_SELF_MULLIGANS = _EXTRAS_MULLIGAN_START + 0
+_EXTRAS_OPP_MULLIGANS  = _EXTRAS_MULLIGAN_START + 1
+_EXTRAS_SELF_BOTTOM_REMAINING = _EXTRAS_MULLIGAN_START + 2
+assert _EXTRAS_SELF_BOTTOM_REMAINING + 1 == _EXTRAS_MULLIGAN_START + EXTRAS_MULLIGAN_SIZE
+_EXTRAS_MC_ONEHOT_START = _EXTRAS_MULLIGAN_START + EXTRAS_MULLIGAN_SIZE
 # self_plays_first: the viewer is the starting player of the game this observation
 # pertains to — the current game in-game, the UPCOMING game during a bo3 sideboard
 # phase (whose starting player is already fixed before either sideboard stage runs).
@@ -530,9 +561,10 @@ _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
 # progress scalars — the three floats indexed immediately above.
 assert _EXTRAS_END == _EXTRAS_PLAYS_FIRST + EXTRAS_SB_CTX_SIZE, _EXTRAS_END
 
-# ── Deck-identity tail blocks (mirror machine_io.h [5977-6328]) ──────────────
-# Each slot is (card_id, count): card id via norm_card_id (empty = -1 sentinel),
-# count normalized /4.0. Slots packed ascending by vocab id, no holes.
+# ── Deck-identity tail blocks (mirror machine_io.h's deck-identity tail) ──────────────
+# Each self slot is (card_id, count) and each opp slot is (card_id, count, revealed):
+# card id via norm_card_id (empty = -1 sentinel), count normalized /4.0. Slots
+# packed ascending by vocab id, no holes.
 #   SELF_LIVE_LIBRARY : the viewer's LIBRARY zone tallied live (viewer-only).
 #   SELF_DECK_MAIN / SELF_DECK_SIDE : the viewer's OWN current 75 — the deck
 #     CONFIGURATION (every card regardless of zone), tracking each sideboard swap.
@@ -540,7 +572,12 @@ assert _EXTRAS_END == _EXTRAS_PLAYS_FIRST + EXTRAS_SB_CTX_SIZE, _EXTRAS_END
 #     between games; this is what the sideboarding player is choosing between.
 #   OPP_DECK_MAIN / OPP_DECK_SIDE : the opponent's REGISTERED decklist, frozen at
 #     the match's registered 75 (the post-board split is hidden information).
-_DECKLIST_SLOT_SIZE     = DECKLIST_SLOT_SIZE      # card id + count per slot
+#     revealed = 1.0 when the opponent has revealed that card this match
+#     (accumulated across the games of a bo3; a double-faced card also counts
+#     when its back face was revealed); 0.0 on empty slots.
+_DECKLIST_SLOT_SIZE     = DECKLIST_SLOT_SIZE      # card id + count per self slot
+_OPP_DECKLIST_SLOT_SIZE = OPP_DECKLIST_SLOT_SIZE  # card id + count + revealed per opp slot
+_OPP_DECKLIST_REVEALED_OFF = OPP_DECKLIST_REVEALED_OFF  # revealed bit within an opp slot
 _SELF_LIVE_LIB_START    = _EXTRAS_END
 _SELF_LIVE_LIB_END      = _SELF_LIVE_LIB_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
 _SELF_DECK_MAIN_START   = _SELF_LIVE_LIB_END
@@ -548,16 +585,15 @@ _SELF_DECK_MAIN_END     = _SELF_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIS
 _SELF_DECK_SIDE_START   = _SELF_DECK_MAIN_END
 _SELF_DECK_SIDE_END     = _SELF_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
 _OPP_DECK_MAIN_START    = _SELF_DECK_SIDE_END
-_OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_MAIN_END      = _OPP_DECK_MAIN_START + DECKLIST_MAIN_SLOTS * _OPP_DECKLIST_SLOT_SIZE
 _OPP_DECK_SIDE_START    = _OPP_DECK_MAIN_END
-_OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _DECKLIST_SLOT_SIZE
+_OPP_DECK_SIDE_END      = _OPP_DECK_SIDE_START + DECKLIST_SIDE_SLOTS * _OPP_DECKLIST_SLOT_SIZE
 
 # ── Mana development (mirrors machine_io.h's MANA DEVELOPMENT block) ─────────
 # The one summary of each player's mana BASE: per-color untapped-source potential
 # (W,U,B,R,G,C), the total source count + floating pool, lands in play, lands in
-# hand (self only — hidden for the opponent), land drops still available this turn
-# (the same expression the PLAY_LAND legal-action gate uses), and the reserved
-# max-affordable-CMC proxy (currently == potential_total; see machine_io.h).
+# hand (self only — hidden for the opponent), and land drops still available this
+# turn (the same expression the PLAY_LAND legal-action gate uses).
 # Sub-offsets within one half; the opponent half omits lands_in_hand, so its later
 # fields sit one earlier — never index the opp block with the self offsets.
 _MD_POTENTIAL_START = 0                     # 6 floats: W, U, B, R, G, C
@@ -565,14 +601,12 @@ _MD_POTENTIAL_TOTAL = MANA_DEV_COLORS       # 6
 _MD_LANDS_IN_PLAY   = _MD_POTENTIAL_TOTAL + 1
 _MD_SELF_LANDS_IN_HAND = _MD_LANDS_IN_PLAY + 1        # SELF half only
 _MD_SELF_LAND_DROPS    = _MD_SELF_LANDS_IN_HAND + 1
-_MD_SELF_MAX_CMC       = _MD_SELF_LAND_DROPS + 1
 _MD_OPP_LAND_DROPS     = _MD_LANDS_IN_PLAY + 1        # opp half: no lands_in_hand
-_MD_OPP_MAX_CMC        = _MD_OPP_LAND_DROPS + 1
 _MANA_DEV_START      = _OPP_DECK_SIDE_END
 _MANA_DEV_OPP_START  = _MANA_DEV_START + MANA_DEV_SELF_SIZE
 _MANA_DEV_END        = _MANA_DEV_OPP_START + MANA_DEV_OPP_SIZE
-assert _MD_SELF_MAX_CMC + 1 == MANA_DEV_SELF_SIZE, MANA_DEV_SELF_SIZE
-assert _MD_OPP_MAX_CMC + 1 == MANA_DEV_OPP_SIZE, MANA_DEV_OPP_SIZE
+assert _MD_SELF_LAND_DROPS + 1 == MANA_DEV_SELF_SIZE, MANA_DEV_SELF_SIZE
+assert _MD_OPP_LAND_DROPS + 1 == MANA_DEV_OPP_SIZE, MANA_DEV_OPP_SIZE
 
 # ── Log-scaled vitals (mirrors machine_io.h's LOG VITALS block) ──────────────
 # log1p re-warpings of the SAME life/library counts the player blocks and the
@@ -590,16 +624,76 @@ _LOG_VITALS_OPP_START = _LOG_VITALS_START + LOG_VITALS_PLAYER_SIZE
 _LOG_VITALS_END       = _LOG_VITALS_OPP_START + LOG_VITALS_PLAYER_SIZE
 assert _LV_LOG_LIBRARY + 1 == LOG_VITALS_PLAYER_SIZE, LOG_VITALS_PLAYER_SIZE
 
-assert _LOG_VITALS_END == STATE_SIZE, (_LOG_VITALS_END, STATE_SIZE)
+# ── Per-turn counters (mirrors machine_io.h's PER-TURN COUNTERS block) ───────
+# Each player's per-turn tallies (reset at cleanup, all public): spells cast,
+# noncreature spells, instant/sorcery spells, cards drawn (each /
+# PER_TURN_COUNT_NORMALIZER), life gained, life lost (each / LIFE_NORMALIZER), then
+# the W/U/B/R/G spell-color multi-hot. Self half then opponent half, same fields.
+_PT_SPELLS          = 0
+_PT_NONCREATURE     = 1
+_PT_INSTANT_SORCERY = 2
+_PT_CARDS_DRAWN     = 3
+_PT_LIFE_GAINED     = 4
+_PT_LIFE_LOST       = 5
+_PT_COLORS_START    = PER_TURN_COUNT_FIELDS    # 5 floats: W, U, B, R, G
+assert _PT_LIFE_LOST + 1 == PER_TURN_COUNT_FIELDS, PER_TURN_COUNT_FIELDS
+assert _PT_COLORS_START + PER_TURN_COLOR_FIELDS == PER_TURN_PLAYER_SIZE, PER_TURN_PLAYER_SIZE
+_PER_TURN_START     = _LOG_VITALS_END
+_PER_TURN_OPP_START = _PER_TURN_START + PER_TURN_PLAYER_SIZE
+_PER_TURN_END       = _PER_TURN_OPP_START + PER_TURN_PLAYER_SIZE
+
+# ── Pending delayed triggers (mirrors machine_io.h's DELAYED TRIGGERS block) ─
+# A derived view of every delayed trigger from registration until it resolves:
+# records still waiting to fire plus the fired stack objects, packed in ascending
+# registration order. Per slot: present, controller_is_self, state (0 waiting /
+# 1 on the stack), stack_ref (norm_ref), creator card id, creator_ref (norm_ref),
+# subject_ref (norm_ref), subject card id, fire_on one-hot (upkeep, end step, end
+# of combat, leaves the battlefield), fires_this_turn.
+_DELAYED_SLOTS          = MAX_DELAYED_TRIGGER_SLOTS
+_DELAYED_SLOT_SIZE      = DELAYED_SLOT_SIZE
+_DT_PRESENT             = 0
+_DT_CTRL_SELF           = 1
+_DT_STATE               = 2
+_DT_STACK_REF           = 3
+_DT_CREATOR_ID          = 4
+_DT_CREATOR_REF         = 5
+_DT_SUBJECT_REF         = 6
+_DT_SUBJECT_ID          = 7
+_DT_FIRE_ONEHOT_START   = 8                    # N_DELAYED_FIRE_KINDS floats
+_DT_FIRES_THIS_TURN     = _DT_FIRE_ONEHOT_START + N_DELAYED_FIRE_KINDS
+assert _DT_FIRES_THIS_TURN + 1 == DELAYED_SLOT_SIZE, DELAYED_SLOT_SIZE
+_DELAYED_START          = _PER_TURN_END
+_DELAYED_END            = _DELAYED_START + _DELAYED_SLOTS * _DELAYED_SLOT_SIZE
+
+# ── Player effects (mirrors machine_io.h's PLAYER EFFECTS block) ────────────
+# Per player (self half, then the opponent's): protection_from_everything,
+# cant_gain_life, hexproof_from W/U/B/R/G, spells_cant_be_countered,
+# may_cast_sorceries_as_flash, restricted_to_sorcery_speed, then MAX_EMBLEM_SLOTS
+# emblem card ids and the floating-trigger source card id.
+_PE_PROTECTION          = 0
+_PE_CANT_GAIN_LIFE      = 1
+_PE_HEXPROOF_START      = 2                    # W, U, B, R, G
+_PE_UNCOUNTERABLE       = 7
+_PE_SORCERY_FLASH       = 8
+_PE_SORCERY_SPEED_LOCK  = 9
+_PE_EMBLEM_OFF          = PLAYER_EFFECTS_FLAGS
+_PE_FLOATING_OFF        = _PE_EMBLEM_OFF + MAX_EMBLEM_SLOTS
+assert _PE_SORCERY_SPEED_LOCK + 1 == PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_FLAGS
+assert _PE_FLOATING_OFF + 1 == PLAYER_EFFECTS_PLAYER_SIZE, PLAYER_EFFECTS_PLAYER_SIZE
+_PLAYER_EFFECTS_START     = _DELAYED_END
+_PLAYER_EFFECTS_OPP_START = _PLAYER_EFFECTS_START + PLAYER_EFFECTS_PLAYER_SIZE
+_PLAYER_EFFECTS_END       = _PLAYER_EFFECTS_OPP_START + PLAYER_EFFECTS_PLAYER_SIZE
+
+assert _PLAYER_EFFECTS_END == STATE_SIZE, (_PLAYER_EFFECTS_END, STATE_SIZE)
 
 # Offsets of the three id-family floats within a permanent slot (all LAST): the
 # chosen-name id (Permanent::chosen_name — Pithing Needle / Disruptor Flute named
 # card, Petrified Hamlet named land), then the returnable-exile id (the card this
 # permanent has exiled that still has a return path — Static Prison / Phelia), then
 # the card id.
-_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3    # 35
-_PERM_RETURNABLE_OFF = _PERM_SLOT_SIZE - 2     # 36
-_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 37 (card id is always LAST)
+_PERM_CHOSEN_NAME_OFF = _PERM_SLOT_SIZE - 3    # 40
+_PERM_RETURNABLE_OFF = _PERM_SLOT_SIZE - 2     # 41
+_PERM_CARD_OFF = _PERM_SLOT_SIZE - 1           # 42 (card id is always LAST)
 
 # Unified entity-reference slot space (machine_io.h): 0-47 self perm slots,
 # 48-95 opp perm slots, 96-107 stack slots, -1 = none. In the float state
@@ -613,9 +707,8 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # state vector describes the STALE terminal board of the previous game — noise
 # for a sideboarding decision. When is_sideboard_phase (state[_MATCH_CTX_START+3])
 # is set we zero every block except the ones that actually inform sideboarding:
-# graveyards + exile ("how the game went"), action history (last-game tempo + in-phase
-# swap context), match/library/turn context (game number => play/draw), the
-# opponent revealed-cards multi-hot (the primary signal), and the pending-decision
+# the graveyard + exile card ids ("how the game went"), match/library/turn context (game
+# number => play/draw), the opponent's registered decklist with its revealed bits (the primary signal), and the pending-decision
 # context (which IN card the OUT query is cutting for). The global-extras block
 # (lands played, monarch, day/night, MandatoryChoice one-hot, ...) describes the
 # stale ended game, so it stays masked; it holds no card-id slots. The MANA
@@ -627,19 +720,19 @@ N_ENTITY_REF_SLOTS = 2 * _PERM_SLOTS + _STACK_SLOTS  # 108
 # (The LINEAR library counts live inside the kept match/library-context range and DO
 # survive; the log copy does not, so during the sideboard phase the two encodings are
 # deliberately not redundant — test_obs_invariants asserts the zeroed block there
-# rather than the log identity.) Card-id slots
+# rather than the log identity.) The PER-TURN COUNTERS block is masked as well: its
+# spell/draw/life tallies describe the ended game's last turn, and so are the
+# DELAYED TRIGGERS block (the ended game's pending triggers) and the PLAYER EFFECTS
+# block (the ended game's player-scoped grants, emblems and floating triggers). Card-id slots
 # must be filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes
 # to a real vocab index 0 and defeats the extractor's empty-slot masking.
 def _build_sideboard_mask():
     keep = np.zeros(STATE_SIZE, dtype=bool)
     for lo, hi in (
-        (_GY_START, _HAND_START),                   # graveyards + exile (self + opp)
-        (_HIST_START, _HIST_END),                   # action history ring
         (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
-        (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
-        # The opponent's REGISTERED decklist is exactly what informs sideboarding, so
-        # both opp-deck blocks stay visible. The SELF_LIVE_LIBRARY block is NOT
+        # The opponent's REGISTERED decklist and its revealed bits are exactly what
+        # informs sideboarding, so both opp-deck blocks stay visible. The SELF_LIVE_LIBRARY block is NOT
         # kept (the library zone is stale during the sideboard phase); its card-id
         # positions are sentinel-filled below, its counts masked to 0.0.
         (_OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END),
@@ -653,6 +746,13 @@ def _build_sideboard_mask():
         (_EXTRAS_PLAYS_FIRST, _EXTRAS_END),
     ):
         keep[lo:hi] = True
+    # Graveyards + exile ("how the game went"): only the card ids survive. The
+    # play-permission flags and the exile counters describe the ended game's
+    # permissions, so they mask to 0.0.
+    for s in range(_GY_SLOTS_TOTAL):
+        keep[_GY_START + s * _GY_SLOT_SIZE + ZONE_CARD_ID_OFF] = True
+    for s in range(_EXILE_SLOTS_TOTAL):
+        keep[_EXILE_START + s * _EXILE_SLOT_SIZE + ZONE_CARD_ID_OFF] = True
     # The "self is Player A" flag MUST survive the mask: it is the seat-routing
     # signal for every obs consumer (runner.drive_game's controller pick, the
     # training envs' opponent-turn gate, decode's seat labels). The engine sets
@@ -679,6 +779,14 @@ def _build_sideboard_mask():
         card_id_idx.append(i)
     for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
         card_id_idx.append(i)
+    for s in range(_DELAYED_SLOTS):                                    # delayed-trigger ids
+        base = _DELAYED_START + s * _DELAYED_SLOT_SIZE
+        card_id_idx.append(base + _DT_CREATOR_ID)
+        card_id_idx.append(base + _DT_SUBJECT_ID)
+    for base in (_PLAYER_EFFECTS_START, _PLAYER_EFFECTS_OPP_START):   # player-effect ids
+        for e in range(MAX_EMBLEM_SLOTS):
+            card_id_idx.append(base + _PE_EMBLEM_OFF + e)
+        card_id_idx.append(base + _PE_FLOATING_OFF)
     # Card id is the first float of each (card_id, count) slot; the count masks to
     # 0.0. Listing every decklist block keeps this "all card-id positions" rather
     # than "the masked ones" — the `if not keep[i]` guard below skips the kept
@@ -712,20 +820,26 @@ _OFF_IS_ATTACKING = 3
 _OFF_IS_BLOCKING  = 4
 _OFF_HAS_SICKNESS = 5
 _OFF_DAMAGE       = 6
-_OFF_CTRL_IS_SELF = 7
-_OFF_IS_CREATURE  = 8    # 1.0 if this slot is a creature
-_OFF_IS_LAND      = 9    # 1.0 if this slot is a land
-_OFF_LOYALTY      = 10   # loyalty / 10 (planeswalkers; 0 otherwise)
-_OFF_P1P1_NET     = 11   # net (+1/+1 minus -1/-1) counters / 10, SIGNED
-_OFF_OTHER_COUNTERS = 12 # total counters of every other kind / 10
-_OFF_ATTACHED_TO  = 13   # norm_ref: what this equipment/aura is attached to
-_OFF_ATTACHED_BY  = 14   # norm_ref: the equipment/aura attached to this
-_OFF_ATTACK_TGT   = 15   # norm_ref: attacked walker's slot (0.0 = the player)
-_OFF_BLOCKING_TGT = 16   # norm_ref: the attacker this blocker blocks
-_OFF_IS_BLOCKED   = 17   # attacker was blocked at declare-blockers (CR 509.1h)
-_OFF_IS_PHASED_OUT = 18  # phased-out permanents ARE serialized, with this set
-_OFF_KEYWORDS_START = 19 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
+_OFF_IS_CREATURE  = 7    # 1.0 if this slot is a creature
+_OFF_IS_LAND      = 8    # 1.0 if this slot is a land
+_OFF_LOYALTY      = 9    # loyalty / 10 (planeswalkers; 0 otherwise)
+_OFF_P1P1_NET     = 10   # net (+1/+1 minus -1/-1) counters / 10, SIGNED
+_OFF_OTHER_COUNTERS = 11 # total counters of every other kind / 10
+_OFF_ATTACHED_TO  = 12   # norm_ref: what this equipment/aura is attached to
+_OFF_ATTACHED_BY  = 13   # norm_ref: the equipment/aura attached to this
+_OFF_ATTACK_TGT   = 14   # norm_ref: attacked walker's slot (0.0 = the player)
+_OFF_BLOCKING_TGT = 15   # norm_ref: the attacker this blocker blocks
+_OFF_IS_BLOCKED   = 16   # attacker was blocked at declare-blockers (CR 509.1h)
+_OFF_IS_PHASED_OUT = 17  # phased-out permanents ARE serialized, with this set
+_OFF_ENTERED_THIS_TURN = 18   # entered the battlefield this turn
+_OFF_RESOLUTIONS_THIS_TURN = 19  # triggered-ability resolutions from it / PER_TURN_COUNT_NORMALIZER
+_OFF_ACTIVATIONS_THIS_TURN = 20  # once-per-turn-gated activations / PER_TURN_COUNT_NORMALIZER
+_OFF_CANT_BE_BLOCKED = 21     # a "can't be blocked this turn" effect applies
+_OFF_COMBAT_DMG_PREVENTED = 22  # creature of a combat-damage prevention shield
+_OFF_PENDING_DELAYED_SUBJECT = 23  # watched by / a subject of a waiting delayed trigger
+_OFF_KEYWORDS_START = 24 # effective keyword multi-hot (N_OBS_KEYWORDS wide,
                          # _OBS_KEYWORDS order from _enums.py)
+assert _OFF_KEYWORDS_START + N_OBS_KEYWORDS == _PERM_CHOSEN_NAME_OFF
 
 _SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
 _SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + _OFF_IS_CREATURE
@@ -856,6 +970,11 @@ class RoboMageEnv(gym.Env):
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
         self.last_engine_seed = None  # engine --seed of the most recent reset()
+        # Where the engine subprocess's stderr goes (a Popen `stderr=` target,
+        # read at each reset()). None inherits the parent's stderr so engine
+        # errors are visible; a test can point it at a file to keep the debug
+        # build's per-decision search trace out of its own output.
+        self.engine_stderr = None
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -918,7 +1037,7 @@ class RoboMageEnv(gym.Env):
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=None,  # inherit parent stderr so engine errors are visible
+            stderr=self.engine_stderr,
             bufsize=-1,  # binary mode, fully buffered
             cwd=BIN_DIR,  # game uses getcwd() to locate resources/
         )
@@ -1354,7 +1473,7 @@ _CARD_COLORED_COSTS = {
 
 # ── Battlefield layout (aliases of the unified state offsets above) ─────────
 _BF_START         = _SELF_PERM_START           # 36
-_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 36
+_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 43
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)

@@ -5,9 +5,11 @@
 #include "counter_map.h"
 #include "zone.h"
 #include "ability.h"
+#include "carddata.h"
 #include "static_ability.h"
 #include "types.h"
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -206,6 +208,15 @@ struct Permanent {
     // a fresh Permanent on re-entry starts empty, so the latch resets naturally when the source
     // leaves the battlefield. Mutated only by the state-trigger scan in state_manager_triggers.cpp.
     std::set<std::string> state_triggers_armed;
+
+    // The card's printed CardData while this permanent is an in-place copy of another object
+    // (CR 707.2 — Thespian's Stage's Clone overwrites the card's CardData with the copied
+    // characteristics). Set by the FIRST copy effect only, so a later re-copy still holds the
+    // original printed card rather than an intermediate copy. A copy effect lasts only while
+    // the object stays on the battlefield (CR 400.7): Orderer::add_to_zone restores this onto
+    // the card's CardData as it leaves, after last-known information is captured. Null for a
+    // permanent that is not a copy. Shared and immutable, so snapshot copies stay cheap.
+    std::shared_ptr<const CardData> printed_card;
 };
 
 #endif /* PERMANENT_H */

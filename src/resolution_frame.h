@@ -72,15 +72,15 @@ struct ScryRt {
 struct SurveilRt {
     bool init = false;            // slice fetched + look logs emitted
     std::vector<Entity> remaining;  // looked-at cards not yet assigned; pinned
-    std::vector<Entity> to_top;     // chosen to stay on top, in choice order; pinned
+    std::vector<Entity> to_top;     // kept on top, in choice order, each placed; pinned
 };
 struct RearrangeRt {
     bool init = false;            // slice fetched + look log emitted
     std::vector<Entity> lib;      // looked-at slice, top-first; all pinned
-    std::vector<Entity> remaining;    // not yet slotted
-    std::vector<Entity> chosen_order; // slot picks so far (deepest first)
+    std::vector<Entity> remaining;    // not yet slotted; still in the library below the placed ones
+    std::vector<Entity> chosen_order; // slot picks so far (deepest first), each already on top
     size_t pick = 0;              // next slot pick
-    bool placed = false;          // put-back epilogue already ran (exactly once)
+    bool placed = false;          // forced last card already placed (exactly once)
 };
 struct SylvanRt {
     bool init = false;            // draw-2 + drawn-in-hand scan done
@@ -389,15 +389,21 @@ class FrameCtx {
 // FrameCtx::ask — consume-or-park with tag RESOLUTION — asking on the AMBIENT
 // seat, so it never repoints priority itself (Batch 5 finding: the call site
 // seats the chooser, exactly as blocking select_target expects; during a root
-// resolution the seat is already the resolving controller).
+// resolution the seat is already the resolving controller). The seated form
+// asks an explicit chooser instead — a spell copy's new targets are chosen by
+// the copy's controller (CR 707.10c), who need not hold priority while the
+// copying effect resolves (Chain Lightning copied by its target's player).
 class ResolutionTargetAsker final : public TargetAsker {
     public:
         explicit ResolutionTargetAsker(FrameCtx &ctx) : ctx(ctx) {}
+        ResolutionTargetAsker(FrameCtx &ctx, Zone::Ownership chooser)
+            : ctx(ctx), chooser(chooser) {}
         int ask(const std::vector<LegalAction> &menu, Entity decision_source) override;
         bool resuming() const override;
 
     private:
         FrameCtx &ctx;
+        Zone::Ownership chooser = Zone::UNKNOWN;  // UNKNOWN = the ambient priority seat
 };
 
 // Entities a suspended decision references, which determinization must pin in

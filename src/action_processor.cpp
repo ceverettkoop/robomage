@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "classes/match_state.h"
+#include "choice_labels.h"
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
@@ -96,13 +97,13 @@ static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
                                                       std::vector<size_t> &mode_indices);
 static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster);
-static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt);
 static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
-                           Zone::Ownership chooser, Entity decision_source = 0);
+                           Zone::Ownership chooser, Entity decision_source);
 static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
-                           Entity decision_source = 0);
+                           Entity decision_source);
 static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Orderer> orderer,
                           int resume_choice);
+static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, Entity card);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -458,12 +459,9 @@ static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
     pq.tag = tag;
     pq.menu = std::move(menu);
     pq.chooser_is_a = chooser_is_a;
-    // Byte-compat: today's inline sub-prompt runs with pending_decision_source
-    // == 0 (no PendingDecisionScope wraps it), and the replay corpus decodes
-    // that state field into a "Pending:" transcript line — a nonzero source
-    // here drifts the corpus. Keep 0; enriching the observation with the
-    // chosen creature is a deliberate (corpus re-record) change for later.
-    pq.decision_source = 0;
+    // The chosen attacker / blocker is the pending-decision source: the
+    // observation names the creature whose attack / block target is being picked.
+    pq.decision_source = chosen_creature;
     pq.answered = false;
     pq.answer = -1;
     pq.active = true;
@@ -1532,36 +1530,15 @@ static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership contro
 // (delve, mana, sac/exile, alt pitch/return) still pass through BLOCKING inside
 // their steps, exactly as today — Batches 10-11 convert them.
 
-// Build the exact two-option menu request_optional_yesno presents (Decline
-// first, Accept second, OPTIONAL_YESNO ordinals 0/1), so a converted cast-time
-// y/n prompt arms the byte-identical menu the blocking helper asked with.
-// (request_optional_yesno itself stays blocking — Batch 8 finding g — so the
-// cast prompts build their own menus here.)
-static std::vector<LegalAction> optional_yesno_menu(const std::string &prompt) {
-    std::vector<LegalAction> yn;
-    LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
-    decline.category = ActionCategory::OPTIONAL_YESNO;
-    decline.option_ordinal = 0;  // 0 = decline
-    yn.push_back(decline);
-    LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
-    accept.category = ActionCategory::OPTIONAL_YESNO;
-    accept.option_ordinal = 1;  // 1 = accept
-    yn.push_back(accept);
-    return yn;
-}
-
 // Park a cast-time prompt (tag CAST) for the main loop to emit. Priority
 // already sits with the caster at every cast-time prompt (the CAST_SPELL
 // action was chosen at the caster's own priority window and nothing repoints
 // before these prompts — request_optional_yesno's repoint was a no-op here),
 // so like the combat sub-prompts nothing needs saving or restoring on resume.
-// Byte-compat per site: the LINEAR cast prompts run with
-// pending_decision_source == 0 (no PendingDecisionScope wraps the CAST_SPELL
-// branch before the announce stages), so they arm with decision_source = 0
-// (the default); the ANNOUNCE-stage prompts (charm modes and every target
-// pick) ran under PendingDecisionScope(ability.source) in the blocking flow,
-// so they arm with that same per-site source. The replay corpus decodes this
-// state field into a "Pending:" transcript line, so the value is load-bearing.
+// Every armed prompt names its asking card as the pending-decision source: the
+// cast flow's prompts (cost choices, X ladders, announce-stage modes and
+// targets) pass the spell being cast, the activation flow's pass the activated
+// card.
 static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
                            Zone::Ownership chooser, Entity decision_source) {
     PendingQuery &pq = game.pending_query;
@@ -1587,7 +1564,8 @@ namespace {
 // on PendingQuery, since no resolution frame exists at cast/activation time
 // (the TriggerPlaceTargetAsker model) — carrying the asking ability's source
 // as the pending-decision context (the same PendingDecisionScope(ability.source)
-// the blocking select_target held). Priority already sits with the caster/
+// the blocking select_target held), or `source_override` when set (the
+// activation flow's activated card). Priority already sits with the caster/
 // activator at every such prompt, so the asker never repoints the seat (the
 // TargetAsker contract: the caller seats the chooser). The latched answer
 // travels through the flow's resume_choice, consumed by the first ask the
@@ -1596,14 +1574,16 @@ namespace {
 class FlowTargetAsker final : public TargetAsker {
     public:
         FlowTargetAsker(Game &game, Zone::Ownership chooser, int &resume_choice,
-                        PendingQuery::Tag tag = PendingQuery::CAST)
-            : game(game), chooser(chooser), resume_choice(resume_choice), tag(tag) {}
+                        PendingQuery::Tag tag = PendingQuery::CAST, Entity source_override = 0)
+            : game(game), chooser(chooser), resume_choice(resume_choice), tag(tag),
+              source_override(source_override) {}
         int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
             if (resume_choice >= 0) {
                 int choice = resume_choice;
                 resume_choice = -1;
                 return choice;
             }
+            if (source_override != 0) decision_source = source_override;
             arm_flow_query(game, tag, std::vector<LegalAction>(menu), chooser, decision_source);
             return -1;
         }
@@ -1614,6 +1594,7 @@ class FlowTargetAsker final : public TargetAsker {
         Zone::Ownership chooser;
         int &resume_choice;
         PendingQuery::Tag tag;
+        Entity source_override;  // nonzero: the pending-decision source for every ask
 };
 }  // namespace
 
@@ -1655,14 +1636,11 @@ void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
 // synchronous here; its cancel path fully rewinds (mana restore, untap, fail
 // count) and clears pa, exactly the blocking early-return.
 //
-// Byte-compat per site (the corpus decodes pending_decision_source into a
-// "Pending:" transcript line, so each prompt arms with TODAY's ambient value):
-// the X_LADDER ladder ran under PendingDecisionScope(ability.source) and arms
-// with that source; the target selections (ZONE_TARGET / TARGET) pass
-// ability.source through the asker exactly as the blocking select_target's
-// scope did; the loyalty-X ladder, the equip creature menu, the secondary
-// sacrifice/return picks, and the ninjutsu return pick all ran source-less
-// (no scope) and arm with 0.
+// Every prompt of the flow (the X ladders, the target selections, the equip
+// creature menu, the secondary sacrifice/return picks, and the ninjutsu return
+// pick) arms with the activated card (pa.source_entity) as the pending-decision
+// source — also for a hand/graveyard-activated ability, whose template
+// ability.source is not yet bound to the card.
 static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                                 std::shared_ptr<Orderer> orderer, int resume_choice) {
     Entity permanent_entity = pa.source_entity;
@@ -1716,7 +1694,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                                permanent_choice_menu(pa.frozen_choices, "Return ",
                                                      " to hand (ninjutsu)",
                                                      ActionCategory::RETURN_PERMANENT),
-                               controller);
+                               controller, permanent_entity);
                 return;
             }
             Entity returned = pa.frozen_choices[static_cast<size_t>(resume_choice)];
@@ -1743,7 +1721,8 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         case Game::PendingActivation::ZONE_TARGET: {
             // Select targets before paying costs
             if (pa.stack_ab.valid_tgts != "N_A") {
-                FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION);
+                FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION,
+                                      permanent_entity);
                 if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
                     TargetStatus::DONE)
                     return;
@@ -1819,7 +1798,8 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             if (resume_choice < 0) {
                 game_log("Choose creature to equip:\n");
                 arm_flow_query(game, PendingQuery::ACTIVATION,
-                               std::vector<LegalAction>(pa.frozen_menu), controller);
+                               std::vector<LegalAction>(pa.frozen_menu), controller,
+                               permanent_entity);
                 return;
             }
             Entity target_creature = pa.frozen_menu[static_cast<size_t>(resume_choice)].source_entity;
@@ -1844,9 +1824,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // cost, chosen during announcement BEFORE targets (CR 602.2b/601.2b) so an
             // exactly-X / up-to-X target count can read it. Prompt for X (bounded by the mana
             // available beyond the rest of the cost), record it as x_paid, and add X generic
-            // to the mana cost paid at TAP_PAY. Arms with decision_source = ability.source —
-            // the PendingDecisionScope the blocking prompt held, naming the ability making
-            // this X choice (it isn't on the stack yet — X is chosen during announcement).
+            // to the mana cost paid at TAP_PAY. Arms with the activated card as the
+            // pending-decision source (the ability isn't on the stack yet — X is chosen
+            // during announcement).
             if (!is_mana_ability && ability.activation_has_x) {
                 if (resume_choice >= 0) {
                     pa.x_activation = static_cast<size_t>(resume_choice);
@@ -1876,7 +1856,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                         x_actions.push_back(la);
                     }
                     arm_flow_query(game, PendingQuery::ACTIVATION, std::move(x_actions),
-                                   controller, ability.source);
+                                   controller, permanent_entity);
                     return;
                 }
             }
@@ -1890,8 +1870,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // than it has, 606.5). Recorded as x_paid — set at APPLY, before the SECONDARY
             // steps run — so the loyalty cost (SECONDARY_PRE) and the effect's Count$xPaid
             // (NumDmg$ X) both read it. This is a loyalty cost, not mana — it never touches
-            // the TAP_PAY cost. Ran source-less in the blocking flow (no scope), so it arms
-            // with decision_source = 0.
+            // the TAP_PAY cost.
             if (ability.loyalty_cost_is_x) {
                 if (resume_choice >= 0) {
                     int x_choice = resume_choice;
@@ -1910,7 +1889,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                         x_actions.push_back(la);
                     }
                     arm_flow_query(game, PendingQuery::ACTIVATION, std::move(x_actions),
-                                   controller);
+                                   controller, permanent_entity);
                     return;
                 }
             }
@@ -1921,7 +1900,8 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         case Game::PendingActivation::TARGET: {
             // SELECT TARGETS BEFORE PAYING COSTS
             if (!is_mana_ability && pa.stack_ab.valid_tgts != "N_A") {
-                FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION);
+                FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION,
+                                      permanent_entity);
                 if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
                     TargetStatus::DONE)
                     return;
@@ -2029,7 +2009,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                         arm_flow_query(game, PendingQuery::ACTIVATION,
                                        permanent_choice_menu(choices, "Sacrifice ", "",
                                                              ActionCategory::SACRIFICE_PERMANENT),
-                                       controller);
+                                       controller, permanent_entity);
                         return;
                     }
                 }
@@ -2056,7 +2036,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                         arm_flow_query(game, PendingQuery::ACTIVATION,
                                        permanent_choice_menu(choices, "Return ", " to hand",
                                                              ActionCategory::RETURN_PERMANENT),
-                                       controller);
+                                       controller, permanent_entity);
                         return;
                     }
                 }
@@ -2338,7 +2318,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.alt_pitch_done++;
                     continue;
                 }
-                arm_cast_query(game, std::move(exile_actions), caster);
+                arm_cast_query(game, std::move(exile_actions), caster, spell_entity);
                 return;
             }
             pc.step = Game::PendingCast::ALT_RETURN;
@@ -2380,7 +2360,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.alt_return_done++;
                     continue;
                 }
-                arm_cast_query(game, std::move(rth_actions), caster);
+                arm_cast_query(game, std::move(rth_actions), caster, spell_entity);
                 return;
             }
             pc.step = Game::PendingCast::ALT_SAC;
@@ -2415,7 +2395,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.alt_sac_done++;
                     continue;
                 }
-                arm_cast_query(game, std::move(sac_actions), caster);
+                arm_cast_query(game, std::move(sac_actions), caster, spell_entity);
                 return;
             }
             pc.step = Game::PendingCast::SPELL_SAC;
@@ -2451,9 +2431,11 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     pc.kicker_idx++;
                     continue;
                 }
-                std::string prompt = "pay kicker " + std::to_string(ki + 1) +
+                std::string prompt = "pay kicker " + mana_value_text(card_data.kicker_costs[ki]) +
                     " for " + card_data.name;
-                arm_cast_query(game, optional_yesno_menu(prompt), caster);
+                if (card_data.kicker_costs.size() > 1)
+                    prompt += " (kicker " + std::to_string(ki + 1) + ")";
+                arm_cast_query(game, optional_yesno_menu(prompt), caster, spell_entity);
                 return;
             }
             pc.step = Game::PendingCast::REPLICATE;
@@ -2485,9 +2467,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                                  pc.replicate_count);
                         continue;
                     }
-                    std::string prompt = "pay replicate cost for " + card_data.name +
-                        " (paid " + std::to_string(pc.replicate_count) + ")";
-                    arm_cast_query(game, optional_yesno_menu(prompt), caster);
+                    std::string prompt = "pay replicate " + mana_value_text(card_data.replicate_cost) +
+                        " for " + card_data.name + " (paid " + std::to_string(pc.replicate_count) + ")";
+                    arm_cast_query(game, optional_yesno_menu(prompt), caster, spell_entity);
                     return;
                 }
             }
@@ -2523,7 +2505,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
-                    arm_cast_query(game, std::move(x_actions), caster);
+                    arm_cast_query(game, std::move(x_actions), caster, spell_entity);
                     return;
                 }
             }
@@ -2569,7 +2551,11 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                             a.category = ActionCategory::PAYING_COSTS;
                             hybrid_actions.push_back(a);
                         }
-                        int hc = InputLogger::instance().get_input(hybrid_actions);
+                        int hc;
+                        {
+                            PendingDecisionScope pending(spell_entity);
+                            hc = InputLogger::instance().get_input(hybrid_actions);
+                        }
                         size_t uc = static_cast<size_t>(hc);
                         if (uc < pip.colors.size()) {
                             pc.cost_to_pay.insert(pip.colors[uc]);
@@ -2651,7 +2637,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pay_mana.option_ordinal = 1;  // Phyrexian pip: 1 = pay mana
                         phyrex_actions.push_back(pay_mana);
                     }
-                    arm_cast_query(game, std::move(phyrex_actions), caster);
+                    arm_cast_query(game, std::move(phyrex_actions), caster, spell_entity);
                     return;
                 }
             }
@@ -2697,7 +2683,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         la.option_ordinal = static_cast<int>(xv);  // the chosen X value
                         x_actions.push_back(la);
                     }
-                    arm_cast_query(game, std::move(x_actions), caster);
+                    arm_cast_query(game, std::move(x_actions), caster, spell_entity);
                     return;
                 }
             }
@@ -2735,7 +2721,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                             la.category = ActionCategory::SACRIFICE_PERMANENT;
                             menu.push_back(la);
                         }
-                        arm_cast_query(game, std::move(menu), caster);
+                        arm_cast_query(game, std::move(menu), caster, spell_entity);
                         return;
                     }
                 }
@@ -2801,7 +2787,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     } else if (can_promise) {
                         arm_cast_query(game,
                                        optional_yesno_menu("promise " + gname + " to your opponent"),
-                                       caster);
+                                       caster, spell_entity);
                         return;
                     }
                 }
@@ -3050,7 +3036,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 }
                 game_log("Choose how many cards to exile via Delve (%zu-%zu):\n", min_needed,
                          max_exiles);
-                arm_cast_query(game, std::move(count_menu), caster);
+                arm_cast_query(game, std::move(count_menu), caster, spell_entity);
                 return;
             }
             pc.delve_exile_ct = min_needed;
@@ -3090,7 +3076,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     }
                     game_log("Choose a card to exile via Delve (%zu of %zu):\n",
                              pc.delve_picks_done + 1, pc.delve_exile_ct);
-                    arm_cast_query(game, std::move(picks), caster);
+                    arm_cast_query(game, std::move(picks), caster, spell_entity);
                     return;
                 }
                 delve_exile_one(picks[0].source_entity, caster, orderer, pc.deferred_mana_cost);
@@ -3212,7 +3198,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                             la.category = ActionCategory::SACRIFICE_PERMANENT;
                             menu.push_back(la);
                         }
-                        arm_cast_query(game, std::move(menu), caster);
+                        arm_cast_query(game, std::move(menu), caster, spell_entity);
                         return;
                     }
                 }
@@ -3247,7 +3233,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                                              " from their graveyard");
                         continue;
                     }
-                    arm_cast_query(game, std::move(menu), caster);
+                    arm_cast_query(game, std::move(menu), caster, spell_entity);
                     return;
                 }
             }
@@ -3278,7 +3264,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pc.escape_exiled_count++;
                         continue;
                     }
-                    arm_cast_query(game, std::move(menu), caster);
+                    arm_cast_query(game, std::move(menu), caster, spell_entity);
                     return;
                 }
             }
@@ -3682,10 +3668,9 @@ static bool arm_damage_assign_query(Game &game) {
     // The attacking (active) player divides the damage (510.1c); priority was
     // seated at them by run_damage_assignment and stays there between arms.
     pq.chooser_is_a = game.player_a_turn;
-    // Byte-compat: this prompt runs with pending_decision_source == 0 today (no
-    // PendingDecisionScope wraps it), and the corpus decodes that state field —
-    // keep 0 (same convention as the combat target sub-prompts).
-    pq.decision_source = 0;
+    // The attacking creature whose damage is being divided is the
+    // pending-decision source.
+    pq.decision_source = pd.attacker;
     pq.answered = false;
     pq.answer = -1;
     pq.active = true;
@@ -3789,6 +3774,20 @@ void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
     run_damage_assignment(game, orderer, game.pending_query.answer);
 }
 
+// One loop-safe miracle yes/no read, with the miracle card as the pending-decision source.
+// The baseline is reset to 0 first (a mandatory choice runs from the loop top with no ambient
+// pending decision): a SNAPSHOT at this decision captures the scoped value, so a RESTORE
+// re-enters with it still set, and without the reset the recreated scope would capture it as
+// its prev and leak it past the answer.
+static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, Entity card) {
+    game.pending_decision_source = 0;
+    PendingDecisionScope pending(card);
+    search_set_loop_safe(true);
+    int choice = InputLogger::instance().get_input(menu);
+    search_set_loop_safe(false);
+    return choice;
+}
+
 // Miracle (CR 702.94a) reveal decision. A first-of-turn miracle card was drawn and its owner may
 // reveal it "as they draw it" — a PRIVATE special action taken off the stack (the opponent is not
 // told a miracle card was drawn unless it is revealed). This forced yes/no is presented to the
@@ -3823,15 +3822,8 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
                                ? global_coordinator.GetComponent<CardData>(card).name
                                : "the card";
 
-    std::vector<LegalAction> yn;
-    LegalAction decline(PASS_PRIORITY, std::string("Don't reveal ") + nm + " (miracle)");
-    decline.category = ActionCategory::OPTIONAL_YESNO;
-    decline.option_ordinal = 0;  // 0 = decline
-    yn.push_back(decline);
-    LegalAction accept(PASS_PRIORITY, std::string("Reveal ") + nm + " for its miracle cost");
-    accept.category = ActionCategory::OPTIONAL_YESNO;
-    accept.option_ordinal = 1;  // 1 = accept (reveal)
-    yn.push_back(accept);
+    std::vector<LegalAction> yn =
+        yesno_menu("Don't reveal " + nm + " (miracle)", "Reveal " + nm + " for its miracle cost");
 
     // Point the input query at the OWNER (the drawer), who need not be the priority holder — the
     // shared chooser-scope pattern (mirrors CLEANUP_DISCARD): machine mode then serializes the state
@@ -3839,9 +3831,7 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     // opponent. Loop-safe: one decision derived from the pending card alone.
     bool prev_priority = game.player_a_has_priority;
     game.player_a_has_priority = (owner == Zone::PLAYER_A);
-    search_set_loop_safe(true);
-    int choice = InputLogger::instance().get_input(yn);
-    search_set_loop_safe(false);
+    int choice = ask_miracle_choice(game, yn, card);
     game.player_a_has_priority = prev_priority;
     // Answer consumed — NOW the one-shot decision is spent (see the flag note above).
     // On a search unwind the restore overwrites the flag from the snapshot (still
@@ -3895,24 +3885,16 @@ static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer) {
     ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, owner);
     bool affordable = alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
 
-    std::vector<LegalAction> menu;
-    LegalAction decline(PASS_PRIORITY, std::string("Do not cast ") + nm + " (miracle)");
-    decline.category = ActionCategory::OPTIONAL_YESNO;
-    decline.option_ordinal = 0;  // 0 = do not cast
-    menu.push_back(decline);
-    if (affordable) {
-        LegalAction accept(PASS_PRIORITY, card, std::string("Cast ") + nm + " for its miracle cost");
-        accept.category = ActionCategory::OPTIONAL_YESNO;
-        accept.option_ordinal = 1;  // 1 = cast now for the miracle cost
-        menu.push_back(accept);
-    }
+    // Decline (0) = do not cast; accept (1) = cast now for the miracle cost, dropped when the
+    // miracle cost is unaffordable.
+    std::vector<LegalAction> menu =
+        yesno_menu("Do not cast " + nm + " (miracle)", "Cast " + nm + " for its miracle cost", card);
+    if (!affordable) menu.pop_back();
 
     // Present to the OWNER (seat repointed, loop-safe — same pattern as cleanup discard / the reveal).
     bool prev_priority = game.player_a_has_priority;
     game.player_a_has_priority = (owner == Zone::PLAYER_A);
-    search_set_loop_safe(true);
-    int choice = InputLogger::instance().get_input(menu);
-    search_set_loop_safe(false);
+    int choice = ask_miracle_choice(game, menu, card);
     // Answer consumed — the one-shot decision is spent (a search unwind's restore
     // brings the still-set flag back from the snapshot, re-deriving this prompt).
     game.miracle_cast_pending = 0;

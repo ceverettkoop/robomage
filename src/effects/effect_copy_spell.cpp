@@ -249,8 +249,10 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
                 game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
                          entity_name(ab.source).c_str());
             bool suspended = false;
-            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ctx,
-                                             suspended, UnlessPayKind::MANA, &ab.unless_cost_pips);
+            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ab.source, ctx,
+                                             suspended,
+                                             UnlessSubject{UnlessEffect::COPY, ab.source, ab.unless_switched},
+                                             UnlessPayKind::MANA, &ab.unless_cost_pips);
             if (suspended) return HandlerResult::SUSPENDED;
             bool paid = !prevented;
             // UnlessSwitched$ True: copy only if paid. Otherwise copy unless paid.
@@ -264,7 +266,8 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (original gone)
     }
 
-    ResolutionTargetAsker asker(ctx);
+    // The copies' new targets are chosen by the copies' controller (CR 707.10c).
+    ResolutionTargetAsker asker(ctx, rt.controller_is_a ? Zone::PLAYER_A : Zone::PLAYER_B);
     if (run_copy_spell(rt, asker, orderer) != TargetStatus::DONE)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;

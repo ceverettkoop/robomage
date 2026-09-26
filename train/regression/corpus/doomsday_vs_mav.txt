@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Underground Sea, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -58,6 +59,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Brainstorm, Polluted Delta, Polluted Delta | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Brainstorm, Polluted Delta, Polluted Delta | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Force of Will
    1: Thoughtseize
@@ -111,6 +115,7 @@
   Step: Upkeep (turn 1)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -128,8 +133,10 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
   Stack: Once Upon a Time (spell, self)
   Pending: Once Upon a Time (self)
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
-   0: Take nothing
+   0: Take nothing (rest go to the bottom of library)
    1: Wasteland
    2: Knight of the Reliquary
    3: Endurance
@@ -147,6 +154,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -160,10 +169,11 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(5): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Polluted Delta | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time
-  Extras: self_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -185,7 +195,8 @@
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time
-  Extras: self_lands_played=1, self_revolt
+  This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Swamp
@@ -204,11 +215,12 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Polluted Delta | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Underground Sea
+  Self BF:  Underground Sea (NEW)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time
-  Extras: self_lands_played=1, self_revolt
+  This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
@@ -223,12 +235,13 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Polluted Delta | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Underground Sea
+  Self BF:  Underground Sea (NEW)
   Pending: Thoughtseize (self)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
   Opp revealed: Once Upon a Time
-  Extras: self_lands_played=1, self_revolt
+  This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Player B (20 life)
    1: Player A (19 life)
@@ -253,14 +266,15 @@
   Step: First Main (turn 1)
   Self:  19 life | mana: empty | hand(4): Force of Will, Thoughtseize, Dark Ritual, Polluted Delta | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Underground Sea (T)
+  Self BF:  Underground Sea (T,NEW)
   Stack: Thoughtseize (spell, self) -> opponent (player)
   Pending: Thoughtseize (self)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Savannah, Swords to Plowshares, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Green Sun's Zenith
    1: Keen-Eyed Curator
@@ -289,6 +303,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -304,12 +320,13 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Savannah
+  Self BF:  Savannah (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -325,12 +342,13 @@
   Step: Second Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath | lib 51
   Opp:   17 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Savannah
+  Self BF:  Savannah (NEW)
   Opp BF:   Underground Sea (T)
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -352,6 +370,7 @@
   Opp GY:  Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -370,6 +389,8 @@
   Opp GY:  Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -386,6 +407,8 @@
   Opp GY:  Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -408,6 +431,8 @@
   Opp GY:  Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (20 life)
    1: Player A (17 life)
@@ -439,6 +464,8 @@
   Opp GY:  Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Green Sun's Zenith
    1: Keen-Eyed Curator
@@ -460,6 +487,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -473,13 +502,14 @@
   Step: First Main (turn 3)
   Self:  15 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Polluted Delta | Underground Sea (T)
+  Self BF:  Polluted Delta (NEW) | Underground Sea (T)
   Opp BF:   Savannah
   Self GY: Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -504,7 +534,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Swamp
@@ -522,13 +553,14 @@
   Step: First Main (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -539,13 +571,14 @@
   Step: Begin Combat (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -558,13 +591,14 @@
   Step: Declare Atk (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -577,13 +611,14 @@
   Step: Declare Blk (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -597,13 +632,14 @@
   Step: Combat Dmg (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -614,13 +650,14 @@
   Step: End Combat (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -631,13 +668,14 @@
   Step: Second Main (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -648,13 +686,14 @@
   Step: End Step (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea
+  Self BF:  Underground Sea (T) | Underground Sea (NEW)
   Opp BF:   Savannah
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -676,6 +715,7 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -694,6 +734,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: opp drawn=1
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -709,6 +751,8 @@
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Talon Gates of Madara
@@ -726,13 +770,14 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   14 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Savannah | Talon Gates of Madara
+  Self BF:  Savannah | Talon Gates of Madara (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea
   Pending: Talon Gates of Madara (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: No target
   >> B/B: 0 (No target)
@@ -746,13 +791,14 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Savannah | Talon Gates of Madara
+  Opp BF:   Savannah | Talon Gates of Madara (NEW)
   Stack: Talon Gates of Madara (ability, opponent)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -765,12 +811,13 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   14 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Savannah | Talon Gates of Madara
+  Self BF:  Savannah | Talon Gates of Madara (NEW,res 1)
   Opp BF:   Underground Sea (T) | Underground Sea
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -783,12 +830,14 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   14 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Savannah | Talon Gates of Madara
+  Self BF:  Savannah | Talon Gates of Madara (NEW,res 1)
   Opp BF:   Underground Sea (T) | Underground Sea
+  Pending: Green Sun's Zenith (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -804,13 +853,14 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Savannah (T) | Talon Gates of Madara
+  Opp BF:   Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Stack: Green Sun's Zenith (spell, opponent)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -824,14 +874,15 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   14 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Savannah (T) | Talon Gates of Madara
+  Self BF:  Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Opp BF:   Underground Sea (T) | Underground Sea
   Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -847,12 +898,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -864,12 +916,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -883,12 +936,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -902,12 +956,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -922,12 +977,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -939,12 +995,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -956,12 +1013,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -973,12 +1031,13 @@
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1000,6 +1059,7 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1018,6 +1078,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1034,6 +1096,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -1047,13 +1111,14 @@
   Step: First Main (turn 5)
   Self:  14 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 50
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Misty Rainforest
+  Self BF:  Underground Sea | Underground Sea | Misty Rainforest (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1076,7 +1141,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1098,7 +1164,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Undercity Sewers
@@ -1114,13 +1181,14 @@
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1131,13 +1199,14 @@
   Step: Begin Combat (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1150,13 +1219,14 @@
   Step: Declare Atk (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1169,13 +1239,14 @@
   Step: Declare Blk (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1189,13 +1260,14 @@
   Step: Combat Dmg (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1206,13 +1278,14 @@
   Step: End Combat (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1223,13 +1296,14 @@
   Step: Second Main (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1240,13 +1314,14 @@
   Step: End Step (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
+  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1268,6 +1343,7 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1286,6 +1362,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: opp drawn=1
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1301,6 +1379,8 @@
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1326,6 +1406,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: opp spells=1 drawn=1 colors=G
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1341,11 +1423,13 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(4): Noble Hierarch, Wasteland, Wasteland, Windswept Heath | lib 49
   Opp:   13 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Underground Sea
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1361,12 +1445,13 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Noble Hierarch, Wasteland, Windswept Heath | lib 49
   Opp:   13 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Talon Gates of Madara | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Talon Gates of Madara | Wasteland (NEW)
   Opp BF:   Underground Sea | Underground Sea | Underground Sea
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Noble Hierarch  [#0]
@@ -1384,13 +1469,14 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Stack: Noble Hierarch (spell, opponent)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1407,12 +1493,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1424,12 +1511,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1443,12 +1531,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1462,12 +1551,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1482,12 +1572,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1499,12 +1590,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1516,12 +1608,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1533,12 +1626,13 @@
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1
+  This turn: opp spells=2 drawn=1 colors=G
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1560,6 +1654,7 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1578,6 +1673,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1594,6 +1691,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Thoughtseize  [#0]
@@ -1614,6 +1713,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Player B (20 life)
    1: Player A (13 life)
@@ -1635,6 +1736,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1662,6 +1765,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1678,6 +1783,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1696,6 +1803,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1714,6 +1823,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1733,6 +1844,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1749,6 +1862,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1765,6 +1880,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1781,6 +1898,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1801,6 +1920,7 @@
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1818,6 +1938,7 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1835,6 +1956,8 @@
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1852,6 +1975,8 @@
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: opp drawn=1
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1867,6 +1992,8 @@
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1883,12 +2010,13 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland
+  Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1903,13 +2031,14 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland
+  Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
   Pending: Keen-Eyed Curator (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Thoughtseize
    1: Thoughtseize
@@ -1931,13 +2060,14 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1952,14 +2082,15 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
   Stack: Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
   Pending: Wasteland (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Underground Sea
    1: Underground Sea
@@ -1980,13 +2111,14 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
   Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 48) -> Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
   Self GY: Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2000,14 +2132,15 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland
+  Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
   Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 48) -> Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
   Pending: Wasteland (self)
   Self GY: Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Underground Sea
    1: Underground Sea
@@ -2033,7 +2166,8 @@
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2051,7 +2185,8 @@
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2071,7 +2206,8 @@
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2089,7 +2225,8 @@
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2108,7 +2245,8 @@
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2126,7 +2264,8 @@
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2146,7 +2285,8 @@
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Polluted Delta
   Opp exile:  Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2166,7 +2306,8 @@
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Polluted Delta
   Opp exile:  Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Thoughtseize
    1: Thoughtseize
@@ -2197,7 +2338,8 @@
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Polluted Delta
   Opp exile:  Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2216,7 +2358,8 @@
   Self exile: Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2236,7 +2379,8 @@
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Polluted Delta
   Opp exile:  Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2256,7 +2400,8 @@
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Polluted Delta
   Opp exile:  Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Thoughtseize
    1: Polluted Delta
@@ -2286,7 +2431,8 @@
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Polluted Delta
   Opp exile:  Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2305,7 +2451,8 @@
   Self exile: Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2325,7 +2472,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta, Polluted Delta
   Opp exile:  Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2345,7 +2493,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta, Polluted Delta
   Opp exile:  Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Polluted Delta
    1: Polluted Delta
@@ -2375,7 +2524,8 @@
   Self exile: Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2396,7 +2546,8 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2414,7 +2565,8 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2433,7 +2585,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -2454,7 +2607,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2476,7 +2630,8 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2491,13 +2646,14 @@
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2511,13 +2667,14 @@
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2533,13 +2690,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: self life_lost=4 | opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2551,13 +2709,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: self life_lost=4 | opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2569,13 +2728,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: self life_lost=4 | opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2587,13 +2747,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  This turn: self life_lost=4 | opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2616,6 +2777,7 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2635,6 +2797,8 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2652,6 +2816,8 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Island
@@ -2665,14 +2831,15 @@
   Step: First Main (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2683,14 +2850,15 @@
   Step: Begin Combat (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2703,14 +2871,15 @@
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2723,14 +2892,15 @@
   Step: Declare Blk (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2744,14 +2914,15 @@
   Step: Combat Dmg (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2762,14 +2933,15 @@
   Step: End Combat (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2780,14 +2952,15 @@
   Step: Second Main (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2798,14 +2971,15 @@
   Step: End Step (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island
+  Self BF:  Underground Sea | Underground Sea | Island (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2827,6 +3001,7 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2844,6 +3019,7 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2862,6 +3038,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2879,6 +3057,8 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: opp drawn=1
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2895,6 +3075,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -2919,6 +3101,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2937,6 +3121,8 @@
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: opp spells=1 drawn=1 colors=G
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -2952,12 +3138,14 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 47
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -2972,13 +3160,14 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Wooded Foothills | lib 47
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Windswept Heath
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Windswept Heath (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2992,14 +3181,15 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Wooded Foothills | lib 47
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Windswept Heath
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Windswept Heath (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Polluted Delta
    1: Underground Sea
@@ -3020,14 +3210,15 @@
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Wooded Foothills | lib 47
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara | Windswept Heath
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara | Windswept Heath (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Keen-Eyed Curator (ability, self) -> Polluted Delta (opponent)
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3043,14 +3234,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 47
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Polluted Delta (opponent)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3062,13 +3254,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Stack: Windswept Heath (ability, opponent) -> Keen-Eyed Curator (ability, opponent) -> Polluted Delta (self)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3082,7 +3275,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 47
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Polluted Delta (opponent)
   Pending: Windswept Heath (self)
@@ -3090,7 +3283,8 @@
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Forest
@@ -3108,14 +3302,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Keen-Eyed Curator (ability, self) -> Polluted Delta (opponent)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
   Opp exile:  Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3127,13 +3322,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, opponent) -> Polluted Delta (self)
   Self GY: Underground Sea, Misty Rainforest, Polluted Delta
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3147,13 +3343,14 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest
   Opp exile:  Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3166,14 +3363,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest
   Opp exile:  Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Underground Sea
    1: Misty Rainforest
@@ -3194,14 +3392,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Keen-Eyed Curator (ability, self) -> Underground Sea (opponent)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest
   Opp exile:  Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3213,13 +3412,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, opponent) -> Underground Sea (self)
   Self GY: Underground Sea, Misty Rainforest
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3233,13 +3433,14 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest
   Opp exile:  Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3252,14 +3453,15 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest
   Opp exile:  Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Misty Rainforest
    1: Knight of the Reliquary
@@ -3280,13 +3482,14 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Stack: Keen-Eyed Curator (ability, opponent) -> Misty Rainforest (self)
   Self GY: Misty Rainforest
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3301,11 +3504,12 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3317,11 +3521,12 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3334,12 +3539,13 @@
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [3/3]
    1: Confirm attackers
@@ -3354,12 +3560,13 @@
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] (ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -3374,12 +3581,13 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
   Stack: Noble Hierarch (ability, opponent) [amt=1] -> Keen-Eyed Curator (opponent, slot 51)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3394,11 +3602,12 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3412,11 +3621,12 @@
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3432,11 +3642,12 @@
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self life_lost=4 | opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3448,11 +3659,12 @@
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self life_lost=4 | opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3464,11 +3676,12 @@
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self life_lost=4 | opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3480,11 +3693,12 @@
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [4/4] (T) | Noble Hierarch [0/1] (T,res 1) | Savannah (T) | Talon Gates of Madara (T)
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self life_lost=4 | opp spells=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3505,6 +3719,7 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3522,6 +3737,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3538,6 +3755,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3554,6 +3773,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3572,6 +3793,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3590,6 +3813,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3609,6 +3834,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3625,6 +3852,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3641,6 +3870,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3657,6 +3888,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3678,6 +3911,7 @@
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3693,6 +3927,7 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3711,6 +3946,8 @@
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3726,6 +3963,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
+  This turn: opp drawn=1
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3742,6 +3981,8 @@
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -3764,6 +4005,8 @@
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3780,6 +4023,8 @@
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
+  This turn: opp spells=1 noncreature=1 drawn=1 colors=G
+  Extras: opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -3796,11 +4041,13 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 45
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 drawn=1 colors=G
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wooded Foothills
@@ -3814,12 +4061,13 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Sylvan Library | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Sylvan Library (NEW) | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3833,13 +4081,14 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Sylvan Library | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Sylvan Library (NEW) | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 colors=G
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Knight of the Reliquary
    1: Once Upon a Time
@@ -3858,13 +4107,14 @@
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library | Talon Gates of Madara | Wooded Foothills
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 colors=G
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3880,13 +4130,14 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Wooded Foothills (ability, self) -> Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3898,12 +4149,13 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library | Talon Gates of Madara
+  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Stack: Wooded Foothills (ability, opponent) -> Keen-Eyed Curator (ability, opponent) -> Knight of the Reliquary (opponent)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3918,14 +4170,15 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Wooded Foothills (ability, self) -> Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (self)
   Pending: Wooded Foothills (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Savannah
@@ -3941,13 +4194,14 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Keen-Eyed Curator (ability, self) -> Knight of the Reliquary (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3959,12 +4213,13 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Sylvan Library | Talon Gates of Madara
+  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, opponent) -> Knight of the Reliquary (opponent)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3979,13 +4234,14 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Self exile: Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3998,14 +4254,15 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Pending: Keen-Eyed Curator (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Self exile: Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Once Upon a Time
    1: Swords to Plowshares
@@ -4024,14 +4281,15 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Self exile: Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -4043,13 +4301,14 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah | Sylvan Library | Talon Gates of Madara
+  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, opponent) -> Once Upon a Time (opponent)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp exile:  Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4065,13 +4324,14 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -4084,14 +4344,15 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Pending: Keen-Eyed Curator (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Swords to Plowshares
    1: Wasteland
@@ -4109,14 +4370,15 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Stack: Keen-Eyed Curator (ability, self) -> Swords to Plowshares (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -4128,13 +4390,14 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara
+  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara
   Stack: Keen-Eyed Curator (ability, opponent) -> Swords to Plowshares (opponent)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp exile:  Once Upon a Time, Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4149,13 +4412,14 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland
   Self exile: Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -4168,14 +4432,15 @@
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
   Pending: Keen-Eyed Curator (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland
   Self exile: Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wasteland
    1: Wasteland
@@ -4193,13 +4458,14 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Stack: Keen-Eyed Curator (ability, opponent) -> Wasteland (opponent)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland, Wasteland
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp exile:  Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4215,12 +4481,13 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp exile:  Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4233,12 +4500,13 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp exile:  Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4252,13 +4520,14 @@
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wooded Foothills, Windswept Heath, Wasteland
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Collector Ouphe [2/2]
    1: Keen-Eyed Curator [7/7]
@@ -4274,13 +4543,14 @@
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wooded Foothills, Windswept Heath, Wasteland
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Keen-Eyed Curator [7/7]
    1: Confirm attackers
@@ -4296,13 +4566,14 @@
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] (ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Self BF:  Collector Ouphe [2/2] (ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] (ATK) | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Opp BF:   Underground Sea | Underground Sea | Island
   Self GY: Wooded Foothills, Windswept Heath, Wasteland
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Polluted Delta, Misty Rainforest, Island, Thoughtseize, Underground Sea
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -4317,12 +4588,13 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp exile:  Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4337,12 +4609,13 @@
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
   Opp:   18 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T) | Savannah (T) | Sylvan Library | Talon Gates of Madara (T)
+  Opp BF:   Collector Ouphe [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] (T,ATK) | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara (T)
   Opp GY:  Wooded Foothills, Windswept Heath, Wasteland
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp exile:  Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
+  Extras: opp_lands_played=1, opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]

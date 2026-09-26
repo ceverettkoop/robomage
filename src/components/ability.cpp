@@ -57,7 +57,8 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
 // The "unless they discard N cards" flavor of run_unless_loop (CR 701.8), suspendable via
 // FrameCtx. Forward-declared per CLAUDE.md.
 static bool run_discard_unless(size_t count, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended);
+                               std::shared_ptr<Orderer> orderer, Entity decision_source,
+                               FrameCtx &ctx, bool &suspended, const UnlessSubject &subject);
 
 // Category-aware detail suffix for the "Resolving ability" log line. Display-only.
 // Forward-declared per CLAUDE.md.
@@ -420,7 +421,8 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 // progress persist in the level's UnlessRt; the per-discard menu is intentionally rebuilt from
 // the LIVE hand each ask — between asks the hand only shrinks by the discards themselves.
 static bool run_discard_unless(size_t count, Zone::Ownership controller,
-                               std::shared_ptr<Orderer> orderer, FrameCtx &ctx, bool &suspended) {
+                               std::shared_ptr<Orderer> orderer, Entity decision_source,
+                               FrameCtx &ctx, bool &suspended, const UnlessSubject &subject) {
     suspended = false;
     UnlessRt local_rt;
     UnlessRt &rt = ctx.can_suspend() ? ctx.rt<UnlessRt>() : local_rt;
@@ -431,23 +433,11 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 
         std::vector<LegalAction> actions;
         size_t pay_idx = actions.size();
-        if (can_pay) {
-            LegalAction pay(PASS_PRIORITY,
-                std::string("Discard ") + std::to_string(count) +
-                (count == 1 ? " card (spell is not countered)" : " cards (spell is not countered)"));
-            pay.category = ActionCategory::PAY_UNLESS;
-            pay.option_ordinal = 1;  // 1 = pay
-            actions.push_back(pay);
-        }
+        if (can_pay) actions.push_back(unless_pay_action(subject, UnlessPayKind::DISCARD, count, nullptr));
         size_t decline_idx = actions.size();
-        LegalAction decline(PASS_PRIORITY, std::string("Don't discard (spell is countered)"));
-        decline.category = ActionCategory::PAY_UNLESS;
-        decline.option_ordinal = 0;  // 0 = don't pay
-        actions.push_back(decline);
+        actions.push_back(unless_decline_action(subject, UnlessPayKind::DISCARD));
 
-        // Runs source-less today (no PendingDecisionScope at the old call site),
-        // so the ambient pending-decision value travels through the ask unchanged.
-        int choice = ctx.ask(actions, controller, cur_game.pending_decision_source);
+        int choice = ctx.ask(actions, controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -470,27 +460,29 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
             la.category = ActionCategory::DISCARD;
             dactions.push_back(la);
         }
-        int dchoice = ctx.ask(dactions, controller, cur_game.pending_decision_source);
+        int dchoice = ctx.ask(dactions, controller, decision_source);
         if (dchoice < 0 && decision_suspended()) {
             suspended = true;
             return false;
         }
         Entity chosen = dactions[static_cast<size_t>(dchoice)].source_entity;
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
-        game_log("%s discards %s — spell is not countered\n",
-                 player_name(controller).c_str(), cd.name.c_str());
+        game_log("%s discards %s — %s\n", player_name(controller).c_str(), cd.name.c_str(),
+                 unless_outcome_text(subject, /*paid=*/true).c_str());
         // The discarded card enters a public zone — record its identity in the belief state.
         mark_card_revealed(chosen, controller);
         orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
     }
-    return false;  // not countered
+    return false;  // paid
 }
 
-// Returns true if the spell should be countered (controller declined or couldn't pay).
-// kind: how the unless-cost is paid — {cost} generic mana (default), `cost` life (Ward—Pay N life,
-// CR 702.21), or discard `cost` card(s) (Reality Smasher, CR 701.8). A life payment is only offered
-// when the payer's life total >= cost (CR 119.4 — a player can't pay more life than they have).
-// The target's controller decides whether to pay, not the Daze caster: every kind seats its asks
+// Returns true if the unless-cost was not paid (controller declined or couldn't pay).
+// kind: how the unless-cost is paid — {cost} generic mana or exact pips (default), `cost` life
+// (Ward—Pay N life, CR 702.21), discard `cost` card(s) (Reality Smasher, CR 701.8), or `cost`
+// energy. A life payment is only offered when the payer's life total >= cost (CR 119.4 — a player
+// can't pay more life than they have). Every pay/decline entry is worded by the shared
+// choice_labels builders from `subject` (the governed effect and its object).
+// The payer decides whether to pay, not the ability's controller: every kind seats its asks
 // on `controller` through ctx.ask (which repoints and restores priority around the prompt exactly
 // as the old manual swap did) and may suspend — `suspended` is set and the return value is
 // meaningless (check it FIRST). The MANA kind is a live-menu loop (Shape C): its pay/decline menu
@@ -498,11 +490,12 @@ static bool run_discard_unless(size_t count, Zone::Ownership controller,
 // executes at consume time, floats mana, and the loop re-arms the rebuilt menu.
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-    FrameCtx &ctx, bool &suspended, UnlessPayKind kind, const ManaValue *cost_pips) {
+    Entity decision_source, FrameCtx &ctx, bool &suspended, const UnlessSubject &subject,
+    UnlessPayKind kind, const ManaValue *cost_pips) {
     suspended = false;
 
     if (kind == UnlessPayKind::DISCARD) {
-        return run_discard_unless(cost, controller, orderer, ctx, suspended);
+        return run_discard_unless(cost, controller, orderer, decision_source, ctx, suspended, subject);
     }
 
     if (kind == UnlessPayKind::LIFE) {
@@ -511,22 +504,11 @@ bool run_unless_loop(
 
         std::vector<LegalAction> unless_actions;
         size_t pay_idx = unless_actions.size();
-        if (can_pay) {
-            LegalAction pay(PASS_PRIORITY,
-                std::string("Pay ") + std::to_string(cost) + " life (spell is not countered)");
-            pay.category = ActionCategory::PAY_UNLESS;
-            pay.option_ordinal = 1;  // 1 = pay
-            unless_actions.push_back(pay);
-        }
+        if (can_pay) unless_actions.push_back(unless_pay_action(subject, kind, cost, nullptr));
         size_t decline_idx = unless_actions.size();
-        LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
-        decline.category = ActionCategory::PAY_UNLESS;
-        decline.option_ordinal = 0;  // 0 = don't pay
-        unless_actions.push_back(decline);
+        unless_actions.push_back(unless_decline_action(subject, kind));
 
-        // Runs source-less today, so the ambient pending-decision value travels
-        // through the ask unchanged.
-        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        int choice = ctx.ask(std::move(unless_actions), controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -534,8 +516,8 @@ bool run_unless_loop(
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             payer.life_total -= static_cast<int>(cost);
             payer.life_lost_this_turn += static_cast<int>(cost);  // CR 119.4: paying life is losing life
-            game_log("%s pays %zu life — spell is not countered\n",
-                player_name(controller).c_str(), cost);
+            game_log("%s pays %zu life — %s\n", player_name(controller).c_str(), cost,
+                     unless_outcome_text(subject, /*paid=*/true).c_str());
             return false;
         }
         (void)decline_idx;
@@ -551,27 +533,19 @@ bool run_unless_loop(
 
         std::vector<LegalAction> unless_actions;
         size_t pay_idx = unless_actions.size();
-        if (can_pay) {
-            LegalAction pay(PASS_PRIORITY,
-                std::string("Pay {E} x") + std::to_string(cost));
-            pay.category = ActionCategory::PAY_UNLESS;
-            pay.option_ordinal = 1;  // 1 = pay
-            unless_actions.push_back(pay);
-        }
+        if (can_pay) unless_actions.push_back(unless_pay_action(subject, kind, cost, nullptr));
         size_t decline_idx = unless_actions.size();
-        LegalAction decline(PASS_PRIORITY, std::string("Don't pay"));
-        decline.category = ActionCategory::PAY_UNLESS;
-        decline.option_ordinal = 0;  // 0 = don't pay
-        unless_actions.push_back(decline);
+        unless_actions.push_back(unless_decline_action(subject, kind));
 
-        int choice = ctx.ask(std::move(unless_actions), controller, cur_game.pending_decision_source);
+        int choice = ctx.ask(std::move(unless_actions), controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
         }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             pay_energy(payer, static_cast<int>(cost));
-            game_log("%s pays %zu energy.\n", player_name(controller).c_str(), cost);
+            game_log("%s pays %zu energy — %s\n", player_name(controller).c_str(), cost,
+                     unless_outcome_text(subject, /*paid=*/true).c_str());
             return false;
         }
         (void)decline_idx;
@@ -613,24 +587,13 @@ bool run_unless_loop(
 
         bool can_pay = can_afford(controller, cond_cost);
         size_t pay_idx = unless_actions.size();
-        if (can_pay) {
-            LegalAction pay(PASS_PRIORITY, std::string("Pay {") + std::to_string(cost) + "} (spell is not countered)");
-            pay.category = ActionCategory::PAY_UNLESS;
-            pay.option_ordinal = 1;  // 1 = pay
-            unless_actions.push_back(pay);
-        }
+        if (can_pay) unless_actions.push_back(unless_pay_action(subject, kind, cost, cost_pips));
         size_t decline_idx = unless_actions.size();
-        {
-            LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
-            decline.category = ActionCategory::PAY_UNLESS;
-            decline.option_ordinal = 0;  // 0 = don't pay
-            unless_actions.push_back(decline);
-        }
+        unless_actions.push_back(unless_decline_action(subject, kind));
 
-        // Runs source-less today, so the ambient pending-decision value travels
-        // through the ask unchanged. Passed as an lvalue: the tap branch below
-        // still needs the menu to map the chosen action.
-        int choice = ctx.ask(unless_actions, controller, cur_game.pending_decision_source);
+        // Passed as an lvalue: the tap branch below still needs the menu to map
+        // the chosen action.
+        int choice = ctx.ask(unless_actions, controller, decision_source);
         if (choice < 0 && decision_suspended()) {
             suspended = true;
             return false;
@@ -642,7 +605,9 @@ bool run_unless_loop(
 
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             spend_mana(controller, cond_cost, paid_for);
-            game_log("%s pays {%zu} — spell is not countered\n", player_name(controller).c_str(), cost);
+            game_log("%s pays %s — %s\n", player_name(controller).c_str(),
+                     unless_cost_text(kind, cost, cost_pips).c_str(),
+                     unless_outcome_text(subject, /*paid=*/true).c_str());
             return false;
         }
 
@@ -1036,10 +1001,7 @@ bool Ability::is_target_valid() const {
 // Evaluates a condition SVar expression against cur_game state.
 static int evaluate_condition_svar(const std::string &expr, Entity src, Zone::Ownership ctrl = Zone::PLAYER_A,
     std::shared_ptr<Orderer> orderer = nullptr) {
-    if (expr == "Count$ResolvedThisTurn") {
-        auto it = cur_game.ability_resolution_counts.find(src);
-        return (it != cur_game.ability_resolution_counts.end()) ? it->second : 0;
-    }
+    if (expr == "Count$ResolvedThisTurn") return ability_resolutions_this_turn(src);
     // Delegate to evaluate_dynamic_amount for Count$ expressions
     if (orderer && expr.find("Count$") != std::string::npos) {
         return static_cast<int>(evaluate_dynamic_amount(expr, ctrl, orderer, 0));
@@ -1089,10 +1051,10 @@ size_t evaluate_dynamic_amount(
         // LKI fallback (CR 608.2h): the source has left the battlefield (Blast Zone is sacrificed
         // as part of its own activation cost before this DestroyAll bound resolves) — use the
         // counter count snapshotted as it left play.
-        auto li = cur_game.last_known_info.find(source);
-        if (li != cur_game.last_known_info.end()) {
-            auto ci = li->second.counters.find(ctype);
-            if (ci != li->second.counters.end() && ci->second > 0)
+        // The ability refers to the departed Blast Zone even if the card has since moved again.
+        if (const LastKnownInfo *lki = departed_lki_for(source)) {
+            auto ci = lki->counters.find(ctype);
+            if (ci != lki->counters.end() && ci->second > 0)
                 return static_cast<size_t>(ci->second);
         }
         return 0;
@@ -1629,18 +1591,8 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // OptionalDecider$ You ("you may ..."): the controller may decline the whole
         // triggered ability as it resolves (Ajani's exile-and-return-transformed).
         if (trigger_optional) {
-            std::vector<LegalAction> yn;
-            LegalAction decline(PASS_PRIORITY, std::string("Decline"));
-            decline.category = ActionCategory::OPTIONAL_YESNO;
-            decline.option_ordinal = 0;  // 0 = decline
-            yn.push_back(decline);
-            LegalAction accept(PASS_PRIORITY, std::string("Accept"));
-            accept.category = ActionCategory::OPTIONAL_YESNO;
-            accept.option_ordinal = 1;  // 1 = accept
-            yn.push_back(accept);
-            // Runs source-less today (no PendingDecisionScope), so the ambient
-            // pending-decision value travels through the ask unchanged.
-            int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+            int yc = ctx.ask(optional_yesno_menu("use " + entity_name(source) + "'s triggered ability"),
+                             controller, source);
             if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
             if (yc == 0) {
                 game_log("%s declines the optional triggered ability.\n", player_name(controller).c_str());
@@ -1678,16 +1630,8 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                 // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost (The Fantasticar):
                 // the Sac<.../CARDNAME> cost makes the whole effect optional — prompt, sacrifice on
                 // accept, do nothing (skip the effect and its subabilities) on decline.
-                std::vector<LegalAction> yn;
-                LegalAction decline(PASS_PRIORITY, std::string("Decline"));
-                decline.category = ActionCategory::OPTIONAL_YESNO;
-                decline.option_ordinal = 0;  // 0 = decline
-                yn.push_back(decline);
-                LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
-                accept.category = ActionCategory::OPTIONAL_YESNO;
-                accept.option_ordinal = 1;  // 1 = accept
-                yn.push_back(accept);
-                int yc = ctx.ask(std::move(yn), controller, cur_game.pending_decision_source);
+                int yc = ctx.ask(yesno_menu("Don't sacrifice " + sname, "Sacrifice " + sname),
+                                 controller, source);
                 if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
                 if (yc == 0) {
                     game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());

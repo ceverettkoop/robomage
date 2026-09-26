@@ -83,8 +83,6 @@ from env import (
     _PENDING_DECISION_START,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
-    # action-history ring start (newest entry first: cat, card id, is_self, turn)
-    _HIST_START,
     # known top-of-library slot 0 (obs[_KNOWN_TOP_LIB_START] == top card id, sentinel=unknown)
     _KNOWN_TOP_LIB_START,
     # header flag / step one-hot indices + self player-block offsets
@@ -387,8 +385,8 @@ def _controls_card(obs: np.ndarray, cid: int) -> bool:
 def _gy_has_any(obs: np.ndarray, ids: frozenset) -> bool:
     """True if EITHER graveyard holds a card whose vocab id is in ``ids``.
 
-    The self and opponent graveyard blocks are contiguous card-id slots
-    (self first), so one scan over 2*MAX_GY_SLOTS covers both. Both sides
+    The self and opponent graveyard blocks are contiguous slots (self first,
+    card id at each slot's start), so one scan over 2*MAX_GY_SLOTS covers both. Both sides
     matter to the caller (Reanimate can take a creature from any graveyard).
     """
     for slot in range(2 * MAX_GY_SLOTS):
@@ -2438,18 +2436,10 @@ class ScriptedAgent:
         # number ladders (index == amount), and both should be the planned
         # energy Y — X buys exactly the energy the sweep needs, and the pay
         # step spends exactly that much (the generic pickers defaulted these
-        # to 0, sweeping nothing). The resolution-time pay menu names Wrath
-        # as the pending source; the cast-time X ladder fires BEFORE the
-        # spell is pending (601.2b announcement), so that one is identified
-        # from the newest action-history entry — our own just-recorded CAST
-        # of Wrath (a plain null-id ladder, so no delve-menu overlap).
+        # to 0, sweeping nothing). Both the cast-time X ladder and the
+        # resolution-time pay menu name Wrath as the pending-decision source.
         wrath_x_menu = (
-            _slot_card_idx(obs, _PENDING_DECISION_START) == _WRATH_OF_SKIES_VOCAB_IDX
-            or (all(c == _CAT_CHOOSE_X for c in cats)
-                and card_ids[0] <= _ACTION_CARD_ID_NULL + 0.01
-                and int(round(float(obs[_HIST_START]) * ACTION_CATEGORY_MAX)) == _CAT_CAST
-                and obs[_HIST_START + 2] > 0.5
-                and _slot_card_idx(obs, _HIST_START + 1) == _WRATH_OF_SKIES_VOCAB_IDX))
+            _slot_card_idx(obs, _PENDING_DECISION_START) == _WRATH_OF_SKIES_VOCAB_IDX)
         if (num_choices >= 2 and wrath_x_menu
                 and all(c in (_CAT_CHOOSE_X, _CAT_OTHER) for c in cats)):
             y, _, _ = _wrath_energy_plan(g())

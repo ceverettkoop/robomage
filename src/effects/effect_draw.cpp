@@ -14,7 +14,8 @@ extern Coordinator global_coordinator;
 namespace effects {
 
 bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
-                              Zone::Ownership owner, size_t &done, size_t total) {
+                              Zone::Ownership owner, size_t &done, size_t total,
+                              Entity decision_source) {
     for (; done < total; done++) {
         // Per-draw ended bail, mirroring Orderer::draw's loop guard (a decked
         // draw ends the game mid-batch).
@@ -30,11 +31,9 @@ bool draw_n_with_replacements(FrameCtx &ctx, std::shared_ptr<Orderer> orderer,
         }
         // One dredge question per draw (CR 702.52a / 614.1a), asked on the
         // DRAWING player (who may differ from the resolving controller — a
-        // draw can be forced by an opponent's effect) with the ambient
-        // pending-decision source — the blocking dispatch_draw prompt ran
-        // under whatever scope the calling handler held (sylvan's ab.source
-        // scope; none for a plain Draw resolution).
-        int choice = ctx.ask(menu, owner, cur_game.pending_decision_source);
+        // draw can be forced by an opponent's effect), with the resolving
+        // ability's source as the pending-decision source.
+        int choice = ctx.ask(menu, owner, decision_source);
         if (choice < 0 && decision_suspended()) return false;
         if (choice == 0) {
             orderer->perform_draw_with_bonus(owner);
@@ -87,7 +86,7 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         rt.total = count;
         rt.init = true;
     }
-    if (!draw_n_with_replacements(ctx, orderer, rt.owner, rt.done, rt.total))
+    if (!draw_n_with_replacements(ctx, orderer, rt.owner, rt.done, rt.total, ab.source))
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }

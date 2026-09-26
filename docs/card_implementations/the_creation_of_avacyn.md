@@ -35,8 +35,8 @@ sacrifice-after-final, `K:Chapter` parse) already existed (`src/saga.cpp`,
   that leaves exile is no longer that hidden object, CR 708.4) alongside `identity_known`.
 - **Move plumbing:** `Orderer::add_to_zone` (`src/systems/orderer.h/.cpp`) gained an
   `exile_face_down` parameter: when true and the destination is EXILE it stamps `Zone::is_face_down`
-  and **withholds** the card from the owner's public revealed multi-hot (a face-down exile is not
-  public knowledge). `effects::change_zone_move` threads the flag through. Parse:
+  and **withholds** the card from the owner's match reveal set (the opponent decklist `revealed`
+  bits; a face-down exile is not public knowledge). `effects::change_zone_move` threads the flag through. Parse:
   `ExileFaceDown$ True` → `Ability::exile_face_down` (`parse_change_zone`).
 - The search-based ChangeZone (chapter I) records the exiled card on the source's
   `Permanent::exiled_with` (the "cards exiled with this" association) and logs the face-down exile
@@ -44,7 +44,7 @@ sacrifice-after-final, `K:Chapter` parse) already existed (`src/saga.cpp`,
 - **Observation info-hiding** (`src/machine_io.cpp`): an opponent-owned face-down exile emits the
   unknown-id sentinel (`-1`) in the per-slot exile block, so a viewer sees a card is in the
   opponent's exile but not which one (the owner still sees its true id). This complements the
-  belief-state (revealed multi-hot) suppression above — the two are distinct observation channels.
+  belief-state (decklist `revealed` bit) suppression above — the two are distinct observation channels.
 
 ### 2. `DB$ SetState | Mode$ TurnFaceUp` — a new SetState effect (CR 708.3 / 711.8)
 

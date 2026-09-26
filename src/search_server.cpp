@@ -285,9 +285,9 @@ void determinize_hidden_state(unsigned int world_seed) {
     size_t opp_hand_slots = 0;
     size_t opp_lib_slots = 0;
 
-    // Post-board games of a bo3 (game index 1+, matching machine_io's
-    // is_post_board): the opponent's sideboard SWAPS are hidden information, so
-    // P only knows the combined 75 — which 60 are in the deck is unknowable.
+    // Post-board games of a bo3 (game index 1+): the opponent's sideboard
+    // SWAPS are hidden information, so P only knows the combined 75 — which 60
+    // are in the deck is unknowable.
     // Model that by adding the opponent's SIDEBOARD cards to the exchange pool:
     // every sampled world re-deals which cards are in hand/library and which
     // sat out in the sideboard. Game 1 (and single games) keep the sideboard

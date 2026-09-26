@@ -17,7 +17,8 @@ from env import (OBS_SIZE, STATE_SIZE, _SELF_IS_A_IDX,
                  _HAND_START, _HAND_SLOT_SIZE, MAX_HAND_SLOTS,
                  _SELF_PERM_START, _OPP_PERM_START, _PERM_SLOT_SIZE,
                  _PERM_SLOTS, _PERM_CARD_OFF,
-                 _GY_START, _EXILE_START, _GY_SLOT_SIZE, MAX_GY_SLOTS,
+                 _GY_START, _EXILE_START, _GY_SLOT_SIZE, _EXILE_SLOT_SIZE,
+                 MAX_GY_SLOTS,
                  _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
                  _KNOWN_TOP_LIB_SLOT_SIZE,
                  _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
@@ -52,9 +53,11 @@ def blank_obs():
     for start in (_SELF_PERM_START, _OPP_PERM_START):
         for s in range(_PERM_SLOTS):
             obs[start + s * _PERM_SLOT_SIZE + _PERM_CARD_OFF] = _SENT
-    for start in (_GY_START, _OPP_GY_START, _EXILE_START, _OPP_EXILE_START):
+    for start, size in ((_GY_START, _GY_SLOT_SIZE), (_OPP_GY_START, _GY_SLOT_SIZE),
+                        (_EXILE_START, _EXILE_SLOT_SIZE),
+                        (_OPP_EXILE_START, _EXILE_SLOT_SIZE)):
         for i in range(MAX_GY_SLOTS):
-            obs[start + i * _GY_SLOT_SIZE] = _SENT
+            obs[start + i * size] = _SENT
     for i in range(_KNOWN_TOP_LIB_SLOTS):
         obs[_KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE] = _SENT
     for i in range(_OPP_KNOWN_HAND_SLOTS):

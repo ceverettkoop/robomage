@@ -45,6 +45,10 @@ std::string player_name(Zone::Ownership owner) {
     return (owner == Zone::PLAYER_A) ? "Player A" : "Player B";
 }
 
+std::string owner_possessive(Zone::Ownership actor, Zone::Ownership owner) {
+    return actor == owner ? std::string("their") : player_name(owner) + "'s";
+}
+
 // ── game_log ──────────────────────────────────────────────────────────────────
 
 static void game_log_va(const char* fmt, va_list ap) {

@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Flow State, Force of Will, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 73
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -80,7 +82,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Scrubland
+  Self BF:  Scrubland (NEW)
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -96,10 +98,11 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Flow State, Force of Will, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
+  Opp BF:   Scrubland (T,NEW)
   Stack: Aether Vial (spell, opponent)
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -112,11 +115,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Flow State, Force of Will, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
+  Opp BF:   Scrubland (T,NEW)
   Stack: Aether Vial (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Aether Vial
   >> B/B: 0 (Aether Vial)
@@ -128,10 +132,12 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Flow State, Force of Will, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
+  Opp BF:   Scrubland (T,NEW)
   Stack: Aether Vial (spell, opponent)
+  Pending: Force of Will (self)
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: opp_lands_played=1
+  This turn: opp spells=1 noncreature=1
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Exile Brainstorm
    1: Exile Flow State
@@ -162,6 +168,7 @@
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -177,12 +184,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Flow State, Polluted Delta, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Mishra's Bauble
+  Self BF:  Mishra's Bauble (NEW)
   Opp BF:   Scrubland (T)
   Self GY: Force of Will
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -197,12 +205,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Flow State, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Scrubland (T)
   Self GY: Force of Will
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -217,14 +226,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Flow State, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Mishra's Bauble | Polluted Delta
+  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Scrubland (T)
   Pending: Mishra's Bauble (self)
   Self GY: Force of Will
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (19 life)
@@ -239,13 +249,14 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Flow State, Scalding Tarn | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Polluted Delta
+  Self BF:  Polluted Delta (NEW)
   Opp BF:   Scrubland (T)
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble, Force of Will
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -270,7 +281,8 @@
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -312,6 +324,7 @@
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self drawn=1 | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -328,12 +341,13 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial | Scrubland (T)
+  Self BF:  Aether Vial (NEW) | Scrubland (T)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -348,12 +362,13 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -368,13 +383,14 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Stack: Aether Vial (ability, self)
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -389,7 +405,7 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
@@ -397,7 +413,8 @@
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -409,12 +426,13 @@
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -426,12 +444,13 @@
   Step: Begin Combat (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -445,12 +464,13 @@
   Step: Declare Atk (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -464,13 +484,14 @@
   Step: Declare Blk (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -484,12 +505,13 @@
   Step: Combat Dmg (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -501,12 +523,13 @@
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -518,12 +541,13 @@
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -535,12 +559,13 @@
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
+  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Aether Vial
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -563,6 +588,7 @@
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -581,6 +607,8 @@
   Opp GY:  Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -597,6 +625,7 @@
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -610,12 +639,13 @@
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Flow State, Wasteland | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Self BF:  Island | Scalding Tarn
+  Self BF:  Island | Scalding Tarn (NEW)
   Opp BF:   Aether Vial (T) | Scrubland (T) | Wasteland
   Self GY: Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -638,7 +668,8 @@
   Opp GY:  Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -660,7 +691,8 @@
   Opp GY:  Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Mystic Sanctuary
@@ -681,12 +713,13 @@
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Opp BF:   Island | Mystic Sanctuary (T,NEW)
   Self GY: Aether Vial
   Opp GY:  Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -700,13 +733,14 @@
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Opp BF:   Island | Mystic Sanctuary (T,NEW)
   Pending: Wasteland (self)
   Self GY: Aether Vial
   Opp GY:  Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Mystic Sanctuary
    1: Scrubland
@@ -750,17 +784,19 @@
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial | Scrubland
+  Self BF:  Aether Vial (res 1) | Scrubland
   Opp BF:   Island
   Stack: Aether Vial (ability, self)
+  Pending: Aether Vial (self)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
+  Extras: not_priority_window
   Actions:
-   0: Decline  [#0]
-   1: Accept  [#1]
-  >> A/A: 1 (Accept)
+   0: Decline: use Aether Vial's triggered ability  [#0]
+   1: Accept: use Aether Vial's triggered ability  [#1]
+  >> A/A: 1 (Accept: use Aether Vial's triggered ability)
 --- Narrative ---
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
@@ -770,7 +806,7 @@
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:1] | Scrubland
+  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
   Opp BF:   Island
   Self GY: Wasteland, Aether Vial
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
@@ -788,12 +824,13 @@
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:1] | Scrubland
+  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
   Opp BF:   Island
   Self GY: Wasteland, Aether Vial
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -804,12 +841,13 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:1] | Scrubland
+  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
   Opp BF:   Island
   Self GY: Wasteland, Aether Vial
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -824,12 +862,13 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:1] | Scrubland | Wasteland
+  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland | Wasteland (NEW)
   Opp BF:   Island
   Self GY: Wasteland, Aether Vial
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -848,13 +887,14 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:1] | Scrubland (T) | Wasteland (T)
+  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland (T) | Wasteland (T,NEW)
   Opp BF:   Island
   Stack: Orcish Bowmasters (spell, self)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 colors=B
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -870,7 +910,7 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:1] (T) | Scrubland (T) | Wasteland (T)
+  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T) | Wasteland (T,NEW)
   Opp BF:   Island
   Stack: Aether Vial (ability, self) -> Orcish Bowmasters (spell, self)
   Pending: Aether Vial (self)
@@ -878,7 +918,8 @@
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=B
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -892,14 +933,15 @@
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T)
+  Self BF:  Aether Vial [charge:1] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T,NEW)
   Opp BF:   Island
   Pending: Orcish Bowmasters (self)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=B
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (20 life)
@@ -933,6 +975,7 @@
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -946,12 +989,13 @@
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Flow State, Wasteland | lib 47
   Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Island | Misty Rainforest
+  Self BF:  Island | Misty Rainforest (NEW)
   Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
   Self GY: Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -977,7 +1021,8 @@
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Thundering Falls
@@ -1000,7 +1045,7 @@
   Step: First Main (turn 6)
   Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Flow State, Wasteland | lib 46
   Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Island | Thundering Falls (T)
+  Self BF:  Island | Thundering Falls (T,NEW,res 1)
   Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
   Stack: Thundering Falls (ability, self) [amt=1]
   Pending: Thundering Falls (self)
@@ -1008,7 +1053,8 @@
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Force of Will on top of library  [#0]
    1: Put Force of Will into graveyard
@@ -1060,6 +1106,7 @@
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1072,13 +1119,14 @@
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Stack: Aether Vial (ability, self)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1089,17 +1137,20 @@
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Stack: Aether Vial (ability, self)
+  Pending: Aether Vial (self)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 colors=W
+  Extras: not_priority_window
   Actions:
-   0: Decline  [#0]
-   1: Accept  [#1]
-  >> A/A: 1 (Accept)
+   0: Decline: use Aether Vial's triggered ability  [#0]
+   1: Accept: use Aether Vial's triggered ability  [#1]
+  >> A/A: 1 (Accept: use Aether Vial's triggered ability)
 --- Narrative ---
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
@@ -1109,12 +1160,13 @@
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1127,12 +1179,13 @@
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1143,12 +1196,13 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Play Witch-Blessed Meadow
@@ -1162,13 +1216,15 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
+  Pending: Witch Enchanter (self)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Decline: pay 3 life so it enters untapped  [#0]
    1: Accept: pay 3 life so it enters untapped  [#1]
@@ -1182,12 +1238,13 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1203,7 +1260,7 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
@@ -1211,7 +1268,8 @@
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
    1: White Orchid Phantom
@@ -1225,14 +1283,15 @@
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Pending: White Orchid Phantom (self)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: No target
    1: Thundering Falls
@@ -1253,13 +1312,14 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [1/1]
@@ -1275,13 +1335,14 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island | Thundering Falls (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -1297,13 +1358,14 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
   Opp:   15 life | mana: empty | hand count: 5 | lib 45
-  Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (ATK)
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (ATK)
   Opp BF:   Island | Thundering Falls (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Mystic Sanctuary
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1333,6 +1395,7 @@
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1353,12 +1416,13 @@
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Flow State, Murktide Regent, Wasteland | lib 44
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Cori-Steel Cutter | Island (T) | Thundering Falls (T)
+  Self BF:  Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T)
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1371,12 +1435,13 @@
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(4): Cori-Steel Cutter, Dragon's Rage Channeler, Flow State, Murktide Regent | lib 44
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Wasteland
+  Self BF:  Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Wasteland (NEW)
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1390,14 +1455,15 @@
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(4): Cori-Steel Cutter, Dragon's Rage Channeler, Flow State, Murktide Regent | lib 44
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Wasteland
+  Self BF:  Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Wasteland (NEW)
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Wasteland (self)
   Self GY: Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 drawn=1 colors=R
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Scrubland
    1: Wasteland
@@ -1444,17 +1510,19 @@
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T)
   Stack: Aether Vial (ability, self)
+  Pending: Aether Vial (self)
   Self GY: Scrubland, Wasteland, Aether Vial
   Opp GY:  Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  Extras: not_priority_window
   Actions:
-   0: Decline  [#0]
-   1: Accept  [#1]
-  >> A/A: 1 (Accept)
+   0: Decline: use Aether Vial's triggered ability  [#0]
+   1: Accept: use Aether Vial's triggered ability  [#1]
+  >> A/A: 1 (Accept: use Aether Vial's triggered ability)
 --- Narrative ---
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
@@ -1464,7 +1532,7 @@
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T)
   Self GY: Scrubland, Wasteland, Aether Vial
   Opp GY:  Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
@@ -1483,12 +1551,13 @@
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T)
   Self GY: Scrubland, Wasteland, Aether Vial
   Opp GY:  Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1500,12 +1569,13 @@
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T)
   Self GY: Scrubland, Wasteland, Aether Vial
   Opp GY:  Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1519,13 +1589,14 @@
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T)
   Stack: Aether Vial (ability, self)
   Self GY: Scrubland, Wasteland, Aether Vial
   Opp GY:  Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1538,7 +1609,7 @@
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T)
   Stack: Aether Vial (ability, self)
   Pending: Wasteland (self)
@@ -1546,6 +1617,8 @@
   Opp GY:  Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Thundering Falls
    1: Wasteland
@@ -1565,7 +1638,7 @@
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
@@ -1573,7 +1646,8 @@
   Opp GY:  Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -1586,13 +1660,14 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Phelia, Exuberant Shepherd [2/2]
@@ -1610,13 +1685,14 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Phelia, Exuberant Shepherd [2/2]
    1: White Orchid Phantom [2/2]
@@ -1634,13 +1710,14 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: White Orchid Phantom [2/2]
    1: Orc Army token [1/1]
@@ -1658,13 +1735,14 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -1682,13 +1760,14 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_revolt, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1705,14 +1784,15 @@
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Pending: Phelia, Exuberant Shepherd (self)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_revolt, opp_revolt
+  This turn: self drawn=1
+  Extras: self_revolt, opp_revolt, not_priority_window
   Actions:
    0: No target
    1: Cori-Steel Cutter
@@ -1752,6 +1832,7 @@
   Opp GY:  Wasteland, Scrubland, Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -1776,6 +1857,8 @@
   Opp GY:  Wasteland, Scrubland, Wasteland, Aether Vial
   Self exile: Brainstorm
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Mishra's Bauble  [#2]
    1: Unholy Heat  [#2]
@@ -1796,7 +1879,10 @@
   Self GY: Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Wasteland, Scrubland, Wasteland, Aether Vial
   Self exile: Brainstorm
+  Known top: Mishra's Bauble, ?, ?, ?, ?
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Unholy Heat  [#1]
    1: Lightning Bolt  [#1]
@@ -1816,6 +1902,8 @@
   Self exile: Brainstorm
   Known top: Lightning Bolt, Unholy Heat, Mishra's Bauble, ?, ?
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -1837,6 +1925,8 @@
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: not_priority_window
   Actions:
    0: Player B (7 life)
    1: Player A (20 life)
@@ -1884,17 +1974,19 @@
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Stack: Aether Vial (ability, self)
+  Pending: Aether Vial (self)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  Extras: not_priority_window
   Actions:
-   0: Decline  [#0]
-   1: Accept  [#1]
-  >> A/A: 1 (Accept)
+   0: Decline: use Aether Vial's triggered ability  [#0]
+   1: Accept: use Aether Vial's triggered ability  [#1]
+  >> A/A: 1 (Accept: use Aether Vial's triggered ability)
 --- Narrative ---
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
@@ -1904,7 +1996,7 @@
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 69
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
@@ -1922,12 +2014,13 @@
   Step: Draw (turn 11)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, Prismatic Vista, White Orchid Phantom | lib 68
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1938,12 +2031,13 @@
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, Prismatic Vista, White Orchid Phantom | lib 68
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Prismatic Vista
@@ -1957,12 +2051,13 @@
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 68
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Prismatic Vista | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Prismatic Vista (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1979,13 +2074,14 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 68
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Stack: Prismatic Vista (ability, self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2000,7 +2096,7 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 68
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Stack: Prismatic Vista (ability, self)
   Pending: Prismatic Vista (self)
@@ -2008,7 +2104,8 @@
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Plains
@@ -2027,12 +2124,13 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2049,13 +2147,14 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Stack: White Orchid Phantom (spell, self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2070,14 +2169,15 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Pending: White Orchid Phantom (self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: No target
    1: Witch-Blessed Meadow
@@ -2091,13 +2191,14 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Stack: White Orchid Phantom (ability, self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2113,12 +2214,13 @@
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2130,12 +2232,13 @@
   Step: Begin Combat (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2149,13 +2252,14 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Phelia, Exuberant Shepherd [2/2]
@@ -2173,13 +2277,14 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Phelia, Exuberant Shepherd [2/2]
    1: White Orchid Phantom [2/2]
@@ -2197,13 +2302,14 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: White Orchid Phantom [2/2]
    1: Orc Army token [2/2]
@@ -2221,13 +2327,14 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [2/2]
    1: Confirm attackers
@@ -2245,13 +2352,14 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (ATK)
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2268,14 +2376,15 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Pending: Phelia, Exuberant Shepherd (self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: No target
    1: Cori-Steel Cutter
@@ -2294,13 +2403,14 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Stack: Phelia, Exuberant Shepherd (ability, self)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2315,12 +2425,13 @@
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2334,13 +2445,14 @@
   Step: Declare Blk (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   6 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Extras: self_lands_played=1, self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2355,12 +2467,13 @@
   Step: First Strike Dmg (turn 11)
   Self:  19 life | mana: empty | hand(1): Pre-War Formalwear | lib 67
   Opp:   4 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
+  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T,ATK)
   Opp BF:   Cori-Steel Cutter | Island (T)
   Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Aether Vial
   Opp GY:  Ponder, Thundering Falls, Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp exile:  Brainstorm
   Opp revealed: Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Island, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W | opp life_lost=2
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority

@@ -74,7 +74,7 @@ class InputLogger {
     // is emitted and stdin/stdout are never touched. The provider receives the same
     // `actions` vector and returns an action index (with the same -1 → last-slot confirm
     // remap the stdio path uses); the choice still flows through commit_choice so the
-    // action-history observation block stays correct. The provider is set by the future
+    // decision log stays complete. The provider is set by the future
     // C++ actor binary (which links the engine objects minus main.o); nothing in
     // bin/robomage ever sets it, so unset is the default and the stdio path is unchanged.
     // The cooperative-unwind short-circuit (search_restore_pending) runs BEFORE this hook,
@@ -86,8 +86,8 @@ class InputLogger {
     InputLogger() = default;
     // Write the RMLOG v2 header (seed, flags, embedded decklists) to the open log file.
     void write_header(unsigned int seed, const DecisionLogHeader& header);
-    // Persist a committed choice: echo it to the log file (if open) and record it in
-    // the action history. Shared by the machine / auto-pass / CLI input paths.
+    // Persist a committed choice: echo it to the log file (if open). Shared by the
+    // machine / auto-pass / CLI input paths.
     void commit_choice(const std::vector<LegalAction>& actions, int choice);
     bool replay_mode = false;
     bool machine_mode = false;

@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "card_db.h"
 #include "card_vocab.h"
 #include "error.h"
 #include "classes/deck_state.h"
@@ -25,8 +26,10 @@
 #include "components/spell.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_driver.h"                  // priority_window_open
 #include "game_queries.h"
 #include "mana_system.h"                    // mana_potential (mana-development block)
+#include "parse.h"                          // name_to_uid
 #include "systems/rules_modifying.h"        // rules_mod::land_drops_remaining
 #include "systems/state_manager_internal.h"
 
@@ -36,21 +39,37 @@ extern Game cur_game;
 // ── Static helpers ────────────────────────────────────────────────────────────
 
 static int token_vocab_idx(Entity e);
+static int last_known_vocab_idx(Entity e);
 static int get_card_vocab_idx(Entity e);
 static int slot_ref_of(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
                                 bool with_lands_in_hand);
 static void push_log_vitals_block(std::vector<float>& out, int life, int library_ct);
+static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps);
+static void fill_player_effects(PlayerState& ps, Zone::Ownership player,
+                                const std::set<Entity>& bf_entities);
+static void push_player_effects_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
 static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer);
-static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership viewer);
+static void fill_permanent_state(PermanentState& ps, Entity e);
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
+static int battlefield_slot_ref_of(Entity e);
+static int creator_slot_ref(const DelayedTriggerLink& link);
+static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity watched);
+static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
+                                  const std::vector<Entity>& stack_delayed);
+static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry& d);
+static void fill_zone_card(ZoneCardEntry& z, Entity e, Zone::Ownership viewer,
+                           Zone::Ownership opp_view, bool hide_face_down);
+static void push_zone_card(std::vector<float>& out, const ZoneCardEntry& z, bool with_counters);
 static void fill_decklist_block(int* ids, int* counts, int n_slots,
                                 const std::vector<DecklistEntry>& entries,
                                 const char* block_name);
+static int revealed_card_identity(int vocab_idx);
+static void fill_opp_revealed_bits(GameState* gs, const unsigned char* opp_revealed);
 
 // ── Entity → reference-slot map ───────────────────────────────────────────────
 // Maps every serialized entity to its slot in the unified viewer-relative
@@ -86,6 +105,17 @@ static int token_vocab_idx(Entity e) {
     return TOKEN_SENTINEL;
 }
 
+// Vocab index of an object that left the battlefield and ceased to exist (a token, CR 111.7),
+// from its last-known information: a token's token-band index (else TOKEN_SENTINEL), a card's
+// name index. -1 when no last-known information was captured.
+static int last_known_vocab_idx(Entity e) {
+    const LastKnownInfo *lki = lki_for(e);
+    if (!lki || lki->name.empty()) return -1;
+    if (!lki->is_token) return card_name_to_index(lki->name);
+    int idx = token_script_to_index(lki->token_script);
+    return idx >= 0 ? idx : TOKEN_SENTINEL;
+}
+
 static int get_card_vocab_idx(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto& perm = global_coordinator.GetComponent<Permanent>(e);
@@ -97,9 +127,8 @@ static int get_card_vocab_idx(Entity e) {
 }
 
 // Vocab index for an action's source entity or a stack entity. The single chain
-// shared by populate_query (BQUERY) and record_chosen_action (action log) so the
-// two never disagree, and by the stack feature extractor (a stack entry is a spell
-// with CardData or a standalone ability whose source resolves the same way).
+// used by populate_query (BQUERY) and by the stack feature extractor (a stack entry
+// is a spell with CardData or a standalone ability whose source resolves the same way).
 int action_card_vocab_idx(Entity e) {
     if (e == 0) return -1;
     if (global_coordinator.entity_has_component<Permanent>(e)) {
@@ -120,8 +149,12 @@ int action_card_vocab_idx(Entity e) {
         // a lingering Token component still identifies it as a token (stack extractor case).
         if (global_coordinator.entity_has_component<Token>(src))
             return token_vocab_idx(src);
+        // A source token that has ceased to exist entirely: its last-known identity.
+        return last_known_vocab_idx(src);
     }
-    return -1;
+    // An object with no live components left (a token that ceased to exist, CR 111.7) is
+    // identified by its last-known information.
+    return last_known_vocab_idx(e);
 }
 
 // Record one announced target of a stack object into the entry's next free target
@@ -139,6 +172,9 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
     } else if (global_coordinator.entity_has_component<Zone>(tgt)) {
         // Non-permanent target (a spell on the stack, a graveyard card): its owner.
         ctrl = global_coordinator.GetComponent<Zone>(tgt).owner;
+    } else if (const LastKnownInfo *lki = lki_for(tgt)) {
+        // A target token that ceased to exist (CR 111.7): its last-known controller.
+        ctrl = lki->controller;
     }
     st.controller_is_self = (ctrl == viewer);
     // Instance-level join: which serialized slot the target occupies (-1 for players
@@ -231,10 +267,6 @@ static void push_mana_dev_block(std::vector<float>& out, const PlayerState& ps,
         out.push_back(static_cast<float>(ps.lands_in_hand) / count_norm);
     out.push_back(static_cast<float>(ps.land_drops_remaining) /
                   static_cast<float>(LAND_DROPS_NORMALIZER));
-    // max_affordable_cmc_proxy: no payment solver here, so the honest available bound
-    // is the total mana this player could float. Documented as a proxy in machine_io.h;
-    // the slot exists so a real payer-based value can land without a layout break.
-    out.push_back(static_cast<float>(ps.mana_potential_total) / count_norm);
 }
 
 // Pushes one player's half of the LOG VITALS block: LOG_VITALS_PLAYER_SIZE floats,
@@ -248,8 +280,57 @@ static void push_log_vitals_block(std::vector<float>& out, int life, int library
     out.push_back(norm_log_count(library_ct, LOG_LIBRARY_DENOM));
 }
 
-// Pushes PERM_SLOT_SIZE floats (35 status + chosen-name id + returnable-exile id + card-id;
-// per-slot offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 35 zeros
+// Pushes one player's half of the PER-TURN COUNTERS block: PER_TURN_PLAYER_SIZE floats,
+// the six counts (spells, noncreature spells, instant/sorcery spells, cards drawn /
+// PER_TURN_COUNT_NORMALIZER; life gained, life lost / LIFE_NORMALIZER) then the W/U/B/R/G
+// spell-color multi-hot. All public, so both halves carry the same fields.
+static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps) {
+    const float count_norm = static_cast<float>(PER_TURN_COUNT_NORMALIZER);
+    const float life_norm  = static_cast<float>(LIFE_NORMALIZER);
+    out.push_back(static_cast<float>(ps.spells_cast_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.noncreature_spells_cast_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.instant_sorcery_spells_cast_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.cards_drawn_this_turn) / count_norm);
+    out.push_back(static_cast<float>(ps.life_gained_this_turn) / life_norm);
+    out.push_back(static_cast<float>(ps.life_lost_this_turn) / life_norm);
+    for (int i = 0; i < PER_TURN_COLOR_FIELDS; i++)
+        out.push_back(ps.spell_colors_cast_this_turn[i] ? 1.0f : 0.0f);
+}
+
+// Copies player_effects(player) (game_queries.h) into the PlayerState's player-effects fields,
+// keeping the first MAX_EMBLEM_SLOTS emblem card ids. `bf_entities` holds the battlefield
+// permanents the player-level statics are read from.
+static void fill_player_effects(PlayerState& ps, Zone::Ownership player,
+                                const std::set<Entity>& bf_entities) {
+    const PlayerEffects fx = player_effects(player, bf_entities);
+    ps.protection_from_everything = fx.protection_from_everything;
+    ps.cant_gain_life = fx.cant_gain_life;
+    for (int i = 0; i < 5; i++) ps.hexproof_from[i] = fx.hexproof_from[i];
+    ps.spells_cant_be_countered = fx.spells_cant_be_countered;
+    ps.may_cast_sorceries_as_flash = fx.may_cast_sorceries_as_flash;
+    ps.restricted_to_sorcery_speed = fx.restricted_to_sorcery_speed;
+    for (int i = 0; i < MAX_EMBLEM_SLOTS; i++)
+        ps.emblem_card_idx[i] = i < static_cast<int>(fx.emblem_vocab_idx.size())
+                                    ? fx.emblem_vocab_idx[static_cast<size_t>(i)] : -1;
+    ps.floating_trigger_source_idx = fx.floating_trigger_vocab_idx;
+}
+
+// Pushes one player's half of the PLAYER EFFECTS block: PLAYER_EFFECTS_PLAYER_SIZE floats, the
+// PLAYER_EFFECTS_FLAGS flags then the emblem card ids and the floating-trigger source card id
+// (per-field offsets documented in machine_io.h).
+static void push_player_effects_block(std::vector<float>& out, const PlayerState& ps) {
+    out.push_back(ps.protection_from_everything ? 1.0f : 0.0f);
+    out.push_back(ps.cant_gain_life ? 1.0f : 0.0f);
+    for (int i = 0; i < 5; i++) out.push_back(ps.hexproof_from[i] ? 1.0f : 0.0f);
+    out.push_back(ps.spells_cant_be_countered ? 1.0f : 0.0f);
+    out.push_back(ps.may_cast_sorceries_as_flash ? 1.0f : 0.0f);
+    out.push_back(ps.restricted_to_sorcery_speed ? 1.0f : 0.0f);
+    for (int i = 0; i < MAX_EMBLEM_SLOTS; i++) out.push_back(norm_card_id(ps.emblem_card_idx[i]));
+    out.push_back(norm_card_id(ps.floating_trigger_source_idx));
+}
+
+// Pushes PERM_SLOT_SIZE floats (40 status + chosen-name id + returnable-exile id + card-id;
+// per-slot offsets documented in machine_io.h). Empty slot (card_vocab_idx == -1) = 40 zeros
 // + THREE id-family empty sentinels (chosen-name, returnable-exile, card-id; a 0.0 pad would
 // alias vocab index 0 and defeat empty-slot masking).
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
@@ -267,7 +348,6 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(p.is_blocking ? 1.0f : 0.0f);
     out.push_back(p.has_summoning_sickness ? 1.0f : 0.0f);
     out.push_back(static_cast<float>(p.damage) / 10.0f);
-    out.push_back(p.controller_is_self ? 1.0f : 0.0f);
     out.push_back(p.is_creature ? 1.0f : 0.0f);
     out.push_back(p.is_land ? 1.0f : 0.0f);
     out.push_back(static_cast<float>(p.loyalty) / 10.0f);
@@ -279,16 +359,23 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(norm_ref(p.blocking_target_ref));
     out.push_back(p.is_blocked ? 1.0f : 0.0f);
     out.push_back(p.is_phased_out ? 1.0f : 0.0f);
+    const float count_norm = static_cast<float>(PER_TURN_COUNT_NORMALIZER);
+    out.push_back(p.entered_this_turn ? 1.0f : 0.0f);
+    out.push_back(static_cast<float>(p.ability_resolutions_this_turn) / count_norm);
+    out.push_back(static_cast<float>(p.activations_this_turn) / count_norm);
+    out.push_back(p.cant_be_blocked_this_turn ? 1.0f : 0.0f);
+    out.push_back(p.combat_damage_prevented ? 1.0f : 0.0f);
+    out.push_back(p.pending_delayed_subject ? 1.0f : 0.0f);
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         out.push_back(p.keywords[k] ? 1.0f : 0.0f);
-    out.push_back(norm_card_id(p.chosen_name_idx));      // [35] chosen-name id
-    out.push_back(norm_card_id(p.returnable_exile_idx)); // [36] returnable-exile id
-    out.push_back(norm_card_id(p.card_vocab_idx));       // [37] card id (LAST)
+    out.push_back(norm_card_id(p.chosen_name_idx));      // [40] chosen-name id
+    out.push_back(norm_card_id(p.returnable_exile_idx)); // [41] returnable-exile id
+    out.push_back(norm_card_id(p.card_vocab_idx));       // [42] card id (LAST)
 }
 
 // Pass-B fill of one battlefield permanent's PermanentState. Runs after the
 // entity->slot map is built so the attachment/combat reference fields resolve.
-static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership viewer) {
+static void fill_permanent_state(PermanentState& ps, Entity e) {
     auto& perm = global_coordinator.GetComponent<Permanent>(e);
 
     ps.card_vocab_idx        = get_card_vocab_idx(e);
@@ -303,7 +390,6 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
     // persist, but the helper handles the token case regardless).
     Entity returnable = returnable_exiled_card(e);
     ps.returnable_exile_idx  = returnable == 0 ? -1 : get_card_vocab_idx(returnable);
-    ps.controller_is_self    = (perm.controller == viewer);
     ps.is_tapped             = perm.is_tapped;
     ps.has_summoning_sickness = perm.has_summoning_sickness;
     ps.is_creature           = global_coordinator.entity_has_component<Creature>(e);
@@ -345,6 +431,14 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
     ps.attached_to_ref = slot_ref_of(perm.equipped_to);
     ps.attached_by_ref = slot_ref_of(perm.equipped_by);
     ps.is_phased_out   = perm.is_phased_out;
+
+    ps.entered_this_turn = entered_battlefield_this_turn(static_cast<long>(perm.entered_on_turn));
+    ps.ability_resolutions_this_turn = ability_resolutions_this_turn(e);
+    ps.activations_this_turn = permanent_activations_this_turn(perm);
+    ps.cant_be_blocked_this_turn =
+        ps.is_creature && global_coordinator.GetComponent<Creature>(e).cant_be_blocked_this_turn;
+    ps.combat_damage_prevented = cur_game.combat_damage_shielded(e);
+    ps.pending_delayed_subject = is_waiting_delayed_trigger_subject(e);
 
     for (int k = 0; k < N_OBS_KEYWORDS; k++)
         ps.keywords[k] = permanent_has_keyword(e, OBS_KEYWORDS[k]);
@@ -416,6 +510,199 @@ static void fill_decklist_block(int* ids, int* counts, int n_slots,
     }
 }
 
+// The vocab index of the physical card a revealed name belongs to: the name's
+// card_db entry (DFC back faces are aliased onto the card's one entity) resolved
+// through that entity's CardData name, i.e. the front face a decklist registers.
+// -1 when the name has no loaded card.
+static int revealed_card_identity(int vocab_idx) {
+    auto it = card_db.find(name_to_uid(card_index_to_name(vocab_idx)));
+    if (it == card_db.end() || !global_coordinator.entity_has_component<CardData>(it->second))
+        return -1;
+    return card_name_to_index(global_coordinator.GetComponent<CardData>(it->second).name);
+}
+
+// Project the opponent's match-scoped reveal set (indexed by vocab id) onto the
+// filled opp registered-decklist slots. A slot is revealed when its card's own
+// name was revealed or, for a double-faced card, when its back face was (a
+// transformed permanent, an MDFC played back face up). A revealed name with no
+// slot even then is dropped; debug builds print a stderr WARNING once per vocab
+// id per process.
+static void fill_opp_revealed_bits(GameState* gs, const unsigned char* opp_revealed) {
+    // Slot of each registered card: main slots as i, side slots as MAIN + i.
+    int slot_of[REVEALED_SIZE];
+    for (int id = 0; id < REVEALED_SIZE; id++) slot_of[id] = -1;
+    for (int i = 0; i < DECKLIST_MAIN_SLOTS; i++) {
+        int id = gs->opp_deck_main_id[i];
+        if (id >= 0 && id < REVEALED_SIZE) slot_of[id] = i;
+    }
+    for (int i = 0; i < DECKLIST_SIDE_SLOTS; i++) {
+        int id = gs->opp_deck_side_id[i];
+        if (id >= 0 && id < REVEALED_SIZE) slot_of[id] = DECKLIST_MAIN_SLOTS + i;
+    }
+    for (int id = 0; id < REVEALED_SIZE; id++) {
+        if (!opp_revealed[id]) continue;
+        int slot = slot_of[id];
+        if (slot < 0) {
+            int card = revealed_card_identity(id);
+            if (card >= 0 && card < REVEALED_SIZE) slot = slot_of[card];
+        }
+        if (slot < 0) {
+#ifndef NDEBUG
+            static unsigned char warned[REVEALED_SIZE] = {};
+            if (!warned[id]) {
+                warned[id] = 1;
+                fprintf(stderr,
+                        "WARNING: opponent revealed card vocab id %d (%s), which is not in "
+                        "their registered 75; the observation has no decklist slot for it\n",
+                        id, card_index_to_name(id));
+            }
+#endif
+            continue;
+        }
+        if (slot < DECKLIST_MAIN_SLOTS)
+            gs->opp_deck_main_revealed[slot] = 1;
+        else
+            gs->opp_deck_side_revealed[slot - DECKLIST_MAIN_SLOTS] = 1;
+    }
+}
+
+// Slot ref of `e` restricted to the battlefield part of the ref space (-1 otherwise).
+static int battlefield_slot_ref_of(Entity e) {
+    int r = slot_ref_of(e);
+    return (r >= 0 && r < 2 * MAX_BATTLEFIELD_SLOTS) ? r : -1;
+}
+
+// The delayed trigger's creator slot when it is on the battlefield or the stack. The entity
+// must still be the same card (its vocab idx matches the one captured at registration), so a
+// creator that left play and whose entity id was reused never points at an unrelated object.
+static int creator_slot_ref(const DelayedTriggerLink& link) {
+    if (link.creator == 0 || action_card_vocab_idx(link.creator) != link.creator_vocab_idx) return -1;
+    return slot_ref_of(link.creator);
+}
+
+// Battlefield slot of the watched object if it is there, else of the first subject still there.
+static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity watched) {
+    int r = battlefield_slot_ref_of(watched);
+    if (r >= 0) return r;
+    for (Entity s : link.subjects) {
+        r = battlefield_slot_ref_of(s);
+        if (r >= 0) return r;
+    }
+    return -1;
+}
+
+// Pass-B fill of the delayed-trigger block: the waiting Game::delayed_triggers records plus
+// the fired stack objects in `stack_delayed`, packed in ascending seq and truncated at
+// MAX_DELAYED_TRIGGER_SLOTS. Needs the entity->slot map for the refs.
+static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
+                                  const std::vector<Entity>& stack_delayed) {
+    Entity viewer_entity = (viewer == Zone::PLAYER_A) ? cur_game.player_a_entity
+                                                      : cur_game.player_b_entity;
+    std::vector<std::pair<uint32_t, DelayedTriggerEntry>> entries;
+    entries.reserve(cur_game.delayed_triggers.size() + stack_delayed.size());
+    for (const auto& dt : cur_game.delayed_triggers) {
+        const DelayedTriggerLink& link = dt.ability.delayed_link;
+        DelayedTriggerEntry d{};
+        d.present            = true;
+        d.controller_is_self = (dt.owner_entity == viewer_entity);
+        d.on_stack           = false;
+        d.stack_ref          = -1;
+        d.creator_card_idx   = link.creator_vocab_idx;
+        d.creator_ref        = creator_slot_ref(link);
+        d.subject_ref        = first_subject_battlefield_ref(link, dt.watch_entity);
+        d.subject_card_idx   = link.subject_vocab_idx;
+        d.fire_kind          = link.fire_kind;
+        d.fires_this_turn    = delayed_trigger_fires_this_turn(dt);
+        entries.push_back({link.seq, d});
+    }
+    for (Entity e : stack_delayed) {
+        const DelayedTriggerLink& link = global_coordinator.GetComponent<Ability>(e).delayed_link;
+        DelayedTriggerEntry d{};
+        d.present            = true;
+        d.controller_is_self = (global_coordinator.GetComponent<Zone>(e).owner == viewer);
+        d.on_stack           = true;
+        d.stack_ref          = slot_ref_of(e);
+        d.creator_card_idx   = link.creator_vocab_idx;
+        d.creator_ref        = creator_slot_ref(link);
+        d.subject_ref        = first_subject_battlefield_ref(link, 0);
+        d.subject_card_idx   = link.subject_vocab_idx;
+        d.fire_kind          = link.fire_kind;
+        d.fires_this_turn    = false;
+        entries.push_back({link.seq, d});
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const std::pair<uint32_t, DelayedTriggerEntry>& a,
+                 const std::pair<uint32_t, DelayedTriggerEntry>& b) { return a.first < b.first; });
+#ifndef NDEBUG
+    if (static_cast<int>(entries.size()) > MAX_DELAYED_TRIGGER_SLOTS)
+        // The observation drops the newest entries past the block width — make it observable.
+        fprintf(stderr,
+                "WARNING: %zu pending delayed triggers; observation truncated to "
+                "MAX_DELAYED_TRIGGER_SLOTS=%d\n",
+                entries.size(), MAX_DELAYED_TRIGGER_SLOTS);
+#endif
+    int n = std::min(static_cast<int>(entries.size()), MAX_DELAYED_TRIGGER_SLOTS);
+    for (int i = 0; i < n; i++) gs->delayed[i] = entries[static_cast<size_t>(i)].second;
+}
+
+// One graveyard / exile slot. An opponent's face-down exiled card (CR 708.2, The Creation
+// of Avacyn chapter I) is hidden from the viewer: the slot keeps the unknown-id sentinel
+// and zeroed flags and counters, so it shows only that a card is there. The owner still
+// sees its own face-down card in full. get_card_vocab_idx guards a missing CardData (a
+// token resolves via its Token band / TOKEN_SENTINEL).
+static void fill_zone_card(ZoneCardEntry& z, Entity e, Zone::Ownership viewer,
+                           Zone::Ownership opp_view, bool hide_face_down) {
+    z = ZoneCardEntry{};
+    z.card_idx = -1;
+    if (hide_face_down && global_coordinator.GetComponent<Zone>(e).is_face_down) return;
+    z.card_idx = get_card_vocab_idx(e);
+    CardPlayPermission self_perm = card_play_permission(e, viewer);
+    CardPlayPermission opp_perm = card_play_permission(e, opp_view);
+    z.playable_by_self = self_perm.playable();
+    z.playable_by_opp = opp_perm.playable();
+    // Expires only when every permission covering the card, for either player, lapses.
+    z.play_expires_this_turn = (z.playable_by_self || z.playable_by_opp) &&
+                               (!z.playable_by_self || self_perm.expires_this_turn) &&
+                               (!z.playable_by_opp || opp_perm.expires_this_turn);
+    if (global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE)
+        z.counters = exiled_card_counters(e);
+}
+
+// Serialize one graveyard slot (card_id, playable_by_self, playable_by_opp,
+// play_expires_this_turn) or, with_counters, one exile slot (the same + counters).
+static void push_zone_card(std::vector<float>& out, const ZoneCardEntry& z, bool with_counters) {
+    out.push_back(norm_card_id(z.card_idx));
+    out.push_back(z.playable_by_self ? 1.0f : 0.0f);
+    out.push_back(z.playable_by_opp ? 1.0f : 0.0f);
+    out.push_back(z.play_expires_this_turn ? 1.0f : 0.0f);
+    if (with_counters)
+        out.push_back(static_cast<float>(z.counters) / static_cast<float>(ZONE_COUNTER_NORMALIZER));
+}
+
+// Pushes DELAYED_SLOT_SIZE floats (per-slot offsets documented in machine_io.h). Empty slot =
+// zeros with the two card-id sentinels.
+static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry& d) {
+    if (!d.present) {
+        out.insert(out.end(), 4, 0.0f);
+        out.push_back(norm_card_id(-1));  // creator_card_id sentinel
+        out.insert(out.end(), 2, 0.0f);
+        out.push_back(norm_card_id(-1));  // subject_card_id sentinel
+        out.insert(out.end(), DELAYED_FIRE_KINDS + 1, 0.0f);
+        return;
+    }
+    out.push_back(1.0f);
+    out.push_back(d.controller_is_self ? 1.0f : 0.0f);
+    out.push_back(d.on_stack ? 1.0f : 0.0f);
+    out.push_back(d.on_stack ? norm_ref(d.stack_ref) : 0.0f);
+    out.push_back(norm_card_id(d.creator_card_idx));
+    out.push_back(norm_ref(d.creator_ref));
+    out.push_back(norm_ref(d.subject_ref));
+    out.push_back(norm_card_id(d.subject_card_idx));
+    for (int k = 0; k < DELAYED_FIRE_KINDS; k++)
+        out.push_back(d.fire_kind == k ? 1.0f : 0.0f);
+    out.push_back(d.fires_this_turn ? 1.0f : 0.0f);
+}
+
 // ── populate_gamestate ────────────────────────────────────────────────────────
 
 void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
@@ -428,10 +715,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     }
     for (int i = 0; i < MAX_HAND_SLOTS; i++) { gs->self_hand[i] = -1; gs->opp_known_hand[i] = -1; }
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        gs->self_graveyard[i] = -1;
-        gs->opp_graveyard[i]  = -1;
-        gs->self_exile[i]     = -1;
-        gs->opp_exile[i]      = -1;
+        gs->self_graveyard[i].card_idx = -1;
+        gs->opp_graveyard[i].card_idx  = -1;
+        gs->self_exile[i].card_idx     = -1;
+        gs->opp_exile[i].card_idx      = -1;
     }
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) gs->known_top_library_self[i] = -1;
     // Deck-identity tail blocks: id = -1 (empty sentinel), count 0.
@@ -442,12 +729,14 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->self_deck_main_ct[i]    = 0;
         gs->opp_deck_main_id[i]     = -1;
         gs->opp_deck_main_ct[i]     = 0;
+        gs->opp_deck_main_revealed[i] = 0;
     }
     for (int i = 0; i < DECKLIST_SIDE_SLOTS; i++) {
         gs->self_deck_side_id[i] = -1;
         gs->self_deck_side_ct[i] = 0;
         gs->opp_deck_side_id[i]  = -1;
         gs->opp_deck_side_ct[i]  = 0;
+        gs->opp_deck_side_revealed[i] = 0;
     }
 
     Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
@@ -460,7 +749,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->cur_step            = cur_game.cur_step;
     gs->turn                = static_cast<int>(cur_game.turn);
     gs->is_active_player    = (viewer == active_owner);
-    gs->viewer_has_priority = (viewer == priority_owner);
     gs->self_is_player_a    = (viewer == Zone::PLAYER_A);
 
     // Pending decision context: the spell/ability currently making a mid-resolution choice
@@ -479,6 +767,14 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         else if (global_coordinator.entity_has_component<Zone>(pd))
             gs->pending_decision_ctrl_is_self =
                 (global_coordinator.GetComponent<Zone>(pd).owner == viewer);
+        else if (global_coordinator.entity_has_component<Spell>(pd))
+            // A spell copy choosing its new targets has no Zone until it is placed on the
+            // stack (CR 707.10); its controller is the Spell's caster.
+            gs->pending_decision_ctrl_is_self =
+                (global_coordinator.GetComponent<Spell>(pd).caster == viewer);
+        else if (const LastKnownInfo *lki = lki_for(pd))
+            // A source token that ceased to exist (CR 111.7): its last-known controller.
+            gs->pending_decision_ctrl_is_self = (lki->controller == viewer);
         else if (sideboard_phase)
             // A sideboard IN/OUT source is a bare load_card template entity with
             // neither Permanent nor Zone; the sideboarding player owns it.
@@ -524,12 +820,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
         gs->known_top_library_self[i] = viewer_known[i];
 
-    // Opponent-of-viewer's match-scoped revealed-cards multi-hot.
-    const unsigned char* opp_revealed = (viewer == Zone::PLAYER_A)
-        ? g_revealed_by_b : g_revealed_by_a;
-    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
-        gs->opp_revealed[i] = opp_revealed[i];
-
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
         auto& p = global_coordinator.GetComponent<Player>(ent);
@@ -544,6 +834,16 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             if (idx >= 0 && idx < 6) mana_counts[idx]++;
         }
         for (int i = 0; i < 6; i++) ps.mana[i] = mana_counts[i];
+        ps.spells_cast_this_turn = static_cast<int>(p.spells_cast_this_turn);
+        ps.noncreature_spells_cast_this_turn = static_cast<int>(p.noncreature_spells_cast_this_turn);
+        ps.instant_sorcery_spells_cast_this_turn =
+            static_cast<int>(p.instant_sorcery_spells_cast_this_turn);
+        ps.cards_drawn_this_turn = static_cast<int>(p.cards_drawn_this_turn.size());
+        ps.life_gained_this_turn = p.life_gained_this_turn;
+        ps.life_lost_this_turn   = p.life_lost_this_turn;
+        const Colors spell_colors[5] = {WHITE, BLUE, BLACK, RED, GREEN};
+        for (int i = 0; i < 5; i++)
+            ps.spell_colors_cast_this_turn[i] = p.spell_colors_cast_this_turn.count(spell_colors[i]) > 0;
     };
     fill_player_stats(gs->self, viewer_entity);
     fill_player_stats(gs->opponent, opp_entity);
@@ -562,6 +862,26 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->is_night = (cur_game.day_night == Game::DN_NIGHT);
     gs->pending_choice_kind = static_cast<int>(cur_game.pending_choice);
 
+    // Priority-window context: the pass flags are meaningful only in an ordinary
+    // priority window (UNTAP/CLEANUP set both as a step-advance device, and a mid-flow
+    // prompt leaves whatever the interrupted round had), so outside one all three stay 0.
+    if (priority_window_open()) {
+        gs->is_priority_window = true;
+        gs->self_has_passed = viewer_is_player_a ? cur_game.a_has_passed : cur_game.b_has_passed;
+        gs->opp_has_passed  = viewer_is_player_a ? cur_game.b_has_passed : cur_game.a_has_passed;
+    }
+
+    // Mulligan state. Game::pregame is the game this observation's board belongs to,
+    // which during the sideboard phase is the game that just ended, so the phase
+    // leaves the fields at 0.
+    if (!sideboard_phase) {
+        const Game::PregameState &pg = cur_game.pregame;
+        gs->self_mulligans_taken = viewer_is_player_a ? pg.mulls_a : pg.mulls_b;
+        gs->opp_mulligans_taken  = viewer_is_player_a ? pg.mulls_b : pg.mulls_a;
+        if (pg.stage == Game::PregameState::MULL_BOTTOM && pg.bottoming_owner == viewer)
+            gs->self_bottom_remaining = pg.bottom_remaining;
+    }
+
     // ── Pass A (collect) ─────────────────────────────────────────────────────
     // One ascending-entity-ID scan collects the entities of every serialized zone;
     // battlefield/stack fills happen in pass B once the entity->slot map exists, so
@@ -574,8 +894,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     StackItem stack_items[MAX_STACK_DISPLAY + 8];
     int stack_item_count = 0;
 
-    // Graveyard/exile cards as (distance_from_top, vocab id), sorted for recency order.
-    struct GyItem { size_t dist; int vocab_idx; };
+    // Graveyard/exile cards as (distance_from_top, entity), sorted for recency order.
+    struct GyItem { size_t dist; Entity ent; };
     std::vector<GyItem> self_gy_items, opp_gy_items;
     std::vector<GyItem> self_exile_items, opp_exile_items;
     self_gy_items.reserve(MAX_GY_SLOTS);
@@ -596,6 +916,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     int self_bf = 0, opp_bf = 0;
     int self_hand_idx = 0;
     int opp_known_hand_idx = 0;
+    // Stack objects that are fired delayed triggers (any depth, not only the displayed 12).
+    std::vector<Entity> stack_delayed;
 
     // Use high-water-mark instead of MAX_ENTITIES to skip unallocated slots.
     Entity max_e = global_coordinator.GetMaxIssuedEntity();
@@ -637,28 +959,23 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 break;
 
             case Zone::GRAVEYARD:
-                if (is_self) self_gy_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
-                else         opp_gy_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
+                (is_self ? self_gy_items : opp_gy_items).push_back({zone.distance_from_top, e});
                 break;
 
             case Zone::EXILE:
-                // Collected per-owner in recency order, exactly like the graveyard.
-                // Most exile is public, so both sides are serialized. The exception is a card
-                // exiled FACE DOWN (CR 708.2, The Creation of Avacyn chapter I): its identity is
-                // hidden from the opponent, so an opponent-owned face-down exile emits the unknown
-                // id sentinel (-1) — the viewer still sees a card is there, just not which. The
-                // owner (who exiled it from their own library) still sees its true identity.
-                // get_card_vocab_idx guards a missing CardData (a token that ever
-                // sits here resolves via its Token band / TOKEN_SENTINEL, no crash).
-                if (is_self) self_exile_items.push_back({zone.distance_from_top, get_card_vocab_idx(e)});
-                else         opp_exile_items.push_back({zone.distance_from_top,
-                                 zone.is_face_down ? -1 : get_card_vocab_idx(e)});
+                // Collected per-owner in recency order, exactly like the graveyard (the
+                // face-down masking is applied in fill_zone_card).
+                (is_self ? self_exile_items : opp_exile_items).push_back({zone.distance_from_top, e});
                 break;
 
             case Zone::STACK:
                 gs->stack_size++;
                 if (stack_item_count < MAX_STACK_DISPLAY + 8)
                     stack_items[stack_item_count++] = {zone.distance_from_top, e};
+                // A fired delayed trigger's stack object (delayed-trigger block).
+                if (global_coordinator.entity_has_component<Ability>(e) &&
+                    global_coordinator.GetComponent<Ability>(e).delayed_link.seq != 0)
+                    stack_delayed.push_back(e);
                 break;
 
             case Zone::BATTLEFIELD:
@@ -696,17 +1013,18 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 
     // ── Pass B (fill) ────────────────────────────────────────────────────────
     for (int i = 0; i < self_bf; i++)
-        fill_permanent_state(gs->self_permanents[i], self_ents[i], viewer);
+        fill_permanent_state(gs->self_permanents[i], self_ents[i]);
     for (int i = 0; i < opp_bf; i++)
-        fill_permanent_state(gs->opp_permanents[i], opp_ents[i], viewer);
+        fill_permanent_state(gs->opp_permanents[i], opp_ents[i]);
     for (int i = 0; i < stored_stack; i++)
         fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
+    fill_delayed_triggers(gs, viewer, stack_delayed);
 
-    // ── Mana development ──────────────────────────────────────────────────────
+    // ── Mana development + player effects ────────────────────────────────────
     // Reuses the battlefield entities pass A already collected (both sides in one
-    // set, since mana_potential re-guards by controller) instead of re-scanning the
-    // ECS. mana_potential applies the live-permanent guard itself, so the phased-out
-    // permanents deliberately kept in the serialized slots are excluded here.
+    // set, since mana_potential and player_effects re-guard by controller) instead
+    // of re-scanning the ECS. Both apply the live-permanent guard themselves, so the
+    // phased-out permanents deliberately kept in the serialized slots are excluded here.
     {
         std::set<Entity> bf_entities(self_ents, self_ents + self_bf);
         bf_entities.insert(opp_ents, opp_ents + opp_bf);
@@ -723,46 +1041,26 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         Zone::Ownership opp_view = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
         fill_mana_dev(gs->self, viewer, viewer_entity);
         fill_mana_dev(gs->opponent, opp_view, opp_entity);
+        fill_player_effects(gs->self, viewer, bf_entities);
+        fill_player_effects(gs->opponent, opp_view, bf_entities);
     }
 
-    // Graveyards in RECENCY order: slot 0 = most recent arrival (lowest distance_from_top)
-    auto fill_graveyard = [](int* slots, std::vector<GyItem>& items) {
-        std::sort(items.begin(), items.end(),
-                  [](const GyItem& a, const GyItem& b) { return a.dist < b.dist; });
-        int n = std::min(static_cast<int>(items.size()), MAX_GY_SLOTS);
-        for (int i = 0; i < n; i++) slots[i] = items[static_cast<size_t>(i)].vocab_idx;
-    };
-    fill_graveyard(gs->self_graveyard, self_gy_items);
-    fill_graveyard(gs->opp_graveyard, opp_gy_items);
-
-    // Exile zones in the same RECENCY order (slot 0 = most recent arrival).
-    fill_graveyard(gs->self_exile, self_exile_items);
-    fill_graveyard(gs->opp_exile, opp_exile_items);
-
-    // Action history: copy from ring buffer, newest first, with perspective normalization
-    gs->action_history_len = cur_game.action_history_count;
-    bool viewer_is_a = (viewer == Zone::PLAYER_A);
-    float cat_max = static_cast<float>(ACTION_CATEGORY_MAX);
-    float card_types = static_cast<float>(N_CARD_TYPES);
-    float id_null = -1.0f / card_types;
-    for (int i = 0; i < ACTION_HISTORY_SIZE; i++) {
-        int base = i * 4;
-        if (i < gs->action_history_len) {
-            // Read newest first: walk backwards from write position
-            int ring_idx = (cur_game.action_history_write - 1 - i + ACTION_HISTORY_SIZE) % ACTION_HISTORY_SIZE;
-            const auto& entry = cur_game.action_history[ring_idx];
-            gs->action_history[base + 0] = static_cast<float>(entry.category) / cat_max;
-            gs->action_history[base + 1] = entry.card_vocab_idx >= 0
-                ? static_cast<float>(entry.card_vocab_idx) / card_types
-                : id_null;
-            gs->action_history[base + 2] = (entry.player_a == viewer_is_a) ? 1.0f : 0.0f;
-            gs->action_history[base + 3] = static_cast<float>(entry.turn) / TURN_NORMALIZER;
-        } else {
-            gs->action_history[base + 0] = 0.0f;
-            gs->action_history[base + 1] = 0.0f;
-            gs->action_history[base + 2] = 0.0f;
-            gs->action_history[base + 3] = 0.0f;
-        }
+    // Graveyards and exile in RECENCY order: slot 0 = most recent arrival (lowest
+    // distance_from_top).
+    {
+        Zone::Ownership opp_view = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        auto fill_zone = [&](ZoneCardEntry* slots, std::vector<GyItem>& items, bool hide_face_down) {
+            std::sort(items.begin(), items.end(),
+                      [](const GyItem& a, const GyItem& b) { return a.dist < b.dist; });
+            int n = std::min(static_cast<int>(items.size()), MAX_GY_SLOTS);
+            for (int i = 0; i < n; i++)
+                fill_zone_card(slots[i], items[static_cast<size_t>(i)].ent, viewer, opp_view,
+                               hide_face_down);
+        };
+        fill_zone(gs->self_graveyard, self_gy_items, false);
+        fill_zone(gs->opp_graveyard, opp_gy_items, false);
+        fill_zone(gs->self_exile, self_exile_items, false);
+        fill_zone(gs->opp_exile, opp_exile_items, true);
     }
 
     // ── Deck-identity tail blocks ─────────────────────────────────────────────
@@ -792,6 +1090,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     fill_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
                         DECKLIST_SIDE_SLOTS, deck_state_registered_side(opp_owner),
                         "opp sideboard");
+    // Opponent-of-viewer's match-scoped reveal set, projected onto those slots.
+    fill_opp_revealed_bits(gs, (viewer == Zone::PLAYER_A) ? g_revealed_by_b : g_revealed_by_a);
 }
 
 // ── populate_query ────────────────────────────────────────────────────────────
@@ -908,11 +1208,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(gs->self_is_player_a ? 1.0f : 0.0f);
     state.push_back(static_cast<float>(gs->stack_size) / 10.0f);
 
-    // Self permanents (48 x 38 = 1824)
+    // Self permanents (48 x 43 = 2064)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->self_permanents[i]);
 
-    // Opp permanents (48 x 38 = 1824)
+    // Opp permanents (48 x 43 = 2064)
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
@@ -956,29 +1256,16 @@ const std::vector<float>& serialize_state(const GameState* gs) {
         }
     }
 
-    // Self graveyard (64 x 1 = 64)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->self_graveyard[i]));
-
-    // Opp graveyard (64 x 1 = 64)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->opp_graveyard[i]));
-
-    // Self exile (64 x 1 = 64), recency-ordered (slot 0 = most recent arrival)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->self_exile[i]));
-
-    // Opp exile (64 x 1 = 64)
-    for (int i = 0; i < MAX_GY_SLOTS; i++)
-        state.push_back(norm_card_id(gs->opp_exile[i]));
+    // Graveyards (64 x GY_SLOT_SIZE per side), then exile (64 x EXILE_SLOT_SIZE per
+    // side), self first, recency-ordered (slot 0 = most recent arrival).
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->self_graveyard[i], false);
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->opp_graveyard[i], false);
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->self_exile[i], true);
+    for (int i = 0; i < MAX_GY_SLOTS; i++) push_zone_card(state, gs->opp_exile[i], true);
 
     // Self hand (10 x 1 = 10)
     for (int i = 0; i < MAX_HAND_SLOTS; i++)
         state.push_back(norm_card_id(gs->self_hand[i]));
-
-    // Action history (128 x 4 = 512, newest first)
-    for (int i = 0; i < ACTION_HISTORY_SIZE * 4; i++)
-        state.push_back(gs->action_history[i]);
 
     // Match context (4 floats, all 0.0 in single-game mode)
     state.push_back(gs->match_game_number >= 0 ? static_cast<float>(gs->match_game_number) / 3.0f : 0.0f);
@@ -986,10 +1273,9 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->match_wins_opp) / 2.0f);
     state.push_back(gs->is_sideboard_phase ? 1.0f : 0.0f);
 
-    // Library counts & post-board flag (3 floats)
+    // Library counts (2 floats)
     state.push_back(static_cast<float>(gs->self_library_ct) / static_cast<float>(LIBRARY_NORMALIZER));
     state.push_back(static_cast<float>(gs->opp_library_ct) / static_cast<float>(LIBRARY_NORMALIZER));
-    state.push_back(gs->match_game_number > 0 ? 1.0f : 0.0f);
 
     // Current turn (1 float)
     state.push_back(static_cast<float>(gs->turn) / TURN_NORMALIZER);
@@ -999,15 +1285,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
         state.push_back(norm_card_id(gs->known_top_library_self[i]));
 
-    // Opponent revealed-cards multi-hot (N_CARD_TYPES floats; all zeros = none seen yet).
-    // Accumulated across the match, perspective-relative to the viewer.
-    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
-        state.push_back(gs->opp_revealed[i] ? 1.0f : 0.0f);
-
     // Known opponent-hand cards (10 x 1 = 10): specific card identities the viewer
     // has had revealed from the opponent's hand and that are still in hand. Sentinel
-    // id = empty/unknown slot. Distinct from the multi-hot above: this tracks the
-    // exact card and clears when that card leaves the hand.
+    // id = empty/unknown slot. Distinct from the opp decklist revealed bits: this
+    // tracks the exact card and clears when that card leaves the hand.
     for (int i = 0; i < MAX_HAND_SLOTS; i++)
         state.push_back(norm_card_id(gs->opp_known_hand[i]));
 
@@ -1016,13 +1297,12 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(norm_card_id(gs->pending_decision_card));
     state.push_back(gs->pending_decision_ctrl_is_self ? 1.0f : 0.0f);
 
-    // Global extras (22 floats): lands played, priority, monarch, city's blessing,
-    // revolt, pending extra turns, day/night, mandatory-choice one-hot, then
-    // self_plays_first and the two sideboard-phase progress scalars. See the
-    // [5955-5976] block in machine_io.h.
+    // Global extras (27 floats): lands played, monarch, city's blessing, revolt,
+    // pending extra turns, day/night, the priority-window context, the mulligan
+    // state, the mandatory-choice one-hot, then self_plays_first and the two
+    // sideboard-phase progress scalars. See the [4898-4924] block in machine_io.h.
     state.push_back(static_cast<float>(gs->self.lands_played_this_turn) / 10.0f);
     state.push_back(static_cast<float>(gs->opponent.lands_played_this_turn) / 10.0f);
-    state.push_back(gs->viewer_has_priority ? 1.0f : 0.0f);
     state.push_back(gs->self.is_monarch ? 1.0f : 0.0f);
     state.push_back(gs->opponent.is_monarch ? 1.0f : 0.0f);
     state.push_back(gs->self.city_blessing ? 1.0f : 0.0f);
@@ -1033,6 +1313,13 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->opponent.extra_turns_pending) / 3.0f);
     state.push_back(gs->is_day ? 1.0f : 0.0f);
     state.push_back(gs->is_night ? 1.0f : 0.0f);
+    state.push_back(gs->self_has_passed ? 1.0f : 0.0f);
+    state.push_back(gs->opp_has_passed ? 1.0f : 0.0f);
+    state.push_back(gs->is_priority_window ? 1.0f : 0.0f);
+    const float mull_norm = static_cast<float>(MULLIGAN_NORMALIZER);
+    state.push_back(static_cast<float>(gs->self_mulligans_taken) / mull_norm);
+    state.push_back(static_cast<float>(gs->opp_mulligans_taken) / mull_norm);
+    state.push_back(static_cast<float>(gs->self_bottom_remaining) / mull_norm);
     // MandatoryChoice one-hot, NONE at index 0 (see the enum in classes/game.h).
     // N_MANDATORY_CHOICES tracks the enum, so adding a choice kind widens this
     // one-hot and machine_io.h's offset chain shifts every later block with it.
@@ -1045,7 +1332,7 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // unbalanced poles sit symmetrically either side of it.
     state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
 
-    // ── Deck-identity tail blocks (see machine_io.h [5977-6328]) ───────────────
+    // ── Deck-identity tail blocks (see machine_io.h [4925-5340]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count
     // normalized /4.0. Slots are packed ascending by vocab id with no holes.
     auto push_decklist_block = [&](const int* ids, const int* counts, int n_slots) {
@@ -1059,17 +1346,28 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Self LIVE deck configuration: maindeck (48 x 2 = 96) then sideboard (15 x 2 = 30)
     push_decklist_block(gs->self_deck_main_id, gs->self_deck_main_ct, DECKLIST_MAIN_SLOTS);
     push_decklist_block(gs->self_deck_side_id, gs->self_deck_side_ct, DECKLIST_SIDE_SLOTS);
-    // Opponent REGISTERED maindeck (48 x 2 = 96)
-    push_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct, DECKLIST_MAIN_SLOTS);
-    // Opponent STATIC sideboard (15 x 2 = 30)
-    push_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct, DECKLIST_SIDE_SLOTS);
+    // Opponent slots carry a third float: the match-scoped revealed bit.
+    auto push_opp_decklist_block = [&](const int* ids, const int* counts,
+                                       const unsigned char* revealed, int n_slots) {
+        for (int i = 0; i < n_slots; i++) {
+            state.push_back(norm_card_id(ids[i]));
+            state.push_back(static_cast<float>(counts[i]) / 4.0f);
+            state.push_back(revealed[i] ? 1.0f : 0.0f);
+        }
+    };
+    // Opponent REGISTERED maindeck (48 x 3 = 144)
+    push_opp_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct,
+                            gs->opp_deck_main_revealed, DECKLIST_MAIN_SLOTS);
+    // Opponent REGISTERED sideboard (16 x 3 = 48)
+    push_opp_decklist_block(gs->opp_deck_side_id, gs->opp_deck_side_ct,
+                            gs->opp_deck_side_revealed, DECKLIST_SIDE_SLOTS);
 
-    // ── Mana development (see machine_io.h [6329-6349]) ───────────────────────
-    // Self (11 floats) then opponent (10 — no lands_in_hand, which is hidden).
+    // ── Mana development (see machine_io.h [5341-5359]) ───────────────────────
+    // Self (10 floats) then opponent (9 — no lands_in_hand, which is hidden).
     push_mana_dev_block(state, gs->self, /*with_lands_in_hand=*/true);
     push_mana_dev_block(state, gs->opponent, /*with_lands_in_hand=*/false);
 
-    // ── Log-scaled vitals (see machine_io.h [6350-6353]) ──────────────────────
+    // ── Log-scaled vitals (see machine_io.h [5360-5363]) ──────────────────────
     // The same life/library counts already emitted linearly above (player blocks,
     // library-context block), re-warped through log1p so the near-zero region —
     // where the game is decided and the linear floats have their least resolution —
@@ -1077,6 +1375,21 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // encodings are kept deliberately; see the rationale in machine_io.h.
     push_log_vitals_block(state, gs->self.life, gs->self_library_ct);
     push_log_vitals_block(state, gs->opponent.life, gs->opp_library_ct);
+
+    // ── Per-turn counters (see machine_io.h [5364-5385]) ──────────────────────
+    // Self (11 floats) then opponent (11): the per-turn counts and the spell-color
+    // multi-hot.
+    push_per_turn_block(state, gs->self);
+    push_per_turn_block(state, gs->opponent);
+
+    // ── Pending delayed triggers (see machine_io.h [5386-5593]) ───────────────
+    for (int i = 0; i < DELAYED_SLOTS; i++)
+        push_delayed_slot(state, gs->delayed[i]);
+
+    // ── Player effects (see machine_io.h [6490-6515]) ─────────────────────────
+    // Self (13 floats) then opponent (13).
+    push_player_effects_block(state, gs->self);
+    push_player_effects_block(state, gs->opponent);
 
     // Loud, NDEBUG-surviving length check: cli_output fwrites STATE_SIZE floats from this
     // buffer, so an under-fill would silently OOB-read under BUILD=RELEASE (where assert() is

@@ -22,7 +22,9 @@ namespace effects {
 // interactive loop over the N looked-at cards: at each step the player picks any remaining card
 // and a destination — into the graveyard or onto the top of the library. The order in which
 // cards are chosen "on top" fixes the final library order: the FIRST card sent to the top ends
-// up as the topmost card (they are re-placed in reverse so the choice order reads top-down).
+// up as the topmost card. Each kept card is put at its final depth (under the cards kept before
+// it, above the undecided ones) the moment it is chosen, so it is on the known-top cache for the
+// remaining choices.
 // The two per-card options share the same card entity, so they must differ by category to be
 // distinguishable to the semantic action resolver (like scry's keep/bottom): on-top =
 // TOP_LIBRARY, into-graveyard = CHOOSE_CARD (a library -> graveyard non-library zone change).
@@ -36,8 +38,9 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     }
 
     // The looked-at slice is frozen once; the shrinking `remaining` pool and the
-    // `to_top` accumulator persist in the frame rt (both pinned against
-    // determinize) so a suspended pick resumes against the identical pool.
+    // `to_top` list of already-placed kept cards persist in the frame rt (both
+    // pinned against determinize) so a suspended pick resumes against the
+    // identical pool.
     SurveilRt local_rt;
     SurveilRt &rt = ctx.can_suspend() ? ctx.rt<SurveilRt>() : local_rt;
     if (!rt.init) {
@@ -59,7 +62,8 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         }
 
         // remaining: the looked-at cards not yet assigned a destination (stable top-first order).
-        // to_top: cards chosen to stay on top, in choice order (to_top[0] ends up topmost).
+        // to_top: cards chosen to stay on top, in choice order (to_top[0] is topmost), each
+        // already placed.
         rt.remaining = looked;
         rt.init = true;
     }
@@ -68,7 +72,7 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         std::vector<LegalAction> actions;
         // First block: "put on top" for each remaining card; second block: "into graveyard".
         // Depth (0-indexed from the top) the card kept on top this round will sit
-        // at: to_top[0] ends up topmost, so it is the count already kept. Shared by
+        // at: to_top[0] is topmost, so it is the count already kept. Shared by
         // the whole "put on top" block — decision context, not disambiguation.
         int place_depth = static_cast<int>(rt.to_top.size());
         for (Entity card : rt.remaining) {
@@ -95,7 +99,11 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         Entity card = rt.remaining[card_idx];
         rt.remaining.erase(rt.remaining.begin() + static_cast<long>(card_idx));
 
+        // Drop from the pool, place, and record in one step with no suspension point
+        // between them: a resume re-asks only while the card is still in `remaining`,
+        // so a card is never placed twice.
         if (on_top) {
+            orderer->put_in_library_at_depth(card, rt.to_top.size());
             rt.to_top.push_back(card);
         } else {
             auto &cd = global_coordinator.GetComponent<CardData>(card);
@@ -104,12 +112,6 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         }
     }
 
-    // Re-place the kept cards on top. add_to_zone(false, ...) makes each the new top, so placing
-    // in reverse leaves to_top[0] (the first choice) on top with the rest in the chosen order.
-    // Runs exactly once: the loop above only exits forward when `remaining` is empty.
-    for (size_t i = rt.to_top.size(); i-- > 0;) {
-        orderer->add_to_zone(false, rt.to_top[i], Zone::LIBRARY);
-    }
     return HandlerResult::DONE_RUN_SUBS;
 }
 

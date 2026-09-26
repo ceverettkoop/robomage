@@ -89,6 +89,15 @@ extern uint64_t g_card_db_generation;
 // fallbacks are defensive only.
 bool in_main_loop();
 
+// True only while play_single_game's decision loop is emitting an ordinary
+// priority decision — the determine_legal_actions menu, including a forced pass
+// broadcast as a BSTATE frame. False for every other decision kind: pregame
+// (keep/mulligan, bottoming, opening-hand actions), mandatory choices, parked
+// mid-flow queries, blocking mid-cast / mid-resolution prompts, and sideboarding.
+// The serializer gates the pass flags and is_priority_window on it, so the two
+// always agree.
+bool priority_window_open();
+
 // ── Concession (CR 104.3a) ──────────────────────────────────────────────────
 // A player may concede at any time; they lose the game immediately. The engine
 // reads a concession as an out-of-band decision INPUT: the sentinels

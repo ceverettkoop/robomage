@@ -591,10 +591,9 @@ class InspectApp(App):
                     return [f"embedding drift unavailable ({e})"], None
             return azi.render_drift(self._drift, top_n=0), None
         if key == "occur":
-            emb, rev, n = azi.card_occurrence_split(
+            emb, n = azi.card_occurrences(
                 self._sample["obs"], limit=a.count_rows, seed=a.seed)
-            return azi.render_occurrences(emb, n, top_n=a.top,
-                                          revealed=rev), None
+            return azi.render_occurrences(emb, n, top_n=a.top), None
         if key == "catemb":
             # The state dict, not the net — so it also works in the PPO
             # fallback (the accessor takes either).

@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -82,7 +84,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Fiery Islet
+  Self BF:  Fiery Islet (NEW)
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -109,8 +111,9 @@
   Self:  20 life | mana: empty | hand(8): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -126,10 +129,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Mountain
+  Self BF:  Mountain (NEW)
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -147,11 +151,12 @@
   Step: Declare Atk (turn 2)
   Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Goblin Guide [2/2] [Haste] (SICK) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] (SICK,NEW) | Mountain (T,NEW)
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=R
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Goblin Guide [2/2]
    1: Confirm attackers
@@ -166,11 +171,12 @@
   Step: Declare Atk (turn 2)
   Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Goblin Guide [2/2] [Haste] (ATK,SICK) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK,SICK,NEW) | Mountain (T,NEW)
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=R
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -202,7 +208,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Fiery Islet
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [play:self/eot]
   Opp revealed: Mountain, Goblin Guide
   Actions:
    0: Pass priority
@@ -222,6 +228,7 @@
   Pending: Rift Bolt (self)
   Self exile: Rift Bolt
   Opp revealed: Mountain, Goblin Guide
+  Extras: not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (17 life)
@@ -243,6 +250,7 @@
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
   Self GY: Rift Bolt
   Opp revealed: Mountain, Goblin Guide
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -264,6 +272,8 @@
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
   Opp revealed: Mountain, Goblin Guide
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (17 life)
@@ -287,11 +297,14 @@
   Self BF:  Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
   Opp BF:   Fiery Islet (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Opp GY:  Rift Bolt
   Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: not_priority_window
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> B/B: 0 (Don't pay (spell is countered))
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 
 --- Decision 14 ---
   Priority: Player A (active)
@@ -302,6 +315,7 @@
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
   Self GY: Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Goblin Guide
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -316,10 +330,11 @@
   Step: First Main (turn 3)
   Self:  16 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   14 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Fiery Islet (T) | Mountain
+  Self BF:  Fiery Islet (T) | Mountain (NEW)
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
   Self GY: Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Goblin Guide
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -345,7 +360,7 @@
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
@@ -363,8 +378,9 @@
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Pending: Lightning Bolt (self)
   Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: not_priority_window
   Actions:
    0: Player A (16 life)
    1: Player B (14 life)
@@ -387,8 +403,9 @@
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Self GY: Lightning Bolt
   Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -403,12 +420,13 @@
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
   Opp:   13 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Self GY: Lightning Bolt
   Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -422,14 +440,15 @@
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
   Opp:   13 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Pending: Lava Spike (self)
   Self GY: Lightning Bolt
   Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (13 life)
    1: Player B (14 life)
@@ -447,13 +466,14 @@
   Step: Declare Atk (turn 4)
   Self:  14 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
   Opp:   10 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Self GY: Lava Spike, Lightning Bolt
   Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=6
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Goblin Guide [2/2]
    1: Confirm attackers
@@ -468,13 +488,14 @@
   Step: Declare Atk (turn 4)
   Self:  14 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
   Opp:   10 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Self GY: Lava Spike, Lightning Bolt
   Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=6
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -506,7 +527,7 @@
   Stack: Rift Bolt (ability, self)
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [1 ctr]
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
   Actions:
    0: Pass priority
@@ -536,8 +557,9 @@
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [play:self/eot]
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
   Actions:
    0: Pass priority
    1: Cast Rift Bolt (from exile, no cost)  [#7]
@@ -558,6 +580,8 @@
   Opp GY:  Lava Spike, Lightning Bolt
   Self exile: Rift Bolt
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
+  Extras: not_priority_window
   Actions:
    0: Player B (14 life)
    1: Player A (5 life)
@@ -580,6 +604,7 @@
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -631,6 +656,7 @@
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=2
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -644,11 +670,12 @@
   Step: First Main (turn 6)
   Self:  11 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
   Opp:   3 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -662,13 +689,14 @@
   Step: First Main (turn 6)
   Self:  11 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
   Opp:   3 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
   Pending: Chain Lightning (self)
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=2
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (3 life)
    1: Player B (11 life)
@@ -689,15 +717,17 @@
   Self:  0 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
   Opp:   11 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Fiery Islet (T) | Mountain (T) | Mountain
-  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: opp_lands_played=1
+  This turn: self life_lost=5 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Tap Mountain for (R)
-   1: Don't pay (spell is countered)  [#0]
+   1: Don't pay (Chain Lightning is not copied)  [#0]
   >> A/A: 0 (Tap Mountain for (R))
 --- Narrative ---
   Player A tapped Mountain for {R}
@@ -708,15 +738,17 @@
   Self:  0 life | mana: 1R | hand(2): Exquisite Firecraft, Mountain | lib 51
   Opp:   11 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: opp_lands_played=1
+  This turn: self life_lost=5 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Don't pay (spell is countered))
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> A/A: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   Player A has 0 life - Player B wins!
 

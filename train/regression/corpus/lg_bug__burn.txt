@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -58,6 +59,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -78,6 +80,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -91,6 +94,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -111,6 +115,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -134,6 +139,8 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -149,10 +156,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Eidolon of the Great Revel, Goblin Guide, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mountain
+  Self BF:  Mountain (NEW)
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Goblin Guide  [#0]
@@ -169,10 +177,11 @@
   Step: Declare Atk (turn 2)
   Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Goblin Guide [2/2] [Haste] (SICK) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] (SICK,NEW) | Mountain (T,NEW)
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=R
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Goblin Guide [2/2]
    1: Confirm attackers
@@ -187,10 +196,11 @@
   Step: Declare Atk (turn 2)
   Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Goblin Guide [2/2] [Haste] (ATK,SICK) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK,SICK,NEW) | Mountain (T,NEW)
   Opp BF:   Tropical Island
   Opp revealed: Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=R
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -225,6 +235,7 @@
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain
   Opp BF:   Tropical Island
   Opp revealed: Orcish Bowmasters, Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -241,6 +252,7 @@
   Opp BF:   Tropical Island
   Pending: Lightning Bolt (self)
   Opp revealed: Orcish Bowmasters, Tropical Island
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (18 life)
    1: Player B (20 life)
@@ -263,6 +275,8 @@
   Opp BF:   Tropical Island
   Self GY: Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -277,11 +291,12 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
   Opp:   15 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (NEW)
   Opp BF:   Tropical Island
   Self GY: Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lava Spike  [#0]
@@ -294,12 +309,13 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
   Opp:   15 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (NEW)
   Opp BF:   Tropical Island
   Pending: Lava Spike (self)
   Self GY: Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (15 life)
    1: Player B (20 life)
@@ -317,11 +333,12 @@
   Step: Declare Atk (turn 4)
   Self:  20 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
   Opp:   12 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T,NEW)
   Opp BF:   Tropical Island
   Self GY: Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=6
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Goblin Guide [2/2]
    1: Confirm attackers
@@ -336,11 +353,12 @@
   Step: Declare Atk (turn 4)
   Self:  20 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
   Opp:   12 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T,NEW)
   Opp BF:   Tropical Island
   Self GY: Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=6
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -371,6 +389,8 @@
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
   Opp GY:  Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -397,6 +417,7 @@
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Price of Progress  [#0]
@@ -421,6 +442,8 @@
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=2
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -434,11 +457,12 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
   Opp:   8 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=2
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Chain Lightning  [#0]
@@ -451,12 +475,13 @@
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
   Opp:   8 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Pending: Chain Lightning (self)
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=2
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (8 life)
    1: Player B (20 life)
@@ -478,14 +503,16 @@
   Self:  5 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 52
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Opp GY:  Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: opp_lands_played=1
+  This turn: self life_lost=5 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R
+  Extras: opp_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> A/A: 0 (Don't pay (spell is countered))
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> A/A: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
@@ -494,11 +521,12 @@
   Step: Declare Atk (turn 6)
   Self:  20 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 50
   Opp:   5 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=5
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Goblin Guide [2/2]
    1: Confirm attackers
@@ -513,11 +541,12 @@
   Step: Declare Atk (turn 6)
   Self:  20 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 50
   Opp:   5 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T) | Mountain (T)
+  Self BF:  Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=5
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -541,10 +570,11 @@
   Self:  5 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 51
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Goblin Guide [2/2] [Haste] (T,ATK) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] (T,ATK,res 1) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: opp_lands_played=1, mandatory_choice=Declare Blk
+  This turn: self life_lost=5 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R
+  Extras: opp_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm blockers
@@ -570,6 +600,8 @@
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
+  This turn: self drawn=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -583,11 +615,12 @@
   Step: Declare Atk (turn 7)
   Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Tropical Island
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (NEW) | Tropical Island
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -602,11 +635,12 @@
   Step: Declare Atk (turn 7)
   Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island | Tropical Island
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (NEW) | Tropical Island
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -622,11 +656,12 @@
   Step: Declare Atk (turn 7)
   Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Tropical Island | Clue (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -639,11 +674,12 @@
   Step: Declare Blk (turn 7)
   Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Tropical Island | Clue (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -657,11 +693,12 @@
   Step: Combat Dmg (turn 7)
   Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Tropical Island | Clue (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -672,11 +709,12 @@
   Step: End Combat (turn 7)
   Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tropical Island | Tropical Island | Clue (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -687,11 +725,12 @@
   Step: Second Main (turn 7)
   Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Tropical Island | Clue (SICK)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tropical Island (NEW) | Tropical Island | Clue (SICK,NEW)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -712,11 +751,12 @@
   Step: Cleanup (turn 7)
   Self:  3 life | mana: empty | hand(8): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Swamp, Thoughtseize | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tropical Island (T,NEW) | Tropical Island (T)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp GY:  Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Cleanup Discard
+  This turn: self drawn=2
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Cleanup Discard
   Actions:
    0: Baleful Strix
    1: Fatal Push
@@ -745,6 +785,8 @@
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Force of Will
   Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fireblast (alternate cost)  [#1]
@@ -763,6 +805,8 @@
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Force of Will
   Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (3 life)
    1: Player B (20 life)
@@ -779,9 +823,12 @@
   Opp:   3 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain | Mountain
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Force of Will
   Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Sacrifice Mountain
    1: Sacrifice Mountain
@@ -795,9 +842,12 @@
   Opp:   3 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain | Mountain
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Force of Will
   Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Sacrifice Mountain
    1: Sacrifice Mountain

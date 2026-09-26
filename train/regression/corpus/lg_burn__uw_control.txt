@@ -31,6 +31,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -51,6 +52,7 @@
   Step: Untap (turn 1)
   Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
+  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -82,7 +84,7 @@
   Step: First Main (turn 1)
   Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Fiery Islet
+  Self BF:  Fiery Islet (NEW)
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -109,8 +111,9 @@
   Self:  20 life | mana: empty | hand(8): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -124,10 +127,11 @@
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Flooded Strand
+  Self BF:  Flooded Strand (NEW)
   Opp BF:   Fiery Islet (T)
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -149,9 +153,10 @@
   Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -172,11 +177,12 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island
+  Self BF:  Island (NEW)
   Opp BF:   Fiery Islet (T)
   Self GY: Flooded Strand
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -193,12 +199,13 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -214,14 +221,15 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Tundra  [#2]
    1: Mystic Sanctuary  [#2]
@@ -235,14 +243,16 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Tundra, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Mystic Sanctuary  [#1]
    1: Flow State  [#1]
@@ -253,15 +263,16 @@
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
+  Self BF:  Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
   Self GY: Flooded Strand
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Known top: Flow State, Mystic Sanctuary, Tundra, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -290,7 +301,7 @@
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
   Opp GY:  Ponder, Flooded Strand
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [play:self/eot]
   Opp revealed: Flooded Strand, Ponder, Island
   Actions:
    0: Pass priority
@@ -311,6 +322,7 @@
   Opp GY:  Ponder, Flooded Strand
   Self exile: Rift Bolt
   Opp revealed: Flooded Strand, Ponder, Island
+  Extras: not_priority_window
   Actions:
    0: Player B (19 life)
    1: Player A (19 life)
@@ -330,6 +342,8 @@
   Self GY: Ponder, Flooded Strand
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -349,6 +363,8 @@
   Self GY: Ponder, Flooded Strand
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window
   Actions:
    0: Rift Bolt
   >> B/B: 0 (Rift Bolt)
@@ -363,9 +379,12 @@
   Self BF:  Island (T)
   Opp BF:   Fiery Islet
   Stack: Rift Bolt (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window
   Actions:
    0: Exile Flow State
    1: Exile Tamiyo, Inquisitive Student
@@ -390,6 +409,7 @@
   Opp GY:  Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -413,6 +433,8 @@
   Opp GY:  Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Player B (18 life)
    1: Player A (19 life)
@@ -435,14 +457,17 @@
   Self BF:  Island (T)
   Opp BF:   Fiery Islet (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Self GY: Force of Will, Ponder, Flooded Strand
   Opp GY:  Rift Bolt
   Self exile: Flow State
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=4 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: not_priority_window
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> B/B: 0 (Don't pay (spell is countered))
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 
 --- Decision 21 ---
   Priority: Player A (active)
@@ -455,6 +480,7 @@
   Opp GY:  Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=4 colors=U
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -469,12 +495,13 @@
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   15 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Fiery Islet (T) | Mountain
+  Self BF:  Fiery Islet (T) | Mountain (NEW)
   Opp BF:   Island (T)
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Flow State
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=4 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -502,7 +529,7 @@
   Self GY: Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Flow State
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
@@ -528,8 +555,9 @@
   Self GY: Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Flow State
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -544,13 +572,14 @@
   Step: First Main (turn 4)
   Self:  15 life | mana: empty | energy 2 | hand(5): Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 48
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Misty Rainforest
+  Self BF:  Island (T) | Misty Rainforest (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Self GY: Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Flow State
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -575,9 +604,10 @@
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Flow State
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -594,13 +624,14 @@
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | energy 2 | hand(5): Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 47
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Island (T) | Island
+  Self BF:  Island (T) | Island (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Flow State
-  Opp exile:  Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -630,7 +661,7 @@
   Stack: Rift Bolt (ability, self)
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [1 ctr]
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
   Actions:
@@ -661,9 +692,10 @@
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Rift Bolt
+  Self exile: Rift Bolt [play:self/eot]
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
   Actions:
    0: Pass priority
    1: Cast Rift Bolt (from exile, no cost)  [#7]
@@ -685,6 +717,8 @@
   Self exile: Rift Bolt
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
+  Extras: not_priority_window
   Actions:
    0: Player B (14 life)
    1: Player A (15 life)
@@ -708,6 +742,7 @@
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -736,6 +771,7 @@
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mystic Sanctuary
@@ -753,12 +789,14 @@
   Step: First Main (turn 6)
   Self:  11 life | mana: empty | energy 2 | hand(4): Mystic Sanctuary, Swords to Plowshares, The One Ring, Tundra | lib 46
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
   Self GY: Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
    0: Keep Tamiyo, Inquisitive Student
    1: Keep Tamiyo, Inquisitive Student
@@ -771,12 +809,13 @@
   Step: First Main (turn 6)
   Self:  11 life | mana: empty | energy 2 | hand(4): Mystic Sanctuary, Swords to Plowshares, The One Ring, Tundra | lib 46
   Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
   Self GY: Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=U
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -824,6 +863,7 @@
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -840,6 +880,7 @@
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -862,6 +903,8 @@
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
    0: Player B (11 life)
    1: Player A (15 life)
@@ -888,6 +931,7 @@
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=4
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -916,6 +960,7 @@
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Meticulous Archive
@@ -934,7 +979,7 @@
   Step: First Main (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 45
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Stack: Meticulous Archive (ability, self) [amt=1]
   Pending: Meticulous Archive (self)
@@ -942,7 +987,8 @@
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Ponder on top of library  [#0]
    1: Put Ponder into graveyard
@@ -956,13 +1002,14 @@
   Step: Declare Atk (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -977,13 +1024,14 @@
   Step: Declare Atk (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, mandatory_choice=Declare Atk
+  This turn: self drawn=1
+  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -999,12 +1047,13 @@
   Step: Declare Atk (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1018,13 +1067,14 @@
   Step: Declare Blk (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1038,12 +1088,13 @@
   Step: Combat Dmg (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1055,12 +1106,13 @@
   Step: End Combat (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1072,12 +1124,13 @@
   Step: Second Main (turn 8)
   Self:  7 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, The One Ring, Tundra | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Self BF:  Island | Island | Meticulous Archive (T,NEW,res 1) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Clue (SICK,NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -1125,6 +1178,7 @@
   Opp GY:  Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -1141,6 +1195,7 @@
   Opp GY:  Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1164,6 +1219,7 @@
   Opp GY:  Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -1181,12 +1237,13 @@
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=1 drawn=2 colors=R
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1200,12 +1257,13 @@
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self spells=1 drawn=2 colors=R
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1219,14 +1277,15 @@
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 43
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
   Pending: Chain Lightning (self)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
-  Extras: self_lands_played=1, self_revolt
+  This turn: self spells=1 drawn=2 colors=R
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Player B (7 life)
    1: Player A (14 life)
@@ -1251,16 +1310,18 @@
   Self:  4 life | mana: empty | energy 2 | hand(4): Murktide Regent, Swords to Plowshares, The One Ring, Tundra | lib 43
   Opp:   12 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW,res 1) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self life_lost=3 | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Tap Mystic Sanctuary for (U)
-   1: Don't pay (spell is countered)  [#0]
+   1: Don't pay (Chain Lightning is not copied)  [#0]
   >> B/B: 0 (Tap Mystic Sanctuary for (U))
 --- Narrative ---
   Player B tapped Mystic Sanctuary for {U}
@@ -1271,16 +1332,18 @@
   Self:  4 life | mana: 1U | energy 2 | hand(4): Murktide Regent, Swords to Plowshares, The One Ring, Tundra | lib 43
   Opp:   12 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW,res 1) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1, opp_revolt
+  This turn: self life_lost=3 | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
-   0: Don't pay (spell is countered)  [#0]
-  >> B/B: 0 (Don't pay (spell is countered))
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
@@ -1321,6 +1384,7 @@
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: not_priority_window
   Actions:
    0: Eidolon of the Great Revel
    1: Tamiyo, Inquisitive Student
@@ -1350,6 +1414,7 @@
   Self exile: Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1366,12 +1431,14 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile 4 cards from graveyard (Delve)  [#4]
    1: Exile 5 cards from graveyard (Delve)  [#5]
@@ -1386,12 +1453,14 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Flooded Strand (Delve)
    1: Exile Force of Will (Delve)
@@ -1413,12 +1482,14 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Force of Will (Delve)
    1: Exile Misty Rainforest (Delve)
@@ -1439,12 +1510,14 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Ponder
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Misty Rainforest (Delve)
    1: Exile Ponder (Delve)
@@ -1464,12 +1537,14 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Tune the Narrative, Ponder
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Ponder (Delve)
@@ -1488,12 +1563,14 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_revolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
+  Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Swords to Plowshares (Delve)
@@ -1513,13 +1590,14 @@
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
   Extras: opp_revolt
   Actions:
    0: Pass priority
@@ -1534,14 +1612,15 @@
   Step: Declare Atk (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(2): Force of Will, The One Ring | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra (NEW)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
+  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1556,14 +1635,15 @@
   Step: Declare Atk (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(2): Force of Will, The One Ring | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra (NEW)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, opp_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
+  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1579,13 +1659,14 @@
   Step: Declare Atk (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(2): Force of Will, The One Ring | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra (NEW) | Clue (SICK,NEW)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1599,14 +1680,15 @@
   Step: Declare Blk (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(2): Force of Will, The One Ring | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra (NEW) | Clue (SICK,NEW)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, opp_revolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
+  Extras: self_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1620,13 +1702,14 @@
   Step: Combat Dmg (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(2): Force of Will, The One Ring | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra (NEW) | Clue (SICK,NEW)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1638,13 +1721,14 @@
   Step: End Combat (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(2): Force of Will, The One Ring | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra (NEW) | Clue (SICK,NEW)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1656,13 +1740,14 @@
   Step: Second Main (turn 10)
   Self:  2 life | mana: empty | energy 2 | hand(2): Force of Will, The One Ring | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra | Clue (SICK)
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (NEW) | Clue (SICK,NEW)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
@@ -1694,6 +1779,7 @@
   Self exile: Eidolon of the Great Revel
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1722,6 +1808,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Geist of Saint Traft  [#0]
@@ -1746,6 +1833,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=WU
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1759,14 +1847,15 @@
   Step: Declare Atk (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   14 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=WU
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [6/6]
    1: Tamiyo, Inquisitive Student [0/3]
@@ -1782,14 +1871,15 @@
   Step: Declare Atk (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   14 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=WU
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -1805,14 +1895,15 @@
   Step: Declare Atk (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   14 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: mandatory_choice=Declare Atk
+  This turn: self spells=1 drawn=1 colors=WU
+  Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1829,13 +1920,14 @@
   Step: Declare Atk (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   14 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Clue (SICK,NEW)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=WU
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1848,13 +1940,15 @@
   Step: Declare Blk (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   14 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Clue (SICK,NEW)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=WU
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1869,13 +1963,14 @@
   Step: Combat Dmg (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Clue (SICK,NEW)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=WU | opp life_lost=6
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1886,13 +1981,14 @@
   Step: End Combat (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK) | Tundra | Clue (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Clue (SICK,NEW)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=WU | opp life_lost=6
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1903,13 +1999,14 @@
   Step: Second Main (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 40
   Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra | Clue (SICK)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra | Clue (SICK,NEW)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=1 colors=WU | opp life_lost=6
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1928,13 +2025,14 @@
   Step: Second Main (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Negation, Force of Will, The One Ring, Wasteland | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=2 colors=WU | opp life_lost=6
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -1948,13 +2046,14 @@
   Step: Second Main (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Wasteland (NEW)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=2 colors=WU | opp life_lost=6
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1966,13 +2065,14 @@
   Step: End Step (turn 12)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra (T) | Wasteland (NEW)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 drawn=2 colors=WU | opp life_lost=6
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -1996,6 +2096,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2015,6 +2116,8 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: opp drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2032,6 +2135,7 @@
   Self exile: Eidolon of the Great Revel
   Opp exile:  Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Wasteland, Ponder, Force of Will, Tundra, Island, Murktide Regent, Swords to Plowshares, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -2045,13 +2149,14 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2063,13 +2168,14 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2083,13 +2189,14 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2103,12 +2210,13 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: opp drawn=1
   Extras: opp_lands_played=1
   Actions:
    0: Pass priority
@@ -2124,13 +2232,14 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2142,13 +2251,14 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2160,13 +2270,14 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2178,13 +2289,14 @@
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
   Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_lands_played=1
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2226,6 +2338,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2248,6 +2361,7 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Actions:
    0: Pass priority
    1: Cast Force of Negation  [#0]
@@ -2277,6 +2391,8 @@
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window
   Actions:
    0: Flow State
    1: Force of Negation
@@ -2304,6 +2420,8 @@
   Opp exile:  Eidolon of the Great Revel
   Known top: Flow State, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+  Extras: not_priority_window
   Actions:
    0: Force of Negation
    1: Force of Will
@@ -2329,6 +2447,7 @@
   Opp exile:  Eidolon of the Great Revel
   Known top: Force of Negation, Flow State, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2347,7 +2466,7 @@
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 37
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tundra | Wasteland
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra | Wasteland
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2355,6 +2474,7 @@
   Opp exile:  Eidolon of the Great Revel
   Known top: Force of Negation, Flow State, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2367,7 +2487,7 @@
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 37
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tundra | Wasteland
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra | Wasteland
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2375,6 +2495,7 @@
   Opp exile:  Eidolon of the Great Revel
   Known top: Force of Negation, Flow State, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2402,13 +2523,14 @@
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, The One Ring, Tundra, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2424,13 +2546,14 @@
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tundra | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -2448,14 +2571,16 @@
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Geist of Saint Traft [2/2]
    1: Murktide Regent [6/6]
@@ -2471,14 +2596,16 @@
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Murktide Regent [6/6]
    1: Confirm attackers
@@ -2494,14 +2621,16 @@
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: self_lands_played=1, self_revolt, mandatory_choice=Declare Atk
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=7 colors=U
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
