@@ -47,6 +47,7 @@
 // affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
+static std::vector<Entity> static_targets(const ActiveStatic &a, const std::set<Entity> &entities);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
 static void apply_global_addtype_statics(const std::set<Entity> &entities);
@@ -523,6 +524,22 @@ static bool affected_is_general_filter(const std::string &aff) {
     return !aff.empty() &&
            !affected_is_attached_target(aff) &&
            aff.find("Self") == std::string::npos;
+}
+
+// The objects a continuous static affects (CR 613.1 / 611.3a), for every layer that applies it:
+// a general Affected$ filter's matching permanents (affected_permanents_for_static), the
+// permanent an EquippedBy/EnchantedBy static's source is attached to, or else (Self / no
+// Affected$) the source itself.
+static std::vector<Entity> static_targets(const ActiveStatic &a, const std::set<Entity> &entities) {
+    const std::string &aff = a.sa->affected;
+    if (affected_is_general_filter(aff)) return affected_permanents_for_static(a, entities);
+    Entity target = a.entity;
+    if (affected_is_attached_target(aff)) {
+        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) return {};
+        target = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
+    }
+    if (target == 0) return {};
+    return {target};
 }
 
 // Lands whose subtype was set to a basic land type this SBE pass (Blood Moon / Magus of
@@ -1684,8 +1701,7 @@ void StateManager::apply_layer6_ability_effects() {
             // Keywords are rebuilt from each creature's printed base every SBE pass
             // (gather_active_statics, rule 611.3a), so re-granting here each pass cannot stack.
             std::vector<Entity> targets =
-                a.condition_met ? affected_permanents_for_static(a, mEntities)
-                                : std::vector<Entity>{};
+                a.condition_met ? static_targets(a, mEntities) : std::vector<Entity>{};
             bool granted_any = false;
             for (Entity e : targets) {
                 if (!global_coordinator.entity_has_component<Creature>(e)) continue;
@@ -1709,14 +1725,9 @@ void StateManager::apply_layer6_ability_effects() {
             continue;
         }
 
-        // Determine which entity receives the grant (source or attached creature).
-        // Affected$ is stored verbatim (e.g. "Creature.EquippedBy" / "Creature.EnchantedBy"),
-        // so match by substring; both attachment forms resolve to equipped_to.
-        Entity target_entity = a.entity;
-        if (affected_is_attached_target(a.sa->affected)) {
-            if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
-            target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
-        }
+        // The single entity that receives the grant (source or attached creature).
+        std::vector<Entity> single = static_targets(a, mEntities);
+        Entity target_entity = single.empty() ? 0 : single[0];
 
         // Keywords are rebuilt from base every pass (gather_active_statics), so a grant
         // that moved to a different creature (equipment re-attached) needs no manual
@@ -2118,7 +2129,7 @@ void StateManager::apply_layer7_pt_effects() {
     // setters, then for each battlefield creature apply the latest-timestamp setter that
     // matches it (rule 613.7; recompute_pt reads has_set_pt/set_power/set_toughness).
     {
-        struct SetPT { ActiveStatic *a; size_t timestamp; };
+        struct SetPT { ActiveStatic *a; size_t timestamp; std::set<Entity> targets; };
         std::vector<SetPT> setters;
         for (auto &a : g_active_statics) {
             if (a.suppressed) continue;
@@ -2129,7 +2140,8 @@ void StateManager::apply_layer7_pt_effects() {
             size_t ts = global_coordinator.entity_has_component<Permanent>(a.entity)
                 ? global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield
                 : 0;
-            setters.push_back({&a, ts});
+            std::vector<Entity> t = static_targets(a, mEntities);
+            setters.push_back({&a, ts, std::set<Entity>(t.begin(), t.end())});
         }
         if (!setters.empty()) {
             std::stable_sort(setters.begin(), setters.end(),
@@ -2138,21 +2150,8 @@ void StateManager::apply_layer7_pt_effects() {
                 if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
                 if (!is_battlefield_permanent(entity)) continue;
                 const ActiveStatic *winner = nullptr;
-                for (auto &s : setters) {
-                    const std::string &aff = s.a->sa->affected;
-                    bool match;
-                    if (affected_is_attached_target(aff)) {
-                        match = global_coordinator.entity_has_component<Permanent>(s.a->entity) &&
-                                global_coordinator.GetComponent<Permanent>(s.a->entity).equipped_to == entity;
-                    } else if (aff.find("Self") != std::string::npos) {
-                        match = (s.a->entity == entity);
-                    } else if (aff.find("Creature") != std::string::npos) {
-                        match = true;  // Affected$ Creature — every creature
-                    } else {
-                        match = (s.a->entity == entity);
-                    }
-                    if (match) winner = s.a;  // later timestamp overwrites
-                }
+                for (auto &s : setters)
+                    if (s.targets.count(entity)) winner = s.a;  // later timestamp overwrites
                 if (!winner) continue;
                 auto &cr = global_coordinator.GetComponent<Creature>(entity);
                 cr.has_set_pt = true;
@@ -2193,19 +2192,7 @@ void StateManager::apply_layer7_pt_effects() {
         // battlefield permanent — go through the shared resolver, which honours +Other (skip
         // self) and YouCtrl (controller scope). The EquippedBy / Self / no-Affected$ forms keep
         // the original single-target behaviour (source, or the equipped creature).
-        const std::string &aff = a.sa->affected;
-        bool general_filter = affected_is_general_filter(aff);
-        std::vector<Entity> targets;
-        if (general_filter) {
-            targets = affected_permanents_for_static(a, mEntities);
-        } else {
-            Entity target_entity = a.entity;
-            if (affected_is_attached_target(aff)) {
-                if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
-                target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
-            }
-            if (target_entity != 0) targets.push_back(target_entity);
-        }
+        std::vector<Entity> targets = static_targets(a, mEntities);
 
         for (Entity target_entity : targets) {
             if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity))
