@@ -31,10 +31,7 @@ Entity load_card(std::string card_name) {
         if(!dfc_path.empty()) path = dfc_path;
     }
     Entity parsed_card_eid = parse_card_script(path);
-    if(parsed_card_eid < 0){
-        non_fatal_error("Failed to parse card " + card_name);
-        return parsed_card_eid;
-    }
+    if(parsed_card_eid == 0) fatal_error("Failed to parse card " + card_name + " (" + path + ")");
     //success
     card_db.emplace(uid, parsed_card_eid);
 

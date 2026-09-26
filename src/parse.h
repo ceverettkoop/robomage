@@ -7,6 +7,7 @@
 #include "components/token.h"
 
 std::string name_to_uid(std::string name);
+// Parses the card script at `path` into a new entity; returns 0 when the file can't be opened.
 Entity parse_card_script(std::string path);
 Token parse_token_script(const std::string &script_name);
 

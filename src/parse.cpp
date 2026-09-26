@@ -392,13 +392,13 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
 }
 
 Entity parse_card_script(std::string path) {
-    auto id = global_coordinator.CreateEntity();
-    std::string script_data;
     auto stream = std::ifstream(path);
     if (!stream.is_open()) {
         fprintf(stderr, "parse_card_script: failed to open '%s'\n", path.c_str());
-        assert(false);
+        return 0;
     }
+    auto id = global_coordinator.CreateEntity();
+    std::string script_data;
     for (size_t i = 0; true; i++) {
         if (i > SCRIPT_MAX_LEN) fatal_error("Script too long");
         char c = stream.get();

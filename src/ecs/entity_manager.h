@@ -1,8 +1,11 @@
 #ifndef ENTITY_MANAGER_H
 #define ENTITY_MANAGER_H
 #include <cassert>
+#include <bitset>
 #include <queue>
 #include <array>
+#include <string>
+#include "../error.h"
 #include "component.h"
 #include "entity.h"
 
@@ -22,17 +25,25 @@ class EntityManager {
             }
         }
         Entity CreateEntity() {
-            assert(mLivingEntityCount < MAX_ENTITIES && "Too many entities in existence.");
+            // Ids 1..MAX_ENTITIES-1 are issuable (0 is the null sentinel), so the pool can run
+            // dry one short of MAX_ENTITIES living entities.
+            if (mAvailableEntities.empty()) fatal_error("Too many entities in existence.");
             // Take an ID from the front of the queue
             Entity id = mAvailableEntities.front();
             mAvailableEntities.pop();
+            mAlive.set(id);
             ++mLivingEntityCount;
             if (id >= mMaxIssuedEntity) mMaxIssuedEntity = id + 1;
             return id;
         }
         Entity GetMaxIssuedEntity() const { return mMaxIssuedEntity; }
         void DestroyEntity(Entity entity) {
-            assert(entity < MAX_ENTITIES && "Entity out of range.");
+            // Destroying an id that isn't alive would queue it a second time, and two later
+            // entities would then share it.
+            if (entity >= MAX_ENTITIES || !mAlive.test(entity))
+                fatal_error("DestroyEntity of an entity that is not alive: " +
+                            std::to_string(entity));
+            mAlive.reset(entity);
             // Invalidate the destroyed entity's signature
             mSignatures[entity].reset();
             // Put the destroyed ID at the back of the queue
@@ -59,15 +70,17 @@ class EntityManager {
         struct EntityManagerState {
             std::queue<Entity> availableEntities;
             std::array<Signature, MAX_ENTITIES> signatures;
+            std::bitset<MAX_ENTITIES> alive;
             uint32_t livingEntityCount;
             Entity maxIssuedEntity;
         };
         EntityManagerState snapshot_state() const {
-            return {mAvailableEntities, mSignatures, mLivingEntityCount, mMaxIssuedEntity};
+            return {mAvailableEntities, mSignatures, mAlive, mLivingEntityCount, mMaxIssuedEntity};
         }
         void restore_state(const EntityManagerState &s) {
             mAvailableEntities = s.availableEntities;
             mSignatures = s.signatures;
+            mAlive = s.alive;
             mLivingEntityCount = s.livingEntityCount;
             mMaxIssuedEntity = s.maxIssuedEntity;
         }
@@ -76,6 +89,8 @@ class EntityManager {
         std::queue<Entity> mAvailableEntities{};
         // Array of signatures where the index corresponds to the entity ID
         std::array<Signature, MAX_ENTITIES> mSignatures{};
+        // Which ids are currently issued (created and not yet destroyed)
+        std::bitset<MAX_ENTITIES> mAlive{};
         // Total living entities - used to keep limits on how many exist
         uint32_t mLivingEntityCount{};
         // Highest entity ID ever issued + 1; used to bound linear scans
