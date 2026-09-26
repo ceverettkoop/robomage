@@ -1735,13 +1735,8 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // exact menu after the payment; a payment made by sacrificing a source for mana
             // must not change the offered menu or its P/T labels).
             std::vector<LegalAction> equip_targets;
-            for (auto e : orderer->mEntities) {
-                if (e == permanent_entity) continue;  // can't attach to itself (CR 301.5c / reconfigure)
-                if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-                if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-                auto &ep = global_coordinator.GetComponent<Permanent>(e);
-                if (ep.controller != controller) continue;
-                std::string ename = ep.name;
+            for (auto e : equip_candidates(permanent_entity, controller, orderer->mEntities)) {
+                std::string ename = global_coordinator.GetComponent<Permanent>(e).name;
                 auto &ecr = global_coordinator.GetComponent<Creature>(e);
                 LegalAction la(
                     PASS_PRIORITY, e, ename + " [" + std::to_string(ecr.power) + "/" + std::to_string(ecr.toughness) + "]");
@@ -2306,21 +2301,10 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             while (pc.alt_return_done < card_data.alt_cost.return_to_hand_count) {
                 std::vector<LegalAction> rth_actions;
                 const std::string &type = card_data.alt_cost.return_to_hand_type;
-                for (auto e : orderer->mEntities) {
-                    if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+                for (auto e : controlled_permanents_matching(caster, type, orderer->mEntities)) {
                     if (already_chosen_as_cost(pc, e)) continue;
-                    auto &eperm = global_coordinator.GetComponent<Permanent>(e);
-                    if (eperm.controller != caster) continue;
-                    bool matches = false;
-                    // can be subtype, type or supertype
-                    for (auto &t : eperm.types) {
-                        if (t.name == type) {
-                            matches = true;
-                            break;
-                        }
-                    }
-                    if (!matches) continue;
-                    LegalAction la(PASS_PRIORITY, e, "Return " + eperm.name);
+                    LegalAction la(PASS_PRIORITY, e,
+                                   "Return " + global_coordinator.GetComponent<Permanent>(e).name);
                     la.category = ActionCategory::RETURN_PERMANENT;
                     rth_actions.push_back(la);
                 }

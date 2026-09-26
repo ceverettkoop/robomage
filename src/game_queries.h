@@ -1001,14 +1001,22 @@ inline std::vector<Entity> controlled_permanents_matching(
     MatchCtx ctx;
     ctx.controller = player;
     ctx.source = exclude_entity;
-    for (auto e : entities) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != Zone::BATTLEFIELD) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.controller != player) continue;
-        if (permanent_matches_filter(e, spec, ctx)) out.push_back(e);
-    }
+    for (auto e : entities)
+        if (is_battlefield_permanent(e, player) && permanent_matches_filter(e, spec, ctx))
+            out.push_back(e);
+    return out;
+}
+
+// The creatures `player` controls that the Equipment `equipment` can be attached to by its equip
+// ability (CR 702.6a: "attach to target creature you control"; CR 301.5c: never to itself).
+// Shared by the equip legal-action gate and the creature menu offered when it is activated.
+inline std::vector<Entity> equip_candidates(Entity equipment, Zone::Ownership player,
+                                            const std::set<Entity> &entities) {
+    std::vector<Entity> out;
+    for (auto e : entities)
+        if (e != equipment && is_battlefield_permanent(e, player) &&
+            global_coordinator.entity_has_component<Creature>(e))
+            out.push_back(e);
     return out;
 }
 

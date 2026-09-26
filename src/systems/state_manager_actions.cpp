@@ -176,18 +176,11 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         return alt_mana.empty() || can_pay_mana(priority_player, alt_mana, card_entity, orderer);
 
     if (alt_cost.return_to_hand_count > 0) {
-        int matching = 0;
-        const std::string& sub = alt_cost.return_to_hand_type;
-        for (auto e : orderer->mEntities) {
-            if (!is_battlefield_permanent(e, priority_player)) continue;
-            auto& perm = global_coordinator.GetComponent<Permanent>(e);
-            for (auto& t : perm.types) {
-                if (t.kind == SUBTYPE && t.name == sub) { matching++; break; }
-            }
-        }
+        size_t matching = controlled_permanents_matching(priority_player, alt_cost.return_to_hand_type,
+                                                         orderer->mEntities).size();
         // Fall through (don't return true here): a pitch-style cost (Daze) still has to
         // cover the floored mana portion checked below when a SetCost floor is active.
-        if (matching < alt_cost.return_to_hand_count) return false;
+        if (matching < static_cast<size_t>(alt_cost.return_to_hand_count)) return false;
     }
 
     if (alt_cost.life_cost > 0) {
@@ -1084,16 +1077,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (global_coordinator.entity_has_component<CardData>(entity)) {
             auto &cd = global_coordinator.GetComponent<CardData>(entity);
             if (cd.is_equipment && sorcery_speed) {
-                bool has_creature = false;
-                for (auto e2 : orderer->mEntities) {
-                    if (e2 == entity) continue;  // can't attach to itself (CR 301.5c / reconfigure)
-                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-                    if (!global_coordinator.entity_has_component<Creature>(e2)) continue;
-                    if (global_coordinator.GetComponent<Zone>(e2).location != Zone::BATTLEFIELD) continue;
-                    if (global_coordinator.GetComponent<Permanent>(e2).controller != priority_player) continue;
-                    has_creature = true;
-                    break;
-                }
+                bool has_creature = !equip_candidates(entity, priority_player, orderer->mEntities).empty();
                 if (has_creature && can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
                     Ability equip_ab;
                     equip_ab.ability_type = Ability::ACTIVATED;
