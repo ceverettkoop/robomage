@@ -41,6 +41,8 @@ static std::string chosen_targets_display(const Ability &ab);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                                 std::shared_ptr<Orderer> orderer, int resume_choice);
+static Entity push_activated_ability(Game::PendingActivation &pa, Zone::Ownership controller,
+                                     std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(
     const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster);
@@ -213,6 +215,16 @@ static std::string chosen_targets_display(const Ability &ab) {
         out += target_display_name(cur_game, ab.targets[i]);
     }
     return out;
+}
+
+// Put an activated ability's stack copy (pa.stack_ab) onto the stack under `controller`, with
+// its source and the X announced for it (CR 107.3a; 0 when no X was announced).
+static Entity push_activated_ability(Game::PendingActivation &pa, Zone::Ownership controller,
+                                     std::shared_ptr<Orderer> orderer) {
+    pa.stack_ab.source = pa.source_entity;
+    pa.stack_ab.controller = controller;
+    if (pa.stack_ab.x_paid < 0) pa.stack_ab.x_paid = 0;
+    return orderer->push_ability_onto_stack(pa.stack_ab, controller);
 }
 
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
@@ -1805,6 +1817,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     pa.x_activation = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
                     cur_game.x_paid = pa.x_activation;
+                    pa.stack_ab.x_paid = static_cast<int>(pa.x_activation);
                     game_log("%s chooses X = %zu\n", player_name(controller).c_str(),
                              pa.x_activation);
                 } else {
@@ -1849,6 +1862,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     int x_choice = resume_choice;
                     resume_choice = -1;
                     cur_game.x_paid = static_cast<size_t>(x_choice);
+                    pa.stack_ab.x_paid = x_choice;
                     game_log("%s chooses X = %d\n", player_name(controller).c_str(), x_choice);
                 } else {
                     int max_x = (ability.loyalty_cost < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
@@ -2050,9 +2064,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 }
 
                 // Create standalone ability entity on the stack
-                pa.stack_ab.source = permanent_entity;
-                pa.stack_ab.controller = controller;
-                Entity ability_stack_entity = orderer->push_ability_onto_stack(pa.stack_ab, controller);
+                Entity ability_stack_entity = push_activated_ability(pa, controller, orderer);
 
                 // Ward (702.21) + BecomesTarget (CR 603.2c) apply to hand/graveyard-activated
                 // abilities too — CR 702.21b triggers on ANY spell or ability an opponent
@@ -2092,9 +2104,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
             // puts on stack; we have targets from earlier
             auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
-            pa.stack_ab.source = permanent_entity;
-            pa.stack_ab.controller = controller;
-            Entity ability_stack_entity = orderer->push_ability_onto_stack(pa.stack_ab, controller);
+            Entity ability_stack_entity = push_activated_ability(pa, controller, orderer);
 
             // Ward (702.21) + Mode$ BecomesTarget (CR 603.2c): abilities fire these too; the
             // per-trigger ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out

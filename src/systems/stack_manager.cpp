@@ -235,6 +235,15 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     // CASE FOR ABILITY ON STACK; not spell
     else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
         auto &ability = global_coordinator.GetComponent<Ability>(top_entity);
+        // An activated ability carries the X announced when it was activated (CR 107.3a):
+        // restore it the way a resolving spell restores Spell::x_paid, so Count$xPaid / cmcLEX
+        // read this ability's X and not a spell or ability that resolved in between (Pernicious
+        // Deed answered by Lightning Bolt). An ability is not cast, so no mana spent casting it
+        // counts for Converge (CR 702.90). A triggered ability (x_paid < 0) leaves both as is.
+        if (ability.x_paid >= 0) {
+            cur_game.x_paid = static_cast<size_t>(ability.x_paid);
+            cur_game.converge = 0;
+        }
         // Count$ResolvedThisTurn tracking (Scythecat Cub) happens inside
         // frame_enter's first-entry block so a resume never recounts.
         frame_enter(top_entity, ability, /*count_triggered=*/true);

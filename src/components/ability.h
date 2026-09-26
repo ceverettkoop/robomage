@@ -120,6 +120,12 @@ struct Ability{
                                         // Blast Zone is "{X}{X}, {T}: put X charge counters" — one X is
                                         // chosen (CR 601.2b) and paid once PER PIP, so the mana owed is
                                         // X * activation_x_count. A bool alone silently charged {X}.
+    // The X announced for this activation (CR 107.3a), stamped on the stack ability when it is
+    // put on the stack (0 for an activation with no X) and restored into cur_game.x_paid when it
+    // resolves, so its Count$xPaid / cmcLEX reads this ability's X rather than the X of whatever
+    // spell or ability resolved in between. -1 = no X was announced with this stack object (a
+    // triggered ability): resolution leaves cur_game.x_paid unchanged.
+    int x_paid = -1;
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
     bool life_cost_is_x = false;        // PayLife<X> — variable life cost: the life paid IS X (Count$xPaid),
