@@ -137,7 +137,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // for an opponent who controls a matching permanent (they must pick one), so it is never
     // optional regardless of Optional$.
     if (ab.defined_each_opponent) {
-        Zone::Ownership opp = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp = opponent_of(ab.controller);
         // sac_count > 1: the sacrificer chooses and sacrifices that many permanents, one at a
         // time (Annihilator N, CR 702.85b). Each iteration re-gathers candidates, so the choices
         // shrink as permanents leave; sacrifice_one returns 0 when none remain, so a player who
@@ -160,8 +160,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // player. Like an edict, it is mandatory for the targeted player when they have a matching
     // permanent, so Optional$ does not apply here.
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
-        Zone::Ownership sacker =
-            (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Zone::Ownership sacker = seat_of_player(ab.target);
         for (; rt.iter < ab.sac_count; ++rt.iter) {
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, sacker, /*optional=*/false, orderer, ctx, suspended);

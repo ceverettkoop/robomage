@@ -145,7 +145,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // Souls, Cloak and Dagger) — selects its target here.
     Zone::Ownership ctrl = ab.controller;
     if (ab.target == 0) {
-        Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp = opponent_of(ctrl);
         // ValidTgts$ Creature.ControlledBy ParentTarget (Cloak and Dagger's DBPump): the creature
         // must be controlled by the targeted opponent. In the two-player engine the parent's
         // "target opponent" is always the source's single opponent, so filter to the opponent's

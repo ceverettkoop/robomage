@@ -234,7 +234,7 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         if (ab.unless_payer_is_targeted_or_controller) {
             Entity tgt = ab.target;
             if (tgt != 0 && global_coordinator.entity_has_component<Player>(tgt)) {
-                payer = (tgt == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                payer = seat_of_player(tgt);
             } else if (tgt != 0 && global_coordinator.entity_has_component<Permanent>(tgt)) {
                 payer = global_coordinator.GetComponent<Permanent>(tgt).controller;
             }

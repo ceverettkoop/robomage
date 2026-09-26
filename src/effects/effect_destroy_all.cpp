@@ -38,8 +38,7 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (dp && !dp->energy_unless_expr.empty()) {
         int n = static_cast<int>(
             evaluate_dynamic_amount(dp->energy_unless_expr, ab.controller, orderer, ab.target));
-        Entity ctrl_entity =
-            (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity ctrl_entity = get_player_entity(ab.controller);
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
         if (dp->energy_unless_switched) {
             // Switched: the spell's controller pays N {E} as a single cost of resolution and the

@@ -81,7 +81,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // listed type; the kept permanents go into cur_game.chosen_cards and a SubAbility$
     // SacrificeAll then sacrifices the rest (ValidCards$ ...+nonChosenCard).
     if (!ab.choose_each.empty()) {
-        Zone::Ownership opp = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp = opponent_of(ab.controller);
 
         // Split the "Artifact & Creature & Enchantment & Planeswalker" type list.
         std::vector<std::string> types;
@@ -137,7 +137,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Dauthi Voidwalker: choose an exiled card owned by opponent with a void counter,
     // then play it without paying its mana cost.
     Zone::Ownership ctrl = ab.controller;
-    Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership opp = opponent_of(ctrl);
 
     std::vector<Entity> choices;
     for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {

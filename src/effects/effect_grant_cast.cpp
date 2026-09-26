@@ -188,7 +188,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // grant, unlike a battlefield static.
     if (ab.effect_cant_gain_life != Ability::CantGainLifeScope::NONE) {
         Zone::Ownership me = ab.controller;
-        Zone::Ownership opp = (me == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp = opponent_of(me);
         switch (ab.effect_cant_gain_life) {
             case Ability::CantGainLifeScope::OPPONENTS:
                 cur_game.cant_gain_life_this_turn.insert(opp);

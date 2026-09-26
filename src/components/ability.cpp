@@ -239,7 +239,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
     // The calling handler has already seated priority on the choosing player
     // (change_zone's search-seat repoint), so asking on the ambient seat is a
     // no-op swap — the exact seat today's inline get_input read from.
-    Zone::Ownership chooser = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership chooser = priority_seat();
     int choice = ctx.ask(search_actions, chooser, decision_source);
     if (choice < 0 && decision_suspended()) {
         suspended = true;
@@ -393,7 +393,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 
     // Seat convention identical to search_zone: the caller already repointed
     // priority at the choosing player.
-    Zone::Ownership chooser = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership chooser = priority_seat();
     int choice = ctx.ask(search_actions, chooser, decision_source);
     if (choice < 0 && decision_suspended()) {
         suspended = true;
@@ -907,7 +907,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (global_coordinator.entity_has_component<Player>(cand)) {
         if (!inc_players) return false;
         if (opp_only) {
-            Zone::Ownership opp = (caster == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+            Zone::Ownership opp = opponent_of(caster);
             return cand == get_player_entity(opp);
         }
         return true;
@@ -1107,7 +1107,7 @@ size_t evaluate_dynamic_amount(
         return lib;
     }
     if (expr.find("Count$YourLifeTotal") != std::string::npos) {
-        Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity ctrl_entity = get_player_entity(ctrl);
         auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
         int life = player.life_total;
         if (life < 0) life = 0;
@@ -1366,7 +1366,7 @@ size_t evaluate_dynamic_amount(
     // requested color was cast by the relevant player this turn, else 0 — sufficient for the GE1
     // conditions that consume it.
     if (expr.find("Count$ThisTurnCast_") != std::string::npos) {
-        Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp = opponent_of(ctrl);
         // The clause controller token is read per-expression (Veil uses OppCtrl); YouCtrl (or no
         // controller token) means the source's controller.
         Zone::Ownership who = (expr.find("OppCtrl") != std::string::npos) ? opp : ctrl;

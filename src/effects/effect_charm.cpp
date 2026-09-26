@@ -7,6 +7,7 @@
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../game_queries.h"
 #include "../input_logger.h"
 #include "../systems/orderer.h"
 
@@ -115,8 +116,7 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
             // Asked on the ambient seat (the resolving controller — a no-op
             // repoint, exactly the seat the old inline get_input read from),
             // under the handler's pending scope source.
-            Zone::Ownership seat =
-                cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+            Zone::Ownership seat = priority_seat();
             int choice = ctx.ask(mode_actions, seat, ab.source);
             if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             rt.chosen_idx = static_cast<int>(mode_indices[static_cast<size_t>(choice)]);

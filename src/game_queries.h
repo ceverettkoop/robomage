@@ -346,6 +346,28 @@ inline void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
     }
 }
 
+// ── Seats (two-player game, CR 102.2) ───────────────────────────────────────
+// The engine seats exactly two players, so "the opponent" is always the other seat. These are the
+// single conversions between a seat (Zone::Ownership) and its player entity; do not open-code the
+// PLAYER_A/PLAYER_B ternaries at call sites. Defined in game_queries.cpp (they read cur_game).
+
+// The other seat: a player's sole opponent (CR 102.2). UNKNOWN stays UNKNOWN.
+inline Zone::Ownership opponent_of(Zone::Ownership p) {
+    if (p == Zone::PLAYER_A) return Zone::PLAYER_B;
+    if (p == Zone::PLAYER_B) return Zone::PLAYER_A;
+    return Zone::UNKNOWN;
+}
+
+// The player entity sitting in `player`'s seat.
+Entity get_player_entity(Zone::Ownership player);
+
+// The seat of a player entity; UNKNOWN when `player_entity` is not a player.
+Zone::Ownership seat_of_player(Entity player_entity);
+
+// The seat holding priority, and the active player's seat (the player whose turn it is).
+Zone::Ownership priority_seat();
+Zone::Ownership active_seat();
+
 // ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
 // Who controls an ability's SOURCE object: its live Permanent.controller while on the
 // battlefield, else the owner of its current zone. The "source controller" idiom that

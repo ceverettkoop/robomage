@@ -36,7 +36,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // controls the tokens, not the spell's controller.
     if (tp && tp->owner_is_target && ab.target != 0 &&
         global_coordinator.entity_has_component<Player>(ab.target))
-        ctrl = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        ctrl = seat_of_player(ab.target);
     // TokenOwner$ TargetedController (Cityscape Leveler): the token is owned/controlled by the
     // controller of the targeted permanent. The target was just destroyed by the preceding
     // sub-ability, so read its last-known controller. With no target chosen (the "up to one"
@@ -58,7 +58,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // TokenOwner$ Promised (Gift, CR 702.176): the gift token is created under the control of the
     // opponent who was promised the gift — the opponent of the ability's controller (two-player).
     if (tp && tp->owner_is_promised)
-        ctrl = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        ctrl = opponent_of(ab.controller);
 
     // TokenPower$/TokenToughness$ from an SVar (Skyclave Apparition: X = Remembered$CardManaCost):
     // override the token script's printed P/T so the created token enters as an X/X. Evaluated

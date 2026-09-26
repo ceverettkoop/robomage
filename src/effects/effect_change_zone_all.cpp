@@ -83,7 +83,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // from their graveyard on the bottom of their library"), operate on the
     // targeted player's zones rather than the controller's.
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
-        owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        owner = seat_of_player(ab.target);
     }
     // Defined$ TriggeredCardOwner (Emrakul's death trigger: "its owner shuffles their graveyard
     // into their library"): operate on the OWNER of the card that triggered this ability (the

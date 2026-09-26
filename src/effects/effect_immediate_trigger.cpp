@@ -53,8 +53,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
         // Optional PayEnergy<N> cost: only fire the reflexive effect if the controller chooses to
         // pay and has the energy to do so (CR 122.1c). Decline / insufficient ⇒ skip Execute.
         if (fire && ab.energy_cost > 0) {
-            Entity ctrl_entity =
-                (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+            Entity ctrl_entity = get_player_entity(ab.controller);
             auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
             if (player_energy(pl) < ab.energy_cost) {
                 fire = false;  // can't pay — not offered

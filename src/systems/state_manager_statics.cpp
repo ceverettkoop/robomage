@@ -180,7 +180,7 @@ static bool static_present_condition_met(const std::string &filter, const std::s
             }
         }
         Zone::Ownership owner_req = you ? controller
-                                 : opp ? (controller == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A)
+                                 : opp ? opponent_of(controller)
                                        : Zone::UNKNOWN;
         for (auto e : entities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
@@ -365,8 +365,7 @@ static bool setcolor_zone_matches(const std::string &az, Zone::ZoneValue zone, b
 static bool setcolor_filter_matches_token(const std::string &aff, const Permanent &perm,
                                           Zone::Ownership static_controller) {
     if (aff.empty()) return false;
-    Zone::Ownership opp =
-        (static_controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership opp = opponent_of(static_controller);
     bool first = true;
     size_t i = 0;
     while (i <= aff.size()) {
@@ -552,7 +551,7 @@ static void add_keywords_from_spec(Creature &cr, const std::string &spec) {
 
 std::string target_display_name(const Game &game, Entity tgt) {
     if (global_coordinator.entity_has_component<Player>(tgt))
-        return player_name((tgt == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B);
+        return player_name(seat_of_player(tgt));
     return entity_name(tgt);
 }
 
@@ -983,8 +982,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (card_data.has_etb_name_card) {
                 auto &perm_ref = global_coordinator.GetComponent<Permanent>(entity);
                 if (perm_ref.chosen_name.empty()) {
-                    Zone::Ownership opp = (perm_ref.controller == Zone::PLAYER_A)
-                        ? Zone::PLAYER_B : Zone::PLAYER_A;
+                    Zone::Ownership opp = opponent_of(perm_ref.controller);
                     // Distinct opponent-owned vocab cards (whole deck; empty ValidCards$
                     // filter = no restriction, so lands are included), built by the shared
                     // helper also used by Cabal Therapy's SP$ NameCard.

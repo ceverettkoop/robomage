@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "../game_queries.h"
 #include "../classes/game.h"
 #include "../components/player.h"
 #include "../components/zone.h"
@@ -65,7 +66,7 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
                               ab.defined == "ParentTarget" || ab.defined == "Parent";
         Zone::Ownership owner;
         if (targets_player && ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
-            owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+            owner = seat_of_player(ab.target);
         else if (ab.source != 0 && global_coordinator.entity_has_component<Zone>(ab.source))
             owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
         else

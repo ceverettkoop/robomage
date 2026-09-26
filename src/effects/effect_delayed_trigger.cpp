@@ -127,8 +127,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         if (dp->valid_player == "You")
             dt.restrict_player = owner_entity;
         else if (dp->valid_player == "Opponent")
-            dt.restrict_player =
-                get_player_entity(owner == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A);
+            dt.restrict_player = get_player_entity(opponent_of(owner));
     }
     dt.fire_on_turn = next_turn ? cur_game.turn + 1 : cur_game.turn;
     register_delayed_trigger(dt, ab.source);

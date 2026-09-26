@@ -66,10 +66,6 @@ static bool has_nonmana_activated_ability(Entity entity);
 static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
                                             std::shared_ptr<Orderer> orderer);
 
-Entity get_player_entity(Zone::Ownership player) {
-    return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
-}
-
 // Non-mutating affordability check: the read-only counterpart of pay_from_pool.
 // Dry-runs the payment on a throwaway copy (this function already copied the pool)
 // so the spend rule is never duplicated.

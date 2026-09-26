@@ -112,8 +112,7 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
     // of energy you may choose to pay). Reads the same counter map every {E} producer/consumer
     // uses (game_queries.h player_energy / pay_energy).
     if (expr == "Count$YourCountersEnergy") {
-        Entity ctrl_entity =
-            (controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity ctrl_entity = get_player_entity(controller);
         if (!global_coordinator.entity_has_component<Player>(ctrl_entity)) return 0;
         return player_energy(global_coordinator.GetComponent<Player>(ctrl_entity));
     }

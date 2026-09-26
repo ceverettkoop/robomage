@@ -18,9 +18,6 @@ struct Ability;
 struct HybridPip;
 struct Player;
 
-// Get player entity from ownership
-Entity get_player_entity(Zone::Ownership player);
-
 // True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
 // without using the stack. Covers the ordinary AddMana producers AND AB$ ManaReflected
 // (Mox Amber), whose producible colors are computed dynamically. Single source so every

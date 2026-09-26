@@ -28,8 +28,7 @@ static bool apply_monstrosity(Ability &ab) {
     if (perm.is_monstrous) return false;  // 701.37a: monstrosity does nothing if already monstrous
     perm.is_monstrous = true;
     game_log("%s becomes monstrous.\n", perm.name.c_str());
-    Entity ctrl_entity =
-        (perm.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity ctrl_entity = get_player_entity(perm.controller);
     Event ev(Events::BECAME_MONSTROUS);
     ev.SetParam(Params::ENTITY, ab.source);
     ev.SetParam(Params::PLAYER, ctrl_entity);
@@ -54,8 +53,7 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (!cp->count_expr.empty())
             n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
         if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
-        Entity ctrl_entity =
-            (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity ctrl_entity = get_player_entity(ab.controller);
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
         int total = pl.add_counters(cp->type, n);
         game_log("%s gets %d %s counter(s) (now %d).\n", player_name(ab.controller).c_str(),

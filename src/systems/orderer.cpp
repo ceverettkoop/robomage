@@ -134,8 +134,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
-        Entity owner_entity = target_zone.owner == Zone::PLAYER_A
-                              ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity owner_entity = get_player_entity(target_zone.owner);
         Event ev(Events::CARD_CHANGED_ZONE);
         ev.SetParam(Params::ENTITY,      target);
         ev.SetParam(Params::PLAYER,      owner_entity);
@@ -577,8 +576,7 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     // Dredge replacement (rule 702.52a / 614.1a): the player may replace this draw
     // with a dredge from their graveyard. If they do, no card is drawn.
     {
-        Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity
-                                                          : cur_game.player_b_entity;
+        Entity player_entity = get_player_entity(player);
         ReplacementEvent rev;
         rev.type = ReplacementEvent::DRAW_CARD;
         rev.entity = player_entity;
@@ -649,15 +647,14 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // record the attempt and let the resolving effect finish (a "then if your library is empty,
         // you win" sub-ability like Jace, Wielder of Mysteries' -8 decides the game first); the
         // player loses at the next state-based-action check (state_based_effects).
-        Entity player_entity_deck =
-            (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity player_entity_deck = get_player_entity(player);
         global_coordinator.GetComponent<Player>(player_entity_deck).attempted_draw_from_empty = true;
         game_log("%s attempts to draw from an empty library.\n", player_name(player).c_str());
         return;
     }
 
     // Track drawn cards on the player's cards_drawn_this_turn list (for Sylvan Library)
-    Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity player_entity = get_player_entity(player);
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
              global_coordinator.GetComponent<CardData>(top).name.c_str());
@@ -697,7 +694,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     // Fire PLAYER_DREW_CARD for this individual draw. The "first card in the
     // drawer's draw step" is flagged so triggers like Orcish Bowmasters can
     // ignore the turn-based draw while punishing every extra draw.
-    Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership active = active_seat();
     bool first_in_draw_step = false;
     if (cur_game.cur_step == DRAW && player == active) {
         first_in_draw_step = (pl.cards_drawn_this_draw_step == 0);

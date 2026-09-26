@@ -192,7 +192,7 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
         non_fatal_error("concede: no player owns the pending decision — ignored");
         return;
     }
-    Zone::Ownership opponent = (conceder == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership opponent = opponent_of(conceder);
     if (whole_match) {
         // Latched even with no live game (a concede during the between-games
         // sideboard phase still ends the match).
@@ -1423,7 +1423,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     // A conceded match is won by the conceder's opponent regardless of the game
     // tally (which can be level, or even in the conceder's favour).
     if (g_match_conceded) {
-        return (g_match_conceder == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        return opponent_of(g_match_conceder);
     }
     int result = ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
     return result;

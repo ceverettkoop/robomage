@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../game_queries.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
@@ -34,7 +35,7 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership owner;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
-        owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        owner = seat_of_player(ab.target);
     else if (global_coordinator.entity_has_component<Permanent>(ab.source))
         owner = global_coordinator.GetComponent<Permanent>(ab.source).controller;
     else

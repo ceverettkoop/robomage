@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../game_queries.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
@@ -23,7 +24,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     PendingDecisionScope pending_scope(ab.source);
     // Draw 2, then for each card drawn this turn still in hand, choose: pay 4 life or put on top
     Zone::Ownership ctrl = ab.controller;
-    Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity ctrl_entity = get_player_entity(ctrl);
     auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
 
     // The draw-2 and the drawn-this-turn scan run once; the candidate set, the

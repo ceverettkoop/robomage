@@ -358,7 +358,7 @@ static std::vector<Entity> build_valid_targets(
         return valid_targets;
     }
 
-    Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership opp = opponent_of(priority_player);
 
     // Target cards in a graveyard (e.g. Faerie Macabre targeting any graveyard card,
     // Life from the Loam targeting Land.YouCtrl, or targeted reanimation graveyard→
@@ -515,8 +515,8 @@ void resume_combat_target_choice(Game &game) {
 }
 
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
-    Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Entity defending_entity = game.player_a_turn ? game.player_b_entity : game.player_a_entity;
+    Zone::Ownership active_player = active_seat();
+    Entity defending_entity = get_player_entity(opponent_of(active_player));
     if (game.pending_attacker != 0)
         fatal_error("declare_attackers entered with an attack-target sub-prompt parked");
 
@@ -551,7 +551,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     }
 
     // Build targets: defending player first, then the defending player's planeswalkers (rule 508.1).
-    Zone::Ownership defending_owner = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership defending_owner = opponent_of(active_seat());
     std::vector<Entity> targets;
     targets.push_back(defending_entity);
     for (auto e : orderer->mEntities) {
@@ -624,7 +624,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             std::string label;
             if (global_coordinator.entity_has_component<Player>(t_entity)) {
                 auto &player = global_coordinator.GetComponent<Player>(t_entity);
-                Zone::Ownership t = (t_entity == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                Zone::Ownership t = seat_of_player(t_entity);
                 label = player_name(t) + " (" + std::to_string(player.life_total) + " life)";
             } else {
                 auto &p = global_coordinator.GetComponent<Permanent>(t_entity);
@@ -669,8 +669,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
 
             // Fire a per-attacker "whenever this creature attacks" event (508.2 attack
             // declaration), so triggers like Mobilize go on the stack for each attacker.
-            Entity actrl_entity = (active_player == Zone::PLAYER_A)
-                                  ? game.player_a_entity : game.player_b_entity;
+            Entity actrl_entity = get_player_entity(active_player);
             Event attacked_ev(Events::CREATURE_ATTACKED);
             attacked_ev.SetParam(Params::ENTITY, entity);
             attacked_ev.SetParam(Params::PLAYER, actrl_entity);
@@ -682,8 +681,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     // "Whenever you attack" (Mode$ AttackersDeclared) — a player-level trigger that fires once
     // when one or more attackers are declared (508.2), independent of how many. Guide of Souls.
     if (any) {
-        Entity actrl_entity = (active_player == Zone::PLAYER_A)
-                              ? game.player_a_entity : game.player_b_entity;
+        Entity actrl_entity = get_player_entity(active_player);
         Event declared_ev(Events::ATTACKERS_DECLARED);
         declared_ev.SetParam(Params::PLAYER, actrl_entity);
         global_coordinator.SendEvent(declared_ev);
@@ -697,8 +695,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (cr.is_attacking) { attacker_count++; sole_attacker = entity; }
     }
     if (attacker_count == 1) {
-        Entity ctrl_entity = (active_player == Zone::PLAYER_A)
-                             ? game.player_a_entity : game.player_b_entity;
+        Entity ctrl_entity = get_player_entity(active_player);
         Event exalted_ev(Events::CREATURE_ATTACKED_ALONE);
         exalted_ev.SetParam(Params::ENTITY, sole_attacker);
         exalted_ev.SetParam(Params::PLAYER, ctrl_entity);
@@ -800,7 +797,7 @@ static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
 }
 
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
-    Zone::Ownership defending_player = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership defending_player = opponent_of(active_seat());
     // defending player declares blockers — priority must be theirs for the input routing to work correctly
     game.player_a_has_priority = !game.player_a_turn;
     if (game.pending_blocker != 0)
@@ -1458,7 +1455,7 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
                                      const std::vector<Entity> &targets,
                                      std::shared_ptr<Orderer> orderer) {
-    Zone::Ownership opp = (controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership opp = opponent_of(controller);
     for (Entity tgt : targets) {
         if (tgt == 0) continue;
         // The Ward permanent must be controlled by an opponent of the targeting player.
@@ -2218,8 +2215,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // mana (CR 707 / 118.9). The permission carries the resolved amount. Consumed here
             // so it can't be reused. X spells cast this way count X = 0 (no X prompt).
             } else if (pc.impulse_cast) {
-                Entity caster_entity = (caster == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                Entity caster_entity = get_player_entity(caster);
                 auto &player = global_coordinator.GetComponent<Player>(caster_entity);
                 auto it = cur_game.impulse_cast_permission.find(spell_entity);
                 bool normal_play = false;
@@ -2584,8 +2580,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         case Game::PendingCast::PHYREXIAN_PIP: {
             // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life
             if (!card_data.phyrexian_mana.empty()) {
-                Entity caster_entity = (caster == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                Entity caster_entity = get_player_entity(caster);
                 auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
                 while (pc.phyrexian_idx < card_data.phyrexian_mana.size()) {
                     Colors phyrex_color = card_data.phyrexian_mana[pc.phyrexian_idx];
@@ -2676,8 +2671,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // paid with everything else at PAY_APPLY — a cancelled mana payment then costs
             // no life. X may be 0..life (CR 119.4 lets a player pay up to their whole total).
             if (spell_has_variable_life_cost(card_data)) {
-                Entity caster_entity = (caster == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                Entity caster_entity = get_player_entity(caster);
                 auto &life_player = global_coordinator.GetComponent<Player>(caster_entity);
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
@@ -2754,8 +2748,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     if (accepted) {
                         pc.gift_promised = true;
                         game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
-                                 player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B
-                                                                      : Zone::PLAYER_A).c_str());
+                                 player_name(opponent_of(caster)).c_str());
                     }
                 } else {
                     std::string gname = card_data.gift_description.empty()
@@ -2793,8 +2786,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         // advance without arming — zero decisions, exactly as before.
                         pc.gift_promised = true;
                         game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
-                                 player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B
-                                                                      : Zone::PLAYER_A).c_str());
+                                 player_name(opponent_of(caster)).c_str());
                     } else if (can_promise) {
                         arm_cast_query(game,
                                        optional_yesno_menu("promise " + gname + " to your opponent"),
@@ -3356,8 +3348,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     }
                 if (!is_creature_spell) {
                     Event cast_ev(Events::NONCREATURE_SPELL_CAST);
-                    Entity caster_entity =
-                        (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    Entity caster_entity = get_player_entity(caster);
                     cast_ev.SetParam(Params::ENTITY, spell_entity);
                     cast_ev.SetParam(Params::PLAYER, caster_entity);
                     global_coordinator.SendEvent(cast_ev);
@@ -3369,7 +3360,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
             // Track spells cast and fire SPELL_CAST event
             {
-                Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                Entity caster_entity = get_player_entity(caster);
                 auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
                 caster_player.spells_cast_this_turn++;
                 caster_player.spells_cast_this_game++;
@@ -3945,7 +3936,7 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             assign_combat_damage(game, orderer);
             break;
         case CLEANUP_DISCARD: {
-            Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+            Zone::Ownership active_player = active_seat();
             auto hand = orderer->get_hand(active_player);
 
             game_log("\n--- Discard to hand size (%s) ---\n", player_name(active_player).c_str());

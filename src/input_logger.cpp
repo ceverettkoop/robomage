@@ -16,6 +16,7 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "game_driver.h"
+#include "game_queries.h"
 #include "machine_io.h"
 #include "search_server.h"
 
@@ -61,7 +62,7 @@ static Zone::Ownership deciding_player() {
     extern bool sideboard_phase;
     extern Zone::Ownership sideboard_phase_player;
     if (sideboard_phase && sideboard_phase_player != Zone::UNKNOWN) return sideboard_phase_player;
-    return cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    return priority_seat();
 }
 
 // Apply a CONCEDE_GAME / CONCEDE_MATCH sentinel read at the current decision
@@ -337,7 +338,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
                         ": logged index " + std::to_string(choice) + " but menu has " +
                         std::to_string(actions.size()) + " actions");
         }
-        Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Zone::Ownership priority = priority_seat();
         game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),
             player_name(priority).c_str(), choice);
         return choice;

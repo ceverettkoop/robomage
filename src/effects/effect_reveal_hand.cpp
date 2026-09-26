@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "../game_queries.h"
 #include "../classes/game.h"
 #include "../classes/match_state.h"
 #include "../cli_output.h"
@@ -28,8 +29,7 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Whose hand: the targeted Player entity (ValidTgts$ Opponent/Player). With no player target
     // the effect has nothing to reveal, so fall through (chaining subabilities) as a no-op.
     if (!global_coordinator.entity_has_component<Player>(ab.target)) return HandlerResult::DONE_RUN_SUBS;
-    Zone::Ownership hand_owner =
-        (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership hand_owner = seat_of_player(ab.target);
 
     std::vector<Entity> hand = orderer->get_hand(hand_owner);
 

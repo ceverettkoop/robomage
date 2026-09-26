@@ -113,7 +113,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // Spectacle (CR 702.107a): the spectacle cost may be paid only if an opponent of the
     // caster lost life this turn. Two-player game — the sole opponent is the other seat.
     if (alt_cost.is_spectacle) {
-        Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp = opponent_of(priority_player);
         if (global_coordinator.GetComponent<Player>(get_player_entity(opp)).life_lost_this_turn <= 0)
             return false;
     }
@@ -135,7 +135,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
             // Truncate at the first space (the count metric follows the condition token).
             size_t sp = compare.find(' ');
             if (sp != std::string::npos) compare = compare.substr(0, sp);
-            Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+            Zone::Ownership opp = opponent_of(priority_player);
             int opp_spells =
                 static_cast<int>(global_coordinator.GetComponent<Player>(get_player_entity(opp)).spells_cast_this_turn);
             if (!compare_svar(opp_spells, compare)) return false;
@@ -456,7 +456,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     if (type_filter == "Card") type_filter.clear();  // "Card" = any permanent
 
     Zone::Ownership required_ctrl = you_ctrl ? caster :
-        opp_ctrl ? (caster == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A) :
+        opp_ctrl ? opponent_of(caster) :
         Zone::UNKNOWN;
 
     size_t count = 0;
@@ -551,7 +551,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     std::vector<LegalAction> actions;          // return value
 
     // Determine whose turn/priority it is
-    Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership priority_player = priority_seat();
     Entity priority_player_entity = get_player_entity(priority_player);
 
     // Graveyard / exile cards the priority player has some play route for (the shared

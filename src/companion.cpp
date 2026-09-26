@@ -9,6 +9,7 @@
 #include "components/player.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_queries.h"
 #include "mana_system.h"
 #include "systems/orderer.h"
 

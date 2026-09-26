@@ -11,6 +11,7 @@
 #include "components/player.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "game_queries.h"
 #include "mana_system.h"
 #include "resolution_frame.h"
 #include "snapshot.h"
@@ -267,8 +268,8 @@ void determinize_hidden_state(unsigned int world_seed) {
     unsigned int gen_base = static_cast<unsigned int>(cur_game.gen());
     cur_game.gen.seed(gen_base ^ (0x9e3779b9u * world_seed));
 
-    Zone::Ownership p = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Zone::Ownership opp = (p == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership p = priority_seat();
+    Zone::Ownership opp = opponent_of(p);
     const int *known_a = cur_game.known_top_library_a;
     const int *known_b = cur_game.known_top_library_b;
 

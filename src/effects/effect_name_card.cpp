@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "../game_queries.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../classes/gamestate.h"
@@ -87,9 +88,9 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // opponent if no target player is set.
     Zone::Ownership name_owner;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
-        name_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        name_owner = seat_of_player(ab.target);
     } else {
-        name_owner = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        name_owner = opponent_of(ab.controller);
     }
 
     std::vector<std::string> names;

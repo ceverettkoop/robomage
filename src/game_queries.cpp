@@ -534,6 +534,23 @@ int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership c
     return count;
 }
 
+// ── Seats (declared in game_queries.h) ──────────────────────────────────────
+Entity get_player_entity(Zone::Ownership player) {
+    return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+}
+
+Zone::Ownership seat_of_player(Entity player_entity) {
+    if (player_entity == cur_game.player_a_entity) return Zone::PLAYER_A;
+    if (player_entity == cur_game.player_b_entity) return Zone::PLAYER_B;
+    return Zone::UNKNOWN;
+}
+
+Zone::Ownership priority_seat() {
+    return cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+}
+
+Zone::Ownership active_seat() { return cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B; }
+
 // ── Defined$ player resolution (declared in game_queries.h) ─────────────────
 Zone::Ownership source_controller(Entity source) {
     if (global_coordinator.entity_has_component<Permanent>(source))
@@ -771,12 +788,6 @@ PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &ent
         break;
     }
     return fx;
-}
-
-static Zone::Ownership opponent_of(Zone::Ownership p) {
-    if (p == Zone::PLAYER_A) return Zone::PLAYER_B;
-    if (p == Zone::PLAYER_B) return Zone::PLAYER_A;
-    return Zone::UNKNOWN;
 }
 
 Zone::Ownership resolve_defined_player(const Ability &ab) {

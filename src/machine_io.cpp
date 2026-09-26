@@ -166,7 +166,7 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
     st.is_player = global_coordinator.entity_has_component<Player>(tgt);
     Zone::Ownership ctrl = Zone::UNKNOWN;
     if (st.is_player) {
-        ctrl = (tgt == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        ctrl = seat_of_player(tgt);
     } else if (global_coordinator.entity_has_component<Permanent>(tgt)) {
         ctrl = global_coordinator.GetComponent<Permanent>(tgt).controller;
     } else if (global_coordinator.entity_has_component<Zone>(tgt)) {
@@ -596,8 +596,7 @@ static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity 
 // MAX_DELAYED_TRIGGER_SLOTS. Needs the entity->slot map for the refs.
 static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
                                   const std::vector<Entity>& stack_delayed) {
-    Entity viewer_entity = (viewer == Zone::PLAYER_A) ? cur_game.player_a_entity
-                                                      : cur_game.player_b_entity;
+    Entity viewer_entity = get_player_entity(viewer);
     std::vector<std::pair<uint32_t, DelayedTriggerEntry>> entries;
     entries.reserve(cur_game.delayed_triggers.size() + stack_delayed.size());
     for (const auto& dt : cur_game.delayed_triggers) {
@@ -739,12 +738,12 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->opp_deck_side_revealed[i] = 0;
     }
 
-    Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership priority_owner = priority_seat();
     if (viewer == Zone::UNKNOWN) viewer = priority_owner;
 
-    Zone::Ownership active_owner = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Entity viewer_entity = (viewer == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
-    Entity opp_entity    = (viewer == Zone::PLAYER_A) ? cur_game.player_b_entity : cur_game.player_a_entity;
+    Zone::Ownership active_owner = active_seat();
+    Entity viewer_entity = get_player_entity(viewer);
+    Entity opp_entity    = get_player_entity(opponent_of(viewer));
 
     gs->cur_step            = cur_game.cur_step;
     gs->turn                = static_cast<int>(cur_game.turn);
@@ -1038,7 +1037,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             ps.lands_in_play         = mp.lands;
             ps.land_drops_remaining  = rules_mod::land_drops_remaining(owner);
         };
-        Zone::Ownership opp_view = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp_view = opponent_of(viewer);
         fill_mana_dev(gs->self, viewer, viewer_entity);
         fill_mana_dev(gs->opponent, opp_view, opp_entity);
         fill_player_effects(gs->self, viewer, bf_entities);
@@ -1048,7 +1047,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     // Graveyards and exile in RECENCY order: slot 0 = most recent arrival (lowest
     // distance_from_top).
     {
-        Zone::Ownership opp_view = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp_view = opponent_of(viewer);
         auto fill_zone = [&](ZoneCardEntry* slots, std::vector<GyItem>& items, bool hide_face_down) {
             std::sort(items.begin(), items.end(),
                       [](const GyItem& a, const GyItem& b) { return a.dist < b.dist; });
@@ -1083,7 +1082,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     // Opponent-of-viewer REGISTERED decklist (maindeck + sideboard). Frozen at
     // the match's registered 75 — deliberately NOT the post-board split, which is
     // hidden information in game 2+ (see deck_state.h).
-    Zone::Ownership opp_owner = (viewer == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership opp_owner = opponent_of(viewer);
     fill_decklist_block(gs->opp_deck_main_id, gs->opp_deck_main_ct,
                         DECKLIST_MAIN_SLOTS, deck_state_registered_main(opp_owner),
                         "opp maindeck");
@@ -1111,9 +1110,9 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
 #endif
     q->num_choices = n;
 
-    Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Entity priority_ent = cur_game.player_a_has_priority ? cur_game.player_a_entity : cur_game.player_b_entity;
-    Entity opp_ent      = cur_game.player_a_has_priority ? cur_game.player_b_entity : cur_game.player_a_entity;
+    Zone::Ownership priority_owner = priority_seat();
+    Entity priority_ent = get_player_entity(priority_owner);
+    Entity opp_ent      = get_player_entity(opponent_of(priority_owner));
 
     for (int i = 0; i < n; i++) {
         const LegalAction& la = actions[static_cast<size_t>(i)];

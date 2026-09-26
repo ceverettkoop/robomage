@@ -64,12 +64,12 @@ void Game::set_monarch(Entity player_entity) {
     if (monarch_entity == player_entity) return;  // already the monarch — no change (725.3)
     monarch_entity = player_entity;  // the previous monarch ceases to be the monarch (725.3)
     game_log("%s becomes the monarch.\n",
-             player_name(player_entity == player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B).c_str());
+             player_name(seat_of_player(player_entity)).c_str());
 }
 
 void Game::player_loses(Zone::Ownership loser) {
     ended = true;
-    winner = (loser == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    winner = opponent_of(loser);
 }
 
 void Game::clear_known_top_library(bool player_a_owner) {
@@ -145,7 +145,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
             // stack is empty and both players have passed
             //  step is changing
             Entity active_player_entity = player_a_turn ? player_a_entity : player_b_entity;
-            Zone::Ownership active_player = player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+            Zone::Ownership active_player = active_seat();
 
             switch (cur_step) {
                 case UNTAP: {

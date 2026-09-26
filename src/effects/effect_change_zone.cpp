@@ -180,7 +180,7 @@ static bool search_reveals_card(const Ability &ab) {
 static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
                                                FrameCtx &fctx) {
     Zone::Ownership active = cur_game.player_a_active ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Zone::Ownership nonactive = (active == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership nonactive = opponent_of(active);
     Zone::Ownership order[2] = {active, nonactive};
 
     EachPlayerPutRt local_rt;
@@ -281,7 +281,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                           ? ab.target
                           : ab.targeted_player;
         if (ptgt != 0 && global_coordinator.entity_has_component<Player>(ptgt))
-            owner = (ptgt == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+            owner = seat_of_player(ptgt);
     }
 
     // DefinedPlayer$ Player — EACH player may put a matching card from THEIR OWN hand onto the

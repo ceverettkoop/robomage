@@ -409,8 +409,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             // pay life only if they have at least that much (CR 119.4 / 118.8); declining or being
             // unable to pay leaves it entering tapped.
             if (c.tapped_unless_life > 0) {
-                Entity pe = (ev.affected_player == Zone::PLAYER_A)
-                                ? cur_game.player_a_entity : cur_game.player_b_entity;
+                Entity pe = get_player_entity(ev.affected_player);
                 auto &pl = global_coordinator.GetComponent<Player>(pe);
                 std::string prompt = "pay " + std::to_string(c.tapped_unless_life) +
                                      " life so it enters untapped";

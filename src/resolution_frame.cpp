@@ -6,6 +6,7 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "game_driver.h"
+#include "game_queries.h"
 #include "input_logger.h"
 #include "pending_query.h"
 
@@ -194,7 +195,7 @@ ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel:
 int ResolutionTargetAsker::ask(const std::vector<LegalAction> &menu, Entity decision_source) {
     Zone::Ownership seat = chooser;
     if (seat != Zone::PLAYER_A && seat != Zone::PLAYER_B)
-        seat = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+        seat = priority_seat();
     return ctx.ask(menu, seat, decision_source);
 }
 

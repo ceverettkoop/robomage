@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../game_queries.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../classes/match_state.h"
@@ -33,7 +34,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // top 7 *before* the subsequent sacrifice decision, per "look at the top seven... Then
         // you may sacrifice"). No card movement here — a chained Dig does the actual selection.
         Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(ab.target)
-                                         ? (ab.target == cur_game.player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B)
+                                         ? seat_of_player(ab.target)
                                          : ab.controller;
         int n = pp->peek_amount > 0 ? pp->peek_amount : 1;
         std::vector<Entity> top = orderer->get_library_top(peek_owner, static_cast<size_t>(n));

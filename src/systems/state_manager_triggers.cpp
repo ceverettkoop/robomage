@@ -250,8 +250,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             }
             if (matched) {
                 // Determine controller from owner_entity
-                Zone::Ownership ctrl = (dt.owner_entity == game.player_a_entity)
-                                       ? Zone::PLAYER_A : Zone::PLAYER_B;
+                Zone::Ownership ctrl = seat_of_player(dt.owner_entity);
                 // The copy carries dt.ability.delayed_link (seq, creator, subjects) onto the
                 // stack object, so the observation's delayed-trigger block keeps following
                 // this trigger until its stack object leaves the stack.
@@ -347,8 +346,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     // card abilities, so they are produced here directly from the drained events against
     // game.monarch_entity. General over any monarch card (Forth Eorlingas! and future ones).
     if (game.monarch_entity != MAX_ENTITIES) {
-        Zone::Ownership monarch_ctrl = (game.monarch_entity == game.player_a_entity)
-                                       ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Zone::Ownership monarch_ctrl = seat_of_player(game.monarch_entity);
         for (const auto &ev : events) {
             // End-step draw: the monarch draws an extra card at the beginning of their end step.
             if (ev.GetType() == Events::END_STEP_BEGAN && ev.HasParam(Params::PLAYER) &&
@@ -853,8 +851,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
                     if (trigger_ab.unless_payer_is_triggered_source_sa_ctrl && ev.HasParam(Params::PLAYER)) {
                         Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
-                        trigger_ab.unless_payer = (src_player == get_player_entity(Zone::PLAYER_A))
-                                                  ? Zone::PLAYER_A : Zone::PLAYER_B;
+                        trigger_ab.unless_payer = seat_of_player(src_player);
                     }
                 }
                 // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
@@ -1250,9 +1247,9 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
     if (game.trigger_placement.active)
         fatal_error("place_triggers_apnap re-entered with a placement already in flight");
 
-    Zone::Ownership active = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership active = active_seat();
     Zone::Ownership apnap[2] = {active,
-                                active == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A};
+                                opponent_of(active)};
 
     // Flatten into the persisted APNAP queue — the active player's group first
     // (so their triggers end up on the bottom and resolve last), collection

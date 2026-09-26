@@ -92,7 +92,7 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
     }
     // Cleanup discard (rule 514.1)
     if (game.cur_step == CLEANUP) {
-        Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Zone::Ownership active_player = active_seat();
         size_t hand_size = 0;
         for (auto entity : mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
@@ -303,9 +303,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // players choose in APNAP order (active player first); one conflict is resolved per pass,
         // then the SBA loop re-evaluates.
         {
-            Zone::Ownership legend_order[2] = {
-                game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B,
-                game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A};
+            Zone::Ownership legend_order[2] = {active_seat(), opponent_of(active_seat())};
             bool legend_applied = false;
             for (Zone::Ownership owner : legend_order) {
                 if (legend_applied) break;

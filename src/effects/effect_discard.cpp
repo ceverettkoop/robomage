@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../game_queries.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../classes/match_state.h"
@@ -61,7 +62,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // Hymn, Cabal Therapy) overrides this with the actual target player below.
     Zone::Ownership tgt_owner = ab.controller;
     if (global_coordinator.entity_has_component<Player>(ab.target)) {
-        tgt_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        tgt_owner = seat_of_player(ab.target);
     }
     std::vector<Entity> hand = orderer->get_hand(tgt_owner);
 

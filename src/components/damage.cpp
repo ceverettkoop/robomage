@@ -57,8 +57,7 @@ bool deal_damage_to_player(Entity source, Entity player_entity, size_t amount) {
     // isn't dealt damage by a source an opponent controls. Enforced here at the effect-damage
     // chokepoint (the combat-damage path checks the same shared predicate).
     if (amount > 0 && player_protected_from_source(player_entity, source)) {
-        Zone::Ownership prot =
-            (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Zone::Ownership prot = seat_of_player(player_entity);
         game_log("%s has protection from everything — %zu damage prevented\n",
                  player_name(prot).c_str(), amount);
         return false;

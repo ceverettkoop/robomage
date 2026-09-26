@@ -58,7 +58,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // the TARGET player's, not the controller's.
     Zone::Ownership dig_owner = ab.controller;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
-        dig_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        dig_owner = seat_of_player(ab.target);
     // The LOOKER (who sees the cards and makes the choices) is always the ability's controller.
     // For a fateseal on an opponent's library (Jace +2) that differs from dig_owner: the owner
     // must NOT learn any card placed back on top, and private card-name logs are pinned to the

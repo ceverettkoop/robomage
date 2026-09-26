@@ -126,7 +126,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (ab.repeat_players.empty() || ab.subabilities.empty()) return HandlerResult::DONE_NO_SUBS;
 
     Zone::Ownership active = cur_game.player_a_active ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Zone::Ownership nonactive = (active == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Zone::Ownership nonactive = opponent_of(active);
     std::vector<Zone::Ownership> order = {active, nonactive};
 
     RepeatRt local_rt;
@@ -137,7 +137,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
     while (rt.player_idx < static_cast<int>(order.size())) {
         Zone::Ownership p = order[static_cast<size_t>(rt.player_idx)];
-        Entity pe = (p == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity pe = get_player_entity(p);
         if (global_coordinator.entity_has_component<Player>(pe)) {
             if (!rt.player_setup) {
                 cur_game.remembered_entities.clear();
