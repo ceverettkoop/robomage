@@ -55,7 +55,7 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     DrawRt &rt = ctx.can_suspend() ? ctx.rt<DrawRt>() : local_rt;
     if (!rt.init) {
         // "Target player draws" (e.g. Deep Analysis) draws for the chosen target
-        // player; otherwise the effect's controller (source owner) draws.
+        // player; otherwise the ability's controller draws ("you", CR 109.5).
         // Redirect to the targeted player ONLY when this Draw itself declared the target —
         // its own ValidTgts$, or an explicit Defined$ naming the parent's target. A DB$ Draw
         // with no Defined$ means Forge's default of "You" (the controller) even though
@@ -67,14 +67,10 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         Zone::Ownership owner;
         if (targets_player && ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
             owner = seat_of_player(ab.target);
-        else if (ab.source != 0 && global_coordinator.entity_has_component<Zone>(ab.source))
-            owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
         else
-            // The source is gone (e.g. a Clue token sacrificed as part of the activation cost before
-            // this Draw resolves): fall back to the ability's controller, captured when it went on the
-            // stack and stable even after the source leaves play (CR 608.2g). For "draw a card" the
-            // drawing player is the ability's controller, which equals the source owner in every case
-            // where the source still exists.
+            // The ability's controller, captured when it went on the stack and stable after the
+            // source changes control or leaves play (CR 608.2g) — a reanimated Uro's draw goes to
+            // the reanimating player, not the card's owner.
             owner = ab.controller;
         // A Draw with no NumCards$ draws a single card (Forge default), e.g. Kozilek's
         // Command's "then draws a card" rider (DB$ Draw | Defined$ ParentTarget).

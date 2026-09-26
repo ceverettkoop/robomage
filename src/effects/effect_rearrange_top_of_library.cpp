@@ -32,7 +32,7 @@ namespace effects {
 
 HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
-    Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+    Zone::Ownership owner = ab.controller;  // "your library" = the ability's controller's (CR 109.5)
 
     // The looked-at slice is frozen once into the frame rt (pinned against
     // determinize). Slots are filled deepest first and each chosen card is put

@@ -30,7 +30,7 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     int n = static_cast<int>(ab.amount);
     if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
 
-    Zone::Ownership ctrl = source_controller(ab.source);
+    Zone::Ownership ctrl = ab.controller;  // the tokens are created by the ability's controller (CR 111.2)
 
     // The defender the Mobilize creature is attacking; the tokens attack the same target.
     Entity attack_target = 0;

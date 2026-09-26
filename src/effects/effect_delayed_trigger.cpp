@@ -28,7 +28,9 @@ static uint32_t phase_string_to_event(const std::string &phase) {
 
 HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    Zone::Ownership owner = source_controller(ab.source);
+    // A delayed triggered ability is controlled by the player who controlled the ability that
+    // created it (CR 603.7d/e), captured on the resolving ability.
+    Zone::Ownership owner = ab.controller;
     Entity owner_entity = get_player_entity(owner);
 
     const DelayedTriggerParams *dp = std::get_if<DelayedTriggerParams>(&ab.params);

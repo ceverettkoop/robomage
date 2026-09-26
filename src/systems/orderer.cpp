@@ -51,7 +51,11 @@ Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership 
     Zone ab_zone(Zone::HAND, controller, controller);
     global_coordinator.AddComponent(ability_entity, ab_zone);
     add_to_zone(false, ability_entity, Zone::STACK);
-    global_coordinator.AddComponent(ability_entity, ability);
+    // The player who put the ability on the stack controls it (CR 113.8 / 603.3a): stamp that onto
+    // the stack object so every "you" it resolves reads Ability::controller.
+    Ability stack_ab = ability;
+    stack_ab.controller = controller;
+    global_coordinator.AddComponent(ability_entity, stack_ab);
     return ability_entity;
 }
 

@@ -31,7 +31,9 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    Zone::Ownership ctrl = source_controller(ab.source);
+    // The ability's controller creates the tokens (CR 111.2) — for a dies trigger that is whoever
+    // controlled the permanent when it died (CR 603.3a), not the card's owner.
+    Zone::Ownership ctrl = ab.controller;
     // TokenOwner$ TargetedPlayer (Kozilek's Command): the targeted player creates and
     // controls the tokens, not the spell's controller.
     if (tp && tp->owner_is_target && ab.target != 0 &&

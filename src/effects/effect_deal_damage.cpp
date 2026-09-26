@@ -32,12 +32,12 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // Thread the source through so a source-relative count (Summon: Bahamut's Mega Flare,
         // X = Count$Valid Permanent.YouCtrl+Other$CardManaCost — total MV of OTHER permanents you
         // control) can exclude the source itself via the +Other qualifier.
-        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, source_controller(ab.source), orderer,
-                                      ab.target, ab.source);
+        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target,
+                                      ab.source);
     }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
     if (dp && dp->is_delirium_scale) {
-        if (check_delirium(source_controller(ab.source), orderer->mEntities)) dmg = dp->delirium_amount;
+        if (check_delirium(ab.controller, orderer->mEntities)) dmg = dp->delirium_amount;
     }
     // Defined$ player routes — "deals N damage to <that player>": You (the source's
     // controller, e.g. Ancient Tomb's pain), Player.Opponent (each opponent — the single

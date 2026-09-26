@@ -795,8 +795,8 @@ PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &ent
 }
 
 Zone::Ownership resolve_defined_player(const Ability &ab) {
-    if (ab.defined_you)                 return source_controller(ab.source);
-    if (ab.defined_each_opponent)       return opponent_of(source_controller(ab.source));
+    if (ab.defined_you)                 return ab.controller;
+    if (ab.defined_each_opponent)       return opponent_of(ab.controller);
     if (ab.defined_targeted_controller) return ab.target != 0 ? last_known_controller(ab.target) : Zone::UNKNOWN;
     if (ab.defined_triggered_activator) return ab.triggered_activator;
     if (ab.defined_triggered_player)    return ab.triggered_player;

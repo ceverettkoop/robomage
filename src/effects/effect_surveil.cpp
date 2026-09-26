@@ -30,12 +30,7 @@ namespace effects {
 // TOP_LIBRARY, into-graveyard = CHOOSE_CARD (a library -> graveyard non-library zone change).
 HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
-    Zone::Ownership controller;
-    if (global_coordinator.entity_has_component<Permanent>(ab.source)) {
-        controller = global_coordinator.GetComponent<Permanent>(ab.source).controller;
-    } else {
-        controller = global_coordinator.GetComponent<Zone>(ab.source).owner;
-    }
+    Zone::Ownership controller = ab.controller;  // "you" = the ability's controller (CR 109.5)
 
     // The looked-at slice is frozen once; the shrinking `remaining` pool and the
     // `to_top` list of already-placed kept cards persist in the frame rt (both

@@ -27,7 +27,7 @@ namespace effects {
 // top keep their relative order (the optional reorder-among-kept is omitted as a
 // simplification). Each kept card goes on its owner's known-top cache at its depth as it
 // is kept, so the kept cards are visible for the remaining choices and afterwards. The
-// player is ValidTgts$ Player (ab.target); absent a target the source's controller
+// player is ValidTgts$ Player (ab.target); absent a target the ability's controller
 // scries. The scrying player sees the cards and makes every keep/bottom choice, so a
 // targeted opponent decides for their own library. After scrying, any SubAbility$ chains with the same target
 // (Kozilek's Command: "scries X, then draws a card" — DBDraw with Defined$ ParentTarget).
@@ -36,10 +36,8 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     Zone::Ownership owner;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
         owner = seat_of_player(ab.target);
-    else if (global_coordinator.entity_has_component<Permanent>(ab.source))
-        owner = global_coordinator.GetComponent<Permanent>(ab.source).controller;
     else
-        owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+        owner = ab.controller;  // "you" = the ability's controller (CR 109.5)
 
     // The looked-at slice is frozen once into the frame rt (pinned against
     // determinize by pinned_entities()); the per-card loop index persists so a

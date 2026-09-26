@@ -236,15 +236,10 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                    ? HandlerResult::DONE_RUN_SUBS
                    : HandlerResult::DONE_NO_SUBS;
 
-    // The owning/searching player for this ChangeZone. Normally the source's Zone.owner, but
-    // the source may have ceased to exist by the time the ability resolves (CR 608.2g/h): a
-    // token that created an ability still on the stack is DestroyEntity'd the instant it leaves
-    // the battlefield, taking its Zone with it. Fall back to the last-known controller (== owner
-    // for a token, which is always owned by its controller), the same last-known-information the
-    // target reads below already rely on.
-    Zone::Ownership owner = global_coordinator.entity_has_component<Zone>(ab.source)
-                                ? global_coordinator.GetComponent<Zone>(ab.source).owner
-                                : last_known_controller(ab.source);
+    // The searching player for this ChangeZone: "you" = the ability's controller (CR 109.5),
+    // captured when it went on the stack and stable after the source changes control or leaves
+    // play. The DefinedPlayer$ forms below redirect it.
+    Zone::Ownership owner = ab.controller;
 
     // DefinedPlayer$ TargetedController (Erode / White Orchid Phantom's DBSearch: "Its
     // controller may search their library for a basic land card, put it onto the battlefield
@@ -433,7 +428,9 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // head of its recursion pile, counted by the GE7 shuffle-back condition).
         if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
         if (landed == Zone::BATTLEFIELD) {
-            global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
+            // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
+            auto &szone = global_coordinator.GetComponent<Zone>(ab.source);
+            szone.controller = szone.owner;
             // Unearth (CR 702.84): flag the returning permanent so its Permanent is created
             // unearthed (haste + delayed end-step exile + leaves-the-battlefield exile).
             if (ab.is_unearth) cur_game.pending_unearthed.insert(ab.source);
@@ -600,7 +597,9 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
         if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
         if (landed == Zone::BATTLEFIELD) {
-            global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
+            // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
+            auto &szone = global_coordinator.GetComponent<Zone>(ab.source);
+            szone.controller = szone.owner;
             if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(ab.source);
         }
         if (landed == ab.destination)
@@ -889,7 +888,7 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
     // Whose zones to search: the caster by default, or the owner of the referenced card
     // (DefinedPlayer$/Defined$ TargetedController). Derive from `ref` (the remembered/
     // targeted card) rather than ab.target, which a Pump vehicle may have overwritten.
-    Zone::Ownership caster = global_coordinator.GetComponent<Zone>(ab.source).owner;
+    Zone::Ownership caster = ab.controller;
     Zone::Ownership searched = caster;
     if (ab.defined_targeted_controller && global_coordinator.entity_has_component<Zone>(ref))
         searched = global_coordinator.GetComponent<Zone>(ref).owner;

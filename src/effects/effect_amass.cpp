@@ -29,7 +29,7 @@ HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     const AmassParams *ap = std::get_if<AmassParams>(&ab.params);
     std::string subtype = (ap && !ap->subtype.empty()) ? ap->subtype : "Orc";
 
-    Zone::Ownership ctrl = source_controller(ab.source);
+    Zone::Ownership ctrl = ab.controller;  // "you amass" = the ability's controller (CR 109.5)
 
     // Find an Army the controller already controls.
     Entity army = 0;

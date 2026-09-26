@@ -400,7 +400,7 @@ Zone::Ownership last_known_controller(Entity e);
 
 // Resolve the Defined$ player an ability designates, or UNKNOWN when it names none (the
 // caller then falls back to its own chosen target):
-//   Defined$ You                -> the source's controller
+//   Defined$ You                -> the ability's controller (CR 109.5)
 //   Defined$ Player.Opponent    -> that controller's single opponent (2-player; CR 109.5)
 //   Defined$ TargetedController -> the last-known controller of ab.target
 //   Defined$ TriggeredActivator -> the player bound when the trigger fired
