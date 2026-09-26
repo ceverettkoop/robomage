@@ -5,8 +5,8 @@ Drives the card-implementation workflow: it diffs the cards used by a set of
 deck files against the registered vocabulary and reports, for each missing card,
 whether a Forge script already exists locally and a suggested next vocab index.
 
-    train/.venv/bin/python train/missing_cards.py                 # scan decks/meta
-    train/.venv/bin/python train/missing_cards.py --decks-dir bin/resources/decks
+    train/.venv/bin/python train/missing_cards.py                 # scan decks/league
+    train/.venv/bin/python train/missing_cards.py --decks-dir bin/resources/decks/meta
     train/.venv/bin/python train/missing_cards.py --json
 
 Output is sorted by cross-deck frequency (most-played missing cards first), so
@@ -28,7 +28,7 @@ import sys
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 VOCAB_H = os.path.join(_REPO_ROOT, "src", "card_vocab.h")
 CARDS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
-DEFAULT_DECKS = os.path.join(_REPO_ROOT, "bin", "resources", "decks", "meta")
+DEFAULT_DECKS = os.path.join(_REPO_ROOT, "bin", "resources", "decks", "league")
 
 
 def name_to_uid(name):
@@ -39,14 +39,30 @@ def name_to_uid(name):
 
 
 def parse_vocab(path):
-    """Return (uid->index dict, highest_index) from card_vocab.h entries."""
+    """Return (uid->index dict, highest_index) from the card_vocab_entries table.
+
+    Only real cards are read: the token identity band (token_vocab_entries, indices
+    from TOKEN_VOCAB_BASE) never appears in deck files, so it is excluded from both
+    the membership map and the highest index."""
     text = open(path).read()
+    m = re.search(r"card_vocab_entries\[\]\s*=\s*\{(.*?)\n\};", text, re.S)
+    if not m:
+        raise SystemExit(f"ERROR: no card_vocab_entries table found in {path}")
     by_uid, highest = {}, -1
-    for m in re.finditer(r'"([^"]+)"\s*,\s*(\d+)', text):
-        idx = int(m.group(2))
-        by_uid[name_to_uid(m.group(1))] = idx
+    for e in re.finditer(r'"([^"]+)"\s*,\s*(\d+)', m.group(1)):
+        idx = int(e.group(2))
+        by_uid[name_to_uid(e.group(1))] = idx
         highest = max(highest, idx)
     return by_uid, highest
+
+
+def parse_token_vocab_base(path):
+    """TOKEN_VOCAB_BASE from card_vocab.h: the first index of the token band, i.e.
+    the exclusive upper bound for card vocab indices."""
+    m = re.search(r"TOKEN_VOCAB_BASE\s*=\s*(\d+)", open(path).read())
+    if not m:
+        raise SystemExit(f"ERROR: no TOKEN_VOCAB_BASE constant found in {path}")
+    return int(m.group(1))
 
 
 def parse_deck(path):
@@ -142,7 +158,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--decks-dir", default=DEFAULT_DECKS,
-                    help="directory of .dk files to scan (default bin/resources/decks/meta)")
+                    help="directory of .dk files to scan (default bin/resources/decks/league)")
     ap.add_argument("--json", action="store_true", help="emit JSON instead of a table")
     args = ap.parse_args(argv)
 
@@ -151,6 +167,7 @@ def main(argv=None):
         return 2
 
     vocab, highest = parse_vocab(VOCAB_H)
+    token_base = parse_token_vocab_base(VOCAB_H)
     refs, dk_files = collect(args.decks_dir)
 
     # A card is "missing" only if the engine has no vocab identity for it. This
@@ -164,17 +181,29 @@ def main(argv=None):
     ]
     # Most-played first: by deck presence, then total copies, then name.
     missing.sort(key=lambda d: (-d["deck_count"], -d["copies"], d["name"].lower()))
+    # New cards append after the highest card index; an index that would reach the
+    # token band gets no suggestion (None) and the run fails below.
     for i, d in enumerate(missing):
-        d["suggested_index"] = highest + 1 + i
+        idx = highest + 1 + i
+        d["suggested_index"] = idx if idx < token_base else None
+    n_no_index = sum(1 for d in missing if d["suggested_index"] is None)
+    rc = 0
+    if n_no_index:
+        print(f"ERROR: {n_no_index} missing card(s) would need an index >= "
+              f"TOKEN_VOCAB_BASE ({token_base}); the card vocab band is full.",
+              file=sys.stderr)
+        rc = 1
 
     if args.json:
         print(json.dumps({"decks_dir": args.decks_dir, "deck_files": dk_files,
                           "vocab_size": len(vocab), "highest_index": highest,
+                          "token_vocab_base": token_base,
                           "missing": missing}, indent=2))
-        return 0
+        return rc
 
     print(f"Scanned {len(dk_files)} deck(s) in {os.path.relpath(args.decks_dir, _REPO_ROOT)}")
-    print(f"Vocab: {len(vocab)} cards (highest index {highest}); "
+    print(f"Vocab: {len(vocab)} cards (highest index {highest}, token band from "
+          f"{token_base}); "
           f"{len(missing)} unique missing card(s)\n")
     if not missing:
         print("All referenced cards are already in the vocab.")
@@ -183,12 +212,13 @@ def main(argv=None):
     print(f"  {'-'*4}  {'-'*3}  {'-'*5}  {'-'*6}  {'-'*30}")
     for d in missing:
         scr = "yes" if d["has_local_script"] else " no"
-        print(f"  {d['suggested_index']:>4}  {scr:>3}  {d['deck_count']:>5}  "
+        idx = "-" if d["suggested_index"] is None else d["suggested_index"]
+        print(f"  {idx:>4}  {scr:>3}  {d['deck_count']:>5}  "
               f"{d['copies']:>6}  {d['name']}")
     n_no_script = sum(1 for d in missing if not d["has_local_script"])
     print(f"\n{len(missing)} missing; {n_no_script} without a local Forge script "
           f"(need fetch or hand-authoring).")
-    return 0
+    return rc
 
 
 if __name__ == "__main__":
