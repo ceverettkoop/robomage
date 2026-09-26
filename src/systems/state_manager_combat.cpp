@@ -68,9 +68,8 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
     int life_delta_b = 0;
 
     for (auto entity : mEntities) {
-        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+        if (!is_attacking_creature(entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
-        if (!cr.is_attacking) continue;
         // CR 510.1/702.7b: each creature deals damage in the step its own first/double
         // strike status dictates — attackers AND blockers independently. Visit every
         // attacker's combat in BOTH damage steps and gate each creature's damage on its
@@ -80,19 +79,15 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
 
         std::string attacker_name = entity_name(entity);
 
-        // Collect blockers for this attacker
-        std::vector<Entity> blockers;
-        for (auto b : mEntities) {
-            if (!global_coordinator.entity_has_component<Creature>(b)) continue;
-            auto &bcr = global_coordinator.GetComponent<Creature>(b);
-            if (bcr.is_blocking && bcr.blocking_target == entity) {
-                blockers.push_back(b);
-            }
-        }
+        std::vector<Entity> blockers = blockers_of(entity, mEntities);
+        // CR 506.4c: an attacker whose planeswalker was removed from combat (it left or phased
+        // out) keeps attacking but, unblocked, deals no combat damage; no trample damage either.
+        bool target_in_combat = global_coordinator.entity_has_component<Player>(cr.attack_target) ||
+                                is_battlefield_permanent(cr.attack_target);
 
         if (!cr.is_blocked) {
             // Unblocked — deal damage to attack target
-            uint32_t dmg = cr.power;
+            uint32_t dmg = target_in_combat ? cr.power : 0;
             // CR 615: a combat-damage prevention shield (Maze of Ith) on this attacker prevents
             // all combat damage it would deal — skip the whole assignment (no damage, no
             // life loss, no trigger, no lifelink).
@@ -121,7 +116,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     ev.SetParam(Params::PLAYER, cr.attack_target);
                     ev.SetParam(Params::AMOUNT, dmg);
                     global_coordinator.SendEvent(ev);
-                } else if (is_planeswalker_permanent(cr.attack_target) && on_battlefield(cr.attack_target)) {
+                } else if (is_planeswalker_permanent(cr.attack_target)) {
                     // Combat damage to a planeswalker removes that many loyalty counters (306.8).
                     damage_planeswalker(cr.attack_target, dmg);
                     game_log("  %s deals %u damage to %s (loyalty now %d)\n", attacker_name.c_str(), dmg,
@@ -196,7 +191,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                 }
             }
             // Trample: excess damage goes to attack target
-            if (remaining > 0) {
+            if (remaining > 0 && target_in_combat) {
                 // CR 615: a prevention shield on this attacker (as source) prevents its trampled-
                 // over combat damage too.
                 if (has_trample && game.combat_damage_prevented(entity, cr.attack_target)) {
@@ -223,8 +218,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     ev.SetParam(Params::AMOUNT, remaining);
                     global_coordinator.SendEvent(ev);
                     apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b);
-                } else if (has_trample && is_planeswalker_permanent(cr.attack_target) &&
-                           on_battlefield(cr.attack_target)) {
+                } else if (has_trample && is_planeswalker_permanent(cr.attack_target)) {
                     // Trample excess over the blockers goes to the attacked planeswalker (306.8).
                     damage_planeswalker(cr.attack_target, remaining);
                     game_log("  %s tramples %u damage to %s (loyalty now %d)\n", attacker_name.c_str(),

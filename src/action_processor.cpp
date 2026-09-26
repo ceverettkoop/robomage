@@ -50,14 +50,16 @@ static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
                                      Entity chosen_creature);
 static void resume_attack_target(Game &game);
 static void resume_block_target(Game &game);
-static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype,
+                                         const std::set<Entity> &entities);
 static std::string landwalk_subtype(const std::string &kw);
+static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player,
+                                 const std::set<Entity> &entities);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
                                             const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 static void finish_blocker_declaration(Game &game);
-static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
 static bool arm_damage_assign_query(Game &game);
 static void finish_pending_attacker(Game &game);
@@ -517,11 +519,9 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     // Collect eligible attackers with stable indices
     std::vector<Entity> eligible;
     for (auto entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!is_battlefield_permanent(entity, active_player)) continue;
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-        auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-        if (permanent.controller != active_player) continue;
-        if (permanent.is_tapped) continue;
+        if (global_coordinator.GetComponent<Permanent>(entity).is_tapped) continue;
         if (is_summoning_sick(entity)) continue;
         // A creature a CantAttack static forbids from attacking (Ensnaring Bridge: power greater
         // than the controller's hand size) is never eligible (CR 509.1a) — not offered and not
@@ -641,51 +641,43 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     }
 
     game_log("\nAttackers declared:\n");
-    bool any = false;
+    Entity actrl_entity = get_player_entity(active_player);
+    int attacker_count = 0;
+    Entity sole_attacker = 0;
     for (auto entity : eligible) {
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
-        if (cr.is_attacking) {
-            any = true;
-            std::string ename = entity_name(entity);
-            game_log("  %s -> %s\n", ename.c_str(), target_display_name(game, cr.attack_target).c_str());
+        if (!cr.is_attacking) continue;
+        attacker_count++;
+        sole_attacker = entity;
+        game_log("  %s -> %s\n", entity_name(entity).c_str(),
+                 target_display_name(game, cr.attack_target).c_str());
 
-            // Tap the attacker, unless it has vigilance (702.21).
-            auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-            if (!creature_has_keyword(cr, "Vigilance"))
-                permanent.is_tapped = true;
+        // Tap the attacker, unless it has vigilance (702.21).
+        if (!creature_has_keyword(cr, "Vigilance"))
+            global_coordinator.GetComponent<Permanent>(entity).is_tapped = true;
 
-            // Fire a per-attacker "whenever this creature attacks" event (508.2 attack
-            // declaration), so triggers like Mobilize go on the stack for each attacker.
-            Entity actrl_entity = get_player_entity(active_player);
-            Event attacked_ev(Events::CREATURE_ATTACKED);
-            attacked_ev.SetParam(Params::ENTITY, entity);
-            attacked_ev.SetParam(Params::PLAYER, actrl_entity);
-            global_coordinator.SendEvent(attacked_ev);
-        }
+        // Fire a per-attacker "whenever this creature attacks" event (508.2 attack
+        // declaration), so triggers like Mobilize go on the stack for each attacker.
+        Event attacked_ev(Events::CREATURE_ATTACKED);
+        attacked_ev.SetParam(Params::ENTITY, entity);
+        attacked_ev.SetParam(Params::PLAYER, actrl_entity);
+        global_coordinator.SendEvent(attacked_ev);
     }
-    if (!any) game_log("  (none)\n");
+    if (attacker_count == 0) game_log("  (none)\n");
 
     // "Whenever you attack" (Mode$ AttackersDeclared) — a player-level trigger that fires once
     // when one or more attackers are declared (508.2), independent of how many. Guide of Souls.
-    if (any) {
-        Entity actrl_entity = get_player_entity(active_player);
+    if (attacker_count > 0) {
         Event declared_ev(Events::ATTACKERS_DECLARED);
         declared_ev.SetParam(Params::PLAYER, actrl_entity);
         global_coordinator.SendEvent(declared_ev);
     }
 
     // Exalted: if exactly one creature is attacking, fire the event so triggers go on the stack
-    int attacker_count = 0;
-    Entity sole_attacker = 0;
-    for (auto entity : eligible) {
-        auto &cr = global_coordinator.GetComponent<Creature>(entity);
-        if (cr.is_attacking) { attacker_count++; sole_attacker = entity; }
-    }
     if (attacker_count == 1) {
-        Entity ctrl_entity = get_player_entity(active_player);
         Event exalted_ev(Events::CREATURE_ATTACKED_ALONE);
         exalted_ev.SetParam(Params::ENTITY, sole_attacker);
-        exalted_ev.SetParam(Params::PLAYER, ctrl_entity);
+        exalted_ev.SetParam(Params::PLAYER, actrl_entity);
         global_coordinator.SendEvent(exalted_ev);
     }
 
@@ -693,16 +685,11 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending_choice = NONE;
 }
 
-static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype) {
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.controller != player) continue;
-        for (auto &t : perm.types) {
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype,
+                                         const std::set<Entity> &entities) {
+    for (auto e : battlefield_permanents(entities, player))
+        for (auto &t : global_coordinator.GetComponent<Permanent>(e).types)
             if (t.kind == SUBTYPE && t.name == subtype) return true;
-        }
-    }
     return false;
 }
 
@@ -716,6 +703,23 @@ static std::string landwalk_subtype(const std::string &kw) {
     return "";
 }
 
+// True if no creature `defending_player` controls can block `atk` (CR 509.1b): it can't be
+// blocked this turn (Kappa Cannoneer), or it has landwalk and the defending player controls a
+// land of that type (CR 702.14c).
+static bool attacker_unblockable(Entity atk, Zone::Ownership defending_player,
+                                 const std::set<Entity> &entities) {
+    auto &acr = global_coordinator.GetComponent<Creature>(atk);
+    if (acr.cant_be_blocked_this_turn) return true;
+    for (auto &kw : acr.keywords) {
+        std::string subtype = landwalk_subtype(kw);
+        if (!subtype.empty() && player_controls_land_subtype(defending_player, subtype, entities))
+            return true;
+    }
+    return false;
+}
+
+// The attackers among `attackers` (already filtered by attacker_unblockable) that `blocker`
+// itself may block: flying/reach, shadow and protection are checked per blocker.
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers) {
     auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
     bool blocker_can_fly = false;
@@ -725,32 +729,17 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
         if (kw == "Shadow") blocker_has_shadow = true;
     }
 
-    // Determine defending player from blocker's controller
-    auto &blocker_perm = global_coordinator.GetComponent<Permanent>(blocker);
-    Zone::Ownership defending_player = blocker_perm.controller;
-
     std::vector<Entity> result;
     for (auto atk : attackers) {
         auto &acr = global_coordinator.GetComponent<Creature>(atk);
-        // "Can't be blocked this turn" (Kappa Cannoneer): no creature may block it (509.1b).
-        if (acr.cant_be_blocked_this_turn) continue;
-        bool atk_flying = false;
-        bool atk_has_shadow = false;
-        bool has_landwalk_evasion = false;
-        for (auto &kw : acr.keywords) {
-            if (kw == "Flying") atk_flying = true;
-            if (kw == "Shadow") atk_has_shadow = true;
-            std::string subtype = landwalk_subtype(kw);
-            if (!subtype.empty() && player_controls_land_subtype(defending_player, subtype))
-                has_landwalk_evasion = true;
-        }
+        bool atk_flying = creature_has_keyword(acr, "Flying");
+        bool atk_has_shadow = creature_has_keyword(acr, "Shadow");
 
         // Shadow: creatures with shadow can only be blocked by shadow creatures,
         // and creatures without shadow cannot be blocked by shadow creatures (rule 702.28)
         if (atk_has_shadow != blocker_has_shadow) continue;
 
         if (atk_flying && !blocker_can_fly) continue;
-        if (has_landwalk_evasion) continue;
         if (has_protection_from(acr, blocker)) continue;
         result.push_back(atk);
     }
@@ -790,12 +779,14 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     if (game.pending_blocker != 0)
         fatal_error("declare_blockers entered with a block-target sub-prompt parked");
 
-    // Collect attackers
+    // Collect attackers, and the ones the defending player can block at all
     std::vector<Entity> attackers;
+    std::vector<Entity> blockable;
     for (auto entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-        auto &cr = global_coordinator.GetComponent<Creature>(entity);
-        if (cr.is_attacking) attackers.push_back(entity);
+        if (!is_attacking_creature(entity)) continue;
+        attackers.push_back(entity);
+        if (!attacker_unblockable(entity, defending_player, orderer->mEntities))
+            blockable.push_back(entity);
     }
 
     if (attackers.empty()) {
@@ -804,21 +795,16 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         return;
     }
 
-    // Collect eligible blockers: defending player's untapped creatures
+    // Collect eligible blockers: defending player's untapped creatures that can block some attacker
+    // (e.g. not non-flyers vs all-flying attackers)
     std::vector<Entity> eligible;
     for (auto entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!is_battlefield_permanent(entity, defending_player)) continue;
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-        auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-        if (permanent.controller != defending_player) continue;
-        if (permanent.is_tapped) continue;
+        if (global_coordinator.GetComponent<Permanent>(entity).is_tapped) continue;
+        if (determine_blockable_attackers(entity, blockable).empty()) continue;
         eligible.push_back(entity);
     }
-
-    // Remove creatures that can't legally block any attacker (e.g. non-flyers vs all-flying attackers)
-    eligible.erase(std::remove_if(eligible.begin(), eligible.end(),
-                       [&](Entity blocker) { return determine_blockable_attackers(blocker, attackers).empty(); }),
-        eligible.end());
 
     if (eligible.empty()) {
         game_log("No creatures eligible to block.\n");
@@ -886,7 +872,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
         std::string chosen_name = entity_name(chosen);
 
-        auto legal_attackers = determine_blockable_attackers(chosen, attackers);
+        auto legal_attackers = determine_blockable_attackers(chosen, blockable);
         game_log("Select attacker for %s to block:\n", chosen_name.c_str());
         std::vector<LegalAction> blk_tgt_actions;
         for (auto atk_entity : legal_attackers) {
@@ -3585,17 +3571,6 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 }
 
 // ── T3.10: prompted combat damage assignment among multiple blockers ──────────
-// Collect an attacker's live blockers — the same set deal_combat_damage() iterates
-// (a blocker killed in the first-strike step has already lost its Creature component).
-static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer) {
-    std::vector<Entity> blockers;
-    for (auto b : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Creature>(b)) continue;
-        auto &bcr = global_coordinator.GetComponent<Creature>(b);
-        if (bcr.is_blocking && bcr.blocking_target == attacker) blockers.push_back(b);
-    }
-    return blockers;
-}
 
 // Does this attacker need its controller to choose how to divide combat damage this step?
 // Only when it deals damage this step, is blocked by 2+ live blockers, and CANNOT assign lethal
@@ -3603,11 +3578,11 @@ static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_pt
 // choice is immaterial, so deal_combat_damage() auto-assigns instead (the ML simplification).
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer,
                                       bool first_strike_only) {
-    if (!global_coordinator.entity_has_component<Creature>(attacker)) return false;
+    if (!is_attacking_creature(attacker)) return false;
     auto &cr = global_coordinator.GetComponent<Creature>(attacker);
-    if (!cr.is_attacking || !cr.is_blocked) return false;
+    if (!cr.is_blocked) return false;
     if (!should_deal_damage(cr, first_strike_only)) return false;
-    auto blockers = collect_live_blockers(attacker, orderer);
+    auto blockers = blockers_of(attacker, orderer->mEntities);
     if (blockers.size() < 2) return false;
     uint32_t total_lethal = 0;
     for (auto b : blockers) total_lethal += lethal_needed_for_blocker(attacker, b);
@@ -3739,7 +3714,7 @@ static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, 
         pd.active = true;
         pd.attacker = attacker;
         pd.remaining = acr.power;
-        pd.pool = collect_live_blockers(attacker, orderer);
+        pd.pool = blockers_of(attacker, orderer->mEntities);
         pd.last_assigned = 0;
         if (arm_damage_assign_query(game)) return;
         // No blocker killable even at full power: dump everything, no prompt.

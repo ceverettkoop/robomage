@@ -757,6 +757,28 @@ inline Entity exiled_with_card(Entity source) {
     return 0;
 }
 
+// True if `e` is a live battlefield creature that is attacking / blocking. A creature removed
+// from combat (CR 506.4) or phased out (CR 702.26b) is neither.
+inline bool is_attacking_creature(Entity e) {
+    return is_battlefield_permanent(e) && global_coordinator.entity_has_component<Creature>(e) &&
+           global_coordinator.GetComponent<Creature>(e).is_attacking;
+}
+inline bool is_blocking_creature(Entity e) {
+    return is_battlefield_permanent(e) && global_coordinator.entity_has_component<Creature>(e) &&
+           global_coordinator.GetComponent<Creature>(e).is_blocking;
+}
+
+// The live battlefield creatures blocking `attacker` (CR 509.1g), in entity order. Shared by the
+// combat-damage step and its damage-assignment prompt so both divide damage among the same set.
+inline std::vector<Entity> blockers_of(Entity attacker, const std::set<Entity> &entities) {
+    std::vector<Entity> out;
+    for (auto b : entities)
+        if (is_blocking_creature(b) &&
+            global_coordinator.GetComponent<Creature>(b).blocking_target == attacker)
+            out.push_back(b);
+    return out;
+}
+
 // Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
 // attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu
 // (CR 702.49e) — the offer requires one, and activating returns one to hand.

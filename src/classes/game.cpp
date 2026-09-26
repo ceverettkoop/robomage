@@ -302,11 +302,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                 case DECLARE_BLOCKERS: {
                     // Scan for first strikers / double strikers
                     has_first_strikers = false;
-                    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-                        if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-                        auto &cr = global_coordinator.GetComponent<Creature>(e);
-                        if (!cr.is_attacking && !cr.is_blocking) continue;
-                        if (creature_deals_first_strike_damage(cr)) {
+                    for (auto e : orderer->mEntities) {
+                        if (!is_attacking_creature(e) && !is_blocking_creature(e)) continue;
+                        if (creature_deals_first_strike_damage(global_coordinator.GetComponent<Creature>(e))) {
                             has_first_strikers = true;
                             break;
                         }
