@@ -747,14 +747,6 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
                global_coordinator.GetComponent<Zone>(cand).location == Zone::GRAVEYARD;
     }
 
-    bool any = (vt == "Any");
-    bool inc_creatures = any || vt.find("Creature") != std::string::npos;
-    bool inc_lands = vt.find("Land") != std::string::npos;
-    bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
-    // "Any" is "any target" (creature/player/planeswalker), NOT non-creature
-    // artifacts/enchantments — those require the type named explicitly.
-    bool inc_artifacts = vt.find("Artifact") != std::string::npos;
-    bool inc_enchantments = vt.find("Enchantment") != std::string::npos;
     int cmc_le = -1;
     {
         size_t cmc_pos = vt.find("cmcLE");
@@ -770,49 +762,32 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
                 cmc_le = static_cast<int>(cur_game.x_paid);
         }
     }
+    // The ValidTgts spec in the shared matcher's grammar: "YouDontCtrl" is Forge's spelling of
+    // OppCtrl (a permanent you don't control), and "Any" as a permanent target is "any creature
+    // or planeswalker" (CR 115.4 / 306.7; players are handled in their own branch below).
+    MatchCtx ctx;
+    ctx.controller = caster;
+    ctx.source = source;
+    // The mana-value bound (cmcLE<n>/cmcLEX, e.g. Abrupt Decay's cmcLE3) is parsed above into
+    // cmc_le; feed it to the evaluator so the bound is actually enforced.
+    if (cmc_le >= 0) { ctx.cmc_bound = cmc_le; ctx.cmc_op = "LE"; }
+    std::string spec = (vt == "Any") ? std::string("Creature,Planeswalker") : vt;
+    for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
+         pos = spec.find("YouDontCtrl", pos))
+        spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");
 
     // Card in a graveyard targeted by a ChangeZone with a type filter. Covers both
     // graveyard→non-battlefield moves (e.g. Life from the Loam: ValidTgts$ Land.YouCtrl,
     // Origin$ Graveyard, Destination$ Hand) and targeted reanimation graveyard→battlefield
     // (e.g. Lorehold Charm's "return target artifact or creature with mana value 2 or less
     // from your graveyard to the battlefield"). In every case the target is the card sitting
-    // in the graveyard, so it is matched there regardless of destination. Filter by zone,
-    // owner (YouCtrl/OppCtrl/YouOwn), card type, mana value (cmcLE), and Basic supertype.
+    // in the graveyard, matched there by its card characteristics regardless of destination; a
+    // card's controller there is its owner (CR 108.4a), so YouCtrl/OppCtrl mean YouOwn/OppOwn.
     if (target_in_graveyard ||
         (category == "ChangeZone" && origin == Zone::GRAVEYARD)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
-        auto &cz = global_coordinator.GetComponent<Zone>(cand);
-        if (cz.location != Zone::GRAVEYARD) return false;
-        // For a card in a graveyard, its owner is also its controller, so YouCtrl/OppCtrl
-        // and YouOwn/OppOwn restrict the same way (Emry: ValidTgts$ Artifact.YouOwn).
-        bool you_ctrl = vt.find("YouCtrl") != std::string::npos || vt.find("YouOwn") != std::string::npos;
-        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos || vt.find("OppOwn") != std::string::npos;
-        if (you_ctrl && cz.owner != caster) return false;
-        if (opp_ctrl && cz.owner == caster) return false;
-        if (!global_coordinator.entity_has_component<CardData>(cand)) return false;
-        auto &cd = global_coordinator.GetComponent<CardData>(cand);
-        // Instant/Sorcery graveyard targets (Mystic Sanctuary: ValidTgts$
-        // Instant.YouOwn,Sorcery.YouOwn) filter alongside the permanent types — without
-        // these the type gate fell open and offered the whole graveyard.
-        bool inc_instants  = vt.find("Instant") != std::string::npos;
-        bool inc_sorceries = vt.find("Sorcery") != std::string::npos;
-        bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments ||
-                         inc_instants || inc_sorceries);
-        for (auto &t : cd.types) {
-            if (t.kind != TYPE) continue;
-            if (inc_creatures    && t.name == "Creature")    type_ok = true;
-            if (inc_lands        && t.name == "Land")        type_ok = true;
-            if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
-            if (inc_enchantments && t.name == "Enchantment") type_ok = true;
-            if (inc_instants     && t.name == "Instant")     type_ok = true;
-            if (inc_sorceries    && t.name == "Sorcery")     type_ok = true;
-        }
-        if (!type_ok) return false;
-        // Mana-value bound (e.g. Lorehold Charm's cmcLE2): a graveyard card has no live MV
-        // layer, so read its printed mana value.
-        if (cmc_le >= 0 && card_mana_value(cd) > cmc_le) return false;
-        if (nonbasic_only && has_basic_supertype(cd.types)) return false;
-        return true;
+        if (global_coordinator.GetComponent<Zone>(cand).location != Zone::GRAVEYARD) return false;
+        return card_matches_filter(cand, owner_relative_filter(spec), ctx);
     }
 
     // Player target
@@ -823,27 +798,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (!is_battlefield_permanent(cand)) return false;
 
     // Match the ValidTgts spec against the permanent through the shared filter evaluator
-    // (game_queries), per OR-clause. This replaces the old whole-string substring scans
-    // (a comma-joined "…YouCtrl,…OppCtrl" set both flags and rejected everything; any text
-    // containing "token" was read as token-only). Two normalizations bridge the ValidTgts
-    // grammar to the evaluator's: Forge separates OR alternatives with ',' while the evaluator
-    // uses ';'; and "YouDontCtrl" is Forge's spelling of OppCtrl (a permanent you don't control)
-    // — the evaluator only knows OppCtrl. "Any" as a permanent target is "any creature or
-    // planeswalker" (CR 115.4 / 306.7; players are handled in the branch above).
-    {
-        MatchCtx ctx;
-        ctx.controller = caster;
-        ctx.source = source;
-        // The dynamic mana-value bound (cmcLE<n>/cmcLEX, e.g. Abrupt Decay's cmcLE3) is parsed
-        // above into cmc_le; feed it to the evaluator so the bound is actually enforced.
-        if (cmc_le >= 0) { ctx.cmc_bound = cmc_le; ctx.cmc_op = "LE"; }
-        std::string spec = (vt == "Any") ? std::string("Creature;Planeswalker") : vt;
-        std::replace(spec.begin(), spec.end(), ',', ';');
-        for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
-             pos = spec.find("YouDontCtrl", pos))
-            spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");
-        if (!permanent_matches_filter(cand, spec, ctx)) return false;
-    }
+    // (game_queries), with the normalized spec and mana-value bound built above.
+    if (!permanent_matches_filter(cand, spec, ctx)) return false;
 
     // Protection (CR 702.16e): a creature with protection from the source's color/quality can't
     // be targeted by it. The filter evaluator doesn't model protection, so check it separately.
@@ -978,17 +934,18 @@ size_t evaluate_dynamic_amount(
             devotion_color = GREEN;
         else if (expr.find("Devotion.White") != std::string::npos)
             devotion_color = WHITE;
+        // CR 700.5: each mana symbol of that color in the mana costs of permanents you control,
+        // a hybrid or Phyrexian symbol of that color included.
         size_t count = 0;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::BATTLEFIELD) continue;
-            auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.controller != ctrl) continue;
+        for (auto e : battlefield_permanents(orderer->mEntities, ctrl)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             count += cd.mana_cost.count(devotion_color);
+            for (const auto &pip : cd.hybrid_mana)
+                if (std::find(pip.colors.begin(), pip.colors.end(), devotion_color) != pip.colors.end())
+                    count++;
+            count += static_cast<size_t>(
+                std::count(cd.phyrexian_mana.begin(), cd.phyrexian_mana.end(), devotion_color));
         }
         return count;
     }
@@ -1040,19 +997,6 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
-    if (expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
-        size_t count = 0;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::BATTLEFIELD) continue;
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (global_coordinator.GetComponent<Permanent>(e).controller != ctrl) continue;
-            count++;
-        }
-        return count;
-    }
     // Count$Valid <filter>$CardManaCost — the SUM of mana values of battlefield permanents matching
     // the filter, rather than their count (Summon: Bahamut's Mega Flare: X = Count$Valid
     // Permanent.YouCtrl+Other$CardManaCost = the total mana value of OTHER permanents you control).
@@ -1098,8 +1042,7 @@ size_t evaluate_dynamic_amount(
     // Count$Valid <Filter> — number of battlefield permanents matching the full Forge filter
     // spec (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
     // ReduceCost: "Count$Valid Creature.Legendary+YouCtrl" = legendary creatures you control).
-    // The Creature-specific branch above is kept for its common case; this generic branch
-    // routes the whole spec (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/
+    // It routes the whole spec (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/
     // colors) through the shared permanent_matches_filter so supertype/color/etc. qualifiers
     // are honored, not just the head type. The RememberedPlayerCtrl form is excluded so it
     // falls through to its dedicated handler below (it needs the remembered-player reference

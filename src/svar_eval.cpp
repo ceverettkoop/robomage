@@ -14,7 +14,29 @@
 
 extern Coordinator global_coordinator;
 
+static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
+                                     Zone::Ownership controller);
+
 // The bare operator table — one home for the EQ/NE/GE/LE/GT/LT switch.
+// The number of cards in `zone` (either player's) matching a Count$Valid<Zone> filter. A card
+// there is controlled by its owner (CR 108.4a), so YouCtrl/OppCtrl read as YouOwn/OppOwn against
+// `controller`; an empty filter counts every card.
+static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
+                                     Zone::Ownership controller) {
+    if (!spec.empty() && spec[0] == ' ') spec.erase(0, 1);
+    const std::string filter = spec.empty() ? std::string("Card") : owner_relative_filter(spec);
+    MatchCtx ctx;
+    ctx.controller = controller;
+    int count = 0;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; ++e) {
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        if (global_coordinator.GetComponent<Zone>(e).location != zone) continue;
+        if (card_matches_filter(e, filter, ctx)) count++;
+    }
+    return count;
+}
+
 bool apply_svar_op(int lhs, const std::string &op2, int rhs) {
     if (op2 == "EQ") return lhs == rhs;
     if (op2 == "NE") return lhs != rhs;
@@ -241,84 +263,17 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
         return static_cast<int>(type_names.size());
     }
 
-    // Count$ValidHand <filter> — number of cards in hand matching <filter> (Ensnaring Bridge:
-    // "Count$ValidHand Card.YouOwn" = the number of cards in your hand). A card in hand has no
-    // controller, so an ownership qualifier (YouOwn/YouCtrl / OppOwn/OppCtrl) scopes the count to
-    // one player's hand via Zone::owner; any remaining characteristic qualifiers (the head type and
-    // '.'/'+' tokens) are matched against the card's printed characteristics by the shared matcher.
-    if (expr.rfind("Count$ValidHand", 0) == 0) {
-        std::string spec = expr.substr(std::string("Count$ValidHand").size());
-        if (!spec.empty() && spec[0] == ' ') spec.erase(0, 1);
-        bool you_own = spec.find("YouOwn") != std::string::npos ||
-                       spec.find("YouCtrl") != std::string::npos;
-        bool opp_own = spec.find("OppOwn") != std::string::npos ||
-                       spec.find("OppCtrl") != std::string::npos;
-        // Rebuild the characteristic filter with the ownership tokens removed; keep the head type
-        // and every other qualifier so a typed/colored hand filter still works.
-        std::string head, sub;  // head type + '+'-joined remaining qualifiers
-        {
-            size_t i = 0;
-            bool first = true;
-            while (i <= spec.size()) {
-                size_t nx = spec.find_first_of(".+", i);
-                size_t end = (nx == std::string::npos) ? spec.size() : nx;
-                std::string tok = spec.substr(i, end - i);
-                if (first) { head = tok; first = false; }
-                else if (!tok.empty() && tok != "YouOwn" && tok != "YouCtrl" &&
-                         tok != "OppOwn" && tok != "OppCtrl")
-                    sub += (sub.empty() ? "" : "+") + tok;
-                if (nx == std::string::npos) break;
-                i = nx + 1;
-            }
-        }
-        if (head.empty()) head = "Card";
-        std::string sub_spec = sub.empty() ? head : (head + "+" + sub);
-        MatchCtx ctx;
-        ctx.controller = controller;
-        int count = 0;
-        Entity max_e = global_coordinator.GetMaxIssuedEntity();
-        for (Entity e = 0; e < max_e; ++e) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::HAND) continue;
-            if (you_own && z.owner != controller) continue;
-            if (opp_own && z.owner == controller) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            if (!card_matches_filter(e, sub_spec, ctx)) continue;
-            count++;
-        }
-        return count;
-    }
-
-    // Count$ValidGraveyard <Type>[.<Restriction>...] — count cards of the given
-    // type in graveyards, optionally restricted to the controller's own cards
-    // (YouOwn/YouCtrl). E.g. "Land.YouOwn" for Knight of the Reliquary.
-    if (expr.rfind("Count$ValidGraveyard ", 0) == 0) {
-        std::string spec = expr.substr(21);  // after "Count$ValidGraveyard "
-        std::string type_name = spec;
-        bool you_own = false;
-        size_t dot = spec.find('.');
-        if (dot != std::string::npos) {
-            type_name = spec.substr(0, dot);
-            std::string rest = spec.substr(dot + 1);
-            you_own = rest.find("YouOwn") != std::string::npos ||
-                      rest.find("YouCtrl") != std::string::npos;
-        }
-        int count = 0;
-        Entity max_e = global_coordinator.GetMaxIssuedEntity();
-        for (Entity e = 0; e < max_e; ++e) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::GRAVEYARD) continue;
-            if (you_own && z.owner != controller) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            for (auto &t : cd.types) {
-                if (t.kind == TYPE && t.name == type_name) { count++; break; }
-            }
-        }
-        return count;
-    }
+    // Count$ValidHand <filter> / Count$ValidGraveyard <filter> — the number of cards in hands /
+    // graveyards matching <filter> (Ensnaring Bridge: "Count$ValidHand Card.YouOwn" = the cards in
+    // your hand; Knight of the Reliquary: "Count$ValidGraveyard Land.YouOwn"). Matched by the
+    // shared filter matcher against each card, with the whole grammar (comma-OR alternatives,
+    // type/color/token qualifiers, OppOwn) honoured.
+    if (expr.rfind("Count$ValidHand", 0) == 0)
+        return count_zone_cards_matching(Zone::HAND, expr.substr(std::string("Count$ValidHand").size()),
+                                         controller);
+    if (expr.rfind("Count$ValidGraveyard", 0) == 0)
+        return count_zone_cards_matching(
+            Zone::GRAVEYARD, expr.substr(std::string("Count$ValidGraveyard").size()), controller);
 
     return 0;
 }

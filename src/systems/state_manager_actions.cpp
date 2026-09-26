@@ -439,41 +439,12 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         return compare_svar(value, compare);
     }
 
-    // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
-    std::string filter = ab.condition_present;
-    std::string type_filter;
-    bool you_ctrl = false;
-    bool opp_ctrl = false;
-    size_t dot = filter.find('.');
-    if (dot != std::string::npos) {
-        type_filter = filter.substr(0, dot);
-        std::string qualifier = filter.substr(dot + 1);
-        if (qualifier == "YouCtrl") you_ctrl = true;
-        else if (qualifier == "OppCtrl") opp_ctrl = true;
-    } else {
-        type_filter = filter;
-    }
-    if (type_filter == "Card") type_filter.clear();  // "Card" = any permanent
-
-    Zone::Ownership required_ctrl = you_ctrl ? caster :
-        opp_ctrl ? opponent_of(caster) :
-        Zone::UNKNOWN;
-
-    size_t count = 0;
-    for (auto e : orderer->mEntities) {
-        if (!is_battlefield_permanent(e, required_ctrl)) continue;
-        if (!type_filter.empty() && global_coordinator.entity_has_component<CardData>(e)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            bool match = false;
-            for (const auto &t : cd.types) {
-                if (t.name == type_filter) { match = true; break; }
-            }
-            if (!match) continue;
-        }
-        count++;
-    }
-
-    return compare_svar(static_cast<int>(count), compare);
+    // A board-presence condition (Birthing Ritual's Creature.YouCtrl, Edge of Autumn's
+    // Land.YouCtrl, Permanent.Red+YouCtrl+Other): count the battlefield permanents matching the
+    // whole filter by their current characteristics (a Clue token is not a creature; an animated
+    // manland is), relative to this ability's controller and source.
+    int count = count_battlefield_matching(ab.condition_present, caster, ab.source);
+    return compare_svar(count, compare);
 }
 
 // Public entry point: evaluate the present condition, applying ConditionNotPresent$ negation.
