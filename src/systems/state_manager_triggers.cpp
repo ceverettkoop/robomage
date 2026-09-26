@@ -13,7 +13,6 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/static_ability.h"
 #include "../components/damage.h"
@@ -633,7 +632,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // carried as Params::ENTITY on both event types.
                 if (ab.trigger_valid_card_colorless && ev.HasParam(Params::ENTITY)) {
                     Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                    if (!is_colorless_entity(ev_card)) continue;
+                    if (!is_colorless(ev_card)) continue;
                 }
 
                 // Spell count filter (Cori-Steel Cutter)

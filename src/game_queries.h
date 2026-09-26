@@ -71,12 +71,18 @@ inline const CardData &active_face(Entity e, const CardData &cd) {
     return cd;
 }
 
-// Printed colors of a card: an explicit Colors$ override if present (e.g. Devoid's COLORLESS),
-// otherwise the colors of its mana cost (CR 105.2 / 202.2). Single source for the color of a
-// card object, shared by the targeting color checks and the last-known-info snapshot.
+// Printed colors of a card: an explicit Colors$ override if present (a color indicator, or
+// Devoid's COLORLESS), otherwise the colors of its mana cost (CR 105.2 / 202.2). Only the five
+// colors are ever returned — the COLORLESS marker means "no color" (CR 105.2c) — so the set is
+// empty exactly when the card is colorless. Single source for the color of a card object, shared
+// by the targeting color checks and the last-known-info snapshot.
 inline std::set<Colors> card_colors(const CardData &cd) {
-    if (!cd.explicit_colors.empty()) return cd.explicit_colors;
     std::set<Colors> result;
+    if (!cd.explicit_colors.empty()) {
+        for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+            if (cd.explicit_colors.count(c)) result.insert(c);
+        return result;
+    }
     for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
         if (cd.mana_cost.count(c)) result.insert(c);
     // Hybrid pips carry color too (CR 105.2/202.3f): {W/U} makes the card both white and blue,
@@ -456,48 +462,10 @@ inline bool is_permanent_card(const CardData &cd) {
            card_has_type(cd, "Land") || card_has_type(cd, "Planeswalker");
 }
 
-// True if the card is colorless (CR 105.2c): no colored mana symbol in its mana cost and no
-// Colors: override granting it a color. A `Colors:`/Devoid override (explicit_colors) takes
-// precedence over the cost; otherwise the printed mana cost's colored symbols decide. Mirrors
-// the colorless test in mana_system.cpp so spell/permanent colorlessness is computed once.
-inline bool is_colorless_card(const CardData &cd) {
-    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN}) {
-        if (!cd.explicit_colors.empty()) {
-            if (cd.explicit_colors.count(c)) return false;
-        } else if (cd.mana_cost.count(c)) {
-            return false;
-        }
-    }
-    // A hybrid pip ({W/U}, {2/W}) carries color, so a card with one is not colorless (unless a
-    // Colors: override said so, handled above). Only consulted when there is no explicit override.
-    if (cd.explicit_colors.empty())
-        for (const auto &pip : cd.hybrid_mana)
-            for (Colors c : pip.colors)
-                if (c != COLORLESS && c != GENERIC) return false;
-    // A Phyrexian pip carries color the same way (CR 202.2d): {B/P} makes the card black even
-    // when paid with life, so it is never colorless (absent a Colors: override, handled above).
-    if (cd.explicit_colors.empty())
-        for (Colors c : cd.phyrexian_mana)
-            if (c != COLORLESS && c != GENERIC) return false;
-    return true;
-}
-
-// True if the entity is colorless (CR 105.2c), handling both real cards (CardData) and
-// tokens (Token, which have no mana cost — their color is the token's color indicator).
-inline bool is_colorless_entity(Entity e) {
-    // A global SetColor$ override (Mycosynth Lattice) decides colorlessness first (CR 613.1e).
-    std::set<Colors> override_colors;
-    if (setcolor_override_for(e, override_colors)) return override_colors.empty();
-    if (global_coordinator.entity_has_component<CardData>(e))
-        return is_colorless_card(global_coordinator.GetComponent<CardData>(e));
-    if (global_coordinator.entity_has_component<Token>(e)) {
-        const auto &cols = global_coordinator.GetComponent<Token>(e).explicit_colors;
-        for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
-            if (cols.count(c)) return false;
-        return true;  // no colored indicator ⇒ colorless
-    }
-    return false;
-}
+// True if the object is colorless (CR 105.2c): it has none of the five colors, read from its
+// effective colors (so a Devoid card, a colorless token, or anything under a Mycosynth Lattice
+// SetColor override is colorless, and a transformed face reads its own colors).
+inline bool is_colorless(Entity e) { return effective_colors(e).empty(); }
 
 // True if a counter type names a keyword ability, so a counter of that type grants the
 // keyword to its permanent (CR 122.1d: keyword counters). The names match the keyword

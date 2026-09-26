@@ -234,15 +234,10 @@ bool color_token(const std::string &q, Colors &c) {
     return false;
 }
 
-// True when the object is one or more colors (CR 105.2a) — membership in the five real colors
-// only. The colors set can carry a COLORLESS sentinel (a Devoid card's explicit_colors is
-// {COLORLESS}), which must read as "has no colors", so a bare empty() test is not equivalent.
+// True when the object is one or more colors (CR 105.2a). Every color source (card_colors,
+// effective_colors, last-known info) holds only the five colors, so this is non-emptiness.
 // Single source for the Colorless / nonColorless qualifier pair.
-bool view_has_any_color(const CharView &v) {
-    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
-        if (v.colors.count(c)) return true;
-    return false;
-}
+bool view_has_any_color(const CharView &v) { return !v.colors.empty(); }
 
 // A "power"/"toughness" comparator qualifier (e.g. "toughnessLE2", "powerGE5"): static
 // characteristic compared against the object's P/T (CR 208.2 / 107.1). Returns true when `q`
@@ -753,7 +748,7 @@ bool permanent_protected_from_colored_spell_source(Entity perm_target, Entity so
     // activated/triggered ability) and one or more colors (CR 702.16a: the quality is a colored
     // spell). A colorless spell's damage is not prevented.
     if (!global_coordinator.entity_has_component<Spell>(source)) return false;
-    return !effective_colors(source).empty();
+    return !is_colorless(source);
 }
 
 Zone::Ownership last_known_controller(Entity e) {

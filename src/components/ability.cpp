@@ -598,7 +598,7 @@ static bool stack_spell_alt_matches(const std::string &alt, Entity cand) {
         !color_set_passes(alt, effective_colors(cand)))
         return false;
     // Colorless restriction (Consign to Memory): the spell must have NO color (CR 105.2c).
-    if (alt.find("Colorless") != std::string::npos && !effective_colors(cand).empty())
+    if (alt.find("Colorless") != std::string::npos && !is_colorless(cand))
         return false;
     return true;
 }
@@ -812,7 +812,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         // not an activated/triggered ability), and the "is colored" half from the source's
         // effective colors — so a colorless spell, or any ability, may still target it.
         if (ability_type == Ability::SPELL && has_protection_from_colored_spells(cand_cr) &&
-            !effective_colors(source).empty())
+            !is_colorless(source))
             return false;
     }
 

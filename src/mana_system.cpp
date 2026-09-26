@@ -211,7 +211,7 @@ static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
     // Colorless test (CR 105.2c) shared with the rest of the engine via game_queries.h, so an
     // Eldrazi Temple mana restriction and a color-targeting check can never disagree on whether
     // the same spell is colorless.
-    return is_colorless_card(paid_cd);
+    return is_colorless(paid_for);
 }
 
 // True if a mana source (its ability `ab`, on `source_entity`) may be spent to pay for
