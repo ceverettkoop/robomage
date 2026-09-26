@@ -173,17 +173,8 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         cur_game.void_countered.erase(chosen);
 
-        // Determine if permanent or instant/sorcery
-        bool is_permanent = false;
-        for (auto &t : cd.types) {
-            if (t.kind == TYPE && (t.name == "Creature" || t.name == "Artifact" ||
-                t.name == "Enchantment" || t.name == "Planeswalker" || t.name == "Land")) {
-                is_permanent = true;
-                break;
-            }
-        }
-
-        if (is_permanent) {
+        // A permanent card (CR 110.4a) enters the battlefield; an instant/sorcery is cast.
+        if (is_permanent_card(cd)) {
             orderer->add_to_zone(false, chosen, Zone::BATTLEFIELD);
             auto &cz = global_coordinator.GetComponent<Zone>(chosen);
             cz.controller = ctrl;

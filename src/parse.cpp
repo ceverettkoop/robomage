@@ -1789,7 +1789,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "ChangeNum") {
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "RestrictValid") {
-        if (value.find("Creature") != std::string::npos &&
+        if (filter_names_token(value, "Creature") &&
             value.find("ChosenType") != std::string::npos) {
             ability.restrict_to_chosen_type_creature = true;
         } else if (value.find("Eldrazi") != std::string::npos &&
@@ -1799,7 +1799,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // clause (activate abilities of colorless Eldrazi) is folded into the same
             // restriction. CR 106.7.
             ability.restrict_to_colorless_eldrazi = true;
-        } else if (value.find("Creature") != std::string::npos) {
+        } else if (filter_names_token(value, "Creature")) {
             // RestrictValid$ Spell.Creature — mana usable only to cast a creature spell
             // (any creature, no subtype constraint), e.g. Abundant Countryside. CR 106.7.
             ability.restrict_to_creature = true;
@@ -3039,7 +3039,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("OppCtrl") != std::string::npos) source_opp_ctrl = true;
             // Mode$ DamageAll | ValidSource$ Creature.YouCtrl — the damaging creature must be one
             // this trigger's controller controls (Forth Eorlingas!'s floating monarch trigger).
-            if (value.find("Creature") != std::string::npos && value.find("YouCtrl") != std::string::npos)
+            if (filter_has_head(value, "Creature") && filter_names_token(value, "YouCtrl"))
                 valid_source_creature_youctrl = true;
         } else if (key == "ValidTarget") {
             // ValidTarget$ Card.Self — the permanent that became a target must be this source.
@@ -3912,7 +3912,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                      (value.find("!token") != std::string::npos ||
                       value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
             // Containment Priest: a non-token creature that wasn't cast (Creature.!token+!wasCast).
-            else if (key == "ValidCard"   && value.find("Creature") != std::string::npos &&
+            else if (key == "ValidCard"   && filter_has_head(value, "Creature") &&
                      value.find("!wasCast") != std::string::npos &&
                      (value.find("!token") != std::string::npos ||
                       value.find("nonToken") != std::string::npos)) valid_card_uncast_creature = true;
@@ -3923,7 +3923,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
             else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
             else if (key == "Prevent"     && value == "True")        prevent_true             = true;
-            else if (key == "ValidLKI"    && value.find("Creature") != std::string::npos)
+            else if (key == "ValidLKI"    && filter_has_head(value, "Creature"))
                 valid_lki_creature = true;
             else if (key == "Origin") {
                 if (value.find("Graveyard") != std::string::npos) origin_graveyard = true;
