@@ -57,6 +57,7 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
 static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
                                             const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
+static void finish_blocker_declaration(Game &game);
 static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
 static bool arm_damage_assign_query(Game &game);
@@ -815,8 +816,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 
     if (attackers.empty()) {
         game_log("No attackers — skipping declare blockers.\n");
-        game.blockers_declared = true;
-        game.pending_choice = NONE;
+        finish_blocker_declaration(game);
         return;
     }
 
@@ -838,8 +838,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 
     if (eligible.empty()) {
         game_log("No creatures eligible to block.\n");
-        game.blockers_declared = true;
-        game.pending_choice = NONE;
+        finish_blocker_declaration(game);
         return;
     }
 
@@ -934,8 +933,17 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     }
     if (!any) game_log("  (none)\n");
 
+    finish_blocker_declaration(game);
+}
+
+// Close the declare-blockers turn-based action (CR 509.1). declare_blockers seats
+// the defending player for the block prompts; once the declaration is complete the
+// active player receives priority (CR 117.3a). Pass flags were reset when the step
+// began and the declaration passes no priority, so they are left as they are.
+static void finish_blocker_declaration(Game &game) {
     game.blockers_declared = true;
     game.pending_choice = NONE;
+    game.player_a_has_priority = game.player_a_turn;
 }
 
 // Perspective player for an ability's target search. Ownership-restricted targets
