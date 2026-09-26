@@ -2137,14 +2137,15 @@ class IncrementalPlanSearch:
         covered = np.isfinite(best)
         q = np.where(covered, best, 0.0)
         visits = np.zeros(n, dtype=np.float64)
+        pi = visits
         if covered.any():
-            # softmax over the covered subset only (mid-coverage chunks);
-            # equals _plan_softmax once coverage completes.
-            z = (q[covered] - q[covered].max()) / SB_PI_TAU
-            e = np.exp(z)
+            # softmax over the covered subset only (mid-coverage chunks):
+            # uncovered picks enter as -inf, exactly as run_plan_search passes
+            # rule-dead picks, so the completed search reproduces its π and
+            # visits bit-for-bit (same _plan_softmax over the same array).
+            pi = _plan_softmax(best)
             n_evals = len(self.plans) * self._worlds
-            visits[covered] = (e / e.sum()) * float(n_evals)
-        pi = visits / visits.sum() if visits.sum() > 0 else visits
+            visits = pi * float(n_evals)
         world_visits = np.zeros((self._worlds, n), dtype=np.int64)
         world_values = np.zeros(self._worlds, dtype=np.float64)
         for w in range(self._worlds):
