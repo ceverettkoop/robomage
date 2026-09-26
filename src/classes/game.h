@@ -804,6 +804,12 @@ struct Game {
         // triggers (end-step draw, steal-on-combat-damage) are fired by check_triggered_abilities.
         void set_monarch(Entity player_entity);
 
+        // Drop everything this Game recorded under entity id `e` (per-entity maps and sets, and
+        // `e`'s entries in the remembered / imprinted / delve / prevention-shield lists), so an
+        // object issued a reused id never inherits state of the id's previous holder (CR 400.7).
+        // Called for every id the coordinator issues (see forget_reissued_entity).
+        void forget_entity(Entity e);
+
         // The one place a player LOSING decides the game: marks the game over and credits the
         // win to their opponent (a two-player game, so the last player standing wins — CR
         // 104.2a). Shared by the state-based-action losses (0 or less life 704.5a, drawing from

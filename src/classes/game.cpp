@@ -25,6 +25,13 @@
 
 extern Coordinator global_coordinator;
 
+static void erase_entity(std::vector<Entity> &list, Entity e);
+
+// Remove every occurrence of `e` from `list`.
+static void erase_entity(std::vector<Entity> &list, Entity e) {
+    list.erase(std::remove(list.begin(), list.end(), e), list.end());
+}
+
 bool Game::ready_to_resolve() {
     return a_has_passed && b_has_passed;
 }
@@ -58,6 +65,41 @@ Entity Game::gen_player(const Deck &deck) {
     player.lands_played_this_turn = 0;
     global_coordinator.AddComponent(player_entity, player);
     return player_entity;
+}
+
+void Game::forget_entity(Entity e) {
+    last_known_info.erase(e);
+    combat_damage_assignment.erase(e);
+    for (auto &kv : combat_damage_assignment) kv.second.erase(e);
+    erase_entity(remembered_entities, e);
+    erase_entity(imprinted_entities, e);
+    erase_entity(delve_exiled, e);
+    combat_damage_prevention_shields.erase(
+        std::remove_if(combat_damage_prevention_shields.begin(),
+                       combat_damage_prevention_shields.end(),
+                       [e](const CombatDamagePreventionShield &s) { return s.creature == e; }),
+        combat_damage_prevention_shields.end());
+    ability_resolution_counts.erase(e);
+    payment_fail_counts.erase(e);
+    void_countered.erase(e);
+    may_cast_this_turn.erase(e);
+    chosen_cards.erase(e);
+    pending_enters_tapped.erase(e);
+    pending_enters_attacking.erase(e);
+    pending_enters_transformed.erase(e);
+    pending_evoked.erase(e);
+    pending_offspring.erase(e);
+    pending_escaped.erase(e);
+    pending_unearthed.erase(e);
+    pending_impending.erase(e);
+    cast_to_battlefield.erase(e);
+    cast_from_hand.erase(e);
+    impulse_cast_permission.erase(e);
+    pending_warp.erase(e);
+    suspend_time_counters.erase(e);
+    pending_etb_xpaid.erase(e);
+    pending_attach.erase(e);
+    pending_aura_target.erase(e);
 }
 
 void Game::set_monarch(Entity player_entity) {

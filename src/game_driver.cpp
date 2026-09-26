@@ -244,7 +244,7 @@ EcsSystems init_ecs() {
     card_db.clear();
     ++g_card_db_generation;
     global_coordinator.Init();
-    global_coordinator.SetEntityIssuedHook(forget_last_known_info);
+    global_coordinator.SetEntityIssuedHook(forget_reissued_entity);
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
     global_coordinator.RegisterComponent<Creature>();

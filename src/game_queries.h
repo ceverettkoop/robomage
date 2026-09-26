@@ -236,10 +236,10 @@ void supersede_last_known_info(Entity e);
 // spell that moved it, CR 608.2h) have all run.
 void supersede_departed_cards();
 
-// Drop any snapshot recorded under `e`. Installed as the coordinator's entity-issued hook, so
-// an object given a reused id never inherits the last-known information of the id's previous
-// holder.
-void forget_last_known_info(Entity e);
+// Drop all Game state recorded under `e` (Game::forget_entity, including its last-known
+// information). Installed as the coordinator's entity-issued hook, so an object given a reused
+// id never inherits the state of the id's previous holder.
+void forget_reissued_entity(Entity e);
 
 // The display name `e` had as it last left the battlefield ("Construct token" for a token),
 // from its last-known information; empty when none was captured.

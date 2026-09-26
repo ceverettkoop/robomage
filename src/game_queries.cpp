@@ -52,7 +52,7 @@ void supersede_departed_cards() {
         if (!kv.second.is_token) kv.second.superseded = true;
 }
 
-void forget_last_known_info(Entity e) { cur_game.last_known_info.erase(e); }
+void forget_reissued_entity(Entity e) { cur_game.forget_entity(e); }
 
 std::string last_known_name(Entity e) {
     const LastKnownInfo *lki = lki_for(e);

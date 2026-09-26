@@ -40,8 +40,9 @@ class Coordinator {
         }
         // Entity methods
         // Called with every id CreateEntity issues, so per-id state kept outside the ECS (the
-        // game's last-known-information store) can drop whatever it recorded for an earlier
-        // object that held the same id. Set by the engine; persists across Init().
+        // game's per-entity records, including last-known information) can drop whatever it
+        // recorded for an earlier object that held the same id. Set by the engine; persists
+        // across Init().
         using EntityIssuedHook = void (*)(Entity);
         void SetEntityIssuedHook(EntityIssuedHook hook) { mEntityIssuedHook = hook; }
         Entity CreateEntity() {
