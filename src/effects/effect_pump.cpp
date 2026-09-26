@@ -15,6 +15,7 @@
 #include "../ecs/entity.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
+#include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -155,8 +156,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
                             ab.valid_tgts.find("OppCtrl") != std::string::npos ||
                             ab.valid_tgts.find("ControlledBy") != std::string::npos;
         std::vector<Entity> pump_targets;
-        for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-            if (!is_battlefield_permanent(e)) continue;
+        for (auto e : battlefield_permanents(orderer->mEntities)) {
             if (!global_coordinator.entity_has_component<Creature>(e)) continue;
             auto &p = global_coordinator.GetComponent<Permanent>(e);
             if (want_youctrl && p.controller != ctrl) continue;

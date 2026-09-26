@@ -74,30 +74,14 @@ bool already_applied(const std::set<std::pair<Entity, int>> &applied, const Cand
 static bool tapped_condition_met(const std::string &filter, const std::string &compare,
                                  Zone::Ownership controller, Entity entering) {
     if (filter.empty()) return true;
-    // Split "Land.Basic" into a main type and an optional Basic/nonBasic supertype qualifier.
-    std::string type_filter = filter;
-    bool require_basic = false, require_nonbasic = false;
-    size_t dot = filter.find('.');
-    if (dot != std::string::npos) {
-        type_filter = filter.substr(0, dot);
-        std::string qual = filter.substr(dot + 1);
-        if (qual == "Basic") require_basic = true;
-        else if (qual == "nonBasic") require_nonbasic = true;
-    }
+    MatchCtx ctx;
+    ctx.controller = controller;
+    ctx.source = entering;
     int count = 0;
     Entity max_e = global_coordinator.GetMaxIssuedEntity();
     for (Entity e = 0; e < max_e; e++) {
         if (e == entering) continue;
-        if (!is_battlefield_permanent(e, controller)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        bool type_ok = type_filter.empty() || type_filter == "Permanent";
-        if (!type_ok)
-            for (const auto &t : perm.types)
-                if (t.name == type_filter) { type_ok = true; break; }
-        if (!type_ok) continue;
-        if (require_basic && !has_basic_supertype(perm.types)) continue;
-        if (require_nonbasic && has_basic_supertype(perm.types)) continue;
-        count++;
+        if (is_battlefield_permanent(e, controller) && permanent_matches_filter(e, filter, ctx)) count++;
     }
     std::string cmp = compare.empty() ? "GE1" : compare;
     return compare_svar(count, cmp);

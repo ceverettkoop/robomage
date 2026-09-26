@@ -574,13 +574,8 @@ ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<
     snap.player_mana = global_coordinator.GetComponent<Player>(player_entity).mana;
     snap.delve_exiled = cur_game.delve_exiled;
 
-    for (auto entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+    for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-        if (permanent.controller != player) continue;
-
         snap.tapped_state.push_back({entity, permanent.is_tapped});
         for (size_t i = 0; i < permanent.abilities.size(); i++) {
             if (permanent.abilities[i].category == "AddMana") {
@@ -812,7 +807,7 @@ bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership cont
 // a TapsForMana trigger. An earthbended land that became a creature counts (it has a Creature
 // component while animated).
 static bool tapped_source_is_creature(Entity e) {
-    return global_coordinator.entity_has_component<Creature>(e) && on_battlefield(e);
+    return global_coordinator.entity_has_component<Creature>(e) && is_battlefield_permanent(e);
 }
 
 // Resolve mana-additional "whenever you tap a <permanent> for mana" triggers (Mode$ TapsForMana

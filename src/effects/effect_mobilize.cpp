@@ -87,12 +87,8 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 // hit the graveyard, matching "sacrifice them."
 HandlerResult sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     for (Entity tok : ab.targets) {
-        if (!global_coordinator.entity_has_component<Zone>(tok)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(tok);
-        if (z.location != Zone::BATTLEFIELD) continue;
-        std::string name = global_coordinator.entity_has_component<Permanent>(tok)
-                               ? global_coordinator.GetComponent<Permanent>(tok).name
-                               : "token";
+        if (!is_battlefield_permanent(tok)) continue;
+        std::string name = global_coordinator.GetComponent<Permanent>(tok).name;
         orderer->add_to_zone(false, tok, Zone::GRAVEYARD);
         game_log("Mobilize: %s is sacrificed.\n", name.c_str());
     }

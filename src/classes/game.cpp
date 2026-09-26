@@ -198,7 +198,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     // Second part of the untap step (CR 502.2 / 731.2): the day/night turn-based
                     // check, based on the turn that just ended. Runs after phasing, before untap.
-                    day_night_untap_transition();
+                    day_night_untap_transition(orderer->mEntities);
                     // Untap all permanents controlled by active player. Once-each-turn activation
                     // gates (ActivationLimit$, CR 602.5b; loyalty, CR 606.3) reset for EVERY
                     // battlefield permanent: "each turn" includes the opponent's turns. A
@@ -281,7 +281,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // CR 714.3c turn-based action: as the active player's precombat main phase
                     // begins, put a lore counter on each Saga they control (firing the next
                     // chapter). Mirrors shed_impending_time_counters' built-in step hook.
-                    saga_put_precombat_lore_counters(active_player);
+                    saga_put_precombat_lore_counters(active_player, orderer->mEntities);
                     break;
                 case FIRST_MAIN:
                     cur_step = BEGIN_COMBAT;

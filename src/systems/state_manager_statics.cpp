@@ -148,14 +148,7 @@ static bool static_present_condition_met(const std::string &filter, const std::s
         // against a permanent's live controller/owner, so the original filter is passed through
         // unchanged — a controller qualifier (YouCtrl) must test the controller, not Zone::owner
         // (which would mishandle a permanent you control but don't own, e.g. a stolen creature).
-        for (auto e : entities) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            const auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != zone) continue;
-            if (!is_battlefield_permanent(e)) continue;
-            if (!permanent_matches_filter(e, filter, ctx)) continue;
-            count++;
-        }
+        count = count_battlefield_matching(filter, controller, source);
     } else {
         // Off-battlefield zones have no controller, so a YouCtrl/YouOwn (or OppCtrl/OppOwn)
         // qualifier collapses to ownership (a card in your graveyard/hand/exile is "yours").
@@ -226,13 +219,7 @@ int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
 
 // Number of artifacts `caster` controls on the battlefield (Affinity count, CR 702.41).
 static int artifacts_controlled_by(Zone::Ownership caster) {
-    int count = 0;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; ++e) {
-        if (!is_battlefield_permanent(e, caster)) continue;
-        if (permanent_has_type(global_coordinator.GetComponent<Permanent>(e), "Artifact")) count++;
-    }
-    return count;
+    return count_battlefield_matching("Artifact.YouCtrl", caster, 0);
 }
 
 // Total generic mana that active ReduceCost statics remove from the cost of casting
@@ -536,6 +523,7 @@ static std::vector<Entity> static_targets(const ActiveStatic &a, const std::set<
     if (affected_is_attached_target(aff)) {
         if (!global_coordinator.entity_has_component<Permanent>(a.entity)) return {};
         target = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
+        if (target == 0 || !is_battlefield_permanent(target)) return {};
     }
     if (target == 0) return {};
     return {target};
@@ -882,7 +870,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (game.day_night == Game::DN_NEITHER && card_has_daybound(card_data) &&
                 global_coordinator.entity_has_component<Permanent>(entity) &&
                 !global_coordinator.GetComponent<Permanent>(entity).transformed)
-                become_day();
+                become_day(mEntities);
 
             // Ninjutsu (CR 702.49e): a card put onto the battlefield "tapped and attacking" by a
             // ninjutsu ability. A normal creature ninja has its Creature component now, so mark it
@@ -2232,9 +2220,8 @@ void StateManager::apply_rules_modifying_effects() {
 // Recompute cached effective P/T from contributions for every battlefield creature.
 void StateManager::recompute_battlefield_pt() {
     for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
         recompute_pt(global_coordinator.GetComponent<Creature>(entity));
     }
 }

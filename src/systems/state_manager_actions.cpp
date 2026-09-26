@@ -684,10 +684,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     }
                     bool any_valid = false;
                     for (auto ce : mEntities) {
+                        if (!is_battlefield_permanent(ce)) continue;
                         if (!global_coordinator.entity_has_component<Creature>(ce)) continue;
-                        if (!global_coordinator.entity_has_component<Zone>(ce)) continue;
-                        auto &cz = global_coordinator.GetComponent<Zone>(ce);
-                        if (cz.location != Zone::BATTLEFIELD) continue;
                         // A token creature carries no CardData; a non-copy token has no mana
                         // cost and therefore mana value 0 (CR 111.7), which is always <= the
                         // threshold, so it is a valid conditional-destroy target. Mirror

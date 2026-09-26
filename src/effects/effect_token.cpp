@@ -137,12 +137,8 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
 HandlerResult exile_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)ctx;
     for (Entity tok : ab.targets) {
-        if (!global_coordinator.entity_has_component<Zone>(tok)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(tok);
-        if (z.location != Zone::BATTLEFIELD) continue;
-        std::string name = global_coordinator.entity_has_component<Permanent>(tok)
-                               ? global_coordinator.GetComponent<Permanent>(tok).name
-                               : "token";
+        if (!is_battlefield_permanent(tok)) continue;
+        std::string name = global_coordinator.GetComponent<Permanent>(tok).name;
         orderer->add_to_zone(false, tok, Zone::EXILE);
         game_log("%s is exiled at end of combat.\n", name.c_str());
     }

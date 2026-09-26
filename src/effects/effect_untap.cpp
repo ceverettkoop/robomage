@@ -5,6 +5,7 @@
 #include "../cli_output.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 
 extern Coordinator global_coordinator;
 
@@ -30,7 +31,7 @@ HandlerResult untap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         }
     }
     for (Entity t : targets) {
-        if (!global_coordinator.entity_has_component<Permanent>(t)) continue;
+        if (!is_battlefield_permanent(t)) continue;
         auto &tperm = global_coordinator.GetComponent<Permanent>(t);
         tperm.is_tapped = false;
         game_log("%s untaps\n", tperm.name.c_str());
