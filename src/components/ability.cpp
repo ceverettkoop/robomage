@@ -11,7 +11,6 @@
 #include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/token.h"
 #include "../components/types.h"
@@ -638,12 +637,11 @@ static bool target_type_matches_stack_object(const std::string &target_type, Ent
 // of the protected player controls whose SOURCE is one of the granted colors. Covers both the
 // protected player (the player object) and any permanent that player controls. `source` is the
 // targeting object (a spell card on the stack, or an ability's source permanent) whose
-// ColorIdentity gives the color of the spell/ability for the comparison; `caster` is its
+// effective colors give the color of the spell/ability for the comparison; `caster` is its
 // controller. Returns true when the candidate is protected (so the target is illegal).
 static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownership caster) {
     if (cur_game.hexproof_from_colors_this_turn.empty()) return false;
-    if (!global_coordinator.entity_has_component<ColorIdentity>(source)) return false;
-    const auto &src_colors = global_coordinator.GetComponent<ColorIdentity>(source).colors;
+    const std::set<Colors> src_colors = effective_colors(source);
     for (const auto &h : cur_game.hexproof_from_colors_this_turn) {
         // Only protects against an opponent's spell/ability (two-player: caster != protected player).
         if (caster == h.player) continue;

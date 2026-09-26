@@ -16,8 +16,8 @@
 #include "components/spell.h"
 #include "components/effect.h"
 #include "components/token.h"
-#include "components/color_identity.h"
 #include "classes/colors.h"
+#include "game_queries.h"
 
 extern Coordinator global_coordinator;
 
@@ -166,12 +166,9 @@ void dump_entity(Entity e) {
         fprintf(stderr, "\n");
     }
 
-    if (global_coordinator.entity_has_component<ColorIdentity>(e)) {
-        auto &ci = global_coordinator.GetComponent<ColorIdentity>(e);
-        fprintf(stderr, "  ColorIdentity:");
-        for (auto col : ci.colors) fprintf(stderr, " %s", mana_symbol(col).c_str());
-        fprintf(stderr, "\n");
-    }
+    fprintf(stderr, "  Colors:");
+    for (auto col : effective_colors(e)) fprintf(stderr, " %s", mana_symbol(col).c_str());
+    fprintf(stderr, "\n");
 
     fprintf(stderr, "=== end dump_entity(%u) ===\n", e);
 }

@@ -15,7 +15,6 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../game_queries.h"
@@ -33,7 +32,6 @@
 #include "../components/types.h"
 
 // --- file-local helpers (forward declarations) ---
-static ColorIdentity color_identity_from(const CardData &cd);
 static void restore_printed_card(Entity target);
 static int card_vocab_of(Entity target);
 
@@ -430,16 +428,6 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 
 extern bool no_shuffle;
 
-// Derive a card's color identity from its mana cost, honoring an explicit
-// color-identity override (e.g. Dryad Arbor) when present. Routed through the shared
-// card_colors() (game_queries.h) so hybrid and Phyrexian pips (CR 202.2d: {B/P} makes the
-// card black however it is paid) color the card here the same way they do everywhere else.
-static ColorIdentity color_identity_from(const CardData &cd) {
-    ColorIdentity ci;
-    ci.colors = card_colors(cd);
-    return ci;
-}
-
 // The card's vocab index, or -1 when it has no CardData (a token).
 static int card_vocab_of(Entity target) {
     if (!global_coordinator.entity_has_component<CardData>(target)) return -1;
@@ -487,8 +475,6 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
                     auto &z = coordinator.GetComponent<Zone>(card_id);
                     z.distance_from_top = deck_position++;
                 }
-                auto &cd = coordinator.GetComponent<CardData>(card_id);
-                coordinator.AddComponent(card_id, color_identity_from(cd));
             }
         }
     }
@@ -770,8 +756,6 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         auto &z = coordinator.GetComponent<Zone>(card_id);
         z.controller = owner;
 
-        auto &cd = coordinator.GetComponent<CardData>(card_id);
-        coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);
     }
 
@@ -793,8 +777,6 @@ std::vector<Entity> Orderer::place_in_zone(const std::vector<std::string> &card_
         auto card_data_id = load_card(name);
         coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
         coordinator.AddComponent(card_id, Zone(zone, owner, owner));
-        auto &cd = coordinator.GetComponent<CardData>(card_id);
-        coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);
     }
 

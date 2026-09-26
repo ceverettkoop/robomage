@@ -11,7 +11,6 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/static_ability.h"
 #include "../components/damage.h"

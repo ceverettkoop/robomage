@@ -5,7 +5,6 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -73,8 +72,9 @@ bool target_color_condition_met(const Ability &ab, Entity target) {
     else if (c.find(".White") != std::string::npos) required = WHITE;
     else if (c.find(".Black") != std::string::npos) required = BLACK;
     if (required == NO_COLOR) return true;  // non-color condition (e.g. cmcLEX) — not handled here
-    if (!global_coordinator.entity_has_component<ColorIdentity>(target)) return false;
-    return global_coordinator.GetComponent<ColorIdentity>(target).colors.count(required) > 0;
+    // The target's current color (CR 105.2 / 613.1e / 712.8e): a token's color indicator, a
+    // transformed face's colors, or a SetColor override.
+    return effective_colors(target).count(required) > 0;
 }
 
 HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {

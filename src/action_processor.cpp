@@ -8,7 +8,6 @@
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
-#include "components/color_identity.h"
 #include "components/creature.h"
 #include "components/permanent.h"
 #include "components/player.h"
@@ -2299,10 +2298,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 for (auto e : orderer->get_hand(caster)) {
                     if (e == spell_entity) continue;
                     if (already_chosen_as_cost(pc, e)) continue;
-                    if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
-                    if (pitch_color != NO_COLOR &&
-                        !global_coordinator.GetComponent<ColorIdentity>(e).colors.count(pitch_color))
-                        continue;
+                    if (pitch_color != NO_COLOR && !effective_colors(e).count(pitch_color)) continue;
                     LegalAction la(PASS_PRIORITY, e,
                                    "Exile " + global_coordinator.GetComponent<CardData>(e).name);
                     la.category = ActionCategory::PAYING_COSTS;
@@ -3373,10 +3369,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (spell_is_instant_or_sorcery) caster_player.instant_sorcery_spells_cast_this_turn++;
                 // Record the spell's colors so a "an opponent has cast a <color> spell this turn"
                 // condition (Veil of Summer's Count$ThisTurnCast_Card.OppCtrl+Blue/Black) can be
-                // evaluated. The spell entity carries the card's ColorIdentity.
-                if (global_coordinator.entity_has_component<ColorIdentity>(spell_entity))
-                    for (Colors c : global_coordinator.GetComponent<ColorIdentity>(spell_entity).colors)
-                        caster_player.spell_colors_cast_this_turn.insert(c);
+                // evaluated.
+                for (Colors c : effective_colors(spell_entity))
+                    caster_player.spell_colors_cast_this_turn.insert(c);
                 Event spell_event(Events::SPELL_CAST);
                 spell_event.SetParam(Params::PLAYER, caster_entity);
                 spell_event.SetParam(Params::ENTITY, spell_entity);

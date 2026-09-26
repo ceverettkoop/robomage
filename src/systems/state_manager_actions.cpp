@@ -12,7 +12,6 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/static_ability.h"
 #include "../components/damage.h"
@@ -217,8 +216,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         bool has_match = false;
         for (auto e : orderer->get_hand(priority_player)) {
             if (e == card_entity) continue;
-            if (required_color != NO_COLOR && global_coordinator.entity_has_component<ColorIdentity>(e) &&
-                global_coordinator.GetComponent<ColorIdentity>(e).colors.count(required_color)) {
+            if (required_color != NO_COLOR && effective_colors(e).count(required_color)) {
                 has_match = true; break;
             }
         }

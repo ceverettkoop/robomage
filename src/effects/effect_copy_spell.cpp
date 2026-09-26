@@ -16,7 +16,7 @@
 //
 // RESUMABLE (Batch 10): the whole loop is driven by a persisted CopySpellRT so a copy's
 // target pick can suspend as a loop-top pending decision. The current copy's entity
-// (CardData/ColorIdentity/Spell, deliberately no Zone until placement) persists in the ECS
+// (CardData/Spell, deliberately no Zone until placement) persists in the ECS
 // across the suspension — snapshot-covered — and its in-flight ability accumulates in
 // rt.work. The no-legal-target path DESTROYS the copy entity mid-loop; that happens strictly
 // before any ask for that copy, and rt.cur_copy is dropped in the same stride, so a parked
@@ -28,7 +28,6 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/spell.h"
@@ -58,16 +57,12 @@ void copy_spell_begin(CopySpellRT &rt, Entity original, int count, Zone::Ownersh
 TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr<Orderer> orderer) {
     if (!rt.active) return TargetStatus::DONE;
 
-    // Copiable characteristics: the card's printed values and color identity (CR 707.2),
+    // Copiable characteristics: the card's printed values (CR 707.2), colors included,
     // re-derived from the original on every (re-)entry — pure reads, and nothing runs between
     // suspend and resume, so a resume re-derives them identically. These survive on the card
-    // entity even after the spell has left the stack (a countered spell keeps its CardData/
-    // ColorIdentity in the graveyard; only its Spell/Ability components are stripped).
+    // entity even after the spell has left the stack (a countered spell keeps its CardData in
+    // the graveyard; only its Spell/Ability components are stripped).
     const auto &orig_card = global_coordinator.GetComponent<CardData>(rt.original);
-    const ColorIdentity *orig_color =
-        global_coordinator.entity_has_component<ColorIdentity>(rt.original)
-            ? &global_coordinator.GetComponent<ColorIdentity>(rt.original)
-            : nullptr;
     const Ability *orig_ability = nullptr;
     bool cant_be_countered = false;
     int x_paid = 0;
@@ -100,7 +95,6 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
             // perspective falls back to the ability's controller.
             Entity copy = global_coordinator.CreateEntity();
             global_coordinator.AddComponent(copy, orig_card);
-            if (orig_color) global_coordinator.AddComponent(copy, *orig_color);
 
             Spell copy_spell;
             copy_spell.caster = controller;

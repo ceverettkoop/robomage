@@ -238,7 +238,8 @@ templates), `Zone` (location, owner, controller, `distance_from_top`), `Permanen
 battlefield: controller, tapped, summoning sickness, abilities, statics, typed `counters`),
 `Creature` (P/T, combat state), `Damage`, `Spell` (card entity on the stack), `Ability` (also a
 standalone stack entity for activated/triggered abilities, `Orderer::push_ability_onto_stack`),
-`Token`, `Player` (life, mana, per-turn counters), `ColorIdentity`. **Tokens have no `CardData`**
+`Token`, `Player` (life, mana, per-turn counters); an object's color is read through
+`effective_colors` (`src/game_queries.h`). **Tokens have no `CardData`**
 (Zone + Permanent + Creature + Damage + Token) — guard `CardData` reads on battlefield objects.
 `Effect` is never instantiated; only its nested `Effect::Replacement` (parsed from `R:` lines into
 `CardData::replacement_effects`) is live.

@@ -193,7 +193,7 @@ struct ImmediateRt {
 // by Replicate (cast FINISH — embedded in Game::PendingCast, driven with the
 // CAST-tag asker) and Storm (resolution — this struct IS the storm handler's
 // EffectRuntime, driven with the ResolutionTargetAsker). The current copy is
-// built incrementally: the entity (CardData/ColorIdentity/Spell, deliberately
+// built incrementally: the entity (CardData/Spell, deliberately
 // NO Zone until placement) persists in the ECS across a suspension, and its
 // in-flight ability lives here BY VALUE until it is complete enough to become
 // the copy's Ability component. The no-legal-target path DESTROYS the copy

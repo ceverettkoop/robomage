@@ -1044,7 +1044,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
         // Colors: line and rely on the keyword for their colorlessness, so apply it here as a
         // general color override (e.g. an Eldrazi printed with colored mana symbols is still
-        // colorless). explicit_colors = {COLORLESS} marks the card colorless for ColorIdentity.
+        // colorless). explicit_colors = {COLORLESS} marks the card colorless (card_colors).
         if (kw_line == "Devoid") {
             card.explicit_colors.clear();
             card.explicit_colors.insert(COLORLESS);

@@ -18,7 +18,6 @@
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
-#include "components/color_identity.h"
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/effect.h"
@@ -248,7 +247,6 @@ EcsSystems init_ecs() {
     global_coordinator.SetEntityIssuedHook(forget_last_known_info);
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
-    global_coordinator.RegisterComponent<ColorIdentity>();
     global_coordinator.RegisterComponent<Creature>();
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Permanent>();
