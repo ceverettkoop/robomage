@@ -2492,11 +2492,14 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
                     cur_game.x_paid = x_val;
-                    for (size_t i = 0; i < x_val; i++) pc.cost_to_pay.insert(GENERIC);
+                    // Each {X} in the cost is paid with the one chosen value (CR 107.3a).
+                    size_t x_pips = static_cast<size_t>(card_data.x_pip_count);
+                    for (size_t i = 0; i < x_val * x_pips; i++) pc.cost_to_pay.insert(GENERIC);
                     game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
                 } else {
-                    size_t max_x = max_available_mana(caster, pc.cost_to_pay, orderer);
-                    max_x = payable_max_x(caster, pc.cost_to_pay, max_x, /*x_pips=*/1, spell_entity,
+                    size_t x_pips = static_cast<size_t>(card_data.x_pip_count);
+                    size_t max_x = max_available_mana(caster, pc.cost_to_pay, orderer) / x_pips;
+                    max_x = payable_max_x(caster, pc.cost_to_pay, max_x, x_pips, spell_entity,
                                           /*exclude=*/0, orderer, card_data.has_delve,
                                           card_data.has_improvise);
                     // For a spell whose required target count IS X (Hide on the Ceiling), X can't

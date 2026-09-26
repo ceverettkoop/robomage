@@ -456,7 +456,7 @@ CharView card_view(Entity e, const CardData &cd) {
     v.entity = e;
     v.types = &cd.types;
     v.colors = card_colors(cd);
-    v.cmc = card_mana_value(cd);
+    v.cmc = object_mana_value(e, cd);
     v.has_pt = true;  // printed P/T (a head type guard keeps P/T filters scoped to creatures)
     v.power = static_cast<int>(cd.power);
     v.toughness = static_cast<int>(cd.toughness);

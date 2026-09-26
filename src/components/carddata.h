@@ -125,6 +125,7 @@ struct CardData{
     bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
     std::string enchant_filter;          // K:Enchant:<ValidTgts> — for Auras, the object this can enchant (CR 303.4); the aura's spell targets it at cast and attaches on resolution
     bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
+    int x_pip_count = 0;                 // how MANY {X} the ManaCost carries (Chalice of the Void's "X X" = 2); the one chosen X is owed once per pip (CR 107.3a)
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
     bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB

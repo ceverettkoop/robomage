@@ -447,7 +447,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     card.uid = name_to_uid(card.name);
     std::string mana_cost_str = value_from_script(front_script, "ManaCost");
     card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana, &card.hybrid_mana);
-    card.has_x_cost = (mana_cost_str.find('X') != std::string::npos);
+    card.x_pip_count = static_cast<int>(std::count(mana_cost_str.begin(), mana_cost_str.end(), 'X'));
+    card.has_x_cost = (card.x_pip_count > 0);
     card.types = parse_types(value_from_script(front_script, "Types"));
     // AlternateMode:Modal marks a MODAL double-faced card (MDFC, CR 712.x) — both faces are
     // playable from hand (front spell OR back face). Only the front face carries this line; the

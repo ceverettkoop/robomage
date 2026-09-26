@@ -107,6 +107,16 @@ inline int card_mana_value(const CardData &cd) {
     return mv;
 }
 
+// Mana value of object `e` (printed characteristics `cd`), counting X while it is a spell on
+// the stack: each {X} in its mana cost counts as the value announced for X (CR 202.3e). In
+// every other zone X is 0 (CR 202.3b), so this equals card_mana_value for a non-spell.
+inline int object_mana_value(Entity e, const CardData &cd) {
+    int mv = card_mana_value(cd);
+    if (e != 0 && global_coordinator.entity_has_component<Spell>(e))
+        mv += cd.x_pip_count * global_coordinator.GetComponent<Spell>(e).x_paid;
+    return mv;
+}
+
 // Enforce a positive color target restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental
 // Blast: "target blue permanent", CR 115.1) against an already-resolved color set. Sharing the
 // color set (rather than re-reading printed colors) is what lets battlefield/last-known callers
