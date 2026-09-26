@@ -3271,6 +3271,7 @@
     Dragon's Rage Channeler deals 3 damage to Player A
   --- End Combat Damage ---
   Dragon's Rage Channeler is destroyed (lethal damage)
+  Cori-Steel Cutter becomes unattached
   -------- TURN 15 (Player A) --------
   Player A draws Daze
 --- Turn 15 (Player A) ---
