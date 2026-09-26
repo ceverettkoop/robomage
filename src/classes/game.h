@@ -209,7 +209,6 @@ struct Game {
         std::mt19937 gen;
         bool ended = false;
         int winner = 0;  // 0=none, 1=PLAYER_A, 2=PLAYER_B (Zone::Ownership values)
-        bool player_a_active = true;
         bool player_a_turn = true;
         bool player_a_has_priority = true;
         bool a_has_passed = false;

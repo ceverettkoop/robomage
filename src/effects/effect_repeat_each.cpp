@@ -125,7 +125,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
     if (ab.repeat_players.empty() || ab.subabilities.empty()) return HandlerResult::DONE_NO_SUBS;
 
-    Zone::Ownership active = cur_game.player_a_active ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership active = active_seat();
     Zone::Ownership nonactive = opponent_of(active);
     std::vector<Zone::Ownership> order = {active, nonactive};
 

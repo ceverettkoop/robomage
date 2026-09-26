@@ -179,7 +179,7 @@ static bool search_reveals_card(const Ability &ab) {
 // re-derived from their live hand every pass (a card already put has left the hand).
 static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
                                                FrameCtx &fctx) {
-    Zone::Ownership active = cur_game.player_a_active ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership active = active_seat();
     Zone::Ownership nonactive = opponent_of(active);
     Zone::Ownership order[2] = {active, nonactive};
 
