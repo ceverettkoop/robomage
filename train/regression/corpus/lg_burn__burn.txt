@@ -640,10 +640,10 @@
   Player B activated Mountain for 1(R)
   Player B casts Price of Progress
   Resolving ability (category: RepeatEach)
-  Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 3 life)
   Resolving ability (category: DealDamage, amount: 0)
   Dealt 0 damage to player (now at 11 life)
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to player (now at 3 life)
   Player B draws Chain Lightning
 
 --- Decision 28 ---
