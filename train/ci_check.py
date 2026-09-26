@@ -63,7 +63,8 @@ fails, so one invocation reports every finding):
           probe runs on the analysis worker, the Tree tab installs a rebuilt
           tree's roots, submits node expansions and renders the walked board
           as text, and live-streamed events grow/follow/finalize a LIVE row
-          (train/test_tui_browser.py). Torch-free; needs bin/robomage; ~3s.
+          (train/test_tui_browser.py). Torch-free; needs bin/robomage,
+          textual and matplotlib (self-skips without them); ~3s.
   modelspec The model-spec resolver (opponents.parse_model_spec + loaders):
           the kind/prefix/base/canonical-evaluator table for every spec
           family, knob stripping, tree_rebuild's recorded-evaluator mapping,
@@ -461,7 +462,15 @@ def tier_treecache(rep):
 def tier_browser(rep):
     """Textual analysis-browser regression (tui_analysis): trace-source load,
     .rmtrace save round trip, probe / tree / live-stream glue over the shared
-    browse_session core (see train/test_tui_browser.py). Torch-free."""
+    browse_session core (see train/test_tui_browser.py). Torch-free; self-skips
+    without textual or matplotlib (its chart view saves a PNG) — the per-push CI
+    image omits both; nightly full-check runs it."""
+    try:
+        import matplotlib  # noqa: F401
+        import textual  # noqa: F401
+    except Exception as e:
+        print(f"  [skip] browser: {e}", flush=True)
+        return
     _run_test_script(rep, "browser", "train/test_tui_browser.py",
                      "tui-browser")
 

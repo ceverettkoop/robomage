@@ -107,3 +107,42 @@ jobs:
           name: nightly-actor-parity-${{ github.run_number }}
           path: ci_out/
           retention-days: 14
+
+  # The full `make check` default run in a dev-equivalent venv. The per-push
+  # ci.yml image omits torch, the SB3 stack, textual and matplotlib, so the checks that
+  # import them (the browser tier; train.py, bench_actor.py and the TUI stubs in
+  # the clispec tier; xwsearch's torch legs) self-skip there; this job installs
+  # them so every leg runs at least nightly.
+  # Same torch pin and CPU wheel as actor-parity below.
+  full-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up robomage
+        uses: ./.github/actions/setup-robomage
+
+      - name: Cache torch wheel
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-torch-cpu-2.10-${{ runner.os }}
+
+      - name: Install torch (CPU) + stable-baselines3 + TUI/chart deps
+        run: |
+          train/.venv/bin/python -m pip install --quiet "torch==2.10.*" \
+            --index-url https://download.pytorch.org/whl/cpu
+          train/.venv/bin/python -m pip install --quiet stable-baselines3 sb3-contrib \
+            matplotlib -r train/requirements-tui.txt
+
+      - name: Engine test gate (make check, full deps)
+        run: train/.venv/bin/python train/ci_check.py --out-dir ci_out
+
+      - name: Upload full-check output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-full-check-${{ github.run_number }}
+          path: ci_out/
+          retention-days: 14

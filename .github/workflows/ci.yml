@@ -23,7 +23,9 @@ jobs:
 
       # Fixed default seed => a red PR is the diff's fault, not RNG. Runs every
       # tier: codegen-sync, vocab coverage, byte-identical replay corpus,
-      # deterministic league smoke, short fuzz.
+      # deterministic league smoke, short fuzz. This image has no torch/SB3/
+      # textual/matplotlib, so the browser tier and the clispec legs that need them skip;
+      # nightly-fuzz.yml's full-check job runs them.
       - name: Run engine test gate
         run: train/.venv/bin/python train/ci_check.py --out-dir ci_out
 

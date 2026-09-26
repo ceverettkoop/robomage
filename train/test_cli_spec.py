@@ -26,6 +26,9 @@
 
 The cli_spec parsers are built in-process exactly as the scripts build them
 (``apply_to_parser``); the standalone scripts are exercised as subprocesses.
+A script whose import chain needs a package this venv lacks (torch and the SB3
+stack for train.py, textual for the TUI stubs — the per-push CI image has
+neither) has its legs skipped; the nightly full-check job installs them.
 
     train/.venv/bin/python train/test_cli_spec.py
 
@@ -33,6 +36,7 @@ Wired into ci_check.py as the 'clispec' tier, so `make check` runs it.
 """
 
 import argparse
+import importlib.util
 import io
 import os
 import re
@@ -57,6 +61,28 @@ FORMAT_SUBS = {
                            "bench-nenvs")
 } | {("analysis", s) for s in ("browse", "report")} | {
     ("play", "play"), ("harness", "harness")}
+
+
+# Scripts that import a package the per-push CI image omits before they parse.
+TORCH_DEPS = ("torch", "stable_baselines3", "sb3_contrib")
+SCRIPT_DEPS = {
+    "train/train.py": TORCH_DEPS,
+    "train/bench_actor.py": TORCH_DEPS,
+    "train/tui_az_inspect.py": ("textual",),
+    "train/tui_analysis.py": ("textual", "rich"),
+}
+
+
+def need(what, modules):
+    """True when every module in ``modules`` is importable; else print a skip."""
+    missing = [m for m in modules if importlib.util.find_spec(m) is None]
+    if missing:
+        print(f"  [skip] {what}: {', '.join(missing)} not installed")
+    return not missing
+
+
+def can_run(script):
+    return need(script, SCRIPT_DEPS.get(script, ()))
 
 
 def check(cond, msg):
@@ -459,6 +485,8 @@ def test_removed_env_real():
             check(f"{name} was removed; use" in str(exc.code)
                   and want in str(exc.code),
                   f"{name} error should name {want!r}: {exc.code!r}")
+    if not can_run("train/train.py"):
+        return
     env = dict(os.environ, ROBOMAGE_POPART="1")
     r = subprocess.run([sys.executable, "train/train.py", "league", "--help"],
                        cwd=REPO, capture_output=True, text=True, timeout=300,
@@ -647,6 +675,8 @@ def test_scripts():
         ("train/play.py",),
     ]
     for prefix in cases:
+        if not can_run(prefix[0]):
+            continue
         name = " ".join(prefix)
         rc, out = run_script(*prefix, "--bo3")
         check(rc == 2 and "--bo3 was removed; use --format bo3" in out,
@@ -693,6 +723,8 @@ def test_scripts():
           "--player-b", "human"), "both 'human'"),
     ]
     for argv, needle in seat_cases:
+        if not can_run(argv[0]):
+            continue
         rc, out = run_script(*argv)
         check(rc == 2 and needle in out,
               f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
@@ -706,6 +738,8 @@ def test_scripts():
          "--n-games was removed; use --games"),
     ]
     for argv, needle in vocab_cases:
+        if not can_run(argv[0]):
+            continue
         rc, out = run_script(*argv)
         check(rc == 2 and needle in out,
               f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
@@ -896,9 +930,10 @@ def test_observe_fuzz_bench():
     check((args.out, args.max_decisions, args.quiet, args.timing, args.seed)
           == (None, None, False, False, 1),
           f"observe fuzz/bench flag defaults ({args})")
-    rc, out = run_script("train/train.py", "observe", "--verbose", "--quiet")
-    check(rc == 2 and "--verbose and --quiet are mutually exclusive" in out,
-          f"observe --verbose --quiet should error (rc={rc}):\n{out[-600:]}")
+    if can_run("train/train.py"):
+        rc, out = run_script("train/train.py", "observe", "--verbose", "--quiet")
+        check(rc == 2 and "--verbose and --quiet are mutually exclusive" in out,
+              f"observe --verbose --quiet should error (rc={rc}):\n{out[-600:]}")
     for script, needle in (
             ("train/fuzz_campaign.py", "use `train.py observe --player-a explore"),
             ("train/bench_engine.py", "--quiet --timing")):
@@ -920,6 +955,13 @@ def test_baseline_players():
                          ("gen", False), ("mcts:gen", False)):
         check(az_baseline.is_oracle_opponent(spec) == oracle,
               f"is_oracle_opponent({spec!r}) should be {oracle}")
+    rc, out = run_script("train/eval_search_gate.py", "--games", "3")
+    check(rc == 1 and "was removed" in out
+          and "train.py baseline --player-a mcts:gen --player-b gen" in out,
+          f"eval_search_gate.py should exit 1 naming baseline (rc={rc}):\n"
+          f"{out[-600:]}")
+    if not can_run("train/train.py"):
+        return
     args = build(sub).parse_args(["--sims", "16", "--worlds", "2"])
     kind, _ckpt, _base, params = az_baseline.classify_model("mcts:gen?worlds=3")
     budget = az_baseline.seat_budget(args, "mcts:gen?worlds=3", params)
@@ -935,11 +977,6 @@ def test_baseline_players():
     check(rc != 0 and "needs the Python backend" in out,
           f"baseline --actor with a non-scripted --player-b should refuse "
           f"(rc={rc}):\n{out[-600:]}")
-    rc, out = run_script("train/eval_search_gate.py", "--games", "3")
-    check(rc == 1 and "was removed" in out
-          and "train.py baseline --player-a mcts:gen --player-b gen" in out,
-          f"eval_search_gate.py should exit 1 naming baseline (rc={rc}):\n"
-          f"{out[-600:]}")
     from train import _baseline_units
     units = _baseline_units([("d", "o")], 5, 4)
     check([u[2:] for u in units] == [(0, 2), (2, 1), (3, 1), (4, 1)],
@@ -1002,13 +1039,16 @@ def test_benches():
     for script, cmd in (("train/bench_actor.py", "bench-actor"),
                         ("train/bench_az_workers.py", "bench-workers"),
                         ("train/bench_nenvs.py", "bench-nenvs")):
+        if not can_run(script):
+            continue
         rc, out = run_script(script, "--games", "3")
         check(rc == 1 and "was removed" in out and f"train.py {cmd}" in out,
               f"{script} should exit 1 naming {cmd} (rc={rc}):\n{out[-600:]}")
-    rc, out = run_script("train/train.py", "bench-workers", "--workers", "2",
-                         "--decks", "delver", "--dry-run")
-    check(rc == 0 and "leg 1: workers=2" in out and "dry run" in out,
-          f"bench-workers --dry-run plans a leg (rc={rc}):\n{out[-600:]}")
+    if can_run("train/train.py"):
+        rc, out = run_script("train/train.py", "bench-workers", "--workers", "2",
+                             "--decks", "delver", "--dry-run")
+        check(rc == 0 and "leg 1: workers=2" in out and "dry run" in out,
+              f"bench-workers --dry-run plans a leg (rc={rc}):\n{out[-600:]}")
 
 
 def test_az_inspect_entry():
@@ -1017,6 +1057,8 @@ def test_az_inspect_entry():
             ("train/tui_az_inspect.py", "use `az_inspect.py tui`"),
             ("train/az_embed_viz.py", "use `az_inspect.py project --chart`"),
             ("train/sb_shard_report.py", "use `az_inspect.py sbreport`")):
+        if not can_run(script):
+            continue
         rc, out = run_script(script, "--help")
         check(rc == 1 and "was removed" in out and needle in out,
               f"{script} should exit 1 naming az_inspect (rc={rc}):\n{out[-600:]}")
@@ -1087,10 +1129,11 @@ def test_browse_source():
             check(rc == 2 and needle in out,
                   f"browse {' '.join(argv)} should error with {needle!r} "
                   f"(rc={rc}):\n{out[-600:]}")
-    rc, out = run_script("train/tui_analysis.py", "--player-a", "gen")
-    check(rc == 1 and "was removed" in out and "use `analysis.py browse`" in out,
-          f"tui_analysis.py should exit 1 naming analysis.py browse (rc={rc}):\n"
-          f"{out[-600:]}")
+    if can_run("train/tui_analysis.py"):
+        rc, out = run_script("train/tui_analysis.py", "--player-a", "gen")
+        check(rc == 1 and "was removed" in out and "use `analysis.py browse`" in out,
+              f"tui_analysis.py should exit 1 naming analysis.py browse (rc={rc}):\n"
+              f"{out[-600:]}")
     check(not any(t.key == "analysis-tui" for t in ALL_TOOLS),
           "the analysis-tui tool is folded into analysis browse")
 
