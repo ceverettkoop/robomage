@@ -533,7 +533,7 @@
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Ponder, Force of Will, Lotus Petal, Swamp, Bloodstained Mire, Atraxa, Grand Unifier
   This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -915,7 +915,7 @@
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Lotus Petal, Swamp, Bloodstained Mire, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1326,7 +1326,7 @@
   Opp exile:  Atraxa, Grand Unifier
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Lotus Petal, Swamp, Bloodstained Mire, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]

@@ -2061,7 +2061,7 @@
   Known opp hand: Meticulous Archive
   Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=4 life_lost=10 colors=UB
-  Extras: self_lands_played=1, self_revolt, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -2619,7 +2619,7 @@
   Opp revealed: Polluted Delta, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, The One Ring, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
   This turn: opp spells=1 noncreature=1 drawn=2
   Opp effects: protection from everything
-  Extras: opp_lands_played=1, self_mulligans=1
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]

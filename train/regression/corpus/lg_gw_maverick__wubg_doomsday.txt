@@ -258,7 +258,7 @@
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time
   This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -539,7 +539,7 @@
   Opp GY:  Once Upon a Time
   Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
   This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_lands_played=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1965,7 +1965,7 @@
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2518,7 +2518,7 @@
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=2 drawn=1 colors=WG
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2845,7 +2845,6 @@
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=2 life_lost=2
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -3418,6 +3417,25 @@
   No creatures eligible to block.
 
 --- Decision 144 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 9)
+  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
+  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara (NEW,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
+  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
+  Opp GY:  Street Wraith, Underground Sea, Tropical Island, Doomsday
+  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 145 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3431,30 +3449,11 @@
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_revolt
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
-
---- Decision 145 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 9)
-  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Badgermole Cub [2/2] (T,ATK) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara (NEW,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
-  Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue (SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Thalia, Guardian of Thraben, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Street Wraith, Underground Sea, Tropical Island, Doomsday
-  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Street Wraith, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
     Thalia, Guardian of Thraben deals 2 damage to Player B

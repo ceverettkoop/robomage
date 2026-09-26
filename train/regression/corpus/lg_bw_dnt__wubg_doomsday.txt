@@ -470,7 +470,7 @@
   Opp GY:  Lotus Petal
   Opp revealed: Island, Lotus Petal, Tamiyo, Inquisitive Student
   This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1211,7 +1211,7 @@
   Opp revealed: Island, Brainstorm, Lotus Petal, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1524,7 +1524,7 @@
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: opp drawn=1
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_mulligans=1
+  Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2103,7 +2103,7 @@
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 drawn=1 colors=W
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2428,25 +2428,6 @@
   No attackers — skipping declare blockers.
 
 --- Decision 116 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 8)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Undercity Sewers
-  Self GY: Wasteland
-  Opp GY:  Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 117 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2458,11 +2439,30 @@
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, self_mulligans=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
+
+--- Decision 117 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 8)
+  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
+  Opp:   19 life | mana: empty | hand count: 4 | lib 48
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Undercity Sewers
+  Self GY: Wasteland
+  Opp GY:  Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -3427,24 +3427,6 @@
   No creatures eligible to block.
 
 --- Decision 164 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 9)
-  Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
-  Opp:   20 life | mana: empty | hand count: 2 | lib 69
-  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Undercity Sewers
-  Opp BF:   Aether Vial [charge:4] (res 1) | Aether Vial [charge:3] (res 1) | Orcish Bowmasters [0/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Pre-War Formalwear (NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [0/1] [+1/+1:1] (T,ATK)
-  Self GY: Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Wasteland
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: opp spells=1 noncreature=1 drawn=1 colors=W
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 165 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3456,12 +3438,30 @@
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, opp_mulligans=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
+
+--- Decision 165 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 9)
+  Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
+  Opp:   20 life | mana: empty | hand count: 2 | lib 69
+  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Undercity Sewers
+  Opp BF:   Aether Vial [charge:4] (res 1) | Aether Vial [charge:3] (res 1) | Orcish Bowmasters [0/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Pre-War Formalwear (NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [0/1] [+1/+1:1] (T,ATK)
+  Self GY: Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp GY:  Wasteland
+  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
+  This turn: opp spells=1 noncreature=1 drawn=1 colors=W
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed, self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
     Phelia, Exuberant Shepherd deals 1 damage to Player B
@@ -4080,25 +4080,6 @@
   No attackers — skipping declare blockers.
 
 --- Decision 196 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   17 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Undercity Sewers
-  Self GY: Wasteland
-  Opp GY:  Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 197 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4111,12 +4092,31 @@
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, self_mulligans=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
+
+--- Decision 197 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 10)
+  Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
+  Opp:   17 life | mana: empty | hand count: 5 | lib 46
+  Self BF:  Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Undercity Sewers
+  Self GY: Wasteland
+  Opp GY:  Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -5386,6 +5386,25 @@
   No creatures eligible to block.
 
 --- Decision 256 ---
+  Priority: Player A (active)
+  Step: Declare Blk (turn 11)
+  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
+  Opp:   17 life | mana: empty | hand count: 5 | lib 46
+  Self BF:  Aether Vial [charge:5] (res 1) | Aether Vial [charge:4] (res 1) | Orcish Bowmasters [0/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T) | Orc Army [1/2] [+1/+1:2] (T,ATK)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying]
+  Self GY: Prismatic Vista, Wasteland, Wasteland
+  Opp GY:  Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 drawn=1 life_lost=1 colors=W
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 257 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5398,30 +5417,11 @@
   Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: opp spells=1 drawn=1 life_lost=1 colors=W
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, self_mulligans=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
-
---- Decision 257 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 11)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
-  Opp:   17 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:5] (res 1) | Aether Vial [charge:4] (res 1) | Orcish Bowmasters [0/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T) | Orc Army [1/2] [+1/+1:2] (T,ATK)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying]
-  Self GY: Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
     Phelia, Exuberant Shepherd deals 1 damage to Player B
@@ -6162,25 +6162,6 @@
   No attackers — skipping declare blockers.
 
 --- Decision 293 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
-  Opp:   13 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] (act 1) | Underground Sea (NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 294 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6192,12 +6173,31 @@
   Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
+
+--- Decision 294 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 12)
+  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
+  Opp:   13 life | mana: empty | hand count: 5 | lib 43
+  Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] (act 1) | Underground Sea (NEW)
+  Self GY: Prismatic Vista, Wasteland, Wasteland
+  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -7478,25 +7478,6 @@
   No creatures eligible to block.
 
 --- Decision 354 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 13)
-  Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
-  Opp:   18 life | mana: empty | hand count: 0 | lib 65
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Underground Sea
-  Opp BF:   Aether Vial [charge:6] (res 1) | Aether Vial [charge:5] (res 1) | Orcish Bowmasters [0/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (NEW) | Pre-War Formalwear | Scrubland | White Orchid Phantom [1/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T) | Orc Army [2/3] [+1/+1:3] (T,ATK)
-  Self GY: Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 355 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7508,12 +7489,31 @@
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 drawn=1 life_lost=1 colors=W
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
+
+--- Decision 355 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 13)
+  Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
+  Opp:   18 life | mana: empty | hand count: 0 | lib 65
+  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Underground Sea
+  Opp BF:   Aether Vial [charge:6] (res 1) | Aether Vial [charge:5] (res 1) | Orcish Bowmasters [0/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (NEW) | Pre-War Formalwear | Scrubland | White Orchid Phantom [1/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T) | Orc Army [2/3] [+1/+1:3] (T,ATK)
+  Self GY: Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp GY:  Arid Mesa, Prismatic Vista, Wasteland, Wasteland
+  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
     White Orchid Phantom deals 1 damage to Player B
@@ -7977,25 +7977,6 @@
   No attackers — skipping declare blockers.
 
 --- Decision 379 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   9 life | mana: empty | hand count: 6 | lib 42
-  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] (act 1) | Underground Sea
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 380 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8007,12 +7988,31 @@
   Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, self_mulligans=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
+
+--- Decision 380 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 14)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 65
+  Opp:   9 life | mana: empty | hand count: 6 | lib 42
+  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] (act 1) | Underground Sea
+  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
+  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -9317,24 +9317,6 @@
   No creatures eligible to block.
 
 --- Decision 441 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 15)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 64
-  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 14] [Flying]
-  Opp BF:   Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [2/3] [Vigilance, Flash] (eq:Pre-War Formalwear) (ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | White Orchid Phantom [1/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [1/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow | Orc Army [2/3] [+1/+1:3] (T,ATK)
-  Self GY: Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: opp drawn=1
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 442 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9346,12 +9328,30 @@
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self drawn=1
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
+
+--- Decision 442 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk (turn 15)
+  Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
+  Opp:   18 life | mana: empty | hand count: 0 | lib 64
+  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 14] [Flying]
+  Opp BF:   Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [2/3] [Vigilance, Flash] (eq:Pre-War Formalwear) (ATK) | Phelia, Exuberant Shepherd [1/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | White Orchid Phantom [1/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [1/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow | Orc Army [2/3] [+1/+1:3] (T,ATK)
+  Self GY: Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp GY:  Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
+  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: opp drawn=1
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
     White Orchid Phantom deals 1 damage to Player B
@@ -9893,7 +9893,7 @@
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=G
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_revolt, opp_mulligans=1
+  Extras: opp_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -10800,7 +10800,7 @@
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self drawn=1
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]

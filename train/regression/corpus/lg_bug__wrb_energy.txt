@@ -1321,7 +1321,7 @@
   Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: self_revolt, opp_passed, opp_mulligans=1
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1603,7 +1603,7 @@
   Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
   This turn: opp drawn=1
-  Extras: opp_mulligans=1
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]

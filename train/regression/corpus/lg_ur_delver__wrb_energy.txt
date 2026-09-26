@@ -1493,7 +1493,6 @@
   Known opp hand: Cori-Steel Cutter, Misty Rainforest, Thundering Falls, Volcanic Island, Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WB
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1785,7 +1784,7 @@
   Known opp hand: Cori-Steel Cutter, Thundering Falls, Volcanic Island, Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
   This turn: opp drawn=1 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2216,7 +2215,7 @@
   Known opp hand: Cori-Steel Cutter, Thundering Falls, Volcanic Island, Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary
   This turn: self spells=1 drawn=1 life_gained=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2489,7 +2488,7 @@
   Known opp hand: Cori-Steel Cutter, Volcanic Island, Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
   This turn: opp drawn=1
-  Extras: opp_lands_played=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3019,7 +3018,7 @@
   Known opp hand: Cori-Steel Cutter, Flow State, Force of Will, Volcanic Island, Volcanic Island
   Opp revealed: Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Flow State, Mystic Sanctuary, Into the Flood Maw
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
-  Extras: self_revolt, opp_passed
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]

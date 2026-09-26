@@ -615,7 +615,7 @@
   Opp GY:  Badlands, Thoughtseize, Marsh Flats
   Opp revealed: Thoughtseize, Marsh Flats, Badlands
   This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1193,7 +1193,7 @@
   Opp GY:  Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1550,7 +1550,7 @@
   Self exile: Orcish Bowmasters
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self life_gained=1 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2011,7 +2011,7 @@
   Self exile: Orcish Bowmasters
   Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2347,7 +2347,7 @@
   Self exile: Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_mulligans=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2721,7 +2721,7 @@
   Self exile: Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self drawn=1
-  Extras: opp_passed, opp_mulligans=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3056,25 +3056,6 @@
   No creatures eligible to block.
 
 --- Decision 147 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:4] | Aether Vial [charge:3] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains
-  Self GY: Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp drawn=1
-  Extras: opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 148 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3087,12 +3068,31 @@
   Known opp hand: Phelia, Exuberant Shepherd
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
-  Extras: opp_passed, self_mulligans=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
+
+--- Decision 148 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 10)
+  Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
+  Opp:   12 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Aether Vial [charge:4] | Aether Vial [charge:3] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains
+  Self GY: Wasteland, Scrubland, Wasteland, Pre-War Formalwear
+  Opp GY:  Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
+  Self exile: Orcish Bowmasters
+  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
+  This turn: opp drawn=1
+  Extras: opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
     Ocelot Pride deals 1 damage to Player A
@@ -3986,7 +3986,7 @@
   Self exile: Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self spells=1 drawn=1 life_gained=2 life_lost=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -4335,25 +4335,6 @@
   No creatures eligible to block.
 
 --- Decision 208 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
-  Opp:   12 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Plains (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains | Cat [1/1] (T,ATK)
-  Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: Phelia, Exuberant Shepherd, Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp drawn=1
-  Extras: opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 209 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4365,11 +4346,30 @@
   Opp exile:  Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
-  Extras: opp_passed, self_mulligans=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
+
+--- Decision 209 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 12)
+  Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
+  Opp:   12 life | mana: empty | hand count: 4 | lib 44
+  Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Plains (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (T,ATK) | Plains | Cat [1/1] (T,ATK)
+  Self GY: Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
+  Opp GY:  Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
+  Self exile: Phelia, Exuberant Shepherd, Orcish Bowmasters
+  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
+  This turn: opp drawn=1
+  Extras: opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
     Ocelot Pride deals 1 damage to Player A
@@ -5174,7 +5174,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self spells=1 drawn=1 life_gained=2 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, opp_passed, opp_mulligans=1
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -5472,7 +5472,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: opp drawn=1
-  Extras: opp_mulligans=1
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -6090,7 +6090,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -6318,7 +6318,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: opp drawn=1
-  Extras: opp_mulligans=1
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -6821,7 +6821,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -7172,7 +7172,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: opp drawn=1
-  Extras: opp_mulligans=1
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -7714,7 +7714,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self spells=1 drawn=1 colors=W
-  Extras: opp_passed, opp_mulligans=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -7966,7 +7966,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: opp drawn=1
-  Extras: opp_mulligans=1
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -8489,7 +8489,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
   This turn: self spells=1 drawn=1 colors=W
-  Extras: opp_passed, opp_mulligans=1
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -8903,7 +8903,7 @@
   Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Guide of Souls
   This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_mulligans=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -9614,7 +9614,7 @@
   Opp exile:  Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Guide of Souls
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
-  Extras: opp_revolt, opp_passed, opp_mulligans=1
+  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -10090,7 +10090,7 @@
   Opp exile:  Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Guide of Souls
   This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_mulligans=1
+  Extras: opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -10698,7 +10698,7 @@
   Opp exile:  Ajani, Nacatl Pariah
   Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Guide of Souls
   This turn: self drawn=1
-  Extras: opp_citys_blessing, opp_passed, opp_mulligans=1
+  Extras: opp_citys_blessing, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]

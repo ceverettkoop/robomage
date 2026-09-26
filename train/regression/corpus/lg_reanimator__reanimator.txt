@@ -1531,6 +1531,7 @@
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: self drawn=1 life_lost=3 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_gained=3 life_lost=8 colors=UB
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]

@@ -436,7 +436,7 @@
   Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_passed, self_mulligans=1, opp_mulligans=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -717,7 +717,7 @@
   Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_mulligans=1, opp_mulligans=1
+  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1114,7 +1114,7 @@
   Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1317,7 +1317,7 @@
   Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
+  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2221,7 +2221,7 @@
   Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2548,7 +2548,7 @@
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, self_mulligans=1, opp_mulligans=1
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]

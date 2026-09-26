@@ -372,7 +372,7 @@
   Opp GY:  Urza's Saga, Dark Depths
   Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
   This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -772,7 +772,7 @@
   Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1874,7 +1874,7 @@
   Known top: Brainstorm, Brainstorm, ?, ?, ?
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt, opp_passed
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2249,6 +2249,7 @@
   Known top: Brainstorm, Brainstorm, ?, ?, ?
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
   This turn: opp spells=1 noncreature=1 drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -2452,7 +2453,6 @@
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
   This turn: self drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -2913,7 +2913,7 @@
   Known top: Brainstorm, ?, ?, ?, ?
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
   This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]

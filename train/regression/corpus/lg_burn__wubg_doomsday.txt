@@ -222,7 +222,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]

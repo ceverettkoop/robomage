@@ -1105,7 +1105,7 @@
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1497,7 +1497,7 @@
   Known top: Force of Negation, ?, ?, ?, ?
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
-  Extras: opp_lands_played=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1863,7 +1863,7 @@
   Opp exile:  Tamiyo, Inquisitive Student
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -5116,7 +5116,6 @@
   This turn: self drawn=1
   Self effects: sorceries as flash, sorcery speed only, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorceries as flash, sorcery speed only, floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]

@@ -1432,7 +1432,7 @@
   Opp GY:  Life from the Loam, Brainstorm, Brainstorm, Sheoldred's Edict, Polluted Delta
   Opp revealed: Polluted Delta, Brainstorm, Undercity Sewers, Underground Sea, Life from the Loam, Orcish Bowmasters, Bayou, Sheoldred's Edict, Tropical Island
   This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, opp_passed, opp_mulligans=1
+  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2421,7 +2421,7 @@
   Opp GY:  Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Wasteland, Plains, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=2 noncreature=1 instant_sorcery=1 life_gained=3 colors=UG
-  Extras: self_revolt, opp_passed, self_mulligans=1
+  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -3171,7 +3171,7 @@
   Opp GY:  Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Scrubland, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UG
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -3789,7 +3789,7 @@
   Opp GY:  Thoughtseize, Scrubland, Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Thoughtseize, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Scrubland, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -4338,7 +4338,7 @@
   Opp GY:  Stoneforge Mystic, Shadowy Backstreet, Thoughtseize, Scrubland, Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Thoughtseize, Shadowy Backstreet, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -5198,7 +5198,7 @@
   Opp GY:  Scrubland, Windswept Heath, Stoneforge Mystic, Shadowy Backstreet, Thoughtseize, Scrubland, Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Windswept Heath, Thoughtseize, Shadowy Backstreet, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -5797,7 +5797,7 @@
   Opp GY:  Wasteland, Scrubland, Windswept Heath, Stoneforge Mystic, Shadowy Backstreet, Thoughtseize, Scrubland, Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Windswept Heath, Thoughtseize, Shadowy Backstreet, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Meteor Sword, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, self_mulligans=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -6134,7 +6134,7 @@
   Opp GY:  Wasteland, Scrubland, Windswept Heath, Stoneforge Mystic, Shadowy Backstreet, Thoughtseize, Scrubland, Scrubland, Flooded Strand, Marsh Flats, Aether Vial, Wasteland, Pre-War Formalwear, Stoneforge Mystic, Prismatic Vista, White Orchid Phantom, Prismatic Vista
   Opp revealed: Flooded Strand, Wasteland, Plains, Windswept Heath, Thoughtseize, Shadowy Backstreet, Marsh Flats, Aether Vial, Stoneforge Mystic, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Meteor Sword, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]

@@ -252,7 +252,7 @@
   Known opp hand: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Ponder, Polluted Delta, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -752,7 +752,7 @@
   Known opp hand: Dragon's Rage Channeler, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1127,7 +1127,7 @@
   Known opp hand: Dragon's Rage Channeler, Scalding Tarn
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U | opp drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1533,7 +1533,7 @@
   Known opp hand: Scalding Tarn
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=UR
-  Extras: opp_lands_played=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -1850,7 +1850,7 @@
   Known opp hand: Scalding Tarn
   Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -2596,7 +2596,7 @@
   Known opp hand: Scalding Tarn
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: self life_lost=3 | opp spells=4 noncreature=3 instant_sorcery=2 drawn=2 colors=UR
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -2838,7 +2838,6 @@
   Known opp hand: Scalding Tarn
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: self drawn=1 | opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -3650,7 +3649,7 @@
   Opp exile:  Brainstorm, Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -3874,7 +3873,6 @@
   Opp exile:  Brainstorm, Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
   This turn: self drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4393,7 +4391,7 @@
   Opp exile:  Brainstorm, Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Unholy Heat
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -5292,7 +5290,7 @@
   Known top: Thassa's Oracle, Ponder, Brainstorm, Brainstorm, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Unholy Heat
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=B
-  Extras: self_revolt, opp_passed
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -5827,7 +5825,7 @@
   Known top: Thassa's Oracle, Ponder, Brainstorm, Brainstorm, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Unholy Heat
   This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_revolt
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]

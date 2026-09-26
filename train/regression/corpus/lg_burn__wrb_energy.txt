@@ -1136,7 +1136,7 @@
   Known opp hand: Mountain
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self spells=1 drawn=1 life_lost=1 colors=R
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares (impulse, alt cost)  [#7]

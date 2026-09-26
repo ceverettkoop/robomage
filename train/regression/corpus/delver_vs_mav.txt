@@ -1384,7 +1384,7 @@
   Self exile: Knight of the Reliquary
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Unholy Heat
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2110,7 +2110,7 @@
   Self exile: Knight of the Reliquary
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble, Unholy Heat
   This turn: self drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2565,7 +2565,7 @@
   Self exile: Knight of the Reliquary
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble, Unholy Heat
   This turn: self life_lost=3 | opp spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=UR
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]

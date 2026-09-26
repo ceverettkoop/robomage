@@ -716,7 +716,7 @@
   Opp exile:  Tamiyo, Inquisitive Student
   Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1083,7 +1083,7 @@
   Self exile: Tamiyo, Inquisitive Student
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
   This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1441,7 +1441,7 @@
   Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1813,25 +1813,6 @@
   No creatures eligible to block.
 
 --- Decision 83 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 8)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | energy 2 | hand count: 3 | lib 41
-  Self BF:  Forest (T) | Gaea's Cradle | Savannah
-  Opp BF:   Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Green Sun's Zenith
-  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp drawn=1 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 84 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
@@ -1844,11 +1825,30 @@
   Opp exile:  Green Sun's Zenith
   Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
   This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
+
+--- Decision 84 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk (turn 8)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   15 life | mana: empty | energy 2 | hand count: 3 | lib 41
+  Self BF:  Forest (T) | Gaea's Cradle | Savannah
+  Opp BF:   Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
+  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
+  Self exile: Green Sun's Zenith
+  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
+  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---

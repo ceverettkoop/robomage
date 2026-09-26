@@ -1045,7 +1045,6 @@
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   This turn: self drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1431,7 +1430,7 @@
   Known opp hand: Wasteland
   Opp revealed: Wasteland, Grafdigger's Cage, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
   This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]

@@ -668,7 +668,7 @@
   Opp exile:  Dryad Arbor
   Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
-  Extras: self_lands_played=1, opp_revolt, opp_passed
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1005,7 +1005,7 @@
   Opp exile:  Dryad Arbor
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
   This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1392,7 +1392,7 @@
   Opp exile:  Dryad Arbor
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1905,7 +1905,7 @@
   Opp exile:  Dryad Arbor
   Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
   This turn: self drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]

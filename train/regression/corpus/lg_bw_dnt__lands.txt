@@ -511,7 +511,7 @@
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Boseiju, Who Endures, Thespian's Stage, Mox Diamond
   This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -992,7 +992,7 @@
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Boseiju, Who Endures, Thespian's Stage, Mox Diamond
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1225,6 +1225,7 @@
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Expedition Map, Boseiju, Who Endures, Thespian's Stage, Mox Diamond
   This turn: opp spells=1 noncreature=1 drawn=1
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1665,7 +1666,7 @@
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Expedition Map, Boseiju, Who Endures, Thespian's Stage, Mox Diamond
   This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1988,7 +1989,7 @@
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Expedition Map, Crop Rotation, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2668,7 +2669,6 @@
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Expedition Map, Crop Rotation, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: self drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3078,7 +3078,7 @@
   Opp GY:  Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3699,7 +3699,7 @@
   Opp GY:  Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -4011,7 +4011,7 @@
   Opp GY:  Urza's Saga, Dark Depths, Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: opp drawn=1
-  Extras: opp_revolt
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -4470,7 +4470,7 @@
   Opp GY:  Urza's Saga, Dark Depths, Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -5049,7 +5049,7 @@
   Opp GY:  Expedition Map, Crop Rotation, Ghost Quarter, Urza's Saga, Dark Depths, Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -5700,7 +5700,7 @@
   Opp GY:  Urza's Saga, Expedition Map, Crop Rotation, Ghost Quarter, Urza's Saga, Dark Depths, Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -6084,7 +6084,7 @@
   Self exile: Orcish Bowmasters
   Opp revealed: Swords to Plowshares, Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: self life_gained=1 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: self_revolt
+  Extras: self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -6666,7 +6666,7 @@
   Self exile: Orcish Bowmasters
   Opp revealed: Swords to Plowshares, Grafdigger's Cage, Ghost Quarter, Expedition Map, Urza's Saga, Crop Rotation, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond, The Tabernacle at Pendrell Vale
   This turn: self spells=1 drawn=1 colors=W
-  Extras: opp_revolt, opp_passed
+  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]

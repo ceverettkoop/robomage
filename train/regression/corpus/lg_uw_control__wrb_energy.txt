@@ -3771,7 +3771,7 @@
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -4079,7 +4079,7 @@
   This turn: self life_gained=6 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
-  Extras: self_revolt
+  Extras: self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -4372,7 +4372,7 @@
   This turn: self drawn=1 life_lost=1
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -4595,6 +4595,7 @@
   This turn: opp drawn=1
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -4798,7 +4799,6 @@
   This turn: self drawn=1
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -5017,6 +5017,7 @@
   This turn: opp drawn=1
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -5328,7 +5329,7 @@
   This turn: self drawn=1
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -5821,7 +5822,7 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -6681,7 +6682,7 @@
   This turn: self life_lost=3 | opp spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=BR
   Self effects: sorceries as flash
   Opp effects: sorcery speed only
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
@@ -7564,7 +7565,6 @@
   This turn: self spells=1 drawn=3 life_lost=2 colors=WU
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]

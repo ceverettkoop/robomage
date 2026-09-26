@@ -618,7 +618,7 @@
   Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -962,7 +962,7 @@
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, self_mulligans=1
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1246,7 +1246,7 @@
   Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1557,7 +1557,7 @@
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: opp spells=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, self_mulligans=1
+  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -1824,7 +1824,7 @@
   Known opp hand: Wasteland, Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: opp_passed, self_mulligans=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2674,7 +2674,7 @@
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, self_mulligans=1
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2900,7 +2900,7 @@
   Known opp hand: Windswept Heath
   Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: self drawn=1
-  Extras: self_lands_played=1, opp_passed, self_mulligans=1
+  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3626,7 +3626,7 @@
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
-  Extras: opp_lands_played=1, opp_revolt, self_mulligans=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -3814,7 +3814,7 @@
   Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
   Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
   This turn: self drawn=1
-  Extras: opp_passed, self_mulligans=1
+  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4615,7 +4615,7 @@
   Opp exile:  Wasteland, Swords to Plowshares, Once Upon a Time, Knight of the Reliquary
   Opp revealed: Forest, Wooded Foothills, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Sylvan Library, Talon Gates of Madara, Windswept Heath
   This turn: opp spells=1 noncreature=1 drawn=1 life_lost=1 colors=G
-  Extras: opp_lands_played=1, opp_revolt, self_mulligans=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]

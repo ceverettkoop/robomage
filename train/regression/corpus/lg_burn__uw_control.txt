@@ -1074,7 +1074,7 @@
   Self exile: Flow State
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self drawn=1
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1688,7 +1688,7 @@
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=WU | opp life_gained=2
-  Extras: self_lands_played=1, opp_revolt, opp_passed
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -1948,7 +1948,6 @@
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self spells=1 drawn=1 colors=WU
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -2217,7 +2216,7 @@
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: opp drawn=1
-  Extras: opp_lands_played=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]

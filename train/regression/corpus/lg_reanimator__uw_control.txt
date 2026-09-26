@@ -1239,7 +1239,7 @@
   Opp exile:  Otherworldly Gaze
   Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Otherworldly Gaze
   This turn: self drawn=2
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1691,7 +1691,7 @@
   Opp exile:  Otherworldly Gaze
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3028,7 +3028,7 @@
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3295,6 +3295,7 @@
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: opp drawn=1
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -3728,7 +3729,7 @@
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: self drawn=1 life_lost=1
   Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -4119,6 +4120,7 @@
   This turn: opp drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -4522,7 +4524,6 @@
   This turn: self drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -5387,7 +5388,7 @@
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=U
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -5641,6 +5642,7 @@
   This turn: opp drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -6222,7 +6224,7 @@
   This turn: self drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -6797,6 +6799,7 @@
   This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=U
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -7318,7 +7321,7 @@
   This turn: self drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -7920,6 +7923,7 @@
   This turn: opp drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -8373,7 +8377,6 @@
   This turn: self drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -8761,6 +8764,7 @@
   This turn: opp drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -9258,7 +9262,7 @@
   This turn: self drawn=1
   Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
   Opp effects: sorcery speed only
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]

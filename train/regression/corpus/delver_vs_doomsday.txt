@@ -518,7 +518,7 @@
   Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -721,7 +721,7 @@
   Opp GY:  Daze, Ponder, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   This turn: opp drawn=1
-  Extras: opp_lands_played=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1207,7 +1207,7 @@
   Known opp hand: Island
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, opp_revolt, opp_passed
+  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1419,7 +1419,7 @@
   Known top: Undercity Sewers, Doomsday, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Daze, Island
   This turn: opp drawn=1
-  Extras: opp_lands_played=1
+  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1792,7 +1792,7 @@
   Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Wasteland
   Opp revealed: Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2186,7 +2186,7 @@
   Known opp hand: Dragon's Rage Channeler, Unholy Heat, Wasteland
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
   This turn: opp spells=2 drawn=1 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -2978,7 +2978,7 @@
   Known opp hand: Dragon's Rage Channeler, Unholy Heat, Wasteland
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, opp_passed
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Verdant Catacombs (ChangeZone)  [#0]
@@ -3458,7 +3458,7 @@
   Known opp hand: Dragon's Rage Channeler
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Verdant Catacombs (ChangeZone)  [#0]
@@ -3850,7 +3850,7 @@
   Known opp hand: Dragon's Rage Channeler
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: self drawn=4 life_lost=4
-  Extras: self_revolt, opp_passed
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -4168,6 +4168,7 @@
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: opp spells=2 drawn=1 colors=UR
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
