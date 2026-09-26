@@ -851,7 +851,7 @@ _OPP_PERM_PHASED_IDX = _OPP_PERM_POWER_IDX + _OFF_IS_PHASED_OUT
 def _board_power_advantage(obs):
     """Return self_power - opp_power from the observation vector.
 
-    Phased-out permanents (CR 702.26e) are serialized with real power and
+    Phased-out permanents (CR 702.26b) are serialized with real power and
     is_creature=1 but count as nonexistent, so exclude them from the sum."""
     self_mask = (obs[_SELF_PERM_CREATURE_IDX] > 0.5) & (obs[_SELF_PERM_PHASED_IDX] < 0.5)
     self_power = np.sum(obs[_SELF_PERM_POWER_IDX[self_mask]]) * 10.0

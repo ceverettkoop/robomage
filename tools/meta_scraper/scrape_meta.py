@@ -69,7 +69,7 @@ def expand_dfc_name(name, cards_dir):
     MTGTop8 lists only the front face, so when there is no exact single-face
     script but a `<uid>_*.txt` combined script exists whose front Name matches,
     return "Front Back". Otherwise return the name unchanged (single-faced, or
-    no local script — left for the implement-missing-cards workflow).
+    no local script — left for implementation; see `train/missing_cards.py`).
     """
     uid = name_to_uid(name)
     if not uid or not cards_dir:

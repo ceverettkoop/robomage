@@ -49,7 +49,7 @@ INTERACTIVE_BINARY = os.path.join(INTERACTIVE_BUILD_DIR, "robomage")
 # branches; every plan is priced by leaf rollout on every determinized world
 # and the training target is pi = softmax(Q / mcts.SB_PI_TAU) over first picks.
 # See the plan-search section of train/mcts.py (mirrored in
-# src/actor/az_mcts.cpp) and docs/alphazero_status.md.
+# src/actor/az_mcts.cpp).
 #
 # Why plans, not a tree (2026-08): at the old sb_sims=128 / 4 worlds a single
 # world's tree got 32 sims for the then ~33-child delta menu — it could not even
@@ -434,7 +434,7 @@ EXPLOITER_STEPS            = 500_000 # default step budget for an exploiter run
 EXPLOITER_CHUNK            = 100_000 # steps per sidecar/progress chunk
 
 
-# ── Distributed league sharding (docs/distributed_league_training.md) ─────────
+# ── Distributed league sharding ──────────────────────────────────────────────
 # A league run may train only a slice of the roster ("--shard i/n") while still
 # sampling opponents from the full roster — one shard per machine over a
 # shared/synced checkpoint dir. These helpers are the single home for the shard
@@ -1184,7 +1184,7 @@ def _actor_mode():
 
 def _actor_device():
     """The --actor-device pass-through (az-selfplay / az / az-league): the C++
-    actor's ``--device`` (Stage A of docs/gpu_selfplay_inference_plan.md)."""
+    actor's ``--device``."""
     return Arg("--actor-device", "str", default="cpu",
                help="Eval device for the C++ actor's net forwards: cpu (default) "
                     "or cuda (the Radeon under the ROCm torch build; the launcher "
@@ -1196,7 +1196,7 @@ def _actor_device():
 
 def _eval_server():
     """The --eval-server | --no-eval-server pair (az-selfplay / az /
-    az-league): Stage C central inference (docs/gpu_selfplay_inference_plan.md).
+    az-league): central eval-server inference.
     Default (neither) is AUTO: start a cuda server iff the box has a usable
     GPU, else fall back to local-CPU actors with a printed notice."""
     return MutexGroup([
@@ -1330,12 +1330,11 @@ def _no_gate_shards():
 
 
 def _no_cross_world():
-    """--no-cross-world (az-selfplay / az / az-league): Stage 0 kill switch."""
+    """--no-cross-world (az-selfplay / az / az-league): cross-world batching kill switch."""
     return Arg("--no-cross-world", "flag",
                help="Disable the actor's cross-world batched leaf evaluation "
                     "(default ON — visits are arithmetically identical to the "
-                    "sequential search, ~1.7-3.3x per decision; see "
-                    "docs/gpu_selfplay_inference_plan.md Stage 0)")
+                    "sequential search, ~1.7-3.3x per decision)")
 
 
 # n-step TD knobs. Two sides of one scheme, so their help lives in one place and
@@ -1728,8 +1727,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--shard", "str", default=None, metavar="i/n",
             help="Distributed training: train only roster slice i of n (0-indexed, "
                  "strided) while still sampling opponents from the FULL roster. Run "
-                 "one shard per machine over a shared/synced checkpoint dir "
-                 "(docs/distributed_league_training.md). Each shard keeps its own "
+                 "one shard per machine over a shared/synced checkpoint dir. "
+                 "Each shard keeps its own "
                  "progress sidecar (_league_progress.shard{i}of{n}.json); pass the "
                  "same --shard together with --resume. Omit for single-machine "
                  "training."),
@@ -2134,7 +2133,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "and fresh controllers make matchups independent"),
         # Gate backend (mirrors the az-selfplay/az knobs): the C++ actor plays
         # candidate-vs-incumbent two-model matches (--model-b) with cross-world
-        # batching and the optional Stage C eval-server (one per net). The
+        # batching and the optional central eval-server (one per net). The
         # no-incumbent vs-scripted fallback always stays on Python.
         _actor_mode(),
         _actor_device(),
@@ -2496,7 +2495,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             choices=EVAL_DEVICE_CHOICES,
             help="Device of the eval-server leg's az_eval_server (default: "
                  "--actor-device, cpu -> cuda, as the az-* commands start it; "
-                 "cpu exercises the Stage C socket path without a GPU)"),
+                 "cpu exercises the eval-server socket path without a GPU)"),
         Arg("--fleet", "int", default=1,
             help="Concurrent actor processes per C++ leg (each plays --games "
                  "matches on a disjoint seed range); with the eval server this "

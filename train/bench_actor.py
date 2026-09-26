@@ -56,7 +56,7 @@ def _cpp_leg(ts_path, out_dir, args, batch=1, cross_world=False,
     # noise/temperature knobs _python_leg passes to _play_match, so the two legs
     # measure the identical workload by construction. ``fleet`` > 1 launches
     # that many CONCURRENT actor processes, each playing args.games games on a
-    # disjoint seed range — the Stage C shape (decisions/dt then measures
+    # disjoint seed range — the central eval-server shape (decisions/dt then measures
     # fleet-wide throughput, not single-process latency). ``scripted`` puts
     # scripted:hard on seat B via the oracle (net seat A, one shared oracle
     # process), matching _python_leg's agent/net_is_a=True mode.
@@ -193,7 +193,7 @@ def run(args):
                              a[0], a[1]))
         eval_server = az_selfplay.resolve_eval_server(args)
         if eval_server is not False:
-            # Stage C: one server owns the device; the whole fleet shares it.
+            # Eval-server mode: one server owns the device; the whole fleet shares it.
             # Cross-world keeps each actor's request K = worlds with no quality
             # cost, so it is the natural pairing.
             srv_dev = _server_device(args)

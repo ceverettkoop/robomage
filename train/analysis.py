@@ -204,7 +204,7 @@ def _extract_interpretable(obs):
         if _slot_card_idx(obs, base + _PERM_CARD_OFF) < 0:
             continue
         # Phased-out permanents are serialized (so the model can anticipate the
-        # phase-in) but the rules treat them as nonexistent (CR 702.26e) — keep
+        # phase-in) but the rules treat them as nonexistent (CR 702.26b) — keep
         # them out of the board stats so they don't inflate counts/power sums.
         if obs[base + _OFF_IS_PHASED_OUT] > 0.5:
             continue

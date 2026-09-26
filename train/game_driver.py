@@ -997,8 +997,8 @@ def build_session(binary_path, model_path, human_player=None,
     for one session (front-end-agnostic). Returns a Session.
 
     `model_path` of None/"scripted" ⇒ rule-based opponent. Any agent spec
-    ``opponents.make_controller`` accepts works — a checkpoint path / deck
-    shorthand, or a scripted tier ("scripted:hard", "explore", ...) — so both
+    ``opponents.make_controller`` accepts works — a checkpoint path, the
+    generalist 'gen', or a scripted tier ("scripted:hard", "explore", ...) — so both
     front ends share the one agent grammar. `bo3` (default True) plays a
     best-of-three match — with sideboarding between games — in a single engine
     process; pass ``bo3=False`` for a single game. `analysis=True` forces the

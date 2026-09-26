@@ -46,11 +46,10 @@ public:
     // backend), so no AMD-specific string exists. On a non-cpu device the
     // forward runs there and the logits/value are copied back; the
     // double-precision prior math stays on CPU, so AZEvalResultD semantics are
-    // identical whichever device ran the GEMMs (Stage A of
-    // docs/gpu_selfplay_inference_plan.md).
+    // identical whichever device ran the GEMMs.
     void load(const std::string& path, const std::string& device = "cpu");
 
-    // Stage C (docs/gpu_selfplay_inference_plan.md): instead of loading a local
+    // Central eval-server inference: instead of loading a local
     // module, connect to a central inference server (train/az_eval_server.py)
     // over the Unix domain socket at `socket_path`. A layout hello
     // (OBS_SIZE/MAX_ACTIONS) is verified at connect; every evaluate_* then

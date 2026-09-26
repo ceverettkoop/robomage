@@ -24,8 +24,7 @@ Then a K=16 batched-leaf sanity check reruns the C++ side with --batch 16 (same
 seeds) and REPORTS (does not assert) the argmax-agreement fraction against the
 batch=1 visits — expected high but not 100% (virtual loss perturbs collection).
 
-Cross-world batching (--cross-world; Stage 0 of
-docs/gpu_selfplay_inference_plan.md) gets two legs: EXACT visit gates under
+Cross-world batching (--cross-world) gets two legs: EXACT visit gates under
 --uniform (bo1 + bo3-sb-persist — with no net, the scheduler must reproduce the
 sequential visits bit-for-bit), and a real-net argmax-agreement REPORT (only the
 batched forward's last-ulp logits can differ).
@@ -536,7 +535,7 @@ def _sb_root_summary(records, is_sb):
 
 
 def _server_legs(td, ts_path, actor1):
-    """Stage C legs (docs/gpu_selfplay_inference_plan.md), compared against
+    """Central eval-server legs, compared against
     ``actor1`` (the local --model bo1 visit records).
 
     (a) EXACT gate, --device cpu: a CPU server forwards the SAME TorchScript
@@ -729,7 +728,7 @@ def _run_legs():
         description="MCTS visit-parity gates (C++ actor vs Python reference)")
     ap.add_argument("--legs", choices=["full", "server", "gate"], default="full",
                     help="'full' (default) runs every gate incl. the slow "
-                         "Python-reference legs; 'server' runs only the Stage C "
+                         "Python-reference legs; 'server' runs only the central "
                          "eval-server legs against a fresh local bo1 reference "
                          "(~minutes — for iterating on server/protocol work); "
                          "'gate' runs only the two-model (--model-b) gate legs "
@@ -861,7 +860,7 @@ def _run_legs():
         print(f"REPORT: batch=16 vs batch=1 argmax agreement over {prefix} "
               f"comparable roots = {agree}/{prefix} = {frac:.3f}{diverged}")
 
-        # 6) Cross-world batching (Stage 0 of docs/gpu_selfplay_inference_plan.md).
+        # 6) Cross-world batching.
         # (a) EXACT gates, --uniform: the uniform evaluator returns identical
         # priors however leaves are grouped, so the cross-world scheduler must
         # reproduce the sequential (batch=1) visits BIT-EXACT — any difference
@@ -913,7 +912,7 @@ def _run_legs():
         print(f"REPORT: cross-world vs batch=1 (net) argmax agreement over "
               f"{prefix} comparable roots = {agree}/{prefix} = {frac:.3f}{diverged}")
 
-        # 7) Stage C central inference server.
+        # 7) Central inference server.
         rc = _server_legs(td, ts_path, actor1)
         if rc:
             return rc

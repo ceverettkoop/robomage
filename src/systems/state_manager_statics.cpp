@@ -1523,7 +1523,7 @@ void StateManager::gather_active_statics(Game &game) {
     g_type_set_lands.clear();
 
     for (auto entity : mEntities) {
-        // Phased-out permanents are treated as nonexistent (702.26e): skip them entirely.
+        // Phased-out permanents are treated as nonexistent (702.26b): skip them entirely.
         // Their cached P/T and keywords are rebuilt from base on a later pass once they
         // phase back in, so there is nothing to reset here.
         if (!is_battlefield_permanent(entity)) continue;

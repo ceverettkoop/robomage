@@ -228,7 +228,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             }
         }
 
-        // 704.5n - an Aura attached to an illegal object, or not attached to anything, is put
+        // 704.5m - an Aura attached to an illegal object, or not attached to anything, is put
         // into its owner's graveyard. Auras carry an enchant restriction (CardData::enchant_filter)
         // and track their attachment via Permanent::equipped_to (shared with equipment). We check
         // the structural part of "illegal": no attachment, or the enchanted object has left the

@@ -1026,14 +1026,15 @@ def tier_actor(rep):
         print(f"  [skip] actor: {actor_bin} not built "
               "(build with `make actor`)", flush=True)
         return
-    # bin/az_actor is a SEPARATE make target that `make` and `make check` do not
+    # az_actor is a SEPARATE make target that `make` and `make check` do not
     # build, so it silently keeps whatever engine it was last linked against. A
     # stale binary then fails the parity tests as an obs/decision-count divergence,
     # which reads exactly like a real layout bug — so name the actual cause here.
     stale = _newer_engine_sources(actor_bin)
     if stale:
         rep.error("actor",
-                  f"bin/az_actor is older than {len(stale)} engine source(s) "
+                  f"{os.path.relpath(actor_bin, _REPO_ROOT)} is older than "
+                  f"{len(stale)} engine source(s) "
                   f"(e.g. {', '.join(stale[:3])}) — run `make actor` first. A stale "
                   "actor fails parity as a spurious obs/decision-count divergence.")
         return

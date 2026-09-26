@@ -1769,8 +1769,8 @@ def _generate_python(deck, *, source, schedule, sims, worlds, workers,
 def actor_gpu_env() -> dict:
     """The environment for GPU-capable actor/server subprocesses.
 
-    Stage A (docs/gpu_selfplay_inference_plan.md): a cuda actor or eval server
-    on the ROCm build needs the RDNA2 override in ITS environment — exported
+    A cuda actor or eval server on the ROCm build needs the RDNA2 override in
+    ITS environment — exported
     here in the launcher (respecting existing values) instead of relying on
     the shell. HIP_VISIBLE_DEVICES pins device 0 (the discrete card; device 1
     is the CPU's iGPU, which the gfx override would misconfigure). Shared by
@@ -1783,7 +1783,7 @@ def actor_gpu_env() -> dict:
 
 def start_eval_server(ts_path: str, *, device: str = "cuda",
                       forced: bool = False, tag: str = "az-selfplay"):
-    """Start a ``train/az_eval_server.py`` serving ``ts_path`` (Stage C).
+    """Start a ``train/az_eval_server.py`` serving ``ts_path``.
 
     Returns ``(proc, socket_path, tmpdir)`` once the server printed READY. The
     socket lives in a short ``mkdtemp`` dir (AF_UNIX paths cap at ~107 chars,
@@ -1942,10 +1942,9 @@ def actor_selfplay_cmd(actor_bin, *, deck, seed, games, sims, worlds, model,
     bit-parity envelope). ``cross_world`` is the actor's ``--cross-world``
     knob (mutually exclusive with batch>1): round-robin the worlds and batch
     one leaf per world per forward with NO virtual loss, so visits stay
-    arithmetically identical to the unbatched search (see
-    docs/gpu_selfplay_inference_plan.md, Stage 0). ``device`` is the actor's
-    ``--device`` (Stage A): "cpu" (default) or "cuda" — the Radeon under the
-    ROCm torch build. ``eval_server`` (Stage C) is the Unix-socket path of a
+    arithmetically identical to the unbatched search. ``device`` is the actor's
+    ``--device``: "cpu" (default) or "cuda" — the Radeon under the
+    ROCm torch build. ``eval_server`` is the Unix-socket path of a
     running ``train/az_eval_server.py``; when set the actor evaluates leaves
     there instead of loading the model locally (``--eval-server`` replaces
     ``--model``; ``device`` is inert — the server owns the device). All of
@@ -2064,11 +2063,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
     sibling is exported once per distinct path and loaded locally by each
     group's actor; the central eval server keeps serving the learner).
 
-    ``eval_server`` is tri-state: True forces the Stage C central server
+    ``eval_server`` is tri-state: True forces the central eval server
     (fatal if it cannot start), False disables it, and None — the default —
     is AUTO: try to start a cuda server and fall back to local-CPU actors
     with a printed notice when the box has no usable GPU. ``cross_world``
-    (default True) turns on Stage 0 cross-world leaf batching — visits are
+    (default True) turns on cross-world leaf batching — visits are
     arithmetically identical to the sequential search, so it is pure speed."""
     import glob
     import shlex
@@ -2077,7 +2076,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
     import threading
     from collections import Counter
 
-    # GPU-capable env for cuda actors and the Stage C central server (the
+    # GPU-capable env for cuda actors and the central eval server (the
     # ROCm RDNA2 override + discrete-GPU pin) — see actor_gpu_env().
     gpu_env = actor_gpu_env()
 
@@ -2132,7 +2131,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
     total_samples = 0
     agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
 
-    # Stage C: one central inference server owns the GPU for the whole fleet;
+    # One central inference server owns the GPU for the whole fleet;
     # each actor connects with --eval-server instead of loading the net. The
     # socket lives in a short mkdtemp dir (AF_UNIX paths cap at ~107 chars, so
     # out_dir is not a safe home for it). Fresh server per generation pass —

@@ -45,8 +45,7 @@ struct MCTSConfig {
     double c_puct = 2.5;  // mirrors train/cli_spec.py DEFAULT_AZ_C_PUCT (callers pass --c)
     int max_depth = 60;
     int batch = 1;                  // 1 = exact mcts.py parity; K>1 = virtual-loss batching
-    // Cross-world batched leaf evaluation (Stage 0 of
-    // docs/gpu_selfplay_inference_plan.md): run the per-world sims round-robin
+    // Cross-world batched leaf evaluation: run the per-world sims round-robin
     // and defer each freshly expanded (or depth-capped) leaf into a PendingLeaf,
     // flushed in one batched forward (K <= worlds) before any world's OWN next
     // descent starts — so NO virtual loss is needed and every per-world tree is

@@ -53,14 +53,14 @@ struct AZEvaluator::Impl {
     torch::jit::Module module;
     torch::Device device{torch::kCPU};
     bool loaded = false;
-    int server_fd = -1;  // >=0: Stage C server mode (connect_server), no local module
+    int server_fd = -1;  // >=0: eval-server mode (connect_server), no local module
 
     ~Impl() {
         if (server_fd >= 0) close(server_fd);
     }
 };
 
-// ── Stage C wire protocol (twin: train/az_eval_server.py — keep in lockstep) ──
+// ── Eval-server wire protocol (twin: train/az_eval_server.py — keep in lockstep) ──
 // Little-endian, uint32-length-prefixed frames. Hello: [MAGIC, OBS_SIZE,
 // MAX_ACTIONS] as int32; reply int32 1 (0 = layout mismatch). Request:
 // [int32 k | k*OBS float32 | k int32 num_choices]; reply: [k*MAX_ACTIONS
@@ -293,7 +293,7 @@ std::vector<AZEvalResultD> AZEvaluator::evaluate_double_batch(
     if (k == 0) return out;
 
     if (impl_->server_fd >= 0) {
-        // Stage C: one request frame, one reply frame, then the SAME per-row
+        // Eval-server mode: one request frame, one reply frame, then the SAME per-row
         // float32-softmax -> float64-renormalize prior math as the local path
         // (torch::softmax over the returned raw logits, single-threaded), so
         // AZEvalResultD numerics match a local forward of the same net.

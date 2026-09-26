@@ -852,7 +852,7 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
     # cross-check: two independent derivations of "how many lands does this player
     # have" — the engine's live-permanent scan vs. the serialized per-slot is_land
     # flags — must match, with phased-out permanents excluded from BOTH per CR
-    # 702.26e). lands_in_hand is self-only and bounded by the hand count.
+    # 702.26b). lands_in_hand is self-only and bounded by the hand count.
     _check_mana_dev(decision_idx, seat, state)
 
     # (13) Log-scaled vitals: each log float is exactly log1p(max(count,0)) over the

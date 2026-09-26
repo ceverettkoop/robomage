@@ -54,11 +54,11 @@ struct ActorConfig {
     std::string model_b;
     std::string eval_server_b;
     // Eval device for the TorchScript forward: "cpu" (default) or "cuda" (the
-    // Radeon under the ROCm build — HIP registers as the cuda backend). Stage A
-    // of docs/gpu_selfplay_inference_plan.md; search math is device-independent
+    // Radeon under the ROCm build — HIP registers as the cuda backend); search
+    // math is device-independent
     // (priors/value come back to CPU inside AZEvaluator).
     std::string device = "cpu";
-    // Stage C: Unix-socket path of a central inference server
+    // Unix-socket path of a central inference server
     // (train/az_eval_server.py). Mutually exclusive with --model/--uniform;
     // --device is inert with it (the server owns the device).
     std::string eval_server;

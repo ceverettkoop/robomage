@@ -17,7 +17,7 @@
   Per-matchup and per-piloted-deck breakdowns are printed; their tallies
   accumulate across the gate's rounds.
   The panel plays on the C++ actor by default (two-model ``az_actor
-  --model-b`` matches with cross-world leaf batching and the optional Stage C
+  --model-b`` matches with cross-world leaf batching and the optional central
   GPU eval-server — one server per net); the no-incumbent-yet fallback (vs
   scripted) runs on the Python ``run_match`` path with ``az`` controllers.
 - ``az_cycle`` : one sequential generate -> train -> eval iteration.
@@ -912,12 +912,12 @@ def _parse_gate_output(stdout: str, bo3: bool) -> tuple:
 @contextlib.contextmanager
 def _gate_eval_servers(cand_ts: str, inc_ts: str, *, eval_server,
                        actor_device: str, cross_world: bool):
-    """Stage C eval servers for an actor gate, held open for the WHOLE
+    """Central eval servers for an actor gate, held open for the WHOLE
     sequential gate (every round) rather than per panel pass — starting and
     stopping two GPU server processes once per round would cost more than the
     rounds save. Yields ``(cand_sock, inc_sock, actor_env)``.
 
-    ``eval_server`` is the tri-state Stage C knob (None AUTO / True forced /
+    ``eval_server`` is the tri-state eval-server knob (None AUTO / True forced /
     False off). The gate needs TWO nets, so it starts one
     ``train/az_eval_server.py`` PER NET (candidate + incumbent) on the one GPU
     — each actor leg connects its ``--eval-server``/``--eval-server-b`` to the
@@ -964,7 +964,7 @@ def _gate_round_servers(backend: str, cand_path: str, inc_path: str, *,
                         eval_server, actor_device: str, cross_world: bool):
     """Everything an actor-backend gate needs to set up ONCE and reuse across
     every round of the sequential test: the two nets' TorchScript exports and
-    the Stage C eval servers. Yields the dict :func:`az_eval`'s ``_play_round``
+    the central eval servers. Yields the dict :func:`az_eval`'s ``_play_round``
     passes to :func:`_gate_actor_panel`, or ``None`` on the Python backend
     (which builds its controllers fresh per matchup and needs no setup)."""
     if backend != "actor":
@@ -1017,7 +1017,7 @@ def _gate_actor_stream(matchups: list, per: int, *, actor_bin: str,
     independent of scheduling order and worker count; only WHICH legs get
     played before the verdict lands depends on completion order.
 
-    Cross-world leaf batching (Stage 0) is on by default — visits are
+    Cross-world leaf batching is on by default — visits are
     arithmetically identical to the sequential search, so it never changes a
     gate verdict, only its wall-clock."""
     import shlex
@@ -1268,7 +1268,7 @@ def az_eval(deck, candidate: str, incumbent: Optional[str] = None, *,
     actor (loud error when impossible), False forces Python. The actor
     backend runs with cross-world leaf batching (``cross_world``, default on
     — visits arithmetically identical to the sequential search) and the
-    Stage C GPU eval-server per the tri-state ``eval_server`` knob (None
+    central GPU eval-server per the tri-state ``eval_server`` knob (None
     AUTO / True forced / False off; TWO servers, one per net — see
     :func:`_gate_eval_servers`, which holds them open across every round rather
     than restarting them per round); ``actor_device`` is the local-forward
@@ -1909,7 +1909,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
         return {"generate": gen, "train": tr, "eval": None}
     print("=== az cycle: eval/gate (aggregate) ===")
     # The gate inherits the cycle's actor-backend knobs (backend choice,
-    # device, Stage C eval-server tri-state, cross-world), so a GPU-served
+    # device, eval-server tri-state, cross-world), so a GPU-served
     # generation pass gates on the same machinery.
     # Gate-shard recording (default on): the gate's candidate-vs-incumbent
     # matches are recorded and pooled into az_data/gen, so the NEXT training

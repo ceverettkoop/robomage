@@ -59,9 +59,8 @@ class Evaluator(Protocol):
     num_choices_list) -> list[(priors, value)]`` — one forward over k rows,
     each row's priors/value computed exactly as ``evaluate`` would. The
     cross-world batched search uses it when present (``az_net.AZEvaluator``
-    implements it; this is where a GPU device pays — see
-    docs/gpu_selfplay_inference_plan.md); evaluators without it are called
-    row-by-row, which keeps torch-free/uniform evaluators BIT-IDENTICAL to
+    implements it; this is where a GPU device pays); evaluators without it
+    are called row-by-row, which keeps torch-free/uniform evaluators BIT-IDENTICAL to
     the sequential search under cross-world scheduling.
     """
 
@@ -461,7 +460,7 @@ def run_search(
     byte-identical): run the per-world sims ROUND-ROBIN and defer each freshly
     expanded (or depth-capped) leaf's net evaluation into a shared pending
     batch, flushed in one ``evaluate_batch`` forward before any world's own
-    next descent starts — the Python twin of the C++ actor's Stage 0
+    next descent starts — the Python twin of the C++ actor's cross-world
     scheduler (see the "Cross-world batched leaf evaluation" block below).
     Per-world trees are arithmetically identical to the sequential search;
     only a batched GEMM's last-ulp logits can differ, and an evaluator
@@ -1049,8 +1048,7 @@ def rollout_memo_key(world_seed: int, leaf_seat_is_a: bool, picks) -> tuple:
     the pinned world seed (the sampled next-game deal), the leaf's mover seat,
     and the SORTED multiset of pick descriptors accumulated from the boundary
     root to the leaf — order-insensitive, so permuted pick orders reaching the
-    same net configuration collide (deliberately: an accepted approximation,
-    see docs/alphazero_status.md)."""
+    same net configuration collide (deliberately: an accepted approximation)."""
     return (int(world_seed), bool(leaf_seat_is_a), tuple(sorted(picks)))
 
 
@@ -1259,8 +1257,8 @@ def _simulate(
 
 
 # ── Cross-world batched leaf evaluation ──────────────────────────────────────
-# The Python twin of the C++ actor's cross-world scheduler (Stage 0 of
-# docs/gpu_selfplay_inference_plan.md, src/actor/az_mcts.cpp): worlds run
+# The Python twin of the C++ actor's cross-world scheduler
+# (src/actor/az_mcts.cpp): worlds run
 # round-robin, each freshly expanded (or depth-capped) leaf DEFERS its net
 # evaluation into a shared pending batch, and the batch is flushed in one
 # forward before any world's OWN next descent starts — so no virtual loss is

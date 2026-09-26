@@ -324,7 +324,7 @@ def _phased(obs: np.ndarray, base: int) -> bool:
     """True if the permanent slot at `base` is phased out.
 
     Phased-out permanents ARE serialized (new obs layout) but the rules treat
-    them as nonexistent (CR 702.26e) — and the pre-enrichment engine never
+    them as nonexistent (CR 702.26b) — and the pre-enrichment engine never
     emitted them — so EVERY battlefield scan here must skip them. That keeps
     scripted decisions identical to the pre-change engine (replay-corpus
     stability), besides being rules-correct."""
@@ -2155,7 +2155,7 @@ class ScriptedAgent:
             if "g" not in g_cache:
                 gs = decode_game_state(obs[:STATE_SIZE])
                 # Drop phased-out permanents before any heuristic reads the board:
-                # the rules treat them as nonexistent (CR 702.26e) and the
+                # the rules treat them as nonexistent (CR 702.26b) and the
                 # pre-enrichment engine never serialized them, so filtering here
                 # keeps every dict-based decision replay-stable (see _phased).
                 for key in ("self_battlefield", "opp_battlefield"):

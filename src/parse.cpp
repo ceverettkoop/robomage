@@ -2051,7 +2051,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             "ForceRevealToController",
             // ── Params for mechanics NOT YET MODELED — currently no-ops, tracked in todo.md ─
             // Suppressed here to keep the log clean; each still needs a real handler (see the
-            // "Unrecognized ability params suppressed but unimplemented" section of todo.md):
+            // "Audit: ability-param keys the parser silently ignores" section of todo.md):
             //   Reorder$ True (Brainstorm) — let the player order the cards put back on top.
             //   TriggerAmount$ / RememberOriginalTokens$ (Ajani, Nacatl Avenger) — the token
             //     count carried to the transform trigger, and tracking the original tokens.

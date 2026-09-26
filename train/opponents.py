@@ -2149,8 +2149,7 @@ class LeaguePool:
     Quality weighting for the historical-snapshot branch is supplied externally by
     the PFSPCallback via :meth:`set_weights` (a global win-rate estimate broadcast to
     every process); each process applies it to whatever sharded subset it holds — an
-    accepted approximation, documented in
-    docs/plan_pfsp_multimatchup_training.md. The weighting *mode* (pfsp vs softmax)
+    accepted approximation. The weighting *mode* (pfsp vs softmax)
     lives entirely in the callback; the pool only consumes the resulting weights and
     falls back to uniform until the first broadcast arrives.
     """

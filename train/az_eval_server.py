@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Central AZNet inference server (Stage C of docs/gpu_selfplay_inference_plan.md).
+"""Central AZNet inference server.
 
 One process owns the GPU (or a CPU copy of the net) and serves batched leaf
 evaluations to the whole az_actor fleet over a Unix domain socket, so the

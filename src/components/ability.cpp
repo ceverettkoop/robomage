@@ -913,7 +913,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         return true;
     }
 
-    // Battlefield permanent target (phased-out permanents can't be targeted, 702.26e)
+    // Battlefield permanent target (phased-out permanents can't be targeted, 702.26b)
     if (!is_battlefield_permanent(cand)) return false;
 
     // Match the ValidTgts spec against the permanent through the shared filter evaluator

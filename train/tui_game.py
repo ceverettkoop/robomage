@@ -11,7 +11,7 @@ remapping all live there. This module is a front-end over that loop.
 
 The opponent is either a trained model (MaskablePPO checkpoint) or the rule-based
 scripted agent when `model_path` is None or "scripted" (any
-opponents.make_controller spec works — checkpoint shorthand or scripted tier).
+opponents.make_controller spec works — checkpoint path, 'gen', or scripted tier).
 
 Invoked via `play.py --board tui` (and the tui.py launcher's play entry).
 """
@@ -905,7 +905,7 @@ def run(binary_path, model_path, human_player=None,
     """Launch the TUI. `model_path` of None/"scripted" ⇒ rule-based opponent.
 
     Any agent spec ``opponents.make_controller`` accepts works here — a
-    checkpoint path / deck shorthand, or a scripted tier ("scripted:hard",
+    checkpoint path, the generalist 'gen', or a scripted tier ("scripted:hard",
     "explore", ...) — so the TUI opponent shares the one agent grammar.
 
     `bo3` (default True) plays a best-of-three match — with sideboarding between

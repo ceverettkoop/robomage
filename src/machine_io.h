@@ -112,7 +112,7 @@
 //                       blocked even if all blockers leave (CR 509.1h)
 //                  [17] is_phased_out — phased-out permanents ARE serialized (with this
 //                       flag set) even though the rules treat them as nonexistent
-//                       (CR 702.26e), so the model can anticipate the phase-in
+//                       (CR 702.26b), so the model can anticipate the phase-in
 //                  [18] entered_this_turn — the permanent entered the battlefield this
 //                       turn (the ThisTurnEntered filter predicate,
 //                       entered_battlefield_this_turn in game_queries.h; Ocelot Pride,

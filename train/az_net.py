@@ -1006,7 +1006,7 @@ class AZEvaluator:
         uniform fallback), so a cross-world deferred leaf's result differs
         from the sequential search only by the batched GEMM's last-ulp
         logits. This is the entry point where a non-cpu ``device`` pays —
-        k rows share one launch (see docs/gpu_selfplay_inference_plan.md)."""
+        k rows share one launch."""
         k = len(num_choices)
         obs_arr = np.stack([np.asarray(o, dtype=np.float32)
                             for o in obs_batch])
@@ -1144,7 +1144,7 @@ if __name__ == "__main__":
     ap.add_argument("--from-ppo", default=None,
                     help="Warm-start from a PPO checkpoint and report transfer")
     ap.add_argument("--export", default=None,
-                    help="Export an AZ checkpoint (path or deck shorthand) to its "
+                    help="Export an AZ checkpoint (path or 'gen') to its "
                          "sibling .ts.pt TorchScript module + meta")
     ap.add_argument("--embed-dim", type=int, default=EMBED_DIM)
     args = ap.parse_args()

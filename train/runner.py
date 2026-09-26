@@ -6,7 +6,7 @@ sits on top of it:
 
 - :func:`run_match` — the high-level front door for scripting games. Give each
   seat a deck and an agent spec ("scripted", "explore", "human", "play:...",
-  a checkpoint path / deck shorthand, or a prebuilt Controller), pick bo1/bo3
+  a checkpoint path or 'gen', or a prebuilt Controller), pick bo1/bo3
   (bo3 is the default) and an output mode, get a :class:`MatchResult` back.
 - :func:`run_games` — the mid-level orchestrator used by the test harness,
   ``train.py observe`` (incl. its fuzz ``--out`` and ``--timing`` benchmark
@@ -614,8 +614,9 @@ def run_match(agent_a="scripted", agent_b="scripted", *,
     ``agent_a`` / ``agent_b`` are agent specs (see :func:`opponents.make_controller`):
     scripted tiers ("scripted"/"hard", "easy"/"greedy", "random", "explore",
     "explore:patient"), "human" (interactive CLI seat), "auto",
-    "play:<specs>", "actions:<indices>", a checkpoint path or deck shorthand
-    ("league/bug" → its newest checkpoint), or a prebuilt Controller.
+    "play:<specs>", "actions:<indices>", the generalist model ("gen", "az:gen",
+    ...), a checkpoint path, or a prebuilt Controller. The model encodes no
+    deck; each seat's deck is ``deck_a`` / ``deck_b``.
 
     Defaults are chosen for scripting: **bo3 matches**, a fixed ``seed`` (game
     ``i`` uses ``seed + i``; pass ``seed=None`` for random), and a compact

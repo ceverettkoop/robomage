@@ -512,7 +512,7 @@ inline bool on_battlefield(Entity e) {
 }
 
 // True if `e` is a *live* battlefield permanent: it carries a Permanent component,
-// its Zone is BATTLEFIELD, and it is not phased out (702.26e — a phased-out permanent
+// its Zone is BATTLEFIELD, and it is not phased out (702.26b — a phased-out permanent
 // is treated as though it doesn't exist), optionally controlled by `ctrl` (UNKNOWN =
 // any controller). This is the single source of "is this on the battlefield": prefer
 // it (or battlefield_permanents() below) over open-coding the

@@ -1364,11 +1364,11 @@ def league(binary_path: str, decks: str | None = None,
     Distributed sharding (``shard='i/n'``): this driver trains only the strided
     roster slice ``roster[i::n]`` while still sampling opponents from the FULL
     roster — run one shard per machine over a shared/synced checkpoint dir and
-    each machine's pool ingests the other's snapshots automatically (see
-    docs/distributed_league_training.md). ``total_timesteps`` is per-driver (the
-    compute THIS process spends on its slice); there is deliberately no
-    cross-machine step counter. Each shard keeps its own sidecar, so pass the
-    same ``--shard`` together with ``--resume``.
+    each machine's pool ingests the other's snapshots automatically.
+    ``total_timesteps`` is per-driver (the compute THIS process spends on its
+    slice); there is deliberately no cross-machine step counter. Each shard
+    keeps its own sidecar, so pass the same ``--shard`` together with
+    ``--resume``.
 
     The driver's loop position (roster, total budget, global steps done, current
     rotation, and every hyperparameter) is persisted to a JSON sidecar
@@ -2242,7 +2242,7 @@ def observe(binary_path: str,
 
     ``player_a``/``player_b`` are ``opponents.make_controller`` specs: "scripted"
     (or a "scripted:*" variant), the "explore"/"explore:patient" coverage fuzzer,
-    a model checkpoint (.zip path or shorthand), an az:/azraw:/mcts: spec, or a
+    a model checkpoint (.zip path or 'gen'), an az:/azraw:/mcts: spec, or a
     "play:<specs>" semantic action script (see ``action_spec``) — handy for
     driving one seat through a fixed line while watching the other. Each seat
     gets its own controller object (an explore seat keeps its own novelty set).

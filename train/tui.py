@@ -137,7 +137,7 @@ def _expand_checkpoint(val):
     """A bare checkpoint filename → repo-relative path that every script can load."""
     if val in _scan_checkpoints() or val in _scan_az_checkpoints():
         return os.path.join("train", "checkpoints", val)
-    return val   # a path, a shorthand, an az:/azraw: spec, or 'scripted'
+    return val   # a path, 'gen', an az:/azraw: spec, or 'scripted'
 
 
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
