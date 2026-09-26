@@ -29,9 +29,6 @@
       "Bash(git log:*)"
     ],
     "deny": [
-      "Bash(sed:*)",
-      "Bash(awk:*)",
-      "Bash(cat:*)"
     ]
   }
 }
