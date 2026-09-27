@@ -805,6 +805,10 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         coordinator.AddComponent(card_id, Zone(Zone::BATTLEFIELD, owner, owner));
         auto &z = coordinator.GetComponent<Zone>(card_id);
         z.controller = owner;
+        // A preset named by a double-faced card's back face starts showing that face (built
+        // from it when its Permanent is created, like any entry transformed).
+        if (names_back_face(name, coordinator.GetComponent<CardData>(card_id)))
+            cur_game.pending_enters_transformed.insert(card_id);
 
         placed.push_back(card_id);
     }
