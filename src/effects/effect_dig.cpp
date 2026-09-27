@@ -29,6 +29,7 @@ static Zone::ZoneValue dig_rest_destination(const Ability &ab);
 static bool dig_rest_on_bottom(const Ability &ab);
 static bool dig_exiles_face_down(const Ability &ab, Zone::ZoneValue dest);
 static bool dig_is_blind(const Ability &ab);
+static bool dig_chosen_revealed(const Ability &ab, Zone::ZoneValue dest);
 
 // Where the chosen cards go: DestinationZone$, else the hand.
 static Zone::ZoneValue dig_chosen_destination(const Ability &ab) {
@@ -55,6 +56,17 @@ static bool dig_rest_on_bottom(const Ability &ab) { return ab.dig_rest_library_p
 // exiled face down (CR 406.3), so their identities stay hidden and are not publicly revealed.
 static bool dig_exiles_face_down(const Ability &ab, Zone::ZoneValue dest) {
     return ab.exile_face_down && dest == Zone::EXILE;
+}
+
+// Whether a chosen card is shown to all players. Every looked-at card is with Reveal$ True
+// (Goblin Guide). Otherwise a card chosen for a ChangeValid$ quality is revealed to show it has
+// that quality (Once Upon a Time's "you may reveal a creature or land card from among them and
+// put it into your hand"), unless the ability says NoReveal$ True or exiles it face down.
+static bool dig_chosen_revealed(const Ability &ab, Zone::ZoneValue dest) {
+    if (ab.dig_reveal) return true;
+    const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
+    if (pp && pp->no_reveal) return false;
+    return !ab.change_valid.empty() && !dig_exiles_face_down(ab, dest);
 }
 
 // A face-down exile of every card in the slice, with no filter and no reveal, is a blind move:
@@ -215,7 +227,11 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     bool on_bottom = dig_chosen_on_bottom(ab);
     const bool chosen_face_down = dig_exiles_face_down(ab, chosen_dest);
     const bool blind = dig_is_blind(ab);
+    const bool chosen_revealed = dig_chosen_revealed(ab, chosen_dest);
     for (Entity chosen : rt.chosen) {
+        // A revealed card is recorded in the opponent's belief state before it moves, so it
+        // stays known if it lands in a hand (CR 701.20a).
+        if (chosen_revealed) mark_card_revealed(chosen, dig_owner);
         orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees, chosen_face_down);
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (blind) {
@@ -234,6 +250,11 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
                                       : actor == dig_owner             ? std::string("hand")
                                                                        : owner_poss + " hand";
             const char *face = chosen_face_down ? " face down" : "";
+            if (chosen_revealed) {
+                game_log("%s reveals %s and puts it into %s.\n", actor_name.c_str(), cd.name.c_str(),
+                         where.c_str());
+                continue;
+            }
             game_log_private(looker, "%s puts %s into %s%s.\n", actor_name.c_str(), cd.name.c_str(),
                 where.c_str(), face);
             game_log_redacted(looker, "%s puts a card into %s%s.\n", actor_name.c_str(), where.c_str(),

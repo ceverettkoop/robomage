@@ -84,6 +84,7 @@ void Game::forget_entity(Entity e) {
     void_countered.erase(e);
     may_cast_this_turn.erase(e);
     chosen_cards.erase(e);
+    revealed_in_library.erase(e);
     pending_enters_tapped.erase(e);
     pending_enters_attacking.erase(e);
     pending_enters_transformed.erase(e);

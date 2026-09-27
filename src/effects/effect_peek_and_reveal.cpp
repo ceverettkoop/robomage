@@ -46,6 +46,8 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 game_log_private(ab.controller, "%s looks at top of %s's library: %s\n",
                     player_name(ab.controller).c_str(), player_name(peek_owner).c_str(), cd.name.c_str());
+                // Looking at your own library's top cards puts them in your known-top cache.
+                if (peek_owner == ab.controller) orderer->note_library_card_known(e);
             }
         }
         // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
@@ -99,8 +101,10 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
     // Arm-only peek line: the resume rebuilds the same menu (the top card is
     // pinned against determinize by collect_pending_pins) without re-logging.
-    if (!ctx.resuming())
+    if (!ctx.resuming()) {
         game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
+        orderer->note_library_card_known(top_card);
+    }
     int reveal_choice = 1;
     if (pp && pp->reveal_optional) {
         std::vector<LegalAction> reveal_actions = {
@@ -116,6 +120,8 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
     if (reveal_choice == 1) {
         game_log("Revealed: %s\n", top_cd.name.c_str());
+        // Shown to all players (CR 701.20a): the opponent's belief state records it.
+        mark_card_revealed(top_card, ab.controller);
         bool is_instant_or_sorcery = false;
         for (auto &t : top_cd.types) {
             if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {

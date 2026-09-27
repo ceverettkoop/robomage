@@ -304,6 +304,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // flag again if the destination is a revealed hidden zone.
     target_zone.identity_known = false;
     const bool left_face_down = target_zone.is_face_down;
+    const bool left_revealed = cur_game.revealed_in_library.erase(target) > 0;
     // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
@@ -315,9 +316,11 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // belief so the observation carries the exact opponent-hand card. A draw
     // (LIBRARY→HAND) is a hidden move and is intentionally excluded, as is a card leaving
     // exile face down: its identity was hidden there too (CR 406.3).
+    // A card revealed in the library by the effect moving it (Atraxa, Goblin Guide) was seen by
+    // both players too (CR 701.20a).
     if (destination == Zone::HAND &&
         (origin == Zone::BATTLEFIELD || origin == Zone::STACK || origin == Zone::GRAVEYARD ||
-         (origin == Zone::EXILE && !left_face_down))) {
+         (origin == Zone::EXILE && !left_face_down) || left_revealed)) {
         target_zone.identity_known = true;
     }
 
@@ -470,8 +473,10 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
         i++;
     }
 
-    // Shuffling destroys any knowledge of which cards are on top of the library
+    // Shuffling destroys any knowledge of which cards are on top of the library, and a revealed
+    // card that is reordered stops being revealed (CR 701.20d).
     cur_game.clear_known_top_library(owner == Zone::PLAYER_A);
+    for (auto &&card : contents) cur_game.revealed_in_library.erase(card);
 }
 
 extern bool no_shuffle;

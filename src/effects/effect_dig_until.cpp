@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -49,6 +50,9 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         const std::string nm = global_coordinator.entity_has_component<CardData>(card)
             ? global_coordinator.GetComponent<CardData>(card).name : "a card";
         game_log("%s reveals %s.\n", player_name(owner).c_str(), nm.c_str());
+        // Every card this dig passes over is shown to all players (CR 701.20a), wherever it
+        // goes next.
+        mark_card_revealed(card, owner);
         bool matches = ab.change_valid.empty() || card_matches_filter(card, ab.change_valid);
         if (matches) { found = card; break; }
         revealed.push_back(card);

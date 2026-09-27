@@ -734,6 +734,11 @@ struct Game {
         // priority-menu cast (can_afford_alt returns false for it).
         Entity miracle_reveal_pending = 0;
         std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
+        // Cards revealed while in a library (CR 701.20a: shown to all players for as long as the
+        // revealing effect needs them). A revealed card the effect puts into a hand stays known to
+        // the opponent there (Zone::identity_known). An entry ends when the card changes zones or
+        // its library is shuffled (CR 701.20d), and every entry ends when the resolution finishes.
+        std::set<Entity> revealed_in_library;
         std::set<Entity> chosen_cards;  // cards chosen by a resolving ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard Effect); cleared by Cleanup ClearChosenCard$ and when the resolution finishes
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving
         int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
