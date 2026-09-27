@@ -1063,11 +1063,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         if (!exile_grant_castable(ex_entity, priority_player, sorcery_window, orderer)) continue;
 
-        bool is_normal_play = (perm_grant.resource == Game::ImpulseCastPermission::NORMAL);
         const char *imp_suffix = (perm_grant.resource == Game::ImpulseCastPermission::FREE)
                                      ? " (from exile, no cost)"
-                                 : is_normal_play ? " (from exile)"
-                                                  : " (impulse, alt cost)";
+                                     : " (from exile)";
         LegalAction imp_la = cast_action(ex_entity, "Cast " + ecd.name + imp_suffix, 7);
         imp_la.impulse_cast = true;
         actions.push_back(imp_la);

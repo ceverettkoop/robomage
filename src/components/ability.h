@@ -801,13 +801,12 @@ struct Ability{
     bool dig_until_attacking = false;            // Attacking$ True — the found card (FoundDestination$ Battlefield)
                                                  // enters tapped (enters_tapped) and attacking (Raph & Mikey; CR 508.4)
 
-    // DB$ Play (Amped Raptor): cast a Defined$ card from its current zone, paying an
-    // alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource is
-    // the resource paid (energy or life); play_cost_expr is the amount — either a literal int
+    // DB$ Play (Amped Raptor): cast a Defined$ exiled card during the resolution (CR 608.2g),
+    // paying an alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource
+    // is the resource paid (energy or life); play_cost_expr is the amount — either a literal int
     // (as a string) or "ConvertedManaCost" (the cast card's mana value). play_valid_sa
     // restricts to nonland spells (ValidSA$ Spell). The optionality is carried by
-    // optional_choice (Optional$ True). General over the resource so a future Bolas's Citadel
-    // ("pay life equal to mana value") reuses this path with play_cost_resource = LIFE.
+    // optional_choice (Optional$ True).
     enum PlayCostResource { PLAY_COST_ENERGY, PLAY_COST_LIFE };
     PlayCostResource play_cost_resource = PLAY_COST_ENERGY;
     std::string play_cost_expr = "";  // amount: "ConvertedManaCost" or a literal int string

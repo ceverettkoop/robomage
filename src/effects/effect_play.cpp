@@ -9,70 +9,63 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
+#include "../action_processor.h"
+#include "../resolution_frame.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static int play_cost_amount(const Ability &ab, Entity card);
+
 namespace effects {
 
 // DB$ Play (Amped Raptor): "You may cast that card by paying [an alternative cost] rather than
-// paying its mana cost." (CR 707 impulse / 118.9 alternative cost.)
+// paying its mana cost." The cast is part of this effect (CR 608.2g): it is offered while the
+// ability resolves, ignoring the card's type-based timing, and made through the ordinary cast
+// flow (cast_during_resolution), so the spell goes on the stack above the resolving ability and
+// cast triggers, targets and cost floors behave as for any cast. If it isn't cast then, the card
+// stays where it is; no permission outlives the resolution.
 //
-// The card to cast is Defined$ Remembered — the nonland card DigUntil just exiled. Rather than
-// reentrantly cast a spell mid-resolution (the DB$ Play ability is itself resolving from the
-// stack), this grants a one-shot permission (cur_game.impulse_cast_permission) to cast that
-// exiled card this turn, with its mana cost replaced by the alternative RESOURCE cost. The
-// normal casting pipeline (determine_legal_actions → CAST_SPELL) then offers it at the
-// controller's next priority and funnels it onto the stack like any other cast, so targeting,
-// triggers, and the stack all work unchanged.
-//
-// General over the resource (PlayCostResource) and the amount (play_cost_expr =
-// "ConvertedManaCost" → the card's mana value, else a literal), so a future Bolas's Citadel
-// ("play the top card of your library, paying life equal to its mana value") reuses this with
-// play_cost_resource = LIFE. Optional$ True (optional_choice) lets the controller decline — the
-// permission is offered, not forced, so declining simply means the card stays in exile.
-//
-// ValidSA$ Spell (play_valid_sa_spell): only a card castable as a nonland spell may be played
-// this way; a land (or a card with no SPELL ability) gets no permission and stays exiled.
+// The card is Defined$ Remembered — the nonland card DigUntil just exiled. The alternative cost
+// replaces the mana cost with the PlayCost$ resource (CR 118.9): PayEnergy / PayLife of a literal
+// amount or of the card's mana value ("ConvertedManaCost"; X counts as 0 for a card in exile,
+// CR 202.3e). ValidSA$ Spell: only a card castable as a spell qualifies, so a land (CR 601.1)
+// gets no offer. Optional$ True: the controller may decline (every DB$ Play in the card pool is
+// optional).
 HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    // Resolve the card to play (Defined$ Remembered).
+    ResolutionCastRt local_rt;
+    ResolutionCastRt &rt = ctx.can_suspend() ? ctx.rt<ResolutionCastRt>() : local_rt;
+    // Resolve the card to play (Defined$ Remembered). While the cast is in flight the card has
+    // left exile, so the card is looked up only for the offer.
     Entity card = 0;
     if (ab.defined_remembered && !cur_game.remembered_entities.empty())
         card = cur_game.remembered_entities[0];
     else
         card = ab.target;  // fallback: a directly-defined/targeted card
-    if (card == 0 || !global_coordinator.entity_has_component<CardData>(card)) return HandlerResult::DONE_RUN_SUBS;
+    if (card == 0 || !global_coordinator.entity_has_component<CardData>(card) ||
+        !global_coordinator.entity_has_component<Zone>(card))
+        return HandlerResult::DONE_RUN_SUBS;
+    if (rt.stage == ResolutionCastRt::OFFER) {
+        const CardData &cd = global_coordinator.GetComponent<CardData>(card);
+        if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE)
+            return HandlerResult::DONE_RUN_SUBS;
+        if (ab.play_valid_sa_spell && is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
+    }
 
-    auto &cd = global_coordinator.GetComponent<CardData>(card);
-
-    // ValidSA$ Spell: only a card that can be cast as a (nonland) spell qualifies. Every
-    // nonland card is cast as a spell (CR 601.1) — instants/sorceries via their SP$ ability,
-    // permanents (creatures, artifacts, ...) cast directly onto the stack — so the gate is
-    // simply "not a land". Lands can't be cast (601.1), so a land remembered here does nothing.
-    if (ab.play_valid_sa_spell && is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
-
-    // Resolve the alternative cost amount. "ConvertedManaCost" = the card's mana value (the
-    // number of mana symbols in its printed cost); otherwise a literal. X spells count X as 0
-    // for this mechanic (the card is exiled with no X chosen), so the printed cost's symbols
-    // already give mana value with X = 0.
-    int amount = 0;
-    if (ab.play_cost_expr == "ConvertedManaCost")
-        amount = card_mana_value(cd);
-    else if (!ab.play_cost_expr.empty())
-        amount = std::atoi(ab.play_cost_expr.c_str());
-
-    Game::ImpulseCastPermission perm;
-    perm.resource = (ab.play_cost_resource == Ability::PLAY_COST_LIFE)
-                        ? Game::ImpulseCastPermission::LIFE
-                        : Game::ImpulseCastPermission::ENERGY;
-    perm.amount = amount;
-    perm.caster = ab.controller;
-    cur_game.impulse_cast_permission[card] = perm;
-
-    const char *res = (perm.resource == Game::ImpulseCastPermission::LIFE) ? "life" : "energy";
-    game_log("%s may cast %s this turn by paying %d %s rather than its mana cost.\n",
-             player_name(ab.controller).c_str(), cd.name.c_str(), amount, res);
+    Game::ImpulseCastPermission grant;
+    grant.resource = (ab.play_cost_resource == Ability::PLAY_COST_LIFE)
+                         ? Game::ImpulseCastPermission::LIFE
+                         : Game::ImpulseCastPermission::ENERGY;
+    grant.amount = play_cost_amount(ab, card);
+    if (rt.stage == ResolutionCastRt::OFFER && !ctx.resuming()) {
+        const char *res = (grant.resource == Game::ImpulseCastPermission::LIFE) ? "life" : "energy";
+        game_log("%s may cast %s by paying %d %s rather than its mana cost.\n",
+                 player_name(ab.controller).c_str(), entity_name(card).c_str(), grant.amount, res);
+    }
+    if (cast_during_resolution(card, ab.controller, grant, rt, ctx, orderer) ==
+        ResolutionCastStatus::SUSPENDED)
+        return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }
 
@@ -103,3 +96,11 @@ bool parse_play(Ability &ab, const std::string &key, const std::string &value) {
 }
 
 }  // namespace effects
+
+// The PlayCost$ amount for `card`: its mana value for "ConvertedManaCost", else the literal.
+static int play_cost_amount(const Ability &ab, Entity card) {
+    if (ab.play_cost_expr == "ConvertedManaCost")
+        return card_mana_value(global_coordinator.GetComponent<CardData>(card));
+    if (!ab.play_cost_expr.empty()) return std::atoi(ab.play_cost_expr.c_str());
+    return 0;
+}

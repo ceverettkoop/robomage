@@ -233,7 +233,7 @@ struct EachPlayerPutRt {
 // A cast made during a resolution (CR 608.2g; cast_during_resolution, action_processor.h):
 // whether the "cast it?" offer is still to be answered, or the cast is in flight — its own
 // prompts park as CAST queries, and the resolution resumes once the spell is on the stack
-// (or the cast was cancelled). Embedded in the offering handler's runtime.
+// (or the cast was cancelled). The DB$ Play handler's runtime, and embedded in suspend's.
 struct ResolutionCastRt {
     enum Stage { OFFER, CASTING, DONE };
     Stage stage = OFFER;
@@ -249,7 +249,8 @@ struct SuspendTickRt {
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
-                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt, SuspendTickRt>;
+                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt, SuspendTickRt,
+                                   ResolutionCastRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating

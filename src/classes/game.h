@@ -751,12 +751,12 @@ struct Game {
         std::set<Entity> pending_impending;  // one-shot: a spell cast for its Impending alternate cost (CR 702.175) is resolving; consumed when its Permanent is created (puts impending_count TIME counters on it → not a creature until they shed)
         std::set<Entity> cast_to_battlefield;  // one-shot: a cast spell is resolving from the stack onto the battlefield (it "was cast", CR 614.12 / Containment Priest); consumed when its Permanent is created
         std::set<Entity> cast_from_hand;  // one-shot: a spell now resolving onto the battlefield was cast from its controller's own hand (a normal CR 601 hand cast); consumed when its Permanent is created → Permanent::cast_from_hand_by_controller (Amped Raptor's Card.wasCastFromYourHandByYou gate)
-        // Impulse-cast permission (CR 707 "impulsive draw" / 118.9 alternative cost): a card a
-        // resolving DB$ Play effect (Amped Raptor) lets its controller cast from EXILE this turn,
-        // paying an alternative RESOURCE cost (energy or life) instead of its mana cost. Keyed by
-        // the card entity; cleared each cleanup. Generalizes the alt-cost-cast over the resource
-        // so the same path serves energy ({E}) and life (a future Bolas's Citadel "pay life =
-        // mana value"). The casting path reads this to compute the cost and skip mana payment.
+        // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
+        // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
+        // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution
+        // only (Amped Raptor's DB$ Play, suspend's last time counter; during_resolution, CR
+        // 608.2g). Keyed by the card entity. The casting path reads it for the cost that
+        // replaces the card's mana cost (CR 118.9) and consumes it as the card is cast.
         struct ImpulseCastPermission {
             // FREE = cast without paying its mana cost (Ugin, Eye of the Storms' -11: "cast those
             // cards without paying their mana costs"; Dauthi Voidwalker: "play it ... without
