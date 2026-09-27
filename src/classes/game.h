@@ -766,17 +766,18 @@ struct Game {
             // next-turn cleanup. Default (false) = the Forge default "this turn" (cleared every cleanup).
             bool persist_until_end_of_next_turn = false;
             size_t grant_turn = 0;
-            // from_suspend: granted by the last Suspend time counter being removed (CR 702.62).
-            // The card is cast without paying its mana cost as an effect of resolving a triggered
-            // ability, so it is offered regardless of the card's normal sorcery/instant timing
-            // (the caster already holds priority in their own upkeep). Ordinary free casts (Ugin)
-            // leave this false and keep their type-based timing.
-            bool from_suspend = false;
+            // during_resolution: granted by a resolving effect for a cast made as part of that
+            // resolution (CR 608.2g; cast_during_resolution — Suspend's last time counter, CR
+            // 702.62a). The cast ignores the card's type-based timing, and the permission is never
+            // offered at priority: it is consumed by that cast or dropped when it isn't made.
+            // Ordinary free casts (Ugin) leave this false and keep their type-based timing.
+            bool during_resolution = false;
             // warp: granted when a warp-cast object is exiled at the next end step. Unlike the
             // per-turn grants above, a warp permission persists across turns FOR AS LONG AS the
             // card remains in exile — it lapses only once the card leaves exile (cast, or moved
             // by another effect). The recast keeps the card's normal sorcery/instant timing (a
-            // creature is recast at sorcery speed), so from_suspend stays false. See effect_warp.cpp.
+            // creature is recast at sorcery speed), so during_resolution stays false. See
+            // effect_warp.cpp.
             bool warp = false;
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
@@ -789,8 +790,8 @@ struct Game {
         // counters. It is NOT a permanent, so its counters can't live in Permanent::counters —
         // they are tracked here, keyed by the exiled card entity. A card is "suspended" (702.62b)
         // iff it is in this map with a positive count and still in the exile zone. Removed to 0 at
-        // its owner's upkeep (state_manager_triggers), at which point a FREE from_suspend
-        // impulse-cast permission is granted (the free cast, CR 702.62a third ability).
+        // its owner's upkeep (effects::suspend_tick), which then offers the free cast during its
+        // resolution (CR 702.62a third ability).
         std::map<Entity, int> suspend_time_counters;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created

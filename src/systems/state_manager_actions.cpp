@@ -224,6 +224,65 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     return !payment_blocked(source);
 }
 
+// See declaration in state_manager.h.
+bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
+                          std::shared_ptr<Orderer> orderer) {
+    auto grant_it = cur_game.impulse_cast_permission.find(card);
+    if (grant_it == cur_game.impulse_cast_permission.end()) return false;
+    const Game::ImpulseCastPermission &perm_grant = grant_it->second;
+    const CardData &ecd = global_coordinator.GetComponent<CardData>(card);
+
+    // A cast made during a resolution (CR 608.2g) ignores the card's type-based timing.
+    // Aura enchant-target gate: the concrete crash it fixes here is Animate Dead reanimating
+    // the opponent's Amped Raptor (emptying the graveyard), the Raptor's impulse exiling a
+    // SECOND Animate Dead and granting this energy-cast permission — which must not be
+    // offered while no creature card is in any graveyard.
+    if (!can_cast_now(ecd, card, caster, Zone::EXILE, sorcery_window,
+                      /*ignore_timing=*/perm_grant.during_resolution, orderer))
+        return false;
+
+    // Affordability of the alternative resource cost.
+    Entity pe = get_player_entity(caster);
+    if (!global_coordinator.entity_has_component<Player>(pe)) return false;
+    auto &ppl = global_coordinator.GetComponent<Player>(pe);
+    bool is_normal_play = (perm_grant.resource == Game::ImpulseCastPermission::NORMAL);
+    if (perm_grant.resource == Game::ImpulseCastPermission::FREE) {
+        // No cost to pay (Ugin -11 grant) — always affordable.
+    } else if (is_normal_play) {
+        // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
+        // the full (cost-increase-adjusted, hybrid-resolved) base cost can be paid.
+        ManaValue base = effective_base_cost(ecd, caster);
+        if (!resolve_hybrid_cost(caster, base, ecd.hybrid_mana, card, orderer, ecd.has_delve,
+                                 ecd.has_improvise))
+            return false;
+    } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
+        if (player_energy(ppl) < perm_grant.amount) return false;
+    } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
+              // legality bar in MTG, but a player won't be forced; require enough life so
+              // the optional cast is sensibly offered.
+        if (!can_pay_life(ppl, perm_grant.amount)) return false;
+    }
+
+    // Cost-increase / SetCost-floor statics apply to alternative costs too (CR 118.9d /
+    // 601.2f): an impulse/free cast substitutes a {0} mana cost, but an active Trinisphere
+    // floor pads that up to its minimum ({3}) and Thalia adds its surcharge — payable ON TOP
+    // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
+    // means no extra mana and this gate is a no-op. NORMAL plays already pay the full base
+    // cost above, so this alt-cost floor doesn't apply to them.
+    // A LIFE grant's life is paid before this mana, so the mana may not spend it either.
+    if (!is_normal_play) {
+        int grant_life = perm_grant.resource == Game::ImpulseCastPermission::LIFE
+                             ? perm_grant.amount : 0;
+        ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, caster);
+        if (!floor_mana.empty() &&
+            !can_pay_mana(caster, floor_mana, card, orderer, /*has_delve=*/false,
+                          /*has_improvise=*/false, /*exclude_entity=*/0,
+                          /*life_reserve=*/grant_life))
+            return false;
+    }
+    return true;
+}
+
 // An ACTIVATE_ABILITY action for `ab` of `source`. `ability_index` is the ability's stable
 // position in its source's ability list, emitted as the action's option_ordinal so the ML
 // observation can tell same-source activations apart (e.g. a planeswalker's loyalty abilities,
@@ -1002,58 +1061,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             continue;
         }
 
-        // A suspend free cast (CR 702.62a) is made as an effect of resolving the last-time-counter
-        // triggered ability during the caster's own upkeep, so it ignores the card's normal
-        // sorcery/instant timing — offer it at any priority window this caster holds (until the
-        // permission lapses at cleanup, i.e. "if you don't, it remains exiled").
-        // Aura enchant-target gate: the concrete crash it fixes here is Animate Dead reanimating
-        // the opponent's Amped Raptor (emptying the graveyard), the Raptor's impulse exiling a
-        // SECOND Animate Dead and granting this energy-cast permission — which must not be
-        // offered while no creature card is in any graveyard.
-        if (!can_cast_now(ecd, ex_entity, priority_player, Zone::EXILE, sorcery_window,
-                          /*ignore_timing=*/perm_grant.from_suspend, orderer))
-            continue;
+        if (!exile_grant_castable(ex_entity, priority_player, sorcery_window, orderer)) continue;
 
-        // Affordability of the alternative resource cost.
-        Entity pe = get_player_entity(priority_player);
-        if (!global_coordinator.entity_has_component<Player>(pe)) continue;
-        auto &ppl = global_coordinator.GetComponent<Player>(pe);
         bool is_normal_play = (perm_grant.resource == Game::ImpulseCastPermission::NORMAL);
-        if (perm_grant.resource == Game::ImpulseCastPermission::FREE) {
-            // No cost to pay (Ugin -11 grant) — always affordable.
-        } else if (is_normal_play) {
-            // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
-            // the full (cost-increase-adjusted, hybrid-resolved) base cost can be paid.
-            ManaValue base = effective_base_cost(ecd, priority_player);
-            if (!resolve_hybrid_cost(priority_player, base, ecd.hybrid_mana, ex_entity, orderer,
-                                     ecd.has_delve, ecd.has_improvise))
-                continue;
-        } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
-            if (player_energy(ppl) < perm_grant.amount) continue;
-        } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
-                  // legality bar in MTG, but a player won't be forced; require enough life so
-                  // the optional cast is sensibly offered.
-            if (!can_pay_life(ppl, perm_grant.amount)) continue;
-        }
-
-        // Cost-increase / SetCost-floor statics apply to alternative costs too (CR 118.9d /
-        // 601.2f): an impulse/free cast substitutes a {0} mana cost, but an active Trinisphere
-        // floor pads that up to its minimum ({3}) and Thalia adds its surcharge — payable ON TOP
-        // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
-        // means no extra mana and this gate is a no-op. NORMAL plays already pay the full base
-        // cost above, so this alt-cost floor doesn't apply to them.
-        // A LIFE grant's life is paid before this mana, so the mana may not spend it either.
-        if (!is_normal_play) {
-            int grant_life = perm_grant.resource == Game::ImpulseCastPermission::LIFE
-                                 ? perm_grant.amount : 0;
-            ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, priority_player);
-            if (!floor_mana.empty() &&
-                !can_pay_mana(priority_player, floor_mana, ex_entity, orderer, /*has_delve=*/false,
-                              /*has_improvise=*/false, /*exclude_entity=*/0,
-                              /*life_reserve=*/grant_life))
-                continue;
-        }
-
         const char *imp_suffix = (perm_grant.resource == Game::ImpulseCastPermission::FREE)
                                      ? " (from exile, no cost)"
                                  : is_normal_play ? " (from exile)"

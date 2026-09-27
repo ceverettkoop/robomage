@@ -18,6 +18,22 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 // Handle the current mandatory choice (declare attackers, blockers, etc.)
 void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 
+// Cast during resolution (CR 608.2g): a resolving effect lets `caster` cast `card` (in exile) as
+// part of its resolution, for the cost `grant` puts in place of the card's mana cost (FREE =
+// "without paying its mana cost"). Offers "cast it / don't" when the cast is possible (timing
+// ignored; targets, prohibitions and the cost checked by exile_grant_castable), then runs the
+// ordinary cast flow: the spell becomes the topmost object on the stack, above the still-resolving
+// ability, and no player receives priority after it is cast. Suspendable: the offer is asked
+// through `ctx`, and a cast prompt parks as a CAST query that the main loop resumes before
+// re-entering the resolution — the calling handler returns SUSPENDED on SUSPENDED and calls this
+// again with the same `rt` when re-entered. CAST when the spell was cast, DECLINED when it
+// wasn't (declined, not castable, or the cast was cancelled).
+enum class ResolutionCastStatus { CAST, DECLINED, SUSPENDED };
+ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
+                                            Game::ImpulseCastPermission grant,
+                                            ResolutionCastRt& rt, FrameCtx& ctx,
+                                            std::shared_ptr<Orderer> orderer);
+
 // Loop-top dispatcher entry for a parked combat target sub-prompt (PendingQuery
 // tags ATTACK_TARGET / BLOCK_TARGET): commits the latched answer onto the
 // creature persisted in Game::pending_attacker / pending_blocker and clears the

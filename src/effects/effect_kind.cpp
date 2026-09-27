@@ -132,8 +132,8 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"CopySpellAbility", EffectKind::CopySpellAbility},
         // Suspend upkeep tick (CR 702.62a): the synthesized "remove a time counter" trigger of a
         // suspended card resolves here (see state_manager_triggers). Removes one suspend time
-        // counter from the exiled source and, when the last is removed, grants a FREE from_suspend
-        // impulse-cast permission (the free cast). See effect_suspend_tick.cpp.
+        // counter from the exiled source and, when the last is removed, offers the free cast
+        // during the resolution. See effect_suspend_tick.cpp.
         {"SuspendTick", EffectKind::SuspendTick},
         // DB$ SetState | Mode$ TurnFaceUp (The Creation of Avacyn chapter II): turn the Defined$
         // card face up (clear its face-down flag). See effect_set_state.cpp.

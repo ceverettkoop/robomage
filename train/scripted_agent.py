@@ -1560,6 +1560,13 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
             and _slot_card_idx(obs, _STACK_START + 1) == _AETHER_VIAL_VOCAB_IDX):
         return 1
 
+    # 5f. An offer to cast a card right now (OPTIONAL_YESNO whose accept option names
+    #     the card): suspend's free cast when the last time counter comes off, or a
+    #     miracle cast. The cast is made then or never, so take it.
+    if (num_choices == 2 and all(c == _CAT_YESNO for c in cats)
+            and _action_card_id(card_ids, 1) >= 0):
+        return 1
+
     # 6. Cast spells.
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
     #    on the stack; skip them when the stack holds only own spells or is empty.

@@ -233,9 +233,9 @@ HandlerResult store_svar(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
 // Suspend upkeep tick (CR 702.62a, second/third abilities): remove one suspend time counter from
 // ab.source (an exiled suspended card, tracked in cur_game.suspend_time_counters — an exiled card
 // is not a permanent, so its counters can't live in Permanent::counters). When the last counter is
-// removed, grant its owner a FREE from_suspend impulse-cast permission so it may be cast without
-// paying its mana cost (the third suspend ability). General over any Suspend card. See
-// effect_suspend_tick.cpp.
+// removed, its owner may cast it without paying its mana cost right then, during this resolution
+// (the third suspend ability, CR 608.2g); if they don't, it remains exiled. General over any
+// Suspend card. See effect_suspend_tick.cpp.
 HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // DB$ SetState | Mode$ TurnFaceUp | Defined$ ExiledWith (The Creation of Avacyn chapter II):
 // turn the Defined$ card face up by clearing its Zone::is_face_down flag (CR 708.3 / 711.8).

@@ -4,6 +4,7 @@
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/zone.h"
+#include "../action_processor.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
 
@@ -19,47 +20,41 @@ namespace effects {
 // The suspended card lives in the EXILE zone and is not a permanent, so its time counters can't be
 // stored in Permanent::counters; they are tracked in cur_game.suspend_time_counters keyed by the
 // card entity (ab.source). This handler decrements that count. When it reaches 0 the card stops
-// being suspended (702.62b) and its owner is granted a FREE from_suspend impulse-cast permission
-// (cur_game.impulse_cast_permission) — the same free-cast-from-exile machinery Ugin's -11 uses —
-// so the casting path offers "Cast <card> (from exile, no cost)" and the spell is put on the stack
-// with its targets chosen then (CR 702.62d / 601.2b). If the owner never casts it (the permission
-// lapses at cleanup), the card simply remains exiled, matching "if you don't, it remains exiled."
-// General over any Suspend card.
+// being suspended (702.62b) and its owner may cast it without paying its mana cost right then, as
+// part of this resolution (CR 608.2g, through cast_during_resolution): the spell goes on the stack
+// above this ability with its targets chosen now. If they don't, it remains exiled — the cast
+// can't be held for later in the turn. General over any Suspend card.
 HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    (void)orderer;
-    (void)ctx;
+    SuspendTickRt local_rt;
+    SuspendTickRt &rt = ctx.can_suspend() ? ctx.rt<SuspendTickRt>() : local_rt;
     Entity card = ab.source;
-    auto it = cur_game.suspend_time_counters.find(card);
-    if (it == cur_game.suspend_time_counters.end()) return HandlerResult::DONE_RUN_SUBS;
-    // The card must still be a suspended card (in exile). If it left exile some other way, drop the
-    // stale tracking and do nothing.
-    if (!global_coordinator.entity_has_component<Zone>(card) ||
-        global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) {
+    if (!rt.ticked) {
+        rt.ticked = true;
+        auto it = cur_game.suspend_time_counters.find(card);
+        if (it == cur_game.suspend_time_counters.end()) return HandlerResult::DONE_RUN_SUBS;
+        // The card must still be a suspended card (in exile). If it left exile some other way,
+        // drop the stale tracking and do nothing.
+        if (!global_coordinator.entity_has_component<Zone>(card) ||
+            global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) {
+            cur_game.suspend_time_counters.erase(it);
+            return HandlerResult::DONE_RUN_SUBS;
+        }
+        it->second -= 1;
+        game_log("Removed a time counter from %s (%d remaining).\n", entity_name(card).c_str(),
+                 it->second);
+        if (it->second > 0) return HandlerResult::DONE_RUN_SUBS;
         cur_game.suspend_time_counters.erase(it);
-        return HandlerResult::DONE_RUN_SUBS;
+        rt.last = true;
     }
-
-    const char *nm = global_coordinator.entity_has_component<CardData>(card)
-                         ? global_coordinator.GetComponent<CardData>(card).name.c_str()
-                         : "card";
-    it->second -= 1;
-    game_log("Removed a time counter from %s (%d remaining).\n", nm, it->second);
-
-    if (it->second <= 0) {
-        // Last time counter removed (CR 702.62a third ability): the owner may cast it without
-        // paying its mana cost. Grant a FREE from_suspend impulse-cast permission to the card's
-        // owner (the suspending player) and stop tracking it as suspended.
-        Zone::Ownership owner = global_coordinator.GetComponent<Zone>(card).owner;
-        Game::ImpulseCastPermission perm;
-        perm.resource = Game::ImpulseCastPermission::FREE;
-        perm.amount = 0;
-        perm.caster = owner;
-        perm.from_suspend = true;
-        cur_game.impulse_cast_permission[card] = perm;
-        cur_game.suspend_time_counters.erase(it);
-        game_log("%s may cast %s without paying its mana cost (suspend).\n",
-                 player_name(owner).c_str(), nm);
-    }
+    if (!rt.last) return HandlerResult::DONE_RUN_SUBS;
+    // Last time counter removed (CR 702.62a third ability): its owner may cast it without paying
+    // its mana cost.
+    Game::ImpulseCastPermission grant;
+    grant.resource = Game::ImpulseCastPermission::FREE;
+    Zone::Ownership owner = global_coordinator.GetComponent<Zone>(card).owner;
+    if (cast_during_resolution(card, owner, grant, rt.cast, ctx, orderer) ==
+        ResolutionCastStatus::SUSPENDED)
+        return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }
 

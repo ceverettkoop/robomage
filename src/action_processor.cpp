@@ -3254,8 +3254,10 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     return;
             }
             // take_action stays LAST — after the copies, exactly the blocking order (the
-            // cancel path never reaches here, like the old break).
-            game.take_action();
+            // cancel path never reaches here, like the old break). A spell cast during a
+            // resolution is not a priority action: no player receives priority after it is
+            // cast, and the resolving object's pass state stands (CR 608.2g).
+            if (!game.resolution.active) game.take_action();
             pc = Game::PendingCast{};
             return;
         }
@@ -3737,6 +3739,56 @@ static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer) {
     cast.use_alt_cost = true;
     cast.option_ordinal = 1;
     process_action(cast, game, orderer);
+}
+
+// See declaration in action_processor.h.
+ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
+                                            Game::ImpulseCastPermission grant,
+                                            ResolutionCastRt &rt, FrameCtx &ctx,
+                                            std::shared_ptr<Orderer> orderer) {
+    if (rt.stage == ResolutionCastRt::OFFER) {
+        grant.caster = caster;
+        grant.during_resolution = true;
+        cur_game.impulse_cast_permission[card] = grant;
+        if (!exile_grant_castable(card, caster, /*sorcery_window=*/false, orderer)) {
+            cur_game.impulse_cast_permission.erase(card);
+            rt.stage = ResolutionCastRt::DONE;
+            return ResolutionCastStatus::DECLINED;
+        }
+        const std::string nm = entity_name(card);
+        const char *how = grant.resource == Game::ImpulseCastPermission::FREE
+                              ? " without paying its mana cost" : "";
+        int choice = ctx.ask(yesno_menu("Do not cast " + nm, "Cast " + nm + how, card), caster,
+                             card);
+        if (choice < 0 && decision_suspended()) return ResolutionCastStatus::SUSPENDED;
+        if (choice != 1) {
+            cur_game.impulse_cast_permission.erase(card);
+            rt.stage = ResolutionCastRt::DONE;
+            return ResolutionCastStatus::DECLINED;
+        }
+        // The cast is made by `caster`, who holds the cast flow's prompts; priority returns to
+        // the resolving ability's controller once it completes.
+        rt.stage = ResolutionCastRt::CASTING;
+        rt.prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (caster == Zone::PLAYER_A);
+        LegalAction cast(CAST_SPELL, card, "Cast " + nm);
+        cast.category = ActionCategory::CAST_SPELL;
+        cast.impulse_cast = true;
+        process_action(cast, cur_game, orderer);
+        if (decision_suspended()) return ResolutionCastStatus::SUSPENDED;
+    }
+    if (rt.stage == ResolutionCastRt::CASTING) {
+        if (cur_game.pending_cast.active)
+            fatal_error("cast_during_resolution re-entered with the cast still in flight");
+        cur_game.player_a_has_priority = rt.prev_priority;
+        rt.stage = ResolutionCastRt::DONE;
+        // A cancelled cast leaves the card where it was, without the permission.
+        cur_game.impulse_cast_permission.erase(card);
+        bool on_stack = global_coordinator.entity_has_component<Zone>(card) &&
+                        global_coordinator.GetComponent<Zone>(card).location == Zone::STACK;
+        return on_stack ? ResolutionCastStatus::CAST : ResolutionCastStatus::DECLINED;
+    }
+    return ResolutionCastStatus::DECLINED;
 }
 
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {

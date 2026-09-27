@@ -62,6 +62,7 @@ static void pregame_fiat_setup(EcsSystems &sys, const Deck &deck_a, const Deck &
 static void pregame_opening_actions(EcsSystems &sys);
 static int pregame_ask(std::vector<LegalAction> &actions);
 static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
+static bool reenter_suspended_resolution(EcsSystems &sys);
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
@@ -433,6 +434,13 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // the normal flow — exactly the next loop iteration after
                     // today's blocking process_action returned.
                     if (cur_game.pending_query.active) continue;
+                    // A cast made during a resolution (CR 608.2g,
+                    // cast_during_resolution) completed: that resolution
+                    // continues, exactly as a resumed RESOLUTION query does.
+                    if (cur_game.resolution.active) {
+                        if (reenter_suspended_resolution(sys)) continue;
+                        resolution_just_completed = true;
+                    }
                     break;
                 case PendingQuery::TRIGGER_PLACE:
                     resume_trigger_placement(cur_game, sys.orderer);
@@ -482,25 +490,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // without re-deriving the question at all.
                     break;
                 case PendingQuery::RESOLUTION: {
-                    // Re-enter the suspended resolution DIRECTLY via advance_step,
-                    // skipping turn-based actions / mandatory choices / SBE — SBAs
-                    // don't apply mid-resolution (CR 704.3 timing), and today the
-                    // whole resolution completed inside one advance_step call, so
-                    // nothing may run between its halves. The pass flags are still
-                    // true (left set at suspension), so advance_step re-enters
-                    // resolve_top, the phased resolve skips to the suspended point,
-                    // and the pending ask consumes the latched answer.
-                    bool advanced = cur_game.advance_step(sys.stack_manager, sys.orderer);
-                    // Purity tripwire: a resumed resolution must consume the
-                    // latched answer at the very ask that armed it — a still-
-                    // answered query means the handler diverged on re-entry.
-                    if (cur_game.pending_query.active && cur_game.pending_query.answered)
-                        fatal_error("resolution resume did not consume its latched answer");
                     // Suspended again (a follow-up ask armed a new query): loop
                     // back so the pending branch emits it before anything runs.
-                    if (advanced) continue;
-                    // Completed (advance_step reset the pass flags and returned
-                    // false): fall through to the post-resolution half below.
+                    if (reenter_suspended_resolution(sys)) continue;
+                    // Completed: fall through to the post-resolution half below.
                     resolution_just_completed = true;
                     break;
                 }
@@ -683,6 +676,22 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // phase and the next game must emit their own queries again.
     concede_reset_unwind();
     return cur_game.winner;
+}
+
+// Re-enter the suspended resolution DIRECTLY via advance_step, skipping turn-based actions /
+// mandatory choices / SBE — SBAs don't apply mid-resolution (CR 704.3 timing), and the whole
+// resolution completes inside advance_step calls, so nothing may run between its halves. The
+// pass flags are still true (left set at suspension), so advance_step re-enters resolve_top, the
+// phased resolve skips to the suspended point, and a pending ask consumes its latched answer.
+// Returns true when the resolution suspended again (a follow-up ask armed a new query), false
+// when it completed (advance_step reset the pass flags).
+static bool reenter_suspended_resolution(EcsSystems &sys) {
+    bool advanced = cur_game.advance_step(sys.stack_manager, sys.orderer);
+    // Purity tripwire: a resumed resolution must consume the latched answer at the very ask
+    // that armed it — a still-answered query means the handler diverged on re-entry.
+    if (cur_game.pending_query.active && cur_game.pending_query.answered)
+        fatal_error("resolution resume did not consume its latched answer");
+    return advanced;
 }
 
 // ── Pregame gate stages (Family F) ──────────────────────────────────────────

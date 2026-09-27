@@ -850,6 +850,8 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
         if (it == cur_game.impulse_cast_permission.end()) return out;
         const Game::ImpulseCastPermission &g = it->second;
         if (g.caster != player) return out;
+        // A permission for a cast made during a resolution (CR 608.2g) is used only there.
+        if (g.during_resolution) return out;
         if (is_land_card(cd) &&
             (g.resource != Game::ImpulseCastPermission::NORMAL || !g.allow_land))
             return out;
