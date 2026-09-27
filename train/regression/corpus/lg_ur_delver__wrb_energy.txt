@@ -4636,5 +4636,6 @@
     Warrior token deals 1 damage to Player A (now at -1 life)
   --- End Combat Damage ---
   Player A has -1 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

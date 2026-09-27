@@ -4938,5 +4938,6 @@
     Knight of the Reliquary deals 15 damage to Player B (now at -5 life)
   --- End Combat Damage ---
   Player B has -5 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

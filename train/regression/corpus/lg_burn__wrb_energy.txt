@@ -1336,5 +1336,6 @@
   Player B sacrifices Arid Mesa
   Player B's Arid Mesa ability is on the stack
   Player B has 0 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

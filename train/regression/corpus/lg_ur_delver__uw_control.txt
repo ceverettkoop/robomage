@@ -4098,5 +4098,6 @@
     Monk token deals 2 damage to Player B (now at -7 life)
   --- End Combat Damage ---
   Player B has -7 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

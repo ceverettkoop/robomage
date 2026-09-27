@@ -6424,5 +6424,6 @@
     Murktide Regent deals 5 damage to Player A (now at 0 life)
   --- End Combat Damage ---
   Player A has 0 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

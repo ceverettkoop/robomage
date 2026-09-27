@@ -3730,5 +3730,6 @@
   Player B sacrifices Polluted Delta
   Player B's Polluted Delta ability is on the stack
   Player B has 0 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

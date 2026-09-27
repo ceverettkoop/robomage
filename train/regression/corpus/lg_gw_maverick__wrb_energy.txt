@@ -3275,5 +3275,6 @@
   Player B activated Wasteland for 1(C)
   Player B casts Swords to Plowshares targeting Badgermole Cub
   Player B has 0 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

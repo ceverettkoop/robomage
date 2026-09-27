@@ -2442,5 +2442,6 @@
   Resolving ability (category: GainLife, amount: 3)
   Player A gains 3 life (now at 5)
   Player B has 0 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

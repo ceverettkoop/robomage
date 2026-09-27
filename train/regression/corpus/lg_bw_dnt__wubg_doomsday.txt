@@ -10379,5 +10379,6 @@
     White Orchid Phantom deals 1 damage to Player B (now at 0 life)
   --- End First Strike Combat Damage ---
   Player B has 0 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

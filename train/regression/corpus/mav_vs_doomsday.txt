@@ -2721,7 +2721,7 @@
 --- Narrative ---
   Player B puts 0 card(s) on the bottom of their library.
   Resolving ability (category: WinsGame)
-  Player B wins the game! (Thassa's Oracle)
-  Player B wins the game!
+  Thassa's Oracle - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

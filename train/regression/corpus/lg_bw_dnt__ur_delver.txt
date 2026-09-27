@@ -2423,5 +2423,6 @@
     Orc Army token deals 2 damage to Player B (now at -1 life)
   --- End Combat Damage ---
   Player B has -1 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

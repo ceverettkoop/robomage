@@ -750,5 +750,6 @@
   >> A/A: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   Player A has 0 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

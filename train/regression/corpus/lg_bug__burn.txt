@@ -849,5 +849,6 @@
   Resolving ability (category: DealDamage, amount: 4)
   Fireblast deals 4 damage to Player A (now at -1 life)
   Player A has -1 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

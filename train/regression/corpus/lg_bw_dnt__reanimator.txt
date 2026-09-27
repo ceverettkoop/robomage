@@ -2145,5 +2145,6 @@
   Player B loses 8 life (now at -1)
   Resolving ability (category: Cleanup)
   Player B has -1 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

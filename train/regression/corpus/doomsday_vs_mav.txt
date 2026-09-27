@@ -4332,5 +4332,6 @@
     Keen-Eyed Curator deals 7 damage to Player A (now at -6 life)
   --- End Combat Damage ---
   Player A has -6 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

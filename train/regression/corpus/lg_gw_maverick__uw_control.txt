@@ -6132,5 +6132,6 @@
   Resolving ability (category: LoseLife, amount: 4)
   Player B loses 4 life (now at -3)
   Player B has -3 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

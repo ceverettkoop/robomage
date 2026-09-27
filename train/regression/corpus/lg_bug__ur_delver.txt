@@ -3279,5 +3279,6 @@
     Monk token deals 2 damage to Orcish Bowmasters
   --- End Combat Damage ---
   Player A has -4 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

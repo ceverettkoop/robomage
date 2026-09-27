@@ -3251,7 +3251,6 @@
     Dragon's Rage Channeler deals 3 damage to Player A (now at 13 life)
   --- End Combat Damage ---
   Dragon's Rage Channeler is destroyed (lethal damage)
-  Cori-Steel Cutter becomes unattached
   -------- TURN 15 (Player A) --------
   Player A draws Daze
 --- Turn 15 (Player A) ---
@@ -4040,5 +4039,6 @@
     Monk token deals 3 damage to Player B (now at -11 life)
   --- End Combat Damage ---
   Player B has -11 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

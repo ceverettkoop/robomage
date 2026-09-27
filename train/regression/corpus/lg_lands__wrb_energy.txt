@@ -1508,23 +1508,21 @@
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
-   0: Ajani, Nacatl Pariah (ChangeZone)  [#0]
-   1: Ajani, Nacatl Pariah (Token)  [#1]
-  >> B/B: 0 (Ajani, Nacatl Pariah (ChangeZone))
+   0: Ajani, Nacatl Pariah (Token)  [#0]
+   1: Ajani, Nacatl Pariah (ChangeZone)  [#1]
+  >> B/B: 0 (Ajani, Nacatl Pariah (Token))
 --- Narrative ---
   Ajani, Nacatl Pariah triggered
   Ajani, Nacatl Pariah triggered
-  Resolving ability (category: Token)
-  Token created: 2/1 Cat Warrior
 
 --- Decision 62 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  16 life | mana: empty | hand(2): Amped Raptor, Voice of Victory | lib 43
   Opp:   45 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Pariah [1/2] (res 1) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1] | Cat Warrior [2/1] (SICK,NEW)
+  Self BF:  Ajani, Nacatl Pariah [1/2] (res 1) | Plains (T) | Plateau (T) | Scrubland | Cat Warrior [2/1]
   Opp BF:   Bojuka Bog (T) | Mox Diamond | Mox Diamond | Pithing Needle [naming: Ajani, Nacatl Pariah] | Skateboard | Urza's Saga [lore:1]
-  Stack: Ajani, Nacatl Pariah (ability, self)
+  Stack: Ajani, Nacatl Pariah (ability, self) -> Ajani, Nacatl Pariah (ability, self)
   Pending: Ajani, Nacatl Pariah (self)
   Self GY: Ajani, Nacatl Pariah
   Opp GY:  Expedition Map, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -1538,6 +1536,8 @@
   >> B/B: 0 (Decline: use Ajani, Nacatl Pariah's triggered ability)
 --- Narrative ---
   Player B declines the optional triggered ability.
+  Resolving ability (category: Token)
+  Token created: 2/1 Cat Warrior
   --- Declare Attackers (Player B) ---
 
 --- Decision 63 ---
@@ -3138,5 +3138,6 @@
     Construct token deals 7 damage to Player B (now at -5 life)
   --- End Combat Damage ---
   Player B has -5 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

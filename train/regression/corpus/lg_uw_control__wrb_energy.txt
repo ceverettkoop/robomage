@@ -7337,5 +7337,6 @@
   Resolving ability (category: DealDamage, amount: 1)
   Goblin Bombardment deals 1 damage to Player A (now at 0 life)
   Player A has 0 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

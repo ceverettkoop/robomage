@@ -14206,5 +14206,6 @@
     Construct token deals 8 damage to Player A (now at -14 life)
   --- End Combat Damage ---
   Player A has -14 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

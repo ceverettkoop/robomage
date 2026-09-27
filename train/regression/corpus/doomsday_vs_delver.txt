@@ -5474,5 +5474,6 @@
     Dragon's Rage Channeler deals 3 damage to Player A (now at -5 life)
   --- End Combat Damage ---
   Player A has -5 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

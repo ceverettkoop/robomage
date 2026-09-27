@@ -3450,5 +3450,6 @@
     Player A gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
   Player B has -1 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===
