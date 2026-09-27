@@ -2040,15 +2040,16 @@ def test_subability_roundtrip():
     """Batch 8 (nested resolves): prompts INSIDE a chained sub-ability — a
     persisted SUB FrameLevel under the root resolve — are loop-top pending
     decisions. Cloak and Dagger, Entwined's ETB trigger chain (TrigRevealHand
-    -> DBPump -> DBChangeZone) reaches two consecutive new roots while the
-    trigger is mid-resolution: the DBPump sub's own target pick (2-option
-    SELECT_TARGET: the opponent's Grizzly Bears / no creature) and the
-    DBChangeZone sub's remembered-exile pick (the Batch 7 live-menu loop,
-    reachable only as a sub-ability — 4 options: two revealed hand cards, the
-    chosen creature, decline). At each root: SNAPSHOT re-emits exactly, a
-    divergent pick (the next menu option — no creature / a different exile)
-    then RESTORE returns byte-identically, and the resumed real line stays
-    byte-identical to a no-snapshot control run with the same outcome."""
+    -> DBPump -> DBChangeZone) reaches two consecutive new roots: the DBPump
+    sub's target pick, made as the trigger is put on the stack (CR 603.3d; a
+    2-option TRIGGER_PLACE SELECT_TARGET: no target / the opponent's Grizzly
+    Bears), and, mid-resolution, the DBChangeZone sub's remembered-exile pick
+    (the Batch 7 live-menu loop, reachable only as a sub-ability — the control
+    line's auto-0 chose no creature, so 3 options: two revealed hand cards,
+    decline). At each root: SNAPSHOT re-emits exactly, a divergent pick (the
+    next menu option — the creature / a different exile) then RESTORE returns
+    byte-identically, and the resumed real line stays byte-identical to a
+    no-snapshot control run with the same outcome."""
     seed = 5
     deck_paths = _write_decks([
         ("cloak_pq_a", "1 Cloak and Dagger Entwined\n29 Plains\n"),
@@ -2079,9 +2080,9 @@ def test_subability_roundtrip():
             raise ProtocolError(f"exile pick at {exile_idx} does not immediately "
                                 f"follow the pump pick at {pump_idx} — the sub "
                                 "chain should re-arm consecutively")
-        if control[exile_idx][0] != 4:
+        if control[exile_idx][0] != 3:
             raise ProtocolError(f"exile menu has {control[exile_idx][0]} options, "
-                                "expected 4 (2 hand cards + creature + decline)")
+                                "expected 3 (2 hand cards + decline)")
         for name, i in (("pump-target", pump_idx), ("remembered-exile", exile_idx)):
             if not control[i][2]:
                 raise ProtocolError(f"{name} decision reports safe=0 — it should "
@@ -2127,7 +2128,7 @@ def test_subability_roundtrip():
         if excursions != 2:
             raise ProtocolError(f"expected 2 subability excursions, ran {excursions}")
         return (f"pump-target @ {pump_idx} (nc=2) and remembered-exile @ "
-                f"{exile_idx} (nc=4) both safe=1, round-trips exact, "
+                f"{exile_idx} (nc=3) both safe=1, round-trips exact, "
                 f"outcome={outcome['winner']!r}")
     finally:
         for p in deck_paths:
