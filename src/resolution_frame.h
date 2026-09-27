@@ -227,10 +227,12 @@ struct DrawRt {
 // change_zone's DefinedPlayer$ Player put-from-hand (Show and Tell: "Each player MAY put an
 // artifact, creature, enchantment, or land card from their hand onto the battlefield"). Each
 // player decides in APNAP order (CR 101.4 / 405.6, active player first); only the loop index
-// persists across a suspension — the per-player candidate menu is re-derived from that player's
-// live hand every pass (a live-menu loop; the parked menu pins cover the hand cards).
+// persists across a suspension, with the chosen card while its Aura enchant pick is parked — the
+// per-player candidate menu is re-derived from that player's live hand every pass (a live-menu
+// loop; the parked menu pins cover the hand cards, and the chosen card is pinned from here).
 struct EachPlayerPutRt {
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
+    Entity chosen = 0;            // the current player's chosen card, parked on its Aura enchant pick (CR 303.4f)
 };
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
                                    SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,

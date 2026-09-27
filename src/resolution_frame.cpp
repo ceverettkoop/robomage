@@ -266,6 +266,9 @@ static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) 
         // hold no entity state of their own: in-flight mode/sub targets live
         // on the persisted parent work / child levels (pinned generically).
         pin_all(rp->saved_remembered, pins);
+    } else if (const auto *ep = std::get_if<EachPlayerPutRt>(&rt)) {
+        // A Show and Tell card chosen from a hidden hand, parked on its Aura enchant pick.
+        if (ep->chosen != 0) pins.insert(ep->chosen);
     } else if (const auto *cs = std::get_if<CopySpellRT>(&rt)) {
         // A suspended storm copy machine: the original, the partially built
         // copy, and its already-bound targets.
