@@ -59,6 +59,12 @@ extern std::vector<ActiveStatic> g_active_statics;
 std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
                                                    const std::set<Entity> &entities);
 
+// CR 614.12: would a card entering the battlefield lose its abilities there to a continuous
+// effect that already exists (Humility / Toxicrene, or a Magus of the Moon on a nonbasic land)?
+// Gates the entering card's own "as it enters" replacement effects (enters tapped / with
+// counters) and a Saga's first lore counter.
+bool entering_object_loses_abilities(Entity entity);
+
 // True while an active ManaConvert continuous static lets players spend mana as though it were
 // mana of any color (Mycosynth Lattice: ManaConversion$ AnyType->AnyColor, CR 609.4 / 106.6).
 // When set, any one mana pays any single colored pip — i.e. colored pips behave like generic for
