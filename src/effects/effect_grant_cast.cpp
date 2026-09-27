@@ -1,6 +1,7 @@
 #include "effects.h"
 
 #include <string>
+#include <vector>
 
 #include "../classes/game.h"
 #include "../cli_output.h"
@@ -71,60 +72,41 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    // DB$ Effect | StaticAbilities$ <SVar(MayPlay+MayPlayWithoutManaCost, AffectedZone$ Exile)>
-    // | RememberObjects$ Remembered (Ugin, Eye of the Storms' -11): "Until end of turn, you may
-    // cast those cards without paying their mana costs." The "those cards" are the colorless
-    // nonland cards the preceding RememberChanged$ ChangeZone just exiled — still sitting in
-    // cur_game.remembered_entities (DBCleanup clears them only AFTER this sub-ability). Rather
-    // than instantiate a continuous-effect object, record a FREE cast-from-exile permission for
-    // each remembered exiled card in cur_game.impulse_cast_permission (the same per-turn map the
-    // alt-cost impulse cast uses), good until cleanup (CR 118.9 / 601.2f). The casting path
-    // offers these from EXILE while they remain there (ForgetOnMoved$ Exile = the permission
-    // lapses once a card leaves exile), pays no cost, and clears the map each cleanup.
-    if (ab.effect_grant_free_cast_from_exile) {
-        for (Entity card : cur_game.remembered_entities) {
-            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
-            auto &cz = global_coordinator.GetComponent<Zone>(card);
-            if (cz.location != Zone::EXILE) continue;
-            if (!global_coordinator.entity_has_component<CardData>(card)) continue;
-            Game::ImpulseCastPermission perm;
-            perm.resource = Game::ImpulseCastPermission::FREE;
-            perm.amount = 0;
-            perm.caster = ab.controller;
-            cur_game.impulse_cast_permission[card] = perm;
-            game_log("%s may cast %s from exile without paying its mana cost this turn.\n",
-                     player_name(ab.controller).c_str(),
-                     global_coordinator.GetComponent<CardData>(card).name.c_str());
-        }
-        return HandlerResult::DONE_RUN_SUBS;
-    }
-
-    // DB$ Effect | StaticAbilities$ <SVar(MayPlay$ True, AffectedZone$ Exile — NO
-    // MayPlayWithoutManaCost)> | RememberObjects$ Remembered (Light Up the Stage): "Until the
-    // end of your next turn, you may play those cards." The "those cards" are the two cards the
-    // preceding RememberChanged$ Dig just exiled (still in cur_game.remembered_entities). Record a
-    // NORMAL-cost play-from-exile permission for each remembered exiled card in
-    // cur_game.impulse_cast_permission — paid for its normal cost (unlike Ugin's free grant),
-    // LANDS permitted (it's "play", not "cast"), and persisting until the end of the caster's next
-    // turn (Duration$ UntilTheEndOfYourNextTurn). ForgetOnMoved$ Exile: the permission lapses once
-    // a card leaves exile (is played), which the casting/play path enforces by offering it only
-    // while the card is still in exile.
-    if (ab.effect_grant_play_from_exile) {
-        for (Entity card : cur_game.remembered_entities) {
+    // DB$ Effect | StaticAbilities$ <SVar(MayPlay$ True, AffectedZone$ Exile)> — "you may play /
+    // cast those cards" for the exiled cards the Effect remembers: the cards the preceding
+    // RememberChanged$ exile just moved (RememberObjects$ Remembered: Light Up the Stage, Ugin -11)
+    // or the card a preceding ChooseCard chose (RememberObjects$ ChosenCard: Dauthi Voidwalker).
+    // Rather than instantiate a continuous-effect object, record a play-from-exile permission for
+    // each such card still in exile in cur_game.impulse_cast_permission (CR 601.2, 305.1). The
+    // permission is used at priority through the ordinary cast and land-play actions, so the card's
+    // timing, the land-drop limit and every cast trigger apply as usual (CR 601.3, 305.2). With
+    // MayPlayWithoutManaCost$ it is cast without paying its mana cost (CR 118.9), otherwise for its
+    // normal costs; a land may be played unless the static's Affected$ is nonLand (Ugin: "cast").
+    // It lasts this turn, or until the end of the caster's next turn (Light Up the Stage), and
+    // lapses once the card leaves exile (ForgetOnMoved$ Exile).
+    if (ab.effect_may_play_from_exile) {
+        const std::vector<Entity> cards =
+            ab.effect_remember_chosen_card
+                ? std::vector<Entity>(cur_game.chosen_cards.begin(), cur_game.chosen_cards.end())
+                : cur_game.remembered_entities;
+        for (Entity card : cards) {
             if (!global_coordinator.entity_has_component<Zone>(card)) continue;
             if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
             if (!global_coordinator.entity_has_component<CardData>(card)) continue;
             Game::ImpulseCastPermission perm;
-            perm.resource = Game::ImpulseCastPermission::NORMAL;
-            perm.amount = 0;
+            perm.resource = ab.effect_may_play_free ? Game::ImpulseCastPermission::FREE
+                                                    : Game::ImpulseCastPermission::NORMAL;
             perm.caster = ab.controller;
-            perm.allow_land = true;
+            perm.allow_land = ab.effect_may_play_lands;
             perm.persist_until_end_of_next_turn = ab.duration_until_end_of_your_next_turn;
             perm.grant_turn = cur_game.turn;
             cur_game.impulse_cast_permission[card] = perm;
-            game_log("%s may play %s from exile%s.\n", player_name(ab.controller).c_str(),
+            game_log("%s may %s %s from exile%s%s.\n", player_name(ab.controller).c_str(),
+                     perm.allow_land ? "play" : "cast",
                      global_coordinator.GetComponent<CardData>(card).name.c_str(),
-                     perm.persist_until_end_of_next_turn ? " until the end of their next turn" : " this turn");
+                     ab.effect_may_play_free ? " without paying its mana cost" : "",
+                     perm.persist_until_end_of_next_turn ? " until the end of their next turn"
+                                                         : " this turn");
         }
         return HandlerResult::DONE_RUN_SUBS;
     }

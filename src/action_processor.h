@@ -124,14 +124,6 @@ void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Own
 TargetStatus run_target_select(Ability& ability, TargetSelectRT& rt, TargetAsker& asker,
                                std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
-// CR 601.2b/c: announce ALL of a spell's cast-time choices on its (already source/controller-
-// stamped) primary spell ability — modal mode(s) (recorded in Ability::charm_chosen, each
-// chosen mode's targets stored on its charm_choices entry), then the primary target, then each
-// targeting chained sub-ability's target. Shared by every path that puts a CAST spell on the
-// stack (the CAST_SPELL action; effect_choose_card's cast-from-exile).
-void announce_spell_targets(Ability& ability, std::shared_ptr<Orderer> orderer,
-                            Zone::Ownership caster);
-
 // General "copy a spell on the stack" machine (CR 707.10 / 707.12), resumable (Batch 10).
 // Creates `count` independent copies of the spell entity `original` on top of the stack,
 // controlled by `controller`. Each copy is a copy of the spell's characteristics

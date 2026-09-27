@@ -8,18 +8,19 @@
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
-#include "../components/spell.h"
 #include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
 #include "../ecs/entity.h"
 #include "../input_logger.h"
-#include "../action_processor.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
+
+static std::vector<Entity> choose_card_candidates(const Ability &ab,
+                                                 std::shared_ptr<Orderer> orderer);
 
 namespace effects {
 
@@ -134,82 +135,60 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    // Dauthi Voidwalker: choose an exiled card owned by opponent with a void counter,
-    // then play it without paying its mana cost.
-    Zone::Ownership ctrl = ab.controller;
-    Zone::Ownership opp = opponent_of(ctrl);
-
-    std::vector<Entity> choices;
-    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != Zone::EXILE) continue;
-        if (z.owner != opp) continue;
-        if (cur_game.void_countered.find(e) == cur_game.void_countered.end()) continue;
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        choices.push_back(e);
+    // ChooseCard | Choices$ <filter> | ChoiceZone$ <zone> (Dauthi Voidwalker: "Choose an exiled
+    // card an opponent owns with a void counter on it."): the controller chooses one card in that
+    // zone matching the filter. The choice becomes the resolution's chosen card
+    // (cur_game.chosen_cards), which a chained RememberObjects$ ChosenCard Effect acts on (Dauthi:
+    // "You may play it this turn without paying its mana cost"). Mandatory$ True leaves no
+    // "choose nothing" option; with no matching card nothing is chosen.
+    std::vector<Entity> cands = choose_card_candidates(ab, orderer);
+    if (cands.empty()) {
+        if (!ctx.resuming()) game_log("There is no card to choose.\n");
+        return HandlerResult::DONE_RUN_SUBS;
     }
-
-    if (!choices.empty()) {
-        std::vector<LegalAction> pick_actions;
-        for (auto e : choices) {
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            LegalAction la(PASS_PRIORITY, e, "Play " + cd.name + " (exiled, free)");
-            la.category = ActionCategory::PLAY_FREE;
-            pick_actions.push_back(la);
-        }
-
-        if (!ctx.resuming())
-            game_log("Choose an exiled card with a void counter:\n");
-        // The pick ran with priority already at the controller (no explicit
-        // repoint today), so seating the ask on ab.controller is a no-op swap.
-        int choice = ctx.ask(std::move(pick_actions), ab.controller, ab.source);
-        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-        // Post-choice work ran under the handler-wide PendingDecisionScope
-        // before the conversion; re-establish it here so the nested cast-time
-        // target prompts inside announce_spell_targets still observe ab.source.
-        PendingDecisionScope pending_scope(ab.source);
-        Entity chosen = choices[static_cast<size_t>(choice)];
-        auto &cd = global_coordinator.GetComponent<CardData>(chosen);
-        cur_game.void_countered.erase(chosen);
-
-        // A permanent card (CR 110.4a) enters the battlefield; an instant/sorcery is cast.
-        if (is_permanent_card(cd)) {
-            orderer->add_to_zone(false, chosen, Zone::BATTLEFIELD);
-            auto &cz = global_coordinator.GetComponent<Zone>(chosen);
-            cz.controller = ctrl;
-            game_log("%s plays %s from exile (Dauthi Voidwalker).\n",
-                     player_name(ctrl).c_str(), cd.name.c_str());
-        } else {
-            // Instant/Sorcery: put on stack as a spell, let normal resolution handle it
-            Spell sp;
-            sp.caster = ctrl;
-            global_coordinator.AddComponent(chosen, sp);
-            for (auto &spell_ab : cd.abilities) {
-                if (spell_ab.ability_type != Ability::SPELL) continue;
-                Ability cast_ab = spell_ab;
-                cast_ab.source = chosen;
-                cast_ab.controller = ctrl;
-                // Announce cast-time choices now (modal modes + all targets, CR 601.2b/c) as
-                // casting normally would, so the spell doesn't fizzle for want of a target on
-                // resolution. Guarded: this forced cast wasn't vetted by the offer-time cast
-                // gate, so a spell with no castable target set skips announcement and simply
-                // fizzles at resolution instead of forcing an empty target menu.
-                if (spell_has_castable_targets(cast_ab, orderer, ctrl, cd.has_gift)) {
-                    announce_spell_targets(cast_ab, orderer, ctrl);
-                }
-                global_coordinator.AddComponent(chosen, cast_ab);
-                break;
-            }
-            orderer->add_to_zone(false, chosen, Zone::STACK);
-            game_log("%s casts %s from exile (Dauthi Voidwalker).\n",
-                     player_name(ctrl).c_str(), cd.name.c_str());
-            fire_targeting_hooks(chosen, ctrl);  // Ward / becomes-target (CR 702.21a)
-        }
-    } else {
-        game_log("No exiled cards with void counters to choose.\n");
+    std::vector<LegalAction> picks;
+    for (auto e : cands) {
+        LegalAction la(PASS_PRIORITY, e, "Choose " + entity_name(e));
+        la.category = ActionCategory::CHOOSE_CARD;
+        // Cards in a public zone (exile is face up, CR 406.3) are public; a hand or library
+        // choice is not.
+        la.card_is_public = ab.choose_card_zone != Zone::HAND && ab.choose_card_zone != Zone::LIBRARY;
+        picks.push_back(la);
+    }
+    if (!ab.mandatory) {
+        LegalAction none(PASS_PRIORITY, std::string("Choose no card"));
+        none.category = ActionCategory::CHOOSE_CARD;
+        picks.push_back(none);
+    }
+    if (!ctx.resuming()) game_log("%s chooses a card:\n", player_name(ab.controller).c_str());
+    int choice = ctx.ask(std::move(picks), ab.controller, ab.source);
+    if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+    cur_game.chosen_cards.clear();
+    if (choice >= 0 && choice < static_cast<int>(cands.size())) {
+        Entity chosen = cands[static_cast<size_t>(choice)];
+        cur_game.chosen_cards.insert(chosen);
+        if (ab.remember_chosen) cur_game.remembered_entities.push_back(chosen);
+        game_log("%s chooses %s.\n", player_name(ab.controller).c_str(), entity_name(chosen).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects
+
+// The cards a generic ChooseCard chooses among: those in its ChoiceZone$ matching its Choices$
+// filter, read relative to the ability's controller (YouOwn / OppOwn).
+static std::vector<Entity> choose_card_candidates(const Ability &ab,
+                                                 std::shared_ptr<Orderer> orderer) {
+    MatchCtx mctx;
+    mctx.controller = ab.controller;
+    mctx.source = ab.source;
+    std::vector<Entity> cands;
+    for (auto e : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        if (global_coordinator.GetComponent<Zone>(e).location != ab.choose_card_zone) continue;
+        if (ab.choose_card_zone == Zone::BATTLEFIELD && !is_battlefield_permanent(e)) continue;
+        if (!object_matches_filter(e, ab.choose_card_filter, mctx)) continue;
+        cands.push_back(e);
+    }
+    return cands;
+}

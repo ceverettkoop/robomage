@@ -24,7 +24,7 @@ static void stamp_mode(const Ability &parent, Ability &mode) {
 }
 
 // Modal spell (CR 700.2): "Choose one/two —". The mode(s) and their targets were announced
-// when the spell was CAST (CR 601.2b/c) — see announce_spell_targets — and recorded in
+// when the spell was CAST (CR 601.2b/c) — see run_cast_flow's CHARM_MODE step — and recorded in
 // charm_chosen. Resolution only replays those picks in order: each mode's own resolve()
 // re-verifies its targets (CR 608.2b), so a mode whose targets became illegal fizzles
 // individually without any prompting here. In a suspendable context each mode resolves as a
@@ -32,7 +32,7 @@ static void stamp_mode(const Ability &parent, Ability &mode) {
 // entry is never read again after its mode resolves, so the old by-reference resolution and
 // the copy are indistinguishable), with CharmRt.announced_idx as the persisted loop cursor.
 // The choose-at-resolution loop below remains as a FALLBACK for a charm that reached the
-// stack without an announcement (a cast path not routed through announce_spell_targets).
+// stack without an announcement (a cast path not routed through run_cast_flow).
 HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source);
     if (!ab.charm_chosen.empty()) {

@@ -1035,21 +1035,21 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         actions.push_back(cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6));
     }
-    // IMPULSE-CAST PERMISSIONS (Amped Raptor's DB$ Play): a card exiled this turn that its
-    // controller may cast, paying an alternative RESOURCE cost (energy or life equal to its
-    // mana value) instead of its mana cost (CR 707 / 118.9). Cast from EXILE at the timing its
-    // type allows; only the granted player may cast it, and only if they can pay the resource.
-    // The EXILE_GRANT route covers a card still in exile whose grant names this player (and
-    // a land only under a NORMAL grant that allows lands).
+    // PLAY-FROM-EXILE PERMISSIONS (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp): an
+    // exiled card its grant lets this player play, for its normal cost, without paying its mana
+    // cost, or for an alternative resource cost (CR 118.9). Cast from EXILE at the timing its type
+    // allows; only the granted player may cast it, and only if they can pay the cost. The
+    // EXILE_GRANT route covers a card still in exile whose grant names this player (and a land
+    // only under a "play" grant that allows lands).
     for (const auto &[ex_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::EXILE_GRANT)) continue;
         const auto &perm_grant = cur_game.impulse_cast_permission.at(ex_entity);
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
 
-        // A LAND among the exiled cards: only a NORMAL "play" permission (Light Up the Stage's
-        // "you may PLAY those cards") may play it — a land play, sorcery-timing, own main phase,
-        // empty stack, and a land drop remaining (CR 305.2 / 601.3e). A free/energy/life "cast"
-        // grant (Ugin -11 / Amped Raptor) can't play a land (601.1), and card_play_permission
+        // A LAND among the exiled cards: only a "play" permission (Light Up the Stage's "you may
+        // PLAY those cards", Dauthi Voidwalker's "you may play it") may play it — a land play,
+        // sorcery-timing, own main phase, empty stack, and a land drop remaining (CR 305.1 /
+        // 305.2). A "cast" grant (Ugin -11) can't play a land (601.1), and card_play_permission
         // reports no route for a land under one.
         if (is_land_card(ecd)) {
             if (!sorcery_window) continue;

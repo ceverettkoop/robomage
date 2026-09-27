@@ -610,6 +610,13 @@ struct Ability{
     // trailing Defined$ Remembered ChangeZone moves it to hand.
     bool choose_imprinted = false;
     bool remember_chosen = false;    // RememberChosen$ True — append the chosen card to remembered_entities
+    // ChooseCard | Choices$ <filter> | ChoiceZone$ <zone> (Dauthi Voidwalker: "Choose an exiled
+    // card an opponent owns with a void counter on it"): the controller chooses one card in that
+    // zone matching the filter. The choice becomes the resolution's chosen card
+    // (cur_game.chosen_cards), which a later RememberObjects$ ChosenCard Effect reads. Mandatory$
+    // True means no "choose nothing" option. Unset zone = the battlefield.
+    std::string choose_card_filter = "";
+    Zone::ZoneValue choose_card_zone = Zone::BATTLEFIELD;
 
     // Mill: remember milled cards in cur_game.remembered_entities
     bool remember_milled = false;    // RememberMilled$ True
@@ -685,24 +692,25 @@ struct Ability{
     // unremovable, zoneless source whose statics are gathered into g_active_statics each SBA pass.
     std::vector<StaticAbility> effect_emblem_statics;
 
-    // DB$ Effect | StaticAbilities$ <SVar> where the named static grants MayPlay$ True +
-    // MayPlayWithoutManaCost$ True with AffectedZone$ Exile (Ugin, Eye of the Storms' -11:
-    // "Until end of turn, you may cast those cards without paying their mana costs"). The
-    // StaticAbilities$ SVar is resolved at parse time; when it carries that grant this flag is
-    // set, and the GrantCast handler records a free (no-mana-cost) cast-from-exile permission
-    // for each currently-remembered exiled card (cur_game.remembered_entities), good until end
-    // of turn. CR 113.3 / 601.3e / 118.9 (cast without paying mana cost).
-    bool effect_grant_free_cast_from_exile = false;
-
-    // DB$ Effect | StaticAbilities$ <SVar> where the named static grants plain MayPlay$ True with
-    // AffectedZone$ Exile but NOT MayPlayWithoutManaCost (Light Up the Stage: "Until the end of
-    // your next turn, you may PLAY those cards"). Unlike the free-cast grant above, the cards are
-    // played for their NORMAL cost, and — since the permission is "play", not "cast" — LANDS among
-    // the exiled cards may be played too (CR 305 / 601.3e). The GrantCast handler records a
-    // normal-cost play-from-exile permission for each currently-remembered exiled card. The
-    // duration (this-turn vs until-end-of-your-next-turn) is carried on
-    // duration_until_end_of_your_next_turn.
-    bool effect_grant_play_from_exile = false;
+    // DB$ Effect | StaticAbilities$ <SVar> where the named static is a MayPlay$ True continuous
+    // effect with AffectedZone$ Exile: "you may play/cast those cards" (Light Up the Stage: "Until
+    // the end of your next turn, you may play those cards"; Ugin, Eye of the Storms' -11: "Until
+    // end of turn, you may cast those cards without paying their mana costs"; Dauthi Voidwalker:
+    // "You may play it this turn without paying its mana cost"). The StaticAbilities$ SVar is
+    // resolved at parse time. The GrantCast handler records a play-from-exile permission
+    // (cur_game.impulse_cast_permission) for each affected card still in exile, used at priority
+    // through the normal cast / land-play actions (CR 601.2, 305.1). The duration (this turn vs
+    // until the end of your next turn) is carried on duration_until_end_of_your_next_turn.
+    bool effect_may_play_from_exile = false;
+    // MayPlayWithoutManaCost$ True: the cards are cast without paying their mana costs (CR 118.9);
+    // otherwise they are played for their normal costs.
+    bool effect_may_play_free = false;
+    // The static's Affected$ filter admits land cards (it has no nonLand qualifier), so a land
+    // among the affected cards may be played ("play", not only "cast"; CR 305.1).
+    bool effect_may_play_lands = false;
+    // RememberObjects$ ChosenCard: the Effect's affected cards are the resolution's chosen card(s)
+    // (cur_game.chosen_cards, set by a preceding ChooseCard) instead of the remembered set.
+    bool effect_remember_chosen_card = false;
 
     // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
     // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one

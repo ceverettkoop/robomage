@@ -736,7 +736,7 @@ struct Game {
         Entity miracle_reveal_pending = 0;
         Entity miracle_cast_pending = 0;
         std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
-        std::set<Entity> chosen_cards;  // permanents chosen/kept by a ChooseCard effect (Ajani -4); read by SacrificeAll's nonChosenCard filter, cleared by Cleanup ClearChosenCard$
+        std::set<Entity> chosen_cards;  // cards chosen by a resolving ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard Effect); cleared by Cleanup ClearChosenCard$ and when the resolution finishes
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving
         int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
         std::vector<Entity> imprinted_entities;  // the set of cards "imprinted" (recorded) by a resolving DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$. Distinct from remembered_entities (which holds the chosen cards taken to hand).
@@ -758,15 +758,15 @@ struct Game {
         // so the same path serves energy ({E}) and life (a future Bolas's Citadel "pay life =
         // mana value"). The casting path reads this to compute the cost and skip mana payment.
         struct ImpulseCastPermission {
-            // FREE = cast without paying any cost (Ugin, Eye of the Storms' -11: "cast those
-            // cards without paying their mana costs", CR 118.9 / 601.2f). ENERGY/LIFE pay an
-            // alternative resource cost equal to `amount` (Amped Raptor's DB$ Play). NORMAL =
-            // PLAY the card for its NORMAL cost (Light Up the Stage's "you may play those cards")
-            // — no alternative cost, and (if allow_land) a land among the cards may be played.
+            // FREE = cast without paying its mana cost (Ugin, Eye of the Storms' -11: "cast those
+            // cards without paying their mana costs"; Dauthi Voidwalker: "play it ... without
+            // paying its mana cost", CR 118.9 / 601.2f). ENERGY/LIFE pay an alternative resource
+            // cost equal to `amount` (Amped Raptor's DB$ Play). NORMAL = PLAY the card for its
+            // NORMAL cost (Light Up the Stage's "you may play those cards").
             enum Resource { ENERGY, LIFE, FREE, NORMAL } resource = ENERGY;
             int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE/NORMAL
             Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
-            bool allow_land = false;   // NORMAL "play" grants may also play a LAND card from exile
+            bool allow_land = false;   // a "play" grant may also play a LAND card from exile (CR 305.1)
             // persist_until_end_of_next_turn: the permission survives the cleanup of the turn it was
             // granted; it is removed at the caster's NEXT turn's cleanup (CR "until the end of your
             // next turn"). grant_turn records cur_game.turn at grant so game.cpp can detect that

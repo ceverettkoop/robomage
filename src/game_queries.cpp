@@ -270,6 +270,22 @@ bool try_pt_qualifier(const CharView &v, const std::string &q, bool &ok) {
     return true;
 }
 
+// A counter-count qualifier "counters_<OP><N>_<TYPE>" (e.g. counters_GE1_VOID — "with a void
+// counter on it", CR 122.1): the number of TYPE counters on the object compared against N.
+// Returns true when `q` IS such a qualifier (and writes the result into `ok`).
+bool try_counters_qualifier(const CharView &v, const std::string &q, bool &ok) {
+    static const std::string lead = "counters_";
+    if (q.rfind(lead, 0) != 0) return false;
+    std::string rest = q.substr(lead.size());
+    size_t sep = rest.find('_', 2);
+    if (rest.size() < 4 || sep == std::string::npos || sep == 2) return false;
+    std::string op = rest.substr(0, 2), num = rest.substr(2, sep - 2), type = rest.substr(sep + 1);
+    for (char c : num)
+        if (!std::isdigit(static_cast<unsigned char>(c))) return false;
+    ok = v.entity != 0 && apply_svar_op(object_counters(v.entity, type), op, std::stoi(num));
+    return true;
+}
+
 // Main card types, for the non<CardType> negation (CR 110.4a + the spell-only types).
 const char *const kCardTypes[] = {"Land", "Creature", "Artifact", "Enchantment",
                                   "Planeswalker", "Battle", "Instant", "Sorcery", "Tribal"};
@@ -376,6 +392,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     }
     // power/toughness comparator ----------------------------------------------
     { bool ok = false; if (try_pt_qualifier(v, q, ok)) return ok; }
+    { bool ok = false; if (try_counters_qualifier(v, q, ok)) return ok; }
     // positive color ----------------------------------------------------------
     { Colors c; if (color_token(q, c)) return v.colors.count(c) > 0; }
     // negations ---------------------------------------------------------------
@@ -852,9 +869,7 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
         if (g.caster != player) return out;
         // A permission for a cast made during a resolution (CR 608.2g) is used only there.
         if (g.during_resolution) return out;
-        if (is_land_card(cd) &&
-            (g.resource != Game::ImpulseCastPermission::NORMAL || !g.allow_land))
-            return out;
+        if (is_land_card(cd) && !g.allow_land) return out;
         out.sources |= CardPlayPermission::EXILE_GRANT;
         // Mirrors the cleanup expiry in game.cpp: a warp grant lasts while the card stays
         // in exile; an until-the-end-of-your-next-turn grant lapses at a later turn's cleanup
@@ -874,6 +889,19 @@ int exiled_card_counters(Entity card) {
     if (it != cur_game.suspend_time_counters.end() && it->second > 0) n += it->second;
     if (cur_game.void_countered.count(card)) n += 1;
     return n;
+}
+
+int object_counters(Entity e, const std::string &type) {
+    if (is_battlefield_permanent(e)) return get_counters(e, type);
+    if (!global_coordinator.entity_has_component<Zone>(e) ||
+        global_coordinator.GetComponent<Zone>(e).location != Zone::EXILE)
+        return 0;
+    if (type == "VOID") return cur_game.void_countered.count(e) ? 1 : 0;
+    if (type == "TIME") {
+        auto it = cur_game.suspend_time_counters.find(e);
+        return it == cur_game.suspend_time_counters.end() ? 0 : std::max(it->second, 0);
+    }
+    return 0;
 }
 
 static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt) {

@@ -68,6 +68,9 @@ static void frame_finish() {
     ResolutionFrame &fr = cur_game.resolution;
     cur_game.player_a_has_priority = fr.prev_priority;
     cur_game.remembered_entities = fr.saved_remembered;
+    // A ChooseCard's chosen cards belong to the resolution that chose them (Ajani's kept
+    // permanents, Dauthi Voidwalker's card), so they don't leak into a later nonChosenCard filter.
+    cur_game.chosen_cards.clear();
     fr = ResolutionFrame{};
     // The effects that could read a card this resolution moved off the battlefield as the
     // departed object have run; from here on it is a new object (CR 400.7).

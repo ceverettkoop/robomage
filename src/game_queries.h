@@ -694,12 +694,12 @@ Entity returnable_exiled_card(Entity host);
 //   GRAVEYARD_LAND    a land card in its owner's graveyard while a static lets the owner play
 //                     lands from the graveyard (Icetill Explorer, Mole Man)
 //   EXILE_GRANT       an exiled card with a Game::impulse_cast_permission whose caster is
-//                     `player` (Light Up the Stage, Ugin's -11, Amped Raptor, a suspend free
-//                     cast, warp); a land only under a NORMAL grant that allows lands
+//                     `player` (Light Up the Stage, Ugin's -11, Dauthi Voidwalker, warp); a land
+//                     only under a "play" grant that allows lands
 // Not covered: a suspended card still carrying time counters (no permission until the last
-// counter is removed), a void-countered card (Dauthi Voidwalker's ability plays its chosen
-// card during resolution, so no standing permission exists), graveyard-activated abilities
-// such as unearth (they activate an ability, not play the card), and hand casts.
+// counter is removed), a card cast during a resolution (Amped Raptor, suspend's last counter:
+// no standing permission exists), graveyard-activated abilities such as unearth (they activate
+// an ability, not play the card), and hand casts.
 // expires_this_turn is true when the card is playable and EVERY source covering it lapses at
 // this turn's cleanup (Emry's grant, a "this turn" exile grant, or a Light Up the Stage grant
 // during the caster's next turn); false for a static or keyword source or a grant that
@@ -723,6 +723,11 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player);
 // permanent, so these live in Game rather than Permanent::counters. Defined in
 // game_queries.cpp.
 int exiled_card_counters(Entity card);
+
+// Number of `type` counters on an object (CR 122.1): a battlefield permanent's
+// Permanent::counters, or an exiled card's VOID / TIME counters as exiled_card_counters tracks
+// them. 0 for any other object. Defined in game_queries.cpp.
+int object_counters(Entity e, const std::string &type);
 
 // ── Delayed triggers (CR 603.7) ──────────────────────────────────────────────
 struct DelayedTrigger;

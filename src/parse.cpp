@@ -1728,6 +1728,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // those same objects when it fires later (Flickerwisp / Phelia exile-and-return).
         if (value.find("RememberedLKI") != std::string::npos)
             effect_params<DelayedTriggerParams>(ability).remember_objects_lki = true;
+        // RememberObjects$ ChosenCard — a DB$ Effect applies to the card the preceding ChooseCard
+        // chose (Dauthi Voidwalker's "You may play it this turn").
+        if (value.find("ChosenCard") != std::string::npos) ability.effect_remember_chosen_card = true;
     } else if (key == "StaticAbilities") {
         // DB$ Effect | StaticAbilities$ <name> — names the continuous static the transient
         // effect grants (e.g. Unblockable). Stored for the Effect handler to interpret.
@@ -1899,12 +1902,20 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // exile-and-return cards whose "imprint" is actually the remembered set, imprinted_entities
         // is empty, so this is a harmless no-op there.)
         ability.clear_imprinted = (value == "True");
-    } else if (key == "Choices" && ability.category == "ChooseCard" &&
-               value.find("IsImprinted") != std::string::npos) {
-        // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa): choose one imprinted
-        // card of the current cur_game.chosen_type. (The Ajani -4 choose_each umbrella Choices$ has
-        // no IsImprinted and is handled by the ignored-keys path below via ChooseEach$.)
-        ability.choose_imprinted = true;
+    } else if (key == "Choices" && ability.category == "ChooseCard") {
+        // ChooseCard | Choices$ <filter>: the cards the choice is made from (Dauthi Voidwalker:
+        // Card.OppOwn+counters_GE1_VOID). Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa)
+        // chooses one imprinted card of the current cur_game.chosen_type. (The Ajani -4
+        // umbrella Choices$ is superseded by its per-type ChooseEach$.)
+        ability.choose_card_filter = value;
+        ability.choose_imprinted = filter_names_token(value, "IsImprinted");
+    } else if (key == "ChoiceZone" && ability.category == "ChooseCard") {
+        // ChooseCard | ChoiceZone$ <zone>: the zone the Choices$ cards are chosen from. (Atraxa's
+        // ChoiceZone$ Library is implied by its imprinted set, which stays in the library.)
+        if (value == "Exile") ability.choose_card_zone = Zone::EXILE;
+        else if (value == "Graveyard") ability.choose_card_zone = Zone::GRAVEYARD;
+        else if (value == "Hand") ability.choose_card_zone = Zone::HAND;
+        else if (value == "Library") ability.choose_card_zone = Zone::LIBRARY;
     } else if (key == "Types" && ability.category == "Animate") {
         // DB$ Animate | Types$ Angel [Cleric ...] — the type/subtype list the animated permanent
         // gains "in addition to its other types" (Guide of Souls: "Angel"; The Fantasticar:
@@ -1978,9 +1989,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // (Chooser$ is parsed above into chooser_is_controller — the search-based ChangeZone
             // honors Chooser$ You. Shuffle$ is handled in apply_param_to_ability above.)
             "Hidden", "ForgetOtherTargets",
-            // ForgetOnMoved$ Exile (Ugin, Eye of the Storms' -11 Effect): tells Forge to drop a
-            // remembered object from the effect once it leaves the named zone. Bookkeeping for the
-            // transient free-cast grant only; the grant itself is a no-op here, so this is cosmetic.
+            // ForgetOnMoved$ Exile (the play-from-exile Effects of Ugin -11, Light Up the Stage,
+            // Dauthi Voidwalker): tells Forge to drop a remembered object from the effect once it
+            // leaves the named zone. The exile-play permission already covers a card only while it
+            // stays in exile (card_play_permission), so the tag needs no separate handling.
             "ForgetOnMoved",
             // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing
             // ChooseEach$; Choices$ (the umbrella pool), ControlledByPlayer$ Chooser, and
@@ -2019,10 +2031,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // (ClearImprinted$ True is parsed above into clear_imprinted — a no-op for Phelia,
             // whose imprinted_entities set is empty, but load-bearing for Atraxa.)
             "Imprint",
-            // ChoiceZone$ Library on Atraxa's ChooseCard: names the zone the imprinted cards are
-            // chosen from. The choose_imprinted handler already scans the imprinted set (which
-            // stays in the library), so this is informational.
-            "ChoiceZone",
             // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
             // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
             // VoteCard$ filter and VoteSubAbility$ are parsed above.
@@ -2331,21 +2339,18 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             // DB$ Effect | StaticAbilities$ <name>. The value may be a literal keyword
             // (Unblockable) or a named SVar holding a continuous static-ability line. Keep the
             // raw value (the Unblockable path reads it), and additionally resolve a named SVar to
-            // detect the "may cast those exiled cards without paying their mana costs" grant
-            // (Ugin -11: MayPlay$ True + MayPlayWithoutManaCost$ True + AffectedZone$ Exile),
-            // which the GrantCast handler turns into free cast-from-exile permissions.
+            // detect a MayPlay$ True grant over exiled cards (Light Up the Stage, Ugin -11, Dauthi
+            // Voidwalker), which the GrantCast handler turns into play-from-exile permissions:
+            // free with MayPlayWithoutManaCost$ True, lands included unless Affected$ says nonLand.
             sub.effect_static_ability = value;
             auto it = svars.find(value);
-            if (it != svars.end() &&
-                it->second.find("MayPlay$ True") != std::string::npos &&
-                it->second.find("AffectedZone$ Exile") != std::string::npos) {
-                if (it->second.find("MayPlayWithoutManaCost$ True") != std::string::npos)
-                    // Ugin -11: cast those cards WITHOUT paying their mana costs (free).
-                    sub.effect_grant_free_cast_from_exile = true;
-                else
-                    // Light Up the Stage: plain MayPlay — PLAY those cards for their NORMAL cost
-                    // (lands included), not free.
-                    sub.effect_grant_play_from_exile = true;
+            if (it != svars.end() && param_value(it->second, "MayPlay") == "True" &&
+                param_value(it->second, "AffectedZone") == "Exile") {
+                sub.effect_may_play_from_exile = true;
+                sub.effect_may_play_free =
+                    param_value(it->second, "MayPlayWithoutManaCost") == "True";
+                sub.effect_may_play_lands =
+                    !filter_names_token(param_value(it->second, "Affected"), "nonLand");
             }
         } else if (key == "ConditionCheckSVar") {
             // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")

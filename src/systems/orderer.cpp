@@ -135,6 +135,10 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if ((target_zone.location == Zone::STACK || target_zone.location == Zone::BATTLEFIELD) &&
         destination != Zone::BATTLEFIELD)
         cur_game.pending_aura_target.erase(target);
+    // A void counter on an exiled card (Dauthi Voidwalker) doesn't follow the card out of exile:
+    // it is a new object with no counters (CR 400.7, 122.2).
+    if (target_zone.location == Zone::EXILE && destination != Zone::EXILE)
+        cur_game.void_countered.erase(target);
 
     // CR 400.7: a card that already left the battlefield becomes a new object again with this
     // move, so its snapshot from that exit no longer describes it (a departure from the

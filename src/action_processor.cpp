@@ -108,8 +108,6 @@ static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
                                                       Zone::Ownership caster,
                                                       const std::vector<bool> &taken,
                                                       std::vector<size_t> &mode_indices);
-static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
-                                 Zone::Ownership caster);
 static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
                            Zone::Ownership chooser, Entity decision_source);
 static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
@@ -1007,7 +1005,7 @@ bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer>
     // live in charm_choices (not subabilities), so the ordinary targeting walk below never
     // sees them; without this a Charm whose every mode lacked a target (Red Elemental Blast
     // with nothing blue anywhere) was offered and then hit an empty mode menu at cast.
-    // Mirrors charm_mode_choosable, the filter announce_charm_modes applies at cast (X isn't
+    // Mirrors charm_mode_choosable, the filter the CHARM_MODE cast step applies (X isn't
     // chosen yet at gate time, so an xPaid-driven target minimum counts as 0 here — X may
     // legally be 0 — matching effective_target_min).
     if (!primary.charm_choices.empty()) {
@@ -1289,74 +1287,6 @@ static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
         mode_indices.push_back(i);
     }
     return mode_actions;
-}
-
-// Modal spell announcement (CR 601.2b): as the spell is CAST, its controller chooses
-// CharmNum$ different modes, then each chosen mode's targets (CR 601.2c) — all before any
-// cost is paid and before the opponent gets priority, becoming public information. The picks
-// are recorded in charm_chosen; effects::charm resolves exactly those modes, re-verifying
-// target legality at resolution (CR 608.2b). BLOCKING form — kept for the cast-from-exile
-// mini-cast (effect_choose_card); the CAST_SPELL action runs the same interleave through the
-// suspendable CHARM_MODE / CHARM_TARGET steps of run_cast_flow.
-static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
-                                 Zone::Ownership caster) {
-    PendingDecisionScope pending_scope(ability.source);
-    int to_pick = ability.charm_num < 1 ? 1 : ability.charm_num;
-    // Track which choice indices remain selectable.
-    std::vector<bool> taken(ability.charm_choices.size(), false);
-
-    for (int pick = 0; pick < to_pick; pick++) {
-        game_log("Choose mode:\n");
-        std::vector<size_t> mode_indices;  // map action index -> charm_choices index
-        std::vector<LegalAction> mode_actions =
-            build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
-        if (mode_actions.empty()) {
-            // No further legal mode (all taken or none with legal targets). The cast-legality
-            // gate (spell_has_castable_targets) requires CharmNum$ choosable modes up front,
-            // so this is only reachable when an earlier pick's target choice changed the
-            // board — proceed with the modes picked so far rather than aborting the cast.
-            game_log("No further legal mode — %d chosen\n", pick);
-            break;
-        }
-        int choice = InputLogger::instance().get_input(mode_actions);
-        size_t chosen_idx = mode_indices[static_cast<size_t>(choice)];
-        taken[chosen_idx] = true;
-        ability.charm_chosen.push_back(static_cast<int>(chosen_idx));
-        Ability &chosen = ability.charm_choices[chosen_idx];
-        game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
-                 charm_mode_desc(ability, chosen_idx).c_str());
-        if (chosen.valid_tgts != "N_A") {
-            select_target(chosen, orderer, caster);
-        }
-    }
-}
-
-// CR 601.2b/c: announce ALL of a spell's cast-time choices on its (already source/controller-
-// stamped) primary ability — modal mode(s) first, then the primary target, then each targeting
-// chained sub-ability's target. Shared by every path that puts a CAST spell on the stack: the
-// CAST_SPELL action and the cast-from-exile mini-cast (effect_choose_card).
-void announce_spell_targets(Ability &ability, std::shared_ptr<Orderer> orderer,
-                            Zone::Ownership caster) {
-    if (!ability.charm_choices.empty()) {
-        announce_charm_modes(ability, orderer, caster);
-    }
-
-    if (ability.valid_tgts != "N_A") {
-        select_target(ability, orderer, caster);
-    }
-    // A spell whose top-level effect doesn't itself target, but whose chained
-    // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal
-    // Therapy: SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$
-    // Player). Select each targeting sub-ability's target now and store it on the
-    // sub-ability template; resolution preserves it (see Ability::resolve).
-    for (auto &sub : ability.subabilities) {
-        if (sub.valid_tgts != "N_A") {
-            sub.source = ability.source;
-            sub.controller = caster;
-            sub.targeted_player = ability.player_target_for_subs();  // ParentTarget
-            select_target(sub, orderer, caster);
-        }
-    }
 }
 
 // Ward (CR 702.21): "Whenever this permanent becomes the target of a spell or ability an
@@ -2662,8 +2592,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // Announce cast-time choices (CR 601.2b/c) across the steps below: modal mode(s)
             // interleaved with their targets (CHARM_MODE/CHARM_TARGET), the primary target
             // (PRIMARY_TARGET), targeting sub-abilities' targets (SUB_TARGET), and the aura
-            // enchant target (AURA_TARGET) — the same interleave announce_spell_targets runs
-            // for the blocking mini-cast. NOTE on ordering: strict CR 601.2b announces modes
+            // enchant target (AURA_TARGET). NOTE on ordering: strict CR 601.2b announces modes
             // before X, but X was chosen above in the cost branch — mode choosability can
             // depend on X (Kozilek's Command's "Creature.cmcLEX" exile mode), and both are
             // the caster's own announcements made atomically before any opponent priority,
@@ -2682,8 +2611,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
         case Game::PendingCast::CHARM_MODE: {
             // Modal spell announcement (CR 601.2b): one mode pick per pass; the just-picked
-            // mode's targets are chosen (CHARM_TARGET) before the NEXT mode pick, exactly the
-            // blocking announce_charm_modes interleave. The picked modes persist in
+            // mode's targets are chosen (CHARM_TARGET) before the NEXT mode pick. The picked
+            // modes persist in
             // ability.charm_chosen — which also reconstructs the taken[] filter on resume —
             // and pc.charm_picks_done counts completed iterations.
             Ability &ability = pc.ability;
@@ -2776,8 +2705,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 }
                 pc.sub_idx++;
             }
-            // Announcement complete: add the fully-targeted Ability to the entity — the
-            // blocking flow's exact position (right after announce_spell_targets returned).
+            // Announcement complete: add the fully-targeted Ability to the entity.
             global_coordinator.AddComponent(spell_entity, pc.ability);
             pc.step = Game::PendingCast::AURA_TARGET;
             break;
